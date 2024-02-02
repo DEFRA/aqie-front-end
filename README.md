@@ -1,6 +1,6 @@
 # aqie-front-end
 
-Core delivery platform Node.js Frontend Template.
+Core delivery platform Node.js Frontend Template. Test for deploy
 
 - [Requirements](#requirements)
   - [Node.js](#nodejs)
