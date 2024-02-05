@@ -1,5 +1,6 @@
 import convict from 'convict'
 import path from 'path'
+import { getTrustStoreCerts } from '~/src/config/helpers/get-trust-store-certs'
 
 const oneWeek = 7 * 24 * 60 * 60 * 1000
 
@@ -58,6 +59,11 @@ const config = convict({
     format: ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'],
     default: 'info',
     env: 'LOG_LEVEL'
+  },
+  trustStore: {
+    doc: 'CA Certificates',
+    format: Array,
+    default: getTrustStoreCerts(process.env)
   }
 })
 
