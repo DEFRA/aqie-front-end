@@ -6,6 +6,9 @@ import { nunjucksConfig } from '~/src/config/nunjucks'
 import { router } from './router'
 import { requestLogger } from '~/src/server/common/helpers/logging/request-logger'
 import { catchAll } from '~/src/server/common/helpers/errors'
+import { secureContext } from '~/src/server/common/helpers/secure-context'
+
+const isProduction = config.get('isProduction')
 
 async function createServer() {
   const server = hapi.server({
@@ -25,11 +28,13 @@ async function createServer() {
     }
   })
 
+  if (isProduction) {
+    await server.register(secureContext)
+  }
+
   await server.register(requestLogger)
 
-  await server.register(router, {
-    routes: { prefix: config.get('appPathPrefix') }
-  })
+  await server.register(router)
 
   await server.register(nunjucksConfig)
 
