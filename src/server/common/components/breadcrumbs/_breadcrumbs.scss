@@ -48,17 +48,8 @@ $chevron-altitude-calculated: govuk-em(5.655px, $font-size);
     display: block;
 
     position: absolute;
-
-    @if $govuk-use-legacy-font {
-      // Begin adjustments for font baseline offset
-      // These should be removed when legacy font support is dropped
-      $offset: govuk-em(1px, $font-size);
-      top: $offset * -1;
-      bottom: $offset;
-    } @else {
-      top: 0;
-      bottom: 0;
-    }
+    top: 0;
+    bottom: 0;
 
     // Offset by the difference between the width of the non-rotated square
     // and its width when rotated
@@ -76,9 +67,10 @@ $chevron-altitude-calculated: govuk-em(5.655px, $font-size);
     border-color: $chevron-border-colour;
 
     @supports (border-width: unquote("max(0px)")) {
-      border-width: unquote("max(#{$chevron-border-min-width}, #{$chevron-border-width}) max(#{$chevron-border-min-width}, #{$chevron-border-width})") 0 0;
+      $border-width-eval: "max(#{$chevron-border-min-width}, #{$chevron-border-width})";
 
       // Ensure that the chevron never gets smaller than 16px
+      border-width: unquote($border-width-eval) unquote($border-width-eval) 0 0;
       font-size: unquote("max(#{$font-size * 1px}, 1em)");
     }
   }

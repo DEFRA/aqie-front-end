@@ -15,11 +15,7 @@ async function startServer() {
   await server.start()
 
   logger.info('Server started successfully')
-  logger.info(
-    `Access your frontend on http://localhost:${config.get('port')}${config.get(
-      'appPathPrefix'
-    )}`
-  )
+  logger.info(`Access your frontend on http://localhost:${config.get('port')}`)
 }
 
 startServer().catch((error) => {

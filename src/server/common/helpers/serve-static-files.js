@@ -2,24 +2,41 @@ import { config } from '~/src/config'
 
 const serveStaticFiles = {
   plugin: {
-    name: 'Serve static files',
+    name: 'staticFiles',
     register: async (server) => {
-      server.route({
-        method: 'GET',
-        path: '/public/{param*}',
-        handler: {
-          directory: {
-            path: '.',
-            redirectToSlash: true
+      server.route([
+        {
+          options: {
+            auth: false,
+            cache: {
+              expiresIn: config.get('staticCacheTimeout'),
+              privacy: 'private'
+            }
+          },
+          method: 'GET',
+          path: '/favicon.ico',
+          handler: function (request, h) {
+            return h.response().code(204).type('image/x-icon')
           }
         },
-        config: {
-          cache: {
-            expiresIn: config.get('staticCacheTimeout'),
-            privacy: 'private'
+        {
+          options: {
+            auth: false,
+            cache: {
+              expiresIn: config.get('staticCacheTimeout'),
+              privacy: 'private'
+            }
+          },
+          method: 'GET',
+          path: '/public/{param*}',
+          handler: {
+            directory: {
+              path: '.',
+              redirectToSlash: true
+            }
           }
         }
-      })
+      ])
     }
   }
 }

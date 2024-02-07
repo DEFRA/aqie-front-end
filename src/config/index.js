@@ -32,11 +32,11 @@ const config = convict({
     format: String,
     default: path.normalize(path.join(__dirname, '..', '..'))
   },
-  appPathPrefix: {
-    doc: 'Application url path prefix this is needed only until we have host based routing',
+  assetPath: {
+    doc: 'Asset path',
     format: String,
-    default: '/aqie-front-end',
-    env: 'APP_PATH_PREFIX'
+    default: '/public',
+    env: 'ASSET_PATH'
   },
   isProduction: {
     doc: 'If this application running in the production environment',
