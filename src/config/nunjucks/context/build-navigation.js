@@ -1,7 +1,7 @@
 function buildNavigation(request) {
   return [
     {
-      text: 'Home',
+      text: 'Home2',
       url: '/',
       isActive: request.path === '/'
     }
