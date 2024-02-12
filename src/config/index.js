@@ -25,7 +25,7 @@ const config = convict({
   serviceName: {
     doc: 'Applications Service Name',
     format: String,
-    default: 'aqie-front-end'
+    default: 'Check local air quality'
   },
   root: {
     doc: 'Project root',

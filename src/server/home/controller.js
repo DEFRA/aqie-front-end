@@ -1,8 +1,9 @@
 const homeController = {
   handler: (request, h) => {
     return h.view('home/index', {
-      pageTitle: 'Home',
-      heading: 'Home'
+      pageTitle: 'Check local air quality',
+      heading: 'Check local air quality',
+      page: 'homepage'
     })
   }
 }
