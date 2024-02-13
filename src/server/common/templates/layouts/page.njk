@@ -3,6 +3,8 @@
 {% from "page-body/macro.njk" import appPageBody %}
 {% from "breadcrumbs/macro.njk" import appBreadcrumbs %}
 {% from "heading/macro.njk" import appHeading %}
+{% from "back-link/macro.njk" import govukBackLink %}
+{% from "phase-banner/macro.njk" import govukPhaseBanner %}
 
 {% set mainClasses = "app-main-wrapper" %}
 
@@ -19,15 +21,25 @@
 {% endblock %}
 
 {% block header %}
+{%if page == "homepage"%}
   {{ govukHeader({
+    homepageUrl: "https://www.gov.uk/",
+    classes: "app-header",
+    containerClasses: "govuk-width-container",
+    serviceName: "",
+    serviceUrl: "/",
+    useTudorCrown: true
+  }) }}
+  {% else %}
+    {{ govukHeader({
     homepageUrl: "https://www.gov.uk/",
     classes: "app-header",
     containerClasses: "govuk-width-container",
     serviceName: serviceName,
     serviceUrl: "/",
     useTudorCrown: true
-  }) }}
-  {% include "partials/navigation.njk" %}
+    }) }}
+    {% endif%}
 {% endblock %}
 
 {% block pageTitle %}
@@ -35,10 +47,17 @@
 {% endblock %}
 
 {% block beforeContent %}
-  {% if breadcrumbs.length > 1 %}
-    {{ appBreadcrumbs({
-      items: breadcrumbs
-    }) }}
+  {{ govukPhaseBanner({
+    tag: {
+      text: "BETA"
+    },
+    html: 'This is a new service – your <a class="govuk-link" href="/feedback">feedback</a> will help us to improve it.'
+  }) }}
+  {%if locationType == "single location" %}
+    {{ govukBackLink({
+    text: "Change location",
+    href: "/search-location"
+  }) }}
   {% endif %}
 {% endblock %}
 

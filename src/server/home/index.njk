@@ -1,4 +1,5 @@
 {% extends 'layouts/page.njk' %}
+{% from "button/macro.njk" import govukButton -%}
 
 {% block content %}
   {{ appHeading({
@@ -7,52 +8,23 @@
   }) }}
 
   {% call appPageBody() %}
-    <p>
-      Welcome to the Frontend Template, a starter kit for Core Delivery Platform Node.js Frontends 🚀
-    </p>
-    <p>
-      Based on <a href="https://github.com/DEFRA/design-standards">DEFRA</a> and <a
-              href="https://design-system.service.gov.uk/">GOV.UK</a> best practices this starter kit provides you with
-      a deployable, production ready template 🙌🏻 to start your new service with.
-    </p>
+      <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <p class="govuk-body">Use this service to:</p>
 
-    <ul>
-      <li>
-        <a href="https://frontend.design-system.service.gov.uk/">GOV.UK Frontend</a>
-      </li>
-      <li>
-        <a href="https://hapi.dev">Hapi</a>
-      </li>
-      <li>
-        <a href="https://mozilla.github.io/nunjucks/">Nunjucks</a>
-      </li>
-      <li>
-        <a href="https://github.com/mozilla/node-convict">Node Convict</a>
-      </li>
-      <li>
-        <a href="https://jestjs.io/">Jest testing</a>
-      </li>
-      <li>
-        <a href="https://webdriver.io">WebdriverIO</a> User Journey testing
-      </li>
-      <li>GitHub Actions Pull Request and Publish jobs</li>
-      <li>
-        <a href="https://github.com/pinojs/pino">PinoJs logging</a>
-      </li>
-      <li>
-        <a href="https://standardjs.com">Standard JS</a>
-      </li>
-      <li>
-        <a href="https://eslint.org">ESLint</a>
-      </li>
-      <li>
-        <a href="https://stylelint.io">StyleLint</a>
-      </li>
-      <li>
-        <a href="https://prettier.io">Prettier</a>
-      </li>
-      <li>and lots more... 😎</li>
-    </ul>
+      <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-6">
+        <li>check air quality in a local area</li>
+        <li>find information on air pollutants</li>
+       <!-- That this is not required for the MVP <li>access the local authority website to find out what is being done to improve air quality</li> -->
+      </ul>
+
+      {{ govukButton({
+        text: "Start now",
+        href: "search-location",
+        isStartButton: true
+      }) }}
+    </div>
+  </div>  
   {% endcall %}
 
 {% endblock %}
