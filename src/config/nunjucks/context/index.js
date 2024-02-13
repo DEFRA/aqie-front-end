@@ -2,10 +2,10 @@ import path from 'path'
 
 import { config } from '~/src/config'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
-// import { buildNavigation } from '~/src/config/nunjucks/context/build-navigation'
 
 const logger = createLogger()
 const assetPath = config.get('assetPath')
+const appPathPrefix = config.get('appPathPrefix')
 
 const manifestPath = path.resolve(
   config.get('root'),
@@ -28,7 +28,7 @@ function context(request) {
     getAssetPath: function (asset) {
       const webpackAssetPath = webpackManifest[asset]
 
-      return `${assetPath}/${webpackAssetPath}`
+      return `${appPathPrefix}/${assetPath}/${webpackAssetPath}`
     }
   }
 }

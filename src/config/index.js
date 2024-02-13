@@ -35,8 +35,14 @@ const config = convict({
   assetPath: {
     doc: 'Asset path',
     format: String,
-    default: '/public',
+    default: 'public',
     env: 'ASSET_PATH'
+  },
+  appPathPrefix: {
+    doc: 'Application url path prefix',
+    format: String,
+    default: '/aqie-front-end',
+    env: 'APP_PATH_PREFIX'
   },
   isProduction: {
     doc: 'If this application running in the production environment',
