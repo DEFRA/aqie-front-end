@@ -17,10 +17,9 @@
         <li>find information on air pollutants</li>
        <!-- That this is not required for the MVP <li>access the local authority website to find out what is being done to improve air quality</li> -->
       </ul>
-
       {{ govukButton({
         text: "Start now",
-        href: "/search-location",
+        href: [prefix, '/search-location'] | join,
         isStartButton: true
       }) }}
     </div>
