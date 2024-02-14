@@ -44,9 +44,7 @@ async function createServer() {
     await server.register(secureContext)
   }
 
-  await server.register(router, {
-    routes: { prefix: config.get('appPathPrefix') }
-  })
+  await server.register(router, {})
 
   await server.register(nunjucksConfig)
 
