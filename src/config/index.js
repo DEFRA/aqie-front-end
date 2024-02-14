@@ -41,7 +41,7 @@ const config = convict({
   appPathPrefix: {
     doc: 'Application url path prefix',
     format: String,
-    default: '',
+    default: '/aqie-front-end',
     env: 'APP_PATH_PREFIX'
   },
   isProduction: {
