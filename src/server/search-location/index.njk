@@ -18,8 +18,7 @@
   {% endif %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-
-      <form action={{[serviceUrl, '/location'] | join}} method="post">
+      <form action={{[appPathPrefix, '/location'] | join}} method="post">
         {{ appSearch(searchParams) }}
         <!-- Hidden input to pass the air quality value -->
         <input type="hidden" name="aq" value="{{ airQuality.value }}" />
