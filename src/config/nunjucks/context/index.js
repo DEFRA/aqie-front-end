@@ -23,7 +23,7 @@ try {
 function context(request) {
   return {
     serviceName: config.get('serviceName'),
-    breadcrumbs: [],
+    breadcrumbs: ['hello'],
     // navigation: buildNavigation(request),
     getAssetPath: function (asset) {
       const webpackAssetPath = webpackManifest[asset]

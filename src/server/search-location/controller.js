@@ -6,11 +6,8 @@ import {
   pollutantTypes
 } from '../data/monitoring-sites.js'
 import * as airQualityData from '../data/air-quality.js'
-import { config } from '~/src/config'
 
 const apiKey = 'vvR3FiaNjSWCnFzSKBst23TX6efl0oL9'
-
-const prefix = config.get('appPathPrefix')
 
 const getLocationDataController = {
   handler: async (request, h) => {
@@ -113,8 +110,7 @@ const getLocationDataController = {
           siteTypeDescriptions,
           pollutantTypes,
           locationType: 'single location',
-          serviceName: 'Check local air quality',
-          prefix
+          serviceName: 'Check local air quality'
         })
       } else if (matches.length > 1 && originalUserLocation.length > 3) {
         return h.view('locations/multiple-locations', {
@@ -125,20 +121,17 @@ const getLocationDataController = {
           monitoringSites,
           siteTypeDescriptions,
           pollutantTypes,
-          serviceName: 'Check local air quality',
-          prefix
+          serviceName: 'Check local air quality'
         })
       } else {
         return h.view('location-not-found.njk', {
-          prefix,
           userLocation: originalUserLocation
         })
       }
     } catch (error) {
       return h.status(400).render('error.njk', {
         error: 'An error occurred while fetching location data.',
-        userLocation: originalUserLocation,
-        prefix
+        userLocation: originalUserLocation
       })
     }
   }
@@ -162,8 +155,7 @@ const searchLocationController = {
         },
         id: 'location',
         name: 'location'
-      },
-      prefix
+      }
     })
   }
 }

@@ -1,5 +1,4 @@
 {% extends 'layouts/page.njk' %}
-{% from "button/macro.njk" import govukButton -%}
 
 {% block content %}
   {{ appHeading({
@@ -19,7 +18,7 @@
       </ul>
       {{ govukButton({
         text: "Start now",
-        href: [prefix,'/search-location'] | join,
+        href: [serviceUrl,'/search-location'] | join,
         isStartButton: true
       }) }}
     </div>
