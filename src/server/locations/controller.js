@@ -3,7 +3,7 @@ const searchLocationController = {
     return h.view('search-location/index', {
       pageTitle: 'Check local air quality',
       heading: 'Check local air quality',
-      page: 'search-location',
+      page: 'location',
       serviceName: 'Check local air quality',
       searchParams: {
         label: {

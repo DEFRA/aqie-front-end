@@ -1,18 +1,18 @@
-import { searchLocationController } from '~/src/server/search-location/controller'
+import { getLocationDataController } from '~/src/server/search-location/controller'
 
-const searchLocation = {
+const locations = {
   plugin: {
-    name: 'search-location',
+    name: 'location',
     register: async (server) => {
       server.route([
         {
-          method: 'GET',
-          path: '/search-location',
-          ...searchLocationController
+          method: 'POST',
+          path: '/location',
+          ...getLocationDataController
         }
       ])
     }
   }
 }
 
-export { searchLocation }
+export { locations }
