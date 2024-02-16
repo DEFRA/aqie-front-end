@@ -11,7 +11,7 @@
     {% for item in results %}
     <ul class="govuk-list govuk-!-margin-bottom-2">
       <li>
-        <a href={{[serviceUrl, '/location/',item.GAZETTEER_ENTRY.ID] | join}} class="govuk-link">
+        <a href={{[appPathPrefix, '/location/',item.GAZETTEER_ENTRY.ID] | join}} class="govuk-link">
         <mark>{{ item.GAZETTEER_ENTRY.NAME1 }}</mark>, 
         {% if item.GAZETTEER_ENTRY.COUNTY_UNITARY %}
           {{ item.GAZETTEER_ENTRY.COUNTY_UNITARY }}
@@ -22,7 +22,7 @@
       </li>
     </ul>
         {% endfor %}
-    <p class="govuk-body govuk-!-margin-top-6">Alternatively, <a href={{[serviceUrl, '/search-location'] | join}}>try searching again</a></p>
+    <p class="govuk-body govuk-!-margin-top-6">Alternatively, <a href={{[appPathPrefix, '/search-location'] | join}}>try searching again</a></p>
   </div>
 </div>
 {% endblock %}

@@ -32,6 +32,7 @@ function context(request) {
   return {
     serviceName: config.get('serviceName'),
     serviceUrl: config.get('appPathPrefix'),
+    appPathPrefix: config.get('appPathPrefix'),
     breadcrumbs: [],
     navigation: buildNavigation(request),
     getAssetPath: function (asset) {
