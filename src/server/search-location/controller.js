@@ -33,7 +33,7 @@ const getLocationDataController = {
       const airQuality = getAirQuality(aqValue)
 
       if (!userLocation) {
-        return h.view('search-location.njk', {
+        return h.view('search-location/index', {
           errors: {
             titleText: 'There is a problem',
             errorList: [
@@ -79,7 +79,7 @@ const getLocationDataController = {
       const { results } = response.data
 
       if (!results || results.length === 0) {
-        return h.view('location-not-found.njk', {
+        return h.view('locations/location-not-found', {
           userLocation: originalUserLocation
         })
       }
@@ -102,7 +102,7 @@ const getLocationDataController = {
       request.yar.set('locationData', { data: matches })
 
       if (matches.length === 1) {
-        return h.view('location/index', {
+        return h.view('locations/location', {
           result: matches[0],
           airQuality,
           airQualityData: airQualityData.commonMessages,
@@ -124,7 +124,7 @@ const getLocationDataController = {
           serviceName: 'Check local air quality'
         })
       } else {
-        return h.view('location-not-found.njk', {
+        return h.view('locations/location-not-found', {
           userLocation: originalUserLocation
         })
       }
