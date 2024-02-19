@@ -2,9 +2,9 @@
 const nitrogenDioxideController = {
   handler: (request, h) => {
     return h.view('nitrogen-dioxide/index', {
-      pageTitle: 'Check local air quality',
+      pageTitle: 'Nitrogen dioxide (NO₂) – Check local air quality – GOV.UK',
       heading: 'Check local air quality',
-      page: 'homepage'
+      page: 'Nitrogen dioxide (NO₂)'
     })
   }
 }
