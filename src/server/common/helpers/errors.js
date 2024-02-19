@@ -29,7 +29,8 @@ function catchAll(request, h) {
     .view('error/index', {
       pageTitle: errorMessage,
       heading: statusCode,
-      message: errorMessage
+      message: errorMessage,
+      url: request.path
     })
     .code(statusCode)
 }
