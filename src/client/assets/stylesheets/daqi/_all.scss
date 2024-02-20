@@ -1,0 +1,540 @@
+//
+// For guidance on how to add CSS and SCSS see:
+// https://prototype-kit.service.gov.uk/docs/adding-css-javascript-and-images
+// 
+
+// Add extra styles here
+
+
+// Table
+.app-table--daqi {
+  border-collapse: separate;
+  border: 0;
+}
+
+.daqi-table__header {
+  @include govuk-font($size: 16, $weight: regular);
+  border: 0;
+  padding: govuk-spacing(2);
+  vertical-align: bottom;
+  text-align: center;
+  width: 10%;
+  border-right: 3px solid #ffffff; /* Add a 3px white vertical border to header cells */
+}
+
+.daqi-table__header:last-child {
+  padding: govuk-spacing(2) govuk-spacing(2) govuk-spacing(2) 9px;
+}
+
+.daqi-table__cell {
+  @include govuk-font($size: 16, $weight: regular);
+  padding: govuk-spacing(2);
+  border: 0;
+  width: 10%;
+  background-color: govuk-colour("light-grey");
+  border-right: 2px solid #ffffff; /* Add a 3px white vertical border to data cells */
+}
+
+.daqi-table__cell:last-child {
+  padding: govuk-spacing(2) govuk-spacing(2) govuk-spacing(2) 9px;
+}
+
+.daqi-table__caption {
+  font-weight: 700;
+  text-align: left;
+  
+}
+
+.daqi-band {
+  @include govuk-font($size: 14, $weight: regular);
+  border: 0;
+  vertical-align: top;
+  text-align: left;
+  width: 10%;
+  border-right: 3px solid #ffffff; /* Add a 3px white vertical border to cells in .daqi-band */
+}
+
+.daqi-band:last-child {
+  text-align: right;
+}
+
+
+// DAQI colours
+
+$daqi-colour-0: govuk-colour("light-grey");
+$daqi-colour-1: govuk-colour("green");
+$daqi-colour-2: govuk-colour("green");
+$daqi-colour-3: govuk-colour("green");
+$daqi-colour-4: govuk-colour("yellow");
+$daqi-colour-5: govuk-colour("yellow");
+$daqi-colour-6: govuk-colour("yellow");
+$daqi-colour-7: govuk-colour("red");
+$daqi-colour-8: govuk-colour("red");
+$daqi-colour-9: govuk-colour("red");
+$daqi-colour-10: govuk-colour("purple");
+  
+  
+  // DAQI table
+
+  .daqi-selected {
+    font-weight: bold; 
+  }
+
+  .daqi-0 {
+    background-color: $daqi-colour-0;
+    color: govuk-colour("black");
+  }
+
+  .daqi-1 {
+    background-color: $daqi-colour-1;
+    color: govuk-colour("white");
+    font-weight: bold; 
+  }
+  
+  .daqi-2 {
+    background-color: $daqi-colour-2;
+    color: govuk-colour("white");
+    font-weight: bold; 
+  }
+  
+  .daqi-3 {
+    background-color: $daqi-colour-3;
+    color: govuk-colour("white");
+    font-weight: bold; 
+  }
+  
+  .daqi-4 {
+    background-color: $daqi-colour-4;
+    color: govuk-colour("black");
+    font-weight: bold; 
+  }
+  
+  .daqi-5 {
+    background-color: $daqi-colour-5;
+    color: govuk-colour("black");
+    font-weight: bold; 
+  }
+  
+  .daqi-6 {
+    background-color: $daqi-colour-6;
+    color: govuk-colour("black");
+    font-weight: bold; 
+  }
+  
+  .daqi-7 {
+    background-color: $daqi-colour-7;
+    color: govuk-colour("white");
+    font-weight: bold; 
+  }
+  
+  .daqi-8 {
+    background-color: $daqi-colour-8;
+    color: govuk-colour("white");
+    font-weight: bold; 
+  }
+  
+  .daqi-9 {
+    background-color: $daqi-colour-9;
+    color: govuk-colour("white");
+    font-weight: bold; 
+  }
+  
+  .daqi-10 {
+    background-color: $daqi-colour-10;
+    color: govuk-colour("white");
+    font-weight: bold; 
+}
+
+
+@for $i from 0 through 10 {
+  .daqi-#{$i} {
+    text-align: center;
+  }
+}
+
+
+
+
+// DAQI Tag
+
+.daqi-tag {
+
+  display: inline-block;
+
+  // When a user customises their colours often the background is removed,
+  // by adding a outline we ensure that the tag component still keeps it's meaning.
+  // https://accessibility.blog.gov.uk/2017/03/27/how-users-change-colours-on-websites/
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+
+  color: govuk-colour("white");
+  background-color: govuk-colour("blue");
+  letter-spacing: 1px;
+
+  text-decoration: none;
+}
+
+.daqi-tag--round {
+  border-radius: 50%; 
+}
+
+mark {
+  background-color: transparent;
+  font-weight: bold;
+  color: inherit;
+}
+
+.daqi-tag--1 {
+  color: govuk-colour("white");
+  background: $daqi-colour-1;
+}
+
+.daqi-tag--2 {
+  color: govuk-colour("white");
+  background: $daqi-colour-2;
+}
+
+.daqi-tag--3 {
+  color: govuk-colour("white");
+  background: $daqi-colour-3;
+}
+
+.daqi-tag--4 {
+  color: govuk-colour("black");
+  background: $daqi-colour-4;
+}
+
+.daqi-tag--5 {
+  color: govuk-colour("black");
+  background: $daqi-colour-5;
+}
+
+.daqi-tag--6 {
+  color: govuk-colour("black");
+  background: $daqi-colour-6;
+}
+
+.daqi-tag--7 {
+  color: govuk-colour("white");
+  background: $daqi-colour-7;
+}
+
+.daqi-tag--8 {
+  color: govuk-colour("white");
+  background: $daqi-colour-8;
+}
+
+.daqi-tag--9 {
+  color: govuk-colour("white");
+  background: $daqi-colour-9;
+}
+
+.daqi-tag--10 {
+  color: govuk-colour("white");
+  background: $daqi-colour-10;
+}
+
+
+// Pollutants
+
+.pollutant-value {
+    margin-bottom: govuk-spacing(0);
+  }
+
+// Section
+
+.app-section__heading {
+    border-top: 2px solid govuk-colour("black");
+    margin: 0 0 govuk-spacing(6);
+    padding: govuk-spacing(6) 0 0;
+}
+
+
+// Forecast Panel
+
+@for $i from 1 through 3 {
+  .daqi-panel--#{$i} {
+    border-left: 10px solid $daqi-colour-1;
+    background-color: #fdedee;
+  }
+}
+
+@for $i from 4 through 6 {
+  .daqi-panel--#{$i} {
+    border-left: 10px solid $daqi-colour-4;
+    background-color: #fdedee;
+  }
+}
+
+@for $i from 7 through 9 {
+  .daqi-panel--#{$i} {
+    border-left: 10px solid $daqi-colour-7;
+  }
+}
+
+.daqi-panel {
+  border-left: 10px solid $daqi-colour-10;
+  background-color: #fdedee;
+}
+
+// Pollutant Card
+
+.air-quality-statistics {
+  &__list {
+      margin:0;
+  }
+
+  &__list::after {
+      content:'';
+      display:block;
+      clear:both;
+  }
+
+  &__item {
+    float: left;
+    box-sizing: border-box;
+    padding-right: 10px;
+    min-width: 6em;
+    
+    @include mq($from: desktop) {
+        width: 33.33%; /* All items take 33.33% width on desktop */
+    }
+  }
+
+  &__item:first-child {
+      width: 33.33%; /* First item takes 50% width */
+  }
+
+  &__item:nth-child(2), &__item:nth-child(3) {
+      width: 33.33%; /* Second and third items take 25% width */
+  }
+
+  &__key {
+      @include govuk-font($size: 19);
+      color: $govuk-secondary-text-colour;
+  }
+
+  &__value {
+      @include govuk-font($size: 27);
+      margin:0;
+      display: block;
+      box-sizing: border-box;
+  }
+
+  &__value::first-letter {
+      margin-left: -0.075em;
+  }  
+
+  &__data-tip:focus {
+      border-bottom: 0;
+      margin-bottom: 0;
+  }
+
+  &--border {
+      border-top: 1px solid $govuk-border-colour;
+      border-bottom: 1px solid $govuk-border-colour;
+      padding-bottom: 15px; 
+      @include mq ($from: tablet) {
+          padding-bottom: 20px;
+      }
+  }
+
+  &--border &__key {
+      padding-top: 15px;
+  }
+}
+
+
+@mixin defra-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  -webkit-clip-path: inset(50%);
+  clip-path: inset(50%);
+  border: 0;
+  white-space: nowrap;
+}
+
+.defra-toggletip {
+	// height: 1rem;
+	&:first-child {
+		display: inline-block;
+	}
+
+  display: inline-block;
+  position: relative;
+
+	&:not(.defra-toggletip-target) {
+		padding-right: 26px;
+	}
+
+	&--open {
+		z-index: 99;
+	}
+
+	&__container {
+		position: absolute;
+		top: -3px;
+		@include mq ($from: tablet) {
+			top: -1px;
+		}
+		right: 0;
+		width: 26px;
+		height: 26px;
+	}
+
+	&__button {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 26px;
+		height: 26px;
+		background-color: #ffffff;
+		border: 0;
+		padding: 0;
+		text-align: center;
+		color: $govuk-text-colour;
+		cursor: help;
+		
+    &-icon {
+			pointer-events: none;
+			position: absolute;
+			overflow: visible;
+			top: 5px;
+			left: 5px;
+			width: 16px;
+			height: 16px;
+			border-radius: 100%;
+		}
+
+		&-text {
+			@include defra-visually-hidden;
+		}
+
+		svg {
+			position: relative;
+			margin: -1px 0 0 -1px;
+		}
+
+		&:hover, &:focus {
+			color: govuk-colour('black');
+		}
+
+		&:hover span {
+			box-shadow: 0 0 0 5px govuk-colour('light-grey');
+		}
+
+		&:focus {
+			outline: 3px solid transparent;
+
+			span {
+				box-shadow: 0 0 0 1px govuk-colour('black'), 0 0 0 5px $govuk-focus-colour;
+			}
+		}
+	}
+
+	&__info {
+		@include govuk-font($size: 16);
+		cursor: auto;
+		position:absolute;
+		width:0;
+		overflow: hidden;
+		box-sizing: border-box;
+		visibility: hidden;
+		top: auto;
+		bottom: 100%;
+		left: 0;
+		padding-bottom: 10px;
+		text-align: left;
+	}
+
+	&__text {
+		position: relative;
+		display:block;
+		box-sizing: border-box;
+		padding: 7.5px 10px;
+		color: #ffffff;
+		background: #000000;
+		border: 0 solid currentcolor;
+		z-index: 2;
+
+		span {
+			color: #ffffff;
+		}
+	}
+
+	&__arrow {
+		position: absolute;
+		box-sizing: border-box;
+		z-index: 1;
+		width: 10px;
+		height: 10px;
+		left: 50%;
+		bottom: auto;
+		top: 100%;
+		margin: -15px 0 0 -5px;
+		color: govuk-colour('black');
+		border: 5px solid currentcolor;
+		-webkit-transform: rotate(135deg);
+		-moz-transform: rotate(135deg);
+		-o-transform: rotate(135deg);
+		transform: rotate(135deg);
+	}
+
+	&--bottom &__info {
+		bottom: auto;
+		top: 100%;
+		padding-top: 10px;
+		padding-bottom: 0;
+	}
+
+	&--bottom &__arrow {
+		bottom: 100%;
+		top: auto;
+		margin: 0 0 -15px -5px;
+	}
+
+	&--open &__info {
+		visibility: visible;
+		width:200px;
+		overflow: visible;
+	}
+
+	&.defra-toggletip-target {
+		cursor: help;
+		border-bottom: 1px dashed govuk-colour('black');
+		padding-bottom: 1px;
+		outline: 3px solid transparent;
+
+		&:focus, &:hover:focus-visible {
+			border-bottom: 1px solid govuk-colour('black');
+			box-shadow: 0 2px 0 govuk-colour('black'), 0 6px 0 govuk-colour('yellow');
+		}
+
+		&:focus:not(:focus-visible):not(:hover) {
+			border-bottom: 1px dashed govuk-colour('black');
+			box-shadow: none;
+		}
+    
+		&:hover {
+			border-bottom: 1px solid govuk-colour('black');
+			box-shadow: 0 2px 0 govuk-colour('black');
+		}
+	}
+}
+
+// Utility classes
+
+.align-middle {
+  vertical-align: middle;
+}
+
+.govuk-caption-s {
+  @extend %govuk-caption-m !optional;
+  @include govuk-font($size: 16);
+}
+
