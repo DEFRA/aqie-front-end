@@ -6,7 +6,6 @@
 
 {% if onlyShowTwoPages == "Yes" %}
 {% block content %}
-<div><h1 class="govuk-body" style="color:red;">COMING SOON...</h1></div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop govuk-grid-column-full">
       <h1 class="govuk-heading-{{ pageHeadingSize }}">
@@ -19,7 +18,30 @@
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop govuk-grid-column-full govuk-!-margin-bottom-9">
-      {% include "partials/daqi.njk" %}
+      {% set daqiValue = airQuality.value %}
+
+      {% set firstRow = [] %}
+      {% for i in range(1, 11) %}
+          {% if daqiValue == i %}
+              {% set cellClass = "daqi-table__cell daqi-selected daqi-" ~ i %}
+          {% else %}
+              {% set cellClass = "daqi-table__cell daqi-0" %}
+          {% endif %}
+          {% set cell = { classes: cellClass, text: i | string } %}
+          {% set _ = firstRow.push(cell) %}
+      {% endfor %}
+
+      {# {{ govukTable({
+        caption: "The air pollution forecast for today is " ~ (airQuality.readableBand | default('unknown')),
+        captionClasses: "govuk-heading-m daqi-table__caption govuk-!-margin-bottom-6",
+        head: [], 
+        rows: [firstRow, [
+            { text: "Low", classes: "daqi-band", colspan: 3 },
+            { text: "Moderate", classes: "daqi-band", colspan: 3 },
+            { text: "High", classes: "daqi-band", colspan: 2 },
+            { text: "Very high", classes: "daqi-band", colspan: 2 }
+        ]]
+      }) }} #}
       {% if airQuality.value >= 1 and airQuality.value <= 3 %}
           <h2 class="govuk-heading-m">Advice for {{ airQuality.readableBand }} levels of air pollution</h2>
           <p>{{ airQuality.advice }}</p>
@@ -42,18 +64,188 @@
           }) }}
           <p>{{ airQuality.advice }}</p>
       {% endif %}    
-      {% include "partials/daqi-index.njk" %}
+        {% set table %}
+        {{ govukTable({
+          classes: "govuk-!-margin-bottom-6",
+          caption: "The Daily Air Quality Index (DAQI) tells you the expected levels of air pollution and can inform you about the short-term health effects.",
+          captionClasses: "govuk-body govuk-!-font-weight-regular govuk-!-margin-bottom-4",
+          firstCellIsHeader: true,
+          head: [
+            {
+              text: "Pollution level"
+            },
+            {
+              text: "Index"
+            },
+            {
+              text: "Health advice",
+              classes: "govuk-!-width-one-half"
+            }
+          ],
+          rows: [
+            [
+              {
+                html: "<strong class='daqi-tag daqi-tag--1'>Low</strong>"
+              },
+              {
+                text: "1-3"
+              },
+              {
+                html: airQualityData['low'].advice
+              }
+            ],
+            [
+              {
+                html: "<strong class='daqi-tag daqi-tag--4'>Moderate</strong>"
+              },
+              {
+                text: "4-6"
+              },
+              {
+                html: "<p>" + airQualityData['moderate'].atrisk.adults + "</p><p>" + airQualityData['moderate'].atrisk.asthma + "</p>" + airQualityData['moderate'].atrisk.oldPeople
+              }
+            ],
+            [
+              {
+                html: "<strong class='daqi-tag daqi-tag--7'>High</strong>"
+              },
+              {
+                text: "7-9"
+              },
+              {
+                html: "<p>" + airQualityData['high'].advice + "</p><p>" + airQualityData['high'].atrisk.adults + "</p><p>" + airQualityData['high'].atrisk.asthma + "</p>" + airQualityData['high'].atrisk.oldPeople
+              }
+            ],
+            [
+              {
+                html: "<strong class='daqi-tag daqi-tag--10'>Very high</strong>"
+              },
+              {
+                text: "10"
+              },
+              {
+                html: "<p>" + airQualityData['veryHigh'].advice + "</p><p>" + airQualityData['veryHigh'].atrisk.adults + "</p><p>" + airQualityData['veryHigh'].atrisk.asthma + "</p>" + airQualityData['veryHigh'].atrisk.oldPeople
+              }
+            ]
+          ]
+        }) }}
+        {% endset %}
+
+        {{ govukDetails({
+          summaryText: "How air quality can affect health",
+          html: table
+        }) }}
       <h2 class="govuk-heading-m">UK air pollution summary</h2>
       <p class="govuk-!-margin-bottom-6">
         {{ airQuality.outlook }}
       </p>
-      <p class="govuk-caption-s govuk-!-margin-bottom-4">Latest at 05:00am {{ "today" | govukDate }}</p>
+      <p class="govuk-caption-s govuk-!-margin-bottom-4">Latest at 05:00am {{ "today" }}</p>
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6">
       <h2 class="govuk-heading-m">How air pollutants can affect your health</h2>
-      {% include "partials/pollutants.njk" %}
+      <h2 class="govuk-heading-s">Gases</h2>
+      <p>Produced by the burning of fossil fuels from sources such as cars, power plants and factories.</p>
+      <ul class="govuk-list">
+        <li>
+          <a class="govuk-link" href={{[appPathPrefix, '/pollutants/ozone'] | join}}>Ozone</a>
+        </li>
+        <li>
+          <a class="govuk-link"href={{[appPathPrefix, '/pollutants/nitrogen-dioxide'] | join}}>Nitrogen dioxide</a>
+        </li>
+        <li>
+          <a class="govuk-link" href={{[appPathPrefix, '/pollutants/sulphur-dioxide'] | join}}>Sulphur dioxide</a>
+        </li>
+      </ul>
+      <h2 class="govuk-heading-s">Particulate matter (PM)</h2>
+      <p>Particulate matter are tiny pieces of solid or liquid particles suspended in the air. They come from sources like car tyres, brakes, exhausts, dust, wood burning and pollen.</p>
+      <ul class="govuk-list">
+        <li>
+          <a class="govuk-link" href={{[appPathPrefix, '/pollutants/particulate-matter-25'] | join}}>PM 2.5</a>
+        </li>
+        <li>
+          <a class="govuk-link" href={{[appPathPrefix, '/pollutants/particulate-matter-10'] | join}}>PM 10</a>
+        </li>
+      </ul>
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6 govuk-!-margin-top-6">
       <h2 class="govuk-heading-m">Air pollutants monitored near by</h2>
-      {% include "partials/monitoring-sites.njk" %}
+        {# {% for site in monitoringSites %}
+        {% set time %}
+            {{ "now" }}
+        {% endset %}
+
+        {% set measurementToggletip %}
+          {{ toggletip(
+            '',
+            'More information about measurement',
+            'Readings are measured every hour. The unit µg/&#13221; stands for micrograms (one millionth of a gram) per cubic metre of air.',
+            'Latest'
+          )}}
+        {% endset %} #}
+
+        {# {% set trendToggletip %}
+          {{ toggletip(
+            '',
+            'More information about the trend',
+            'The trend is taken from the last 3 readings which are updated hourly
+            ',
+            'Trend'
+          )}}
+        {% endset %} #}
+
+        {# {% set levelToggletip %}
+          {{ toggletip(
+            '',
+            'More information about the level',
+            'There are 4 levels: low, moderate, high and very high. The level is determined by the highest reading of a single pollutant.
+            ',
+            'Level'
+          )}}
+        {% endset %}
+        {% set siteNameToggletip %}
+          {{ toggletip(
+            '',
+            'More information about ' + site.site_name,
+            siteTypeDescriptions[site.site_type],
+            site.site_name
+          )}}
+        {% endset %} #}
+          <h3 class="govuk-heading-s govuk-!-margin-bottom-1">{{ siteNameToggletip | safe }}</h3>
+          <p class="govuk-caption-m govuk-!-margin-bottom-3">{{ site.distance }} coming soon...</p>
+          {# {% set rows = [] %}
+          {% for pollutant in site.pollutants %}
+              {% set pollutantDetail = pollutantTypes[pollutant.type] %}
+              {% set row = [
+                  { 
+                      html: "<a class='govuk-!-margin-bottom-1' href='" + pollutantDetail.href + "'>" + pollutantDetail.title + "</a><span class='govuk-caption-s govuk-!-margin-bottom-1'>Low range " + pollutantDetail.low_range + "</span>",
+                      classes: "defra-aq-levels-table__cell--pollutant" 
+                  },
+                  { 
+                      html: (pollutant.measurement | int) +  " <span class='govuk-!-font-size-16 govuk-!-font-weight-regular'>μg/&#13221;</span>",
+                      classes: "defra-aq-levels-table__cell--reading" 
+                  },
+                  { 
+                      html: pollutant.trend, 
+                      classes: "defra-aq-levels-table__cell--trend" 
+                  },
+                  { 
+                      html: "<strong class='daqi-tag daqi-tag--" + (pollutant.aqi if pollutant.aqi else "default-aqi-value") + "'>" + pollutant.band + "</strong>",
+                      classes: "defra-aq-levels-table__cell--level" 
+                  }
+              ] %}
+              {% set _ = rows.push(row) %}
+          {% endfor %} #}
+          {# {{ aqLevelsTable({
+              classes: "govuk-!-margin-bottom-2",
+              firstCellIsHeader: false,
+              head: [
+                { text: "Pollutant", classes: "defra-aq-levels-table__cell--pollutant"},
+                { html: measurementToggletip, classes: "defra-aq-levels-table__cell--reading" },
+                { html: trendToggletip, classes: "defra-aq-levels-table__cell--trend" },
+                { html: levelToggletip, classes: "defra-aq-levels-table__cell--level" }
+              ],
+              rows: rows
+          }) }}
+          <p class='govuk-caption-s govuk-!-margin-bottom-6'>Latest {{ "now" }}</p> #}
+        {# {% endfor %} #}
     </div>
   </div>
 {% endblock %}
