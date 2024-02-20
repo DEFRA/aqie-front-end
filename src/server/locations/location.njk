@@ -19,7 +19,7 @@
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop govuk-grid-column-full govuk-!-margin-bottom-9">
-      {% include "partials/daqi.njk" %}
+      {% include "partials/daqi.njk" with context %}
       {% if airQuality.value >= 1 and airQuality.value <= 3 %}
           <h2 class="govuk-heading-m">Advice for {{ airQuality.readableBand }} levels of air pollution</h2>
           <p>{{ airQuality.advice }}</p>
