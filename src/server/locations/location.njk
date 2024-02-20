@@ -31,7 +31,7 @@
           {% set _ = firstRow.push(cell) %}
       {% endfor %}
 
-      {# {{ govukTable({
+      {{ govukTable({
         caption: "The air pollution forecast for today is " ~ (airQuality.readableBand | default('unknown')),
         captionClasses: "govuk-heading-m daqi-table__caption govuk-!-margin-bottom-6",
         head: [], 
@@ -41,7 +41,7 @@
             { text: "High", classes: "daqi-band", colspan: 2 },
             { text: "Very high", classes: "daqi-band", colspan: 2 }
         ]]
-      }) }} #}
+      }) }}
       {% if airQuality.value >= 1 and airQuality.value <= 3 %}
           <h2 class="govuk-heading-m">Advice for {{ airQuality.readableBand }} levels of air pollution</h2>
           <p>{{ airQuality.advice }}</p>
@@ -210,7 +210,7 @@
         {% endset %} #}
           <h3 class="govuk-heading-s govuk-!-margin-bottom-1">{{ siteNameToggletip | safe }}</h3>
           <p class="govuk-caption-m govuk-!-margin-bottom-3">{{ site.distance }} coming soon...</p>
-          {# {% set rows = [] %}
+           {# {% set rows = [] %}
           {% for pollutant in site.pollutants %}
               {% set pollutantDetail = pollutantTypes[pollutant.type] %}
               {% set row = [
@@ -232,8 +232,8 @@
                   }
               ] %}
               {% set _ = rows.push(row) %}
-          {% endfor %} #}
-          {# {{ aqLevelsTable({
+          {% endfor %} 
+          {{ aqLevelsTable({
               classes: "govuk-!-margin-bottom-2",
               firstCellIsHeader: false,
               head: [
@@ -243,8 +243,8 @@
                 { html: levelToggletip, classes: "defra-aq-levels-table__cell--level" }
               ],
               rows: rows
-          }) }}
-          <p class='govuk-caption-s govuk-!-margin-bottom-6'>Latest {{ "now" }}</p> #}
+          }) }} #}
+          {# <p class='govuk-caption-s govuk-!-margin-bottom-6'>Latest {{ "now" }}</p>  #}
         {# {% endfor %} #}
     </div>
   </div>
