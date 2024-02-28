@@ -129,8 +129,7 @@ const getLocationDataController = {
         })
       }
     } catch (error) {
-      return h.status(400).render('error.njk', {
-        error: 'An error occurred while fetching location data.',
+      return h.view('error/index', {
         userLocation: originalUserLocation
       })
     }

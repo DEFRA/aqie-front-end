@@ -6,6 +6,7 @@ import { config } from '~/src/config'
 import { context } from './context'
 import * as filters from './filters'
 import * as globals from './globals'
+import { addMomentFilters } from './filters/index'
 
 const nunjucksEnvironment = nunjucks.configure(
   [
@@ -15,6 +16,17 @@ const nunjucksEnvironment = nunjucks.configure(
     ),
     path.normalize(
       path.resolve(__dirname, '..', '..', 'server', 'common', 'components')
+    ),
+    path.normalize(
+      path.resolve(
+        __dirname,
+        '..',
+        '..',
+        'server',
+        'common',
+        'templates',
+        'partials'
+      )
     )
   ],
   {
@@ -55,5 +67,7 @@ Object.keys(globals).forEach((global) => {
 Object.keys(filters).forEach((filter) => {
   nunjucksEnvironment.addFilter(filter, filters[filter])
 })
+
+addMomentFilters(nunjucksEnvironment)
 
 export { nunjucksConfig }
