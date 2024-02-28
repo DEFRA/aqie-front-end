@@ -123,27 +123,27 @@ export const monitoringSites = [
 export const pollutantTypes = {
   'nitrogen-dioxide': {
     title: 'Nitrogen dioxide',
-    href: '/pollutants/nitrogen-dioxide',
+    href: '/aqie-front-end/pollutants/nitrogen-dioxide',
     low_range: '0 to 200'
   },
   'particulate-matter10': {
     title: 'PM10',
-    href: '/pollutants/particulate-matter10',
+    href: '/aqie-front-end/pollutants/particulate-matter-10',
     low_range: '0 to 50'
   },
   'particulate-matter2': {
     title: 'PM2.5',
-    href: '/pollutants/particulate-matter2',
+    href: '/aqie-front-end/pollutants/particulate-matter-25',
     low_range: '0 to 35'
   },
   ozone: {
     title: 'Ozone',
-    href: '/pollutants/ozone',
+    href: '/aqie-front-end/pollutants/ozone',
     low_range: '0 to 100'
   },
   'sulphur-dioxide': {
     title: 'Sulphur dioxide',
-    href: '/pollutants/sulphur-dioxide',
+    href: '/aqie-front-end/pollutants/sulphur-dioxide',
     low_range: '0 to 100'
   }
 }

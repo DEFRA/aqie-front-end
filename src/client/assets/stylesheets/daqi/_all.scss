@@ -1,4 +1,4 @@
-//
+/* stylelint-disable */
 // For guidance on how to add CSS and SCSS see:
 // https://prototype-kit.service.gov.uk/docs/adding-css-javascript-and-images
 // 
@@ -527,6 +527,80 @@ mark {
 	}
 }
 
+button {
+	&.tooltip {
+		strong {
+			line-height: 30px; 
+    }
+
+		& ~ span {
+			width: auto; 
+			margin-top: auto; 
+			margin-left: auto; 
+			opacity: 0; 
+			visibility: hidden; 
+			z-index: 10; 
+			position: absolute; 
+			-webkit-transition-property: opacity, margin-top, visibility, margin-left; 
+			-webkit-transition-duration: 0.4s, 0.3s, 0.4s, 0.3s; 
+			-webkit-transition-timing-function: ease-in-out, ease-in-out, ease-in-out,
+    ease-in-out; 
+			-moz-transition-property: opacity, margin-top, visibility, margin-left; 
+			-moz-transition-duration: 0.4s, 0.3s, 0.4s, 0.3s; 
+			-moz-transition-timing-function: ease-in-out, ease-in-out, ease-in-out,
+    ease-in-out; 
+			-o-transition-property: opacity, margin-top, visibility, margin-left; 
+			-o-transition-duration: 0.4s, 0.3s, 0.4s, 0.3s; 
+			-o-transition-timing-function: ease-in-out, ease-in-out, ease-in-out,
+    ease-in-out; 
+			transition-property: opacity, margin-top, visibility, margin-left; 
+			transition-duration: 0.4s, 0.3s, 0.4s, 0.3s; 
+			transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out; 
+			
+      &.defra-toggletip__info {
+				color: #ffffff; 
+				filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F0F0F0', endColorstr='#FFFFFF',GradientType=0 ); 
+        margin-left: -87px;
+        pointer-events: none;
+      }
+    }
+    
+		&:hover {
+			& ~ span {
+				&.defra-toggletip__info {
+					opacity: 1; 
+					text-decoration: none;
+					visibility: visible; 
+          margin-left: -87px;
+        }
+      }
+    }
+
+		span {
+			b {
+				width: 15px; 
+				height: 15px;
+				margin-left: 20px;
+				margin-top: -19px;
+				display: block;
+				position: absolute; 
+				-webkit-transform: rotate(-45deg); 
+				-moz-transform: rotate(-45deg); 
+				-o-transform: rotate(-45deg); 
+				transform: rotate(-45deg); 
+				-webkit-box-shadow: inset -1px 1px 0 #ffffff; 
+				-moz-box-shadow: inset 0 1px 0 #ffffff; 
+				-o-box-shadow: inset 0 1px 0 #ffffff; 
+				box-shadow: inset 0 1px 0 #ffffff; 
+				display: none; 
+				background: #f0f0f0; 
+				border-top: 1px solid #cfb57c; 
+				border-right: 1px solid #cfb57c; 
+      }
+    }
+  }
+}
+
 // Utility classes
 
 .align-middle {
@@ -536,5 +610,306 @@ mark {
 .govuk-caption-s {
   @extend %govuk-caption-m !optional;
   @include govuk-font($size: 16);
+}
+// aqLevelsTable
+
+$color_1: #0b0c0c;
+$color_2: #000000;
+$font-family_1: 'GDS Transport', arial, sans-serif;
+$font-family_2: sans-serif;
+
+.govuk-caption-xl {
+	font-family: $font-family_1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	font-weight: 400;
+	font-size: 18px;
+	font-size: 1.125rem;
+	line-height: 1.1111111111;
+	display: block;
+	margin-bottom: 5px;
+	color: $color_1;
+}
+
+.govuk-caption-l {
+	font-family: $font-family_1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	font-weight: 400;
+	font-size: 18px;
+	font-size: 1.125rem;
+	line-height: 1.1111111111;
+	display: block;
+	margin-bottom: 5px;
+	color: $color_1;
+}
+
+.govuk-caption-m {
+	font-family: $font-family_1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	font-weight: 400;
+	font-size: 16px;
+	font-size: 1rem;
+	line-height: 1.25;
+	display: block;
+	color: #505a5f;
+}
+
+.govuk-caption-s {
+	font-family: $font-family_1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	font-weight: 400;
+	font-size: 1rem;
+	line-height: 1.25;
+	display: block;
+	color:#505a5f;
+}
+
+@media print {
+	.govuk-caption-xl {
+		font-family: $font-family_2;
+		font-size: 18pt;
+		line-height: 1.15;
+	}
+
+	.govuk-caption-l {
+		font-family: $font-family_2;
+		font-size: 18pt;
+		line-height: 1.15;
+	}
+
+	.govuk-caption-m {
+		font-family: $font-family_2;
+		font-size: 14pt;
+		line-height: 1.15;
+	}
+
+	.govuk-caption-s {
+		font-family: $font-family_2;
+		font-size: 1rem;
+		line-height: 1.25;
+	}
+}
+
+@media (min-width: 40.0625em) {
+	.govuk-caption-xl {
+		font-size: 27px;
+		font-size: 1.6875rem;
+		line-height: 1.1111111111;
+	}
+
+	.govuk-caption-l {
+		font-size: 24px;
+		font-size: 1.5rem;
+		line-height: 1.25;
+		margin-bottom: 0;
+	}
+
+	.govuk-caption-m {
+		font-size: 19px;
+		font-size: 1.1875rem;
+		line-height: 1.3157894737;
+	}
+
+	.govuk-caption-s {
+    font-size: 1rem;
+    line-height: 1.25;
+	}
+}
+
+
+.defra-aq-levels-table {
+	font-family: $font-family_1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	font-weight: 400;
+	font-size: 16px;
+	font-size: 1rem;
+	line-height: 1.25;
+	color: $color_1;
+	width: 100%;
+	margin-bottom: 20px;
+	border-spacing: 0;
+	border-collapse: collapse;
+	position: relative;
+	margin-top: -1px;
+	margin-bottom: 0px;
+}
+
+.defra-aq-levels-table__cell {
+	padding: 10px 20px 10px 0;
+	border-bottom: 1px solid #b1b4b6;
+	text-align: left;
+	vertical-align: top;
+	border-bottom: 0px;
+	vertical-align: middle;
+	text-align: left;
+	padding-left: 0px;
+	padding-right: 0px;
+
+	&:last-child {
+		padding-right: 0;
+	}
+
+	a {
+		display: inline-block;
+
+		&:not(:hover) {
+			text-decoration: none;
+		}
+	}
+}
+.defra-aq-levels-table__head {
+
+	.defra-aq-levels-table__cell {
+		text-align: left;
+		padding-top: 20px;
+		padding-bottom: 20px;
+	}
+}
+
+.defra-aq-levels-table__row {
+	border-top: 1px solid #b1b4b6;
+	border-bottom: 1px solid #b1b4b6;
+}
+
+.defra-aq-levels-table__cell--pollutant {
+	font-family: $font-family_1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	font-weight: 700;
+	font-size: 16px;
+	font-size: 1rem;
+	line-height: 1.25;
+	width: 40%;
+	padding-right: 20px;
+}
+
+.defra-aq-levels-table__cell--reading {
+	font-family: $font-family_1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	font-weight: 700;
+	font-size: 16px;
+	font-size: 1rem;
+	line-height: 1.25;
+	width: 20%;
+}
+
+.defra-aq-levels-table__cell--trend {
+	width: 20%;
+}
+
+.defra-aq-levels-table__cell--level {
+	width: 20%;
+}
+
+@media print {
+	.defra-aq-levels-table {
+		font-family: $font-family_2;
+		font-size: 14pt;
+		line-height: 1.15;
+		color: $color_2;
+	}
+
+	.defra-aq-levels-table__cell--pollutant {
+		font-family: $font-family_2;
+		font-size: 14pt;
+		line-height: 1.15;
+	}
+
+	.defra-aq-levels-table__cell--reading {
+		font-family: $font-family_2;
+		font-size: 14pt;
+		line-height: 1.15;
+	}
+}
+
+@media (min-width: 40.0625em) {
+	.defra-aq-levels-table {
+		font-size: 19px;
+		font-size: 1.1875rem;
+		line-height: 1.3157894737;
+		margin-bottom: 30px;
+	}
+
+	.defra-aq-levels-table__cell--pollutant {
+		font-size: 19px;
+		font-size: 1.1875rem;
+		line-height: 1.3157894737;
+	}
+
+	.defra-aq-levels-table__cell--reading {
+		font-size: 19px;
+		font-size: 1.1875rem;
+		line-height: 1.3157894737;
+	}
+}
+
+@media (max-width: 40.0525em) {
+	.defra-aq-levels-table {
+		display: block;
+	}
+
+	.defra-aq-levels-table__head {
+		display: block;
+
+		tr {
+			display: flex;
+			flex-wrap: wrap;
+		}
+
+		.defra-aq-levels-table__cell--pollutant {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+			clip: rect(0 0 0 0);
+			-webkit-clip-path: inset(50%);
+			clip-path: inset(50%);
+			border: 0;
+			white-space: nowrap;
+		}
+	}
+
+	.defra-aq-levels-table__body {
+		display: block;
+	}
+
+	.defra-aq-levels-table__row {
+		position: relative;
+		display: flex;
+		flex-wrap: wrap;
+		margin-bottom: -1px;
+	}
+
+	.defra-aq-levels-table__cell {
+		display: inline-block;
+		padding-top: 0;
+		padding-bottom: 10px;
+	}
+
+	.defra-aq-levels-table__cell--pollutant {
+		padding-top: 10px;
+		padding-bottom: 5px;
+		padding-right: 0px;
+		width: 100%;
+	}
+
+	.defra-aq-levels-table__cell--reading {
+		width: 35%;
+	}
+
+	.defra-aq-levels-table__cell--trend {
+		width: 30%;
+	}
+
+	.defra-aq-levels-table__cell--level {
+		width: 35%;
+	}
 }
 
