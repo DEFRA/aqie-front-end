@@ -7,7 +7,7 @@ const searchLocation = {
       server.route([
         {
           method: 'POST',
-          path: '/location:id',
+          path: '/location{id}',
           ...searchLocationController
         }
       ])

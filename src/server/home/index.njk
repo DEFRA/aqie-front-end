@@ -1,28 +1,34 @@
 {% extends 'layouts/page.njk' %}
 
+
+{% block pageTitle %}
+  Sign in - Private Beta Air Quality
+{% endblock %}
+
 {% block content %}
-  {{ appHeading({
-    text: heading,
-    caption: ""
-  }) }}
-
-  {% call appPageBody() %}
-      <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds-from-desktop">
-      <p class="govuk-body">Use this service to:</p>
-
-      <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-6">
-        <li>check air quality in a local area</li>
-        <li>find information on air pollutants</li>
-       <!-- That this is not required for the MVP <li>access the local authority website to find out what is being done to improve air quality</li> -->
-      </ul>
-      {{ govukButton({
-        text: "Start now",
-        href: [appPathPrefix,'/search-location'] | join,
-        isStartButton: true
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop govuk-grid-column-full">
+    <h1 class="govuk-heading-xl">
+      Private Beta Air Quality
+    </h1>
+    <p class="govuk-body-m">
+      You should only continue if you have been invited to test this  Private Beta. 
+    </p>
+    <form action='/aqie-front-end' method="post" name="login-form" value="login">
+      {{ govukInput({
+        label: {
+          text: "Password",
+          classes: "govuk-label"
+        },
+        classes: "govuk-!-width-one-third",
+        id: "password",
+        name: "password"
       }) }}
-    </div>
-  </div>  
-  {% endcall %}
+      {{ govukButton({
+        text: "Log in"
+      }) }}
+     </form>
+  </div>
+</div>
 
 {% endblock %}

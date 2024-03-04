@@ -1,7 +1,7 @@
 import inert from '@hapi/inert'
 import yar from '@hapi/yar'
 import { health } from '~/src/server/health'
-import { home } from '~/src/server/home/index'
+import { checkLocalAirQuality } from '~/src/server/check-local-air-quality/index'
 import { searchLocation } from '~/src/server/search-location/index'
 import { locations } from '~/src/server/locations/index'
 import { locationId } from '~/src/server/location-id/index'
@@ -12,6 +12,7 @@ import { particulateMatter10 } from '~/src/server/particulate-matter-10/index'
 import { particulateMatter25 } from '~/src/server/particulate-matter-25/index'
 import { sulphurDioxide } from '~/src/server/sulphur-dioxide/index'
 import { feedback } from '~/src/server/feedback/index'
+import { home } from '~/src/server/home/index'
 
 const options = {
   storeBlank: false,
@@ -28,7 +29,7 @@ const router = {
       await server.register([inert])
       await server.register([
         health,
-        home,
+        checkLocalAirQuality,
         searchLocation,
         locations,
         locationId,
@@ -38,7 +39,8 @@ const router = {
         particulateMatter10,
         particulateMatter25,
         sulphurDioxide,
-        feedback
+        feedback,
+        home
       ])
       await server.register({
         plugin: yar,
