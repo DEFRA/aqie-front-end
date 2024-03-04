@@ -1,4 +1,4 @@
-import { homeController } from '~/src/server/home/controller'
+import { homeController, loginController } from '~/src/server/home/controller'
 
 const home = {
   plugin: {
@@ -8,7 +8,14 @@ const home = {
         {
           method: 'GET',
           path: '/',
-          ...homeController
+          ...homeController,
+          options: { auth: { mode: 'try' } }
+        },
+        {
+          method: 'POST',
+          path: '/',
+          ...loginController,
+          options: { auth: { mode: 'try' } }
         }
       ])
     }
