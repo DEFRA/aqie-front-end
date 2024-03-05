@@ -6,8 +6,16 @@
 {% endblock %}
 
 {% block content %}
+ {% call appPageBody() %}
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop govuk-grid-column-full">
+  <div class="govuk-grid-column-full">
+  {% if errors %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+  {{ govukErrorSummary(errors) }}
+    </div>
+  </div>
+  {% endif %}
     <h1 class="govuk-heading-xl">
       Private Beta Air Quality
     </h1>
@@ -22,7 +30,9 @@
         },
         classes: "govuk-!-width-one-third",
         id: "password",
-        name: "password"
+        name: "password",
+        type: "password",
+        errorMessage:errorMessage
       }) }}
       {{ govukButton({
         text: "Log in"
@@ -30,5 +40,5 @@
      </form>
   </div>
 </div>
-
+  {% endcall %}
 {% endblock %}
