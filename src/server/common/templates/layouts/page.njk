@@ -32,25 +32,16 @@
 {% endblock %}
 
 {% block header %}
-{%if page == "homepage"%}
+{%if page != "home"%}
   {{ govukHeader({
-    homepageUrl: "https://www.gov.uk/",
-    classes: "app-header",
-    containerClasses: "govuk-width-container",
-    serviceName: "",
-    serviceUrl: "/",
-    useTudorCrown: true
-  }) }}
-  {% else %}
-    {{ govukHeader({
     homepageUrl: "https://www.gov.uk/",
     classes: "app-header",
     containerClasses: "govuk-width-container",
     serviceName: serviceName,
     serviceUrl: appPathPrefix,
     useTudorCrown: true
-    }) }}
-    {% endif%}
+  }) }}
+{% endif%}
 {% endblock %}
 
 {% block pageTitle %}
@@ -58,6 +49,7 @@
 {% endblock %}
 
 {% block beforeContent %}
+{%if page != "home"%}
   {{ govukPhaseBanner({
     tag: {
       text: "BETA"
@@ -70,11 +62,13 @@
     href: '/aqie-front-end/search-location'
   }) }}
   {% endif %}
+  {% endif %}
 {% endblock %}
 
 {% block content %}{% endblock %}
 
 {% block footer %}
+{%if page != "home"%}
   {{ govukFooter({
     meta: {
       items: [
@@ -93,6 +87,7 @@
       ]
     }
   }) }}
+  {% endif %}
 {% endblock %}
 
 {% block bodyEnd %}
