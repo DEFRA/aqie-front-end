@@ -31,7 +31,7 @@ const loginController = {
           errorList: [
             {
               text: 'The password is not correct',
-              href: '#'
+              href: '#password'
             }
           ]
         }
