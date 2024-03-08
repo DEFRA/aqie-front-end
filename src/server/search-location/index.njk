@@ -18,8 +18,80 @@
   {% endif %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <form action={{[appPathPrefix, '/location'] | join}} method="post"  name="search-form" value="search"">
-        {{ appSearch(searchParams) }}
+      <form action={{[appPathPrefix, '/location'] | join}} method="post"  name="search-form" value="search">
+      <!-- UK Location Input Field -->
+      {% if locationType === 'uk-location' %}
+        {% set ukHtml %}
+        {{ govukInput({
+          id: "engScoWal",
+          name: "engScoWal",
+          classes: "govuk-!-width-one-half",
+          errorMessage:errorMessage
+        }) }}
+        {% endset %}
+      {% else %}
+        {% set ukHtml %}
+        {{ govukInput({
+          id: "engScoWal",
+          name: "engScoWal",
+          classes: "govuk-!-width-one-half",
+          label: { text: "Enter a location or postcode" }
+        }) }}
+        {% endset %}
+      {% endif %}
+
+      <!-- Northern Ireland Input Field -->
+      {% if locationType === 'ni-location' %}
+        {% set niHtml %}
+        {{ govukInput({
+          id: "ni",
+          name: "ni",
+          classes: "govuk-!-width-one-half",
+          errorMessage:errorMessage
+        }) }}
+        {% endset %}
+      {% else %}
+        {% set niHtml %}
+        {{ govukInput({
+          id: "ni",
+          name: "ni",
+          classes: "govuk-!-width-one-half",
+          label: { text: "Enter a location or postcode" }
+        }) }}
+        {% endset %}
+      {% endif %}
+
+      <!-- Radio Buttons -->
+      {{ govukRadios({
+        name: "locationType",
+        fieldset: {
+          legend: {
+            text: "Where do you want to check?",
+            isPageHeading: true,
+            classes: "govuk-fieldset__legend--l govuk-label--l govuk-!-margin-bottom-6"
+          }
+        },
+        items: [
+          {
+            value: "uk-location",
+            text: "England, Scotland or Wales",
+            checked: locationType === 'uk-location',
+            conditional: { html: ukHtml }
+          },
+          {
+            value: "ni-location",
+            text: "Northern Ireland",
+            checked: locationType === 'ni-location',
+            conditional: { html: niHtml }
+          }
+        ]
+      }) }}
+
+      <!-- Continue Button -->
+      {{ govukButton({
+        classes: "app-search__button",
+        text: "Continue"
+      }) }}
         <!-- Hidden input to pass the air quality value -->
         <input type="hidden" name="aq" value="{{ airQuality.value }}" />
     </form>
