@@ -6,14 +6,13 @@
   firstCellIsHeader: true,
   head: [
     {
-      text: "Pollution level"
+      text: "Level"
     },
     {
       text: "Index"
     },
     {
-      text: "Health advice",
-      classes: "govuk-!-width-one-half"
+      text: "Health advice"
     }
   ],
   rows: [
@@ -36,7 +35,7 @@
         text: "4-6"
       },
       {
-        html: "<p>" + airQualityData['moderate'].atrisk.adults + "</p><p>" + airQualityData['moderate'].atrisk.asthma + "</p>" + airQualityData['moderate'].atrisk.oldPeople
+        html: "<p>" + airQualityData['moderate'].advice + "</p><p>" + airQualityData['moderate'].atrisk.adults + "</p><p>" + airQualityData['moderate'].atrisk.asthma + "</p>" + airQualityData['moderate'].atrisk.oldPeople
       }
     ],
     [
@@ -66,6 +65,6 @@
 {% endset %}
 
 {{ govukDetails({
-  summaryText: "How air quality can affect health",
+  summaryText: "How different levels of air pollution can affect health",
   html: table
 }) }}

@@ -21,6 +21,7 @@ const homeController = {
 
 const loginController = {
   handler: (request, h) => {
+    // test
     if (request.payload.password === 'n1tr0g3n') {
       request.cookieAuth.set({ password: request.payload.password })
       return h.redirect('/aqie-front-end/check-local-air-quality')

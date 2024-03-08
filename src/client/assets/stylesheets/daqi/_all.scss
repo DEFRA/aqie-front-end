@@ -46,7 +46,7 @@
 }
 
 .daqi-band {
-  @include govuk-font($size: 14, $weight: regular);
+  @include govuk-font($size: 16, $weight: regular);
   border: 0;
   vertical-align: top;
   text-align: left;

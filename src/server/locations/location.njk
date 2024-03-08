@@ -20,10 +20,11 @@
     <div class="govuk-grid-column-two-thirds-from-desktop govuk-grid-column-full govuk-!-margin-bottom-9">
       {% include "daqi.njk" %}
       {% if airQuality.value >= 1 and airQuality.value <= 3 %}
-          <h2 class="govuk-heading-m">Advice for {{ airQuality.readableBand }} levels of air pollution</h2>
+          <h2 class="govuk-heading-m">Health advice for {{ airQuality.readableBand }} levels of air pollution</h2>
           <p>{{ airQuality.advice }}</p>
       {% elseif airQuality.value >= 4 %}
-          <h2 class="govuk-heading-m">Advice for {{ airQuality.readableBand }} levels of air pollution</h2>
+          <h2 class="govuk-heading-m">Health advice for {{ airQuality.readableBand }} levels of air pollution</h2>
+          <p>{{ airQuality.advice }}</p>
           {% set adultsText %}
             {{ (airQuality.atrisk.adults) }}
           {% endset %}
@@ -39,14 +40,13 @@
               "<p>" + asthmaText + "</p>" +
               "<p>" + oldPeopleText + "</p>" 
           }) }}
-          <p>{{ airQuality.advice }}</p>
       {% endif %}    
       {% include "daqi-index.njk" %}
       <h2 class="govuk-heading-m">UK air pollution summary</h2>
       <p class="govuk-!-margin-bottom-6">
         {{ airQuality.outlook }}
       </p>
-      <p class="govuk-caption-s govuk-!-margin-bottom-4">Latest at 05:00am {{ "today" | govukDate }}</p>
+      <p class="govuk-caption-s govuk-!-margin-bottom-4">Latest at 5am {{ "today" | govukDate }}</p>
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6">
       <h2 class="govuk-heading-m">How air pollutants can affect your health</h2>
       {% include "pollutants.njk" %}
@@ -58,10 +58,11 @@
 {% endset %}
 
 {% set measurementToggletip %}
+{% set microgramcubic = '<span>Readings are measured every hour. The unit µg/</sapn><span>&#13221;</span><span> stands for micrograms (one millionth of a gram) per cubic metre of air.</span>'%}
   {{ toggletip(
     '',
     'More information about measurement',
-    'Readings are measured every hour. The unit µg/&#13221; stands for micrograms (one millionth of a gram) per cubic metre of air.',
+    microgramcubic | safe,
     'Latest'
   )}}
 {% endset %}
