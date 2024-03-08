@@ -4,10 +4,11 @@
 {% endset %}
 
 {% set measurementToggletip %}
+{% set microgramcubic = '<span>Readings are measured every hour. The unit µg/</span><span>&#13221;</span><span> stands for micrograms (one millionth of a gram) per cubic metre of air.</span>'%}
   {{ toggletip(
     '',
     'More information about measurement',
-    'Readings are measured every hour. The unit µg/&#13221; stands for micrograms (one millionth of a gram) per cubic metre of air.',
+    microgramcubic | safe,
     'Latest'
   )}}
 {% endset %}
@@ -39,14 +40,14 @@
     site.site_name
   )}}
 {% endset %}
-  <h3 class="govuk-heading-s govuk-!-margin-bottom-1 pollutant-table">{{ siteNameToggletip | safe }}</h3>
+  <h3 class="govuk-heading-s govuk-!-margin-bottom-1">{{ siteNameToggletip | safe }}</h3>
   <p class="govuk-caption-m govuk-!-margin-bottom-3">{{ site.distance }} miles away</p>
   {% set rows = [] %}
   {% for pollutant in site.pollutants %}
       {% set pollutantDetail = pollutantTypes[pollutant.type] %}
       {% set row = [
           { 
-              html: "<a class='govuk-!-margin-bottom-1' href='" + pollutantDetail.href + "'>" + pollutantDetail.title + "</a><span class='govuk-caption-s govuk-!-margin-bottom-1'>Low range " + pollutantDetail.low_range + "</span>",
+              html: "<a class='govuk-!-margin-bottom-1' href='/" + version + pollutantDetail.href + "'>" + pollutantDetail.title + "</a><span class='govuk-caption-s govuk-!-margin-bottom-1'>Low range " + pollutantDetail.low_range + "</span>",
               classes: "defra-aq-levels-table__cell--pollutant" 
           },
           { 
