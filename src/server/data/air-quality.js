@@ -97,3 +97,4 @@ export function getAirQuality(aqValue) {
     outlook: message.outlook
   }
 }
+
