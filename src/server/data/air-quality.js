@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 export const commonMessages = {
   low: {
     values: [1, 2, 3],
@@ -97,4 +96,3 @@ export function getAirQuality(aqValue) {
     outlook: message.outlook
   }
 }
-
