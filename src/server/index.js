@@ -8,8 +8,9 @@ import { requestLogger } from '~/src/server/common/helpers/logging/request-logge
 import { catchAll } from '~/src/server/common/helpers/errors'
 import { secureContext } from '~/src/server/common/helpers/secure-context'
 import hapiCookie from '@hapi/cookie'
-import dotenv from 'dotenv'
-dotenv.config()
+import 'dotenv/config'
+// eslint-disable-next-line no-console
+console.log('PROCESS ENV ', process.env)
 const isProduction = config.get('isProduction')
 
 async function createServer() {
