@@ -19,7 +19,6 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <form action={{[appPathPrefix, '/location'] | join}} method="post"  name="search-form" value="search">
-      <!-- UK Location Input Field -->
       {% if locationType === 'uk-location' %}
         {% set ukHtml %}
         {{ govukInput({
@@ -39,8 +38,6 @@
         }) }}
         {% endset %}
       {% endif %}
-
-      <!-- Northern Ireland Input Field -->
       {% if locationType === 'ni-location' %}
         {% set niHtml %}
         {{ govukInput({
@@ -60,8 +57,6 @@
         }) }}
         {% endset %}
       {% endif %}
-
-      <!-- Radio Buttons -->
       {{ govukRadios({
         name: "locationType",
         fieldset: {
@@ -86,14 +81,11 @@
           }
         ]
       }) }}
-
-      <!-- Continue Button -->
       {{ govukButton({
         classes: "app-search__button",
         text: "Continue"
       }) }}
-        <!-- Hidden input to pass the air quality value -->
-        <input type="hidden" name="aq" value="{{ airQuality.value }}" />
+      <input type="hidden" name="aq" value="{{ airQuality.value }}" />
     </form>
     </div>
   </div>
