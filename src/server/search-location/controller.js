@@ -7,7 +7,7 @@ const searchLocationController = {
       request.yar.set('errors', null)
       request.yar.set('errorMessage', null)
       return h.view('search-location/index', {
-        pageTitle: 'Check local air quality',
+        pageTitle: 'Check local air quality - GOV.UK',
         heading: 'Check local air quality',
         page: 'search-location',
         serviceName: 'Check local air quality',
@@ -29,7 +29,7 @@ const searchLocationController = {
       })
     } else {
       return h.view('search-location/index', {
-        pageTitle: 'Check local air quality',
+        pageTitle: 'Check local air quality - GOV.UK',
         heading: 'Check local air quality',
         page: 'search-location',
         serviceName: 'Check local air quality',

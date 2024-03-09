@@ -2,7 +2,7 @@
 const feedbackController = {
   handler: (request, h) => {
     return h.view('feedback/index', {
-      pageTitle: 'Check local air quality',
+      pageTitle: 'Check local air quality - GOV.UK',
       heading: 'Check local air quality',
       page: 'feedback'
     })

@@ -8,7 +8,7 @@ const homeController = {
       request.yar.set('errors', null)
       request.yar.set('errorMessage', null)
       return h.view('home/index', {
-        pageTitle: 'Check local air quality',
+        pageTitle: 'Check local air quality - GOV.UK',
         heading: 'Check local air quality',
         page: 'home',
         serviceName: 'Check local air quality',

@@ -1,7 +1,7 @@
 const searchLocationController = {
   handler: (request, h) => {
     return h.view('location-not-found/index', {
-      pageTitle: 'Check local air quality',
+      pageTitle: 'Check local air quality - GOV.UK',
       heading: 'Check local air quality',
       page: 'location',
       serviceName: 'Check local air quality',
