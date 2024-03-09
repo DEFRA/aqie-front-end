@@ -102,9 +102,9 @@ const getLocationDataController = {
           'LOCAL_TYPE:Airport'
         ].join('+')
 
-        const apiUrl = `${process.env.OS_PLACES_API_URL}${encodeURIComponent(
+        const apiUrl = `https://api.os.uk/search/names/v1/find?query=${encodeURIComponent(
           userLocation
-        )}&fq=${encodeURIComponent(filters)}&key=${process.env.OS_PLACES_API_KEY}`
+        )}&fq=${encodeURIComponent(filters)}&key=vvR3FiaNjSWCnFzSKBst23TX6efl0oL9`
 
         const response = await axios.get(apiUrl)
 
@@ -162,7 +162,7 @@ const getLocationDataController = {
           })
         }
       } else if (locationType === 'ni-location') {
-        const postcodeApiUrl = `${process.env.NORTHERN_IRELAND_POSTCODE_URL}${encodeURIComponent(userLocation)}`
+        const postcodeApiUrl = `https://api.postcodes.io/postcodes?q=${encodeURIComponent(userLocation)}`
         const response = await axios.get(postcodeApiUrl)
         const { result } = response.data
 
