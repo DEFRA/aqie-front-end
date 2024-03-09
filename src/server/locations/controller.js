@@ -7,6 +7,7 @@ import {
 import * as airQualityData from '../data/air-quality.js'
 import { getAirQuality } from '../data/air-quality.js'
 
+const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
 const getLocationDataController = {
   handler: async (request, h) => {
     const locationType = request?.payload?.locationType
@@ -105,10 +106,12 @@ const getLocationDataController = {
         const apiUrl = `https://api.os.uk/search/names/v1/find?query=${encodeURIComponent(
           userLocation
         )}&fq=${encodeURIComponent(filters)}&key=vvR3FiaNjSWCnFzSKBst23TX6efl0oL9`
+        const shouldCallApi = symbolsArr.some((symbol) =>
+          userLocation.includes(symbol)
+        )
+        const response = !shouldCallApi ? await axios.get(apiUrl) : { data: [] }
 
-        const response = await axios.get(apiUrl)
-
-        const { results } = response.data
+        const { results } = response?.data
 
         if (!results || results.length === 0) {
           return h.view('locations/location-not-found', {
@@ -135,6 +138,18 @@ const getLocationDataController = {
         request.yar.set('locationData', { data: matches })
 
         if (matches.length === 1) {
+          const locationDetails = matches[0]
+          let title = ''
+          if (locationDetails) {
+            if (locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY) {
+              title =
+                locationDetails.GAZETTEER_ENTRY.NAME1 +
+                ', ' +
+                locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
+            } else {
+              title = locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+            }
+          }
           return h.view('locations/location', {
             result: matches[0],
             airQuality,
@@ -142,7 +157,8 @@ const getLocationDataController = {
             monitoringSites,
             siteTypeDescriptions,
             pollutantTypes,
-            locationType: 'single location',
+            displayBacklink: true,
+            pageTitle: title,
             serviceName: 'Check local air quality'
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
@@ -154,6 +170,7 @@ const getLocationDataController = {
             monitoringSites,
             siteTypeDescriptions,
             pollutantTypes,
+            pageTitle: `Locations matching ${userLocation}`,
             serviceName: 'Check local air quality'
           })
         } else {
@@ -178,13 +195,22 @@ const getLocationDataController = {
             DISTRICT_BOROUGH: result[0].admin_district
           }
         }
+        let title = ''
+        if (locationData) {
+          title =
+            locationData.GAZETTEER_ENTRY.NAME1 +
+            ', ' +
+            locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+        }
         return h.view('locations/location', {
           result: locationData,
           airQuality,
           airQualityData: airQualityData.commonMessages,
           monitoringSites,
           siteTypeDescriptions,
-          pollutantTypes
+          pollutantTypes,
+          pageTitle: title,
+          displayBacklink: true
         })
       }
     } catch (error) {
@@ -205,6 +231,15 @@ const getLocationDetailsController = {
       )
 
       if (locationDetails) {
+        let title = ''
+        if (locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY) {
+          title =
+            locationDetails.GAZETTEER_ENTRY.NAME1 +
+            ', ' +
+            locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
+        } else {
+          title = locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+        }
         const airQuality =
           getAirQuality(/* Retrieved from session or another source */)
         return h.view('locations/location', {
@@ -213,7 +248,9 @@ const getLocationDetailsController = {
           airQualityData: airQualityData.commonMessages,
           monitoringSites,
           siteTypeDescriptions,
-          pollutantTypes
+          pollutantTypes,
+          pageTitle: title,
+          displayBacklink: true
         })
       } else {
         return h.view('location-not-found')

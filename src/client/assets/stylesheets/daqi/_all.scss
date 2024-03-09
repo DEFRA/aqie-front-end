@@ -601,6 +601,11 @@ button {
   }
 }
 
+#tipfix ~ span {
+	color: #000000;
+	margin-top: -5px;
+}
+
 // Utility classes
 
 .align-middle {
