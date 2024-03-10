@@ -158,20 +158,27 @@ $daqi-colour-10: govuk-colour("purple");
 // DAQI Tag
 
 .daqi-tag {
-
-  display: inline-block;
-
   // When a user customises their colours often the background is removed,
   // by adding a outline we ensure that the tag component still keeps it's meaning.
   // https://accessibility.blog.gov.uk/2017/03/27/how-users-change-colours-on-websites/
-  outline: 2px solid transparent;
-  outline-offset: -2px;
-
   color: govuk-colour("white");
   background-color: govuk-colour("blue");
-  letter-spacing: 1px;
-
   text-decoration: none;
+  display: inline-block;
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  letter-spacing: 1px;
+  text-decoration: none;
+  font-family: "GDS Transport", arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1;
+  padding-top: 4px;
+  padding-right: 6px;
+  padding-bottom: 4px;
+  padding-left: 6px;
 }
 
 .daqi-tag--round {
@@ -760,10 +767,6 @@ $font-family_2: sans-serif;
 
 	a {
 		display: inline-block;
-
-		&:not(:hover) {
-			text-decoration: none;
-		}
 	}
 }
 .defra-aq-levels-table__head {
