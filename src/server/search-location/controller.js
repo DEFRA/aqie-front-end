@@ -25,7 +25,8 @@ const searchLocationController = {
         },
         locationType,
         errors: errors.errors,
-        errorMessage: errorMessage?.errorMessage
+        errorMessage: errorMessage?.errorMessage,
+        errorMessageRadio: errorMessage?.errorMessage
       })
     } else {
       return h.view('search-location/index', {

@@ -24,14 +24,16 @@ const getLocationDataController = {
           titleText: 'There is a problem',
           errorList: [
             {
-              text: 'Select a location',
-              href: '#'
+              text: 'Select where you want to check',
+              href: '#itembox'
             }
           ]
         }
       })
+      request.yar.set('errorMessage', {
+        errorMessage: { text: 'Select where you want to check' }
+      })
       request.yar.set('locationType', '')
-
       return h.redirect('/aqie-front-end/search-location')
     }
     try {
