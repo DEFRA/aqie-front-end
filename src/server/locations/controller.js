@@ -177,7 +177,8 @@ const getLocationDataController = {
           })
         } else {
           return h.view('locations/location-not-found', {
-            userLocation: locationNameOrPostcode
+            userLocation: locationNameOrPostcode,
+            pageTitle: `We could not find ${locationNameOrPostcode} - Check local air quality - GOV.UK`
           })
         }
       } else if (locationType === 'ni-location') {
