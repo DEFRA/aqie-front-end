@@ -47,6 +47,14 @@ button {
 			visibility: visible;
 	    }
 	}
+
+	&tooltip:focus ~ span{
+		&defra-toggletip__info {
+			opacity: 1;
+			text-decoration: none;
+			visibility: visible;
+	    }
+	}
 		
 	&tooltip span b {
 		width: 15px;

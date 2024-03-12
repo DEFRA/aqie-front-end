@@ -33,6 +33,7 @@
 {% endblock %}
 
 {% block header %}
+{%if page == "Check local air quality"%}{% set serviceName = ""%}{%endif%}
 {%if page != "home"%}
   {{ govukHeader({
     homepageUrl: "https://www.gov.uk/",
@@ -42,7 +43,7 @@
     serviceUrl: appPathPrefix,
     useTudorCrown: true
   }) }}
-{% endif%}
+  {%endif%}
 {% endblock %}
 
 {% block pageTitle %}
