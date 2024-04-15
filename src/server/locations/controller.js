@@ -1,11 +1,17 @@
 import axios from 'axios'
 import {
-  monitoringSites,
   siteTypeDescriptions,
   pollutantTypes
 } from '../data/monitoring-sites.js'
 import * as airQualityData from '../data/air-quality.js'
 import { getAirQuality } from '../data/air-quality.js'
+import { createLogger } from '~/src/server/common/helpers/logging/logger'
+import { getNearestLocation } from './helpers/get-nearest-location.js'
+import { config } from 'dotenv'
+
+config()
+
+const logger = createLogger()
 
 const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
 const getLocationDataController = {
@@ -93,8 +99,14 @@ const getLocationDataController = {
         request.yar.set('locationType', 'ni-location')
         return h.redirect('/aqie-front-end/search-location')
       }
+      const forecastsAPIurl = process.env.FORECAST_API_URL
+      const measurementsAPIurl = process.env.MEASUREMENTS_API_URL
       const airQuality = getAirQuality(request.payload.aq)
-
+      const forecastSummaryUrl = process.env.FORECAST_SUMMARY_URL
+      const forecastSummaryRes = await axios.get(forecastSummaryUrl)
+      const forecastSummary = forecastSummaryRes.data.today
+      const { data: forecasts } = await axios.get(forecastsAPIurl)
+      const { data: measurements } = await axios.get(measurementsAPIurl)
       if (locationType === 'uk-location') {
         const filters = [
           'LOCAL_TYPE:City',
@@ -105,14 +117,17 @@ const getLocationDataController = {
           'LOCAL_TYPE:Airport'
         ].join('+')
 
-        const apiUrl = `https://api.os.uk/search/names/v1/find?query=${encodeURIComponent(
+        const osPlacesApiUrl = `${process.env.OS_PLACES_API_URL}${encodeURIComponent(
           userLocation
-        )}&fq=${encodeURIComponent(filters)}&key=vvR3FiaNjSWCnFzSKBst23TX6efl0oL9`
+        )}&fq=${encodeURIComponent(filters)}&key=${process.env.OS_PLACES_API_KEY}`
+
         const shouldCallApi = symbolsArr.some((symbol) =>
           userLocation.includes(symbol)
         )
-        const response = !shouldCallApi ? await axios.get(apiUrl) : { data: [] }
-
+        const response = !shouldCallApi
+          ? await axios.get(osPlacesApiUrl)
+          : { data: [] }
+        //
         const { results } = response?.data
 
         if (!results || results.length === 0) {
@@ -136,9 +151,20 @@ const getLocationDataController = {
             locationNameOrPostcode.toUpperCase() // Set the name to the partial postcode
           matches = [matches[0]]
         }
-
-        request.yar.set('locationData', { data: matches })
-
+        const { forecastNum, nearestLocationsRange } = getNearestLocation(
+          matches,
+          forecasts.forecasts,
+          measurements.measurements,
+          'uk-location'
+        )
+        request.yar.set('locationData', {
+          data: matches,
+          rawForecasts: forecasts.forecasts,
+          forecastNum,
+          forecastSummary,
+          nearestLocationsRange
+        })
+        //
         if (matches.length === 1) {
           const locationDetails = matches[0]
           let title = ''
@@ -152,16 +178,19 @@ const getLocationDataController = {
               title = locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
             }
           }
+          //
+          const airQuality = getAirQuality(forecastNum[0])
           return h.view('locations/location', {
             result: matches[0],
             airQuality,
             airQualityData: airQualityData.commonMessages,
-            monitoringSites,
+            monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
             displayBacklink: true,
             pageTitle: title,
-            serviceName: 'Check local air quality'
+            serviceName: 'Check local air quality',
+            forecastSummary
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
           return h.view('locations/multiple-locations', {
@@ -169,7 +198,7 @@ const getLocationDataController = {
             userLocation: locationNameOrPostcode,
             airQuality,
             airQualityData: airQualityData.commonMessages,
-            monitoringSites,
+            monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
             pageTitle: `Locations matching ${userLocation}`,
@@ -182,7 +211,7 @@ const getLocationDataController = {
           })
         }
       } else if (locationType === 'ni-location') {
-        const postcodeApiUrl = `https://api.postcodes.io/postcodes?q=${encodeURIComponent(userLocation)}`
+        const postcodeApiUrl = `${process.env.NORTHERN_IRELAND_POSTCODE_URL}${encodeURIComponent(userLocation)}`
         const response = await axios.get(postcodeApiUrl)
         const { result } = response.data
 
@@ -195,9 +224,17 @@ const getLocationDataController = {
         const locationData = {
           GAZETTEER_ENTRY: {
             NAME1: result[0].postcode,
-            DISTRICT_BOROUGH: result[0].admin_district
+            DISTRICT_BOROUGH: result[0].admin_district,
+            LONGITUDE: result[0].longitude,
+            LATITUDE: result[0].latitude
           }
         }
+        const { forecastNum, nearestLocationsRange } = getNearestLocation(
+          result,
+          forecasts.forecasts,
+          measurements.measurements,
+          'Ireland'
+        )
         let title = ''
         if (locationData) {
           title =
@@ -205,15 +242,21 @@ const getLocationDataController = {
             ', ' +
             locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
         }
+        logger.info(
+          `coordinates latitude: ${locationData.GAZETTEER_ENTRY.LATITUDE} longitude: ${locationData.GAZETTEER_ENTRY.LONGITUDE}`
+        )
+        const airQuality = getAirQuality(forecastNum[0])
         return h.view('locations/location', {
           result: locationData,
           airQuality,
           airQualityData: airQualityData.commonMessages,
-          monitoringSites,
+          monitoringSites: locationData.nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: title,
-          displayBacklink: true
+          displayBacklink: true,
+          forecastSummary,
+          nearestLocationsRange
         })
       }
     } catch (error) {
@@ -243,17 +286,17 @@ const getLocationDetailsController = {
         } else {
           title = locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
         }
-        const airQuality =
-          getAirQuality(/* Retrieved from session or another source */)
+        const airQuality = getAirQuality(locationData.forecastNum[0])
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
           airQualityData: airQualityData.commonMessages,
-          monitoringSites,
+          monitoringSites: locationData.nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: title,
-          displayBacklink: true
+          displayBacklink: true,
+          forecastSummary: locationData.forecastSummary
         })
       } else {
         return h.view('location-not-found')
