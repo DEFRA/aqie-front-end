@@ -7,7 +7,9 @@ import * as airQualityData from '../data/air-quality.js'
 import { getAirQuality } from '../data/air-quality.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { getNearestLocation } from './helpers/get-nearest-location.js'
-import { config } from '~/src/config'
+import { config } from 'dotenv'
+
+config()
 
 const logger = createLogger()
 
@@ -97,10 +99,13 @@ const getLocationDataController = {
         request.yar.set('locationType', 'ni-location')
         return h.redirect('/search-location')
       }
-      const forecastsAPIurl = process.env.FORECAST_API_URL
-      const measurementsAPIurl = process.env.MEASUREMENTS_API_URL
+      const forecastsAPIurl =
+        'https://aqie-back-end.test.cdp-int.defra.cloud/forecasts'
+      const measurementsAPIurl =
+        'https://aqie-back-end.test.cdp-int.defra.cloud/measurements'
       const airQuality = getAirQuality(request.payload.aq)
-      const forecastSummaryUrl = process.env.FORECAST_SUMMARY_URL
+      const forecastSummaryUrl =
+        'https://uk-air.defra.gov.uk/ajax/forecast_text_summary.php'
       const forecastSummaryRes = await axios.get(forecastSummaryUrl)
       const forecastSummary = forecastSummaryRes.data.today
       const { data: forecasts } = await axios.get(forecastsAPIurl)
@@ -115,9 +120,9 @@ const getLocationDataController = {
           'LOCAL_TYPE:Airport'
         ].join('+')
 
-        const osPlacesApiUrl = `${process.env.OS_PLACES_API_URL}${encodeURIComponent(
+        const osPlacesApiUrl = `https://api.os.uk/search/names/v1/find?query=${encodeURIComponent(
           userLocation
-        )}&fq=${encodeURIComponent(filters)}&key=${config.get('osPlacesApiKey')}`
+        )}&fq=${encodeURIComponent(filters)}&key=vvR3FiaNjSWCnFzSKBst23TX6efl0oL9`
 
         const shouldCallApi = symbolsArr.some((symbol) =>
           userLocation.includes(symbol)
@@ -209,7 +214,7 @@ const getLocationDataController = {
           })
         }
       } else if (locationType === 'ni-location') {
-        const postcodeApiUrl = `${process.env.NORTHERN_IRELAND_POSTCODE_URL}${encodeURIComponent(userLocation)}`
+        const postcodeApiUrl = `https://api.postcodes.io/postcodes?q=${encodeURIComponent(userLocation)}`
         const response = await axios.get(postcodeApiUrl)
         const { result } = response.data
 
