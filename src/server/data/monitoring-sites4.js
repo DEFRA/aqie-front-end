@@ -122,7 +122,7 @@ const pollutantTypes = {
   },
   'particulate-matter10': {
     title: 'PM10',
-    href: '//aqie-front-end/pollutants/particulate-matter-10',
+    href: '/pollutants/particulate-matter-10',
     low_range: '0 to 50'
   },
   'particulate-matter2': {

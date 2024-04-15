@@ -7,9 +7,7 @@ import * as airQualityData from '../data/air-quality.js'
 import { getAirQuality } from '../data/air-quality.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { getNearestLocation } from './helpers/get-nearest-location.js'
-import { config } from 'dotenv'
-
-config()
+import { config } from '~/src/config'
 
 const logger = createLogger()
 
@@ -40,7 +38,7 @@ const getLocationDataController = {
         errorMessage: { text: 'Select where you want to check' }
       })
       request.yar.set('locationType', '')
-      return h.redirect('/aqie-front-end/search-location')
+      return h.redirect('/search-location')
     }
     try {
       let userLocation = locationNameOrPostcode.toUpperCase() // Use 'let' to allow reassignment
@@ -77,7 +75,7 @@ const getLocationDataController = {
           }
         })
         request.yar.set('locationType', 'uk-location')
-        return h.redirect('/aqie-front-end/search-location')
+        return h.redirect('/search-location')
       }
       if (!userLocation && locationType === 'ni-location') {
         request.yar.set('errors', {
@@ -97,7 +95,7 @@ const getLocationDataController = {
           }
         })
         request.yar.set('locationType', 'ni-location')
-        return h.redirect('/aqie-front-end/search-location')
+        return h.redirect('/search-location')
       }
       const forecastsAPIurl = process.env.FORECAST_API_URL
       const measurementsAPIurl = process.env.MEASUREMENTS_API_URL
@@ -119,7 +117,7 @@ const getLocationDataController = {
 
         const osPlacesApiUrl = `${process.env.OS_PLACES_API_URL}${encodeURIComponent(
           userLocation
-        )}&fq=${encodeURIComponent(filters)}&key=${process.env.OS_PLACES_API_KEY}`
+        )}&fq=${encodeURIComponent(filters)}&key=${config.get('osPlacesApiKey')}`
 
         const shouldCallApi = symbolsArr.some((symbol) =>
           userLocation.includes(symbol)
@@ -270,7 +268,7 @@ const getLocationDataController = {
 const getLocationDetailsController = {
   handler: (request, h) => {
     try {
-      const locationId = request.path.split('/')[3]
+      const locationId = request.path.split('/')[2]
       const locationData = request.yar.get('locationData') || []
       const locationDetails = locationData.data.find(
         (item) => item.GAZETTEER_ENTRY.ID === locationId

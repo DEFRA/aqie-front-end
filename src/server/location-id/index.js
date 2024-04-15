@@ -2,7 +2,7 @@ import { getLocationDetailsController } from '~/src/server/locations/controller'
 
 const locationId = {
   plugin: {
-    name: 'location:id',
+    name: 'location{id}',
     register: async (server) => {
       server.route([
         {

@@ -4,7 +4,7 @@
   {%- for attribute, value in params.attributes %} {{ attribute }}="{{ value }}"{% endfor %}>
   <div class="govuk-header__container {{ params.containerClasses | default("govuk-width-container", true) }}">
     <div class="govuk-header__logo">
-      <a href="/aqie-front-end" class="govuk-header__link govuk-header__link--homepage">
+      <a href="/" class="govuk-header__link govuk-header__link--homepage">
         {#- The SVG needs `focusable="false"` so that Internet Explorer does
         not treat it as an interactive element - without this it will be
         'focusable' when using the keyboard to navigate.

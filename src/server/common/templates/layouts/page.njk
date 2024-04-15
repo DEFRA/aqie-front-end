@@ -40,7 +40,7 @@
     classes: "app-header",
     containerClasses: "govuk-width-container",
     serviceName: serviceName,
-    serviceUrl: appPathPrefix,
+    serviceUrl: '/',
     useTudorCrown: true
   }) }}
   {%endif%}
@@ -56,13 +56,13 @@
     tag: {
       text: "Beta"
     },
-    html: 'This is a new service – your <a class="govuk-link" href="/aqie-front-end/feedback">feedback</a> will help us to improve it.'
+    html: 'This is a new service – your <a class="govuk-link" href="/feedback">feedback</a> will help us to improve it.'
   }) }}
 
   {%if displayBacklink %}
     {{ govukBackLink({
     text: "Change location",
-    href: '/aqie-front-end/search-location'
+    href: '/search-location'
   }) }}
   {% endif %}
   {% endif %}

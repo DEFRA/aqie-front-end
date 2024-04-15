@@ -38,12 +38,6 @@ const config = convict({
     default: 'public',
     env: 'ASSET_PATH'
   },
-  appPathPrefix: {
-    doc: 'Application url path prefix',
-    format: String,
-    default: '/aqie-front-end',
-    env: 'APP_PATH_PREFIX'
-  },
   isProduction: {
     doc: 'If this application running in the production environment',
     format: Boolean,
@@ -78,6 +72,19 @@ const config = convict({
     nullable: true,
     default: null,
     env: 'CDP_HTTPS_PROXY'
+  },
+  osPlacesApiKey: {
+    doc: 'SO Name Place',
+    format: '*',
+    sensitive: true,
+    env: 'OS_PLACES_API_KEY'
+  },
+  daqiePassword: {
+    doc: 'password for daqie',
+    format: '*',
+    default: '',
+    sensitive: true,
+    env: 'MY_PASSWORD'
   }
 })
 

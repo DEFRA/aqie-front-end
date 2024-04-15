@@ -56,10 +56,10 @@ async function createServer() {
       password: 'super-secure-cookie-pass-at-least-32chars',
       isSecure: isProduction
     },
-    redirectTo: '/aqie-front-end',
+    redirectTo: '/',
     keepAlive: true,
     validate: async (request, session) => {
-      if (session.password === 'n1tr0g3n') {
+      if (session.password === config.get('daqiePassword')) {
         return { isValid: true }
       } else {
         return { isValid: true }
@@ -68,9 +68,7 @@ async function createServer() {
   })
   server.auth.default({ strategy: 'login', mode: 'required' })
 
-  await server.register(router, {
-    routes: { prefix: config.get('appPathPrefix') }
-  })
+  await server.register(router)
 
   await server.register(nunjucksConfig)
 

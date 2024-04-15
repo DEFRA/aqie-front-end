@@ -3,7 +3,7 @@
 {% set title = result.GAZETTEER_ENTRY.NAME1 + ", " + (result.GAZETTEER_ENTRY.COUNTY_UNITARY if result.GAZETTEER_ENTRY.COUNTY_UNITARY else result.GAZETTEER_ENTRY.DISTRICT_BOROUGH) %}
 
 {% set pageHeadingSize = pageHeadingSize or "xl" %}
-
+{{getAssetPath('application.css') |dump}}
 {% if onlyShowTwoPages == "Yes" %}
 {% block content %}
   <div class="govuk-grid-row">

@@ -13,7 +13,7 @@
   {% endif %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <form  id="itembox" action={{[appPathPrefix, '/location'] | join}} method="post"  name="search-form" value="search">
+      <form  id="itembox" action={{['/location'] | join}} method="post"  name="search-form" value="search">
       {% if locationType |length %}
       {%set errorMessage = ""%}
       {%else%}
