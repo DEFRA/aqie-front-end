@@ -1,3 +1,6 @@
+import { config } from 'dotenv'
+
+config()
 const homeController = {
   handler: (request, h) => {
     if (request.auth.isAuthenticated) {
@@ -22,7 +25,7 @@ const homeController = {
 const loginController = {
   handler: (request, h) => {
     // test
-    if (request.payload.password === 'n1tr0g3n') {
+    if (request.payload.password === process.env.AIR_QUALITY_PASSWORD) {
       request.cookieAuth.set({ password: request.payload.password })
       return h.redirect('/aqie-front-end/check-local-air-quality')
     } else {
