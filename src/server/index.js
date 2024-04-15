@@ -59,7 +59,7 @@ async function createServer() {
     redirectTo: '/',
     keepAlive: true,
     validate: async (request, session) => {
-      if (session.password === 'n1tr0g3n') {
+      if (session.password === config.get('daqiePassword')) {
         return { isValid: true }
       } else {
         return { isValid: true }
