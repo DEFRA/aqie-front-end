@@ -4,7 +4,7 @@ config()
 const homeController = {
   handler: (request, h) => {
     if (request.auth.isAuthenticated) {
-      return h.redirect('/aqie-front-end/check-local-air-quality')
+      return h.redirect('/check-local-air-quality')
     } else {
       const errors = request.yar.get('errors')
       const errorMessage = request.yar.get('errorMessage')
@@ -27,7 +27,7 @@ const loginController = {
     // test
     if (request.payload.password === process.env.AIR_QUALITY_PASSWORD) {
       request.cookieAuth.set({ password: request.payload.password })
-      return h.redirect('/aqie-front-end/check-local-air-quality')
+      return h.redirect('/check-local-air-quality')
     } else {
       request.yar.set('errors', {
         errors: {
@@ -45,7 +45,7 @@ const loginController = {
           text: 'The password is not correct'
         }
       })
-      return h.redirect('/aqie-front-end')
+      return h.redirect('')
     }
   }
 }

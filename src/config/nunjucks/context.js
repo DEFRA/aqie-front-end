@@ -4,7 +4,7 @@ import { config } from '~/src/config'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 
 const logger = createLogger()
-const appPathPrefix = config.get('appPathPrefix')
+const assetPath = config.get('assetPath')
 const manifestPath = path.resolve(
   config.get('root'),
   '.public',
@@ -22,8 +22,8 @@ function buildNavigation(request) {
   return [
     {
       text: 'Home',
-      url: appPathPrefix,
-      isActive: request.path === `${appPathPrefix}`
+      url: '/',
+      isActive: request.path === '/'
     }
   ]
 }
@@ -31,14 +31,13 @@ function buildNavigation(request) {
 function context(request) {
   return {
     serviceName: config.get('serviceName'),
-    serviceUrl: config.get('appPathPrefix'),
-    appPathPrefix: config.get('appPathPrefix'),
+    serviceUrl: '/',
     breadcrumbs: [],
     navigation: buildNavigation(request),
     getAssetPath: function (asset) {
       const webpackAssetPath = webpackManifest[asset]
 
-      return `${appPathPrefix}/public/${webpackAssetPath}`
+      return `/${assetPath}/${webpackAssetPath}`
     }
   }
 }
