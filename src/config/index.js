@@ -66,25 +66,43 @@ const config = convict({
     default: null,
     env: 'CDP_HTTP_PROXY'
   },
-  httpsProxy: {
-    doc: 'HTTPS Proxy',
-    format: String,
-    nullable: true,
-    default: null,
-    env: 'CDP_HTTPS_PROXY'
-  },
   osPlacesApiKey: {
-    doc: 'OS Name Places',
+    doc: 'OS Name Places key',
     format: '*',
     sensitive: true,
     env: 'OS_PLACES_API_KEY'
+  },
+  osPlacesApiUrl: {
+    doc: 'OS Name Places url',
+    format: String,
+    env: 'OS_PLACES_API_URL'
   },
   daqiePassword: {
     doc: 'password for daqie',
     format: '*',
     default: '',
     sensitive: true,
-    env: 'MY_PASSWORD'
+    env: 'DAQIE_PASSWORD'
+  },
+  forecastsApiUrl: {
+    doc: 'API forecast rss feed',
+    format: String,
+    env: 'FORECAST_API_URL'
+  },
+  measurementsApiUrl: {
+    doc: 'Ricardo API url',
+    format: String,
+    env: 'MEASUREMENTS_API_URL'
+  },
+  forecastSummaryUrl: {
+    doc: 'Summary forecast url',
+    format: String,
+    env: 'FORECAST_SUMMARY_URL'
+  },
+  postcodeNortherIrelandUrl: {
+    doc: 'Search postcode Northern Ireland url',
+    format: String,
+    env: 'POSTCODE_NORTHERN_IRELAND_URL'
   }
 })
 
