@@ -74,7 +74,7 @@ const config = convict({
     env: 'CDP_HTTPS_PROXY'
   },
   osPlacesApiKey: {
-    doc: 'SO Name Place',
+    doc: 'OS Name Places',
     format: '*',
     sensitive: true,
     env: 'OS_PLACES_API_KEY'
