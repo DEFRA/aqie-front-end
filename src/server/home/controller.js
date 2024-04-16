@@ -1,6 +1,5 @@
-import { config } from 'dotenv'
+import { config } from '~/src/config'
 
-config()
 const homeController = {
   handler: (request, h) => {
     if (request.auth.isAuthenticated) {
