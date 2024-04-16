@@ -70,12 +70,14 @@ const config = convict({
     doc: 'OS Name Places key',
     format: '*',
     sensitive: true,
-    env: 'OS_PLACES_API_KEY'
+    env: 'OS_PLACES_API_KEY',
+    default: 'OS Name Places key'
   },
   osPlacesApiUrl: {
     doc: 'OS Name Places url',
     format: String,
-    env: 'OS_PLACES_API_URL'
+    env: 'OS_PLACES_API_URL',
+    default: 'OS Name Places url'
   },
   daqiePassword: {
     doc: 'password for daqie',
@@ -87,22 +89,26 @@ const config = convict({
   forecastsApiUrl: {
     doc: 'API forecast rss feed',
     format: String,
-    env: 'FORECAST_API_URL'
+    env: 'FORECAST_API_URL',
+    default: 'API forecast rss feed'
   },
   measurementsApiUrl: {
     doc: 'Ricardo API url',
     format: String,
-    env: 'MEASUREMENTS_API_URL'
+    env: 'MEASUREMENTS_API_URL',
+    default: 'Ricardo API url'
   },
   forecastSummaryUrl: {
     doc: 'Summary forecast url',
     format: String,
-    env: 'FORECAST_SUMMARY_URL'
+    env: 'FORECAST_SUMMARY_URL',
+    default: 'Summary forecast url'
   },
   postcodeNortherIrelandUrl: {
     doc: 'Search postcode Northern Ireland url',
     format: String,
-    env: 'POSTCODE_NORTHERN_IRELAND_URL'
+    env: 'POSTCODE_NORTHERN_IRELAND_URL',
+    default: 'Search postcode Northern Ireland url'
   }
 })
 
