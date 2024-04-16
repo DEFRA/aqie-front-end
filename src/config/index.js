@@ -66,18 +66,25 @@ const config = convict({
     default: null,
     env: 'CDP_HTTP_PROXY'
   },
+  httpsProxy: {
+    doc: 'HTTPS Proxy',
+    format: String,
+    nullable: true,
+    default: null,
+    env: 'CDP_HTTPS_PROXY'
+  },
   osPlacesApiKey: {
     doc: 'OS Name Places key',
     format: '*',
     sensitive: true,
     env: 'OS_PLACES_API_KEY',
-    default: 'OS Name Places key'
+    default: ''
   },
   osPlacesApiUrl: {
     doc: 'OS Name Places url',
     format: String,
     env: 'OS_PLACES_API_URL',
-    default: 'OS Name Places url'
+    default: 'https://api.os.uk/search/names/v1/find?query='
   },
   daqiePassword: {
     doc: 'password for daqie',
@@ -90,25 +97,25 @@ const config = convict({
     doc: 'API forecast rss feed',
     format: String,
     env: 'FORECAST_API_URL',
-    default: 'API forecast rss feed'
+    default: 'https://aqie-back-end.dev.cdp-int.defra.cloud/forecasts'
   },
   measurementsApiUrl: {
     doc: 'Ricardo API url',
     format: String,
     env: 'MEASUREMENTS_API_URL',
-    default: 'Ricardo API url'
+    default: 'https://aqie-back-end.dev.cdp-int.defra.cloud/measurements'
   },
   forecastSummaryUrl: {
     doc: 'Summary forecast url',
     format: String,
     env: 'FORECAST_SUMMARY_URL',
-    default: 'Summary forecast url'
+    default: 'https://uk-air.defra.gov.uk/ajax/forecast_text_summary.php'
   },
   postcodeNortherIrelandUrl: {
     doc: 'Search postcode Northern Ireland url',
     format: String,
     env: 'POSTCODE_NORTHERN_IRELAND_URL',
-    default: 'Search postcode Northern Ireland url'
+    default: 'https://api.postcodes.io/postcodes?q='
   }
 })
 

@@ -1,6 +1,5 @@
 import inert from '@hapi/inert'
 import yar from '@hapi/yar'
-import { health } from '~/src/server/health'
 import { checkLocalAirQuality } from '~/src/server/check-local-air-quality/index'
 import { searchLocation } from '~/src/server/search-location/index'
 import { locations } from '~/src/server/locations/index'
@@ -28,7 +27,6 @@ const router = {
     register: async (server) => {
       await server.register([inert])
       await server.register([
-        health,
         checkLocalAirQuality,
         searchLocation,
         locations,
