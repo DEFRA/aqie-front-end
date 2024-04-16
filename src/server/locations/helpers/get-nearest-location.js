@@ -37,6 +37,7 @@ function getNearestLocation(matches, forecasts, measurements, location) {
     })
     return opt
   })
+  // TODO select and filter locations and pollutants which are null or have exceptions
   const forecastDay = moment().format('dddd').substring(0, 3)
   const forecastNum = nearestLocation.map((current) => {
     let val = ''
