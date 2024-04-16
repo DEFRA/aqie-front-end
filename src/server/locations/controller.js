@@ -97,10 +97,13 @@ const getLocationDataController = {
         request.yar.set('locationType', 'ni-location')
         return h.redirect('/search-location')
       }
-      const forecastsAPIurl = config.get('forecastsApiUrl')
-      const measurementsAPIurl = config.get('measurementsApiUrl')
+      const forecastsAPIurl =
+        'https://aqie-back-end.test.cdp-int.defra.cloud/forecasts'
+      const measurementsAPIurl =
+        'https://aqie-back-end.test.cdp-int.defra.cloud/measurements'
       const airQuality = getAirQuality(request.payload.aq)
-      const forecastSummaryUrl = config.get('forecastSummaryUrl')
+      const forecastSummaryUrl =
+        'https://uk-air.defra.gov.uk/ajax/forecast_text_summary.php'
       const forecastSummaryRes = await axios.get(forecastSummaryUrl)
       const forecastSummary = forecastSummaryRes.data.today
       const { data: forecasts } = await axios.get(forecastsAPIurl)
@@ -209,7 +212,7 @@ const getLocationDataController = {
           })
         }
       } else if (locationType === 'ni-location') {
-        const postcodeNortherIrelandUrl = `${config.get('postcodeNortherIrelandUrl')}${encodeURIComponent(userLocation)}`
+        const postcodeNortherIrelandUrl = `https://api.postcodes.io/postcodes?q=${encodeURIComponent(userLocation)}`
         const response = await axios.get(postcodeNortherIrelandUrl)
         const { result } = response.data
         if (!result || result.length === 0) {
