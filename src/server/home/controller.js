@@ -23,8 +23,8 @@ const homeController = {
 
 const loginController = {
   handler: (request, h) => {
-    // test
-    if (request.payload.password === config.get('daqiePassword')) {
+    const password = config.get('daqiePassword')
+    if (request.payload.password === password) {
       request.cookieAuth.set({ password: request.payload.password })
       return h.redirect('/check-local-air-quality')
     } else {

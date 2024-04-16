@@ -6,7 +6,7 @@ import {
   convertPointToLonLat,
   coordinatesTotal,
   pointsInRange
-} from './location-util.js'
+} from '~/src/server/locations/helpers/location-util.js'
 
 function getNearestLocation(matches, forecasts, measurements, location) {
   const latlon = convertPointToLonLat(matches, location)
