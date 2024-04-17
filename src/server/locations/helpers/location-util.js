@@ -33,21 +33,21 @@ function orderByDistance(lat, lon, forecastCoordinates) {
   return getLocation
 }
 
-function convertPointToLonLat(matches, location) {
+function convertPointToLonLat(matches, location, index) {
   let lat = ''
   let lon = ''
   let point
   if (location === 'uk-location') {
     point = new OsGridRef(
-      matches[0].GAZETTEER_ENTRY.GEOMETRY_X,
-      matches[0].GAZETTEER_ENTRY.GEOMETRY_Y
+      matches[index].GAZETTEER_ENTRY.GEOMETRY_X,
+      matches[index].GAZETTEER_ENTRY.GEOMETRY_Y
     )
     const latlon = OsGridRef.osGridToLatLong(point)
     lat = latlon._lat
     lon = latlon._lon
   } else {
-    lat = matches[0].latitude
-    lon = matches[0].longitude
+    lat = matches[index].latitude
+    lon = matches[index].longitude
   }
   return { lat, lon }
 }

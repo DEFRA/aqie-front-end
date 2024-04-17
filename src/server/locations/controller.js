@@ -156,14 +156,16 @@ const getLocationDataController = {
           matches,
           forecasts.forecasts,
           measurements.measurements,
-          'uk-location'
+          'uk-location',
+          0
         )
         request.yar.set('locationData', {
           data: matches,
           rawForecasts: forecasts.forecasts,
           forecastNum,
           forecastSummary,
-          nearestLocationsRange
+          nearestLocationsRange,
+          measurements: measurements.measurements
         })
         //
         if (matches.length === 1) {
@@ -199,7 +201,7 @@ const getLocationDataController = {
             userLocation: locationNameOrPostcode,
             airQuality,
             airQualityData: airQualityData.commonMessages,
-            monitoringSites: nearestLocationsRange,
+            monitoringSites: nearestLocationsRange.ponearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
             pageTitle: `Locations matching ${userLocation}`,
@@ -232,7 +234,8 @@ const getLocationDataController = {
           result,
           forecasts.forecasts,
           measurements.measurements,
-          'Ireland'
+          'Ireland',
+          0
         )
         let title = ''
         if (locationData) {
@@ -271,9 +274,14 @@ const getLocationDetailsController = {
     try {
       const locationId = request.path.split('/')[2]
       const locationData = request.yar.get('locationData') || []
-      const locationDetails = locationData.data.find(
-        (item) => item.GAZETTEER_ENTRY.ID === locationId
-      )
+      let locationIndex = 0
+      const locationDetails = locationData.data.find((item, index) => {
+        if (item.GAZETTEER_ENTRY.ID === locationId) {
+          locationIndex = index
+          return item.GAZETTEER_ENTRY.ID === locationId
+        }
+        return null
+      })
 
       if (locationDetails) {
         let title = ''
@@ -285,12 +293,22 @@ const getLocationDetailsController = {
         } else {
           title = locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
         }
-        const airQuality = getAirQuality(locationData.forecastNum[0])
+        const { forecastNum, nearestLocationsRange } = getNearestLocation(
+          locationData.data,
+          locationData.rawForecasts,
+          locationData.measurements,
+          'uk-location',
+          locationIndex
+        )
+        const airQuality = getAirQuality(forecastNum[0])
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
           airQualityData: airQualityData.commonMessages,
-          monitoringSites: locationData.nearestLocationsRange,
+          monitoringSites:
+            Object.keys(nearestLocationsRange[0].pollutants).length === 0
+              ? {}
+              : nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: title,
