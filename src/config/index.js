@@ -77,14 +77,14 @@ const config = convict({
     doc: 'OS Name Places key',
     format: '*',
     sensitive: true,
-    env: 'OS_PLACES_API_KEY',
-    default: ''
+    default: '',
+    env: 'OS_PLACES_API_KEY'
   },
   osPlacesApiUrl: {
     doc: 'OS Name Places url',
     format: String,
-    env: 'OS_PLACES_API_URL',
-    default: 'https://api.os.uk/search/names/v1/find?query='
+    default: 'https://api.os.uk/search/names/v1/find?query=',
+    env: 'OS_PLACES_API_URL'
   },
   daqiePassword: {
     doc: 'password for daqie',
@@ -96,26 +96,26 @@ const config = convict({
   forecastsApiUrl: {
     doc: 'API forecast rss feed',
     format: String,
-    env: 'FORECAST_API_URL',
-    default: 'https://aqie-back-end.dev.cdp-int.defra.cloud/forecasts'
+    default: `https://aqie-back-end.dev.cdp-int.defra.cloud/forecasts`,
+    env: 'FORECAST_API_URL'
   },
   measurementsApiUrl: {
     doc: 'Ricardo API url',
     format: String,
-    env: 'MEASUREMENTS_API_URL',
-    default: 'https://aqie-back-end.dev.cdp-int.defra.cloud/measurements'
+    default: `https://aqie-back-end.dev.cdp-int.defra.cloud/measurements`,
+    env: 'MEASUREMENTS_API_URL'
   },
   forecastSummaryUrl: {
     doc: 'Summary forecast url',
     format: String,
-    env: 'FORECAST_SUMMARY_URL',
-    default: 'https://uk-air.defra.gov.uk/ajax/forecast_text_summary.php'
+    default: 'https://uk-air.defra.gov.uk/ajax/forecast_text_summary.php',
+    env: 'FORECAST_SUMMARY_URL'
   },
   postcodeNortherIrelandUrl: {
     doc: 'Search postcode Northern Ireland url',
     format: String,
-    env: 'POSTCODE_NORTHERN_IRELAND_URL',
-    default: 'https://api.postcodes.io/postcodes?q='
+    default: 'https://api.postcodes.io/postcodes?q=',
+    env: 'POSTCODE_NORTHERN_IRELAND_URL'
   }
 })
 
