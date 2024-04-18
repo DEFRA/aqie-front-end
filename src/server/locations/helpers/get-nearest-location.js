@@ -30,7 +30,7 @@ function getNearestLocation(matches, forecasts, measurements, location, index) {
   const pointsToDisplay = nearestMeasurementsPoints.filter((p) =>
     pointsInRange(latlon, p)
   )
-  let nearestLocationsRange = measurements.filter((item, i) => {
+  const nearestLocationsRangeCal = measurements.filter((item, i) => {
     const opt = pointsToDisplay.some((dis, index) => {
       return (
         item.location.coordinates[0] === dis.latitude &&
@@ -40,36 +40,34 @@ function getNearestLocation(matches, forecasts, measurements, location, index) {
     return opt
   })
   // TODO select and filter locations and pollutants which are not null or don't have exceptions
-  nearestLocationsRange = nearestLocationsRange.reduce((acc, curr, index) => {
-    if (index === 0) newpollutants = []
-    const getDistance =
-      geolib.getDistance(
-        { latitude: latlon.lat, longitude: latlon.lon },
-        {
-          latitude: curr.location.coordinates[0],
-          longitude: curr.location.coordinates[1]
-        }
-      ) * 0.000621371192
-    Object.keys(curr.pollutants).forEach((pollutant) => {
-      const polValue = curr.pollutants[pollutant].value
-      if (polValue !== null && polValue !== -99) {
-        const { getDaqi, getBand } = getPollutantLevel(polValue, pollutant)
-        Object.assign(newpollutants, {
-          [pollutant]: {
-            exception: curr.pollutants[pollutant].exception,
-            featureOfInterest: curr.pollutants[pollutant].featureOfInterest,
-            time: { date: curr.pollutants[pollutant].time.date },
-            value: polValue,
-            daqi: getDaqi,
-            band: getBand
+  const nearestLocationsRange = nearestLocationsRangeCal.reduce(
+    (acc, curr, index) => {
+      if (index === 0) newpollutants = []
+      const getDistance =
+        geolib.getDistance(
+          { latitude: latlon.lat, longitude: latlon.lon },
+          {
+            latitude: curr.location.coordinates[0],
+            longitude: curr.location.coordinates[1]
           }
-        })
-      }
-    })
-
-    return [
-      {
-        ...acc,
+        ) * 0.000621371192
+      Object.keys(curr.pollutants).forEach((pollutant) => {
+        const polValue = curr.pollutants[pollutant].value
+        if (polValue !== null && polValue !== -99) {
+          const { getDaqi, getBand } = getPollutantLevel(polValue, pollutant)
+          Object.assign(newpollutants, {
+            [pollutant]: {
+              exception: curr.pollutants[pollutant].exception,
+              featureOfInterest: curr.pollutants[pollutant].featureOfInterest,
+              time: { date: curr.pollutants[pollutant].time.date },
+              value: polValue,
+              daqi: getDaqi,
+              band: getBand
+            }
+          })
+        }
+      })
+      acc.push({
         area: curr.area,
         areaType: curr.areaType,
         location: {
@@ -83,9 +81,12 @@ function getNearestLocation(matches, forecasts, measurements, location, index) {
         updated: curr.updated,
         distance: getDistance.toFixed(1),
         pollutants: { ...newpollutants }
-      }
-    ]
-  }, [])
+      })
+
+      return acc
+    },
+    []
+  )
 
   const forecastDay = moment().format('dddd').substring(0, 3)
   const forecastNum = nearestLocation.map((current) => {

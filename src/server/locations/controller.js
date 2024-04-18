@@ -256,7 +256,7 @@ const getLocationDataController = {
           result: locationData,
           airQuality,
           airQualityData: airQualityData.commonMessages,
-          monitoringSites: locationData.nearestLocationsRange,
+          monitoringSites: nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: title,
