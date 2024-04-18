@@ -108,6 +108,7 @@
       {% set _ = rows.push(row) %}
   {% endfor %}
   {{ aqLevelsTable({
+      id:result.GAZETTEER_ENTRY.ID,
       classes: "govuk-!-margin-bottom-2",
       firstCellIsHeader: false,
       head: [

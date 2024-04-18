@@ -132,6 +132,11 @@ export const pollutantTypes = {
     href: '/pollutants/particulate-matter-10',
     low_range: '0 to 50'
   },
+  GE10: {
+    title: 'PM10',
+    href: '/pollutants/particulate-matter-10',
+    low_range: '0 to 50'
+  },
   PM25: {
     title: 'PM2.5',
     href: '/pollutants/particulate-matter-25',

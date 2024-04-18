@@ -187,7 +187,10 @@ const getLocationDataController = {
             result: matches[0],
             airQuality,
             airQualityData: airQualityData.commonMessages,
-            monitoringSites: nearestLocationsRange,
+            monitoringSites:
+              Object.keys(nearestLocationsRange[0].pollutants).length === 0
+                ? {}
+                : nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
             displayBacklink: true,
@@ -201,7 +204,10 @@ const getLocationDataController = {
             userLocation: locationNameOrPostcode,
             airQuality,
             airQualityData: airQualityData.commonMessages,
-            monitoringSites: nearestLocationsRange.ponearestLocationsRange,
+            monitoringSites:
+              Object.keys(nearestLocationsRange[0].pollutants).length === 0
+                ? {}
+                : nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
             pageTitle: `Locations matching ${userLocation}`,
@@ -258,7 +264,10 @@ const getLocationDataController = {
           pageTitle: title,
           displayBacklink: true,
           forecastSummary,
-          nearestLocationsRange
+          nearestLocationsRange:
+            Object.keys(nearestLocationsRange[0].pollutants).length === 0
+              ? {}
+              : nearestLocationsRange
         })
       }
     } catch (error) {
