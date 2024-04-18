@@ -107,8 +107,6 @@
       ] %}
       {% set _ = rows.push(row) %}
   {% endfor %}
-  {{result.GAZETTEER_ENTRY.ID| dump}}
-  {{site| dump}}
   {{ aqLevelsTable({
       id:result.GAZETTEER_ENTRY.ID,
       classes: "govuk-!-margin-bottom-2",
