@@ -1,4 +1,3 @@
-import axios from 'axios'
 import {
   siteTypeDescriptions,
   pollutantTypes
@@ -8,9 +7,9 @@ import { getAirQuality } from '../data/air-quality.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { getNearestLocation } from './helpers/get-nearest-location.js'
 import { config } from '~/src/config'
+import { proxyFetch } from '~/src/helpers/proxy-fetch.js'
 
 const logger = createLogger()
-
 const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
 const getLocationDataController = {
   handler: async (request, h) => {
@@ -101,10 +100,19 @@ const getLocationDataController = {
       const measurementsAPIurl = config.get('measurementsApiUrl')
       const airQuality = getAirQuality(request.payload.aq)
       const forecastSummaryURL = config.get('forecastSummaryUrl')
-      const forecastSummaryRes = await axios.get(forecastSummaryURL)
-      const forecastSummary = forecastSummaryRes.data.today
-      const { data: forecasts } = await axios.get(forecastsAPIurl)
-      const { data: measurements } = await axios.get(measurementsAPIurl)
+      const forecastSummaryRes = await proxyFetch(forecastSummaryURL).then(
+        (res) => res.json()
+      )
+
+      const forecastSummary = forecastSummaryRes.today
+      const forecastsRes = await proxyFetch(forecastsAPIurl).then((res) =>
+        res.json()
+      )
+      const { forecasts } = forecastsRes
+      const measurementsRes = await proxyFetch(measurementsAPIurl).then((res) =>
+        res.json()
+      )
+      const { measurements } = measurementsRes
       if (locationType === 'uk-location') {
         const filters = [
           'LOCAL_TYPE:City',
@@ -122,11 +130,14 @@ const getLocationDataController = {
         const shouldCallApi = symbolsArr.some((symbol) =>
           userLocation.includes(symbol)
         )
-        const response = !shouldCallApi
-          ? await axios.get(osPlacesApiUrl)
-          : { data: [] }
+        let response
+        if (!shouldCallApi) {
+          response = await proxyFetch(osPlacesApiUrl).then((res) => res.json())
+        } else {
+          response = { data: [] }
+        }
         //
-        const { results } = response?.data
+        const { results } = response
 
         if (!results || results.length === 0) {
           return h.view('locations/location-not-found', {
@@ -151,18 +162,18 @@ const getLocationDataController = {
         }
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
           matches,
-          forecasts.forecasts,
-          measurements.measurements,
+          forecasts,
+          measurements,
           'uk-location',
           0
         )
         request.yar.set('locationData', {
           data: matches,
-          rawForecasts: forecasts.forecasts,
+          rawForecasts: forecasts,
           forecastNum,
           forecastSummary,
           nearestLocationsRange,
-          measurements: measurements.measurements
+          measurements
         })
         //
         if (matches.length === 1) {
@@ -213,8 +224,10 @@ const getLocationDataController = {
       } else if (locationType === 'ni-location') {
         const postcodeNIURL = config.get('postcodeNortherIrelandUrl')
         const postcodeNortherIrelandURL = `${postcodeNIURL}${encodeURIComponent(userLocation)}`
-        const response = await axios.get(postcodeNortherIrelandURL)
-        const { result } = response.data
+        const response = await proxyFetch(postcodeNortherIrelandURL).then(
+          (res) => res.json()
+        )
+        const { result } = response
         if (!result || result.length === 0) {
           return h.view('locations/location-not-found', {
             userLocation: locationNameOrPostcode
@@ -230,8 +243,8 @@ const getLocationDataController = {
         }
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
           result,
-          forecasts.forecasts,
-          measurements.measurements,
+          forecasts,
+          measurements,
           'Ireland',
           0
         )
