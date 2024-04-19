@@ -184,10 +184,7 @@ const getLocationDataController = {
             result: matches[0],
             airQuality,
             airQualityData: airQualityData.commonMessages,
-            monitoringSites:
-              Object.keys(nearestLocationsRange[0].pollutants).length === 0
-                ? {}
-                : nearestLocationsRange,
+            monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
             displayBacklink: true,
@@ -201,10 +198,7 @@ const getLocationDataController = {
             userLocation: locationNameOrPostcode,
             airQuality,
             airQualityData: airQualityData.commonMessages,
-            monitoringSites:
-              Object.keys(nearestLocationsRange[0].pollutants).length === 0
-                ? {}
-                : nearestLocationsRange,
+            monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
             pageTitle: `Locations matching ${userLocation}`,
@@ -256,16 +250,13 @@ const getLocationDataController = {
           result: locationData,
           airQuality,
           airQualityData: airQualityData.commonMessages,
-          monitoringSites: locationData.nearestLocationsRange,
+          monitoringSites: nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: title,
           displayBacklink: true,
           forecastSummary,
-          nearestLocationsRange:
-            Object.keys(nearestLocationsRange[0].pollutants).length === 0
-              ? {}
-              : nearestLocationsRange
+          nearestLocationsRange
         })
       }
     } catch (error) {
@@ -312,10 +303,7 @@ const getLocationDetailsController = {
           result: locationDetails,
           airQuality,
           airQualityData: airQualityData.commonMessages,
-          monitoringSites:
-            Object.keys(nearestLocationsRange[0].pollutants).length === 0
-              ? {}
-              : nearestLocationsRange,
+          monitoringSites: nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: title,

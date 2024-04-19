@@ -51,9 +51,10 @@
       <h2 class="govuk-heading-m">How air pollutants can affect your health</h2>
       {% include "pollutants.njk" %}
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6 govuk-!-margin-top-6">
-
-{% for site in monitoringSites %}
+{% if monitoringSites|length %}
 <h2 class="govuk-heading-m">Air pollutants monitored near by</h2>
+{% endif %}
+{% for site in monitoringSites %}
 {% set time %}
     {{ "now" | date | minusOneHour }}
 {% endset %}
@@ -97,7 +98,7 @@
               classes: "defra-aq-levels-table__cell--pollutant" 
           },
           { 
-              html: (pollutant.value | int) +  " <span class='govuk-!-font-size-16 govuk-!-font-weight-regular'>μg/&#13221;</span>",
+              html: (pollutant.value) +  " <span class='govuk-!-font-size-16 govuk-!-font-weight-regular'>μg/&#13221;</span>",
               classes: "defra-aq-levels-table__cell--reading" 
           },
           { 
@@ -108,7 +109,7 @@
       {% set _ = rows.push(row) %}
   {% endfor %}
   {{ aqLevelsTable({
-      id:result.GAZETTEER_ENTRY.ID,
+      id:loop.index,
       classes: "govuk-!-margin-bottom-2",
       firstCellIsHeader: false,
       head: [
@@ -119,6 +120,7 @@
       rows: rows
   }) }}
   <p class='govuk-caption-s govuk-!-margin-bottom-6'>Latest {{ "now" | date | minusOneHour | lower }}</p>
+
 {% endfor %}
     </div>
   </div>
