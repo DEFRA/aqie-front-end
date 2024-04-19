@@ -100,10 +100,14 @@ const getLocationDataController = {
       const measurementsAPIurl = config.get('measurementsApiUrl')
       const airQuality = getAirQuality(request.payload.aq)
       const forecastSummaryURL = config.get('forecastSummaryUrl')
-      const forecastSummaryRes = await proxyFetch(forecastSummaryURL).then(
-        (res) => res.json()
-      )
-
+      let forecastSummaryRes
+      try {
+        forecastSummaryRes = await proxyFetch(forecastSummaryURL).then((res) =>
+          res.json()
+        )
+      } catch (error) {
+        logger.info('ERRRRRORRR ', error)
+      }
       const forecastSummary = forecastSummaryRes.today
       const forecastsRes = await proxyFetch(forecastsAPIurl).then((res) =>
         res.json()
