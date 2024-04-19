@@ -6,11 +6,9 @@ import * as airQualityData from '../data/air-quality.js'
 import { getAirQuality } from '../data/air-quality.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { getNearestLocation } from './helpers/get-nearest-location.js'
-import { config } from '~/src/config'
-import { proxyFetch } from '~/src/helpers/proxy-fetch.js'
+import { fetchData } from '~/src/server/locations/helpers/fetch-data'
 
 const logger = createLogger()
-const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
 const getLocationDataController = {
   handler: async (request, h) => {
     const locationType = request?.payload?.locationType
@@ -96,52 +94,13 @@ const getLocationDataController = {
         request.yar.set('locationType', 'ni-location')
         return h.redirect('/search-location')
       }
-      const forecastsAPIurl = config.get('forecastsApiUrl')
-      const measurementsAPIurl = config.get('measurementsApiUrl')
       const airQuality = getAirQuality(request.payload.aq)
-      const forecastSummaryURL = config.get('forecastSummaryUrl')
-      let forecastSummaryRes
-      try {
-        forecastSummaryRes = await proxyFetch(forecastSummaryURL).then((res) =>
-          res.json()
-        )
-      } catch (error) {
-        logger.info('ERRRRRORRR ', error)
-      }
-      const forecastSummary = forecastSummaryRes.today
-      const forecastsRes = await proxyFetch(forecastsAPIurl).then((res) =>
-        res.json()
-      )
-      const { forecasts } = forecastsRes
-      const measurementsRes = await proxyFetch(measurementsAPIurl).then((res) =>
-        res.json()
-      )
-      const { measurements } = measurementsRes
+
+      const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
+        await fetchData('uk-location', userLocation)
+
       if (locationType === 'uk-location') {
-        const filters = [
-          'LOCAL_TYPE:City',
-          'LOCAL_TYPE:Town',
-          'LOCAL_TYPE:Village',
-          'LOCAL_TYPE:Suburban_Area',
-          'LOCAL_TYPE:Postcode',
-          'LOCAL_TYPE:Airport'
-        ].join('+')
-
-        const osPlacesApiUrl = `${config.get('osPlacesApiUrl')}${encodeURIComponent(
-          userLocation
-        )}&fq=${encodeURIComponent(filters)}&key=${config.get('osPlacesApiKey')}`
-
-        const shouldCallApi = symbolsArr.some((symbol) =>
-          userLocation.includes(symbol)
-        )
-        let response
-        if (!shouldCallApi) {
-          response = await proxyFetch(osPlacesApiUrl).then((res) => res.json())
-        } else {
-          response = { data: [] }
-        }
-        //
-        const { results } = response
+        const { results } = getOSPlaces
 
         if (!results || results.length === 0) {
           return h.view('locations/location-not-found', {
@@ -166,18 +125,18 @@ const getLocationDataController = {
         }
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
           matches,
-          forecasts,
-          measurements,
+          getForecasts.forecasts,
+          getMeasurements.measurements,
           'uk-location',
           0
         )
         request.yar.set('locationData', {
           data: matches,
-          rawForecasts: forecasts,
+          rawForecasts: getForecasts.forecasts,
           forecastNum,
-          forecastSummary,
+          forecastSummary: getDailySummary.today,
           nearestLocationsRange,
-          measurements
+          measurements: getMeasurements.measurements
         })
         //
         if (matches.length === 1) {
@@ -205,7 +164,7 @@ const getLocationDataController = {
             displayBacklink: true,
             pageTitle: title,
             serviceName: 'Check local air quality',
-            forecastSummary
+            forecastSummary: getDailySummary.today
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
           return h.view('locations/multiple-locations', {
@@ -226,12 +185,9 @@ const getLocationDataController = {
           })
         }
       } else if (locationType === 'ni-location') {
-        const postcodeNIURL = config.get('postcodeNortherIrelandUrl')
-        const postcodeNortherIrelandURL = `${postcodeNIURL}${encodeURIComponent(userLocation)}`
-        const response = await proxyFetch(postcodeNortherIrelandURL).then(
-          (res) => res.json()
-        )
-        const { result } = response
+        const { getNIPlaces } = fetchData('uk-location', userLocation)
+        const { result } = getNIPlaces.data
+
         if (!result || result.length === 0) {
           return h.view('locations/location-not-found', {
             userLocation: locationNameOrPostcode
@@ -247,8 +203,8 @@ const getLocationDataController = {
         }
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
           result,
-          forecasts,
-          measurements,
+          getForecasts,
+          getMeasurements,
           'Ireland',
           0
         )
@@ -272,7 +228,7 @@ const getLocationDataController = {
           pollutantTypes,
           pageTitle: title,
           displayBacklink: true,
-          forecastSummary,
+          forecastSummary: getDailySummary.today,
           nearestLocationsRange
         })
       }
