@@ -9,7 +9,6 @@ import {
 } from '~/src/server/locations/helpers/location-util.js'
 import { getPollutantLevel } from './pollutant-level-calculation'
 
-let newpollutants = []
 function getNearestLocation(matches, forecasts, measurements, location, index) {
   const latlon = convertPointToLonLat(matches, location, index)
   const forecastCoordinates = coordinatesTotal(forecasts)
@@ -42,7 +41,7 @@ function getNearestLocation(matches, forecasts, measurements, location, index) {
   // TODO select and filter locations and pollutants which are not null or don't have exceptions
   const nearestLocationsRange = nearestLocationsRangeCal.reduce(
     (acc, curr, index) => {
-      if (index === 0) newpollutants = []
+      const newpollutants = []
       const getDistance =
         geolib.getDistance(
           { latitude: latlon.lat, longitude: latlon.lon },
