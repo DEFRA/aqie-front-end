@@ -53,7 +53,7 @@ function getNearestLocation(matches, forecasts, measurements, location, index) {
         ) * 0.000621371192
       Object.keys(curr.pollutants).forEach((pollutant) => {
         const polValue = curr.pollutants[pollutant].value
-        if (polValue !== null && polValue !== -99) {
+        if (polValue !== null && polValue !== -99 && polValue !== '0') {
           const { getDaqi, getBand } = getPollutantLevel(polValue, pollutant)
           Object.assign(newpollutants, {
             [pollutant]: {
@@ -67,22 +67,23 @@ function getNearestLocation(matches, forecasts, measurements, location, index) {
           })
         }
       })
-      acc.push({
-        area: curr.area,
-        areaType: curr.areaType,
-        location: {
-          type: curr.location.type,
-          coordinates: [
-            curr.location.coordinates[0],
-            curr.location.coordinates[1]
-          ]
-        },
-        name: curr.name,
-        updated: curr.updated,
-        distance: getDistance.toFixed(1),
-        pollutants: { ...newpollutants }
-      })
-
+      if (Object.keys(newpollutants).length !== 0) {
+        acc.push({
+          area: curr.area,
+          areaType: curr.areaType,
+          location: {
+            type: curr.location.type,
+            coordinates: [
+              curr.location.coordinates[0],
+              curr.location.coordinates[1]
+            ]
+          },
+          name: curr.name,
+          updated: curr.updated,
+          distance: getDistance.toFixed(1),
+          pollutants: { ...newpollutants }
+        })
+      }
       return acc
     },
     []
