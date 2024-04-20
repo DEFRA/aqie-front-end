@@ -2,7 +2,7 @@
 import { proxyFetch } from '~/src/helpers/proxy-fetch.js'
 import { config } from '~/src/config'
 
-const options = { method: 'GET', headers: { 'Content-Type': 'text/xml' } }
+const options = { method: 'GET', headers: { 'Content-Type': 'text/json' } }
 async function fetchData(locationType, userLocation) {
   const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
   let getOSPlaces = { data: [] }
@@ -53,10 +53,7 @@ async function fetchData(locationType, userLocation) {
     let getNIPlaces
     const postcodeNIURL = config.get('postcodeNortherIrelandUrl')
     const postcodeNortherIrelandURL = `${postcodeNIURL}${encodeURIComponent(userLocation)}`
-    const northerIrelandRes = await proxyFetch(
-      postcodeNortherIrelandURL,
-      options
-    )
+    const northerIrelandRes = await proxyFetch(postcodeNortherIrelandURL)
     if (northerIrelandRes.ok) {
       getNIPlaces = await northerIrelandRes.json()
     }
