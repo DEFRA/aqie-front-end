@@ -186,8 +186,8 @@ const getLocationDataController = {
           })
         }
       } else if (locationType === 'ni-location') {
-        const { getNIPlaces } = fetchData('uk-location', userLocation)
-        const { result } = getNIPlaces.data
+        const { getNIPlaces } = await fetchData('ni-location', userLocation)
+        const { result } = getNIPlaces
 
         if (!result || result.length === 0) {
           return h.view('locations/location-not-found', {
@@ -204,8 +204,8 @@ const getLocationDataController = {
         }
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
           result,
-          getForecasts,
-          getMeasurements,
+          getForecasts.forecasts,
+          getMeasurements.measurements,
           'Ireland',
           0
         )
