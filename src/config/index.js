@@ -77,7 +77,7 @@ const config = convict({
     doc: 'OS Name Places key',
     format: '*',
     sensitive: true,
-    default: 'vvR3FiaNjSWCnFzSKBst23TX6efl0oL9',
+    default: '',
     env: 'OS_PLACES_API_KEY'
   },
   osPlacesApiUrl: {
@@ -89,7 +89,7 @@ const config = convict({
   daqiePassword: {
     doc: 'password for daqie',
     format: '*',
-    default: 'e3BakXA1Up8PxN3ehAYO',
+    default: '',
     sensitive: true,
     env: 'DAQIE_PASSWORD'
   },
