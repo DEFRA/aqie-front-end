@@ -2,6 +2,7 @@
 import { proxyFetch } from '~/src/helpers/proxy-fetch.js'
 import { config } from '~/src/config'
 
+const options = { method: 'GET', headers: { 'Content-Type': 'text/xml' } }
 async function fetchData(locationType, userLocation) {
   const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
   let getOSPlaces = { data: [] }
@@ -21,18 +22,18 @@ async function fetchData(locationType, userLocation) {
     const forecastSummaryURL = config.get('forecastSummaryUrl')
     const forecastsAPIurl = config.get('forecastsApiUrl')
     const measurementsAPIurl = config.get('measurementsApiUrl')
-    const forecastSummaryRes = await proxyFetch(forecastSummaryURL)
+    const forecastSummaryRes = await proxyFetch(forecastSummaryURL, options)
     let getDailySummary
     if (forecastSummaryRes.ok) {
       getDailySummary = await forecastSummaryRes.json()
     }
 
-    const forecastsRes = await proxyFetch(forecastsAPIurl)
+    const forecastsRes = await proxyFetch(forecastsAPIurl, options)
     let getForecasts
     if (forecastsRes.ok) {
       getForecasts = await forecastsRes.json()
     }
-    const measurementsRes = await proxyFetch(measurementsAPIurl)
+    const measurementsRes = await proxyFetch(measurementsAPIurl, options)
     let getMeasurements
     if (measurementsRes.ok) {
       getMeasurements = await measurementsRes.json()
@@ -41,7 +42,7 @@ async function fetchData(locationType, userLocation) {
       userLocation.includes(symbol)
     )
     if (!shouldCallApi) {
-      const osPlacesRes = await proxyFetch(osPlacesApiUrl)
+      const osPlacesRes = await proxyFetch(osPlacesApiUrl, options)
       if (osPlacesRes.ok) {
         getOSPlaces = await osPlacesRes.json()
       }
@@ -52,7 +53,10 @@ async function fetchData(locationType, userLocation) {
     let getNIPlaces
     const postcodeNIURL = config.get('postcodeNortherIrelandUrl')
     const postcodeNortherIrelandURL = `${postcodeNIURL}${encodeURIComponent(userLocation)}`
-    const northerIrelandRes = await proxyFetch(postcodeNortherIrelandURL)
+    const northerIrelandRes = await proxyFetch(
+      postcodeNortherIrelandURL,
+      options
+    )
     if (northerIrelandRes.ok) {
       getNIPlaces = await northerIrelandRes.json()
     }
