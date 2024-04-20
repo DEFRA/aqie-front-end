@@ -44,7 +44,7 @@ const loginController = {
           text: 'The password is not correct'
         }
       })
-      return h.redirect('')
+      return h.redirect('/')
     }
   }
 }

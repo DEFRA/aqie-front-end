@@ -109,7 +109,7 @@ const getLocationDataController = {
         }
 
         let matches = results.filter((item) => {
-          const name = item.GAZETTEER_ENTRY.NAME1.toUpperCase()
+          const name = item?.GAZETTEER_ENTRY.NAME1.toUpperCase()
           return name.includes(userLocation) || userLocation.includes(name)
         })
 
@@ -133,9 +133,10 @@ const getLocationDataController = {
         request.yar.set('locationData', {
           data: matches,
           rawForecasts: getForecasts.forecasts,
-          forecastNum,
+          forecastNum: matches.length !== 0 ? forecastNum : 0,
           forecastSummary: getDailySummary.today,
-          nearestLocationsRange,
+          nearestLocationsRange:
+            matches.length !== 0 ? nearestLocationsRange : [],
           measurements: getMeasurements.measurements
         })
         //
@@ -234,7 +235,8 @@ const getLocationDataController = {
       }
     } catch (error) {
       return h.view('error/index', {
-        userLocation: locationNameOrPostcode
+        userLocation: locationNameOrPostcode,
+        msError: error
       })
     }
   }
