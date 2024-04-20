@@ -10,15 +10,16 @@ import {
 import { getPollutantLevel } from './pollutant-level-calculation'
 
 function getNearestLocation(matches, forecasts, measurements, location, index) {
-  const latlon = convertPointToLonLat(matches, location, index)
-  const forecastCoordinates = coordinatesTotal(forecasts)
-  const measurementsCoordinates = coordinatesTotal(measurements)
-  const nearestLocation = getNearLocation(
-    latlon.lat,
-    latlon.lon,
-    forecastCoordinates,
-    forecasts
-  )
+  const latlon =
+    matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
+  const forecastCoordinates =
+    matches.length !== 0 ? coordinatesTotal(forecasts) : []
+  const measurementsCoordinates =
+    matches.length !== 0 ? coordinatesTotal(measurements) : []
+  const nearestLocation =
+    matches.length !== 0
+      ? getNearLocation(latlon.lat, latlon.lon, forecastCoordinates, forecasts)
+      : {}
 
   const orderByDistanceMeasurements = geolib.orderByDistance(
     { latitude: latlon.lat, longitude: latlon.lon },
@@ -54,11 +55,14 @@ function getNearestLocation(matches, forecasts, measurements, location, index) {
         const polValue = curr.pollutants[pollutant].value
         if (polValue !== null && polValue !== -99 && polValue !== '0') {
           const { getDaqi, getBand } = getPollutantLevel(polValue, pollutant)
+          const formatDate = moment(
+            curr.pollutants[pollutant].time.date
+          ).format('hh:mm a, MMMM, DD, YYYY')
           Object.assign(newpollutants, {
             [pollutant]: {
               exception: curr.pollutants[pollutant].exception,
               featureOfInterest: curr.pollutants[pollutant].featureOfInterest,
-              time: { date: curr.pollutants[pollutant].time.date },
+              time: { date: formatDate },
               value: polValue,
               daqi: getDaqi,
               band: getBand
@@ -83,19 +87,23 @@ function getNearestLocation(matches, forecasts, measurements, location, index) {
           pollutants: { ...newpollutants }
         })
       }
+      acc.sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
       return acc
     },
     []
   )
 
   const forecastDay = moment().format('dddd').substring(0, 3)
-  const forecastNum = nearestLocation.map((current) => {
-    let val = ''
-    current.forecast.forEach((item) => {
-      if (item.day === forecastDay) val = item.value
-    })
-    return val
-  })
+  const forecastNum =
+    matches.length !== 0
+      ? nearestLocation.map((current) => {
+          let val = ''
+          current.forecast.forEach((item) => {
+            if (item.day === forecastDay) val = item.value
+          })
+          return val
+        })
+      : 0
   return { forecastNum, nearestLocationsRange }
 }
 

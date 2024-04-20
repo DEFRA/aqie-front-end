@@ -1,9 +1,8 @@
 {% extends 'layouts/page.njk' %}
 {% set caption = "" %}
 {% set title = result.GAZETTEER_ENTRY.NAME1 + ", " + (result.GAZETTEER_ENTRY.COUNTY_UNITARY if result.GAZETTEER_ENTRY.COUNTY_UNITARY else result.GAZETTEER_ENTRY.DISTRICT_BOROUGH) %}
-
+{% set pollutantTime = '' %}
 {% set pageHeadingSize = pageHeadingSize or "xl" %}
-{{getAssetPath('application.css') |dump}}
 {% if onlyShowTwoPages == "Yes" %}
 {% block content %}
   <div class="govuk-grid-row">
@@ -91,6 +90,7 @@
   {% set rows = [] %}
 
   {% for key, pollutant in site.pollutants %}
+  {% set pollutantTime = pollutant.time.date %}
       {% set pollutantDetail = pollutantTypes[key] %}
       {% set row = [
           { 
@@ -119,8 +119,9 @@
       ],
       rows: rows
   }) }}
-  <p class='govuk-caption-s govuk-!-margin-bottom-6'>Latest {{ "now" | date | minusOneHour | lower }}</p>
-
+  {# {% if loop.index == monitoringSites.length %} #}
+  <p class='govuk-caption-s govuk-!-margin-bottom-6'>Latest measurement at {{pollutantTime}}</p>
+  {# {%endif%} #}
 {% endfor %}
     </div>
   </div>
