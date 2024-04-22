@@ -24,21 +24,26 @@ async function fetchData(locationType, userLocation) {
     const osPlacesApiUrlFull = `${osPlacesApiUrl}${encodeURIComponent(
       userLocation
     )}&fq=${encodeURIComponent(filters)}&key=${osPlacesApiKey}`
+    logger.info(`osPlacesApiUrlFull: ${osPlacesApiUrlFull}`)
+    logger.info(`osPlacesApiKey: ${osPlacesApiKey}`)
     const forecastSummaryURL = config.get('forecastSummaryUrl')
     const forecastsAPIurl = config.get('forecastsApiUrl')
     const measurementsAPIurl = config.get('measurementsApiUrl')
+    logger.info(`forecastsAPIurl: ${forecastsAPIurl}`)
+    logger.info(`measurementsAPIurl : ${measurementsAPIurl}`)
+    logger.info(`forecastSummaryURL 1: ${forecastSummaryURL}`)
     const forecastSummaryRes = await proxyFetch(forecastSummaryURL, options)
     let getDailySummary
     if (forecastSummaryRes.ok) {
       getDailySummary = await forecastSummaryRes.json()
     }
-    logger.info(`forecastsAPIurl: ${forecastsAPIurl}`)
+    logger.info(`forecastsAPIurl 2: ${forecastsAPIurl}`)
     const forecastsRes = await proxyFetch(forecastsAPIurl, options)
     let getForecasts
     if (forecastsRes.ok) {
       getForecasts = await forecastsRes.json()
     }
-    logger.info(`measurementsAPIurl: ${measurementsAPIurl}`)
+    logger.info(`measurementsAPIurl 3: ${measurementsAPIurl}`)
     const measurementsRes = await proxyFetch(measurementsAPIurl, options)
     let getMeasurements
     if (measurementsRes.ok) {
@@ -48,7 +53,7 @@ async function fetchData(locationType, userLocation) {
       userLocation.includes(symbol)
     )
     if (!shouldCallApi) {
-      logger.info(`osPlacesApiUrlFull: ${osPlacesApiUrlFull}`)
+      logger.info(`osPlacesApiUrlFull 4: ${osPlacesApiUrlFull}`)
       const osPlacesRes = await proxyFetch(osPlacesApiUrlFull, options)
       if (osPlacesRes.ok) {
         getOSPlaces = await osPlacesRes.json()
