@@ -154,7 +154,7 @@ export const pollutantTypes = {
   }
 }
 
-// Used to populate toggletips on monitoring sites
+// Used to populate toggletips on monitoring sites //
 
 export const siteTypeDescriptions = {
   'Background Urban':
