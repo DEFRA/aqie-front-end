@@ -1,6 +1,9 @@
 /* eslint-disable prettier/prettier */
 import { proxyFetch } from '~/src/helpers/proxy-fetch.js'
 import { config } from '~/src/config'
+import { createLogger } from '~/src/server/common/helpers/logging/logger'
+
+const logger = createLogger()
 
 const options = { method: 'GET', headers: { 'Content-Type': 'text/json' } }
 async function fetchData(locationType, userLocation) {
@@ -15,10 +18,12 @@ async function fetchData(locationType, userLocation) {
       'LOCAL_TYPE:Postcode',
       'LOCAL_TYPE:Airport'
     ].join('+')
-    const osPlacesApiUrl = `${config.get('osPlacesApiUrl')}${encodeURIComponent(
+    const osPlacesApiUrl = config.get('osPlacesApiUrl')
+    const osPlacesApiKey = config.get('osPlacesApiKey')
+    logger.info(`osPlacesApiUrlPartial: ${osPlacesApiUrl}`)
+    const osPlacesApiUrlFull = `${osPlacesApiUrl}${encodeURIComponent(
       userLocation
-    )}&fq=${encodeURIComponent(filters)}&key=${config.get('osPlacesApiKey')}`
-
+    )}&fq=${encodeURIComponent(filters)}&key=${osPlacesApiKey}`
     const forecastSummaryURL = config.get('forecastSummaryUrl')
     const forecastsAPIurl = config.get('forecastsApiUrl')
     const measurementsAPIurl = config.get('measurementsApiUrl')
@@ -27,12 +32,13 @@ async function fetchData(locationType, userLocation) {
     if (forecastSummaryRes.ok) {
       getDailySummary = await forecastSummaryRes.json()
     }
-
+    logger.info(`forecastsAPIurl: ${forecastsAPIurl}`)
     const forecastsRes = await proxyFetch(forecastsAPIurl, options)
     let getForecasts
     if (forecastsRes.ok) {
       getForecasts = await forecastsRes.json()
     }
+    logger.info(`measurementsAPIurl: ${measurementsAPIurl}`)
     const measurementsRes = await proxyFetch(measurementsAPIurl, options)
     let getMeasurements
     if (measurementsRes.ok) {
@@ -42,7 +48,8 @@ async function fetchData(locationType, userLocation) {
       userLocation.includes(symbol)
     )
     if (!shouldCallApi) {
-      const osPlacesRes = await proxyFetch(osPlacesApiUrl, options)
+      logger.info(`osPlacesApiUrlFull: ${osPlacesApiUrlFull}`)
+      const osPlacesRes = await proxyFetch(osPlacesApiUrlFull, options)
       if (osPlacesRes.ok) {
         getOSPlaces = await osPlacesRes.json()
       }
@@ -52,7 +59,10 @@ async function fetchData(locationType, userLocation) {
   } else if (locationType === 'ni-location') {
     let getNIPlaces
     const postcodeNIURL = config.get('postcodeNortherIrelandUrl')
+    logger.info(`postcodeNIURL: ${postcodeNIURL}`)
+    logger.info(`userLocation: ${userLocation}`)
     const postcodeNortherIrelandURL = `${postcodeNIURL}${encodeURIComponent(userLocation)}`
+    logger.info(`postcodeNortherIrelandURL: ${postcodeNortherIrelandURL}`)
     const northerIrelandRes = await proxyFetch(postcodeNortherIrelandURL)
     if (northerIrelandRes.ok) {
       getNIPlaces = await northerIrelandRes.json()
