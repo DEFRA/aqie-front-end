@@ -17,7 +17,7 @@ function getPollutantLevel(polValue, pollutant) {
     }
     if (polValue > 100) {
       getDaqi = 10
-      getBand = 'Very High'
+      getBand = 'Very high'
     }
   }
   if (pollutant === 'NO2') {
@@ -35,7 +35,7 @@ function getPollutantLevel(polValue, pollutant) {
     }
     if (polValue > 600) {
       getDaqi = 10
-      getBand = 'Very High'
+      getBand = 'Very high'
     }
   }
   if (pollutant === 'PM25') {
@@ -53,7 +53,7 @@ function getPollutantLevel(polValue, pollutant) {
     }
     if (polValue > 70) {
       getDaqi = 10
-      getBand = 'Very High'
+      getBand = 'Very high'
     }
   }
   if (pollutant === 'SO2') {
@@ -71,7 +71,7 @@ function getPollutantLevel(polValue, pollutant) {
     }
     if (polValue > 1064) {
       getDaqi = 10
-      getBand = 'Very High'
+      getBand = 'Very high'
     }
   }
   if (pollutant === 'O3') {
@@ -89,7 +89,7 @@ function getPollutantLevel(polValue, pollutant) {
     }
     if (polValue > 240) {
       getDaqi = 10
-      getBand = 'Very High'
+      getBand = 'Very high'
     }
   }
   return { getDaqi, getBand }
