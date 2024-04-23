@@ -8,6 +8,12 @@ function addMomentFilters(env) {
       }
       return moment().format('DD MMMM YYYY')
     })
+    env.addFilter('govukDateHour', function (dateString) {
+      if (dateString === 'now') {
+        return moment()
+      }
+      return moment().format('ha, DD, MMMM, YYYY')
+    })
     env.addFilter('date', function (dateString) {
       if (dateString === 'now') {
         return moment()

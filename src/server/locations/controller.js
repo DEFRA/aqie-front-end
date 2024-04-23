@@ -165,7 +165,8 @@ const getLocationDataController = {
             displayBacklink: true,
             pageTitle: title,
             serviceName: 'Check local air quality',
-            forecastSummary: getDailySummary.today
+            forecastSummary: getDailySummary.today,
+            summaryDate: getDailySummary.issue_date
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
           return h.view('locations/multiple-locations', {
@@ -230,6 +231,7 @@ const getLocationDataController = {
           pageTitle: title,
           displayBacklink: true,
           forecastSummary: getDailySummary.today,
+          summaryDate: getDailySummary.issue_date,
           nearestLocationsRange
         })
       }
