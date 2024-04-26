@@ -116,6 +116,12 @@ const config = convict({
     format: String,
     default: 'https://api.postcodes.io/postcodes?q=',
     env: 'POSTCODE_NORTHERN_IRELAND_URL'
+  },
+  googleSiteTagId: {
+    doc: 'Google analytic tag',
+    format: String,
+    default: 'G-8CMZBTDQBC',
+    env: 'GOOGLE_SITE_TAG_ID'
   }
 })
 

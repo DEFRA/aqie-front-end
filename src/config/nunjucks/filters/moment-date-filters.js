@@ -12,7 +12,7 @@ function addMomentFilters(env) {
       if (dateString === 'now') {
         return moment()
       }
-      return moment().format('ha, DD, MMMM, YYYY')
+      return moment(dateString).format('ha, DD, MMMM, YYYY')
     })
     env.addFilter('date', function (dateString) {
       if (dateString === 'now') {
