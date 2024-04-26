@@ -1,3 +1,6 @@
+import { config } from '~/src/config'
+
+const googleSiteTagId = config.get('googleSiteTagId')
 const searchLocationController = {
   handler: (request, h) => {
     const errors = request.yar.get('errors')
@@ -45,7 +48,8 @@ const searchLocationController = {
           },
           id: 'location',
           name: 'location'
-        }
+        },
+        googleSiteTagId
       })
     }
   }
