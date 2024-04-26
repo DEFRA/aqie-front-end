@@ -1,9 +1,11 @@
 import { config } from '~/src/config'
 
+const googleSiteTagId = config.get('googleSiteTagId')
+const password = config.get('daqiePassword')
 const homeController = {
   handler: (request, h) => {
     if (request.auth.isAuthenticated) {
-      return h.redirect('/check-local-air-quality')
+      return h.redirect('/check-local-air-quality', { googleSiteTagId })
     } else {
       const errors = request.yar.get('errors')
       const errorMessage = request.yar.get('errorMessage')
@@ -15,7 +17,8 @@ const homeController = {
         page: 'home',
         serviceName: 'Check local air quality',
         errors: errors?.errors,
-        errorMessage: errorMessage?.errorMessage
+        errorMessage: errorMessage?.errorMessage,
+        googleSiteTagId
       })
     }
   }
@@ -23,10 +26,9 @@ const homeController = {
 
 const loginController = {
   handler: (request, h) => {
-    const password = config.get('daqiePassword')
     if (request.payload.password === password) {
       request.cookieAuth.set({ password: request.payload.password })
-      return h.redirect('/check-local-air-quality')
+      return h.redirect('/check-local-air-quality', { googleSiteTagId })
     } else {
       request.yar.set('errors', {
         errors: {

@@ -1,6 +1,6 @@
 import { config } from '~/src/config'
 
-const googleSiteTagId = config.googleSiteTagId
+const googleSiteTagId = config.get('googleSiteTagId')
 const checkLocalAirController = {
   handler: (request, h) => {
     return h.view('check-local-air-quality/index', {
