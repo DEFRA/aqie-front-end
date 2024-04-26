@@ -134,7 +134,7 @@ const getLocationDataController = {
           data: matches,
           rawForecasts: getForecasts.forecasts,
           forecastNum: matches.length !== 0 ? forecastNum : 0,
-          forecastSummary: getDailySummary.today,
+          forecastSummary: getDailySummary,
           nearestLocationsRange:
             matches.length !== 0 ? nearestLocationsRange : [],
           measurements: getMeasurements.measurements
@@ -286,7 +286,8 @@ const getLocationDetailsController = {
           pollutantTypes,
           pageTitle: title,
           displayBacklink: true,
-          forecastSummary: locationData.forecastSummary
+          forecastSummary: locationData.forecastSummary.today,
+          summaryDate: locationData.forecastSummary.issue_date
         })
       } else {
         return h.view('location-not-found')
