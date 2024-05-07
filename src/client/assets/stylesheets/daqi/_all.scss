@@ -814,6 +814,10 @@ $font-family_2: sans-serif;
 	width: 20%;
 }
 
+.daqi-scale-hidden {
+	@include defra-visually-hidden();
+}
+
 @media print {
 	.defra-aq-levels-table {
 		font-family: $font-family_2;

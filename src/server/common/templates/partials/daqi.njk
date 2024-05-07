@@ -10,9 +10,9 @@
     {% set cell = { classes: cellClass, text: i | string } %}
     {% set _ = firstRow.push(cell) %}
 {% endfor %}
-
+<h2 class="govuk-heading-m govuk-!-margin-bottom-6">The air pollution forecast for today is {{airQuality.readableBand | default('unknown')}}<span class="daqi-scale-hidden">, {{daqiValue}} out of 10</span></h2>
 {{ govukTable({
-  caption: "The air pollution forecast for today is " ~ (airQuality.readableBand | default('unknown')),
+  caption: "",
   captionClasses: "govuk-heading-m daqi-table__caption govuk-!-margin-bottom-6",
   head: [], 
   rows: [firstRow, [
