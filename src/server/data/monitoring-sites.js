@@ -167,12 +167,12 @@ export const siteTypeDescriptions = {
     'This monitoring area is located in a city or a town. It is located so pollutant measurements do not come from one specific source.',
   'Background Suburban':
     'This monitoring area is on the outskirts of an urban area or in an area of its own. It is located so pollutant measurements do not come from one specific source.',
-  'Traffic Urban':
-    'This monitoring area is located in a city or a town close to roads, motorways or highways.',
   'Background Rural':
     'This monitoring area is in small settlements or areas with natural ecosystems, forests or crops. It is located so pollutant measurements do not come from one specific source.',
   'Industrial Suburban':
     'This monitoring area is on the outskirts of an urban area or in an area of its own and downwind of an industrial source.',
   'Industrial Urban':
-    'This monitoring area is located in a city or a town downwind of an industrial source.'
+    'This monitoring area is located in a city or a town downwind of an industrial source.',
+  'Traffic Urban':
+    'This monitoring area is located in a city or a town close to roads, motorways or highways.'
 }

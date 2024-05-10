@@ -61,28 +61,28 @@
 {% set measurementToggletip %}
 {% set microgramcubic = 'Readings are measured every hour. The unit µg/&#13221; stands for micrograms (one millionth of a gram) per cubic metre of air.'%}
   {{ toggletip(
-    '',
+    'Latest',
     'More information about measurement',
     microgramcubic | safe,
-    'Latest'
+    ''
   )}}
 {% endset %}
 
 {% set levelToggletip %}
   {{ toggletip(
-    '',
+    'Level',
     'More information about the level',
     'There are 4 levels: low, moderate, high and very high. The level is determined by the highest reading of a single pollutant.
     ',
-    'Level'
+    ''
   )}}
 {% endset %}
 {% set siteNameToggletip %}
   {{ toggletip(
-    '',
+    site.name,
     'More information about ' + site.name,
     siteTypeDescriptions[site.areaType],
-    site.name
+    site.id
   )}}
 {% endset %}
   <h3 class="govuk-heading-s govuk-!-margin-bottom-1 pollutant-table">{{ siteNameToggletip | safe }}</h3>
