@@ -8,6 +8,7 @@ import { requestLogger } from '~/src/server/common/helpers/logging/request-logge
 import { catchAll } from '~/src/server/common/helpers/errors'
 import { secureContext } from '~/src/server/common/helpers/secure-context'
 import hapiCookie from '@hapi/cookie'
+import { catboxProvider, CacheService } from '~/src/common/helpers/cacheService'
 
 const isProduction = config.get('isProduction')
 
@@ -36,7 +37,8 @@ async function createServer() {
     },
     router: {
       stripTrailingSlash: true
-    }
+    },
+    cache: [{ provider: catboxProvider() }]
   })
 
   if (isProduction) {
@@ -69,6 +71,8 @@ async function createServer() {
   await server.register(router)
 
   await server.register(nunjucksConfig)
+
+  server.registerService([CacheService])
 
   server.ext('onPreResponse', catchAll)
 
