@@ -13,6 +13,10 @@ const logger = createLogger()
 const googleSiteTagId = config.get('googleSiteTagId')
 const getLocationDataController = {
   handler: async (request, h) => {
+    const { cacheService } = request.services([])
+    const state = await cacheService.getState(request)
+
+    logger.info(`Redis state ${state}`)
     const locationType = request?.payload?.locationType
     let locationNameOrPostcode = ''
     if (locationType === 'uk-location') {
