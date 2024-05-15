@@ -8,10 +8,14 @@ import { requestLogger } from '~/src/server/common/helpers/logging/request-logge
 import { catchAll } from '~/src/server/common/helpers/errors'
 import { secureContext } from '~/src/server/common/helpers/secure-context'
 import hapiCookie from '@hapi/cookie'
-import { catboxProvider, CacheService } from '~/src/common/helpers/cacheService'
+import { buildRedisClient } from '~/src/common/helpers/redis-client'
+import { Engine as CatboxRedis } from '@hapi/catbox-redis'
+import { createLogger } from '~/src/server/common/helpers/logging/logger'
 
+const logger = createLogger()
 const isProduction = config.get('isProduction')
-
+const redisEnabled = config.get('redis.enabled')
+//
 async function createServer() {
   const server = hapi.server({
     port: config.get('port'),
@@ -38,7 +42,16 @@ async function createServer() {
     router: {
       stripTrailingSlash: true
     },
-    cache: [{ provider: catboxProvider() }]
+    ...(redisEnabled && {
+      cache: [
+        {
+          name: 'session',
+          engine: new CatboxRedis({
+            client: buildRedisClient()
+          })
+        }
+      ]
+    })
   })
 
   if (isProduction) {
@@ -72,10 +85,8 @@ async function createServer() {
 
   await server.register(nunjucksConfig)
 
-  server.registerService([CacheService])
-
   server.ext('onPreResponse', catchAll)
-
+  logger.info(server)
   return server
 }
 
