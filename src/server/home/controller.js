@@ -4,6 +4,7 @@ const googleSiteTagId = config.get('googleSiteTagId')
 const password = config.get('daqiePassword')
 const homeController = {
   handler: (request, h) => {
+    request.yar.flash()
     if (request.auth.isAuthenticated) {
       return h.redirect('/check-local-air-quality', { googleSiteTagId })
     } else {
@@ -26,6 +27,7 @@ const homeController = {
 
 const loginController = {
   handler: (request, h) => {
+    request.yar.flash()
     if (request.payload.password === password) {
       request.cookieAuth.set({ password: request.payload.password })
       return h.redirect('/check-local-air-quality', { googleSiteTagId })

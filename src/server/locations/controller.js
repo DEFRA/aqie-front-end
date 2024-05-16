@@ -13,6 +13,7 @@ const logger = createLogger()
 const googleSiteTagId = config.get('googleSiteTagId')
 const getLocationDataController = {
   handler: async (request, h) => {
+    request.yar.flash()
     const locationType = request?.payload?.locationType
     let locationNameOrPostcode = ''
     if (locationType === 'uk-location') {
@@ -254,6 +255,7 @@ const getLocationDataController = {
 
 const getLocationDetailsController = {
   handler: (request, h) => {
+    request.yar.flash()
     try {
       const locationId = request.path.split('/')[2]
       logger.info('request.path ', request.path)

@@ -3,6 +3,7 @@ import { config } from '~/src/config'
 const googleSiteTagId = config.get('googleSiteTagId')
 const searchLocationController = {
   handler: (request, h) => {
+    request.yar.flash()
     const errors = request.yar.get('errors')
     const errorMessage = request.yar.get('errorMessage')
     const locationType = request.yar.get('locationType')
