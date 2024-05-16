@@ -4,10 +4,12 @@ import {
 } from '../data/monitoring-sites.js'
 import * as airQualityData from '../data/air-quality.js'
 import { getAirQuality } from '../data/air-quality.js'
+import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { getNearestLocation } from './helpers/get-nearest-location.js'
 import { fetchData } from '~/src/server/locations/helpers/fetch-data'
 import { config } from '~/src/config'
-//
+
+const logger = createLogger()
 const googleSiteTagId = config.get('googleSiteTagId')
 const getLocationDataController = {
   handler: async (request, h) => {
@@ -20,7 +22,7 @@ const getLocationDataController = {
     }
 
     if (!locationNameOrPostcode && !locationType) {
-      request.yar.flash('errors', {
+      request.yar.set('errors', {
         errors: {
           titleText: 'There is a problem',
           errorList: [
@@ -31,10 +33,10 @@ const getLocationDataController = {
           ]
         }
       })
-      request.yar.flash('errorMessage', {
+      request.yar.set('errorMessage', {
         errorMessage: { text: 'Select where you want to check' }
       })
-      request.yar.flash('locationType', '')
+      request.yar.set('locationType', '')
       return h.redirect('/search-location')
     }
     try {
@@ -55,7 +57,7 @@ const getLocationDataController = {
       }
 
       if (!userLocation && locationType === 'uk-location') {
-        request.yar.flash('errors', {
+        request.yar.set('errors', {
           errors: {
             titleText: 'There is a problem',
             errorList: [
@@ -66,16 +68,16 @@ const getLocationDataController = {
             ]
           }
         })
-        request.yar.flash('errorMessage', {
+        request.yar.set('errorMessage', {
           errorMessage: {
             text: 'Enter a location or postcode'
           }
         })
-        request.yar.flash('locationType', 'uk-location')
+        request.yar.set('locationType', 'uk-location')
         return h.redirect('/search-location')
       }
       if (!userLocation && locationType === 'ni-location') {
-        request.yar.flash('errors', {
+        request.yar.set('errors', {
           errors: {
             titleText: 'There is a problem',
             errorList: [
@@ -86,12 +88,12 @@ const getLocationDataController = {
             ]
           }
         })
-        request.yar.flash('errorMessage', {
+        request.yar.set('errorMessage', {
           errorMessage: {
             text: 'Enter a postcode'
           }
         })
-        request.yar.flash('locationType', 'ni-location')
+        request.yar.set('locationType', 'ni-location')
         return h.redirect('/search-location')
       }
       const airQuality = getAirQuality(request.payload.aq)
@@ -131,7 +133,7 @@ const getLocationDataController = {
           'uk-location',
           0
         )
-        request.yar.flash('locationData', {
+        request.yar.set('locationData', {
           data: matches,
           rawForecasts: getForecasts.forecasts,
           forecastNum: matches.length !== 0 ? forecastNum : 0,
@@ -222,6 +224,9 @@ const getLocationDataController = {
             ', ' +
             locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
         }
+        logger.info(
+          `coordinates latitude: ${locationData.GAZETTEER_ENTRY.LATITUDE} longitude: ${locationData.GAZETTEER_ENTRY.LONGITUDE}`
+        )
         const airQuality = getAirQuality(forecastNum[0])
         return h.view('locations/location', {
           result: locationData,
@@ -251,6 +256,8 @@ const getLocationDetailsController = {
   handler: (request, h) => {
     try {
       const locationId = request.path.split('/')[2]
+      logger.info('request.path ', request.path)
+      logger.info('locationId ', locationId)
       const locationData = request.yar.get('locationData') || []
       let locationIndex = 0
       const locationDetails = locationData.data.find((item, index) => {
