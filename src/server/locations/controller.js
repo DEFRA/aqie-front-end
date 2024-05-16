@@ -13,7 +13,6 @@ const logger = createLogger()
 const googleSiteTagId = config.get('googleSiteTagId')
 const getLocationDataController = {
   handler: async (request, h) => {
-    request.yar.flash()
     const locationType = request?.payload?.locationType
     let locationNameOrPostcode = ''
     if (locationType === 'uk-location') {
@@ -23,7 +22,7 @@ const getLocationDataController = {
     }
 
     if (!locationNameOrPostcode && !locationType) {
-      request.yar.set('errors', {
+      request.yar.flash('errors', {
         errors: {
           titleText: 'There is a problem',
           errorList: [
@@ -34,10 +33,10 @@ const getLocationDataController = {
           ]
         }
       })
-      request.yar.set('errorMessage', {
+      request.yar.flash('errorMessage', {
         errorMessage: { text: 'Select where you want to check' }
       })
-      request.yar.set('locationType', '')
+      request.yar.flash('locationType', '')
       return h.redirect('/search-location')
     }
     try {
@@ -58,7 +57,7 @@ const getLocationDataController = {
       }
 
       if (!userLocation && locationType === 'uk-location') {
-        request.yar.set('errors', {
+        request.yar.flash('errors', {
           errors: {
             titleText: 'There is a problem',
             errorList: [
@@ -69,16 +68,16 @@ const getLocationDataController = {
             ]
           }
         })
-        request.yar.set('errorMessage', {
+        request.yar.flash('errorMessage', {
           errorMessage: {
             text: 'Enter a location or postcode'
           }
         })
-        request.yar.set('locationType', 'uk-location')
+        request.yar.flash('locationType', 'uk-location')
         return h.redirect('/search-location')
       }
       if (!userLocation && locationType === 'ni-location') {
-        request.yar.set('errors', {
+        request.yar.flash('errors', {
           errors: {
             titleText: 'There is a problem',
             errorList: [
@@ -89,12 +88,12 @@ const getLocationDataController = {
             ]
           }
         })
-        request.yar.set('errorMessage', {
+        request.yar.flash('errorMessage', {
           errorMessage: {
             text: 'Enter a postcode'
           }
         })
-        request.yar.set('locationType', 'ni-location')
+        request.yar.flash('locationType', 'ni-location')
         return h.redirect('/search-location')
       }
       const airQuality = getAirQuality(request.payload.aq)
@@ -134,7 +133,7 @@ const getLocationDataController = {
           'uk-location',
           0
         )
-        request.yar.set('locationData', {
+        request.yar.flash('locationData', {
           data: matches,
           rawForecasts: getForecasts.forecasts,
           forecastNum: matches.length !== 0 ? forecastNum : 0,
@@ -255,11 +254,8 @@ const getLocationDataController = {
 
 const getLocationDetailsController = {
   handler: (request, h) => {
-    request.yar.flash()
     try {
       const locationId = request.path.split('/')[2]
-      logger.info('request.path ', request.path)
-      logger.info('locationId ', locationId)
       const locationData = request.yar.get('locationData') || []
       let locationIndex = 0
       const locationDetails = locationData.data.find((item, index) => {

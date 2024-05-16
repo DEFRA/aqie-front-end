@@ -3,13 +3,12 @@ import { config } from '~/src/config'
 const googleSiteTagId = config.get('googleSiteTagId')
 const searchLocationController = {
   handler: (request, h) => {
-    request.yar.flash()
     const errors = request.yar.get('errors')
     const errorMessage = request.yar.get('errorMessage')
     const locationType = request.yar.get('locationType')
     if (errors) {
-      request.yar.set('errors', null)
-      request.yar.set('errorMessage', null)
+      request.yar.flash('errors', null)
+      request.yar.flash('errorMessage', null)
       return h.view('search-location/index', {
         pageTitle: 'Check local air quality - GOV.UK',
         heading: 'Check local air quality',
