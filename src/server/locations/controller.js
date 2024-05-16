@@ -7,7 +7,7 @@ import { getAirQuality } from '../data/air-quality.js'
 import { getNearestLocation } from './helpers/get-nearest-location.js'
 import { fetchData } from '~/src/server/locations/helpers/fetch-data'
 import { config } from '~/src/config'
-
+//
 const googleSiteTagId = config.get('googleSiteTagId')
 const getLocationDataController = {
   handler: async (request, h) => {
