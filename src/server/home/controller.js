@@ -9,8 +9,8 @@ const homeController = {
     } else {
       const errors = request.yar.get('errors')
       const errorMessage = request.yar.get('errorMessage')
-      request.yar.set('errors', null)
-      request.yar.set('errorMessage', null)
+      request.yar.flash('errors', null)
+      request.yar.flash('errorMessage', null)
       return h.view('home/index', {
         pageTitle: 'Check local air quality - GOV.UK',
         heading: 'Check local air quality',
@@ -27,10 +27,10 @@ const homeController = {
 const loginController = {
   handler: (request, h) => {
     if (request.payload.password === password) {
-      request.cookieAuth.set({ password: request.payload.password })
+      request.cookieAuth.flash({ password: request.payload.password })
       return h.redirect('/check-local-air-quality', { googleSiteTagId })
     } else {
-      request.yar.set('errors', {
+      request.yar.flash('errors', {
         errors: {
           titleText: 'There is a problem',
           errorList: [
@@ -41,7 +41,7 @@ const loginController = {
           ]
         }
       })
-      request.yar.set('errorMessage', {
+      request.yar.flash('errorMessage', {
         errorMessage: {
           text: 'The password is not correct'
         }
