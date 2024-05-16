@@ -4,10 +4,12 @@ import {
 } from '../data/monitoring-sites.js'
 import * as airQualityData from '../data/air-quality.js'
 import { getAirQuality } from '../data/air-quality.js'
+import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { getNearestLocation } from './helpers/get-nearest-location.js'
 import { fetchData } from '~/src/server/locations/helpers/fetch-data'
 import { config } from '~/src/config'
-//
+
+const logger = createLogger()
 const googleSiteTagId = config.get('googleSiteTagId')
 const getLocationDataController = {
   handler: async (request, h) => {
@@ -222,6 +224,9 @@ const getLocationDataController = {
             ', ' +
             locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
         }
+        logger.info(
+          `coordinates latitude: ${locationData.GAZETTEER_ENTRY.LATITUDE} longitude: ${locationData.GAZETTEER_ENTRY.LONGITUDE}`
+        )
         const airQuality = getAirQuality(forecastNum[0])
         return h.view('locations/location', {
           result: locationData,
@@ -252,6 +257,8 @@ const getLocationDetailsController = {
   handler: (request, h) => {
     try {
       const locationId = request.path.split('/')[2]
+      logger.info('request.path ', request.path)
+      logger.info('locationId ', locationId)
       const locationData = request.yar.get('locationData') || []
       logger.info(`locationData ${locationData}`)
       logger.info(`googleSiteTagId ${googleSiteTagId}`)
