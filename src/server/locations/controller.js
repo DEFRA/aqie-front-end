@@ -22,7 +22,7 @@ const getLocationDataController = {
     }
 
     if (!locationNameOrPostcode && !locationType) {
-      request.yar.flash('errors', {
+      request.yar.set('errors', {
         errors: {
           titleText: 'There is a problem',
           errorList: [
@@ -33,10 +33,10 @@ const getLocationDataController = {
           ]
         }
       })
-      request.yar.flash('errorMessage', {
+      request.yar.set('errorMessage', {
         errorMessage: { text: 'Select where you want to check' }
       })
-      request.yar.flash('locationType', '')
+      request.yar.set('locationType', '')
       return h.redirect('/search-location')
     }
     try {
@@ -57,7 +57,7 @@ const getLocationDataController = {
       }
 
       if (!userLocation && locationType === 'uk-location') {
-        request.yar.flash('errors', {
+        request.yar.set('errors', {
           errors: {
             titleText: 'There is a problem',
             errorList: [
@@ -68,16 +68,16 @@ const getLocationDataController = {
             ]
           }
         })
-        request.yar.flash('errorMessage', {
+        request.yar.set('errorMessage', {
           errorMessage: {
             text: 'Enter a location or postcode'
           }
         })
-        request.yar.flash('locationType', 'uk-location')
+        request.yar.set('locationType', 'uk-location')
         return h.redirect('/search-location')
       }
       if (!userLocation && locationType === 'ni-location') {
-        request.yar.flash('errors', {
+        request.yar.set('errors', {
           errors: {
             titleText: 'There is a problem',
             errorList: [
@@ -88,12 +88,12 @@ const getLocationDataController = {
             ]
           }
         })
-        request.yar.flash('errorMessage', {
+        request.yar.set('errorMessage', {
           errorMessage: {
             text: 'Enter a postcode'
           }
         })
-        request.yar.flash('locationType', 'ni-location')
+        request.yar.set('locationType', 'ni-location')
         return h.redirect('/search-location')
       }
       const airQuality = getAirQuality(request.payload.aq)
@@ -133,7 +133,7 @@ const getLocationDataController = {
           'uk-location',
           0
         )
-        request.yar.flash('locationData', {
+        request.yar.set('locationData', {
           data: matches,
           rawForecasts: getForecasts.forecasts,
           forecastNum: matches.length !== 0 ? forecastNum : 0,
