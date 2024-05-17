@@ -263,7 +263,7 @@ const getLocationDetailsController = {
       logger.info(`locationData ${locationData}`)
       logger.info(`googleSiteTagId ${googleSiteTagId}`)
       let locationIndex = 0
-      const locationDetails = locationData.data.find((item, index) => {
+      const locationDetails = locationData?.data?.find((item, index) => {
         if (item.GAZETTEER_ENTRY.ID === locationId) {
           locationIndex = index
           return item.GAZETTEER_ENTRY.ID === locationId
