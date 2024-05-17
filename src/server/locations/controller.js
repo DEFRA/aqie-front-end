@@ -257,6 +257,8 @@ const getLocationDetailsController = {
   handler: (request, h) => {
     try {
       const locationId = request.path.split('/')[2]
+      logger.info('request.path ', request.path)
+      logger.info('locationId ', locationId)
       const locationData = request.yar.get('locationData') || []
       logger.info(`locationData ${locationData}`)
       logger.info(`googleSiteTagId ${googleSiteTagId}`)
