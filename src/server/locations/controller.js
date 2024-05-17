@@ -244,6 +244,7 @@ const getLocationDataController = {
         })
       }
     } catch (error) {
+      logger.info(`error from location refresh ${error.message}`)
       return h.view('error/index', {
         msError: error.message,
         googleSiteTagId
@@ -257,6 +258,8 @@ const getLocationDetailsController = {
     try {
       const locationId = request.path.split('/')[2]
       const locationData = request.yar.get('locationData') || []
+      logger.info(`locationData ${locationData}`)
+      logger.info(`googleSiteTagId ${googleSiteTagId}`)
       let locationIndex = 0
       const locationDetails = locationData.data.find((item, index) => {
         if (item.GAZETTEER_ENTRY.ID === locationId) {
@@ -301,6 +304,7 @@ const getLocationDetailsController = {
         return h.view('location-not-found', { googleSiteTagId })
       }
     } catch (error) {
+      logger.info(`error on single location ${error.message}`)
       return h.status(500).render('error', {
         error: 'An error occurred while retrieving location details.'
       })
