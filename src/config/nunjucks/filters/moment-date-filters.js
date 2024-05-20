@@ -1,22 +1,22 @@
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 function addMomentFilters(env) {
   try {
     env.addFilter('govukDate', function (dateString) {
       if (dateString === 'now') {
-        return moment()
+        return moment.tz('Europe/London')
       }
-      return moment().format('DD MMMM YYYY')
+      return moment.tz('Europe/London').format('DD MMMM YYYY')
     })
     env.addFilter('govukDateHour', function (dateString) {
       if (dateString === 'now') {
-        return moment()
+        return moment.tz('Europe/London')
       }
       return moment(dateString).format('ha, DD, MMMM, YYYY')
     })
     env.addFilter('date', function (dateString) {
       if (dateString === 'now') {
-        return moment()
+        return moment.tz('Europe/London')
       }
       return moment(dateString)
     })

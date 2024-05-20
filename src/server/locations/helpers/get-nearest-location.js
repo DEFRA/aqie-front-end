@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import * as geolib from 'geolib'
-import moment from 'moment'
+import moment from 'moment-timezone'
+
 import {
   getNearLocation,
   convertPointToLonLat,
@@ -93,7 +94,7 @@ function getNearestLocation(matches, forecasts, measurements, location, index) {
     []
   )
 
-  const forecastDay = moment().format('dddd').substring(0, 3)
+  const forecastDay = moment.tz('Europe/London').format('dddd').substring(0, 3)
   const forecastNum =
     matches.length !== 0
       ? nearestLocation.map((current) => {

@@ -12,6 +12,7 @@ import { particulateMatter25 } from '~/src/server/particulate-matter-25/index'
 import { sulphurDioxide } from '~/src/server/sulphur-dioxide/index'
 import { feedback } from '~/src/server/feedback/index'
 import { home } from '~/src/server/home/index'
+import { cookies } from '~/src/server/cookies/index'
 
 const options = {
   storeBlank: false,
@@ -38,7 +39,8 @@ const router = {
         particulateMatter25,
         sulphurDioxide,
         feedback,
-        home
+        home,
+        cookies
       ])
       await server.register({
         plugin: yar,

@@ -16,8 +16,15 @@
 {% from "aq-levels-table/macro.njk" import aqLevelsTable %}
 {% from "input/macro.njk" import govukInput -%}
 {% from "radios/macro.njk" import govukRadios -%}
+{% from "notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "cookie-banner/macro.njk" import govukCookieBanner %}
 
-
+{% block bodyStart %}
+{%if page != "home"%}
+  <a id="top"></a>
+  {% include "cookie-banner.njk" %}
+{%endif%}
+{% endblock %}
 {% set mainClasses = "govuk-main-wrapper" %}
 
 {% block headIcons %}
