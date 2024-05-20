@@ -53,6 +53,7 @@
     "ioredis": "5.4.1",
     "lodash": "4.17.21",
     "moment": "2.30.1",
+    "moment-timezone": "0.5.45",
     "mt-osgridref": "0.1.0",
     "node-fetch": "3.3.2",
     "nunjucks": "3.2.4",

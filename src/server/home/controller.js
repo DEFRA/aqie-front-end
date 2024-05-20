@@ -17,8 +17,7 @@ const homeController = {
         page: 'home',
         serviceName: 'Check local air quality',
         errors: errors?.errors,
-        errorMessage: errorMessage?.errorMessage,
-        googleSiteTagId
+        errorMessage: errorMessage?.errorMessage
       })
     }
   }

@@ -62,7 +62,7 @@ async function createServer() {
 
   server.auth.strategy('login', 'cookie', {
     cookie: {
-      name: 'airaqie-cookie',
+      name: 'airaqie-cookies',
       path: '/',
       password: 'super-secure-cookie-pass-at-least-32chars',
       isSecure: isProduction
