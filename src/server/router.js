@@ -18,6 +18,11 @@ const options = {
   cookieOptions: {
     password: 'the-password-must-be-at-least-32-characters-long',
     isSecure: true
+  },
+  errorOnCacheNotReady: true,
+  maxCookieSize: 0,
+  cache: {
+    cache: 'session'
   }
 }
 
