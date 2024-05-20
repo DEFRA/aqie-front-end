@@ -10,6 +10,7 @@ import { secureContext } from '~/src/server/common/helpers/secure-context'
 import hapiCookie from '@hapi/cookie'
 import { buildRedisClient } from '~/src/common/helpers/redis-client'
 import { Engine as CatboxRedis } from '@hapi/catbox-redis'
+import { Engine as CatboxMemory } from '@hapi/catbox-memory'
 
 const isProduction = config.get('isProduction')
 const redisEnabled = config.get('redis.enabled')
@@ -39,16 +40,16 @@ async function createServer() {
     router: {
       stripTrailingSlash: true
     },
-    ...(redisEnabled && {
-      cache: [
-        {
-          name: 'session',
-          engine: new CatboxRedis({
-            client: buildRedisClient()
-          })
-        }
-      ]
-    })
+    cache: [
+      {
+        name: 'session',
+        engine: redisEnabled
+          ? new CatboxRedis({
+              client: buildRedisClient()
+            })
+          : new CatboxMemory()
+      }
+    ]
   })
 
   if (isProduction) {
