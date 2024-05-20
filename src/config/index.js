@@ -149,7 +149,7 @@ const config = convict({
       sensitive: true,
       env: 'REDIS_PASSWORD'
     },
-    KeyPrefix: {
+    keyPrefix: {
       doc: 'Redis cache key prefix name used to isolate the cached results across multiple clients',
       format: String,
       default: 'aqie-front-end',
