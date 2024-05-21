@@ -12,13 +12,17 @@ import { particulateMatter25 } from '~/src/server/particulate-matter-25/index'
 import { sulphurDioxide } from '~/src/server/sulphur-dioxide/index'
 import { feedback } from '~/src/server/feedback/index'
 import { home } from '~/src/server/home/index'
-import { cookies } from '~/src/server/cookies/index'
 
 const options = {
   storeBlank: false,
   cookieOptions: {
     password: 'the-password-must-be-at-least-32-characters-long',
     isSecure: true
+  },
+  errorOnCacheNotReady: true,
+  maxCookieSize: 0,
+  cache: {
+    cache: 'session'
   }
 }
 
@@ -39,8 +43,7 @@ const router = {
         particulateMatter25,
         sulphurDioxide,
         feedback,
-        home,
-        cookies
+        home
       ])
       await server.register({
         plugin: yar,

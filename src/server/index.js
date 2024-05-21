@@ -8,9 +8,12 @@ import { requestLogger } from '~/src/server/common/helpers/logging/request-logge
 import { catchAll } from '~/src/server/common/helpers/errors'
 import { secureContext } from '~/src/server/common/helpers/secure-context'
 import hapiCookie from '@hapi/cookie'
+import { buildRedisClient } from '~/src/common/helpers/redis-client'
+import { Engine as CatboxRedis } from '@hapi/catbox-redis'
+import { Engine as CatboxMemory } from '@hapi/catbox-memory'
 
 const isProduction = config.get('isProduction')
-
+const redisEnabled = config.get('redis.enabled')
 async function createServer() {
   const server = hapi.server({
     port: config.get('port'),
@@ -36,7 +39,17 @@ async function createServer() {
     },
     router: {
       stripTrailingSlash: true
-    }
+    },
+    cache: [
+      {
+        name: 'session',
+        engine: redisEnabled
+          ? new CatboxRedis({
+              client: buildRedisClient()
+            })
+          : new CatboxMemory()
+      }
+    ]
   })
 
   if (isProduction) {
@@ -49,7 +62,7 @@ async function createServer() {
 
   server.auth.strategy('login', 'cookie', {
     cookie: {
-      name: 'airaqie-cookies',
+      name: 'airaqie-cookie',
       path: '/',
       password: 'super-secure-cookie-pass-at-least-32chars',
       isSecure: isProduction
