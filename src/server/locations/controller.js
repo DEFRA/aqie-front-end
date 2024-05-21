@@ -1,14 +1,13 @@
 import {
   siteTypeDescriptions,
   pollutantTypes
-} from '~/src/server/data/monitoring-sites.js'
-import * as airQualityData from '~/src/server/data/air-quality.js'
-import { getAirQuality } from '~/src/server/data/air-quality.js'
+} from '../data/monitoring-sites.js'
+import * as airQualityData from '../data/air-quality.js'
+import { getAirQuality } from '../data/air-quality.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location.js'
+import { getNearestLocation } from './helpers/get-nearest-location.js'
 import { fetchData } from '~/src/server/locations/helpers/fetch-data'
 import { config } from '~/src/config'
-import { showLocationPage } from '~/src/server/locations/helpers/show-location-page.js'
 
 const logger = createLogger()
 const googleSiteTagId = config.get('googleSiteTagId')
@@ -159,41 +158,33 @@ const getLocationDataController = {
           }
           //
           const airQuality = getAirQuality(forecastNum[0])
-          return showLocationPage(
-            'locations/location',
-            h,
-            matches[0],
+          return h.view('locations/location', {
+            result: matches[0],
             airQuality,
-            airQualityData.commonMessages,
-            nearestLocationsRange,
+            airQualityData: airQualityData.commonMessages,
+            monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
-            true,
-            title,
-            'Check local air quality',
-            getDailySummary.today,
-            getDailySummary.issue_date,
-            googleSiteTagId,
-            ''
-          )
+            displayBacklink: true,
+            pageTitle: title,
+            serviceName: 'Check local air quality',
+            forecastSummary: getDailySummary.today,
+            summaryDate: getDailySummary.issue_date,
+            googleSiteTagId
+          })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
-          return await showLocationPage(
-            matches,
+          return h.view('locations/multiple-locations', {
+            results: matches,
+            userLocation: locationNameOrPostcode,
             airQuality,
-            airQualityData.commonMessages,
-            nearestLocationsRange,
+            airQualityData: airQualityData.commonMessages,
+            monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
-            true,
-            `Locations matching ${userLocation}`,
-            'Check local air quality',
-            '',
-            '',
-            googleSiteTagId,
-            locationNameOrPostcode,
-            'locations/multiple-locations',
-            h
-          )
+            pageTitle: `Locations matching ${userLocation}`,
+            serviceName: 'Check local air quality',
+            googleSiteTagId
+          })
         } else {
           return h.view('locations/location-not-found', {
             userLocation: locationNameOrPostcode,
@@ -237,23 +228,20 @@ const getLocationDataController = {
           `coordinates latitude: ${locationData.GAZETTEER_ENTRY.LATITUDE} longitude: ${locationData.GAZETTEER_ENTRY.LONGITUDE}`
         )
         const airQuality = getAirQuality(forecastNum[0])
-        return showLocationPage(
-          locationData,
+        return h.view('locations/location', {
+          result: locationData,
           airQuality,
-          airQualityData.commonMessages,
-          nearestLocationsRange,
+          airQualityData: airQualityData.commonMessages,
+          monitoringSites: nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
-          title,
-          true,
-          '',
-          getDailySummary.today,
-          getDailySummary.issue_date,
-          googleSiteTagId,
-          '',
-          'locations/location',
-          h
-        )
+          pageTitle: title,
+          displayBacklink: true,
+          forecastSummary: getDailySummary.today,
+          summaryDate: getDailySummary.issue_date,
+          nearestLocationsRange,
+          googleSiteTagId
+        })
       }
     } catch (error) {
       logger.info(`error from location refresh ${error.message}`)
@@ -298,23 +286,19 @@ const getLocationDetailsController = {
           locationIndex
         )
         const airQuality = getAirQuality(forecastNum[0])
-        return showLocationPage(
-          locationDetails,
+        return h.view('locations/location', {
+          result: locationDetails,
           airQuality,
-          airQualityData.commonMessages,
-          nearestLocationsRange,
+          airQualityData: airQualityData.commonMessages,
+          monitoringSites: nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
-          title,
-          true,
-          '',
-          locationData.forecastSummary.today,
-          locationData.forecastSummary.issue_date,
-          googleSiteTagId,
-          '',
-          'locations/location',
-          h
-        )
+          pageTitle: title,
+          displayBacklink: true,
+          forecastSummary: locationData.forecastSummary.today,
+          summaryDate: locationData.forecastSummary.issue_date,
+          googleSiteTagId
+        })
       } else {
         return h.view('location-not-found', { googleSiteTagId })
       }
