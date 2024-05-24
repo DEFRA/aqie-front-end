@@ -1,11 +1,9 @@
 import { config } from '~/src/config'
-
-const googleSiteTagId = config.get('googleSiteTagId')
 const password = config.get('daqiePassword')
 const homeController = {
   handler: (request, h) => {
     if (request.auth.isAuthenticated) {
-      return h.redirect('/check-local-air-quality', { googleSiteTagId })
+      return h.redirect('/check-local-air-quality')
     } else {
       const errors = request.yar.get('errors')
       const errorMessage = request.yar.get('errorMessage')
@@ -27,7 +25,7 @@ const loginController = {
   handler: (request, h) => {
     if (request.payload.password === password) {
       request.cookieAuth.set({ password: request.payload.password })
-      return h.redirect('/check-local-air-quality', { googleSiteTagId })
+      return h.redirect('/check-local-air-quality')
     } else {
       request.yar.set('errors', {
         errors: {

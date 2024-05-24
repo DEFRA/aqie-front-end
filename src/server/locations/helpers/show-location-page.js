@@ -11,7 +11,6 @@ async function showLocationPage(
   serviceName,
   forecastSummary,
   summaryDate,
-  googleSiteTagId,
   userLocation,
   locationString,
   h
@@ -27,8 +26,7 @@ async function showLocationPage(
       pageTitle,
       displayBacklink,
       forecastSummary,
-      summaryDate,
-      googleSiteTagId
+      summaryDate
     })
   } else if (locationString === 'locations/multiple-locations')
     return h.view(locationString, {
@@ -40,7 +38,6 @@ async function showLocationPage(
       pollutantTypes,
       pageTitle,
       serviceName,
-      googleSiteTagId,
       userLocation
     })
 }

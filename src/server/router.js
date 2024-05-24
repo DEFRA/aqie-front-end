@@ -10,8 +10,10 @@ import { ozone } from '~/src/server/ozone/index'
 import { particulateMatter10 } from '~/src/server/particulate-matter-10/index'
 import { particulateMatter25 } from '~/src/server/particulate-matter-25/index'
 import { sulphurDioxide } from '~/src/server/sulphur-dioxide/index'
-import { feedback } from '~/src/server/feedback/index'
+import { privacy } from '~/src/server/privacy/index'
 import { home } from '~/src/server/home/index'
+import { cookies } from '~/src/server/cookies/index'
+import { accessibility } from '~/src/server/accessibility/index'
 
 const options = {
   storeBlank: false,
@@ -42,8 +44,10 @@ const router = {
         particulateMatter10,
         particulateMatter25,
         sulphurDioxide,
-        feedback,
-        home
+        privacy,
+        home,
+        cookies,
+        accessibility
       ])
       await server.register({
         plugin: yar,

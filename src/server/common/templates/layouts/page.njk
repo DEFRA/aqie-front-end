@@ -36,14 +36,17 @@
 {% endblock %}
 
 {% block head %}
+{{currentConsentCookie | dump}}
   <link href="{{ getAssetPath('application.css') }}" rel="stylesheet">
+  {%if currentConsentCookie %}
     <!-- Google tag (gtag.js) --> 
-  <script async src="https://www.googletagmanager.com/gtag/js?id={{googleSiteTagId}}"></script> 
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8CMZBTDQBC"></script> 
   <script>   window.dataLayer = window.dataLayer || [];   
     function gtag(){dataLayer.push(arguments);}   
     gtag('js', new Date());   
-    gtag('config', '{{googleSiteTagId}}'); 
+    gtag('config', 'G-8CMZBTDQBC'); 
   </script>
+  {%endif%}
 {% endblock %}
 
 {% block header %}
@@ -70,7 +73,7 @@
     tag: {
       text: "Beta"
     },
-    html: 'This is a new service – your <a class="govuk-link" href="/feedback">feedback</a> will help us to improve it.'
+    html: 'This is a new service – your <a class="govuk-link" href="https://defragroup.eu.qualtrics.com/jfe/form/SV_dj4wJCoOkFQLXfM" target="_blank">feedback</a> will help us to improve it.'
   }) }}
 
   {%if displayBacklink %}
@@ -90,15 +93,15 @@
     meta: {
       items: [
         {
-          href: "https://www.gov.uk/help/privacy-notice",
+          href: "/privacy",
           text: "Privacy"
         },
         {
-          href: "https://www.gov.uk/help/cookies",
+          href: "/cookies",
           text: "Cookies"
         },
         {
-          href: "https://www.gov.uk/help/accessibility-statement",
+          href: "/accessibility",
           text: "Accessibility statement"
         }
       ]
