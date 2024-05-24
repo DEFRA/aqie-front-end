@@ -58,7 +58,7 @@ function getNearestLocation(matches, forecasts, measurements, location, index) {
           const { getDaqi, getBand } = getPollutantLevel(polValue, pollutant)
           const formatDate = moment(
             curr.pollutants[pollutant].time.date
-          ).format('hh:mm a, MMMM, DD, YYYY')
+          ).format('ha')
           Object.assign(newpollutants, {
             [pollutant]: {
               exception: curr.pollutants[pollutant].exception,
