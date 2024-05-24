@@ -82,6 +82,7 @@ function getNearestLocation(matches, forecasts, measurements, location, index) {
               curr.location.coordinates[1]
             ]
           },
+          id: curr.name.replaceAll(' ', ''),
           name: curr.name,
           updated: curr.updated,
           distance: getDistance.toFixed(1),

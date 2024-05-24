@@ -1,12 +1,12 @@
 /* eslint-disable prettier/prettier */
-const feedbackController = {
+const privacyController = {
   handler: (request, h) => {
-    return h.view('feedback/index', {
+    return h.view('privacy/index', {
       pageTitle: 'Check local air quality - GOV.UK',
       heading: 'Check local air quality',
-      page: 'feedback'
+      page: 'privacy'
     })
   }
 }
 
-export { feedbackController }
+export { privacyController }
