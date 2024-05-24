@@ -7,10 +7,8 @@ import { getAirQuality } from '../data/air-quality.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { getNearestLocation } from './helpers/get-nearest-location.js'
 import { fetchData } from '~/src/server/locations/helpers/fetch-data'
-import { config } from '~/src/config'
 
 const logger = createLogger()
-const googleSiteTagId = config.get('googleSiteTagId')
 const getLocationDataController = {
   handler: async (request, h) => {
     const locationType = request?.payload?.locationType
@@ -107,7 +105,7 @@ const getLocationDataController = {
         if (!results || results.length === 0) {
           return h.view('locations/location-not-found', {
             userLocation: locationNameOrPostcode,
-            googleSiteTagId
+            pageTitle: `We could not find ${userLocation} - Check local air quality - GOV.UK`
           })
         }
 
@@ -169,8 +167,7 @@ const getLocationDataController = {
             pageTitle: title,
             serviceName: 'Check local air quality',
             forecastSummary: getDailySummary.today,
-            summaryDate: getDailySummary.issue_date,
-            googleSiteTagId
+            summaryDate: getDailySummary.issue_date
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
           return h.view('locations/multiple-locations', {
@@ -182,13 +179,11 @@ const getLocationDataController = {
             siteTypeDescriptions,
             pollutantTypes,
             pageTitle: `Locations matching ${userLocation}`,
-            serviceName: 'Check local air quality',
-            googleSiteTagId
+            serviceName: 'Check local air quality'
           })
         } else {
           return h.view('locations/location-not-found', {
             userLocation: locationNameOrPostcode,
-            googleSiteTagId,
             pageTitle: `We could not find ${locationNameOrPostcode} - Check local air quality - GOV.UK`
           })
         }
@@ -199,7 +194,7 @@ const getLocationDataController = {
         if (!result || result.length === 0) {
           return h.view('locations/location-not-found', {
             userLocation: locationNameOrPostcode,
-            googleSiteTagId
+            pageTitle: `We could not find ${userLocation} - Check local air quality - GOV.UK`
           })
         }
         const locationData = {
@@ -239,15 +234,13 @@ const getLocationDataController = {
           displayBacklink: true,
           forecastSummary: getDailySummary.today,
           summaryDate: getDailySummary.issue_date,
-          nearestLocationsRange,
-          googleSiteTagId
+          nearestLocationsRange
         })
       }
     } catch (error) {
       logger.info(`error from location refresh ${error.message}`)
       return h.view('error/index', {
-        msError: error.message,
-        googleSiteTagId
+        msError: error.message
       })
     }
   }
@@ -296,11 +289,10 @@ const getLocationDetailsController = {
           pageTitle: title,
           displayBacklink: true,
           forecastSummary: locationData.forecastSummary.today,
-          summaryDate: locationData.forecastSummary.issue_date,
-          googleSiteTagId
+          summaryDate: locationData.forecastSummary.issue_date
         })
       } else {
-        return h.view('location-not-found', { googleSiteTagId })
+        return h.view('location-not-found')
       }
     } catch (error) {
       logger.info(`error on single location ${error.message}`)

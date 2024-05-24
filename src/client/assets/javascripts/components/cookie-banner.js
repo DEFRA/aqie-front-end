@@ -1,4 +1,4 @@
-import * as CookieFunctions from './cookie-functions.mjs'
+import * as CookieFunctions from './cookie-functions.js'
 
 const cookieBannerAcceptSelector = '.js-cookie-banner-accept'
 const cookieBannerRejectSelector = '.js-cookie-banner-reject'
@@ -6,6 +6,7 @@ const cookieBannerHideButtonSelector = '.js-cookie-banner-hide'
 const cookieMessageSelector = '.js-cookie-banner-message'
 const cookieConfirmationAcceptSelector = '.js-cookie-banner-confirmation-accept'
 const cookieConfirmationRejectSelector = '.js-cookie-banner-confirmation-reject'
+
 /**
  * Website cookie banner
  */
@@ -60,7 +61,10 @@ class CookieBanner {
     // outdated consent cookie
     const currentConsentCookie = CookieFunctions.getConsentCookie()
 
-    if (!currentConsentCookie) {
+    if (
+      !currentConsentCookie ||
+      !CookieFunctions.isValidConsentCookie(currentConsentCookie)
+    ) {
       // If the consent cookie version is not valid, we need to remove any cookies which have been
       // set previously
       CookieFunctions.resetCookies()

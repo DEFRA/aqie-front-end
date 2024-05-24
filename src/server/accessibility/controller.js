@@ -1,12 +1,12 @@
-const cookiesController = {
+const accessibilityController = {
   handler: (request, h) => {
-    return h.view('cookies/index', {
+    return h.view('accessibility/index', {
       pageTitle: 'Check local air quality - GOV.UK',
       heading: 'Check local air quality',
-      page: 'cookies',
+      page: 'accessibility',
       serviceName: 'Check local air quality'
     })
   }
 }
 
-export { cookiesController }
+export { accessibilityController }
