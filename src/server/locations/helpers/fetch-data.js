@@ -2,7 +2,7 @@
 import { proxyFetch } from '~/src/helpers/proxy-fetch.js'
 import { config } from '~/src/config'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
-// const options = { method: 'GET', headers: { 'Content-Type': 'text/json' } }
+const options = { method: 'GET', headers: { 'Content-Type': 'text/json' } }
 const logger = createLogger()
 async function fetchData(locationType, userLocation) {
   const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
@@ -28,15 +28,17 @@ async function fetchData(locationType, userLocation) {
     logger.info(`userLocation 8 ${forecastSummaryURL}`)
     logger.info(`userLocation 8 ${forecastsAPIurl}`)
 
-    const forecastsRes = await proxyFetch(forecastsAPIurl).catch((err) => {
-      logger.info(`err 1 ${JSON.stringify(err.message)}`)
-    })
+    const forecastsRes = await proxyFetch(`${forecastsAPIurl}`, options).catch(
+      (err) => {
+        logger.info(`err 1 ${JSON.stringify(err.message)}`)
+      }
+    )
     let getForecasts
     if (forecastsRes.ok) {
       getForecasts = await forecastsRes.json()
     }
     logger.info(`userLocation 9 ${getForecasts}`)
-    const measurementsRes = await proxyFetch(measurementsAPIurl).catch(
+    const measurementsRes = await proxyFetch(measurementsAPIurl, options).catch(
       (err) => {
         logger.info(`err 2 ${JSON.stringify(err.message)}`)
       }
@@ -48,11 +50,12 @@ async function fetchData(locationType, userLocation) {
     logger.info(`userLocation 9 ${getMeasurements}`)
     logger.info(`userLocation 9 ${JSON.stringify(measurementsAPIurl)}`)
 
-    const forecastSummaryRes = await proxyFetch(forecastSummaryURL).catch(
-      (err) => {
-        logger.info(`err 3 ${JSON.stringify(err.message)}`)
-      }
-    )
+    const forecastSummaryRes = await proxyFetch(
+      forecastSummaryURL,
+      options
+    ).catch((err) => {
+      logger.info(`err 3 ${JSON.stringify(err.message)}`)
+    })
     let getDailySummary
     if (forecastSummaryRes.ok) {
       getDailySummary = await forecastSummaryRes.json()
@@ -62,9 +65,11 @@ async function fetchData(locationType, userLocation) {
       userLocation.includes(symbol)
     )
     if (!shouldCallApi) {
-      const osPlacesRes = await proxyFetch(osPlacesApiUrlFull).catch((err) => {
-        logger.info(`err 4 ${JSON.stringify(err.message)}`)
-      })
+      const osPlacesRes = await proxyFetch(osPlacesApiUrlFull, options).catch(
+        (err) => {
+          logger.info(`err 4 ${JSON.stringify(err.message)}`)
+        }
+      )
       if (osPlacesRes.ok) {
         getOSPlaces = await osPlacesRes.json()
       }
@@ -75,7 +80,10 @@ async function fetchData(locationType, userLocation) {
     let getNIPlaces
     const postcodeNIURL = config.get('postcodeNortherIrelandUrl')
     const postcodeNortherIrelandURL = `${postcodeNIURL}${encodeURIComponent(userLocation)}`
-    const northerIrelandRes = await proxyFetch(postcodeNortherIrelandURL)
+    const northerIrelandRes = await proxyFetch(
+      postcodeNortherIrelandURL,
+      options
+    )
     if (northerIrelandRes.ok) {
       getNIPlaces = await northerIrelandRes.json()
     }
