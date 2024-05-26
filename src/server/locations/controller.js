@@ -44,7 +44,7 @@ const getLocationDataController = {
       // Regex patterns to check for full and partial postcodes
       const fullPostcodePattern = /^([A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2})$/
       const partialPostcodePattern = /^([A-Z]{1,2}\d[A-Z\d]?)$/
-
+      logger.info(`userLocation 3 ${userLocation}`)
       // Insert a space for full postcodes without a space
       if (
         fullPostcodePattern.test(userLocation) &&
@@ -55,7 +55,7 @@ const getLocationDataController = {
           spaceIndex
         )}`
       }
-
+      logger.info(`userLocation 4 ${userLocation}`)
       if (!userLocation && locationType === 'uk-location') {
         request.yar.set('errors', {
           errors: {
@@ -76,6 +76,7 @@ const getLocationDataController = {
         request.yar.set('locationType', 'uk-location')
         return h.redirect('/search-location')
       }
+      logger.info(`userLocation 5 ${userLocation}`)
       if (!userLocation && locationType === 'ni-location') {
         request.yar.set('errors', {
           errors: {
@@ -96,12 +97,10 @@ const getLocationDataController = {
         request.yar.set('locationType', 'ni-location')
         return h.redirect('/search-location')
       }
-      logger.info(`userLocation 3 ${userLocation}`)
+      logger.info(`userLocation 6 ${userLocation}`)
       const airQuality = getAirQuality(request.payload.aq)
-      logger.info(`userLocation 4 ${userLocation}`)
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
         await fetchData('uk-location', userLocation)
-      logger.info(`userLocation 5 ${userLocation}`)
       if (locationType === 'uk-location') {
         const { results } = getOSPlaces
 
