@@ -27,7 +27,7 @@ async function fetchData(locationType, userLocation) {
     const measurementsAPIurl = config.get('measurementsApiUrl')
     logger.info(`userLocation 8 ${forecastSummaryURL}`)
     logger.info(`userLocation 9 ${forecastsAPIurl}`)
-    logger.info(`userLocation 10 ${measurementsAPIurl}`)
+    logger.info(`userLocation 9 ${measurementsAPIurl}`)
     const forecastSummaryRes = await proxyFetch(forecastSummaryURL).catch(
       (err) => {
         logger.info(`err 1 ${err}`)
@@ -37,7 +37,7 @@ async function fetchData(locationType, userLocation) {
     if (forecastSummaryRes.ok) {
       getDailySummary = await forecastSummaryRes.json()
     }
-    logger.info(`userLocation 12 ${getDailySummary}`)
+    logger.info(`userLocation 9 ${getDailySummary}`)
     const forecastsRes = await proxyFetch(forecastsAPIurl).catch((err) => {
       logger.info(`err 1 ${err}`)
     })
@@ -45,7 +45,7 @@ async function fetchData(locationType, userLocation) {
     if (forecastsRes.ok) {
       getForecasts = await forecastsRes.json()
     }
-    logger.info(`userLocation 13 ${getForecasts}`)
+    logger.info(`userLocation 9 ${getForecasts}`)
     const measurementsRes = await proxyFetch(measurementsAPIurl).catch(
       (err) => {
         logger.info(`err 1 ${err}`)
@@ -55,7 +55,7 @@ async function fetchData(locationType, userLocation) {
     if (measurementsRes.ok) {
       getMeasurements = await measurementsRes.json()
     }
-    logger.info(`userLocation 14 ${getMeasurements}`)
+    logger.info(`userLocation 9 ${getMeasurements}`)
     const shouldCallApi = symbolsArr.some((symbol) =>
       userLocation.includes(symbol)
     )
@@ -67,7 +67,7 @@ async function fetchData(locationType, userLocation) {
         getOSPlaces = await osPlacesRes.json()
       }
     }
-    logger.info(`userLocation 15 ${getOSPlaces}`)
+    logger.info(`userLocation 9 ${getOSPlaces}`)
     return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
   } else if (locationType === 'ni-location') {
     let getNIPlaces
