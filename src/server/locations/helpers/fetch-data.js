@@ -1,8 +1,9 @@
 /* eslint-disable prettier/prettier */
 import { proxyFetch } from '~/src/helpers/proxy-fetch.js'
 import { config } from '~/src/config'
-
+import { createLogger } from '~/src/server/common/helpers/logging/logger'
 const options = { method: 'GET', headers: { 'Content-Type': 'text/json' } }
+const logger = createLogger()
 async function fetchData(locationType, userLocation) {
   const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
   let getOSPlaces = { data: [] }
@@ -17,28 +18,34 @@ async function fetchData(locationType, userLocation) {
     ].join('+')
     const osPlacesApiUrl = config.get('osPlacesApiUrl')
     const osPlacesApiKey = config.get('osPlacesApiKey')
+    logger.info(`userLocation 7 ${osPlacesApiKey}`)
     const osPlacesApiUrlFull = `${osPlacesApiUrl}${encodeURIComponent(
       userLocation
     )}&fq=${encodeURIComponent(filters)}&key=${osPlacesApiKey}`
     const forecastSummaryURL = config.get('forecastSummaryUrl')
     const forecastsAPIurl = config.get('forecastsApiUrl')
     const measurementsAPIurl = config.get('measurementsApiUrl')
+    logger.info(`userLocation 8 ${forecastSummaryURL}`)
+    logger.info(`userLocation 9 ${forecastsAPIurl}`)
+    logger.info(`userLocation 10 ${measurementsAPIurl}`)
     const forecastSummaryRes = await proxyFetch(forecastSummaryURL, options)
     let getDailySummary
     if (forecastSummaryRes.ok) {
       getDailySummary = await forecastSummaryRes.json()
     }
-
+    logger.info(`userLocation 11 ${getDailySummary}`)
     const forecastsRes = await proxyFetch(forecastsAPIurl, options)
     let getForecasts
     if (forecastsRes.ok) {
       getForecasts = await forecastsRes.json()
     }
+    logger.info(`userLocation 12 ${getForecasts}`)
     const measurementsRes = await proxyFetch(measurementsAPIurl, options)
     let getMeasurements
     if (measurementsRes.ok) {
       getMeasurements = await measurementsRes.json()
     }
+    logger.info(`userLocation 13 ${getMeasurements}`)
     const shouldCallApi = symbolsArr.some((symbol) =>
       userLocation.includes(symbol)
     )
@@ -48,7 +55,7 @@ async function fetchData(locationType, userLocation) {
         getOSPlaces = await osPlacesRes.json()
       }
     }
-
+    logger.info(`userLocation 14 ${getOSPlaces}`)
     return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
   } else if (locationType === 'ni-location') {
     let getNIPlaces

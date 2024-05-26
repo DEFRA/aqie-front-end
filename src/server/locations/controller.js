@@ -99,6 +99,7 @@ const getLocationDataController = {
       }
       logger.info(`userLocation 6 ${userLocation}`)
       const airQuality = getAirQuality(request.payload.aq)
+      logger.info(`userLocation 7 ${userLocation}`)
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
         await fetchData('uk-location', userLocation)
       if (locationType === 'uk-location') {
