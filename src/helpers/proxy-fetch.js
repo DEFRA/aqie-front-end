@@ -1,7 +1,6 @@
+/* eslint-disable no-console */
 import { config } from '~/src/config'
 import { ProxyAgent, fetch as undiciFetch } from 'undici'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
-const logger = createLogger()
 
 const nonProxyFetch = (url, opts) => {
   return undiciFetch(url, {
@@ -12,10 +11,10 @@ const nonProxyFetch = (url, opts) => {
 const proxyFetch = (url, opts) => {
   const proxy = config.get('httpsProxy') ?? config.get('httpProxy')
   if (!proxy) {
-    logger.info('no proxy')
+    console.log('no proxy')
     return nonProxyFetch(url, opts)
   } else {
-    logger.info(`proxy ${proxy}`)
+    console.log(`proxy ${proxy}`)
     return undiciFetch(url, {
       ...opts,
       dispatcher: new ProxyAgent({
