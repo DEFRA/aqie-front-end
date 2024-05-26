@@ -39,6 +39,8 @@ const getLocationDataController = {
     }
     try {
       let userLocation = locationNameOrPostcode.toUpperCase() // Use 'let' to allow reassignment
+      logger.info(`userLocation 1 ${userLocation}`)
+      logger.info(`userLocation 2 ${JSON.stringify(userLocation)}`)
       // Regex patterns to check for full and partial postcodes
       const fullPostcodePattern = /^([A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2})$/
       const partialPostcodePattern = /^([A-Z]{1,2}\d[A-Z\d]?)$/
