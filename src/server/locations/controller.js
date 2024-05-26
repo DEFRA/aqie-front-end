@@ -162,7 +162,7 @@ const getLocationDataController = {
             airQualityData: airQualityData.commonMessages,
             monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
-            pollutantTypes,
+            pollutantTypes: siteTypeDescriptions.pollutantTypes,
             displayBacklink: true,
             pageTitle: title,
             serviceName: 'Check local air quality',
@@ -170,6 +170,26 @@ const getLocationDataController = {
             summaryDate: getDailySummary.issue_date
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
+          logger.info(`matches ${JSON.stringify(matches)}`)
+          logger.info(
+            `locationNameOrPostcode ${JSON.stringify(locationNameOrPostcode)}`
+          )
+          logger.info(`airQuality ${JSON.stringify(airQuality)}`)
+          logger.info(
+            `airQualityData.commonMessages ${JSON.stringify(airQualityData.commonMessages)}`
+          )
+          logger.info(
+            `nearestLocationsRange ${JSON.stringify(nearestLocationsRange)}`
+          )
+          logger.info(
+            `siteTypeDescriptions ${JSON.stringify(siteTypeDescriptions)}`
+          )
+          logger.info(`pollutantTypes ${JSON.stringify(pollutantTypes)}`)
+          logger.info(`userLocation ${JSON.stringify(userLocation)}`)
+          logger.info(`matches ${JSON.stringify(matches)}`)
+          logger.info(
+            `siteTypeDescriptions.pollutantTypes ${JSON.stringify(siteTypeDescriptions.pollutantTypes)}`
+          )
           return h.view('locations/multiple-locations', {
             results: matches,
             userLocation: locationNameOrPostcode,
@@ -177,7 +197,7 @@ const getLocationDataController = {
             airQualityData: airQualityData.commonMessages,
             monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
-            pollutantTypes,
+            pollutantTypes: siteTypeDescriptions.pollutantTypes,
             pageTitle: `Locations matching ${userLocation}`,
             serviceName: 'Check local air quality'
           })
@@ -229,7 +249,7 @@ const getLocationDataController = {
           airQualityData: airQualityData.commonMessages,
           monitoringSites: nearestLocationsRange,
           siteTypeDescriptions,
-          pollutantTypes,
+          pollutantTypes: siteTypeDescriptions.pollutantTypes,
           pageTitle: title,
           displayBacklink: true,
           forecastSummary: getDailySummary.today,
@@ -285,7 +305,7 @@ const getLocationDetailsController = {
           airQualityData: airQualityData.commonMessages,
           monitoringSites: nearestLocationsRange,
           siteTypeDescriptions,
-          pollutantTypes,
+          pollutantTypes: siteTypeDescriptions.pollutantTypes,
           pageTitle: title,
           displayBacklink: true,
           forecastSummary: locationData.forecastSummary.today,
