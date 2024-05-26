@@ -2,7 +2,7 @@
 import { proxyFetch } from '~/src/helpers/proxy-fetch.js'
 import { config } from '~/src/config'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
-const options = { method: 'GET', headers: { 'Content-Type': 'text/json' } }
+// const options = { method: 'GET', headers: { 'Content-Type': 'text/json' } }
 const logger = createLogger()
 async function fetchData(locationType, userLocation) {
   const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
@@ -28,19 +28,19 @@ async function fetchData(locationType, userLocation) {
     logger.info(`userLocation 8 ${forecastSummaryURL}`)
     logger.info(`userLocation 9 ${forecastsAPIurl}`)
     logger.info(`userLocation 10 ${measurementsAPIurl}`)
-    const forecastSummaryRes = await proxyFetch(forecastSummaryURL, options)
+    const forecastSummaryRes = await proxyFetch(forecastSummaryURL)
     let getDailySummary
     if (forecastSummaryRes.ok) {
       getDailySummary = await forecastSummaryRes.json()
     }
     logger.info(`userLocation 11 ${getDailySummary}`)
-    const forecastsRes = await proxyFetch(forecastsAPIurl, options)
+    const forecastsRes = await proxyFetch(forecastsAPIurl)
     let getForecasts
     if (forecastsRes.ok) {
       getForecasts = await forecastsRes.json()
     }
     logger.info(`userLocation 12 ${getForecasts}`)
-    const measurementsRes = await proxyFetch(measurementsAPIurl, options)
+    const measurementsRes = await proxyFetch(measurementsAPIurl)
     let getMeasurements
     if (measurementsRes.ok) {
       getMeasurements = await measurementsRes.json()
@@ -50,7 +50,7 @@ async function fetchData(locationType, userLocation) {
       userLocation.includes(symbol)
     )
     if (!shouldCallApi) {
-      const osPlacesRes = await proxyFetch(osPlacesApiUrlFull, options)
+      const osPlacesRes = await proxyFetch(osPlacesApiUrlFull)
       if (osPlacesRes.ok) {
         getOSPlaces = await osPlacesRes.json()
       }
