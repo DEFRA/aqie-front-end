@@ -28,34 +28,46 @@ async function fetchData(locationType, userLocation) {
     logger.info(`userLocation 8 ${forecastSummaryURL}`)
     logger.info(`userLocation 9 ${forecastsAPIurl}`)
     logger.info(`userLocation 10 ${measurementsAPIurl}`)
-    const forecastSummaryRes = await proxyFetch(forecastSummaryURL)
+    const forecastSummaryRes = await proxyFetch(forecastSummaryURL).catch(
+      (err) => {
+        logger.info(`err 1 ${err}`)
+      }
+    )
     let getDailySummary
     if (forecastSummaryRes.ok) {
       getDailySummary = await forecastSummaryRes.json()
     }
-    logger.info(`userLocation 11 ${getDailySummary}`)
-    const forecastsRes = await proxyFetch(forecastsAPIurl)
+    logger.info(`userLocation 12 ${getDailySummary}`)
+    const forecastsRes = await proxyFetch(forecastsAPIurl).catch((err) => {
+      logger.info(`err 1 ${err}`)
+    })
     let getForecasts
     if (forecastsRes.ok) {
       getForecasts = await forecastsRes.json()
     }
-    logger.info(`userLocation 12 ${getForecasts}`)
-    const measurementsRes = await proxyFetch(measurementsAPIurl)
+    logger.info(`userLocation 13 ${getForecasts}`)
+    const measurementsRes = await proxyFetch(measurementsAPIurl).catch(
+      (err) => {
+        logger.info(`err 1 ${err}`)
+      }
+    )
     let getMeasurements
     if (measurementsRes.ok) {
       getMeasurements = await measurementsRes.json()
     }
-    logger.info(`userLocation 13 ${getMeasurements}`)
+    logger.info(`userLocation 14 ${getMeasurements}`)
     const shouldCallApi = symbolsArr.some((symbol) =>
       userLocation.includes(symbol)
     )
     if (!shouldCallApi) {
-      const osPlacesRes = await proxyFetch(osPlacesApiUrlFull)
+      const osPlacesRes = await proxyFetch(osPlacesApiUrlFull).catch((err) => {
+        logger.info(`err 1 ${err}`)
+      })
       if (osPlacesRes.ok) {
         getOSPlaces = await osPlacesRes.json()
       }
     }
-    logger.info(`userLocation 14 ${getOSPlaces}`)
+    logger.info(`userLocation 15 ${getOSPlaces}`)
     return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
   } else if (locationType === 'ni-location') {
     let getNIPlaces
