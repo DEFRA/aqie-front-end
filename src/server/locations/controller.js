@@ -1,11 +1,11 @@
 import {
   siteTypeDescriptions,
   pollutantTypes
-} from '../data/monitoring-sites.js'
-import * as airQualityData from '../data/air-quality.js'
-import { getAirQuality } from '../data/air-quality.js'
+} from '~/src/server/data/monitoring-sites.js'
+import * as airQualityData from '~/src/server/data/air-quality.js'
+import { getAirQuality } from '~/src/server/data/air-quality.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { getNearestLocation } from './helpers/get-nearest-location.js'
+import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { fetchData } from '~/src/server/locations/helpers/fetch-data'
 
 const logger = createLogger()
