@@ -96,11 +96,12 @@ const getLocationDataController = {
         request.yar.set('locationType', 'ni-location')
         return h.redirect('/search-location')
       }
+      logger.info(`userLocation 3 ${userLocation}`)
       const airQuality = getAirQuality(request.payload.aq)
-
+      logger.info(`userLocation 4 ${userLocation}`)
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
         await fetchData('uk-location', userLocation)
-
+      logger.info(`userLocation 5 ${userLocation}`)
       if (locationType === 'uk-location') {
         const { results } = getOSPlaces
 
