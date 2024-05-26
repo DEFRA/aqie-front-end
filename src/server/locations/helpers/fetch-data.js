@@ -29,7 +29,7 @@ async function fetchData(locationType, userLocation) {
     logger.info(`userLocation 8 ${forecastsAPIurl}`)
 
     const forecastsRes = await proxyFetch(forecastsAPIurl).catch((err) => {
-      logger.info(`err 1 ${err}`)
+      logger.info(`err 1 ${JSON.stringify(err.message)}`)
     })
     let getForecasts
     if (forecastsRes.ok) {
@@ -38,7 +38,7 @@ async function fetchData(locationType, userLocation) {
     logger.info(`userLocation 9 ${getForecasts}`)
     const measurementsRes = await proxyFetch(measurementsAPIurl).catch(
       (err) => {
-        logger.info(`err 1 ${err}`)
+        logger.info(`err 2 ${JSON.stringify(err.message)}`)
       }
     )
     let getMeasurements
@@ -49,7 +49,7 @@ async function fetchData(locationType, userLocation) {
     logger.info(`userLocation 9 ${JSON.stringify(measurementsAPIurl)}`)
     const forecastSummaryRes = await proxyFetch(forecastSummaryURL).catch(
       (err) => {
-        logger.info(`err 1 ${err}`)
+        logger.info(`err 3 ${JSON.stringify(err.message)}`)
       }
     )
     let getDailySummary
@@ -62,7 +62,7 @@ async function fetchData(locationType, userLocation) {
     )
     if (!shouldCallApi) {
       const osPlacesRes = await proxyFetch(osPlacesApiUrlFull).catch((err) => {
-        logger.info(`err 1 ${err}`)
+        logger.info(`err 4 ${JSON.stringify(err.message)}`)
       })
       if (osPlacesRes.ok) {
         getOSPlaces = await osPlacesRes.json()
