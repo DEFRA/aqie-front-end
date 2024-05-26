@@ -47,6 +47,7 @@ async function fetchData(locationType, userLocation) {
     }
     logger.info(`userLocation 9 ${getMeasurements}`)
     logger.info(`userLocation 9 ${JSON.stringify(measurementsAPIurl)}`)
+
     const forecastSummaryRes = await proxyFetch(forecastSummaryURL).catch(
       (err) => {
         logger.info(`err 3 ${JSON.stringify(err.message)}`)
