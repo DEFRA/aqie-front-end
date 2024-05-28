@@ -1,4 +1,7 @@
-import { siteTypeDescriptions } from '~/src/server/data/monitoring-sites.js'
+import {
+  siteTypeDescriptions,
+  pollutantTypes
+} from '~/src/server/data/monitoring-sites.js'
 import * as airQualityData from '~/src/server/data/air-quality.js'
 import { getAirQuality } from '~/src/server/data/air-quality.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
@@ -155,7 +158,7 @@ const getLocationDataController = {
             airQualityData: airQualityData.commonMessages,
             monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
-            pollutantTypes: siteTypeDescriptions.pollutantTypes,
+            pollutantTypes,
             displayBacklink: true,
             pageTitle: title,
             serviceName: 'Check local air quality',
@@ -170,7 +173,7 @@ const getLocationDataController = {
             airQualityData: airQualityData.commonMessages,
             monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
-            pollutantTypes: siteTypeDescriptions.pollutantTypes,
+            pollutantTypes,
             pageTitle: `Locations matching ${userLocation}`,
             serviceName: 'Check local air quality'
           })
@@ -219,7 +222,7 @@ const getLocationDataController = {
           airQualityData: airQualityData.commonMessages,
           monitoringSites: nearestLocationsRange,
           siteTypeDescriptions,
-          pollutantTypes: siteTypeDescriptions.pollutantTypes,
+          pollutantTypes,
           pageTitle: title,
           displayBacklink: true,
           forecastSummary: getDailySummary.today,
@@ -274,7 +277,7 @@ const getLocationDetailsController = {
           airQualityData: airQualityData.commonMessages,
           monitoringSites: nearestLocationsRange,
           siteTypeDescriptions,
-          pollutantTypes: siteTypeDescriptions.pollutantTypes,
+          pollutantTypes,
           pageTitle: title,
           displayBacklink: true,
           forecastSummary: locationData.forecastSummary.today,
