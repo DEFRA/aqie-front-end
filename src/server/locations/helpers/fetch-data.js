@@ -28,7 +28,7 @@ async function fetchData(locationType, userLocation) {
     console.log(`userLocation 8 ${forecastSummaryURL}`)
     console.log(`userLocation 8 ${forecastsAPIurl}`)
 
-    const forecastsRes = await proxyFetch(`${forecastsAPIurl}`, options).catch(
+    const forecastsRes = await fetch(`${forecastsAPIurl}`, options).catch(
       (err) => {
         console.log(`err 1 ${JSON.stringify(err.message)}`)
       }
@@ -38,7 +38,7 @@ async function fetchData(locationType, userLocation) {
       getForecasts = await forecastsRes.json()
     }
     console.log(`userLocation 9 ${getForecasts}`)
-    const measurementsRes = await proxyFetch(measurementsAPIurl, options).catch(
+    const measurementsRes = await fetch(measurementsAPIurl, options).catch(
       (err) => {
         console.log(`err 2 ${JSON.stringify(err.message)}`)
       }
