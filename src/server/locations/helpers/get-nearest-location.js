@@ -9,12 +9,8 @@ import {
   pointsInRange
 } from '~/src/server/locations/helpers/location-util.js'
 import { getPollutantLevel } from '~/src/server/locations/helpers/pollutant-level-calculation'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
-
-const logger = createLogger()
 
 function getNearestLocation(matches, forecasts, measurements, location, index) {
-  logger.info(`matches 2 ${JSON.stringify(matches)}`)
   const latlon =
     matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
   const forecastCoordinates =
