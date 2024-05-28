@@ -35,7 +35,7 @@ async function fetchData(locationType, userLocation) {
     if (forecastsRes.ok) {
       getForecasts = await forecastsRes.json()
     }
-    const measurementsRes = await proxyFetch(measurementsAPIurl, options).catch(
+    const measurementsRes = await fetch(measurementsAPIurl, options).catch(
       (err) => {
         logger.info(`err ${JSON.stringify(err.message)}`)
       }
