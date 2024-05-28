@@ -14,6 +14,7 @@ import { privacy } from '~/src/server/privacy/index'
 import { home } from '~/src/server/home/index'
 import { cookies } from '~/src/server/cookies/index'
 import { accessibility } from '~/src/server/accessibility/index'
+import { health } from '~/src/server/health/index'
 
 const options = {
   storeBlank: false,
@@ -47,7 +48,8 @@ const router = {
         privacy,
         home,
         cookies,
-        accessibility
+        accessibility,
+        health
       ])
       await server.register({
         plugin: yar,
