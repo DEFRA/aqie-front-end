@@ -11,10 +11,8 @@ const nonProxyFetch = (url, opts) => {
 const proxyFetch = (url, opts) => {
   const proxy = config.get('httpsProxy') ?? config.get('httpProxy')
   if (!proxy) {
-    console.log('no proxy')
     return nonProxyFetch(url, opts)
   } else {
-    console.log(`proxy ${proxy}`)
     return undiciFetch(url, {
       ...opts,
       dispatcher: new ProxyAgent({

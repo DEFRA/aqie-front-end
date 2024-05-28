@@ -1,7 +1,4 @@
-import {
-  siteTypeDescriptions,
-  pollutantTypes
-} from '~/src/server/data/monitoring-sites.js'
+import { siteTypeDescriptions } from '~/src/server/data/monitoring-sites.js'
 import * as airQualityData from '~/src/server/data/air-quality.js'
 import { getAirQuality } from '~/src/server/data/air-quality.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
@@ -39,12 +36,9 @@ const getLocationDataController = {
     }
     try {
       let userLocation = locationNameOrPostcode.toUpperCase() // Use 'let' to allow reassignment
-      logger.info(`userLocation 1 ${userLocation}`)
-      logger.info(`userLocation 2 ${JSON.stringify(userLocation)}`)
       // Regex patterns to check for full and partial postcodes
       const fullPostcodePattern = /^([A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2})$/
       const partialPostcodePattern = /^([A-Z]{1,2}\d[A-Z\d]?)$/
-      logger.info(`userLocation 3 ${userLocation}`)
       // Insert a space for full postcodes without a space
       if (
         fullPostcodePattern.test(userLocation) &&
@@ -55,7 +49,6 @@ const getLocationDataController = {
           spaceIndex
         )}`
       }
-      logger.info(`userLocation 4 ${userLocation}`)
       if (!userLocation && locationType === 'uk-location') {
         request.yar.set('errors', {
           errors: {
@@ -76,7 +69,6 @@ const getLocationDataController = {
         request.yar.set('locationType', 'uk-location')
         return h.redirect('/search-location')
       }
-      logger.info(`userLocation 5 ${userLocation}`)
       if (!userLocation && locationType === 'ni-location') {
         request.yar.set('errors', {
           errors: {
@@ -97,9 +89,7 @@ const getLocationDataController = {
         request.yar.set('locationType', 'ni-location')
         return h.redirect('/search-location')
       }
-      logger.info(`userLocation 6 ${userLocation}`)
       const airQuality = getAirQuality(request.payload.aq)
-      logger.info(`userLocation 7 ${userLocation}`)
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
         await fetchData('uk-location', userLocation)
       if (locationType === 'uk-location') {
@@ -173,26 +163,6 @@ const getLocationDataController = {
             summaryDate: getDailySummary.issue_date
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
-          logger.info(`matches ${JSON.stringify(matches)}`)
-          logger.info(
-            `locationNameOrPostcode ${JSON.stringify(locationNameOrPostcode)}`
-          )
-          logger.info(`airQuality ${JSON.stringify(airQuality)}`)
-          logger.info(
-            `airQualityData.commonMessages ${JSON.stringify(airQualityData.commonMessages)}`
-          )
-          logger.info(
-            `nearestLocationsRange ${JSON.stringify(nearestLocationsRange)}`
-          )
-          logger.info(
-            `siteTypeDescriptions ${JSON.stringify(siteTypeDescriptions)}`
-          )
-          logger.info(`pollutantTypes ${JSON.stringify(pollutantTypes)}`)
-          logger.info(`userLocation ${JSON.stringify(userLocation)}`)
-          logger.info(`matches ${JSON.stringify(matches)}`)
-          logger.info(
-            `siteTypeDescriptions.pollutantTypes ${JSON.stringify(siteTypeDescriptions.pollutantTypes)}`
-          )
           return h.view('locations/multiple-locations', {
             results: matches,
             userLocation: locationNameOrPostcode,
@@ -242,9 +212,6 @@ const getLocationDataController = {
             ', ' +
             locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
         }
-        logger.info(
-          `coordinates latitude: ${locationData.GAZETTEER_ENTRY.LATITUDE} longitude: ${locationData.GAZETTEER_ENTRY.LONGITUDE}`
-        )
         const airQuality = getAirQuality(forecastNum[0])
         return h.view('locations/location', {
           result: locationData,
@@ -274,7 +241,6 @@ const getLocationDetailsController = {
     try {
       const locationId = request.params.id
       const locationData = request.yar.get('locationData') || []
-      logger.info(`locationData ${locationData}`)
       let locationIndex = 0
       const locationDetails = locationData?.data?.find((item, index) => {
         if (item.GAZETTEER_ENTRY.ID === locationId) {
