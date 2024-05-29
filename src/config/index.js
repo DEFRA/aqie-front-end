@@ -93,6 +93,13 @@ const config = convict({
     sensitive: true,
     env: 'DAQIE_PASSWORD'
   },
+  cookiePassword: {
+    doc: 'password for  cookie',
+    format: '*',
+    default: '',
+    sensitive: true,
+    env: 'COOKIE_PASSWORD'
+  },
   forecastsApiUrl: {
     doc: 'API forecast rss feed',
     format: String,

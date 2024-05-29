@@ -14,6 +14,7 @@ import { Engine as CatboxMemory } from '@hapi/catbox-memory'
 
 const isProduction = config.get('isProduction')
 const redisEnabled = config.get('redis.enabled')
+const cookiePassword = config.get('cookiePassword')
 async function createServer() {
   const server = hapi.server({
     port: config.get('port'),
@@ -64,7 +65,7 @@ async function createServer() {
     cookie: {
       name: 'airaqie-cookie',
       path: '/',
-      password: 'super-secure-cookie-pass-at-least-32chars',
+      password: cookiePassword,
       isSecure: isProduction
     },
     redirectTo: '/',
