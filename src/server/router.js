@@ -15,14 +15,14 @@ import { home } from '~/src/server/home/index'
 import { cookies } from '~/src/server/cookies/index'
 import { accessibility } from '~/src/server/accessibility/index'
 import { health } from '~/src/server/health/index'
-// import { config } from '~/src/config'
+import { config } from '~/src/config'
 
-// const cookiePassword = config.get('cookiePassword')
+const cookiePassword = config.get('cookiePassword')
 
 const options = {
   storeBlank: false,
   cookieOptions: {
-    password: 'the-password-must-be-at-least-32-characters-long',
+    password: cookiePassword,
     isSecure: true
   },
   errorOnCacheNotReady: true,
