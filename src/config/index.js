@@ -89,16 +89,23 @@ const config = convict({
   daqiePassword: {
     doc: 'password for daqie',
     format: '*',
-    default: '',
+    default: 'airquality',
     sensitive: true,
     env: 'DAQIE_PASSWORD'
   },
   cookiePassword: {
     doc: 'password for  cookie',
     format: '*',
-    default: '',
+    default: 'the-password-must-be-at-least-32-characters-long',
     sensitive: true,
     env: 'COOKIE_PASSWORD'
+  },
+  sessionCookiePassword: {
+    doc: 'session password for  cookie',
+    format: '*',
+    default: 'the-password-must-be-at-least-32-characters-long',
+    sensitive: true,
+    env: 'SESSION_COOKIE_PASSWORD'
   },
   forecastsApiUrl: {
     doc: 'API forecast rss feed',

@@ -17,12 +17,12 @@ import { accessibility } from '~/src/server/accessibility/index'
 import { health } from '~/src/server/health/index'
 import { config } from '~/src/config'
 
-const cookiePassword = config.get('cookiePassword')
+const sessionCookiePassword = config.get('sessionCookiePassword')
 
 const options = {
   storeBlank: false,
   cookieOptions: {
-    password: cookiePassword,
+    password: sessionCookiePassword,
     isSecure: true
   },
   errorOnCacheNotReady: true,
