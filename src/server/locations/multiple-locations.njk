@@ -12,7 +12,11 @@
     <ul class="govuk-list govuk-!-margin-bottom-2">
       <li>
         <a href={{['location/',item.GAZETTEER_ENTRY.ID] | join}} class="govuk-link">
-        <mark>{{ item.GAZETTEER_ENTRY.NAME1 }}</mark>, 
+        {% if name2 %}  
+        <mark>{{ name2 }}</mark>, 
+        {% else %}
+        <mark>{{ item.GAZETTEER_ENTRY.NAME1}}</mark>, 
+        {% endif %}
         {% if item.GAZETTEER_ENTRY.COUNTY_UNITARY %}
           {{ item.GAZETTEER_ENTRY.COUNTY_UNITARY }}
         {% else %}

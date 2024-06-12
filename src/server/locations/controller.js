@@ -107,7 +107,12 @@ const getLocationDataController = {
 
         let matches = results.filter((item) => {
           const name = item?.GAZETTEER_ENTRY.NAME1.toUpperCase()
-          return name.includes(userLocation) || userLocation.includes(name)
+          const name2 = item?.GAZETTEER_ENTRY.NAME2?.toUpperCase()
+          return (
+            name.includes(userLocation) ||
+            userLocation.includes(name) ||
+            userLocation.includes(name2)
+          )
         })
 
         // If it's a partial postcode and there are matches, use the first match and adjust the title
@@ -116,8 +121,12 @@ const getLocationDataController = {
           matches.length > 0 &&
           locationNameOrPostcode.length <= 3
         ) {
-          matches[0].GAZETTEER_ENTRY.NAME1 =
-            locationNameOrPostcode.toUpperCase() // Set the name to the partial postcode
+          if (matches[0].GAZETTEER_ENTRY.NAME2) {
+            matches[0].GAZETTEER_ENTRY.NAME1 = matches[0].GAZETTEER_ENTRY.NAME2
+          } else {
+            matches[0].GAZETTEER_ENTRY.NAME1 =
+              locationNameOrPostcode.toUpperCase() // Set the name to the partial postcode
+          }
           matches = [matches[0]]
         }
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
@@ -142,10 +151,17 @@ const getLocationDataController = {
           let title = ''
           if (locationDetails) {
             if (locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY) {
-              title =
-                locationDetails.GAZETTEER_ENTRY.NAME1 +
-                ', ' +
-                locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
+              if (locationDetails.GAZETTEER_ENTRY.NAME2) {
+                title =
+                  locationDetails.GAZETTEER_ENTRY.NAME2 +
+                  ', ' +
+                  locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
+              } else {
+                title =
+                  locationDetails.GAZETTEER_ENTRY.NAME1 +
+                  ', ' +
+                  locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
+              }
             } else {
               title = locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
             }
@@ -154,6 +170,7 @@ const getLocationDataController = {
           const airQuality = getAirQuality(forecastNum[0])
           return h.view('locations/location', {
             result: matches[0],
+            name2: matches[0].GAZETTEER_ENTRY?.NAME2,
             airQuality,
             airQualityData: airQualityData.commonMessages,
             monitoringSites: nearestLocationsRange,
@@ -168,6 +185,7 @@ const getLocationDataController = {
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
           return h.view('locations/multiple-locations', {
             results: matches,
+            name2: matches[0].GAZETTEER_ENTRY?.NAME2,
             userLocation: locationNameOrPostcode,
             airQuality,
             airQualityData: airQualityData.commonMessages,
@@ -210,10 +228,17 @@ const getLocationDataController = {
         )
         let title = ''
         if (locationData) {
-          title =
-            locationData.GAZETTEER_ENTRY.NAME1 +
-            ', ' +
-            locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+          if (locationData.GAZETTEER_ENTRY.NAME2) {
+            title =
+              locationData.GAZETTEER_ENTRY.NAME2 +
+              ', ' +
+              locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+          } else {
+            title =
+              locationData.GAZETTEER_ENTRY.NAME1 +
+              ', ' +
+              locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+          }
         }
         const airQuality = getAirQuality(forecastNum[0])
         return h.view('locations/location', {
@@ -256,10 +281,17 @@ const getLocationDetailsController = {
       if (locationDetails) {
         let title = ''
         if (locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY) {
-          title =
-            locationDetails.GAZETTEER_ENTRY.NAME1 +
-            ', ' +
-            locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
+          if (locationDetails.GAZETTEER_ENTRY.NAME2) {
+            title =
+              locationDetails.GAZETTEER_ENTRY.NAME2 +
+              ', ' +
+              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
+          } else {
+            title =
+              locationDetails.GAZETTEER_ENTRY.NAME1 +
+              ', ' +
+              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
+          }
         } else {
           title = locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
         }
