@@ -11,14 +11,24 @@ import { fetchData } from '~/src/server/locations/helpers/fetch-data'
 const logger = createLogger()
 const getLocationDataController = {
   handler: async (request, h) => {
-    const locationType = request?.payload?.locationType
+    const { query } = request
+    let locationType = request?.payload?.locationType
+    const airQuality = getAirQuality(request.payload?.aq)
     let locationNameOrPostcode = ''
     if (locationType === 'uk-location') {
       locationNameOrPostcode = request.payload.engScoWal
     } else if (locationType === 'ni-location') {
       locationNameOrPostcode = request.payload.ni
     }
-
+    if (Object.values(query).length === 0) {
+      request.yar.set('locationType', locationType)
+      request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
+      request.yar.set('airQuality', airQuality)
+    } else {
+      locationType = request.yar.get('locationType')
+      locationNameOrPostcode = request.yar.get('locationNameOrPostcode')
+      request.yar.get('airQuality', airQuality)
+    }
     if (!locationNameOrPostcode && !locationType) {
       request.yar.set('errors', {
         errors: {
@@ -92,7 +102,7 @@ const getLocationDataController = {
         request.yar.set('locationType', 'ni-location')
         return h.redirect('/search-location')
       }
-      const airQuality = getAirQuality(request.payload.aq)
+      
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
         await fetchData('uk-location', userLocation)
       if (locationType === 'uk-location') {
@@ -101,7 +111,8 @@ const getLocationDataController = {
         if (!results || results.length === 0) {
           return h.view('locations/location-not-found', {
             userLocation: locationNameOrPostcode,
-            pageTitle: `We could not find ${userLocation} - Check local air quality - GOV.UK`
+            pageTitle: `We could not find ${userLocation} - Check local air quality - GOV.UK`,
+            lang: request.query.lang
           })
         }
 
@@ -180,7 +191,8 @@ const getLocationDataController = {
             pageTitle: title,
             serviceName: 'Check local air quality',
             forecastSummary: getDailySummary.today,
-            summaryDate: getDailySummary.issue_date
+            summaryDate: getDailySummary.issue_date,
+            lang: request.query.lang
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
           return h.view('locations/multiple-locations', {
@@ -193,12 +205,14 @@ const getLocationDataController = {
             siteTypeDescriptions,
             pollutantTypes,
             pageTitle: `Locations matching ${userLocation}`,
-            serviceName: 'Check local air quality'
+            serviceName: 'Check local air quality',
+            lang: request.query.lang
           })
         } else {
           return h.view('locations/location-not-found', {
             userLocation: locationNameOrPostcode,
-            pageTitle: `We could not find ${locationNameOrPostcode} - Check local air quality - GOV.UK`
+            pageTitle: `We could not find ${locationNameOrPostcode} - Check local air quality - GOV.UK`,
+            lang: request.query.lang
           })
         }
       } else if (locationType === 'ni-location') {
@@ -208,7 +222,8 @@ const getLocationDataController = {
         if (!result || result.length === 0) {
           return h.view('locations/location-not-found', {
             userLocation: locationNameOrPostcode,
-            pageTitle: `We could not find ${userLocation} - Check local air quality - GOV.UK`
+            pageTitle: `We could not find ${userLocation} - Check local air quality - GOV.UK`,
+            lang: request.query.lang
           })
         }
         const locationData = {
@@ -252,13 +267,15 @@ const getLocationDataController = {
           displayBacklink: true,
           forecastSummary: getDailySummary.today,
           summaryDate: getDailySummary.issue_date,
-          nearestLocationsRange
+          nearestLocationsRange,
+          lang: request.query?.lang
         })
       }
     } catch (error) {
       logger.info(`error from location refresh ${error.message}`)
       return h.view('error/index', {
-        msError: error.message
+        msError: error.message,
+        lang: request.query?.lang
       })
     }
   }
@@ -313,10 +330,11 @@ const getLocationDetailsController = {
           pageTitle: title,
           displayBacklink: true,
           forecastSummary: locationData.forecastSummary.today,
-          summaryDate: locationData.forecastSummary.issue_date
+          summaryDate: locationData.forecastSummary.issue_date,
+          lang: request.query.lang
         })
       } else {
-        return h.view('location-not-found')
+        return h.view('location-not-found', { lang: request.query.lang })
       }
     } catch (error) {
       logger.info(`error on single location ${error.message}`)

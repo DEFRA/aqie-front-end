@@ -5,7 +5,8 @@ const particulateMatter25Controller = {
       pageTitle:
         'Particulate matter (PM2.5) – Check local air quality – GOV.UK',
       heading: 'Check local air quality',
-      page: 'particulate matter 25'
+      page: 'particulate matter 25',
+      lang: request.query.lang
     })
   }
 }

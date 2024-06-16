@@ -4,7 +4,8 @@ const accessibilityController = {
       pageTitle: 'Check local air quality - GOV.UK',
       heading: 'Check local air quality',
       page: 'accessibility',
-      serviceName: 'Check local air quality'
+      serviceName: 'Check local air quality',
+      lang: request.query.lang
     })
   }
 }

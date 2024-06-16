@@ -4,7 +4,8 @@ const sulphurDioxideController = {
     return h.view('sulphur-dioxide/index', {
       pageTitle: 'Sulphur dioxide (SO₂) – Check local air quality – GOV.UK',
       heading: 'Check local air quality',
-      page: 'Sulphur dioxide (SO₂)'
+      page: 'Sulphur dioxide (SO₂)',
+      lang: request.query.lang
     })
   }
 }
