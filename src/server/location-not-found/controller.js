@@ -16,7 +16,8 @@ const searchLocationController = {
         },
         id: 'location',
         name: 'location'
-      }
+      },
+      lang: request.query.lang
     })
   }
 }

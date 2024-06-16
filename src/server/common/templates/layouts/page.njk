@@ -18,11 +18,15 @@
 {% from "radios/macro.njk" import govukRadios -%}
 {% from "notification-banner/macro.njk" import govukNotificationBanner %}
 {% from "cookie-banner/macro.njk" import govukCookieBanner %}
+{% from "language-toggle/macro.njk" import dwpLanguageToggle %}
+
+{%set htmlLang = lang%}
 
 {% block bodyStart %}
 {%if page != "home"%}
   <a id="top"></a>
   {% include "cookie-banner.njk" %}
+
 {%endif%}
 {% endblock %}
 {% set mainClasses = "govuk-main-wrapper" %}
@@ -75,6 +79,7 @@
     },
     html: 'Give your <a class="govuk-link" href="https://defragroup.eu.qualtrics.com/jfe/form/SV_dj4wJCoOkFQLXfM">feedback</a> on this new service.'
   }) }}
+ {{ super() }}
 
   {%if displayBacklink %}
     {{ govukBackLink({
@@ -82,10 +87,29 @@
     href: '/search-location'
   }) }}
   {% endif %}
+  {%if lang == "en"%}
+{% set htmlLang = "en" %}
+{% elif lang == "cy" %}
+{% set htmlLang = "cy" %}
+{% else %}
+{% set htmlLang = "en" %}
+{%endif%}
+ {{langCode|dump}}
+  {{
+    dwpLanguageToggle({
+        selectedLang: lang,
+        href: {
+            en: "?lang=en",
+            cy: "?lang=cy"
+        }
+    })
+  }}
   {% endif %}
 {% endblock %}
 
-{% block content %}{% endblock %}
+{% block content %}
+
+{% endblock %}
 
 {% block footer %}
 {%if page != "home"%}

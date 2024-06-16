@@ -4,7 +4,8 @@ const particulateMatter10Controller = {
     return h.view('particulate-matter-10/index', {
       pageTitle: 'Particulate matter (PM10) – Check local air quality – GOV.UK',
       heading: 'Check local air quality',
-      page: 'particulate matter 10'
+      page: 'particulate matter 10',
+      lang: request.query.lang
     })
   }
 }
