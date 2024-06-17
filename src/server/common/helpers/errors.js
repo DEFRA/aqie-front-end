@@ -14,6 +14,7 @@ function statusCodeMessage(statusCode) {
 }
 
 function catchAll(request, h) {
+  const { query } = request
   const { response } = request
 
   if (!response.isBoom) {
@@ -30,7 +31,8 @@ function catchAll(request, h) {
       pageTitle: errorMessage,
       heading: statusCode,
       message: errorMessage,
-      url: request.path
+      url: request.path,
+      lang: query?.lang
     })
     .code(statusCode)
 }
