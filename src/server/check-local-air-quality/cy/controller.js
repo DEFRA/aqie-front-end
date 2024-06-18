@@ -1,4 +1,4 @@
-import { english } from '~/src/server/data/en/en.js'
+import { welsh } from '~/src/server/data/cy/cy.js'
 
 const checkLocalAirController = {
   handler: (request, h) => {
@@ -9,9 +9,9 @@ const checkLocalAirController = {
       phaseBanner,
       displayBacklink,
       cookieBanner
-    } = english
-    if (query.lang === 'cy') {
-      return h.redirect('/check-local-air-quality/cy')
+    } = welsh
+    if (query.lang === 'en') {
+      return h.redirect('/check-local-air-quality')
     }
     return h.view('check-local-air-quality/index', {
       pageTitle: checkLocalAirQuality.pageTitle,
@@ -24,7 +24,7 @@ const checkLocalAirController = {
       displayBacklink,
       cookieBanner,
       serviceName: '',
-      lang: 'en'
+      lang: 'cy'
     })
   }
 }

@@ -19,6 +19,8 @@
 {% from "notification-banner/macro.njk" import govukNotificationBanner %}
 {% from "cookie-banner/macro.njk" import govukCookieBanner %}
 {% from "language-toggle/macro.njk" import dwpLanguageToggle %}
+{% from "footer/macro.njk" import govukFooterWelsh %}
+
 
 {%set htmlLang = lang%}
 
@@ -75,15 +77,16 @@
 {%if page != "home"%}
   {{ govukPhaseBanner({
     tag: {
-      text: "Beta"
+      text: phaseBanner.paragraphs.a
     },
-    html: 'Give your <a class="govuk-link" href="https://defragroup.eu.qualtrics.com/jfe/form/SV_dj4wJCoOkFQLXfM">feedback</a> on this new service.'
+    html: phaseBanner.paragraphs.b + " <a class='govuk-link' href='https://defragroup.eu.qualtrics.com/jfe/form/SV_dj4wJCoOkFQLXfM'>" + phaseBanner.paragraphs.c + " </a>" + phaseBanner.paragraphs.d
   }) }}
+
  {{ super() }}
 
   {%if displayBacklink %}
     {{ govukBackLink({
-    text: "Change location",
+    text: displayBacklink.text,
     href: '/search-location'
   }) }}
   {% endif %}
@@ -94,7 +97,6 @@
 {% else %}
 {% set htmlLang = "en" %}
 {%endif%}
- {{langCode|dump}}
   {{
     dwpLanguageToggle({
         selectedLang: lang,
@@ -113,23 +115,24 @@
 
 {% block footer %}
 {%if page != "home"%}
-  {{ govukFooter({
+  {{ govukFooterWelsh({
     meta: {
       items: [
         {
           href: "/privacy",
-          text: "Privacy"
+          text: footerTxt.privacy
         },
         {
           href: "/cookies",
-          text: "Cookies"
+          text: footerTxt.cookies
         },
         {
           href: "/accessibility",
-          text: "Accessibility statement"
+          text: footerTxt.accessibility
         }
       ]
-    }
+    },
+    texts: footerTxt
   }) }}
   {% endif %}
 {% endblock %}

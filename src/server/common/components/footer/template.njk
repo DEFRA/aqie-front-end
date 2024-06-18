@@ -67,12 +67,12 @@
           {% if params.contentLicence.html or params.contentLicence.text %}
             {{ params.contentLicence.html | safe if params.contentLicence.html else params.contentLicence.text }}
           {% else %}
-            All content is available under the
+            {{params.texts.paragraphs.a}}
             <a
               class="govuk-footer__link"
               href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
               rel="license"
-            >Open Government Licence v3.0</a>, except where otherwise stated
+            >{{params.texts.paragraphs.b}}</a> {{params.texts.paragraphs.c}}
           {% endif %}
         </span>
       </div>
@@ -84,7 +84,7 @@
           {%- if params.copyright.html or params.copyright.text -%}
             {{ params.copyright.html | safe if params.copyright.html else params.copyright.text }}
           {%- else -%}
-            © Crown copyright
+            © {{params.texts.paragraphs.d}}
           {%- endif -%}
         </a>
       </div>
