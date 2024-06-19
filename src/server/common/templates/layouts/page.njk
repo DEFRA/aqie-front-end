@@ -83,20 +83,27 @@
   }) }}
 
  {{ super() }}
-
+{%if page != "Check local air quality"%}
   {%if displayBacklink %}
     {{ govukBackLink({
-    text: displayBacklink.text,
+    text: backlink.text,
     href: '/search-location'
   }) }}
   {% endif %}
+  {% endif %}
+
+  {%if lang == 'cy'%}
+   {% set htmlLang = "cy" %}
+   {% endif %}
+  {% endif %}
+ {%if (page != "home") and (page != "Check local air quality") and (page != "Gwirio ansawdd aer lleol" ) %} 
   {%if lang == "en"%}
-{% set htmlLang = "en" %}
-{% elif lang == "cy" %}
-{% set htmlLang = "cy" %}
-{% else %}
-{% set htmlLang = "en" %}
-{%endif%}
+  {% set htmlLang = "en" %}
+  {% elif lang == "cy" %}
+  {% set htmlLang = "cy" %}
+  {% else %}
+  {% set htmlLang = "en" %}
+  {%endif%}
   {{
     dwpLanguageToggle({
         selectedLang: lang,
@@ -106,7 +113,7 @@
         }
     })
   }}
-  {% endif %}
+{%endif%}
 {% endblock %}
 
 {% block content %}

@@ -1,8 +1,8 @@
 export const welsh = {
   checkLocalAirQuality: {
     pageTitle: 'Gwirio ansawdd aer lleol - GOV.UK',
-    heading: 'Gwirio ansawdd aer lleol ',
-    page: 'Gwirio ansawdd aer lleol ',
+    heading: 'Gwirio ansawdd aer lleol',
+    page: 'Gwirio ansawdd aer lleol',
     paragraphs: {
       a: 'Defnyddiwch y gwasanaeth yma:',
       b: 'i ddod o hyd i wybodaeth am',
@@ -18,7 +18,7 @@ export const welsh = {
       d: 'ar y gwasanaeth newydd hwn'
     }
   },
-  displayBacklink: {
+  backlink: {
     text: 'Newid lleoliad'
   },
   cookieBanner: {

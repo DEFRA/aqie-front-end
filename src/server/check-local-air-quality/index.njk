@@ -8,7 +8,7 @@
 
   {% call appPageBody() %}
       <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds-from-desktop">
+    <div class="govuk-grid-column-two-thirds-from-desktop language-toggle">
       <p class="govuk-body">{{paragraphs.a}}</p>
 
       <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-6">
@@ -16,6 +16,18 @@
         <li>{{paragraphs.c}}</li>
        <!-- That this is not required for the MVP <li>access the local authority website to find out what is being done to improve air quality</li> -->
       </ul>
+      {%if lang == 'en' %}
+      {{ govukInsetText({
+        html: "<p class='govuk-body'>This page is also available <a class='govuk-link' href='/check-local-air-quality?lang=cy'> in Welsh</a> (<a href='/check-local-air-quality?lang=cy' hreflang='cy'>Cymraeg</a>).</p>",
+        classes: "check-local-air-quality"
+      }) }}
+      {%endif%}
+      {%if lang == 'cy'%}
+      {{ govukInsetText({
+        html: "<p class='govuk-body'>Mae'r dudalen hon hefyd ar gael <a class='govuk-link' href='/check-local-air-quality?lang=en'> yn Saesneg</a> (<a href='/check-local-air-quality?lang=en' hreflang='en'>English</a>).</p>",
+        classes: "check-local-air-quality"
+      }) }}
+      {%endif%}
       {{ govukButton({
         text: label,
         href: ['/search-location'] | join,

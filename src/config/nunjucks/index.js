@@ -7,9 +7,6 @@ import { context } from './context'
 import * as filters from './filters'
 import * as globals from './globals'
 import { addMomentFilters } from './filters/index'
-import njglobals from 'nunjucks/src/globals'
-
-njglobals.langCode = 'en'
 
 const nunjucksEnvironment = nunjucks.configure(
   [
