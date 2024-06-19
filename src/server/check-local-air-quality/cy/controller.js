@@ -7,7 +7,7 @@ const checkLocalAirController = {
       checkLocalAirQuality,
       footerTxt,
       phaseBanner,
-      displayBacklink,
+      backlink,
       cookieBanner
     } = welsh
     if (query.lang === 'en') {
@@ -21,7 +21,7 @@ const checkLocalAirController = {
       label: checkLocalAirQuality.button,
       footerTxt,
       phaseBanner,
-      displayBacklink,
+      backlink,
       cookieBanner,
       serviceName: '',
       lang: 'cy'

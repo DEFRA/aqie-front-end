@@ -18,7 +18,7 @@ export const english = {
       d: 'on this new service'
     }
   },
-  displayBacklink: {
+  backlink: {
     text: 'Change location'
   },
   cookieBanner: {
