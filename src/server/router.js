@@ -7,6 +7,7 @@ import { searchLocationCy } from '~/src/server/search-location/cy/index'
 import { locations } from '~/src/server/locations/index'
 import { locationsCy } from '~/src/server/locations/cy/index'
 import { locationId } from '~/src/server/location-id/index'
+import { locationIdCy } from '~/src/server/location-id/cy/index'
 import { serveStaticFiles } from '~/src/server/common/helpers/serve-static-files'
 import { nitrogenDioxide } from '~/src/server/nitrogen-dioxide/index'
 import { ozone } from '~/src/server/ozone/index'
@@ -48,6 +49,7 @@ const router = {
         locations,
         locationsCy,
         locationId,
+        locationIdCy,
         serveStaticFiles,
         nitrogenDioxide,
         ozone,

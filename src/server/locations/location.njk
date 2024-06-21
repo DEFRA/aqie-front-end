@@ -9,6 +9,12 @@
 {% set pageHeadingSize = pageHeadingSize or "xl" %}
 {% if onlyShowTwoPages == "Yes" %}
 {% block content %}
+{{htmlLang | dump}}
+{%if lang == "en"%}
+{% set htmlLang = "en"%}
+{%else%}
+{% set htmlLang = "cy"%}
+{%endif%}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop govuk-grid-column-full">
       <h1 class="govuk-heading-{{ pageHeadingSize }}">

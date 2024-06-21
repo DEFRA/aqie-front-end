@@ -10,7 +10,7 @@
     {% for item in results %}
     <ul class="govuk-list govuk-!-margin-bottom-2">
       <li>
-        <a href={{['location/',item.GAZETTEER_ENTRY.ID] | join}} class="govuk-link">
+        <a href={%if htmlLang == 'en' %}{{['/location/',item.GAZETTEER_ENTRY.ID, '?lang=en'] | join}}{%else%}{{['/lleoliad/cy/',item.GAZETTEER_ENTRY.ID, '?lang=cy'] | join}}{%endif%} class="govuk-link">
         {% if name2 %}  
         <mark>{{ name2 }}</mark>, 
         {% else %}

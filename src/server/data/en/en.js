@@ -109,5 +109,18 @@ export const english = {
       c: 'except where otherwise stated',
       d: 'Crown copyright'
     }
+  },
+  daqi: {
+    paragraphs: {
+      a: 'The air pollution forecast for today is',
+      b: 'out of 10'
+    },
+    summaryText: 'How different levels of air pollution can affect health'
+  },
+  healthAdvice: {
+    paragraphs: {
+      a: 'Health advice for',
+      b: 'levels of air pollution'
+    }
   }
 }
