@@ -12,7 +12,6 @@
   {% endif %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      {{htmlLang | dump}}
       <form  id="itembox" action={%if htmlLang == 'en' %}'/location' {%else%}'/lleoliad/cy'{%endif%} method="post"  name="search-form" value="search">
       {% if locationType |length %}
       {%set errorMessage = ""%}
