@@ -7,24 +7,21 @@ import { getAirQuality } from '~/src/server/data/air-quality.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { fetchData } from '~/src/server/locations/helpers/fetch-data'
-import { english } from '~/src/server/data/en/en.js'
 import { welsh } from '~/src/server/data/cy/cy.js'
 
 const logger = createLogger()
 const getLocationDataController = {
   handler: async (request, h) => {
     const { query } = request
-    const { referer } = request.headers
-    const lang = referer.slice(-2)
     const {
       searchLocation,
+      notFoundLocation,
+      multipleLocations,
       footerTxt,
       phaseBanner,
       backlink,
-      cookieBanner,
-      notFoundLocation,
-      multipleLocations
-    } = english
+      cookieBanner
+    } = welsh
     let locationType = request?.payload?.locationType
     const airQuality = getAirQuality(request.payload?.aq)
     let locationNameOrPostcode = ''
@@ -43,45 +40,22 @@ const getLocationDataController = {
       request.yar.get('airQuality', airQuality)
     }
     if (!locationNameOrPostcode && !locationType) {
-      if (lang === 'cy') {
-        request.yar.set('errors', {
-          errors: {
-            titleText: welsh.searchLocation.errorText.radios.title, // 'There is a problem',
-            errorList: [
-              {
-                text: welsh.searchLocation.errorText.radios.list.text, // 'Select where you want to check',
-                href: '#itembox'
-              }
-            ]
-          }
-        })
-        request.yar.set('errorMessage', {
-          errorMessage: {
-            text: welsh.searchLocation.errorText.radios.list.text
-          } // 'Select where you want to check' }
-        })
-      } else {
-        request.yar.set('errors', {
-          errors: {
-            titleText: searchLocation.errorText.radios.title, // 'There is a problem',
-            errorList: [
-              {
-                text: searchLocation.errorText.radios.list.text, // 'Select where you want to check',
-                href: '#itembox'
-              }
-            ]
-          }
-        })
-        request.yar.set('errorMessage', {
-          errorMessage: { text: searchLocation.errorText.radios.list.text } // 'Select where you want to check' }
-        })
-      }
-
+      request.yar.set('errors', {
+        errors: {
+          titleText: searchLocation.errorText.radios.title, // 'There is a problem',
+          errorList: [
+            {
+              text: searchLocation.errorText.radios.list.text, // 'Select where you want to check',
+              href: '#itembox'
+            }
+          ]
+        }
+      })
+      request.yar.set('errorMessage', {
+        errorMessage: { text: searchLocation.errorText.radios.list.text } // 'Select where you want to check' }
+      })
       request.yar.set('locationType', '')
-      if (lang === 'cy') {
-        return h.redirect('/chwilio-lleoliad/cy')
-      }
-      return h.redirect('/search-location')
+      return h.redirect('/search-location?lang=' + query?.lang)
     }
     try {
       let userLocation = locationNameOrPostcode.toUpperCase() // Use 'let' to allow reassignment
@@ -99,86 +73,44 @@ const getLocationDataController = {
         )}`
       }
       if (!userLocation && locationType === 'uk-location') {
-        if (lang === 'cy') {
-          request.yar.set('errors', {
-            errors: {
-              titleText: welsh.searchLocation.errorText.uk.fields.title, // 'There is a problem',
-              errorList: [
-                {
-                  text: welsh.searchLocation.errorText.uk.fields.list.text, // 'Enter a location or postcode',
-                  href: '#engScoWal'
-                }
-              ]
-            }
-          })
-          request.yar.set('errorMessage', {
-            errorMessage: {
-              text: welsh.searchLocation.errorText.uk.fields.list.text // 'Enter a location or postcode'
-            }
-          })
-          request.yar.set('locationType', 'uk-location')
-          return h.redirect('/chwilio-lleoliad/cy')
-        } else {
-          request.yar.set('errors', {
-            errors: {
-              titleText: searchLocation.errorText.uk.fields.title, // 'There is a problem',
-              errorList: [
-                {
-                  text: searchLocation.errorText.uk.fields.list.text, // 'Enter a location or postcode',
-                  href: '#engScoWal'
-                }
-              ]
-            }
-          })
-          request.yar.set('errorMessage', {
-            errorMessage: {
-              text: searchLocation.errorText.uk.fields.list.text // 'Enter a location or postcode'
-            }
-          })
-          request.yar.set('locationType', 'uk-location')
-          return h.redirect('/search-location')
-        }
+        request.yar.set('errors', {
+          errors: {
+            titleText: searchLocation.errorText.uk.fields.title, // 'There is a problem',
+            errorList: [
+              {
+                text: searchLocation.errorText.uk.fields.list.text, // 'Enter a location or postcode',
+                href: '#engScoWal'
+              }
+            ]
+          }
+        })
+        request.yar.set('errorMessage', {
+          errorMessage: {
+            text: searchLocation.errorText.uk.fields.list.text // 'Enter a location or postcode'
+          }
+        })
+        request.yar.set('locationType', 'uk-location')
+        return h.redirect('/search-location?lang=' + query?.lang)
       }
       if (!userLocation && locationType === 'ni-location') {
-        if (lang === 'cy') {
-          request.yar.set('errors', {
-            errors: {
-              titleText: welsh.searchLocation.errorText.ni.fields.title, // 'There is a problem',
-              errorList: [
-                {
-                  text: welsh.searchLocation.errorText.ni.fields.list.text, // 'Enter a postcode',
-                  href: '#ni'
-                }
-              ]
-            }
-          })
-          request.yar.set('errorMessage', {
-            errorMessage: {
-              text: welsh.searchLocation.errorText.ni.fields.list.text // 'Enter a postcode'
-            }
-          })
-          request.yar.set('locationType', 'ni-location')
-          return h.redirect('/chwilio-lleoliad/cy')
-        } else {
-          request.yar.set('errors', {
-            errors: {
-              titleText: searchLocation.errorText.ni.fields.title, // 'There is a problem',
-              errorList: [
-                {
-                  text: searchLocation.errorText.ni.fields.list.text, // 'Enter a postcode',
-                  href: '#ni'
-                }
-              ]
-            }
-          })
-          request.yar.set('errorMessage', {
-            errorMessage: {
-              text: searchLocation.errorText.ni.fields.list.text // 'Enter a postcode'
-            }
-          })
-          request.yar.set('locationType', 'ni-location')
-          return h.redirect('/search-location')
-        }
+        request.yar.set('errors', {
+          errors: {
+            titleText: searchLocation.errorText.ni.fields.title, // 'There is a problem',
+            errorList: [
+              {
+                text: searchLocation.errorText.ni.fields.list.text, // 'Enter a postcode',
+                href: '#ni'
+              }
+            ]
+          }
+        })
+        request.yar.set('errorMessage', {
+          errorMessage: {
+            text: searchLocation.errorText.ni.fields.list.text // 'Enter a postcode'
+          }
+        })
+        request.yar.set('locationType', 'ni-location')
+        return h.redirect('/search-location?lang=' + query?.lang)
       }
 
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
@@ -187,29 +119,15 @@ const getLocationDataController = {
         const { results } = getOSPlaces
 
         if (!results || results.length === 0) {
-          if (query.lang === 'cy' || (lang === 'cy' && query.lang !== 'en')) {
-            return h.view('locations/location-not-found', {
-              userLocation: locationNameOrPostcode,
-              serviceName: welsh.notFoundLocation.heading,
-              paragraph: welsh.notFoundLocation.paragraphs,
-              pageTitle: `${welsh.notFoundLocation.paragraphs.a} ${userLocation} - ${welsh.searchLocation.pageTitle}`,
-              footerTxt: welsh.footerTxt,
-              phaseBanner: welsh.phaseBanner,
-              backlink: welsh.backlink,
-              cookieBanner: welsh.cookieBanner,
-              lang: 'cy'
-            })
-          }
           return h.view('locations/location-not-found', {
             userLocation: locationNameOrPostcode,
-            serviceName: notFoundLocation.heading,
+            pageTitle: `We could not find ${userLocation} - Check local air quality - GOV.UK`,
             paragraph: notFoundLocation.paragraphs,
-            pageTitle: `${notFoundLocation.paragraphs.a} ${userLocation} - ${welsh.searchLocation.pageTitle}`,
             footerTxt,
             phaseBanner,
             backlink,
             cookieBanner,
-            lang: 'en'
+            lang: request.query.lang
           })
         }
 
@@ -289,34 +207,9 @@ const getLocationDataController = {
             serviceName: 'Check local air quality',
             forecastSummary: getDailySummary.today,
             summaryDate: getDailySummary.issue_date,
-            footerTxt,
-            phaseBanner,
-            backlink,
-            cookieBanner,
             lang: request.query.lang
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
-          if (query.lang === 'cy' || (lang === 'cy' && query.lang !== 'en')) {
-            return h.view('locations/multiple-locations', {
-              results: matches,
-              title: welsh.multipleLocations.heading,
-              paragraphs: welsh.multipleLocations.paragraphs,
-              name2: matches[0].GAZETTEER_ENTRY?.NAME2,
-              userLocation: locationNameOrPostcode,
-              airQuality,
-              airQualityData: airQualityData.commonMessages,
-              monitoringSites: nearestLocationsRange,
-              siteTypeDescriptions,
-              pollutantTypes,
-              pageTitle: `${welsh.multipleLocations.title} ${userLocation}`,
-              serviceName: welsh.multipleLocations.serviceName,
-              footerTxt: welsh.footerTxt,
-              phaseBanner: welsh.phaseBanner,
-              backlink: welsh.backlink,
-              cookieBanner: welsh.cookieBanner,
-              lang: 'cy'
-            })
-          }
           return h.view('locations/multiple-locations', {
             results: matches,
             title: multipleLocations.title,
@@ -328,25 +221,20 @@ const getLocationDataController = {
             monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
-            pageTitle: `${multipleLocations.title} ${userLocation}`,
+            pageTitle: `${multipleLocations.heading} ${userLocation}`,
             serviceName: multipleLocations.serviceName,
-            footerTxt,
-            phaseBanner,
-            backlink,
-            cookieBanner,
-            lang: 'en'
+            lang: request.query.lang
           })
         } else {
           return h.view('locations/location-not-found', {
             userLocation: locationNameOrPostcode,
-            serviceName: notFoundLocation.heading,
+            pageTitle: `${notFoundLocation.heading} ${locationNameOrPostcode} - Check local air quality - GOV.UK`,
             paragraph: notFoundLocation.paragraphs,
-            pageTitle: `${notFoundLocation.paragraphs.a} ${locationNameOrPostcode} - ${multipleLocations.pageTitle}`,
             footerTxt,
             phaseBanner,
             backlink,
             cookieBanner,
-            lang: 'en'
+            lang: request.query.lang
           })
         }
       } else if (locationType === 'ni-location') {
@@ -354,29 +242,15 @@ const getLocationDataController = {
         const { result } = getNIPlaces
 
         if (!result || result.length === 0) {
-          if (query.lang === 'cy' || (lang === 'cy' && query.lang !== 'en')) {
-            return h.view('locations/location-not-found', {
-              userLocation: locationNameOrPostcode,
-              serviceName: welsh.notFoundLocation.heading,
-              paragraph: welsh.notFoundLocation.paragraphs,
-              pageTitle: `${welsh.notFoundLocation.paragraphs.a} ${userLocation} - ${welsh.searchLocation.pageTitle}`,
-              footerTxt: welsh.footerTxt,
-              phaseBanner: welsh.phaseBanner,
-              backlink: welsh.backlink,
-              cookieBanner: welsh.cookieBanner,
-              lang: 'cy'
-            })
-          }
           return h.view('locations/location-not-found', {
             userLocation: locationNameOrPostcode,
-            serviceName: notFoundLocation.heading,
+            pageTitle: `${notFoundLocation.heading} ${userLocation} - Check local air quality - GOV.UK`,
             paragraph: notFoundLocation.paragraphs,
-            pageTitle: `${notFoundLocation.paragraphs.a} ${userLocation} - ${welsh.searchLocation.pageTitle}`,
             footerTxt,
             phaseBanner,
             backlink,
             cookieBanner,
-            lang: 'en'
+            lang: request.query.lang
           })
         }
         const locationData = {
@@ -421,10 +295,6 @@ const getLocationDataController = {
           forecastSummary: getDailySummary.today,
           summaryDate: getDailySummary.issue_date,
           nearestLocationsRange,
-          footerTxt,
-          phaseBanner,
-          backlink,
-          cookieBanner,
           lang: request.query?.lang
         })
       }
@@ -448,7 +318,7 @@ const getLocationDetailsController = {
         phaseBanner,
         backlink,
         cookieBanner
-      } = english
+      } = welsh
       const locationData = request.yar.get('locationData') || []
       let locationIndex = 0
       const locationDetails = locationData?.data?.find((item, index) => {
@@ -504,7 +374,6 @@ const getLocationDetailsController = {
       } else {
         return h.view('location-not-found', {
           paragraph: notFoundLocation.paragraphs,
-          serviceName: notFoundLocation.heading,
           footerTxt,
           phaseBanner,
           backlink,

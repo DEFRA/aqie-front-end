@@ -5,16 +5,16 @@
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
-    <h1 class="govuk-heading-l">We could not find '{{ userLocation }}'</h1>
-    <p class="govuk-body">If you searched for a place in England, Scotland or Wales, you should:</p>
+    <h1 class="govuk-heading-l">'{{paragraph.a}}' '{{ userLocation }}'</h1>
+    <p class="govuk-body">{{paragraph.b}}</p>
 
     <ul class="govuk-list govuk-list--bullet">
-      <li>check the spelling</li>
-      <li>enter a broader location</li>
-      <li>enter a correct postcode</li>
+      <li>{{paragraph.c}}</li>
+      <li>{{paragraph.d}}</li>
+      <li>{{paragraph.e}}</li>
     </ul>
-    <p class="govuk-body">If you searched for a place in Northern Ireland, check that you have entered the correct postcode.</p>
-    <p class="govuk-body"><a href={{['/search-location'] | join}}>Go back to search a location</a></p>
+    <p class="govuk-body">{{paragraph.f}}</p>
+    <p class="govuk-body"><a href={%if htmlLang == 'en' %}'/search-location' {%else%}'/chwilio-lleoliad/cy'{%endif%}>{{paragraph.g}}</a></p>
   </div>
 </div>
 {% endblock %}

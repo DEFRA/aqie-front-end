@@ -1,12 +1,17 @@
-import { english } from '~/src/server/data/en/en.js'
+import { welsh } from '~/src/server/data/cy/cy.js'
 
 const searchLocationController = {
   handler: (request, h) => {
     const { query } = request
+    const { referer } = request.headers
+    const lang = referer.slice(-2)
+    if (lang === 'cy') {
+      // return h.redirect('/chwilio-lleoliad/cy')
+    }
     const { searchLocation, footerTxt, phaseBanner, backlink, cookieBanner } =
-      english
-    if (query.lang === 'cy') {
-      return h.redirect('/chwilio-lleoliad/cy')
+      welsh
+    if (query.lang === 'en') {
+      return h.redirect('/search-location?lang=' + query?.lang)
     }
     const errors = request.yar.get('errors')
     const errorMessage = request.yar.get('errorMessage')
@@ -41,7 +46,7 @@ const searchLocationController = {
         phaseBanner,
         backlink,
         cookieBanner,
-        lang: request.query.lang
+        lang: 'cy'
       })
     } else {
       return h.view('search-location/index', {
@@ -67,7 +72,7 @@ const searchLocationController = {
         phaseBanner,
         backlink,
         cookieBanner,
-        lang: request.query.lang
+        lang: 'cy'
       })
     }
   }

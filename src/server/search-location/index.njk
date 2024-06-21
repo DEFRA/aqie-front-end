@@ -1,5 +1,4 @@
 {% extends 'layouts/page.njk' %}
-
 {% block content %}
   {% call appPageBody() %}
   <div class="govuk-grid-row">
@@ -13,7 +12,8 @@
   {% endif %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <form  id="itembox" action={{['/location'] | join}} method="post"  name="search-form" value="search">
+      {{htmlLang | dump}}
+      <form  id="itembox" action={%if htmlLang == 'en' %}'/location' {%else%}'/lleoliad/cy'{%endif%} method="post"  name="search-form" value="search">
       {% if locationType |length %}
       {%set errorMessage = ""%}
       {%else%}
@@ -33,7 +33,7 @@
           id: "engScoWal",
           name: "engScoWal",
           classes: "govuk-!-width-one-half",
-          label: { text: "Enter a location or postcode" }
+          label: { text: searchParams.hint.text }
         }) }}
         {% endset %}
       {% endif %}
@@ -52,7 +52,7 @@
           id: "ni",
           name: "ni",
           classes: "govuk-!-width-one-half",
-          label: { text: "Enter a postcode" }
+          label: { text: searchParams.hint.text }
         }) }}
         {% endset %}
       {% endif %}
@@ -60,7 +60,7 @@
         name: "locationType",
         fieldset: {
           legend: {
-            text: "Where do you want to check?",
+            text: searchParams.label.text,
             isPageHeading: true,
             classes: "govuk-fieldset__legend--l govuk-label--l govuk-!-margin-bottom-6"
           }
@@ -68,13 +68,13 @@
         items: [
           {
             value: "uk-location",
-            text: "England, Scotland or Wales",
+            text: locations.a,
             checked: locationType === 'uk-location',
             conditional: { html: ukHtml }
           },
           {
             value: "ni-location",
-            text: "Northern Ireland",
+            text: locations.b,
             checked: locationType === 'ni-location',
             conditional: { html: niHtml }
           }
@@ -83,7 +83,7 @@
       }) }}
       {{ govukButton({
         classes: "app-search__button",
-        text: "Continue"
+        text: button
       }) }}
       <input type="hidden" name="aq" value="{{ airQuality.value }}" />
     </form>

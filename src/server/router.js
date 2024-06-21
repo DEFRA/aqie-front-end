@@ -3,7 +3,9 @@ import yar from '@hapi/yar'
 import { checkLocalAirQuality } from '~/src/server/check-local-air-quality/index'
 import { checkLocalAirQualityCy } from '~/src/server/check-local-air-quality/cy/index'
 import { searchLocation } from '~/src/server/search-location/index'
+import { searchLocationCy } from '~/src/server/search-location/cy/index'
 import { locations } from '~/src/server/locations/index'
+import { locationsCy } from '~/src/server/locations/cy/index'
 import { locationId } from '~/src/server/location-id/index'
 import { serveStaticFiles } from '~/src/server/common/helpers/serve-static-files'
 import { nitrogenDioxide } from '~/src/server/nitrogen-dioxide/index'
@@ -42,7 +44,9 @@ const router = {
         checkLocalAirQuality,
         checkLocalAirQualityCy,
         searchLocation,
+        searchLocationCy,
         locations,
+        locationsCy,
         locationId,
         serveStaticFiles,
         nitrogenDioxide,
