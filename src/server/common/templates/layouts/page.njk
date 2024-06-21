@@ -21,9 +21,11 @@
 {% from "language-toggle/macro.njk" import dwpLanguageToggle %}
 {% from "footer/macro.njk" import govukFooterWelsh %}
 
-
-{%set htmlLang = lang%}
-
+{%if lang%}
+{%set htmlLang = lang %}
+{%else%}
+{%set htmlLang = 'en' %}
+{%endif%}
 {% block bodyStart %}
 {%if page != "home"%}
   <a id="top"></a>
