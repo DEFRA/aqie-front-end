@@ -87,10 +87,18 @@
  {{ super() }}
 {%if page != "Check local air quality"%}
   {%if displayBacklink %}
+  {%if htmlLang == "en"%}
     {{ govukBackLink({
     text: backlink.text,
     href: '/search-location'
   }) }}
+  {% endif %}
+  {%if htmlLang == "cy"%}
+    {{ govukBackLink({
+    text: backlink.text,
+    href: '/chwilio-lleoliad/cy'
+  }) }}
+  {% endif %}
   {% endif %}
   {% endif %}
 
