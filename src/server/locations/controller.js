@@ -425,7 +425,7 @@ const getLocationDataController = {
           phaseBanner,
           backlink,
           cookieBanner,
-          lang: request.query?.lang
+          lang: request.query?.lang ?? lang
         })
       }
     } catch (error) {
