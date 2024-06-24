@@ -9,7 +9,6 @@
 {% set pageHeadingSize = pageHeadingSize or "xl" %}
 {% if onlyShowTwoPages == "Yes" %}
 {% block content %}
-{{htmlLang | dump}}
 {%if lang == "en"%}
 {% set htmlLang = "en"%}
 {%else%}
