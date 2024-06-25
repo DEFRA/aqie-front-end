@@ -60,6 +60,7 @@
 {% block header %}
 {%if page == "Check local air quality"%}{% set serviceName = ""%}{%endif%}
 {%if page != "home"%}
+  {%if htmlLang == "en"%}
   {{ govukHeader({
     homepageUrl: "https://www.gov.uk/",
     classes: "app-header",
@@ -68,6 +69,18 @@
     serviceUrl: '/',
     useTudorCrown: true
   }) }}
+  {%endif%}
+  {%if htmlLang == "cy"%}
+  {{ govukHeader({
+    homepageUrl: "https://www.gov.uk/",
+    classes: "app-header",
+    containerClasses: "govuk-width-container",
+    serviceName: serviceName,
+    serviceUrl: '/check-lleol-ansawdd-aer/cy',
+    useTudorCrown: true
+  }) }}
+  {%endif%}
+
   {%endif%}
 {% endblock %}
 

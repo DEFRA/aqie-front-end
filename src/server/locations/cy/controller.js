@@ -13,6 +13,11 @@ const logger = createLogger()
 const getLocationDataController = {
   handler: async (request, h) => {
     const { query } = request
+    const { referer } = request.headers
+    let lang = referer.slice(-2)
+    if (lang === 'on') {
+      lang = 'en'
+    }
     const {
       searchLocation,
       notFoundLocation,
@@ -160,7 +165,8 @@ const getLocationDataController = {
           getForecasts.forecasts,
           getMeasurements.measurements,
           'uk-location',
-          0
+          0,
+          lang
         )
         request.yar.set('locationData', {
           data: matches,
@@ -207,7 +213,7 @@ const getLocationDataController = {
             serviceName: 'Check local air quality',
             forecastSummary: getDailySummary.today,
             summaryDate: getDailySummary.issue_date,
-            lang: request.query.lang
+            lang: request.query.lang ?? lang
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
           return h.view('locations/multiple-locations', {
@@ -223,7 +229,7 @@ const getLocationDataController = {
             pollutantTypes,
             pageTitle: `${multipleLocations.heading} ${userLocation}`,
             serviceName: multipleLocations.serviceName,
-            lang: request.query.lang
+            lang: request.query.lang ?? lang
           })
         } else {
           return h.view('locations/location-not-found', {
@@ -234,7 +240,7 @@ const getLocationDataController = {
             phaseBanner,
             backlink,
             cookieBanner,
-            lang: request.query.lang
+            lang: request.query.lang ?? lang
           })
         }
       } else if (locationType === 'ni-location') {
@@ -250,7 +256,7 @@ const getLocationDataController = {
             phaseBanner,
             backlink,
             cookieBanner,
-            lang: request.query.lang
+            lang: request.query.lang ?? lang
           })
         }
         const locationData = {
@@ -266,7 +272,8 @@ const getLocationDataController = {
           getForecasts.forecasts,
           getMeasurements.measurements,
           'Ireland',
-          0
+          0,
+          lang
         )
         let title = ''
         if (locationData) {
@@ -295,7 +302,7 @@ const getLocationDataController = {
           forecastSummary: getDailySummary.today,
           summaryDate: getDailySummary.issue_date,
           nearestLocationsRange,
-          lang: request.query?.lang
+          lang: request.query?.lang ?? lang
         })
       }
     } catch (error) {
@@ -312,6 +319,11 @@ const getLocationDetailsController = {
   handler: (request, h) => {
     try {
       const locationId = request.params.id
+      const { referer } = request.headers
+      let lang = referer.slice(-2)
+      if (lang === 'on') {
+        lang = 'en'
+      }
       const {
         notFoundLocation,
         footerTxt,
@@ -351,7 +363,8 @@ const getLocationDetailsController = {
           locationData.rawForecasts,
           locationData.measurements,
           'uk-location',
-          locationIndex
+          locationIndex,
+          lang
         )
         const airQuality = getAirQuality(forecastNum[0])
         return h.view('locations/location', {
@@ -369,7 +382,7 @@ const getLocationDetailsController = {
           phaseBanner,
           backlink,
           cookieBanner,
-          lang: request.query.lang
+          lang: request.query.lang ?? lang
         })
       } else {
         return h.view('location-not-found', {
@@ -378,7 +391,7 @@ const getLocationDetailsController = {
           phaseBanner,
           backlink,
           cookieBanner,
-          lang: request.query.lang
+          lang: request.query.lang ?? lang
         })
       }
     } catch (error) {

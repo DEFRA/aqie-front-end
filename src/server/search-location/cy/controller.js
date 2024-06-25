@@ -4,9 +4,9 @@ const searchLocationController = {
   handler: (request, h) => {
     const { query } = request
     const { referer } = request.headers
-    const lang = referer.slice(-2)
-    if (lang === 'cy') {
-      // return h.redirect('/chwilio-lleoliad/cy')
+    let lang = referer.slice(-2)
+    if (lang === 'on') {
+      lang = 'en'
     }
     const { searchLocation, footerTxt, phaseBanner, backlink, cookieBanner } =
       welsh

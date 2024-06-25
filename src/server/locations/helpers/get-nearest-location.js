@@ -9,8 +9,16 @@ import {
   pointsInRange
 } from '~/src/server/locations/helpers/location-util.js'
 import { getPollutantLevel } from '~/src/server/locations/helpers/pollutant-level-calculation'
+import { getPollutantLevelCy } from '~/src/server/locations/helpers/cy/pollutant-level-calculation'
 
-function getNearestLocation(matches, forecasts, measurements, location, index) {
+function getNearestLocation(
+  matches,
+  forecasts,
+  measurements,
+  location,
+  index,
+  lang
+) {
   const latlon =
     matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
   const forecastCoordinates =
@@ -55,7 +63,10 @@ function getNearestLocation(matches, forecasts, measurements, location, index) {
       Object.keys(curr.pollutants).forEach((pollutant) => {
         const polValue = curr.pollutants[pollutant].value
         if (polValue !== null && polValue !== -99 && polValue !== '0') {
-          const { getDaqi, getBand } = getPollutantLevel(polValue, pollutant)
+          const { getDaqi, getBand } =
+            lang === 'cy'
+              ? getPollutantLevelCy(polValue, pollutant)
+              : getPollutantLevel(polValue, pollutant)
           const formatDate = moment(
             curr.pollutants[pollutant].time.date
           ).format('ha')

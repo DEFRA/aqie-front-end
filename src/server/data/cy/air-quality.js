@@ -1,4 +1,4 @@
-export const commonMessages = {
+export const commonMessagesCy = {
   low: {
     values: [1, 2, 3],
     advice: 'Mwynhewch eich gweithgareddau awyr agored arferol.',
@@ -37,7 +37,7 @@ export const commonMessages = {
       oldPeople: 'Dylai pobl hŷn leihau eu hymdrech gorfforol.'
     },
     outlook:
-      'Warm temperatures are expected to increase pollution levels to high across many areas today.'
+      'Mae disgwyl i dymheredd cynnes gynyddu lefelau llygredd i lefel uchel ar draws sawl ardal heddiw.'
   },
   veryHigh: {
     values: [10],
@@ -51,18 +51,18 @@ export const commonMessages = {
       oldPeople: 'Dylai pobl hŷn osgoi gweithgareddau corfforol egnïol.'
     },
     outlook:
-      'The current heatwave shows no signs of relenting, causing air pollution levels to remain very high across many areas today.'
+      'Nid yw’r tywydd poeth presennol yn dangos unrhyw arwyddion o ad- daliad, gan achosi i lefelau llygredd aer barhau’n uchel iawn ar draws sawl ardal heddiw.'
   },
   unknown: {
-    advice: 'No data available.'
+    advice: 'Dim data ar gael.'
   }
 }
 
-export function getCommonMessage(band) {
-  return commonMessages[band] || commonMessages.unknown
+export function getCommonMessageCy(band) {
+  return commonMessagesCy[band] || commonMessagesCy.unknown
 }
 
-export function getAirQuality(aqValue) {
+export function getAirQualityCy(aqValue) {
   const value = aqValue || '4'
 
   const lookup = {
@@ -85,7 +85,7 @@ export function getAirQuality(aqValue) {
   const band = bandInfo.band
   const readableBand = bandInfo.readableBand
 
-  const message = getCommonMessage(band)
+  const message = getCommonMessageCy(band)
 
   return {
     value,
