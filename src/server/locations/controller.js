@@ -1,9 +1,15 @@
 import {
   siteTypeDescriptions,
   pollutantTypes
-} from '~/src/server/data/monitoring-sites.js'
+} from '~/src/server/data/en/monitoring-sites.js'
+import {
+  siteTypeDescriptionsCy,
+  pollutantTypesCy
+} from '~/src/server/data/cy/monitoring-sites.js'
 import * as airQualityData from '~/src/server/data/air-quality.js'
+import * as airQualityDataCy from '~/src/server/data/cy/air-quality.js'
 import { getAirQuality } from '~/src/server/data/air-quality.js'
+import { getAirQualityCy } from '~/src/server/data/cy/air-quality.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { fetchData } from '~/src/server/locations/helpers/fetch-data'
@@ -15,7 +21,10 @@ const getLocationDataController = {
   handler: async (request, h) => {
     const { query } = request
     const { referer } = request.headers
-    const lang = referer.slice(-2)
+    let lang = referer.slice(-2)
+    if (lang === 'on') {
+      lang = 'en'
+    }
     const {
       searchLocation,
       footerTxt,
@@ -23,10 +32,12 @@ const getLocationDataController = {
       backlink,
       cookieBanner,
       notFoundLocation,
-      multipleLocations
+      multipleLocations,
+      daqi
     } = english
     let locationType = request?.payload?.locationType
     const airQuality = getAirQuality(request.payload?.aq)
+    const airQualityCy = getAirQualityCy(request.payload?.aq)
     let locationNameOrPostcode = ''
     if (locationType === 'uk-location') {
       locationNameOrPostcode = request.payload.engScoWal
@@ -242,7 +253,8 @@ const getLocationDataController = {
           getForecasts.forecasts,
           getMeasurements.measurements,
           'uk-location',
-          0
+          0,
+          lang
         )
         request.yar.set('locationData', {
           data: matches,
@@ -276,6 +288,30 @@ const getLocationDataController = {
           }
           //
           const airQuality = getAirQuality(forecastNum[0])
+          const airQualityCy = getAirQualityCy(forecastNum[0])
+          if (query.lang === 'cy' || (lang === 'cy' && query.lang !== 'en')) {
+            return h.view('locations/location', {
+              result: matches[0],
+              name2: matches[0].GAZETTEER_ENTRY?.NAME2,
+              airQuality: airQualityCy,
+              airQualityData: airQualityDataCy.commonMessagesCy,
+              monitoringSites: nearestLocationsRange,
+              siteTypeDescriptions: siteTypeDescriptionsCy,
+              pollutantTypes: pollutantTypesCy,
+              displayBacklink: true,
+              forecastSummary: getDailySummary.today,
+              summaryDate: getDailySummary.issue_date,
+              daqi: welsh.daqi,
+              title: welsh.multipleLocations.heading,
+              pageTitle: `${welsh.multipleLocations.title} ${userLocation}`,
+              serviceName: welsh.multipleLocations.serviceName,
+              footerTxt: welsh.footerTxt,
+              phaseBanner: welsh.phaseBanner,
+              backlink: welsh.backlink,
+              cookieBanner: welsh.cookieBanner,
+              lang: request.query.lang
+            })
+          }
           return h.view('locations/location', {
             result: matches[0],
             name2: matches[0].GAZETTEER_ENTRY?.NAME2,
@@ -293,22 +329,23 @@ const getLocationDataController = {
             phaseBanner,
             backlink,
             cookieBanner,
+            daqi,
             lang: request.query.lang
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
           if (query.lang === 'cy' || (lang === 'cy' && query.lang !== 'en')) {
             return h.view('locations/multiple-locations', {
               results: matches,
-              title: welsh.multipleLocations.heading,
               paragraphs: welsh.multipleLocations.paragraphs,
               name2: matches[0].GAZETTEER_ENTRY?.NAME2,
               userLocation: locationNameOrPostcode,
-              airQuality,
-              airQualityData: airQualityData.commonMessages,
+              airQuality: airQualityCy,
+              airQualityData: airQualityDataCy.commonMessagesCy,
               monitoringSites: nearestLocationsRange,
-              siteTypeDescriptions,
-              pollutantTypes,
-              pageTitle: `${welsh.multipleLocations.title} ${userLocation}`,
+              siteTypeDescriptions: siteTypeDescriptionsCy,
+              pollutantTypes: pollutantTypesCy,
+              title: welsh.multipleLocations.heading,
+              pageTitle: `${welsh.multipleLocations.title} ${locationNameOrPostcode}`,
               serviceName: welsh.multipleLocations.serviceName,
               footerTxt: welsh.footerTxt,
               phaseBanner: welsh.phaseBanner,
@@ -392,7 +429,8 @@ const getLocationDataController = {
           getForecasts.forecasts,
           getMeasurements.measurements,
           'Ireland',
-          0
+          0,
+          lang
         )
         let title = ''
         if (locationData) {
@@ -409,6 +447,30 @@ const getLocationDataController = {
           }
         }
         const airQuality = getAirQuality(forecastNum[0])
+        const airQualityCy = getAirQualityCy(forecastNum[0])
+        if (query.lang === 'cy' || (lang === 'cy' && query.lang !== 'en')) {
+          return h.view('locations/location', {
+            result: locationData,
+            airQuality: airQualityCy,
+            airQualityData: airQualityDataCy.commonMessagesCy,
+            monitoringSites: nearestLocationsRange,
+            siteTypeDescriptions: siteTypeDescriptionsCy,
+            pollutantTypes: pollutantTypesCy,
+            displayBacklink: true,
+            forecastSummary: getDailySummary.today,
+            summaryDate: getDailySummary.issue_date,
+            nearestLocationsRange,
+            daqi: welsh.daqi,
+            title: welsh.multipleLocations.heading,
+            pageTitle: `${welsh.multipleLocations.title} ${userLocation}`,
+            serviceName: welsh.multipleLocations.serviceName,
+            footerTxt: welsh.footerTxt,
+            phaseBanner: welsh.phaseBanner,
+            backlink: welsh.backlink,
+            cookieBanner: welsh.cookieBanner,
+            lang: request.query?.lang ?? lang
+          })
+        }
         return h.view('locations/location', {
           result: locationData,
           airQuality,
@@ -425,6 +487,7 @@ const getLocationDataController = {
           phaseBanner,
           backlink,
           cookieBanner,
+          daqi,
           lang: request.query?.lang ?? lang
         })
       }
@@ -441,13 +504,21 @@ const getLocationDataController = {
 const getLocationDetailsController = {
   handler: (request, h) => {
     try {
+      const { query } = request
+      const locationNameOrPostcode = request.yar.set('locationNameOrPostcode')
       const locationId = request.params.id
+      const { referer } = request.headers
+      let lang = referer.slice(-2)
+      if (lang === 'on') {
+        lang = 'en'
+      }
       const {
         notFoundLocation,
         footerTxt,
         phaseBanner,
         backlink,
-        cookieBanner
+        cookieBanner,
+        daqi
       } = english
       const locationData = request.yar.get('locationData') || []
       let locationIndex = 0
@@ -481,9 +552,37 @@ const getLocationDetailsController = {
           locationData.rawForecasts,
           locationData.measurements,
           'uk-location',
-          locationIndex
+          locationIndex,
+          request.query?.lang
         )
         const airQuality = getAirQuality(forecastNum[0])
+        const airQualityCy = getAirQualityCy(forecastNum[0])
+        if (query.lang === 'cy' || (lang === 'cy' && query.lang !== 'en')) {
+          try {
+            return h.view('locations/location', {
+              result: locationDetails,
+              airQuality: airQualityCy,
+              airQualityData: airQualityDataCy.commonMessagesCy,
+              monitoringSites: nearestLocationsRange,
+              siteTypeDescriptions: siteTypeDescriptionsCy,
+              pollutantTypes: pollutantTypesCy,
+              displayBacklink: true,
+              forecastSummary: locationData.forecastSummary.today,
+              summaryDate: locationData.forecastSummary.issue_date,
+              daqi: welsh.daqi,
+              title: welsh.multipleLocations.heading,
+              pageTitle: `${welsh.multipleLocations.title} ${locationNameOrPostcode}`,
+              serviceName: welsh.multipleLocations.serviceName,
+              footerTxt: welsh.footerTxt,
+              phaseBanner: welsh.phaseBanner,
+              backlink: welsh.backlink,
+              cookieBanner: welsh.cookieBanner,
+              lang: request.query.lang ?? lang
+            })
+          } catch (error) {
+            logger.info('ERROR ', error.message)
+          }
+        }
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
@@ -499,7 +598,8 @@ const getLocationDetailsController = {
           phaseBanner,
           backlink,
           cookieBanner,
-          lang: request.query.lang
+          daqi,
+          lang: request.query.lang ?? lang
         })
       } else {
         return h.view('location-not-found', {

@@ -115,12 +115,59 @@ export const english = {
       a: 'The air pollution forecast for today is',
       b: 'out of 10'
     },
-    summaryText: 'How different levels of air pollution can affect health'
-  },
-  healthAdvice: {
-    paragraphs: {
-      a: 'Health advice for',
-      b: 'levels of air pollution'
+    caption:
+      'The daily air quality index (DAQI) tells you about levels of air pollution. It provides health advice for current levels.',
+    summaryText: 'How different levels of air pollution can affect health',
+    headText: {
+      a: 'Level',
+      b: 'Index',
+      c: 'Health advice'
+    },
+    healthAdvice: {
+      paragraphs: {
+        a: 'Health advice for',
+        b: 'levels of air pollution'
+      }
+    },
+    pageTexts: {
+      a: 'UK air pollution summary',
+      b: 'Latest at 5am on',
+      c: 'How air pollutants can affect your health',
+      d: 'Air pollutants monitored near by'
+    },
+    pollutantText: {
+      a: 'Gases',
+      b: 'Produced by burning fossil fuels. For example, in cars, power stations and factories.',
+      c: 'Particulate matter are tiny pieces of solid or liquid particles suspended in the air. They come from sources like car tyres, brakes, exhausts, dust, wood burning and pollen.',
+      d: 'Particulate matter (PM)'
+    },
+    pollutantsNames: {
+      a: 'Ozone',
+      b: 'Nitrogen dioxide',
+      c: 'Sulphur dioxide',
+      d: 'PM2.5',
+      e: 'PM10'
+    },
+    pollutantTable: {
+      a: 'miles away',
+      b: 'Pollutants',
+      c: 'Latest',
+      d: 'Level',
+      e: 'Low range',
+      f: 'Latest measurement at',
+      g: 'on'
+    },
+    levels: {
+      a: 'Low',
+      b: 'Moderate',
+      c: 'High',
+      d: 'Very high'
+    },
+    tooltipText: {
+      level:
+        'There are 4 levels: low, moderate, high and very high. The level is determined by the highest reading of a single pollutant.',
+      latest:
+        'Readings are measured every hour. The unit µg/&#13221; stands for micrograms (one millionth of a gram) per cubic metre of air.'
     }
   }
 }

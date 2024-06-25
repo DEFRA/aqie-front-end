@@ -9,7 +9,7 @@
     '',
     'More information about measurement',
     microgramcubic | safe,
-    'Latest'
+    daqi.pollutantTable.c
   )}}
 {% endset %}
 
@@ -29,7 +29,7 @@
     'More information about the level',
     'There are 4 levels: low, moderate, high and very high. The level is determined by the highest reading of a single pollutant.
     ',
-    'Level'
+    daqi.pollutantTable.d
   )}}
 {% endset %}
 {% set siteNameToggletip %}
@@ -41,7 +41,7 @@
   )}}
 {% endset %}
   <h3 class="govuk-heading-s govuk-!-margin-bottom-1">{{ siteNameToggletip | safe }}</h3>
-  <p class="govuk-caption-m govuk-!-margin-bottom-3">{{ site.distance }} miles away</p>
+  <p class="govuk-caption-m govuk-!-margin-bottom-3">{{ site.distance }} {{daqi.pollutantTable.a}}</p>
   {% set rows = [] %}
   {% for pollutant in site.pollutants %}
       {% set pollutantDetail = pollutantTypes[pollutant.type] %}
