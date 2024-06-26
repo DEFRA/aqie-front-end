@@ -13,7 +13,7 @@ export const commonMessagesCy = {
   moderate: {
     values: [4, 5, 6],
     advice:
-      'For most people, short term exposure to moderate levels of air pollution is not an issue.',
+      'I’r rhan fwyaf o bobl, dyw amlygiad byrdymor i lefelau cymedrol o lygredd aer ddim yn broblem.',
     atrisk: {
       adults:
         'Dylai oedolion sydd â phroblemau’r galon ac sy’n teimlo’n sâl ystyried gwneud ymarfer corff llai egnïol, yn enwedig y tu allan.',
