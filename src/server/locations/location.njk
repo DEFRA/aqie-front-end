@@ -28,10 +28,10 @@
     <div class="govuk-grid-column-two-thirds-from-desktop govuk-grid-column-full govuk-!-margin-bottom-9">
       {% include "daqi.njk" %}
       {% if airQuality.value >= 1 and airQuality.value <= 3 %}
-          <h2 class="govuk-heading-m">Health advice for {{ airQuality.readableBand }} levels of air pollution</h2>
+          <h2 class="govuk-heading-m">{{daqi.healthAdvice.paragraphs.a}} {{ airQuality.readableBand }} {{daqi.healthAdvice.paragraphs.b}}</h2>
           <p>{{ airQuality.advice }}</p>
       {% elseif airQuality.value >= 4 %}
-          <h2 class="govuk-heading-m">Health advice for {{ airQuality.readableBand }} levels of air pollution</h2>
+          <h2 class="govuk-heading-m">{{daqi.healthAdvice.paragraphs.a}} {{ airQuality.readableBand }} {{daqi.healthAdvice.paragraphs.b}}</h2>
           <p>{{ airQuality.advice }}</p>
           {% set adultsText %}
             {{ (airQuality.atrisk.adults) }}
@@ -50,17 +50,17 @@
           }) }}
       {% endif %}    
       {% include "daqi-index.njk" %}
-      <h2 class="govuk-heading-m">UK air pollution summary</h2>
+      <h2 class="govuk-heading-m">{{daqi.pageTexts.a}}</h2>
       <p class="govuk-!-margin-bottom-6">
         {{ forecastSummary }}
       </p>
-      <p class="govuk-caption-s govuk-!-margin-bottom-4">Latest at 5am on {{ "today" | govukDate }}</p>
+      <p class="govuk-caption-s govuk-!-margin-bottom-4">{{daqi.pageTexts.b}} {{ "today" | govukDate }}</p>
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6">
-      <h2 class="govuk-heading-m">How air pollutants can affect your health</h2>
+      <h2 class="govuk-heading-m">{{daqi.pageTexts.c}}</h2>
       {% include "pollutants.njk" %}
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6 govuk-!-margin-top-6">
 {% if monitoringSites|length %}
-<h2 class="govuk-heading-m">Air pollutants monitored near by</h2>
+<h2 class="govuk-heading-m">{{daqi.pageTexts.d}}</h2>
 {% endif %}
 {% for site in monitoringSites %}
 {% set time %}
@@ -68,22 +68,21 @@
 {% endset %}
 
 {% set measurementToggletip %}
-{% set microgramcubic = 'Readings are measured every hour. The unit µg/&#13221; stands for micrograms (one millionth of a gram) per cubic metre of air.'%}
+{% set microgramcubic = daqi.tooltipText.latest%}
   {{ toggletip(
-    'Latest',
+    daqi.pollutantTable.c,
     'More information about measurement',
     microgramcubic | safe,
-    'Latest'
+    daqi.pollutantTable.c
   )}}
 {% endset %}
 
 {% set levelToggletip %}
   {{ toggletip(
-    'Level',
+    daqi.pollutantTable.d,
     'More information about the level',
-    'There are 4 levels: low, moderate, high and very high. The level is determined by the highest reading of a single pollutant.
-    ',
-    'Level'
+    daqi.tooltipText.level,
+    daqi.pollutantTable.d
   )}}
 {% endset %}
 
@@ -96,7 +95,7 @@
   )}}
 {% endset %}
   <h3 class="govuk-heading-s govuk-!-margin-bottom-1 pollutant-table">{{ siteNameToggletip | safe }}</h3>
-  <p class="govuk-caption-m govuk-!-margin-bottom-3">{{ site.distance }} miles away</p>
+  <p class="govuk-caption-m govuk-!-margin-bottom-3">{{ site.distance }} {{daqi.pollutantTable.a}}</p>
   {% set rows = [] %}
 
   {% for key, pollutant in site.pollutants %}
@@ -104,7 +103,7 @@
       {% set pollutantDetail = pollutantTypes[key] %}
       {% set row = [
           { 
-              html: "<a class='govuk-!-margin-bottom-1' href='" + pollutantDetail.href + "'>" + pollutantDetail.title + "</a><span class='govuk-caption-s govuk-!-margin-bottom-1'>Low range " + pollutantDetail.low_range + "</span>",
+              html: "<a class='govuk-!-margin-bottom-1' href='" + pollutantDetail.href + "'>" + pollutantDetail.title + "</a><span class='govuk-caption-s govuk-!-margin-bottom-1'>" + daqi.pollutantTable.e + ' ' + pollutantDetail.low_range + "</span>",
               classes: "defra-aq-levels-table__cell--pollutant" 
           },
           { 
@@ -123,14 +122,14 @@
       classes: "govuk-!-margin-bottom-2",
       firstCellIsHeader: false,
       head: [
-        { text: "Pollutant", classes: "defra-aq-levels-table__cell--pollutant"},
+        { text: daqi.pollutantTable.b, classes: "defra-aq-levels-table__cell--pollutant"},
         { html: measurementToggletip, classes: "defra-aq-levels-table__cell--reading" },
         { html: levelToggletip, classes: "defra-aq-levels-table__cell--level" }
       ],
       rows: rows
   }) }}
   {# {% if loop.index == monitoringSites.length %} #}
-  <p class='govuk-caption-s govuk-!-margin-bottom-6'>Latest measurement at {{pollutantTime}} on {{ "today" | govukDate }}</p>
+  <p class='govuk-caption-s govuk-!-margin-bottom-6'>{{daqi.pollutantTable.f}} {{pollutantTime}} {{daqi.pollutantTable.g}} {{ "today" | govukDate }}</p>
   {# {%endif%} #}
 {% endfor %}
     </div>
