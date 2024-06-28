@@ -20,10 +20,10 @@ const logger = createLogger()
 const getLocationDataController = {
   handler: async (request, h) => {
     const { query } = request
-    const { referer } = request.headers
-    let lang = referer.slice(-2)
-    if (lang === 'on') {
-      lang = 'en'
+    const lang = 'en'
+
+    if (query.lang && query.lang === 'cy') {
+      return h.redirect('/lleoliad/cy?lang=cy')
     }
     const {
       searchLocation,
@@ -91,6 +91,9 @@ const getLocationDataController = {
       request.yar.set('locationType', '')
       if (lang === 'cy') {
         return h.redirect('/chwilio-lleoliad/cy')
+      }
+      if (query.lang === 'cy') {
+        return h.redirect('/lleoliad/cy')
       }
       return h.redirect('/search-location')
     }
@@ -198,7 +201,7 @@ const getLocationDataController = {
         const { results } = getOSPlaces
 
         if (!results || results.length === 0) {
-          if (query.lang === 'cy' || (lang === 'cy' && query.lang !== 'en')) {
+          if (query.lang === 'cy' || lang === 'cy') {
             return h.view('locations/location-not-found', {
               userLocation: locationNameOrPostcode,
               serviceName: welsh.notFoundLocation.heading,
@@ -289,7 +292,7 @@ const getLocationDataController = {
           //
           const airQuality = getAirQuality(forecastNum[0])
           const airQualityCy = getAirQualityCy(forecastNum[0])
-          if (query.lang === 'cy' || (lang === 'cy' && query.lang !== 'en')) {
+          if (query.lang === 'cy' || lang === 'cy') {
             return h.view('locations/location', {
               result: matches[0],
               name2: matches[0].GAZETTEER_ENTRY?.NAME2,
@@ -333,7 +336,7 @@ const getLocationDataController = {
             lang: request.query.lang
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
-          if (query.lang === 'cy' || (lang === 'cy' && query.lang !== 'en')) {
+          if (query.lang === 'cy' || lang === 'cy') {
             return h.view('locations/multiple-locations', {
               results: matches,
               paragraphs: welsh.multipleLocations.paragraphs,
@@ -391,7 +394,7 @@ const getLocationDataController = {
         const { result } = getNIPlaces
 
         if (!result || result.length === 0) {
-          if (query.lang === 'cy' || (lang === 'cy' && query.lang !== 'en')) {
+          if (query.lang === 'cy' || lang === 'cy') {
             return h.view('locations/location-not-found', {
               userLocation: locationNameOrPostcode,
               serviceName: welsh.notFoundLocation.heading,
@@ -447,29 +450,10 @@ const getLocationDataController = {
           }
         }
         const airQuality = getAirQuality(forecastNum[0])
-        const airQualityCy = getAirQualityCy(forecastNum[0])
-        if (query.lang === 'cy' || (lang === 'cy' && query.lang !== 'en')) {
-          return h.view('locations/location', {
-            result: locationData,
-            airQuality: airQualityCy,
-            airQualityData: airQualityDataCy.commonMessagesCy,
-            monitoringSites: nearestLocationsRange,
-            siteTypeDescriptions: siteTypeDescriptionsCy,
-            pollutantTypes: pollutantTypesCy,
-            displayBacklink: true,
-            forecastSummary: getDailySummary.today,
-            summaryDate: getDailySummary.issue_date,
-            nearestLocationsRange,
-            daqi: welsh.daqi,
-            title: welsh.multipleLocations.heading,
-            pageTitle: `${welsh.multipleLocations.title} ${userLocation}`,
-            serviceName: welsh.multipleLocations.serviceName,
-            footerTxt: welsh.footerTxt,
-            phaseBanner: welsh.phaseBanner,
-            backlink: welsh.backlink,
-            cookieBanner: welsh.cookieBanner,
-            lang: request.query?.lang ?? lang
-          })
+        if (lang === 'en') {
+          if (query.lang === 'cy') {
+            return h.redirect('/lleoliad/cy?lang=cy')
+          }
         }
         return h.view('locations/location', {
           result: locationData,
@@ -482,7 +466,6 @@ const getLocationDataController = {
           displayBacklink: true,
           forecastSummary: getDailySummary.today,
           summaryDate: getDailySummary.issue_date,
-          nearestLocationsRange,
           footerTxt,
           phaseBanner,
           backlink,
@@ -509,7 +492,9 @@ const getLocationDetailsController = {
       const locationId = request.params.id
       const { referer } = request.headers
       let lang = referer.slice(-2)
-      if (lang === 'on') {
+      if (query.lang) {
+        lang = query.lang
+      } else if (lang === 'on') {
         lang = 'en'
       }
       const {
