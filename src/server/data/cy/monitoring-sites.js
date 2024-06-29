@@ -121,7 +121,7 @@ export const monitoringSites = [
 
 // Pollutant reference data
 
-export const pollutantTypesCy = {
+export const pollutantTypes = {
   NO2: {
     title: 'Nitrogen deuocsid',
     href: '/llygryddion /nitrogen-dioxide/cy',
@@ -162,7 +162,7 @@ export const pollutantTypesCy = {
 // Suburban background area - Background Suburban
 // Rural background area - Background Rural
 // Urban background area - Background Urban
-export const siteTypeDescriptionsCy = {
+export const siteTypeDescriptions = {
   'Background Urban':
     "Mae'r safle monitro yma wedi'i leoli ger traffig cerbydau. Mae wedi'i leoli'n agos at ffordd, traffordd neu briffordd.Mae hyn yn golygu ein bod ni'n gwybod bod y llygryddion sydd wedi'u cofnodi yn dod o'r ffynhonnell yma. Rhaid i lygryddion gael eu mesur ar hyd darn o ffordd sy'n fwy na 100 metr o hyd.Bydd y chwiliedydd samplu o leiaf 25 metr i ffwrdd o gyffyrdd mawr a llai na 10 metr o ymyl y ffordd.",
   'Background Suburban':

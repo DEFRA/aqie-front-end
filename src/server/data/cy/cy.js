@@ -66,6 +66,14 @@ export const welsh = {
       g: 'Ewch yn ôl i chwilio am leoliad'
     }
   },
+  notFoundUrl: {
+    heading: 'Tudalen ddim i’w chanfod',
+    paragraphs: {
+      a: 'Nid oes tudalen yn ',
+      b: 'Gall hyn fod oherwydd:',
+      c: 'rydych wedi teipio neu gludo’r cyfeiriad gwe yn anghywir'
+    }
+  },
   multipleLocations: {
     title: 'Lleoliadau sy’n cyfateb',
     heading: 'Gwirio ansawdd aer lleol ',

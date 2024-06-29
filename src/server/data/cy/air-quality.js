@@ -1,4 +1,4 @@
-export const commonMessagesCy = {
+export const commonMessages = {
   low: {
     values: [1, 2, 3],
     advice: 'Mwynhewch eich gweithgareddau awyr agored arferol.',
@@ -58,11 +58,11 @@ export const commonMessagesCy = {
   }
 }
 
-export function getCommonMessageCy(band) {
-  return commonMessagesCy[band] || commonMessagesCy.unknown
+export function getCommonMessage(band) {
+  return commonMessages[band] || commonMessages.unknown
 }
 
-export function getAirQualityCy(aqValue) {
+export function getAirQuality(aqValue) {
   const value = aqValue || '4'
 
   const lookup = {
@@ -85,7 +85,7 @@ export function getAirQualityCy(aqValue) {
   const band = bandInfo.band
   const readableBand = bandInfo.readableBand
 
-  const message = getCommonMessageCy(band)
+  const message = getCommonMessage(band)
 
   return {
     value,

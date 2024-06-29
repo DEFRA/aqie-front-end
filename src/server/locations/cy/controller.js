@@ -1,9 +1,9 @@
 import {
-  siteTypeDescriptionsCy,
-  pollutantTypesCy
+  siteTypeDescriptions,
+  pollutantTypes
 } from '~/src/server/data/cy/monitoring-sites.js'
-import * as airQualityDataCy from '~/src/server/data/cy/air-quality.js'
-import { getAirQualityCy } from '~/src/server/data/cy/air-quality.js'
+import * as airQualityData from '~/src/server/data/cy/air-quality.js'
+import { getAirQuality } from '~/src/server/data/cy/air-quality.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { fetchData } from '~/src/server/locations/helpers/fetch-data'
@@ -29,7 +29,7 @@ const getLocationDataController = {
       daqi
     } = welsh
     let locationType = request?.payload?.locationType
-    const airQuality = getAirQualityCy(request.payload?.aq)
+    const airQuality = getAirQuality(request.payload?.aq)
     let locationNameOrPostcode = ''
     if (locationType === 'uk-location') {
       locationNameOrPostcode = request.payload.engScoWal
@@ -201,17 +201,19 @@ const getLocationDataController = {
             }
           }
 
-          const airQuality = getAirQualityCy(forecastNum[0])
+          const airQuality = getAirQuality(forecastNum[0])
           return h.view('locations/location', {
             result: matches[0],
             name2: matches[0].GAZETTEER_ENTRY?.NAME2,
             airQuality,
-            airQualityData: airQualityDataCy.commonMessages,
+            airQualityData: airQualityData.commonMessages,
             monitoringSites: nearestLocationsRange,
-            siteTypeDescriptions: siteTypeDescriptionsCy,
-            pollutantTypes: pollutantTypesCy,
+            siteTypeDescriptions,
+            pollutantTypes,
             displayBacklink: true,
             pageTitle: title,
+            backlink,
+            daqi,
             serviceName: multipleLocations.serviceName,
             forecastSummary: getDailySummary.today,
             summaryDate: getDailySummary.issue_date,
@@ -228,10 +230,10 @@ const getLocationDataController = {
             name2: matches[0].GAZETTEER_ENTRY?.NAME2,
             userLocation: locationNameOrPostcode,
             airQuality,
-            airQualityData: airQualityDataCy.commonMessages,
+            airQualityData: airQualityData.commonMessages,
             monitoringSites: nearestLocationsRange,
-            siteTypeDescriptions: siteTypeDescriptionsCy,
-            pollutantTypes: pollutantTypesCy,
+            siteTypeDescriptions,
+            pollutantTypes,
             pageTitle: `${multipleLocations.heading} ${userLocation}`,
             serviceName: multipleLocations.serviceName,
             footerTxt,
@@ -301,14 +303,14 @@ const getLocationDataController = {
         if (query.lang === 'en') {
           return h.redirect('/location')
         }
-        const airQuality = getAirQualityCy(forecastNum[0])
+        const airQuality = getAirQuality(forecastNum[0])
         return h.view('locations/location', {
           result: locationData,
           airQuality,
-          airQualityData: airQualityDataCy.commonMessagesCy,
+          airQualityData: airQualityData.commonMessages,
           monitoringSites: nearestLocationsRange,
-          siteTypeDescriptions: siteTypeDescriptionsCy,
-          pollutantTypes: pollutantTypesCy,
+          siteTypeDescriptions,
+          pollutantTypes,
           displayBacklink: true,
           forecastSummary: getDailySummary.today,
           summaryDate: getDailySummary.issue_date,
@@ -345,21 +347,23 @@ const getLocationDetailsController = {
         lang = 'en'
       }
       if (query?.lang && query?.lang === 'en') {
-        lang = 'en'
+        return h.redirect(`/location/${locationId}?lang=${query.lang}`)
       }
+      lang = request.query.lang ?? lang
       const {
-        notFoundLocation,
         footerTxt,
         phaseBanner,
         backlink,
-        cookieBanner
+        cookieBanner,
+        notFoundLocation,
+        daqi
       } = welsh
       const locationData = request.yar.get('locationData') || []
       let locationIndex = 0
       const locationDetails = locationData?.data?.find((item, index) => {
-        if (item.GAZETTEER_ENTRY.ID === locationId) {
+        if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
           locationIndex = index
-          return item.GAZETTEER_ENTRY.ID === locationId
+          return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
         }
         return null
       })
@@ -389,15 +393,16 @@ const getLocationDetailsController = {
           locationIndex,
           lang
         )
-        const airQuality = getAirQualityCy(forecastNum[0])
+        const airQuality = getAirQuality(forecastNum[0])
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
-          airQualityData: airQualityDataCy.commonMessages,
+          airQualityData: airQualityData.commonMessages,
           monitoringSites: nearestLocationsRange,
-          siteTypeDescriptions: siteTypeDescriptionsCy,
-          pollutantTypes: pollutantTypesCy,
+          siteTypeDescriptions,
+          pollutantTypes,
           pageTitle: title,
+          daqi,
           displayBacklink: true,
           forecastSummary: locationData.forecastSummary.today,
           summaryDate: locationData.forecastSummary.issue_date,

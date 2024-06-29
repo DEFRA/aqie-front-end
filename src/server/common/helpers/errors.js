@@ -1,3 +1,6 @@
+import { english } from '~/src/server/data/en/en.js'
+import { welsh } from '~/src/server/data/cy/cy.js'
+
 function statusCodeMessage(statusCode) {
   switch (true) {
     case statusCode === 404:
@@ -14,9 +17,14 @@ function statusCodeMessage(statusCode) {
 }
 
 function catchAll(request, h) {
-  const { query } = request
-  const { response } = request
-
+  const { query, response, path } = request
+  let lang = path?.slice(-2)
+  if (lang === 'cy') {
+    lang = 'cy'
+  } else {
+    lang = 'en'
+  }
+  lang = query.lang ?? lang
   if (!response.isBoom) {
     return h.continue
   }
@@ -25,14 +33,37 @@ function catchAll(request, h) {
 
   const statusCode = response.output.statusCode
   const errorMessage = statusCodeMessage(statusCode)
-
+  const { footerTxt, notFoundUrl, cookieBanner, multipleLocations } = english
+  if (lang === 'cy') {
+    return h
+      .view('error/index', {
+        pageTitle: errorMessage,
+        heading: statusCode,
+        message: errorMessage,
+        url: request.path,
+        notFoundUrl: welsh.notFoundUrl,
+        displayBacklink: false,
+        phaseBanner: false,
+        footerTxt: welsh.footerTxt,
+        cookieBanner: welsh.cookieBanner,
+        serviceName: welsh.multipleLocations.serviceName,
+        lang: request.query.lang ?? lang
+      })
+      .code(statusCode)
+  }
   return h
     .view('error/index', {
       pageTitle: errorMessage,
       heading: statusCode,
       message: errorMessage,
       url: request.path,
-      lang: query?.lang
+      notFoundUrl,
+      displayBacklink: false,
+      phaseBanner: false,
+      footerTxt,
+      cookieBanner,
+      serviceName: multipleLocations.serviceName,
+      lang: request.query.lang ?? lang
     })
     .code(statusCode)
 }

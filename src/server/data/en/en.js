@@ -66,6 +66,14 @@ export const english = {
       g: 'Go back to search a location'
     }
   },
+  notFoundUrl: {
+    heading: 'Page not found',
+    paragraphs: {
+      a: 'There is no page at ',
+      b: 'This may be because:',
+      c: 'you typed or pasted the web address incorrectly'
+    }
+  },
   multipleLocations: {
     pageTitle: 'Check local air quality - GOV.UK',
     title: 'Locations matching',
