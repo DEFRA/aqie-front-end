@@ -102,7 +102,7 @@ export const english = {
       b: "We'd also like to use analytics cookies so we can understand how you use the service and make improvements."
     },
     buttons: {
-      a: 'Accept analytics',
+      a: 'Accept analytics cookies',
       b: 'Reject analytics cookies',
       c: 'View cookies'
     }
@@ -176,6 +176,146 @@ export const english = {
         'The level is calculated based on the daily air quality index (DAQI). There are 4 levels: low, moderate, high and very high.',
       latest:
         'Readings are measured every hour. The unit µg/&#13221; stands for micrograms (one millionth of a gram) per cubic metre of air.'
+    }
+  },
+  pollutants: {
+    ozone: {
+      title: 'Ozone (O₃)',
+      pageTitle: 'Ozone(O₃) – Check local air quality – GOV.UK',
+      headerText: 'Check local air quality',
+      headings: {
+        a: 'Sources of ozone',
+        b: 'Health effects'
+      },
+      paragraphs: {
+        a: 'There are no major emission sources of ozone itself. Reactions between other pollutants form ozone in the air. For example, when pollutants from cars, power stations and factories react with sunlight.',
+        b: 'Ground level ozone can be at unhealthy levels on both hot and cold days. It can travel by the wind, affecting both urban and rural areas.',
+        c: 'Short term exposure to ozone can cause:',
+        d: 'shortness of breath, wheezing and coughing',
+        e: 'asthma attacks',
+        f: 'increased risk of respiratory infections',
+        g: 'irritation of eyes, nose and throat',
+        h: 'Long term exposure to ozone may lead to:',
+        i: 'increased respiratory illnesses',
+        j: 'nervous system issues',
+        k: 'cancer',
+        l: 'heart issues',
+        m: 'Long term exposure to high levels of ozone may cause symptoms like coughing or difficulty breathing.'
+      }
+    },
+    nitrogenDioxide: {
+      title: 'Nitrogen dioxide (NO₂)',
+      pageTitle: 'Nitrogen dioxide (NO₂) – Check local air quality – GOV.UK',
+      headerText: 'Check local air quality',
+      headings: {
+        a: 'Sources of nitrogen dioxide',
+        b: 'Health effects'
+      },
+      paragraphs: {
+        a: 'Nitrogen dioxide is a colourless gas. It’s mainly produced during:',
+        b: 'burning of petrol or diesel in a car engine',
+        c: 'burning natural gas in a central-heating boiler or power station',
+        d: 'welding',
+        e: 'the use of explosives',
+        f: 'commercial manufacturing',
+        g: 'food manufacturing',
+        h: 'Short term exposure to nitrogen dioxide can cause:',
+        i: 'asthma attacks',
+        j: 'respiratory infections',
+        k: 'symptoms of lung or heart conditions to get worse',
+        l: 'Long term exposure to nitrogen dioxide can cause:',
+        m: 'an increase risk of respiratory infections',
+        n: 'poorer lung function in children'
+      }
+    },
+    sulphurDioxide: {
+      title: 'Sulphur dioxide (SO₂)',
+      pageTitle: 'Sulphur dioxide (NO₂) – Check local air quality – GOV.UK',
+      headerText: 'Check local air quality',
+      headings: {
+        a: 'Sources of sulphur dioxide',
+        b: 'Health effects'
+      },
+      paragraphs: {
+        a: 'Sulphur dioxide is a colourless gas with a strong odour. It’s mainly produced from:',
+        b: 'burning petrol or diesel in vehicles',
+        c: 'gas boilers',
+        d: 'coal burning power stations',
+        e: 'commercial manufacturing',
+        f: 'food manufacturing',
+        g: 'Short term exposure can cause irritation to the:',
+        h: 'eyes',
+        i: 'nose',
+        j: 'throat',
+        k: 'Long term exposure at high levels may lead to:',
+        l: 'reduced lung function',
+        m: 'altered sense of smell',
+        n: 'increased respiratory infections'
+      }
+    },
+    particulateMatter10: {
+      title: 'Particulate matter (PM10)',
+      pageTitle: 'Particulate matter (PM10) – Check local air quality – GOV.UK',
+      headerText: 'Check local air quality',
+      headings: {
+        a: 'Sources of PM10',
+        b: 'Health effects'
+      },
+      paragraphs: {
+        a: 'Particulate matter (PM) are small particles of solids or liquids that are in the air. The particles are only 10 micrometres in diameter. For context, the width of a human hair is 50 to 70 micrometres.',
+        b: 'The main sources of particulate matter are:',
+        c: 'dust from construction sites',
+        d: 'dust from landfills',
+        e: 'dust from agriculture',
+        f: 'wildfires',
+        g: 'pollen',
+        h: 'power stations',
+        i: 'vehicles',
+        j: 'Short term health impacts of PM10 can include:',
+        k: 'difficulty breathing',
+        l: 'coughing',
+        m: 'eye, nose and throat irritation',
+        n: 'chest tightness and pain',
+        o: 'Long term health impacts of PM10 can include:',
+        p: 'lung tissue damage',
+        q: 'asthma',
+        r: 'heart failure',
+        s: 'cancer',
+        t: 'chronic obstructive pulmonary disease (COPD)'
+      }
+    },
+    particulateMatter25: {
+      title: 'Particulate matter (PM2.5)',
+      pageTitle:
+        'Particulate matter (PM2.5) – Check local air quality – GOV.UK',
+      headerText: 'Check local air quality',
+      headings: {
+        a: 'Sources of PM2.5',
+        b: 'Health effects'
+      },
+      paragraphs: {
+        a: 'Particulate matter (PM) are small particles of solids or liquids that are in the air. The particles are only 2.5 micrometres in diameter. For context, the width of a human hair is 50 to 70 micrometres.',
+        b: 'PM2.5 particles may include:',
+        c: 'dust',
+        d: 'soot',
+        e: 'smoke',
+        f: 'drops of liquid',
+        g: 'The main sources of particulate matter are from:',
+        h: 'burning of fuel by vehicles, industry and domestic properties',
+        i: 'wear of tyres and brakes',
+        j: 'wind blown soil and dust',
+        k: 'sea spray particles',
+        l: 'burning vegetation',
+        m: 'Short term health impacts of PM2.5 can include worsening of conditions such as:',
+        n: 'asthma',
+        o: 'chronic obstructive pulmonary disease (COPD)',
+        p: 'Long term health impacts of PM2.5 can include:',
+        q: 'strokes',
+        r: 'lung cancer',
+        s: 'diabetes',
+        t: 'Alzheimer’s and Parkinson’s disease',
+        u: 'poor lung health in children'
+      }
     }
   }
 }

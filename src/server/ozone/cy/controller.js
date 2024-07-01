@@ -1,10 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { english } from '~/src/server/data/en/en.js'
+import { welsh } from '~/src/server/data/cy/cy.js'
 
 const ozoneController = {
   handler: (request, h) => {
-    const { ozone } = english.pollutants
-    const { footerTxt, cookieBanner, phaseBanner, multipleLocations } = english
+    const { ozone } = welsh.pollutants
+    const { footerTxt, cookieBanner, phaseBanner, multipleLocations } = welsh
     const { query, path } = request
     let lang = path?.slice(-2)
     if (lang === 'cy') {
@@ -13,13 +13,13 @@ const ozoneController = {
       lang = 'en'
     }
     lang = query.lang ?? lang
-    if (query?.lang && query?.lang === 'cy') {
-      return h.redirect('/llygryddion/oson/cy')
+    if (query?.lang && query?.lang === 'en') {
+      return h.redirect('/pollutants/ozone')
     }
     return h.view('ozone/index', {
       pageTitle: ozone.pageTitle,
       ozone,
-      page: 'ozone',
+      page: 'ozone-cy',
       displayBacklink: false,
       phaseBanner,
       footerTxt,

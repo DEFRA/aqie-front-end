@@ -2,7 +2,7 @@
 {% extends 'layouts/page.njk' %}
 
 {% set caption = "" %}
-{% set title = "Ozone (O₃)" %}
+{% set title = ozone.title %}
 
 {% set displayBacklink = false %}
 {% set pageHeadingSize = pageHeadingSize or "xl" %}
@@ -14,33 +14,33 @@
       <h1 class="govuk-heading-xl">{% if caption %}<span class="govuk-caption-{{ pageHeadingSize }}">{{ caption }}</span>
         {% endif %}
         {{ title | safe }}</h1>
-        <h2 class="govuk-heading-m">Sources of ozone</h2>
-        <p>There are no major emission sources of ozone itself. Reactions between other pollutants form ozone in the air. For example, when pollutants from cars, power stations and factories react with sunlight.
+        <h2 class="govuk-heading-m">{{ozone.headings.a}}</h2>
+        <p>{{ozone.paragraphs.a}}
         </p>
         <p>
-        Ground level ozone can be at unhealthy levels on both hot and cold days. It can travel by the wind, affecting both urban and rural areas.
+        {{ozone.paragraphs.b}}
         </p> 
-        <h2 class="govuk-heading-m">Health effects </h2>
+        <h2 class="govuk-heading-m">{{ozone.headings.b}} </h2>
         <p>
-          Short term exposure to ozone can cause:
+          {{ozone.paragraphs.c}}
         </p>
         <ul class="govuk-list govuk-list--bullet">
-          <li>shortness of breath, wheezing and coughing</li>
-          <li>asthma attacks</li>
-          <li>increased risk of respiratory infections</li>
-          <li>irritation of eyes, nose and throat
+          <li>{{ozone.paragraphs.d}}g</li>
+          <li>{{ozone.paragraphs.e}}</li>
+          <li>{{ozone.paragraphs.f}}</li>
+          <li>{{ozone.paragraphs.g}}
           </li>
         </ul>
         <p>
-          Long term exposure to ozone may lead to:
+          {{ozone.paragraphs.h}}
         </p>
         <ul class="govuk-list govuk-list--bullet">
-          <li>increased respiratory illnesses</li>
-          <li>nervous system issues</li>
-          <li>cancer</li>
-          <li>heart issues</li>
+          <li>{{ozone.paragraphs.i}}</li>
+          <li>{{ozone.paragraphs.j}}</li>
+          <li>{{ozone.paragraphs.k}}</li>
+          <li>{{ozone.paragraphs.l}}</li>
         </ul>
-        <p class="govuk-body">Long term exposure to high levels of ozone may cause symptoms like coughing or difficulty breathing.</p>
+        <p class="govuk-body">{{ozone.paragraphs.m}}</p>
     </div>
   </div>
 {% endblock %}

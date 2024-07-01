@@ -43,7 +43,6 @@ function catchAll(request, h) {
         url: request.path,
         notFoundUrl: welsh.notFoundUrl,
         displayBacklink: false,
-        phaseBanner: false,
         footerTxt: welsh.footerTxt,
         cookieBanner: welsh.cookieBanner,
         serviceName: welsh.multipleLocations.serviceName,
