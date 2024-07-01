@@ -1,4 +1,4 @@
-import { getLocationDataController } from '~/src/server/locations/controller'
+import { getLocationDataController } from '~/src/server/locations/cy/controller'
 
 const locationsCy = {
   plugin: {

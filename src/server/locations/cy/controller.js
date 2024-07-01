@@ -1,9 +1,9 @@
 import {
   siteTypeDescriptions,
   pollutantTypes
-} from '~/src/server/data/monitoring-sites.js'
-import * as airQualityData from '~/src/server/data/air-quality.js'
-import { getAirQuality } from '~/src/server/data/air-quality.js'
+} from '~/src/server/data/cy/monitoring-sites.js'
+import * as airQualityData from '~/src/server/data/cy/air-quality.js'
+import { getAirQuality } from '~/src/server/data/cy/air-quality.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { fetchData } from '~/src/server/locations/helpers/fetch-data'
@@ -13,11 +13,11 @@ const logger = createLogger()
 const getLocationDataController = {
   handler: async (request, h) => {
     const { query } = request
-    const { referer } = request.headers
-    let lang = referer.slice(-2)
-    if (lang === 'on') {
-      lang = 'en'
+    const lang = 'cy'
+    if (query?.lang && query?.lang === 'en') {
+      return h.redirect('/location?lang=en')
     }
+
     const {
       searchLocation,
       notFoundLocation,
@@ -25,7 +25,8 @@ const getLocationDataController = {
       footerTxt,
       phaseBanner,
       backlink,
-      cookieBanner
+      cookieBanner,
+      daqi
     } = welsh
     let locationType = request?.payload?.locationType
     const airQuality = getAirQuality(request.payload?.aq)
@@ -60,7 +61,7 @@ const getLocationDataController = {
         errorMessage: { text: searchLocation.errorText.radios.list.text } // 'Select where you want to check' }
       })
       request.yar.set('locationType', '')
-      return h.redirect('/search-location?lang=' + query?.lang)
+      return h.redirect('/chwilio-lleoliad/cy')
     }
     try {
       let userLocation = locationNameOrPostcode.toUpperCase() // Use 'let' to allow reassignment
@@ -95,7 +96,7 @@ const getLocationDataController = {
           }
         })
         request.yar.set('locationType', 'uk-location')
-        return h.redirect('/search-location?lang=' + query?.lang)
+        return h.redirect('/chwilio-lleoliad/cy')
       }
       if (!userLocation && locationType === 'ni-location') {
         request.yar.set('errors', {
@@ -115,7 +116,7 @@ const getLocationDataController = {
           }
         })
         request.yar.set('locationType', 'ni-location')
-        return h.redirect('/search-location?lang=' + query?.lang)
+        return h.redirect('/chwilio-lleoliad/cy')
       }
 
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
@@ -132,7 +133,7 @@ const getLocationDataController = {
             phaseBanner,
             backlink,
             cookieBanner,
-            lang: request.query.lang
+            lang: request.query.lang ?? lang
           })
         }
 
@@ -160,6 +161,7 @@ const getLocationDataController = {
           }
           matches = [matches[0]]
         }
+
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
           matches,
           getForecasts.forecasts,
@@ -198,7 +200,7 @@ const getLocationDataController = {
               title = locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
             }
           }
-          //
+
           const airQuality = getAirQuality(forecastNum[0])
           return h.view('locations/location', {
             result: matches[0],
@@ -210,12 +212,17 @@ const getLocationDataController = {
             pollutantTypes,
             displayBacklink: true,
             pageTitle: title,
-            serviceName: 'Check local air quality',
+            backlink,
+            daqi,
+            serviceName: multipleLocations.serviceName,
             forecastSummary: getDailySummary.today,
             summaryDate: getDailySummary.issue_date,
             lang: request.query.lang ?? lang
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
+          if (lang === 'en') {
+            return h.redirect('/location')
+          }
           return h.view('locations/multiple-locations', {
             results: matches,
             title: multipleLocations.title,
@@ -229,6 +236,10 @@ const getLocationDataController = {
             pollutantTypes,
             pageTitle: `${multipleLocations.heading} ${userLocation}`,
             serviceName: multipleLocations.serviceName,
+            footerTxt,
+            phaseBanner,
+            backlink,
+            cookieBanner,
             lang: request.query.lang ?? lang
           })
         } else {
@@ -289,6 +300,9 @@ const getLocationDataController = {
               locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
           }
         }
+        if (query.lang === 'en') {
+          return h.redirect('/location')
+        }
         const airQuality = getAirQuality(forecastNum[0])
         return h.view('locations/location', {
           result: locationData,
@@ -297,11 +311,18 @@ const getLocationDataController = {
           monitoringSites: nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
-          pageTitle: title,
           displayBacklink: true,
           forecastSummary: getDailySummary.today,
           summaryDate: getDailySummary.issue_date,
+          daqi,
           nearestLocationsRange,
+          title,
+          pageTitle: `${multipleLocations.title} ${userLocation}`,
+          serviceName: multipleLocations.serviceName,
+          footerTxt,
+          phaseBanner,
+          backlink,
+          cookieBanner,
           lang: request.query?.lang ?? lang
         })
       }
@@ -318,25 +339,31 @@ const getLocationDataController = {
 const getLocationDetailsController = {
   handler: (request, h) => {
     try {
+      const { query } = request
       const locationId = request.params.id
       const { referer } = request.headers
       let lang = referer.slice(-2)
       if (lang === 'on') {
         lang = 'en'
       }
+      if (query?.lang && query?.lang === 'en') {
+        return h.redirect(`/location/${locationId}?lang=${query.lang}`)
+      }
+      lang = request.query.lang ?? lang
       const {
-        notFoundLocation,
         footerTxt,
         phaseBanner,
         backlink,
-        cookieBanner
+        cookieBanner,
+        notFoundLocation,
+        daqi
       } = welsh
       const locationData = request.yar.get('locationData') || []
       let locationIndex = 0
       const locationDetails = locationData?.data?.find((item, index) => {
-        if (item.GAZETTEER_ENTRY.ID === locationId) {
+        if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
           locationIndex = index
-          return item.GAZETTEER_ENTRY.ID === locationId
+          return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
         }
         return null
       })
@@ -375,6 +402,7 @@ const getLocationDetailsController = {
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: title,
+          daqi,
           displayBacklink: true,
           forecastSummary: locationData.forecastSummary.today,
           summaryDate: locationData.forecastSummary.issue_date,

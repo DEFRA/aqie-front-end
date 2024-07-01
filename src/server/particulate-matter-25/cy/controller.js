@@ -1,10 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { english } from '~/src/server/data/en/en.js'
+import { welsh } from '~/src/server/data/cy/cy.js'
 
 const particulateMatter25Controller = {
   handler: (request, h) => {
-    const { particulateMatter25 } = english.pollutants
-    const { footerTxt, cookieBanner, phaseBanner, multipleLocations } = english
+    const { particulateMatter25 } = welsh.pollutants
+    const { footerTxt, cookieBanner, phaseBanner, multipleLocations } = welsh
     const { query, path } = request
     let lang = path?.slice(-2)
     if (lang === 'cy') {
@@ -13,8 +13,8 @@ const particulateMatter25Controller = {
       lang = 'en'
     }
     lang = query.lang ?? lang
-    if (query?.lang && query?.lang === 'cy') {
-      return h.redirect('/llygryddion/mater-gronynnol-25/cy')
+    if (query?.lang && query?.lang === 'en') {
+      return h.redirect('/pollutants/particulate-matter-25')
     }
     return h.view('particulate-matter-25/index', {
       pageTitle: particulateMatter25.pageTitle,

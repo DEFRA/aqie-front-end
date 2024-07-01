@@ -66,6 +66,14 @@ export const welsh = {
       g: 'Ewch yn ôl i chwilio am leoliad'
     }
   },
+  notFoundUrl: {
+    heading: 'Tudalen ddim i’w chanfod',
+    paragraphs: {
+      a: 'Nid oes tudalen yn ',
+      b: 'Gall hyn fod oherwydd:',
+      c: 'rydych wedi teipio neu gludo’r cyfeiriad gwe yn anghywir'
+    }
+  },
   multipleLocations: {
     title: 'Lleoliadau sy’n cyfateb',
     heading: 'Gwirio ansawdd aer lleol ',
@@ -94,7 +102,7 @@ export const welsh = {
       b: "Hoffem hefyd ddefnyddio cwcis dadansoddol fel y gallwn ddeall sut rydych yn defnyddio'r gwasanaeth a gwneud gwelliannau."
     },
     buttons: {
-      a: 'Derbyn dadansoddeg',
+      a: 'Derbyn cwcis dadansoddeg',
       b: 'Gwrthod cwcis dadansoddeg',
       c: 'Gweld cwcis'
     }
@@ -169,6 +177,145 @@ export const welsh = {
         'Mae’r lefel yn cael ei chyfrifo ar sail y mynegai ansawdd aer dyddiol (DAQI). Mae pedair lefel: isel, cymedrol, uchel ac uchel iawn.',
       latest:
         'Mae’r darlleniadau’n cael eu mesur bob awr.Mae’r uned µg/&#13221; yn sefyll am ficrogramau (miliynfed o gram) am bob metr ciwbig o aer.'
+    }
+  },
+  pollutants: {
+    ozone: {
+      title: 'Osôn (O3)',
+      pageTitle: 'Ozone(O₃) – Check local air quality – GOV.UK',
+      headerText: 'Gwirio ansawdd aer lleol',
+      headings: {
+        a: 'Ffynonellau osôn',
+        b: 'Effeithiau ar iechyd'
+      },
+      paragraphs: {
+        a: 'Does dim ffynonellau allyriadau mawr o osôn ei hun. Mae osôn yn yr aer yn cael ei ffurfio gan adweithiau rhwng llygryddion eraill, er enghraifft, pan fydd llygryddion o geir, gorsafoedd pŵer a ffatrïoedd yn adweithio gyda golau’r haul.',
+        b: 'Gall osôn ar lefel y ddaear fod ar lefelau afiach ar ddiwrnodau poeth ac oer. Gall deithio gyda’r gwynt, gan effeithio ar ardaloedd trefol a gwledig.',
+        c: 'Gall amlygiad byrdymor i osôn achosi:',
+        d: 'diffyg anadl, gwichian a phesychu',
+        e: 'pyliau asthma',
+        f: 'mwy o risg o heintiau’r anadl',
+        g: 'llid yn y llygaid, y trwyn a’r gwddf',
+        h: 'Gall amlygiad hirdymor i osôn arwain at y canlynol:',
+        i: 'mwy o salwch yr anadl',
+        j: 'materion y system nerfol',
+        k: 'canser',
+        l: 'materion y galon',
+        m: 'Gall amlygiad hirdymor i lefelau uchel o osôn achosi symptomau fel peswch neu anhawster anadlu.'
+      }
+    },
+    nitrogenDioxide: {
+      title: 'Nitrogen deuocsid (NO₂)',
+      pageTitle: 'Nitrogen deuocsid (NO₂) – Check local air quality – GOV.UK',
+      headerText: 'Gwirio ansawdd aer lleol',
+      headings: {
+        a: 'Ffynonellau nitrogen deuocsid',
+        b: 'Effeithiau ar iechyd'
+      },
+      paragraphs: {
+        a: 'Mae nitrogen deuocsid yn nwy di-liw. Mae’n cael ei gynhyrchu’n bennaf yn sgil:',
+        b: 'llosgi petrol neu ddisel mewn injan car',
+        c: 'llosgi nwy naturiol mewn boeler gwres canolog neu orsaf bŵer',
+        d: 'weldio',
+        e: 'defnyddio ffrwydron',
+        f: 'gweithgynhyrchu masnachol ',
+        g: 'gweithgynhyrchu bwyd',
+        h: 'Gall amlygiad byrdymor i nitrogen deuocsid achosi:',
+        i: 'pyliau asthma',
+        j: 'heintiau’r anadl',
+        k: 'symptomau cyflyrau’r ysgyfaint neu’r galon i waethygu',
+        l: 'Gall amlygiad hirdymor i nitrogen deuocsid achosi:',
+        m: 'mwy o risg o heintiau anadlol',
+        n: 'gweithrediad ysgyfaint gwaeth mewn plant'
+      }
+    },
+    sulphurDioxide: {
+      title: 'Sylffwr deuocsid (SO₂)',
+      pageTitle: 'Sylffwr deuocsid (SO₂) – Gwirio ansawdd aer lleol – GOV.UK',
+      headerText: 'Gwirio ansawdd aer lleol',
+      headings: {
+        a: 'Ffynonellau sylffwr deuocsid',
+        b: 'Effeithiau ar iechyd'
+      },
+      paragraphs: {
+        a: 'Mae sylffwr deuocsid yn nwy di-liw sydd ag arogl cryf. Mae’n cael ei gynhyrchu’n bennaf yn sgil:',
+        b: 'cerbydau',
+        c: 'boeleri nwy',
+        d: 'pwerdai sy’n llosgi glo',
+        e: 'gweithgynhyrchu masnachol',
+        f: 'gweithgynhyrchu bwyd',
+        g: 'Gall amlygiad byrdymor achosi llid ar y canlynol:',
+        h: 'llygaid',
+        i: 'trwyn',
+        j: 'gwddf',
+        k: 'Gall amlygiad hirdymor ar lefelau uchel arwain at y canlynol:',
+        l: 'llai o weithrediad yn yr ysgyfaint',
+        m: 'newid synnwyr arogli',
+        n: 'mwy o heintiau’r anadl'
+      }
+    },
+    particulateMatter10: {
+      title: 'Mater gronynnol (PM10)',
+      pageTitle: 'Mater gronynnol (PM10) – Gwirio ansawdd aer lleol – GOV.UK',
+      headerText: 'Gwirio ansawdd aer lleol',
+      headings: {
+        a: 'Ffynonellau PM10',
+        b: 'Effeithiau ar iechyd'
+      },
+      paragraphs: {
+        a: 'Mae mater gronynnol (PM) yn ronynnau mân iawn o solidau neu hylifau yn yr aer. Dim ond 10 micrometr mewn diamedr yw’r gronynnau.O ran cyd- destun, mae lled blewyn o wallt dynol yn 50 i 70 micrometr.',
+        b: 'cerbydau',
+        c: 'boeleri nwy',
+        d: 'pwerdai sy’n llosgi glo',
+        e: 'gweithgynhyrchu masnachol',
+        f: 'gweithgynhyrchu bwyd',
+        g: 'Gall amlygiad byrdymor achosi llid ar y canlynol:',
+        h: 'llygaid',
+        i: 'trwyn',
+        j: 'gwddf',
+        k: 'Gall amlygiad hirdymor ar lefelau uchel arwain at y canlynol:',
+        l: 'llai o weithrediad yn yr ysgyfaint',
+        m: 'newid synnwyr arogli',
+        n: 'mwy o heintiau’r anadl',
+        o: 'Gall effeithiau hirdymor PM10 ar iechyd gynnwys:',
+        p: 'niwed i feinwe’r ysgyfaint',
+        q: 'asthma',
+        r: 'methiant y galon',
+        s: 'cancr',
+        t: 'clefyd rhwystrol cronig yr ysgyfaint (COPD)'
+      }
+    },
+    particulateMatter25: {
+      title: 'Mater gronynnol (PM2.5)',
+      pageTitle: 'Mater gronynnol (PM2.5) – Check local air quality – GOV.UK',
+      headerText: 'Check local air quality',
+      headings: {
+        a: 'Ffynonellau PM2.5',
+        b: 'Health effects'
+      },
+      paragraphs: {
+        a: 'Mae mater gronynnol (PM) yn ronynnau mân iawn o solidau neu hylifau sydd yn yr aer. Dim ond 2.5 micrometr mewn diamedr yw’r gronynnau.O ran cyd- destun, mae lled blewyn o wallt dynol yn 50 i 70 micrometr.',
+        b: 'Gall gronynnau PM2.5 gynnwys:',
+        c: 'llwch',
+        d: 'huddygl',
+        e: 'mwg',
+        f: 'diferion hylif',
+        g: 'Prif ffynonellau mater gronynnol yw:',
+        h: 'llosgi tanwydd mewn cerbydau, diwydiant ac eiddo domestig',
+        i: 'traul ar deiars a breciau',
+        j: 'pridd a llwch yn cael eu chwythu gan y gwynt',
+        k: 'gronynnau ewyn y môr',
+        l: 'llosgi llystyfiant',
+        m: 'Gall effeithiau iechyd byrdymor PM2.5 gynnwys cyflyrau sy’n gwaethygu, fel:',
+        n: 'asma',
+        o: 'clefyd rhwystrol cronig yr ysgyfaint (COPD)',
+        p: 'Gall effeithiau hirdymor PM2.5 gynnwys:',
+        q: 'strôc',
+        r: 'canser yr ysgyfaint',
+        s: 'diabetes',
+        t: 'clefyd Alzheimer a chlefyd Parkinson',
+        u: 'iechyd ysgyfaint gwael mewn plant'
+      }
     }
   }
 }

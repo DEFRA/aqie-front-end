@@ -25,7 +25,7 @@
       </li>
     </ul>
         {% endfor %}
-    <p class="govuk-body govuk-!-margin-top-6">{{paragraphs.b}} <a href={% if htmlLang == 'en' %}'/search-location'{%else%}'/chwilio-lleoliad/cy'{%endif%}>{{paragraphs.c}}</a></p>
+    <p class="govuk-body govuk-!-margin-top-6">{{paragraphs.b}} <a href={% if htmlLang == 'en' %}'/search-location'{%else%}'/chwilio-lleoliad/cy?lang=cy'{%endif%}>{{paragraphs.c}}</a></p>
   </div>
 </div>
 {% endblock %}

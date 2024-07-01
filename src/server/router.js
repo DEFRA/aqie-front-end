@@ -10,10 +10,15 @@ import { locationId } from '~/src/server/location-id/index'
 import { locationIdCy } from '~/src/server/location-id/cy/index'
 import { serveStaticFiles } from '~/src/server/common/helpers/serve-static-files'
 import { nitrogenDioxide } from '~/src/server/nitrogen-dioxide/index'
+import { nitrogenDioxideCy } from '~/src/server/nitrogen-dioxide/cy/index'
 import { ozone } from '~/src/server/ozone/index'
+import { ozoneCy } from '~/src/server/ozone/cy/index'
 import { particulateMatter10 } from '~/src/server/particulate-matter-10/index'
+import { particulateMatter10Cy } from '~/src/server/particulate-matter-10/cy/index'
 import { particulateMatter25 } from '~/src/server/particulate-matter-25/index'
+import { particulateMatter25Cy } from '~/src/server/particulate-matter-25/cy/index'
 import { sulphurDioxide } from '~/src/server/sulphur-dioxide/index'
+import { sulphurDioxideCy } from '~/src/server/sulphur-dioxide/cy/index'
 import { privacy } from '~/src/server/privacy/index'
 import { home } from '~/src/server/home/index'
 import { cookies } from '~/src/server/cookies/index'
@@ -52,10 +57,15 @@ const router = {
         locationIdCy,
         serveStaticFiles,
         nitrogenDioxide,
+        nitrogenDioxideCy,
         ozone,
+        ozoneCy,
         particulateMatter10,
+        particulateMatter10Cy,
         particulateMatter25,
+        particulateMatter25Cy,
         sulphurDioxide,
+        sulphurDioxideCy,
         privacy,
         home,
         cookies,

@@ -1,10 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { english } from '~/src/server/data/en/en.js'
+import { welsh } from '~/src/server/data/cy/cy.js'
 
 const nitrogenDioxideController = {
   handler: (request, h) => {
-    const { nitrogenDioxide } = english.pollutants
-    const { footerTxt, cookieBanner, phaseBanner, multipleLocations } = english
+    const { nitrogenDioxide } = welsh.pollutants
+    const { footerTxt, cookieBanner, phaseBanner, multipleLocations } = welsh
     const { query, path } = request
     let lang = path?.slice(-2)
     if (lang === 'cy') {
@@ -13,8 +13,8 @@ const nitrogenDioxideController = {
       lang = 'en'
     }
     lang = query.lang ?? lang
-    if (query?.lang && query?.lang === 'cy') {
-      return h.redirect('/llygryddion/nitrogen-deuocsid/cy')
+    if (query?.lang && query?.lang === 'en') {
+      return h.redirect('/pollutants/nitrogen-dioxide')
     }
     return h.view('nitrogen-dioxide/index', {
       pageTitle: nitrogenDioxide.pageTitle,

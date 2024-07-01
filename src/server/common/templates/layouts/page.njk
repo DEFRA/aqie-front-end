@@ -90,13 +90,15 @@
 
 {% block beforeContent %}
 {%if page != "home"%}
+{% if notFoundUrl %}
+{% else %}
   {{ govukPhaseBanner({
     tag: {
       text: phaseBanner.paragraphs.a
     },
     html: phaseBanner.paragraphs.b + " <a class='govuk-link' href='https://defragroup.eu.qualtrics.com/jfe/form/SV_dj4wJCoOkFQLXfM'>" + phaseBanner.paragraphs.c + " </a>" + phaseBanner.paragraphs.d
   }) }}
-
+{% endif %}
  {{ super() }}
 {%if page != "Check local air quality"%}
   {%if displayBacklink %}
@@ -109,7 +111,7 @@
   {%if htmlLang == "cy"%}
     {{ govukBackLink({
     text: backlink.text,
-    href: '/chwilio-lleoliad/cy'
+    href: '/chwilio-lleoliad/cy?lang=cy'
   }) }}
   {% endif %}
   {% endif %}

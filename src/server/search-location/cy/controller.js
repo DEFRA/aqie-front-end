@@ -11,7 +11,7 @@ const searchLocationController = {
     const { searchLocation, footerTxt, phaseBanner, backlink, cookieBanner } =
       welsh
     if (query.lang === 'en') {
-      return h.redirect('/search-location?lang=' + query?.lang)
+      return h.redirect('/search-location?lang=en')
     }
     const errors = request.yar.get('errors')
     const errorMessage = request.yar.get('errorMessage')

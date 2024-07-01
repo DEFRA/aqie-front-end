@@ -121,30 +121,30 @@ export const monitoringSites = [
 
 // Pollutant reference data
 
-export const pollutantTypesCy = {
+export const pollutantTypes = {
   NO2: {
     title: 'Nitrogen deuocsid',
-    href: '/llygryddion /nitrogen-dioxide/cy',
+    href: '/llygryddion/nitrogen-deuocsid/cy',
     low_range: '0 to 200'
   },
   MP10: {
     title: 'PM10',
-    href: '/llygryddion/mater-gronynnol-10/cy',
+    href: '/llygryddion/mater gronynnol-10/cy',
     low_range: '0 to 50'
   },
   GE10: {
     title: 'PM10',
-    href: '/llygryddion/mater-gronynnol-10/cy',
+    href: '/llygryddion/mater gronynnol-10/cy',
     low_range: '0 to 50'
   },
   PM25: {
     title: 'PM2.5',
-    href: '/llygryddion/mater-gronynnol-25/cy',
+    href: '/llygryddion/mater gronynnol-25/cy',
     low_range: '0 to 35'
   },
   O3: {
     title: 'Osôn',
-    href: '/llygryddion/osôn/cy',
+    href: '/llygryddion/oson/cy',
     low_range: '0 to 100'
   },
   SO2: {
@@ -162,17 +162,17 @@ export const pollutantTypesCy = {
 // Suburban background area - Background Suburban
 // Rural background area - Background Rural
 // Urban background area - Background Urban
-export const siteTypeDescriptionsCy = {
+export const siteTypeDescriptions = {
   'Background Urban':
-    "Mae'r safle monitro yma wedi'i leoli ger traffig cerbydau. Mae wedi'i leoli'n agos at ffordd, traffordd neu briffordd.Mae hyn yn golygu ein bod ni'n gwybod bod y llygryddion sydd wedi'u cofnodi yn dod o'r ffynhonnell yma. Rhaid i lygryddion gael eu mesur ar hyd darn o ffordd sy'n fwy na 100 metr o hyd.Bydd y chwiliedydd samplu o leiaf 25 metr i ffwrdd o gyffyrdd mawr a llai na 10 metr o ymyl y ffordd.",
+    "Mae'r ardal fonitro hon wedi'i lleoli mewn dinas neu dref. Mae wedi'i leoli fel nad yw mesuriadau llygryddion yn dod o un ffynhonnell benodol.",
   'Background Suburban':
-    "Mae'r safle monitro yma wedi'i leoli mewn lleoliad diwydiannol. Mae safleoedd diwydiannol wedi'u lleoli'n agos at fannau fel: - gweithfeydd pŵer - llosgyddion - gweithfeydd trin gwastraff. Mae'r llygryddion yn cael eu mesur dan y gwynt o'r ffynhonnell ddiwydiannol a'r ardal breswyl agosaf.",
+    "Mae'r ardal fonitro hon ar gyrion ardal drefol neu mewn ardal ei hun. Mae wedi'i leoli fel nad yw mesuriadau llygryddion yn dod o un ffynhonnell benodol.",
   'Background Rural':
-    "Mae'r safle monitro yma wedi'i leoli mewn lleoliad maestrefol. Mae mannau maestrefol naill ai ar eu pen eu hunain neu ar gyrion dinas neu ardal drefol.Maen nhw'n ardaloedd o adeiladau o faint gwahanol a all fod yn agos at y canlynol: - ffermydd - llynnoedd - coedwigoedd. Mae mesuriadau osôn yn cael eu cymryd pan fo yna amlygiad uchel i'r canlynol: - pobl - cnydau sensitif - ecosystemau naturiol",
+    "Mae'r ardal fonitro hon mewn aneddiadau bach neu ardaloedd ag ecosystemau, coedwigoedd neu gnydau naturiol. Mae wedi'i leoli fel nad yw mesuriadau llygryddion yn dod o un ffynhonnell benodol.",
   'Industrial Suburban':
-    "Mae'r safle monitro yma wedi'i leoli mewn ardal drefol. Mae ardal drefol yn ddnas neu dref, lle mae llawer o adeiladau deulawr. O ran mesur osôn, mae ardal drefol yn cynnwys: - adeiladau preswyl - syfleusterau masnachol - parciau - strydoedd mawr neu sgwariau sydd â lefelau isel o draffig - cyfleusterau addysg, chwaraeon a hamdden",
+    "Mae'r ardal fonitro hon ar gyrion ardal drefol neu mewn ardal ar ei phen ei hun ac i lawr y gwynt o ffynhonnell ddiwydiannol.",
   'Industrial Urban':
-    "Mae'r safle monitro yma mewn lleoliad gwledig. Gall safle gwledig fod mewn anheddiad bach neu ardal sydd ag ecosystemau naturiol, coedwigoedd neu gnydau.Mae'r safleoedd dros 20 cilometr i ffwrdd o ddinasoedd a threfi a mwy na 5 cilometr i ffwrdd o'r canlynol: - safleoedd diwydiannol - traffyrdd - ffyrdd mawr",
+    "Mae'r ardal fonitro hon wedi'i lleoli mewn dinas neu dref i lawr y gwynt o ffynhonnell ddiwydiannol.",
   'Traffic Urban':
     "Mae'r safle monitro yma wedi'i leoli mewn lleoliad cefndir. Mae wedi cael ei leoli er mwyn sicrhau nad yw mesuriadau llygryddion yn dod o un ffynhonnell benodol. Mae'r safle yma yn groes i'r gwynt o ffynonellau llygredd mewn dinasoedd, ffynonellau diwydiannol ac ardaloedd gwledig. Bydd y pwynt samplu yma yn rhoi syniad o lefel y llygryddion am sawl cilometr sgwâr."
 }
