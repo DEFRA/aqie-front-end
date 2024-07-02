@@ -199,8 +199,7 @@ export const english = {
         i: 'increased respiratory illnesses',
         j: 'nervous system issues',
         k: 'cancer',
-        l: 'heart issues',
-        m: 'Long term exposure to high levels of ozone may cause symptoms like coughing or difficulty breathing.'
+        l: 'heart issues'
       }
     },
     nitrogenDioxide: {
@@ -315,6 +314,100 @@ export const english = {
         s: 'diabetes',
         t: 'Alzheimer’s and Parkinson’s disease',
         u: 'poor lung health in children'
+      }
+    }
+  },
+  footer: {
+    privacy: {
+      title: 'Check local air quality privacy notice',
+      headings: {
+        a: 'What personal data we collect and how it is used',
+        b: 'Lawful basis for processing your personal data',
+        c: 'Consent to process your personal data',
+        d: '>Who we share your personal data with',
+        e: 'How long we hold personal data',
+        f: 'What happens if you do not provide the personal data',
+        g: 'The personal data you provide is not used for:',
+        h: 'Transfer of your personal data outside of the UK',
+        i: 'Your rights',
+        j: 'Complaints'
+      },
+      paragraphs: {
+        a: 'This privacy notice explains how the Check local air quality service processes and shares your personal data. If you have any queries about the content of this privacy notice, please email <a href="mailto:data.protection@defra.gov.uk">data.protection@defra.gov.uk.',
+        b: 'Department for Environment, Food and Rural Affairs (Defra) is the controller for the personal data we collect:',
+        c: 'Department for Environment, Food and Rural Affairs',
+        d: 'Seacole Building',
+        e: '2 Marsham Street',
+        f: 'London',
+        g: 'SW1P 4DF',
+        h: 'If you need further information about how Defra uses your personal data and your associated rights you can contact the Defra data protection manager at ',
+        i: 'or at the above address.',
+        j: 'The data protection officer for Defra is responsible for checking that Defra complies with legislation. You can contact them at',
+        k: 'We collect:',
+        l: 'the postcode or placename that you search for as this is essential data for the service to give relevant data',
+        m: 'your IP address so that we can collect information on where users are based',
+        n: 'your device and operating system to enable us to improve our service',
+        o: "the search term you used to find 'Check local air quality' to enable us to improve our service",
+        p: "the pages you interact with in 'Check local air quality' to enable us to improve our service",
+        q: 'The legal basis for processing your personal data to conduct research on the effectiveness of the service is consent. You do not have to provide your consent and you can withdraw your consent at any time.',
+        r: 'The processing of your personal data is based on consent. You can withdraw consent at any time by emailing ',
+        s: 'We do not share the personal data collected under this privacy notice with other organisations.',
+        t: 'We respect your personal privacy when responding to access to information requests. We only share information when necessary to meet the statutory requirements of the Environmental Information Regulations 2004 and the Freedom of Information Act 2000.',
+        u: 'We will keep your personal data for 7 in line with legislative requirements which is 7.',
+        v: 'Contact the Defra Record Centre',
+        w: 'If you do not provide the personal data of the postcode or location that you are searching for, then you will not be able to use our service as we will not be able to provide you any data.',
+        x: 'The other personal data is optional and only required for service improvement.',
+        y: 'The personal data you provide is not used for:',
+        z: 'automated decision making (making a decision by automated means without any human involvement)',
+        a1: 'profiling (automated processing of personal data to evaluate certain things about an individual)',
+        a2: 'We will only transfer your personal data to another country that is deemed adequate for data protection purposes.',
+        a3: 'Based on the lawful processing above, your individual rights are:',
+        a4: 'Consent',
+        a5: 'The right to be informed',
+        a6: 'The right of access',
+        a7: 'The right to rectification',
+        a8: 'The right to erasure',
+        a9: 'The right to restrict processing',
+        a10: 'The right to data portability',
+        a11: 'Rights in relation to automated decision making and profiling',
+        a12: 'More information about your',
+        a13: 'individual rights',
+        a14: 'under the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018 (DPA 2018),',
+        a15: 'can be found at the Information Commissioner’s Office',
+        a16: 'Complaints',
+        a17: 'You have the right to',
+        a18: 'make a complaint',
+        a19: 'to the Information Commissioner’s Office at any time.',
+        c20: 'Personal information charter',
+        c21: 'Our',
+        c22: 'personal information charter',
+        c23: 'explains more about your rights over your personal data.'
+      }
+    },
+    cookies: {
+      title: '',
+      headings: {
+        a: '',
+        b: '',
+        c: ''
+      },
+      paragraphs: {
+        a: '',
+        b: '',
+        c: ''
+      }
+    },
+    accessibility: {
+      title: '',
+      headings: {
+        a: '',
+        b: '',
+        c: ''
+      },
+      paragraphs: {
+        a: '',
+        b: '',
+        c: ''
       }
     }
   }

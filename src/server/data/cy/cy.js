@@ -200,8 +200,7 @@ export const welsh = {
         i: 'mwy o salwch yr anadl',
         j: 'materion y system nerfol',
         k: 'canser',
-        l: 'materion y galon',
-        m: 'Gall amlygiad hirdymor i lefelau uchel o osôn achosi symptomau fel peswch neu anhawster anadlu.'
+        l: 'materion y galon'
       }
     },
     nitrogenDioxide: {
