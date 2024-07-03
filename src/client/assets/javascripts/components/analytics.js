@@ -15,8 +15,16 @@ export default function loadAnalytics() {
       const dl = l !== 'dataLayer' ? `&l=${l}` : ''
 
       j.async = true
+      j.src = 'https://www.googletagmanager.com/gtag/js?id=G-8CMZBTDQBC'
+      document.head.appendChild(j)
+      window.dataLayer = window.dataLayer || []
+      function gtag() {
+        window.dataLayer.push(arguments)
+      }
+      gtag('js', new Date())
+      gtag('config', 'G-8CMZBTDQBC')
       j.src = `https://www.googletagmanager.com/gtm.js?id=${i}${dl}`
       document.head.appendChild(j)
-    })(window, document, 'script', 'dataLayer', 'GTM-53XG2JT')
+    })(window, document, 'script', 'dataLayer', 'G-8CMZBTDQBC')
   }
 }

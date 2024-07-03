@@ -50,7 +50,12 @@ async function createServer() {
             })
           : new CatboxMemory()
       }
-    ]
+    ],
+    state: {
+      encoding: 'iron',
+      strictHeader: false,
+      ignoreErrors: true
+    }
   })
 
   if (isProduction) {
@@ -63,7 +68,7 @@ async function createServer() {
 
   server.auth.strategy('login', 'cookie', {
     cookie: {
-      name: 'airaqie-cookie',
+      name: 'airaqie_cookie',
       path: '/',
       password: cookiePassword,
       isSecure: isProduction

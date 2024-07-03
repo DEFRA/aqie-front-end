@@ -10,13 +10,16 @@ export default function loadAnalytics() {
         'gtm.start': new Date().getTime(),
         event: 'gtm.js'
       })
-
       const j = d.createElement(s)
       const dl = l !== 'dataLayer' ? `&l=${l}` : ''
-
-      j.async = true
+      window.dataLayer = window.dataLayer || []
+      function gtag() {
+        window.dataLayer.push(arguments)
+      }
+      gtag('js', new Date())
+      gtag('config', 'G-8CMZBTDQBC')
       j.src = `https://www.googletagmanager.com/gtm.js?id=${i}${dl}`
-      document.head.appendChild(j)
+      document.getElementsByTagName("head")[0].appendChild(j)
     })(window, document, 'script', 'dataLayer', 'G-8CMZBTDQBC')
   }
 }
