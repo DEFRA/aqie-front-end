@@ -4,7 +4,8 @@ const privacyController = {
     return h.view('privacy/index', {
       pageTitle: 'Check local air quality - GOV.UK',
       heading: 'Check local air quality',
-      page: 'privacy'
+      page: 'privacy',
+      lang: request.query.lang
     })
   }
 }

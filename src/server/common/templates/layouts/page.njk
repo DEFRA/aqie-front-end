@@ -18,11 +18,19 @@
 {% from "radios/macro.njk" import govukRadios -%}
 {% from "notification-banner/macro.njk" import govukNotificationBanner %}
 {% from "cookie-banner/macro.njk" import govukCookieBanner %}
+{% from "language-toggle/macro.njk" import dwpLanguageToggle %}
+{% from "footer/macro.njk" import govukFooterWelsh %}
 
+{%if lang%}
+{%set htmlLang = lang %}
+{%else%}
+{%set htmlLang = 'en' %}
+{%endif%}
 {% block bodyStart %}
 {%if page != "home"%}
   <a id="top"></a>
   {% include "cookie-banner.njk" %}
+
 {%endif%}
 {% endblock %}
 {% set mainClasses = "govuk-main-wrapper" %}
@@ -36,22 +44,13 @@
 {% endblock %}
 
 {% block head %}
-{{currentConsentCookie | dump}}
   <link href="{{ getAssetPath('application.css') }}" rel="stylesheet">
-  {%if currentConsentCookie %}
-    <!-- Google tag (gtag.js) --> 
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8CMZBTDQBC"></script> 
-  <script>   window.dataLayer = window.dataLayer || [];   
-    function gtag(){dataLayer.push(arguments);}   
-    gtag('js', new Date());   
-    gtag('config', 'G-8CMZBTDQBC'); 
-  </script>
-  {%endif%}
 {% endblock %}
 
 {% block header %}
 {%if page == "Check local air quality"%}{% set serviceName = ""%}{%endif%}
 {%if page != "home"%}
+  {%if htmlLang == "en"%}
   {{ govukHeader({
     homepageUrl: "https://www.gov.uk/",
     classes: "app-header",
@@ -60,6 +59,29 @@
     serviceUrl: '/',
     useTudorCrown: true
   }) }}
+    <!-- Google tag (gtag.js) --> 
+    {# <script async src="https://www.googletagmanager.com/gtag/js?id=G-8CMZBTDQBC"></script> 
+    <script>  
+      console.log("the cookie value 2 ", cookies); 
+      window.dataLayer = window.dataLayer || [];   
+      function gtag(){
+        window.dataLayer.push(arguments);
+      };
+      gtag('js', new Date());   
+      gtag('config', 'G-8CMZBTDQBC'); 
+</script> #}
+  {%endif%}
+  {%if htmlLang == "cy"%}
+  {{ govukHeader({
+    homepageUrl: "https://www.gov.uk/",
+    classes: "app-header",
+    containerClasses: "govuk-width-container",
+    serviceName: serviceName,
+    serviceUrl: '/check-lleol-ansawdd-aer/cy',
+    useTudorCrown: true
+  }) }}
+  {%endif%}
+
   {%endif%}
 {% endblock %}
 
@@ -69,43 +91,81 @@
 
 {% block beforeContent %}
 {%if page != "home"%}
+{% if notFoundUrl %}
+{% else %}
   {{ govukPhaseBanner({
     tag: {
-      text: "Beta"
+      text: phaseBanner.paragraphs.a
     },
-    html: 'Give your <a class="govuk-link" href="https://defragroup.eu.qualtrics.com/jfe/form/SV_dj4wJCoOkFQLXfM">feedback</a> on this new service.'
+    html: phaseBanner.paragraphs.b + " <a class='govuk-link' href='https://defragroup.eu.qualtrics.com/jfe/form/SV_dj4wJCoOkFQLXfM'>" + phaseBanner.paragraphs.c + " </a>" + phaseBanner.paragraphs.d
   }) }}
-
+{% endif %}
+ {{ super() }}
+{%if page != "Check local air quality"%}
   {%if displayBacklink %}
+  {%if htmlLang == "en"%}
     {{ govukBackLink({
-    text: "Change location",
+    text: backlink.text,
     href: '/search-location'
   }) }}
   {% endif %}
+  {%if htmlLang == "cy"%}
+    {{ govukBackLink({
+    text: backlink.text,
+    href: '/chwilio-lleoliad/cy?lang=cy'
+  }) }}
   {% endif %}
+  {% endif %}
+  {% endif %}
+
+  {%if lang == 'cy'%}
+   {% set htmlLang = "cy" %}
+   {% endif %}
+  {% endif %}
+ {%if (page != "home") and (page != "Check local air quality") and (page != "Gwirio ansawdd aer lleol" ) %} 
+  {%if lang == "en"%}
+  {% set htmlLang = "en" %}
+  {% elif lang == "cy" %}
+  {% set htmlLang = "cy" %}
+  {% else %}
+  {% set htmlLang = "en" %}
+  {%endif%}
+  {{
+    dwpLanguageToggle({
+        selectedLang: lang,
+        href: {
+            en: "?lang=en",
+            cy: "?lang=cy"
+        }
+    })
+  }}
+{%endif%}
 {% endblock %}
 
-{% block content %}{% endblock %}
+{% block content %}
+
+{% endblock %}
 
 {% block footer %}
 {%if page != "home"%}
-  {{ govukFooter({
+  {{ govukFooterWelsh({
     meta: {
       items: [
         {
           href: "/privacy",
-          text: "Privacy"
+          text: footerTxt.privacy
         },
         {
           href: "/cookies",
-          text: "Cookies"
+          text: footerTxt.cookies
         },
         {
           href: "/accessibility",
-          text: "Accessibility statement"
+          text: footerTxt.accessibility
         }
       ]
-    }
+    },
+    texts: footerTxt
   }) }}
   {% endif %}
 {% endblock %}

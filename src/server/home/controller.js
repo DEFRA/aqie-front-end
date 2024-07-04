@@ -13,7 +13,7 @@ const homeController = {
         pageTitle: 'Check local air quality - GOV.UK',
         heading: 'Check local air quality',
         page: 'home',
-        serviceName: 'Check local air quality',
+        serviceName: '',
         errors: errors?.errors,
         errorMessage: errorMessage?.errorMessage
       })

@@ -10,15 +10,15 @@
     {% set cell = { classes: cellClass, text: i | string } %}
     {% set _ = firstRow.push(cell) %}
 {% endfor %}
-<h2 class="govuk-heading-m govuk-!-margin-bottom-6">The air pollution forecast for today is {{airQuality.readableBand | default('unknown')}}<span class="daqi-scale-hidden">, {{daqiValue}} out of 10</span></h2>
+<h2 class="govuk-heading-m govuk-!-margin-bottom-6">{{daqi.paragraphs.a}} {{airQuality.readableBand | default('unknown')}}<span class="daqi-scale-hidden">, {{daqiValue}} {{daqi.paragraphs.b}}</span></h2>
 {{ govukTable({
   caption: "",
   captionClasses: "govuk-heading-m daqi-table__caption govuk-!-margin-bottom-6",
   head: [], 
   rows: [firstRow, [
-      { text: "Low", classes: "daqi-band", colspan: 3 },
-      { text: "Moderate", classes: "daqi-band", colspan: 3 },
-      { text: "High", classes: "daqi-band", colspan: 2 },
-      { text: "Very high", classes: "daqi-band", colspan: 2 }
+      { text: daqi.levels.a, classes: "daqi-band", colspan: 3 },
+      { text: daqi.levels.b, classes: "daqi-band", colspan: 3 },
+      { text: daqi.levels.c, classes: "daqi-band", colspan: 2 },
+      { text: daqi.levels.d, classes: "daqi-band", colspan: 2 }
   ]]
 }) }}

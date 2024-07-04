@@ -120,7 +120,7 @@ export function getConsentCookie() {
  */
 export function isValidConsentCookie(options) {
   // @ts-expect-error Property does not exist on window
-  return options && options.version >= window.GDS_CONSENT_COOKIE_VERSION
+  return options && options.version >= window.AQ_CONSENT_COOKIE_VERSION
 }
 
 /**
@@ -143,7 +143,7 @@ export function setConsentCookie(options) {
   delete cookieConsent.essential
 
   // @ts-expect-error Property does not exist on window
-  cookieConsent.version = window.GDS_CONSENT_COOKIE_VERSION
+  cookieConsent.version = window.AQ_CONSENT_COOKIE_VERSION
 
   // Set the consent cookie
   setCookie(CONSENT_COOKIE_NAME, JSON.stringify(cookieConsent), { days: 365 })

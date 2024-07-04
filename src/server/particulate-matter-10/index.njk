@@ -1,7 +1,7 @@
 {% extends 'layouts/page.njk' %}
 
 {% set caption = "" %}
-{% set title = "Particulate matter (PM10)" %}
+{% set title = particulateMatter10.title %}
 
 {% set displayBacklink = false %}
 {% set pageHeadingSize = pageHeadingSize or "xl" %}
@@ -13,34 +13,34 @@
       <h1 class="govuk-heading-xl">{% if caption %}<span class="govuk-caption-{{ pageHeadingSize }}">{{ caption }}</span>
         {% endif %}
         {{ title | safe }}</h1>
-      <h2 class="govuk-heading-m">Sources of PM10</h2>
-      <p>Particulate matter (PM) are small particles of solids or liquids that are in the air. The particles are only 10 micrometres in diameter. For context, the width of a human hair is 50 to 70 micrometres.
+      <h2 class="govuk-heading-m">{{particulateMatter10.headings.a}}</h2>
+      <p>{{particulateMatter10.paragraphs.a}}
       </p>
-      <p>The main sources of particulate matter are:</p>
+      <p>{{particulateMatter10.paragraphs.b}}</p>
       <ul class="govuk-list govuk-list--bullet">
-        <li>dust from construction sites</li>
-        <li>dust from landfills</li>
-        <li>dust from agriculture</li>
-        <li>wildfires</li>
-        <li>pollen</li>
-        <li>power stations</li>
-        <li>vehicles</li>
+        <li>{{particulateMatter10.paragraphs.c}}</li>
+        <li>{{particulateMatter10.paragraphs.d}}</li>
+        <li>{{particulateMatter10.paragraphs.e}}</li>
+        <li>{{particulateMatter10.paragraphs.f}}</li>
+        <li>{{particulateMatter10.paragraphs.g}}</li>
+        <li>{{particulateMatter10.paragraphs.h}}</li>
+        <li>{{particulateMatter10.paragraphs.i}}</li>
       </ul>
-      <h2 class="govuk-heading-m">Health effects</h2>
-      <p>Short term health impacts of PM10 can include:</p>
+      <h2 class="govuk-heading-m">{{particulateMatter10.headings.b}}</h2>
+      <p>{{particulateMatter10.paragraphs.j}}</p>
       <ul class="govuk-list govuk-list--bullet">
-        <li>difficulty breathing</li>
-        <li>coughing</li>
-        <li>eye, nose and throat irritation</li>
-        <li>chest tightness and pain</li>
+        <li>{{particulateMatter10.paragraphs.k}}</li>
+        <li>{{particulateMatter10.paragraphs.l}}</li>
+        <li>{{particulateMatter10.paragraphs.m}}</li>
+        <li>{{particulateMatter10.paragraphs.n}}</li>
       </ul>
-      <p>Long term health impacts of PM10 can include:</p>
+      <p>{{particulateMatter10.paragraphs.o}}</p>
       <ul class="govuk-list govuk-list--bullet">
-        <li>lung tissue damage </li>
-        <li>asthma</li>
-        <li>heart failure</li>
-        <li>cancer</li>
-        <li>chronic obstructive pulmonary disease (COPD)</li>
+        <li>{{particulateMatter10.paragraphs.p}} </li>
+        <li>{{particulateMatter10.paragraphs.q}}</li>
+        <li>{{particulateMatter10.paragraphs.r}}</li>
+        <li>{{particulateMatter10.paragraphs.s}}</li>
+        <li>{{particulateMatter10.paragraphs.t}}</li>
       </ul>
     </div>
   </div>

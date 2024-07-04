@@ -1,17 +1,16 @@
 {% extends 'layouts/page.njk' %}
 {% set displayBreadcrumbs = false %}
-{% set title = "Locations matching 'millbrook'" %}
 
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
-    <h1 class="govuk-heading-l">Locations matching '{{ userLocation }}'</h1>
-    <p class="govuk-body">More than one match was found for your location. Choose the correct location from the following options:</p>
+    <h1 class="govuk-heading-l">{{title}} '{{ userLocation }}'</h1>
+    <p class="govuk-body">{{paragraphs.a}}</p>
 
     {% for item in results %}
     <ul class="govuk-list govuk-!-margin-bottom-2">
       <li>
-        <a href={{['location/',item.GAZETTEER_ENTRY.ID] | join}} class="govuk-link">
+        <a href={%if htmlLang == 'en' %}{{['/location/',item.GAZETTEER_ENTRY.ID, '?lang=en'] | join}}{%else%}{{['/lleoliad/cy/',item.GAZETTEER_ENTRY.ID, '?lang=cy'] | join}}{%endif%} class="govuk-link">
         {% if name2 %}  
         <mark>{{ name2 }}</mark>, 
         {% else %}
@@ -26,7 +25,7 @@
       </li>
     </ul>
         {% endfor %}
-    <p class="govuk-body govuk-!-margin-top-6">Alternatively, <a href={{['/search-location'] | join}}>try searching again</a></p>
+    <p class="govuk-body govuk-!-margin-top-6">{{paragraphs.b}} <a href={% if htmlLang == 'en' %}'/search-location'{%else%}'/chwilio-lleoliad/cy?lang=cy'{%endif%}>{{paragraphs.c}}</a></p>
   </div>
 </div>
 {% endblock %}

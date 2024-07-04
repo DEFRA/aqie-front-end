@@ -1,0 +1,37 @@
+params:
+- name: selectedLang
+  type: string
+  required: false
+  description: Used to switch between langauges - defaults to English.
+- name: href
+  type: object
+  required: true
+  description: Object for setting urls
+  params:
+    - name: en
+      type: string
+      required: true
+      description: URL to switch to English Langauge
+    - name: cy
+      type: string
+      required: true
+      description: URL to switch to Welsh Langauge
+
+examples:
+- name: default
+  data:
+    href:
+      en: /components/language-toggle?lang=en
+      cy: /components/language-toggle?lang=cy
+- name: englishSelected
+  data:
+    selectedLang: en
+    href:
+      en: /components/language-toggle?lang=en
+      cy: /components/language-toggle?lang=cy
+- name: welshSelected
+  data:
+    selectedLang: cy
+    href:
+      en: /components/language-toggle?lang=en
+      cy: /components/language-toggle?lang=cy

@@ -1,8 +1,8 @@
 {% from "govuk/components/cookie-banner/macro.njk" import govukCookieBanner %}
 
 {% set html %}
-  <p class="govuk-body">We use some essential cookies to make this service work.</p>
-  <p class="govuk-body">We'd also like to use analytics cookies so we can understand how you use the service and make improvements.</p>
+  <p class="govuk-body">{{cookieBanner.paragraphs.a}}</p>
+  <p class="govuk-body">{{cookieBanner.paragraphs.b}}</p>
 {% endset %}
 
 {% set acceptHtml %}
@@ -14,28 +14,28 @@
 {% endset %}
 
 {{ govukCookieBanner({
-  ariaLabel: "Cookies on Check local air quality",
+  ariaLabel: cookieBanner.title,
   hidden: true,
   attributes: {
     "data-module": "govuk-cookie-banner"
   },
   messages: [
     {
-      headingText: "Cookies on Check local air quality",
+      headingText: cookieBanner.title,
       html: html,
       actions: [
         {
-          text: "Accept analytics cookies",
+          text: cookieBanner.buttons.a,
           type: "button",
           classes: "js-cookie-banner-accept"
         },
         {
-          text: "Reject analytics cookies",
+          text: cookieBanner.buttons.b,
           type: "button",
           classes: "js-cookie-banner-reject"
         },
         {
-          text: "View cookies",
+          text: cookieBanner.buttons.c,
           href: "/cookies/"
         }
       ],
@@ -83,7 +83,7 @@ to avoid a high cumulative layout shift (CLS) score https://web.dev/cls/ #}
    * cookie is equal to or greater than this number, you should be careful to
    * check backwards compatibility when changing the object format.
   */
-  {# window.GDS_CONSENT_COOKIE_VERSION = 1; #}
+  window.AQ_CONSENT_COOKIE_VERSION = 1;
 
   (function () {
     // Skip early setup when cookie banner component is not supported

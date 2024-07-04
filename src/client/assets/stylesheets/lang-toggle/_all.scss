@@ -1,0 +1,31 @@
+.dwp-language-toggle {
+        @include govuk-clearfix;
+        @include govuk-font($size: 19);
+
+        &__list {
+            float: right;
+            text-align: right;
+            white-space: nowrap;
+            margin-top: 15px;
+        }
+        
+        &__list-item {
+            display: inline-block;
+        
+            &:first-child::after {
+            content: "";
+            display: inline-block;
+            position: relative;
+            top: 0.400em;
+            height: 1.4em;
+            padding-left: 1rem;
+            border-left: 0.1rem solid currentcolor;
+            margin-left: 0.66rem;
+            }
+        }
+    }
+
+    .govuk-grid-column-two-thirds-from-desktop.language-toggle {
+        width: 86.6667%
+    }
+    
