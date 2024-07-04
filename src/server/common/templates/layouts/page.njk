@@ -44,17 +44,7 @@
 {% endblock %}
 
 {% block head %}
-{{currentConsentCookie | dump}}
   <link href="{{ getAssetPath('application.css') }}" rel="stylesheet">
-  {%if currentConsentCookie %}
-    <!-- Google tag (gtag.js) --> 
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8CMZBTDQBC"></script> 
-  <script>   window.dataLayer = window.dataLayer || [];   
-    function gtag(){dataLayer.push(arguments);}   
-    gtag('js', new Date());   
-    gtag('config', 'G-8CMZBTDQBC'); 
-  </script>
-  {%endif%}
 {% endblock %}
 
 {% block header %}
@@ -69,6 +59,17 @@
     serviceUrl: '/',
     useTudorCrown: true
   }) }}
+    <!-- Google tag (gtag.js) --> 
+    {# <script async src="https://www.googletagmanager.com/gtag/js?id=G-8CMZBTDQBC"></script> 
+    <script>  
+      console.log("the cookie value 2 ", cookies); 
+      window.dataLayer = window.dataLayer || [];   
+      function gtag(){
+        window.dataLayer.push(arguments);
+      };
+      gtag('js', new Date());   
+      gtag('config', 'G-8CMZBTDQBC'); 
+</script> #}
   {%endif%}
   {%if htmlLang == "cy"%}
   {{ govukHeader({

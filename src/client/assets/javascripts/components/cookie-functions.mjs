@@ -18,24 +18,19 @@ import Analytics from './analytics.mjs'
 const CONSENT_COOKIE_NAME = 'airaqie_cookies_analytics'
 
 /* Google Analytics tracking IDs for preview and live environments. */
-const TRACKING_PREVIEW_ID = '26179049-17'
-const TRACKING_LIVE_ID = '116229859-1'
+const TRACKING_PREVIEW_ID = '8F2EMQL51V'
+const TRACKING_LIVE_ID = 'GHT8W0QGD9'
 
 /* Users can (dis)allow different groups of cookies. */
 const COOKIE_CATEGORIES = {
-  analytics: [
-    '_ga',
-    '_gid',
-    `_gat_UA-${TRACKING_PREVIEW_ID}`,
-    `_gat_UA-${TRACKING_LIVE_ID}`
-  ],
+  analytics: ['_ga', `_ga_${TRACKING_PREVIEW_ID}`, `_ga_${TRACKING_LIVE_ID}`],
   /* Essential cookies
    *
    * Essential cookies cannot be deselected, but we want our cookie code to
    * only allow adding cookies that are documented in this object, so they need
    * to be added here.
    */
-  essential: ['airaqie_cookie_policy']
+  essential: ['airaqie_cookies_analytics']
 }
 
 /*
@@ -45,7 +40,9 @@ const COOKIE_CATEGORIES = {
  * cookies cannot be disallowed. If the object contains { essential: false }
  * this will be ignored.
  */
-const DEFAULT_COOKIE_CONSENT = false
+const DEFAULT_COOKIE_CONSENT = {
+  analytics: false
+}
 
 /**
  * Set, get, and delete cookies.
@@ -90,8 +87,19 @@ export function Cookie(name, value, options) {
  */
 export function getConsentCookie() {
   const consentCookie = getCookie(CONSENT_COOKIE_NAME)
+  let consentCookieObj
 
-  return consentCookie
+  if (consentCookie) {
+    try {
+      consentCookieObj = JSON.parse(consentCookie)
+    } catch (error) {
+      return null
+    }
+  } else {
+    return null
+  }
+
+  return consentCookieObj
 }
 
 /**
@@ -105,10 +113,10 @@ export function getConsentCookie() {
  * @param {ConsentPreferences | null} options - Consent preferences
  * @returns {boolean} True if consent cookie is valid
  */
-// export function isValidConsentCookie(options) {
-//   // @ts-expect-error Property does not exist on window
-//   return options && options.version >= window.GDS_CONSENT_COOKIE_VERSION
-// }
+export function isValidConsentCookie(options) {
+  // @ts-expect-error Property does not exist on window
+  return options && options.version >= window.AQ_CONSENT_COOKIE_VERSION
+}
 
 /**
  * Update the user's cookie preferences.
@@ -116,21 +124,21 @@ export function getConsentCookie() {
  * @param {ConsentPreferences} options - Consent options to parse
  */
 export function setConsentCookie(options) {
-  let cookieConsent =
+  const cookieConsent =
     getConsentCookie() ||
     // If no preferences or old version use the default
-    DEFAULT_COOKIE_CONSENT
+    JSON.parse(JSON.stringify(DEFAULT_COOKIE_CONSENT))
 
   // Merge current cookie preferences and new preferences
   for (const option in options) {
-    cookieConsent = options[option]
+    cookieConsent[option] = options[option]
   }
 
   // Essential cookies cannot be deselected, ignore this cookie type
   delete cookieConsent.essential
 
   // @ts-expect-error Property does not exist on window
-  // cookieConsent.version = window.GDS_CONSENT_COOKIE_VERSION
+  cookieConsent.version = window.AQ_CONSENT_COOKIE_VERSION
 
   // Set the consent cookie
   setCookie(CONSENT_COOKIE_NAME, JSON.stringify(cookieConsent), { days: 365 })
@@ -148,26 +156,60 @@ export function resetCookies() {
   const options =
     getConsentCookie() ||
     // If no preferences or old version use the default
-    DEFAULT_COOKIE_CONSENT
-  const cookieType = options
+    JSON.parse(JSON.stringify(DEFAULT_COOKIE_CONSENT))
 
-  // Initialise analytics if allowed
-  if (cookieType === 'analytics') {
-    // Enable GA if allowed
-    window[`ga-disable-UA-${TRACKING_PREVIEW_ID}`] = false
-    window[`ga-disable-UA-${TRACKING_LIVE_ID}`] = false
-    Analytics()
-  } else {
-    // Disable GA if not allowed
-    window[`ga-disable-UA-${TRACKING_PREVIEW_ID}`] = true
-    window[`ga-disable-UA-${TRACKING_LIVE_ID}`] = true
+  for (const cookieType in options) {
+    if (cookieType === 'version') {
+      continue
+    }
+
+    // Essential cookies cannot be deselected, ignore this cookie type
+    if (cookieType === 'essential') {
+      continue
+    }
+
+    // Initialise analytics if allowed
+    if (cookieType === 'analytics' && options[cookieType]) {
+      // Enable GA if allowed
+      window[`ga-disable-UA-${TRACKING_PREVIEW_ID}`] = false
+      window[`ga-disable-UA-${TRACKING_LIVE_ID}`] = false
+      Analytics()
+      // Unset UA cookies if they've been set by GTM
+      removeUACookies()
+    } else {
+      // Disable GA if not allowed
+      window[`ga-disable-UA-${TRACKING_PREVIEW_ID}`] = true
+      window[`ga-disable-UA-${TRACKING_LIVE_ID}`] = true
+    }
+
+    if (!options[cookieType]) {
+      // Fetch the cookies in that category
+      const cookiesInCategory = COOKIE_CATEGORIES[cookieType]
+
+      cookiesInCategory.forEach((cookie) => {
+        // Delete cookie
+        Cookie(cookie, null)
+      })
+    }
   }
+}
 
-  if (!cookieType) {
-    // Fetch the cookies in that category
-    const cookiesInCategory = cookieType
-
-    Cookie(cookiesInCategory, null)
+/**
+ * Remove UA cookies for user and prevent Google setting them.
+ *
+ * We've migrated our analytics from UA (Universal Analytics) to GA4, however
+ * users may still have the UA cookie set from our previous implementation.
+ * Additionally, our UA properties are scheduled for deletion but until they are
+ * entirely deleted, GTM is still setting UA cookies.
+ */
+export function removeUACookies() {
+  for (const UACookie of [
+    '_ga_8CMZBTDQBC',
+    '_gid',
+    '_gat_UA-26179049-17',
+    '_gat_UA-116229859-1'
+  ]) {
+    Cookie(UACookie, null)
   }
 }
 
@@ -178,7 +220,7 @@ export function resetCookies() {
  * @param {ConsentPreferences} cookiePreferences - Consent preferences
  * @returns {string | boolean} Cookie type value
  */
-function userAllowsCookieCategory(cookieCategory) {
+function userAllowsCookieCategory(cookieCategory, cookiePreferences) {
   // Essential cookies are always allowed
   if (cookieCategory === 'essential') {
     return true
@@ -186,8 +228,9 @@ function userAllowsCookieCategory(cookieCategory) {
 
   // Sometimes cookiePreferences is malformed in some of the tests, so we need to handle these
   try {
-    return cookieCategory
+    return cookiePreferences[cookieCategory]
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(error)
     return false
   }
@@ -209,7 +252,7 @@ function userAllowsCookie(cookieName) {
   let cookiePreferences = getConsentCookie()
 
   // If no preferences or old version use the default
-  if (!cookiePreferences) {
+  if (!isValidConsentCookie(cookiePreferences)) {
     cookiePreferences = DEFAULT_COOKIE_CONSENT
   }
 
@@ -217,7 +260,7 @@ function userAllowsCookie(cookieName) {
     const cookiesInCategory = COOKIE_CATEGORIES[category]
 
     if (cookiesInCategory.indexOf(cookieName) !== '-1') {
-      return userAllowsCookieCategory(category)
+      return userAllowsCookieCategory(category, cookiePreferences)
     }
   }
 
@@ -292,4 +335,5 @@ function deleteCookie(name) {
  * @typedef {object} ConsentPreferences
  * @property {boolean} [analytics] - Accept analytics cookies
  * @property {boolean} [essential] - Accept essential cookies
+ *  * @property {string} [version] - Content cookie version
  */
