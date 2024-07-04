@@ -10,7 +10,7 @@ export default function loadAnalytics() {
         'gtm.start': new Date().getTime(),
         event: 'gtm.js'
       })
-      //
+     
       const noscript = document.createElement('noscript')
       const iframe = document.createElement('iframe')
       iframe.setAttribute("height", "0")
@@ -20,7 +20,7 @@ export default function loadAnalytics() {
       iframe.src = "https://www.googletagmanager.com/ns.html?id=GTM-WHV4RRMR"
       noscript.appendChild(iframe)
       document.body.appendChild(noscript)
-      //
+     
       const j = d.createElement(s)
       const dl = l !== 'dataLayer' ? `&l=${l}` : ''
       window.dataLayer = window.dataLayer || []
