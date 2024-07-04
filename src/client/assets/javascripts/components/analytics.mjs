@@ -10,6 +10,17 @@ export default function loadAnalytics() {
         'gtm.start': new Date().getTime(),
         event: 'gtm.js'
       })
+      //
+      const noscript = document.createElement('noscript')
+      const iframe = document.createElement('iframe')
+      iframe.setAttribute("height", "0")
+      iframe.setAttribute("width", "0")
+      iframe.setAttribute("style", "display:none;visibility:hidden")
+      iframe.async = true
+      iframe.src = "https://www.googletagmanager.com/ns.html?id=GTM-WHV4RRMR"
+      noscript.appendChild(iframe)
+      document.body.appendChild(noscript)
+      //
       const j = d.createElement(s)
       const dl = l !== 'dataLayer' ? `&l=${l}` : ''
       window.dataLayer = window.dataLayer || []
@@ -17,9 +28,10 @@ export default function loadAnalytics() {
         window.dataLayer.push(arguments)
       }
       gtag('js', new Date())
-      gtag('config', 'G-8CMZBTDQBC')
+      gtag('config', 'GTM-WHV4RRMR')
+      j.async = true
       j.src = `https://www.googletagmanager.com/gtm.js?id=${i}${dl}`
-      document.getElementsByTagName("head")[0].appendChild(j)
-    })(window, document, 'script', 'dataLayer', 'G-8CMZBTDQBC')
+      document.head.appendChild(j)
+    })(window, document, 'script', 'dataLayer', 'GTM-WHV4RRMR')
   }
 }

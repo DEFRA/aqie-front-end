@@ -18,8 +18,8 @@ import Analytics from './analytics.mjs'
 const CONSENT_COOKIE_NAME = 'airaqie_cookies_analytics'
 
 /* Google Analytics tracking IDs for preview and live environments. */
-const TRACKING_PREVIEW_ID = '26179049-17'
-const TRACKING_LIVE_ID = '116229859-1'
+const TRACKING_PREVIEW_ID = '8F2EMQL51V'
+const TRACKING_LIVE_ID = 'GHT8W0QGD9'
 
 /* Users can (dis)allow different groups of cookies. */
 const COOKIE_CATEGORIES = {
@@ -174,6 +174,8 @@ export function resetCookies() {
       window[`ga-disable-UA-${TRACKING_PREVIEW_ID}`] = false
       window[`ga-disable-UA-${TRACKING_LIVE_ID}`] = false
       Analytics()
+      // Unset UA cookies if they've been set by GTM
+      removeUACookies()
     } else {
       // Disable GA if not allowed
       window[`ga-disable-UA-${TRACKING_PREVIEW_ID}`] = true
@@ -189,6 +191,25 @@ export function resetCookies() {
         Cookie(cookie, null)
       })
     }
+  }
+}
+
+/**
+ * Remove UA cookies for user and prevent Google setting them.
+ *
+ * We've migrated our analytics from UA (Universal Analytics) to GA4, however
+ * users may still have the UA cookie set from our previous implementation.
+ * Additionally, our UA properties are scheduled for deletion but until they are
+ * entirely deleted, GTM is still setting UA cookies.
+ */
+export function removeUACookies() {
+  for (const UACookie of [
+    '_ga_8CMZBTDQBC',
+    '_gid',
+    '_gat_UA-26179049-17',
+    '_gat_UA-116229859-1'
+  ]) {
+    Cookie(UACookie, null)
   }
 }
 
@@ -314,4 +335,5 @@ function deleteCookie(name) {
  * @typedef {object} ConsentPreferences
  * @property {boolean} [analytics] - Accept analytics cookies
  * @property {boolean} [essential] - Accept essential cookies
+ *  * @property {string} [version] - Content cookie version
  */

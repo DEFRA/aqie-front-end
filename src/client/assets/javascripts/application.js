@@ -15,7 +15,8 @@ import CookieBanner from './components/cookie-banner.mjs'
 import Analytics from './components/analytics.mjs'
 import {
   getConsentCookie,
-  isValidConsentCookie
+  isValidConsentCookie,
+  removeUACookies
 } from './components/cookie-functions.mjs'
 import CookiesPage from './components/cookies-page.mjs'
 
@@ -31,6 +32,10 @@ if ($cookieBanner) {
 const userConsent = getConsentCookie()
 if (userConsent && isValidConsentCookie(userConsent) && userConsent.analytics) {
   Analytics()
+
+  // Remove UA cookies if the user previously had them set or Google attempts
+  // to set them
+  removeUACookies()
 }
 
 // Initialise cookie page
