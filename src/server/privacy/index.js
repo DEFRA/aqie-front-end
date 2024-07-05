@@ -9,7 +9,8 @@ const privacy = {
         {
           method: 'GET',
           path: '/privacy',
-          ...privacyController
+          ...privacyController,
+          options: { auth: { mode: 'try' } }
         }
       ])
     }

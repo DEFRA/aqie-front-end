@@ -1,4 +1,13 @@
 export const english = {
+  login: {
+    pageTitle: 'Sign in - Private beta air quality',
+    heading: 'This is a private beta',
+    texts: {
+      a: 'You should only continue if you have been invited to.',
+      b: 'Password',
+      buttonText: 'Continue'
+    }
+  },
   checkLocalAirQuality: {
     pageTitle: 'Check local air quality - GOV.UK',
     heading: 'Check local air quality',

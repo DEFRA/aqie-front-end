@@ -2,7 +2,7 @@
 
 
 {% block pageTitle %}
-  Sign in - Private beta air quality
+  {{pageTitle}}
 {% endblock %}
 
 {% block content %}
@@ -17,15 +17,15 @@
   </div>
   {% endif %}
     <h1 class="govuk-heading-xl">
-      This is a private beta
+      {{heading}}
     </h1>
     <p class="govuk-body-m">
-      You should only continue if you have been invited to. 
+      {{texts.a}} 
     </p>
     <form action='/' method="post">
       {{ govukInput({
         label: {
-          text: "Password",
+          text:  texts.b,
           classes: "govuk-label"
         },
         classes: "govuk-!-width-one-third",
@@ -36,7 +36,7 @@
         errorMessage:errorMessage
       }) }}
       {{ govukButton({
-        text: "Continue"
+        text:  texts.buttonText
       }) }}
      </form>
   </div>

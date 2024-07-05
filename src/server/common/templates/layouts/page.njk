@@ -27,11 +27,7 @@
 {%set htmlLang = 'en' %}
 {%endif%}
 {% block bodyStart %}
-{%if page != "home"%}
-  <a id="top"></a>
-  {% include "cookie-banner.njk" %}
-
-{%endif%}
+{% include "cookie-banner.njk" %}
 {% endblock %}
 {% set mainClasses = "govuk-main-wrapper" %}
 
@@ -147,7 +143,6 @@
 {% endblock %}
 
 {% block footer %}
-{%if page != "home"%}
   {{ govukFooterWelsh({
     meta: {
       items: [
@@ -167,7 +162,6 @@
     },
     texts: footerTxt
   }) }}
-  {% endif %}
 {% endblock %}
 
 {% block bodyEnd %}
