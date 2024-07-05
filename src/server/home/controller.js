@@ -1,7 +1,9 @@
 import { config } from '~/src/config'
+import { english } from '~/src/server/data/en/en.js'
 const password = config.get('daqiePassword')
 const homeController = {
   handler: (request, h) => {
+    const { footerTxt, cookieBanner, login } = english
     if (request.auth.isAuthenticated) {
       return h.redirect('/check-local-air-quality')
     } else {
@@ -10,9 +12,12 @@ const homeController = {
       request.yar.set('errors', null)
       request.yar.set('errorMessage', null)
       return h.view('home/index', {
-        pageTitle: 'Check local air quality - GOV.UK',
-        heading: 'Check local air quality',
+        pageTitle: login.pageTitle,
+        heading: login.heading,
+        texts: login.texts,
         page: 'home',
+        footerTxt,
+        cookieBanner,
         serviceName: '',
         errors: errors?.errors,
         errorMessage: errorMessage?.errorMessage
