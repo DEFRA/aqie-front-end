@@ -17,13 +17,17 @@ export default function loadAnalytics() {
       iframe.setAttribute("width", "0")
       iframe.setAttribute("style", "display:none;visibility:hidden")
       iframe.async = true
-      iframe.src = "https://www.googletagmanager.com/ns.html?id=G-8CMZBTDQBC"
+      iframe.src = "https://www.googletagmanager.com/ns.html?id=GTM-N5P9H455"
       noscript.appendChild(iframe)
       document.body.appendChild(noscript)
      
       const j = d.createElement(s)
       const dl = l !== 'dataLayer' ? `&l=${l}` : ''
       window.dataLayer = window.dataLayer || []
+      const k = d.createElement(s)
+      k.async = true
+      k.src = "https://www.googletagmanager.com/gtag/js?id=G-8CMZBTDQBC"
+      document.body.appendChild(k)
       function gtag() {
         window.dataLayer.push(arguments)
       }
@@ -32,6 +36,6 @@ export default function loadAnalytics() {
       j.async = true
       j.src = `https://www.googletagmanager.com/gtm.js?id=${i}${dl}`
       document.head.appendChild(j)
-    })(window, document, 'script', 'dataLayer', 'G-8CMZBTDQBC')
+    })(window, document, 'script', 'dataLayer', 'GTM-N5P9H455')
   }
 }
