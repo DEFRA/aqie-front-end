@@ -17,7 +17,7 @@ export default function loadAnalytics() {
       iframe.setAttribute("width", "0")
       iframe.setAttribute("style", "display:none;visibility:hidden")
       iframe.async = true
-      iframe.src = "https://www.googletagmanager.com/ns.html?id=G-SDVB7LSTVN"
+      iframe.src = "https://www.googletagmanager.com/ns.html?id=GTM-WHV4RRMR"
       noscript.appendChild(iframe)
       document.body.appendChild(noscript)
      
@@ -28,10 +28,10 @@ export default function loadAnalytics() {
         window.dataLayer.push(arguments)
       }
       gtag('js', new Date())
-      gtag('config', 'G-SDVB7LSTVN')
+      gtag('config', 'GTM-WHV4RRMR')
       j.async = true
       j.src = `https://www.googletagmanager.com/gtm.js?id=${i}${dl}`
       document.head.appendChild(j)
-    })(window, document, 'script', 'dataLayer', 'G-SDVB7LSTVN')
+    })(window, document, 'script', 'dataLayer', 'GTM-WHV4RRMR')
   }
 }

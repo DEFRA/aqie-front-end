@@ -328,21 +328,25 @@ export const english = {
   },
   footer: {
     privacy: {
+      pageTitle: 'Check local air quality - GOV.UK',
       title: 'Check local air quality privacy notice',
+      heading: 'Check local air quality',
       headings: {
-        a: 'What personal data we collect and how it is used',
-        b: 'Lawful basis for processing your personal data',
-        c: 'Consent to process your personal data',
-        d: '>Who we share your personal data with',
-        e: 'How long we hold personal data',
-        f: 'What happens if you do not provide the personal data',
-        g: 'The personal data you provide is not used for:',
-        h: 'Transfer of your personal data outside of the UK',
-        i: 'Your rights',
-        j: 'Complaints'
+        a: 'Who collects your personal data',
+        b: 'What personal data we collect and how it is used',
+        c: 'Lawful basis for processing your personal data',
+        d: 'Consent to process your personal data',
+        e: 'Who we share your personal data with',
+        f: 'How long we hold personal data',
+        g: 'What happens if you do not provide the personal data',
+        h: 'Use of automated decision-making or profiling',
+        i: 'Transfer of your personal data outside of the UK',
+        j: 'Your rights',
+        k: 'Complaints',
+        l: 'Persona information charter'
       },
       paragraphs: {
-        a: 'This privacy notice explains how the Check local air quality service processes and shares your personal data. If you have any queries about the content of this privacy notice, please email <a href="mailto:data.protection@defra.gov.uk">data.protection@defra.gov.uk.',
+        a: 'This privacy notice explains how the Check local air quality service processes and shares your personal data. If you have any queries about the content of this privacy notice, please email',
         b: 'Department for Environment, Food and Rural Affairs (Defra) is the controller for the personal data we collect:',
         c: 'Department for Environment, Food and Rural Affairs',
         d: 'Seacole Building',
@@ -364,10 +368,11 @@ export const english = {
         t: 'We respect your personal privacy when responding to access to information requests. We only share information when necessary to meet the statutory requirements of the Environmental Information Regulations 2004 and the Freedom of Information Act 2000.',
         u: 'We will keep your personal data for 7 in line with legislative requirements which is 7.',
         v: 'Contact the Defra Record Centre',
-        w: 'If you do not provide the personal data of the postcode or location that you are searching for, then you will not be able to use our service as we will not be able to provide you any data.',
-        x: 'The other personal data is optional and only required for service improvement.',
-        y: 'The personal data you provide is not used for:',
-        z: 'automated decision making (making a decision by automated means without any human involvement)',
+        w: 'for advice on retention period that you need to state here.',
+        x: 'If you do not provide the personal data of the postcode or location that you are searching for, then you will not be able to use our service as we will not be able to provide you any data.',
+        y: 'The other personal data is optional and only required for service improvement.',
+        z: 'The personal data you provide is not used for:',
+        a0: 'automated decision making (making a decision by automated means without any human involvement)',
         a1: 'profiling (automated processing of personal data to evaluate certain things about an individual)',
         a2: 'We will only transfer your personal data to another country that is deemed adequate for data protection purposes.',
         a3: 'Based on the lawful processing above, your individual rights are:',
@@ -383,40 +388,89 @@ export const english = {
         a13: 'individual rights',
         a14: 'under the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018 (DPA 2018),',
         a15: 'can be found at the Information Commissioner’s Office',
-        a16: 'Complaints',
-        a17: 'You have the right to',
-        a18: 'make a complaint',
-        a19: 'to the Information Commissioner’s Office at any time.',
-        c20: 'Personal information charter',
-        c21: 'Our',
-        c22: 'personal information charter',
-        c23: 'explains more about your rights over your personal data.'
+        a16: 'You have the right to',
+        a17: 'make a complaint',
+        a18: 'to the Information Commissioner’s Office at any time.',
+        a19: 'Personal information charter',
+        a20: 'Our',
+        a21: 'personal information charter',
+        a22: 'explains more about your rights over your personal data.'
       }
     },
     cookies: {
-      title: '',
+      title: 'Cookies',
       headings: {
-        a: '',
-        b: '',
-        c: ''
+        a: 'Essential cookies (strictly necessary)',
+        b: 'Analytics cookies (optional)',
+        d: 'Analytics cookies we us',
+        e: 'Do you want to accept analytics cookies?'
+      },
+      table1: {
+        title: 'Essential cookies we use',
+        text1: 'Name',
+        text2: 'Purpose',
+        text3: 'Expires',
+        text4: 'airaqie_cookies_analytics',
+        text5: 'Saves your cookie consent settings',
+        text6: '1 year'
+      },
+      table2: {
+        title: 'Analytics cookies we use',
+        text1: 'Name',
+        text2: 'Purpose',
+        text3: 'Expires',
+        text4:
+          'Helps us count how many people visit the Check local air quality by telling us if you’ve visited before.',
+        text5: '2 years',
+        text6: '_gid',
+        text7:
+          'Helps us count how many people visit the Check local air quality by telling us if you’ve visited before.',
+        text8: '24 hours',
+        text9: '_gat_UA-[GTM-WHV4RRMR]',
+        text10: 'Used to reduce the number of requests.',
+        text11: '1 minute'
       },
       paragraphs: {
-        a: '',
-        b: '',
-        c: ''
+        a: 'Check local air quality',
+        b: 'puts small files (known as ‘cookies’) on your computer.',
+        c: 'These cookies are used across the Check local air quality website.',
+        d: 'We only set cookies when JavaScript is running in your browser and you’ve accepted them. If you choose not to run Javascript, the information on this page will not apply to you.',
+        e: 'Find out',
+        f: 'how to manage cookies',
+        g: 'from the Information Commissioner‘s Office.',
+        h: 'We use an essential cookie to remember when you accept or reject cookies on our website.',
+        i: 'We use Google Analytics software to understand how people use the Check local air quality. We do this to help make sure the site is meeting the needs of its users and to help us make improvements.',
+        j: 'We do not collect or store your personal information (for example your name or address) so this information cannot be used to identify who you are.',
+        k: 'We do not allow Google to use or share our analytics data.',
+        l: 'Google Analytics stores information about:',
+        m: 'the pages you visit',
+        n: 'how long you spend on each page',
+        o: 'how you arrived at the site',
+        p: 'what you click on while you visit the site',
+        q: 'the device and browser you use',
+        r: 'Yes',
+        s: 'No',
+        buttonText: 'Save cookie settings'
       }
     },
     accessibility: {
-      title: '',
+      title: 'Accessibility Statement',
       headings: {
-        a: '',
-        b: '',
-        c: ''
+        a: 'Compliance status',
+        b: 'Preparation of this accessibility statement',
+        c: 'Feedback and contact information',
+        d: 'Enforcement procedure'
       },
       paragraphs: {
-        a: '',
-        b: '',
-        c: ''
+        a: 'Department for Environment, Food & Rural Affairs is committed to making its websites accessible in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.',
+        b: 'This accessibility statement applies to',
+        c: 'This website is fully compliant with the Web Content Accessibility Guidelines (WCAG) version 2.2 AA standard.',
+        d: 'This statement was prepared on 20 March 2024.',
+        e: 'The website was evaluated by the Department for Environment, Food & Rural Affairs.',
+        f: 'The statement was last reviewed on 11 March 2024.',
+        g: 'If you notice any compliance failures or need to request information and content that is not provided in this document, please email',
+        h: 'The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’).',
+        i: 'If you’re not happy with how we respond to your complaint, contact the Equality Advisory and Support Service (EASS).'
       }
     }
   }

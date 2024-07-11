@@ -8,6 +8,7 @@ import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { fetchData } from '~/src/server/locations/helpers/fetch-data'
 import { welsh } from '~/src/server/data/cy/cy.js'
+import moment from 'moment-timezone'
 
 const logger = createLogger()
 const getLocationDataController = {
@@ -17,6 +18,40 @@ const getLocationDataController = {
     if (query?.lang && query?.lang === 'en') {
       return h.redirect('/location?lang=en')
     }
+    const formattedDate = moment().format('DD MMMM YYYY').split(' ')
+    const calendarWelsh = [
+      'Ionawr',
+      'Chwefror',
+      'Mawrth',
+      'Ebrill',
+      'Mai',
+      'Mehefin',
+      'Gorffennaf',
+      'Awst',
+      'Medi',
+      'Hydref',
+      'Tachwedd',
+      'Rhagfyr'
+    ]
+    const calendarEnglish = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ]
+    const getMonth = calendarEnglish.findIndex(function (item) {
+      return item.indexOf(formattedDate[1]) !== -1
+    })
+    const englishDate = `${formattedDate[0]} ${calendarEnglish[getMonth]} ${formattedDate[2]}`
+    const welshDate = `${formattedDate[0]} ${calendarWelsh[getMonth]} ${formattedDate[2]}`
 
     const {
       searchLocation,
@@ -217,6 +252,7 @@ const getLocationDataController = {
             serviceName: multipleLocations.serviceName,
             forecastSummary: getDailySummary.today,
             summaryDate: getDailySummary.issue_date,
+            languageDate: lang === 'cy' ? welshDate : englishDate,
             lang: request.query.lang ?? lang
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
@@ -240,6 +276,7 @@ const getLocationDataController = {
             phaseBanner,
             backlink,
             cookieBanner,
+            languageDate: lang === 'cy' ? welshDate : englishDate,
             lang: request.query.lang ?? lang
           })
         } else {
@@ -323,6 +360,7 @@ const getLocationDataController = {
           phaseBanner,
           backlink,
           cookieBanner,
+          languageDate: lang === 'cy' ? welshDate : englishDate,
           lang: request.query?.lang ?? lang
         })
       }
@@ -350,6 +388,40 @@ const getLocationDetailsController = {
         return h.redirect(`/location/${locationId}?lang=${query.lang}`)
       }
       lang = request.query.lang ?? lang
+      const formattedDate = moment().format('DD MMMM YYYY').split(' ')
+      const calendarWelsh = [
+        'Ionawr',
+        'Chwefror',
+        'Mawrth',
+        'Ebrill',
+        'Mai',
+        'Mehefin',
+        'Gorffennaf',
+        'Awst',
+        'Medi',
+        'Hydref',
+        'Tachwedd',
+        'Rhagfyr'
+      ]
+      const calendarEnglish = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+      ]
+      const getMonth = calendarEnglish.findIndex(function (item) {
+        return item.indexOf(formattedDate[1]) !== -1
+      })
+      const englishDate = `${formattedDate[0]} ${calendarEnglish[getMonth]} ${formattedDate[2]}`
+      const welshDate = `${formattedDate[0]} ${calendarWelsh[getMonth]} ${formattedDate[2]}`
       const {
         footerTxt,
         phaseBanner,
@@ -410,6 +482,7 @@ const getLocationDetailsController = {
           phaseBanner,
           backlink,
           cookieBanner,
+          languageDate: lang === 'cy' ? welshDate : englishDate,
           lang: request.query.lang ?? lang
         })
       } else {
