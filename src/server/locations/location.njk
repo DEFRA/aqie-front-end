@@ -54,7 +54,7 @@
       <p class="govuk-!-margin-bottom-6">
         {{ forecastSummary }}
       </p>
-      <p class="govuk-caption-s govuk-!-margin-bottom-4">{{daqi.pageTexts.b}} {{ "today" | govukDate }}</p>
+      <p class="govuk-caption-s govuk-!-margin-bottom-4">{{daqi.pageTexts.b}} {{languageDate }}</p>
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6">
       <h2 class="govuk-heading-m">{{daqi.pageTexts.c}}</h2>
       {% include "pollutants.njk" %}
@@ -129,7 +129,7 @@
       rows: rows
   }) }}
   {# {% if loop.index == monitoringSites.length %} #}
-  <p class='govuk-caption-s govuk-!-margin-bottom-6'>{{daqi.pollutantTable.f}} {{pollutantTime}} {{daqi.pollutantTable.g}} {{ "today" | govukDate }}</p>
+  <p class='govuk-caption-s govuk-!-margin-bottom-6'>{{daqi.pollutantTable.f}} {{pollutantTime}} {{daqi.pollutantTable.g}} {{ languageDate }}</p>
   {# {%endif%} #}
 {% endfor %}
     </div>

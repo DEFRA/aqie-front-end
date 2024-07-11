@@ -31,14 +31,14 @@ export const welsh = {
     button: 'Parhau',
     errorText: {
       radios: {
-        title: 'Mae yna problem',
+        title: 'Mae yna broblem',
         list: {
           text: 'Dewiswch lle rydych chi am wirio'
         }
       },
       uk: {
         fields: {
-          title: 'Mae yna problem',
+          title: 'Mae yna broblem',
           list: {
             text: 'Rhowch leoliad neu god post'
           }
@@ -46,7 +46,7 @@ export const welsh = {
       },
       ni: {
         fields: {
-          title: 'Mae yna problem',
+          title: 'Mae yna broblem',
           list: {
             text: 'Rhowch god post'
           }
