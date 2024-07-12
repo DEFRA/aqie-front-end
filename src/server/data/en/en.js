@@ -278,7 +278,7 @@ export const english = {
         f: 'wildfires',
         g: 'pollen',
         h: 'power stations',
-        i: 'vehicles',
+        i: 'Vehicles',
         j: 'Short term health impacts of PM10 can include:',
         k: 'difficulty breathing',
         l: 'coughing',

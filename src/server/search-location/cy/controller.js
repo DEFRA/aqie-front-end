@@ -31,7 +31,7 @@ const searchLocationController = {
             isPageHeading: true
           },
           hint: {
-            text: searchLocation.searchParams.hint.text1 // 'Enter a location or postcode'
+            text: searchLocation.searchParams.hint.text2 // 'Enter a location or postcode'
           },
           id: 'location',
           name: 'location'
@@ -61,7 +61,7 @@ const searchLocationController = {
             isPageHeading: true
           },
           hint: {
-            text: searchLocation.searchParams.hint.text1 // 'Enter a location or postcode'
+            text: searchLocation.searchParams.hint.text2 // 'Enter a location or postcode'
           },
           id: 'location',
           name: 'location'

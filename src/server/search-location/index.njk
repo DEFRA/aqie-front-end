@@ -28,12 +28,21 @@
         {% endset %}
       {% else %}
         {% set ukHtml %}
+        {%if htmlLang == 'en' %}
         {{ govukInput({
           id: "engScoWal",
           name: "engScoWal",
           classes: "govuk-!-width-one-half",
-          label: { text: searchParams.hint.text }
+          label: { text: 'Enter a location or postcode' }
         }) }}
+        {%else%}
+          {{ govukInput({
+          id: "engScoWal",
+          name: "engScoWal",
+          classes: "govuk-!-width-one-half",
+          label: { text: 'Rhowch leoliad neu god post' }
+        }) }}
+        {%endif%}
         {% endset %}
       {% endif %}
       {% if locationType === 'ni-location' %}
@@ -47,12 +56,21 @@
         {% endset %}
       {% else %}
         {% set niHtml %}
+        {%if htmlLang == 'en' %}
         {{ govukInput({
           id: "ni",
           name: "ni",
           classes: "govuk-!-width-one-half",
-          label: { text: searchParams.hint.text }
+          label: { text: 'Enter a postcode' }
         }) }}
+        {%else%}
+          {{ govukInput({
+          id: "ni",
+          name: "ni",
+          classes: "govuk-!-width-one-half",
+          label: { text: 'Rhowch god post' }
+        }) }}
+        {%endif%}
         {% endset %}
       {% endif %}
       {{ govukRadios({

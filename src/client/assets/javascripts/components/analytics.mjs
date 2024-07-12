@@ -24,6 +24,7 @@ export default function loadAnalytics() {
       const j = d.createElement(s)
       const dl = l !== 'dataLayer' ? `&l=${l}` : ''
       window.dataLayer = window.dataLayer || []
+      ////////
       const k = d.createElement(s)
       k.async = true
       k.src = "https://www.googletagmanager.com/gtag/js?id=G-8CMZBTDQBC"
@@ -33,6 +34,7 @@ export default function loadAnalytics() {
       }
       gtag('js', new Date())
       gtag('config', 'G-8CMZBTDQBC')
+      /////////
       j.async = true
       j.src = `https://www.googletagmanager.com/gtm.js?id=${i}${dl}`
       document.head.appendChild(j)
