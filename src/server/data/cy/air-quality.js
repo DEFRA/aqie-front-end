@@ -66,16 +66,16 @@ export function getAirQuality(aqValue) {
   const value = aqValue || '4'
 
   const lookup = {
-    1: { band: 'isel', readableBand: 'isel' },
-    2: { band: 'isel', readableBand: 'isel' },
-    3: { band: 'isel', readableBand: 'isel' },
-    4: { band: 'cymedrol', readableBand: 'cymedrol' },
-    5: { band: 'cymedrol', readableBand: 'cymedrol' },
-    6: { band: 'cymedrol', readableBand: 'cymedrol' },
-    7: { band: 'uchel', readableBand: 'uchel' },
-    8: { band: 'uchel', readableBand: 'uchel' },
-    9: { band: 'uchel', readableBand: 'uchel' },
-    10: { band: 'veryHigh', readableBand: 'uchel iawn' }
+    1: { band: 'low', readableBand: 'low' },
+    2: { band: 'low', readableBand: 'low' },
+    3: { band: 'low', readableBand: 'low' },
+    4: { band: 'moderate', readableBand: 'moderate' },
+    5: { band: 'moderate', readableBand: 'moderate' },
+    6: { band: 'moderate', readableBand: 'moderate' },
+    7: { band: 'high', readableBand: 'high' },
+    8: { band: 'high', readableBand: 'high' },
+    9: { band: 'high', readableBand: 'high' },
+    10: { band: 'veryHigh', readableBand: 'very high' }
   }
 
   const bandInfo = lookup[value] || {

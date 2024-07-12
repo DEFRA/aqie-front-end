@@ -217,7 +217,7 @@ export const welsh = {
         c: 'llosgi nwy naturiol mewn boeler gwres canolog neu orsaf bŵer',
         d: 'weldio',
         e: 'defnyddio ffrwydron',
-        f: 'gweithgynhyrchu masnachol ',
+        f: 'gweithgynhyrchu masnachol',
         g: 'gweithgynhyrchu bwyd',
         h: 'Gall amlygiad byrdymor i nitrogen deuocsid achosi:',
         i: 'pyliau asthma',
@@ -225,7 +225,7 @@ export const welsh = {
         k: 'symptomau cyflyrau’r ysgyfaint neu’r galon i waethygu',
         l: 'Gall amlygiad hirdymor i nitrogen deuocsid achosi:',
         m: 'mwy o risg o heintiau anadlol',
-        n: 'gweithrediad ysgyfaint gwaeth mewn plant'
+        n: 'gwaeth gweithrediad yr ysgyfaint mewn plant'
       }
     },
     sulphurDioxide: {
@@ -238,7 +238,7 @@ export const welsh = {
       },
       paragraphs: {
         a: 'Mae sylffwr deuocsid yn nwy di-liw sydd ag arogl cryf. Mae’n cael ei gynhyrchu’n bennaf yn sgil:',
-        b: 'cerbydau',
+        b: 'llosgi petrol neu ddisel mewn cerbydau',
         c: 'boeleri nwy',
         d: 'pwerdai sy’n llosgi glo',
         e: 'gweithgynhyrchu masnachol',
@@ -263,24 +263,24 @@ export const welsh = {
       },
       paragraphs: {
         a: 'Mae mater gronynnol (PM) yn ronynnau mân iawn o solidau neu hylifau yn yr aer. Dim ond 10 micrometr mewn diamedr yw’r gronynnau.O ran cyd- destun, mae lled blewyn o wallt dynol yn 50 i 70 micrometr.',
-        b: 'cerbydau',
-        c: 'boeleri nwy',
-        d: 'pwerdai sy’n llosgi glo',
-        e: 'gweithgynhyrchu masnachol',
-        f: 'gweithgynhyrchu bwyd',
-        g: 'Gall amlygiad byrdymor achosi llid ar y canlynol:',
-        h: 'llygaid',
-        i: 'trwyn',
-        j: 'gwddf',
-        k: 'Gall amlygiad hirdymor ar lefelau uchel arwain at y canlynol:',
-        l: 'llai o weithrediad yn yr ysgyfaint',
-        m: 'newid synnwyr arogli',
-        n: 'mwy o heintiau’r anadl',
-        o: 'Gall effeithiau hirdymor PM10 ar iechyd gynnwys:',
-        p: 'niwed i feinwe’r ysgyfaint',
-        q: 'asthma',
+        b: 'Prif ffynonellau mater gronynnol yw:',
+        c: 'llwch o safleoedd adeiladu',
+        d: 'llwch o safleoedd tirlenwi',
+        e: 'llwch o amaethyddiaeth',
+        f: 'tanau gwyllt',
+        g: 'paill',
+        h: 'gorsafoedd pŵer',
+        i: 'Cerbydau',
+        j: 'Mae effeithiau iechyd byrdmor PM10 yn cynnwys:',
+        k: 'anhawster anadlu',
+        l: 'pesychu',
+        m: 'llid yn y llygaid, y trwyn a’r gwddf',
+        n: 'tyndra a phoen y frest',
+        o: 'Mae effeithiau hirdymor PM10 yn cynnwys:',
+        p: 'difrod i feinwe’r ysgyfaint',
+        q: 'asma',
         r: 'methiant y galon',
-        s: 'cancr',
+        s: 'canser',
         t: 'clefyd rhwystrol cronig yr ysgyfaint (COPD)'
       }
     },
@@ -290,7 +290,7 @@ export const welsh = {
       headerText: 'Check local air quality',
       headings: {
         a: 'Ffynonellau PM2.5',
-        b: 'Health effects'
+        b: 'Effeithiau ar iechyd'
       },
       paragraphs: {
         a: 'Mae mater gronynnol (PM) yn ronynnau mân iawn o solidau neu hylifau sydd yn yr aer. Dim ond 2.5 micrometr mewn diamedr yw’r gronynnau.O ran cyd- destun, mae lled blewyn o wallt dynol yn 50 i 70 micrometr.',
