@@ -6,7 +6,7 @@ const nitrogenDioxideController = {
     const { nitrogenDioxide } = welsh.pollutants
     const { footerTxt, cookieBanner, phaseBanner, multipleLocations } = welsh
     const { query, path } = request
-    let lang = path?.slice(-2)
+    let lang = path?.split('/').pop().slice(0, 2)
     if (lang === 'cy') {
       lang = 'cy'
     } else {

@@ -76,11 +76,9 @@ export const english = {
     }
   },
   notFoundUrl: {
-    heading: 'Page not found',
+    heading: 'We could not find that page',
     paragraphs: {
-      a: 'There is no page at ',
-      b: 'This may be because:',
-      c: 'you typed or pasted the web address incorrectly'
+      a: 'Go back to local air quality'
     }
   },
   multipleLocations: {
