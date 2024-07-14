@@ -112,6 +112,13 @@ export const english = {
       a: 'Accept analytics cookies',
       b: 'Reject analytics cookies',
       c: 'View cookies'
+    },
+    hideCookieMsg: {
+      text0: 'You’ve accepted analytics cookies. You can ',
+      text1: 'You’ve rejected analytics cookies. You can',
+      text2: 'change your cookie settings',
+      text3: ' at any time.',
+      buttonText: 'Hide cookie message'
     }
   },
   footerTxt: {

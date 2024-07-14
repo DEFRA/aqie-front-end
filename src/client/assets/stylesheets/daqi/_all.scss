@@ -608,6 +608,31 @@ button {
   }
 }
 
+button:focus, tooltip ~ span, tooltip ~ span:focus {
+				width: auto; 
+			margin-top: auto; 
+			margin-left: auto; 
+			opacity: 0; 
+			visibility: hidden; 
+			z-index: 10; 
+			position: absolute; 
+			-webkit-transition-property: opacity, margin-top, visibility, margin-left; 
+			-webkit-transition-duration: 0.4s, 0.3s, 0.4s, 0.3s; 
+			-webkit-transition-timing-function: ease-in-out, ease-in-out, ease-in-out,
+    ease-in-out; 
+			-moz-transition-property: opacity, margin-top, visibility, margin-left; 
+			-moz-transition-duration: 0.4s, 0.3s, 0.4s, 0.3s; 
+			-moz-transition-timing-function: ease-in-out, ease-in-out, ease-in-out,
+    ease-in-out; 
+			-o-transition-property: opacity, margin-top, visibility, margin-left; 
+			-o-transition-duration: 0.4s, 0.3s, 0.4s, 0.3s; 
+			-o-transition-timing-function: ease-in-out, ease-in-out, ease-in-out,
+    ease-in-out; 
+			transition-property: opacity, margin-top, visibility, margin-left; 
+			transition-duration: 0.4s, 0.3s, 0.4s, 0.3s; 
+			transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out; 
+}
+
 #tipfix ~ span {
 	color: #000000;
 	margin-top: -5px;
@@ -923,5 +948,13 @@ $font-family_2: sans-serif;
 	.defra-aq-levels-table__cell--level {
 		width: 35%;
 	}
+}
+
+.govuk-back-link{
+	font-size: 1.2rem;
+}
+.top-nav{
+	display:flex;
+	justify-content:space-between;
 }
 

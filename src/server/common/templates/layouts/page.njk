@@ -87,6 +87,7 @@
 
 {% block beforeContent %}
 {%if page != "home"%}
+
 {% if notFoundUrl %}
 {% else %}
   {{ govukPhaseBanner({
@@ -95,10 +96,24 @@
     },
     html: phaseBanner.paragraphs.b + " <a class='govuk-link' href='https://defragroup.eu.qualtrics.com/jfe/form/SV_dj4wJCoOkFQLXfM'>" + phaseBanner.paragraphs.c + " </a>" + phaseBanner.paragraphs.d
   }) }}
+  {%if page != "Check local air quality"%}
+  {% if not displayBacklink %}
+    {{
+      dwpLanguageToggle({
+          selectedLang: lang,
+          href: {
+              en: "?lang=en",
+              cy: "?lang=cy"
+          }
+      })
+    }}
+  {%endif%}
+  {%endif%}
 {% endif %}
  {{ super() }}
 {%if page != "Check local air quality"%}
   {%if displayBacklink %}
+  <div class='top-nav'>
   {%if htmlLang == "en"%}
     {{ govukBackLink({
     text: backlink.text,
@@ -111,9 +126,18 @@
     href: '/chwilio-lleoliad/cy?lang=cy'
   }) }}
   {% endif %}
+    {{
+      dwpLanguageToggle({
+          selectedLang: lang,
+          href: {
+              en: "?lang=en",
+              cy: "?lang=cy"
+          }
+      })
+    }}
+  </div>
   {% endif %}
   {% endif %}
-
   {%if lang == 'cy'%}
    {% set htmlLang = "cy" %}
    {% endif %}
@@ -126,15 +150,7 @@
   {% else %}
   {% set htmlLang = "en" %}
   {%endif%}
-  {{
-    dwpLanguageToggle({
-        selectedLang: lang,
-        href: {
-            en: "?lang=en",
-            cy: "?lang=cy"
-        }
-    })
-  }}
+
 {%endif%}
 {% endblock %}
 
