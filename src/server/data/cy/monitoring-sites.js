@@ -129,17 +129,17 @@ export const pollutantTypes = {
   },
   MP10: {
     title: 'PM10',
-    href: '/llygryddion/mater gronynnol-10/cy',
+    href: '/llygryddion/mater-gronynnol-10/cy',
     low_range: '0 i 50'
   },
   GE10: {
     title: 'PM10',
-    href: '/llygryddion/mater gronynnol-10/cy',
+    href: '/llygryddion/mater-gronynnol-10/cy',
     low_range: '0 i 50'
   },
   PM25: {
     title: 'PM2.5',
-    href: '/llygryddion/mater gronynnol-25/cy',
+    href: '/llygryddion/mater-gronynnol-25/cy',
     low_range: '0 i 35'
   },
   O3: {

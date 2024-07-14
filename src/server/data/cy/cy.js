@@ -67,11 +67,9 @@ export const welsh = {
     }
   },
   notFoundUrl: {
-    heading: 'Tudalen ddim i’w chanfod',
+    heading: 'Ni allem ddod o hyd i’r dudalen hon',
     paragraphs: {
-      a: 'Nid oes tudalen yn ',
-      b: 'Gall hyn fod oherwydd:',
-      c: 'rydych wedi teipio neu gludo’r cyfeiriad gwe yn anghywir'
+      a: 'Ewch yn ôl i ansawdd aer lleol'
     }
   },
   multipleLocations: {
@@ -105,6 +103,13 @@ export const welsh = {
       a: 'Derbyn cwcis dadansoddeg',
       b: 'Gwrthod cwcis dadansoddeg',
       c: 'Gweld cwcis'
+    },
+    hideCookieMsg: {
+      text0: 'Rydych chi wedi derbyn cwcis dadansoddol. Gallwch newid ',
+      text1: 'Rydych chi wedi gwrthod cwcis dadansoddol. Gallwch newid ',
+      text2: 'eich gosodiadau cwci ',
+      text3: ' ar unrhyw adeg.',
+      buttonText: 'Cuddio neges cwci'
     }
   },
   footerTxt: {

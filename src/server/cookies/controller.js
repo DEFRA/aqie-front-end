@@ -8,7 +8,7 @@ const cookiesController = {
       multipleLocations
     } = english
     const { path } = request
-    let lang = path?.slice(-2)
+    let lang = path?.split('/').pop().slice(0, 2)
     if (lang === 'cy') {
       lang = 'cy'
     } else {

@@ -48,7 +48,11 @@ button {
 	    }
 	}
 
-	&tooltip:focus ~ span{
+	&tooltip:focus:not(:focus) ~ span {
+		opacity: 0;
+    }
+
+  	&tooltip:focus ~ span{
 		&defra-toggletip__info {
 			opacity: 1;
 			text-decoration: none;

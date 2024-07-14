@@ -67,7 +67,7 @@ const getLocationDataController = {
     const airQuality = getAirQuality(request.payload?.aq)
     let locationNameOrPostcode = ''
     if (locationType === 'uk-location') {
-      locationNameOrPostcode = request.payload.engScoWal
+      locationNameOrPostcode = request.payload.engScoWal.trimEnd()
     } else if (locationType === 'ni-location') {
       locationNameOrPostcode = request.payload.ni
     }
