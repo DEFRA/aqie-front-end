@@ -5,6 +5,7 @@ const cookiesController = {
       footer: { cookies },
       cookieBanner,
       phaseBanner,
+      footerTxt,
       multipleLocations
     } = english
     const { path } = request
@@ -22,6 +23,7 @@ const cookiesController = {
       paragraphs: cookies.paragraphs,
       displayBacklink: false,
       phaseBanner,
+      footerTxt,
       cookieBanner,
       serviceName: multipleLocations.serviceName,
       page: 'cookies',
