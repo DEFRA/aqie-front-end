@@ -263,7 +263,7 @@ const getLocationDataController = {
             cookieBanner,
             daqi,
             languageDate: lang === 'cy' ? welshDate : englishDate,
-            lang: request.query.lang
+            lang: request.query.lang ?? lang
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
           return h.view('locations/multiple-locations', {
