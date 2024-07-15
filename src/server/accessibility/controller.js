@@ -6,6 +6,7 @@ const accessibilityController = {
       footer: { accessibility },
       cookieBanner,
       phaseBanner,
+      footerTxt,
       multipleLocations
     } = english
     const { path } = request
@@ -23,6 +24,7 @@ const accessibilityController = {
       paragraphs: accessibility.paragraphs,
       displayBacklink: false,
       phaseBanner,
+      footerTxt,
       cookieBanner,
       serviceName: multipleLocations.serviceName,
       lang: request.query.lang

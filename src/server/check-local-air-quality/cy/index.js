@@ -2,7 +2,7 @@ import { checkLocalAirController } from '~/src/server/check-local-air-quality/cy
 
 const checkLocalAirQualityCy = {
   plugin: {
-    name: 'check local air quality cy',
+    name: 'Gwirio ansawdd aer lleol',
     register: async (server) => {
       server.route([
         {

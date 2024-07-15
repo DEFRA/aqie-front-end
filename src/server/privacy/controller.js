@@ -6,6 +6,7 @@ const privacyController = {
       footer: { privacy },
       cookieBanner,
       phaseBanner,
+      footerTxt,
       multipleLocations
     } = english
     const { path } = request
@@ -23,6 +24,7 @@ const privacyController = {
       paragraphs: privacy.paragraphs,
       displayBacklink: false,
       phaseBanner,
+      footerTxt,
       cookieBanner,
       serviceName: multipleLocations.serviceName,
       page: 'privacy',
