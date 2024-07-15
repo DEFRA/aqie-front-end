@@ -187,7 +187,7 @@ export const english = {
     },
     tooltipText: {
       level:
-        'The level is calculated based on the daily air quality index (DAQI). There are 4 levels: low, moderate, high and very high.',
+        'There are 4 levels: low, moderate, high and very high. The level is determined by the highest reading of a single pollutant.',
       latest:
         'Readings are measured every hour. The unit µg/&#13221; stands for micrograms (one millionth of a gram) per cubic metre of air.'
     }
