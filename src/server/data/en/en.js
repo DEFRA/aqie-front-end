@@ -57,7 +57,7 @@ export const english = {
         fields: {
           title: 'There is a problem',
           list: {
-            text: 'Enter postcode'
+            text: 'Enter a postcode'
           }
         }
       }
