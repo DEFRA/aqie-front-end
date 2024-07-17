@@ -17,16 +17,16 @@
        <!-- That this is not required for the MVP <li>access the local authority website to find out what is being done to improve air quality</li> -->
       </ul>
       {%if lang == 'en' %}
-      {# {{ govukInsetText({
+      {{ govukInsetText({
         html: "<p class='govuk-body'>This page is also available <a class='govuk-link' href='/check-lleol-ansawdd-aer/cy'> in Welsh</a> (<a href='/check-lleol-ansawdd-aer/cy' hreflang='cy'>Cymraeg</a>).</p>",
         classes: "check-local-air-quality"
-      }) }} #}
+      }) }}
       {%endif%}
       {%if lang == 'cy'%}
-      {# {{ govukInsetText({
+      {{ govukInsetText({
         html: "<p class='govuk-body'>Mae'r dudalen hon hefyd ar gael <a class='govuk-link' href='/check-local-air-quality'> yn Saesneg</a> (<a href='/check-local-air-quality' hreflang='en'>English</a>).</p>",
         classes: "check-local-air-quality"
-      }) }} #}
+      }) }}
       {%endif%}
       {%if htmlLang == 'en'%}
       {{ govukButton({
