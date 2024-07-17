@@ -55,17 +55,6 @@
     serviceUrl: '/',
     useTudorCrown: true
   }) }}
-    <!-- Google tag (gtag.js) --> 
-    {# <script async src="https://www.googletagmanager.com/gtag/js?id=G-8CMZBTDQBC"></script> 
-    <script>  
-      console.log("the cookie value 2 ", cookies); 
-      window.dataLayer = window.dataLayer || [];   
-      function gtag(){
-        window.dataLayer.push(arguments);
-      };
-      gtag('js', new Date());   
-      gtag('config', 'G-8CMZBTDQBC'); 
-</script> #}
   {%endif%}
   {%if htmlLang == "cy"%}
   {{ govukHeader({
@@ -96,17 +85,18 @@
     },
     html: phaseBanner.paragraphs.b + " <a class='govuk-link' href='https://defragroup.eu.qualtrics.com/jfe/form/SV_dj4wJCoOkFQLXfM'>" + phaseBanner.paragraphs.c + " </a>" + phaseBanner.paragraphs.d
   }) }}
-  {%if page != "Check local air quality"%}
-  {% if not displayBacklink %}
-    {# {{
-      dwpLanguageToggle({
-          selectedLang: lang,
-          href: {
-              en: "?lang=en",
-              cy: "?lang=cy"
-          }
-      })
-    }} #}
+  {%if (page != "Check local air quality") and (page != "Gwirio ansawdd aer lleol") %}
+  {% if displayBacklink %}
+   {%else%}
+       {{
+        dwpLanguageToggle({
+            selectedLang: lang,
+            href: {
+                en: "?lang=en",
+                cy: "?lang=cy"
+            }
+        })
+      }}
   {%endif%}
   {%endif%}
 {% endif %}
@@ -126,7 +116,7 @@
     href: '/chwilio-lleoliad/cy?lang=cy'
   }) }}
   {% endif %}
-    {# {{
+    {{
       dwpLanguageToggle({
           selectedLang: lang,
           href: {
@@ -134,7 +124,7 @@
               cy: "?lang=cy"
           }
       })
-    }} #}
+    }}
   </div>
   {% endif %}
   {% endif %}

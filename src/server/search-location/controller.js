@@ -66,6 +66,7 @@ const searchLocationController = {
         button: searchLocation.button,
         footerTxt,
         phaseBanner,
+        displayBacklink: false,
         backlink,
         cookieBanner,
         lang: request.query.lang
