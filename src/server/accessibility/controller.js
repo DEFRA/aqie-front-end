@@ -9,7 +9,7 @@ const accessibilityController = {
       footerTxt,
       multipleLocations
     } = english
-    const { path } = request
+    const { path, query } = request
     let lang = path?.split('/').pop().slice(0, 2)
     if (lang === 'cy' && path !== '/privacy') {
       lang = 'cy'
@@ -17,6 +17,8 @@ const accessibilityController = {
       lang = 'en'
     }
     return h.view('accessibility/index', {
+      userId: query?.userId,
+      utm_source: query?.utm_source,
       pageTitle: accessibility.pageTitle,
       title: accessibility.title,
       heading: accessibility.heading,

@@ -15,7 +15,10 @@ const searchLocationController = {
     if (errors) {
       request.yar.set('errors', null)
       request.yar.set('errorMessage', null)
+      const queryValues = request.yar.get('queryValues')
       return h.view('search-location/index', {
+        userId: queryValues?.userId,
+        utm_source: queryValues?.utm_source,
         pageTitle: searchLocation.pageTitle, // 'Check local air quality - GOV.UK',
         heading: searchLocation.heading, // 'Check local air quality',
         page: searchLocation.page, // 'search-location',
@@ -46,6 +49,8 @@ const searchLocationController = {
       })
     } else {
       return h.view('search-location/index', {
+        userId: query?.userId,
+        utm_source: query?.utm_source,
         pageTitle: searchLocation.pageTitle, // 'Check local air quality - GOV.UK',
         heading: searchLocation.heading, // 'Check local air quality',
         page: searchLocation.page, // 'search-location',

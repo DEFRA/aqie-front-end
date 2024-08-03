@@ -5,7 +5,6 @@
     text: heading,
     caption: ""
   }) }}
-
   {% call appPageBody() %}
       <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop language-toggle">
@@ -29,9 +28,10 @@
       }) }} #}
       {%endif%}
       {%if htmlLang == 'en'%}
+      {% set queryhref %}/search-location?userId={{ userId }}&utm_source={{utm_source}}{% endset %}
       {{ govukButton({
         text: label,
-        href: '/search-location',
+        href: queryhref,
         isStartButton: true
       }) }}
       {%endif%}
