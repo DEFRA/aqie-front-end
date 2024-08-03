@@ -2,9 +2,10 @@
 export default function loadAnalytics() {
   if (!window.ga || !window.ga.loaded) {
     window.dataLayer = window.dataLayer || []
-    function gtag() {
+    const gtagCall = function gtag() {
       window.dataLayer.push(arguments)
     }
+    gtagCall()
     if(localStorage.getItem('consentMode') === null){
       gtag('consent', 'default', {
         'ad_storage': 'denied',
@@ -16,8 +17,6 @@ export default function loadAnalytics() {
     } else {
       gtag('consent', 'default', JSON.parse(localStorage.getItem('consentMode')))
     }
-    // Load gtm script
-    // Script based on snippet at https://developers.google.com/tag-manager/quickstart
     // prettier-ignore
     ;(function (w, d, s, l, i) {
       w[l] = w[l] || []
