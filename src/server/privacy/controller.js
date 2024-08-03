@@ -9,6 +9,7 @@ const privacyController = {
       footerTxt,
       multipleLocations
     } = english
+    const { query } = request
     const { path } = request
     let lang = path?.split('/').pop().slice(0, 2)
     if (lang === 'cy' && path !== '/privacy') {
@@ -17,6 +18,8 @@ const privacyController = {
       lang = 'en'
     }
     return h.view('privacy/index', {
+      userId: query?.userId,
+      utm_source: query?.utm_source,
       pageTitle: privacy.pageTitle,
       title: privacy.title,
       heading: privacy.heading,
