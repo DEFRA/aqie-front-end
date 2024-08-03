@@ -40,7 +40,6 @@ export default function loadAnalytics() {
       k.async = true
       k.src = "https://www.googletagmanager.com/gtag/js?id=G-8CMZBTDQBC"
       document.body.appendChild(k)
-      // const userID = window.location.href.split('=').pop()
       const urlParams = new URLSearchParams(window.location.search);
       const userId = urlParams.get('userId');
       const utm_source = urlParams.get('utm_source');

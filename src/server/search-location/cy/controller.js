@@ -1,5 +1,4 @@
 import { welsh } from '~/src/server/data/cy/cy.js'
-
 const searchLocationController = {
   handler: (request, h) => {
     const { query } = request

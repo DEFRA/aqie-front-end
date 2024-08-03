@@ -11,7 +11,6 @@ const searchLocationController = {
     const errors = request.yar.get('errors')
     const errorMessage = request.yar.get('errorMessage')
     const locationType = request.yar.get('locationType')
-
     if (errors) {
       request.yar.set('errors', null)
       request.yar.set('errorMessage', null)

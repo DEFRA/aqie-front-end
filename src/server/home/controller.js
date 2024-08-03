@@ -7,7 +7,6 @@ const homeController = {
     /* eslint-disable camelcase */
     const { userId, utm_source } = request.query
     const query = request.yar.get('queryValues')
-
     if (request.auth.isAuthenticated) {
       return h.redirect(
         `/check-local-air-quality?userId=${query.userId}&utm_source=${query.utm_source}`
@@ -17,6 +16,7 @@ const homeController = {
       const errorMessage = request.yar.get('errorMessage')
       request.yar.set('errors', null)
       request.yar.set('errorMessage', null)
+      /* eslint-disable camelcase */
       request.yar.set('queryValues', { userId, utm_source })
       return h.view('home/index', {
         userId,
@@ -39,6 +39,7 @@ const loginController = {
   handler: (request, h) => {
     if (request.payload.password === password) {
       request.cookieAuth.set({ password: request.payload.password })
+      /* eslint-disable camelcase */
       const { userId, utm_source } = request.query
       return h.redirect(
         `/check-local-air-quality?userId=${userId}&utm_source=${utm_source}`
