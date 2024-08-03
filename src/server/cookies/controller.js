@@ -8,7 +8,7 @@ const cookiesController = {
       footerTxt,
       multipleLocations
     } = english
-    const { path } = request
+    const { path, query } = request
     let lang = path?.split('/').pop().slice(0, 2)
     if (lang === 'cy') {
       lang = 'cy'
@@ -16,6 +16,8 @@ const cookiesController = {
       lang = 'en'
     }
     return h.view('cookies/index', {
+      userId: query?.userId,
+      utm_source: query?.utm_source,
       pageTitle: cookies.pageTitle,
       title: cookies.title,
       heading: cookies.heading,

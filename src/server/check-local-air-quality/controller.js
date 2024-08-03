@@ -14,6 +14,8 @@ const checkLocalAirController = {
       return h.redirect('/check-lleol-ansawdd-aer/cy')
     }
     return h.view('check-local-air-quality/index', {
+      userId: query?.userId,
+      utm_source: query?.utm_source,
       pageTitle: checkLocalAirQuality.pageTitle,
       heading: checkLocalAirQuality.heading,
       page: checkLocalAirQuality.page,

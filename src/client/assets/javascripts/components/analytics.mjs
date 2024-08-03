@@ -1,6 +1,21 @@
 // @ts-nocheck
 export default function loadAnalytics() {
   if (!window.ga || !window.ga.loaded) {
+    window.dataLayer = window.dataLayer || []
+    function gtag() {
+      window.dataLayer.push(arguments)
+    }
+    if(localStorage.getItem('consentMode') === null){
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'analytics_storage': 'denied',
+        'personalization_storage': 'denied',
+        'functionality_storage': 'denied',
+        'security_storage': 'denied',
+      })
+    } else {
+      gtag('consent', 'default', JSON.parse(localStorage.getItem('consentMode')))
+    }
     // Load gtm script
     // Script based on snippet at https://developers.google.com/tag-manager/quickstart
     // prettier-ignore
@@ -25,11 +40,21 @@ export default function loadAnalytics() {
       k.async = true
       k.src = "https://www.googletagmanager.com/gtag/js?id=G-8CMZBTDQBC"
       document.body.appendChild(k)
-      function gtag() {
-        window.dataLayer.push(arguments)
-      }
+      // const userID = window.location.href.split('=').pop()
+      const urlParams = new URLSearchParams(window.location.search);
+      const userId = urlParams.get('userId');
+      const utm_source = urlParams.get('utm_source');
       gtag('js', new Date())
-      gtag('config', 'G-8CMZBTDQBC')
+      gtag('config', 'G-8CMZBTDQBC',{
+        'event': 'userData',
+        'userId': userId,
+        'utm_source': utm_source
+      })
+      window.dataLayer.push({
+        'event': 'userData',
+        'userId': userId,
+        'utm_source': utm_source
+      })
       ///
       const f = d.getElementsByTagName(s)[0],
       j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''

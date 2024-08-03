@@ -105,9 +105,10 @@
   {%if displayBacklink %}
   <div class='top-nav'>
   {%if htmlLang == "en"%}
+  {% set queryhref %}/search-location?userId={{ userId }}&utm_source={{utm_source}}{% endset %}
     {{ govukBackLink({
     text: backlink.text,
-    href: '/search-location'
+    href: queryhref
   }) }}
   {% endif %}
   {%if htmlLang == "cy"%}
@@ -149,19 +150,22 @@
 {% endblock %}
 
 {% block footer %}
+{% set privacyhref %}/privacy?userId={{ userId }}&utm_source={{utm_source}}{% endset %}
+{% set cookieshref %}/cookies?userId={{ userId }}&utm_source={{utm_source}}{% endset %}
+{% set accessibilityhref %}/accessibility?userId={{ userId }}&utm_source={{utm_source}}{% endset %}
   {{ govukFooterWelsh({
     meta: {
       items: [
         {
-          href: "/privacy",
+          href: privacyhref,
           text: footerTxt.privacy
         },
         {
-          href: "/cookies",
+          href: cookieshref,
           text: footerTxt.cookies
         },
         {
-          href: "/accessibility",
+          href: accessibilityhref,
           text: footerTxt.accessibility
         }
       ]

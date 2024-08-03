@@ -22,7 +22,9 @@
     <p class="govuk-body-m">
       {{texts.a}} 
     </p>
-    <form action='/' method="post">
+    <form name="login-air-quality" id="login-air-quality" action='/?userId=seg1&utm_source=RNA987' method="POST">
+    <input type="hidden" name="userId" value="{{userId}}" /> 
+    <input type="hidden" name="utm_source" value="{{utm_source}}" /> 
       {{ govukInput({
         label: {
           text:  texts.b,
