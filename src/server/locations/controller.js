@@ -7,7 +7,8 @@ import { getAirQuality } from '~/src/server/data/air-quality.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { fetchData } from '~/src/server/locations/helpers/fetch-data'
-import { english } from '~/src/server/data/en/en.js'
+import { english, calendarEnglish } from '~/src/server/data/en/en.js'
+import { calendarWelsh } from '~/src/server/data/cy/cy.js'
 import moment from 'moment-timezone'
 
 const logger = createLogger()
@@ -20,34 +21,6 @@ const getLocationDataController = {
       return h.redirect('/lleoliad/cy?lang=cy')
     }
     const formattedDate = moment().format('DD MMMM YYYY').split(' ')
-    const calendarWelsh = [
-      'Ionawr',
-      'Chwefror',
-      'Mawrth',
-      'Ebrill',
-      'Mai',
-      'Mehefin',
-      'Gorffennaf',
-      'Awst',
-      'Medi',
-      'Hydref',
-      'Tachwedd',
-      'Rhagfyr'
-    ]
-    const calendarEnglish = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ]
     const getMonth = calendarEnglish.findIndex(function (item) {
       return item.indexOf(formattedDate[1]) !== -1
     })
@@ -422,34 +395,6 @@ const getLocationDetailsController = {
       }
       lang = request.query.lang ?? lang
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')
-      const calendarWelsh = [
-        'Ionawr',
-        'Chwefror',
-        'Mawrth',
-        'Ebrill',
-        'Mai',
-        'Mehefin',
-        'Gorffennaf',
-        'Awst',
-        'Medi',
-        'Hydref',
-        'Tachwedd',
-        'Rhagfyr'
-      ]
-      const calendarEnglish = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December'
-      ]
       const getMonth = calendarEnglish.findIndex(function (item) {
         return item.indexOf(formattedDate[1]) !== -1
       })
