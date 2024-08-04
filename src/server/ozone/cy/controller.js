@@ -17,6 +17,8 @@ const ozoneController = {
       return h.redirect('/pollutants/ozone')
     }
     return h.view('ozone/index', {
+      userId: query?.userId,
+      utm_source: query?.utm_source,
       pageTitle: ozone.pageTitle,
       ozone,
       page: 'ozone-cy',
