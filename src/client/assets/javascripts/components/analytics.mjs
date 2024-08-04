@@ -39,13 +39,9 @@ export default function loadAnalytics() {
         const userId = urlParams.get('userId');
         const utm_source = urlParams.get('utm_source');
         window.dataLayer.push('js', new Date())
-        window.dataLayer.push('config', 'G-8CMZBTDQBC',{
-          'event': 'userData',
-          'userId': userId,
-          'utm_source': utm_source
-        })
+        window.dataLayer.push('config', 'G-8CMZBTDQBC')
         window.dataLayer.push({
-          'event': 'userData',
+          'event': 'airQualityData',
           'userId': userId,
           'utm_source': utm_source
         })
