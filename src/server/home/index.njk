@@ -22,7 +22,8 @@
     <p class="govuk-body-m">
       {{texts.a}} 
     </p>
-    <form name="login-air-quality" id="login-air-quality" action='/?userId=seg1&utm_source=RNA987' method="POST">
+    {% set queryhref %}/?userId={{ userId }}&utm_source={{utm_source}}{% endset %}
+    <form name="login-air-quality" id="login-air-quality" action="{{queryhref}}" method="POST">
     <input type="hidden" name="userId" value="{{userId}}" /> 
     <input type="hidden" name="utm_source" value="{{utm_source}}" /> 
       {{ govukInput({
