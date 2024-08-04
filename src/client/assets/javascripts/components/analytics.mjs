@@ -1,14 +1,9 @@
 // @ts-nocheck
 export default function loadAnalytics() {
-  (function(){
     if (!window.ga || !window.ga.loaded) {
       window.dataLayer = window.dataLayer || []
-      function gtag() {
-        window.dataLayer.push(arguments)
-      }
-      
       if(localStorage.getItem('consentMode') === null){
-        gtag('consent', 'default', {
+        window.dataLayer.push('consent', 'default', {
           'ad_storage': 'denied',
           'analytics_storage': 'denied',
           'personalization_storage': 'denied',
@@ -16,7 +11,7 @@ export default function loadAnalytics() {
           'security_storage': 'denied',
         })
       } else {
-        gtag('consent', 'default', JSON.parse(localStorage.getItem('consentMode')))
+        window.dataLayer.push('consent', 'default', JSON.parse(localStorage.getItem('consentMode')))
       }
       // prettier-ignore
       ;(function (w, d, s, l, i) {
@@ -43,8 +38,8 @@ export default function loadAnalytics() {
         const urlParams = new URLSearchParams(window.location.search);
         const userId = urlParams.get('userId');
         const utm_source = urlParams.get('utm_source');
-        gtag('js', new Date())
-        gtag('config', 'G-8CMZBTDQBC',{
+        window.dataLayer.push('js', new Date())
+        window.dataLayer.push('config', 'G-8CMZBTDQBC',{
           'event': 'userData',
           'userId': userId,
           'utm_source': utm_source
@@ -62,5 +57,4 @@ export default function loadAnalytics() {
         f.parentNode.insertBefore(j, f)
       })(window, document, 'script', 'dataLayer', 'GTM-PBFV8FNC')
     }
-  })()
 }
