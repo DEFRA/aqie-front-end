@@ -5,14 +5,8 @@ const particulateMatter25Controller = {
   handler: (request, h) => {
     const { particulateMatter25 } = english.pollutants
     const { footerTxt, cookieBanner, phaseBanner, multipleLocations } = english
-    const { query, path } = request
-    let lang = path?.split('/').pop().slice(0, 2)
-    if (lang === 'cy') {
-      lang = 'cy'
-    } else {
-      lang = 'en'
-    }
-    lang = query.lang ?? lang
+    const { query } = request
+    const lang = 'en'
     if (query?.lang && query?.lang === 'cy') {
       return h.redirect('/llygryddion/mater-gronynnol-25/cy')
     }
@@ -27,7 +21,7 @@ const particulateMatter25Controller = {
       footerTxt,
       cookieBanner,
       serviceName: multipleLocations.serviceName,
-      lang: request.query.lang ?? lang
+      lang: query.lang ?? lang
     })
   }
 }
