@@ -17,6 +17,8 @@ const particulateMatter10Controller = {
       return h.redirect('/pollutants/particulate-matter-10')
     }
     return h.view('particulate-matter-10/index', {
+      userId: query?.userId,
+      utm_source: query?.utm_source,
       pageTitle: particulateMatter10.pageTitle,
       particulateMatter10,
       page: 'particulate matter 10',

@@ -17,6 +17,8 @@ const nitrogenDioxideController = {
       return h.redirect('/llygryddion/nitrogen-deuocsid/cy')
     }
     return h.view('nitrogen-dioxide/index', {
+      userId: query?.userId,
+      utm_source: query?.utm_source,
       pageTitle: nitrogenDioxide.pageTitle,
       nitrogenDioxide,
       page: 'Nitrogen dioxide (NO₂)',

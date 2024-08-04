@@ -17,6 +17,8 @@ const particulateMatter10Controller = {
       return h.redirect('/llygryddion/mater-gronynnol-10/cy')
     }
     return h.view('particulate-matter-10/index', {
+      userId: query?.userId,
+      utm_source: query?.utm_source,
       pageTitle: particulateMatter10.pageTitle,
       particulateMatter10,
       page: 'particulate matter 10',

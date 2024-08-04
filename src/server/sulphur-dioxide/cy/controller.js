@@ -17,6 +17,8 @@ const sulphurDioxideController = {
       return h.redirect('/pollutants/sulphur-dioxide')
     }
     return h.view('sulphur-dioxide/index', {
+      userId: query?.userId,
+      utm_source: query?.utm_source,
       pageTitle: sulphurDioxide.pageTitle,
       sulphurDioxide,
       page: 'Sulphur dioxide (SO₂)',
