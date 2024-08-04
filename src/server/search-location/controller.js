@@ -3,8 +3,6 @@ import { english } from '~/src/server/data/en/en.js'
 const searchLocationController = {
   handler: (request, h) => {
     const { query } = request
-    const { searchLocation, footerTxt, phaseBanner, backlink, cookieBanner } =
-      english
     if (query.lang === 'cy') {
       return h.redirect('/chwilio-lleoliad/cy')
     }
@@ -18,61 +16,60 @@ const searchLocationController = {
       return h.view('search-location/index', {
         userId: queryValues?.userId,
         utm_source: queryValues?.utm_source,
-        pageTitle: searchLocation.pageTitle, // 'Check local air quality - GOV.UK',
-        heading: searchLocation.heading, // 'Check local air quality',
-        page: searchLocation.page, // 'search-location',
-        serviceName: searchLocation.serviceName, // 'Check local air quality',
+        pageTitle: english.searchLocation.pageTitle,
+        heading: english.searchLocation.heading,
+        page: english.searchLocation.page,
+        serviceName: english.searchLocation.serviceName,
         searchParams: {
           label: {
-            text: searchLocation.searchParams.label.text, // 'Where do you want to check?',
+            text: english.searchLocation.searchParams.label.text,
             classes: 'govuk-label--l govuk-!-margin-bottom-6',
             isPageHeading: true
           },
           hint: {
-            text: searchLocation.searchParams.hint.text1 // 'Enter a location or postcode'
+            text: english.searchLocation.searchParams.hint.text1
           },
           id: 'location',
           name: 'location'
         },
-        locations: searchLocation.searchParams.locations,
-        button: searchLocation.button,
+        locations: english.searchLocation.searchParams.locations,
+        button: english.searchLocation.button,
         locationType,
         errors: errors.errors,
         errorMessage: errorMessage?.errorMessage,
         errorMessageRadio: errorMessage?.errorMessage,
-        footerTxt,
-        phaseBanner,
-        backlink,
-        cookieBanner,
+        footerTxt: english.footerTxt,
+        phaseBanner: english.phaseBanner,
+        backlink: english.backlink,
+        cookieBanner: english.cookieBanner,
         lang: request.query.lang
       })
     } else {
       return h.view('search-location/index', {
         userId: query?.userId,
         utm_source: query?.utm_source,
-        pageTitle: searchLocation.pageTitle, // 'Check local air quality - GOV.UK',
-        heading: searchLocation.heading, // 'Check local air quality',
-        page: searchLocation.page, // 'search-location',
-        serviceName: searchLocation.serviceName, // 'Check local air quality',
+        pageTitle: english.searchLocation.pageTitle,
+        heading: english.searchLocation.heading,
+        page: english.searchLocation.page,
+        serviceName: english.searchLocation.serviceName,
         searchParams: {
           label: {
-            text: searchLocation.searchParams.label.text, // 'Where do you want to check?',
+            text: english.searchLocation.searchParams.label.text,
             classes: 'govuk-label--l govuk-!-margin-bottom-6',
             isPageHeading: true
           },
           hint: {
-            text: searchLocation.searchParams.hint.text2 // 'Enter a location or postcode'
+            text: english.searchLocation.searchParams.hint.text2
           },
           id: 'location',
           name: 'location'
         },
-        locations: searchLocation.searchParams.locations,
-        button: searchLocation.button,
-        footerTxt,
-        phaseBanner,
-        displayBacklink: false,
-        backlink,
-        cookieBanner,
+        locations: english.searchLocation.searchParams.locations,
+        button: english.searchLocation.button,
+        footerTxt: english.footerTxt,
+        phaseBanner: english.phaseBanner,
+        backlink: english.backlink,
+        cookieBanner: english.cookieBanner,
         lang: request.query.lang
       })
     }

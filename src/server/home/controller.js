@@ -8,9 +8,15 @@ const homeController = {
     const { userId, utm_source } = request.query
     const query = request.yar.get('queryValues')
     if (request.auth.isAuthenticated) {
-      return h.redirect(
-        `/check-local-air-quality?userId=${query.userId}&utm_source=${query.utm_source}`
-      )
+      if (query) {
+        return h.redirect(
+          `/check-local-air-quality?userId=${query.userId ?? userId}&utm_source=${query.utm_source ?? utm_source}`
+        )
+      } else {
+        return h.redirect(
+          `/check-local-air-quality?userId=${userId ?? userId}&utm_source=${utm_source ?? utm_source}`
+        )
+      }
     } else {
       const errors = request.yar.get('errors')
       const errorMessage = request.yar.get('errorMessage')
