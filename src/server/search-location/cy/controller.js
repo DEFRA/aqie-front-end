@@ -16,64 +16,42 @@ const searchLocationController = {
     const errors = request.yar.get('errors')
     const errorMessage = request.yar.get('errorMessage')
     const locationType = request.yar.get('locationType')
+    const tempObject = {
+      heading: welsh.searchLocation.heading,
+      page: welsh.searchLocation.page,
+      serviceName: welsh.searchLocation.serviceName,
+      searchParams: {
+        label: {
+          text: welsh.searchLocation.searchParams.label.text,
+          classes: 'govuk-label--l govuk-!-margin-bottom-6',
+          isPageHeading: true
+        },
+        hint: {
+          text: welsh.searchLocation.searchParams.hint.text2
+        },
+        id: 'location',
+        name: 'location'
+      },
+      locations: welsh.searchLocation.searchParams.locations,
+      button: welsh.searchLocation.button,
+      locationType,
+      footerTxt: welsh.footerTxt,
+      phaseBanner: welsh.phaseBanner,
+      backlink: welsh.backlink,
+      cookieBanner: welsh.cookieBanner,
+      lang: 'cy'
+    }
     if (errors) {
       request.yar.set('errors', null)
       request.yar.set('errorMessage', null)
       return h.view('search-location/index', {
-        pageTitle: welsh.searchLocation.pageTitle,
-        heading: welsh.searchLocation.heading,
-        page: welsh.searchLocation.page,
-        serviceName: welsh.searchLocation.serviceName,
-        searchParams: {
-          label: {
-            text: welsh.searchLocation.searchParams.label.text,
-            classes: 'govuk-label--l govuk-!-margin-bottom-6',
-            isPageHeading: true
-          },
-          hint: {
-            text: welsh.searchLocation.searchParams.hint.text2
-          },
-          id: 'location',
-          name: 'location'
-        },
-        locations: welsh.searchLocation.searchParams.locations,
-        button: welsh.searchLocation.button,
-        locationType,
+        ...tempObject,
         errors: errors.errors,
         errorMessage: errorMessage?.errorMessage,
-        errorMessageRadio: errorMessage?.errorMessage,
-        footerTxt: welsh.footerTxt,
-        phaseBanner: welsh.phaseBanner,
-        backlink: welsh.backlink,
-        cookieBanner: welsh.cookieBanner,
-        lang: 'cy'
+        errorMessageRadio: errorMessage?.errorMessage
       })
     } else {
-      return h.view('search-location/index', {
-        pageTitle: welsh.searchLocation.pageTitle, // 'Check local air quality - GOV.UK',
-        heading: welsh.searchLocation.heading, // 'Check local air quality',
-        page: welsh.searchLocation.page, // 'search-location',
-        serviceName: welsh.searchLocation.serviceName, // 'Check local air quality',
-        searchParams: {
-          label: {
-            text: welsh.searchLocation.searchParams.label.text, // 'Where do you want to check?',
-            classes: 'govuk-label--l govuk-!-margin-bottom-6',
-            isPageHeading: true
-          },
-          hint: {
-            text: welsh.searchLocation.searchParams.hint.text2 // 'Enter a location or postcode'
-          },
-          id: 'location',
-          name: 'location'
-        },
-        locations: welsh.searchLocation.searchParams.locations,
-        button: welsh.searchLocation.button,
-        footerTxt: welsh.footerTxt,
-        phaseBanner: welsh.phaseBanner,
-        backlink: welsh.backlink,
-        cookieBanner: welsh.cookieBanner,
-        lang: 'cy'
-      })
+      return h.view('search-location/index', { ...tempObject })
     }
   }
 }
