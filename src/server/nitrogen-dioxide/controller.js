@@ -5,18 +5,14 @@ const nitrogenDioxideController = {
   handler: (request, h) => {
     const { nitrogenDioxide } = english.pollutants
     const { footerTxt, cookieBanner, phaseBanner, multipleLocations } = english
-    const { query, path } = request
-    let lang = path?.split('/').pop().slice(0, 2)
-    if (lang === 'cy') {
-      lang = 'cy'
-    } else {
-      lang = 'en'
-    }
-    lang = query.lang ?? lang
+    const { query } = request
+    const lang = 'en'
     if (query?.lang && query?.lang === 'cy') {
       return h.redirect('/llygryddion/nitrogen-deuocsid/cy')
     }
     return h.view('nitrogen-dioxide/index', {
+      userId: query?.userId,
+      utm_source: query?.utm_source,
       pageTitle: nitrogenDioxide.pageTitle,
       nitrogenDioxide,
       page: 'Nitrogen dioxide (NO₂)',
@@ -25,7 +21,7 @@ const nitrogenDioxideController = {
       footerTxt,
       cookieBanner,
       serviceName: multipleLocations.serviceName,
-      lang: request.query.lang ?? lang
+      lang: query.lang ?? lang
     })
   }
 }
