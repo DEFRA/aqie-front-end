@@ -323,3 +323,18 @@ export const welsh = {
     }
   }
 }
+
+export const calendarWelsh = [
+  'Ionawr',
+  'Chwefror',
+  'Mawrth',
+  'Ebrill',
+  'Mai',
+  'Mehefin',
+  'Gorffennaf',
+  'Awst',
+  'Medi',
+  'Hydref',
+  'Tachwedd',
+  'Rhagfyr'
+]

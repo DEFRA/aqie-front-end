@@ -7,7 +7,8 @@ import { getAirQuality } from '~/src/server/data/air-quality.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { fetchData } from '~/src/server/locations/helpers/fetch-data'
-import { english } from '~/src/server/data/en/en.js'
+import { english, calendarEnglish } from '~/src/server/data/en/en.js'
+import { calendarWelsh } from '~/src/server/data/cy/cy.js'
 import moment from 'moment-timezone'
 
 const logger = createLogger()
@@ -20,34 +21,6 @@ const getLocationDataController = {
       return h.redirect('/lleoliad/cy?lang=cy')
     }
     const formattedDate = moment().format('DD MMMM YYYY').split(' ')
-    const calendarWelsh = [
-      'Ionawr',
-      'Chwefror',
-      'Mawrth',
-      'Ebrill',
-      'Mai',
-      'Mehefin',
-      'Gorffennaf',
-      'Awst',
-      'Medi',
-      'Hydref',
-      'Tachwedd',
-      'Rhagfyr'
-    ]
-    const calendarEnglish = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ]
     const getMonth = calendarEnglish.findIndex(function (item) {
       return item.indexOf(formattedDate[1]) !== -1
     })
@@ -71,7 +44,7 @@ const getLocationDataController = {
     } else if (locationType === 'ni-location') {
       locationNameOrPostcode = request.payload.ni
     }
-    if (Object.values(query).length === 0) {
+    if (!query.lang) {
       request.yar.set('locationType', locationType)
       request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
       request.yar.set('airQuality', airQuality)
@@ -97,13 +70,18 @@ const getLocationDataController = {
       })
 
       request.yar.set('locationType', '')
+      request.yar.get('', '')
       if (lang === 'cy') {
         return h.redirect('/chwilio-lleoliad/cy')
       }
       if (query.lang === 'cy') {
         return h.redirect('/lleoliad/cy')
       }
-      return h.redirect('/search-location')
+      /* eslint-disable camelcase */
+      const { userId, utm_source } = request.query
+      return h.redirect(
+        `/search-location?userId=${userId}&utm_source=${utm_source}`
+      )
     }
     try {
       let userLocation = locationNameOrPostcode.toUpperCase() // Use 'let' to allow reassignment
@@ -138,7 +116,10 @@ const getLocationDataController = {
           }
         })
         request.yar.set('locationType', 'uk-location')
-        return h.redirect('/search-location')
+        const { userId, utm_source } = request.query
+        return h.redirect(
+          `/search-location?userId=${userId}&utm_source=${utm_source}`
+        )
       }
       if (!userLocation && locationType === 'ni-location') {
         request.yar.set('errors', {
@@ -158,7 +139,10 @@ const getLocationDataController = {
           }
         })
         request.yar.set('locationType', 'ni-location')
-        return h.redirect('/search-location')
+        const { userId, utm_source } = request.query
+        return h.redirect(
+          `/search-location?userId=${userId}&utm_source=${utm_source}`
+        )
       }
 
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
@@ -168,6 +152,8 @@ const getLocationDataController = {
 
         if (!results || results.length === 0) {
           return h.view('locations/location-not-found', {
+            userId: query?.userId,
+            utm_source: query?.utm_source,
             userLocation: locationNameOrPostcode,
             serviceName: notFoundLocation.heading,
             paragraph: notFoundLocation.paragraphs,
@@ -245,6 +231,8 @@ const getLocationDataController = {
           //
           const airQuality = getAirQuality(forecastNum[0])
           return h.view('locations/location', {
+            userId: query?.userId,
+            utm_source: query?.utm_source,
             result: matches[0],
             name2: matches[0].GAZETTEER_ENTRY?.NAME2,
             airQuality,
@@ -267,6 +255,8 @@ const getLocationDataController = {
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
           return h.view('locations/multiple-locations', {
+            userId: query?.userId,
+            utm_source: query?.utm_source,
             results: matches,
             title: multipleLocations.title,
             paragraphs: multipleLocations.paragraphs,
@@ -288,6 +278,8 @@ const getLocationDataController = {
           })
         } else {
           return h.view('locations/location-not-found', {
+            userId: query?.userId,
+            utm_source: query?.utm_source,
             userLocation: locationNameOrPostcode,
             serviceName: notFoundLocation.heading,
             paragraph: notFoundLocation.paragraphs,
@@ -305,6 +297,8 @@ const getLocationDataController = {
 
         if (!result || result.length === 0) {
           return h.view('locations/location-not-found', {
+            userId: query?.userId,
+            utm_source: query?.utm_source,
             userLocation: locationNameOrPostcode,
             serviceName: notFoundLocation.heading,
             paragraph: notFoundLocation.paragraphs,
@@ -353,6 +347,8 @@ const getLocationDataController = {
           }
         }
         return h.view('locations/location', {
+          userId: query?.userId,
+          utm_source: query?.utm_source,
           result: locationData,
           airQuality,
           airQualityData: airQualityData.commonMessages,
@@ -375,6 +371,8 @@ const getLocationDataController = {
     } catch (error) {
       logger.info(`error from location refresh ${error.message}`)
       return h.view('error/index', {
+        userId: query?.userId,
+        utm_source: query?.utm_source,
         msError: error.message,
         lang: request.query?.lang
       })
@@ -397,34 +395,6 @@ const getLocationDetailsController = {
       }
       lang = request.query.lang ?? lang
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')
-      const calendarWelsh = [
-        'Ionawr',
-        'Chwefror',
-        'Mawrth',
-        'Ebrill',
-        'Mai',
-        'Mehefin',
-        'Gorffennaf',
-        'Awst',
-        'Medi',
-        'Hydref',
-        'Tachwedd',
-        'Rhagfyr'
-      ]
-      const calendarEnglish = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December'
-      ]
       const getMonth = calendarEnglish.findIndex(function (item) {
         return item.indexOf(formattedDate[1]) !== -1
       })
@@ -475,6 +445,8 @@ const getLocationDetailsController = {
         )
         const airQuality = getAirQuality(forecastNum[0])
         return h.view('locations/location', {
+          userId: query?.userId,
+          utm_source: query?.utm_source,
           result: locationDetails,
           airQuality,
           airQualityData: airQualityData.commonMessages,
@@ -495,6 +467,8 @@ const getLocationDetailsController = {
         })
       } else {
         return h.view('location-not-found', {
+          userId: query?.userId,
+          utm_source: query?.utm_source,
           paragraph: notFoundLocation.paragraphs,
           serviceName: notFoundLocation.heading,
           footerTxt,
