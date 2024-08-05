@@ -44,9 +44,9 @@ export default function loadAnalytics() {
         })
         window.dataLayer.push({
           'event': 'airQualityData',
-          'userSeg': utm_source,
+          'userSeg': userId,
           'login_status': 'logged in',
-          'utm_source': userId
+          'utm_source': utm_source
         })
         ///
         const f = d.getElementsByTagName(s)[0],
