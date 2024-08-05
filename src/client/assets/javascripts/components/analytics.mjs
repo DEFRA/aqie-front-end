@@ -44,7 +44,7 @@ export default function loadAnalytics() {
         })
         window.dataLayer.push({
           'event': 'airQualityData',
-          'userId': utm_source,
+          'userSeg': utm_source,
           'login_status': 'logged in',
           'utm_source': userId
         })
