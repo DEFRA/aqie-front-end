@@ -372,7 +372,6 @@ export const english = {
         s: 'We do not share the personal data collected under this privacy notice with other organisations.',
         t: 'We respect your personal privacy when responding to access to information requests. We only share information when necessary to meet the statutory requirements of the Environmental Information Regulations 2004 and the Freedom of Information Act 2000.',
         u: 'We will keep your personal data for 7 in line with legislative requirements which is 7.',
-        v: 'Contact the Defra Record Centre',
         w: 'for advice on retention period that you need to state here.',
         x: 'If you do not provide the personal data of the postcode or location that you are searching for, then you will not be able to use our service as we will not be able to provide you any data.',
         y: 'The other personal data is optional and only required for service improvement.',

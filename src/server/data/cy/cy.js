@@ -100,8 +100,8 @@ export const welsh = {
       b: "Hoffem hefyd ddefnyddio cwcis dadansoddol fel y gallwn ddeall sut rydych yn defnyddio'r gwasanaeth a gwneud gwelliannau."
     },
     buttons: {
-      a: 'Derbyn cwcis dadansoddeg',
-      b: 'Gwrthod cwcis dadansoddeg',
+      a: 'Derbyn cwcis dadansoddol',
+      b: 'Gwrthod cwcis dadansoddol',
       c: 'Gweld cwcis'
     },
     hideCookieMsg: {
