@@ -88,7 +88,7 @@
   {%if (page != "Check local air quality") and (page != "Gwirio ansawdd aer lleol") %}
   {% if displayBacklink %}
    {%else%}
-       {#{{
+       {{
         dwpLanguageToggle({
             selectedLang: lang,
             href: {
@@ -96,7 +96,7 @@
                 cy: "?lang=cy"
             }
         })
-      }}#}
+      }}
   {%endif%}
   {%endif%}
 {% endif %}
@@ -117,7 +117,7 @@
     href: '/chwilio-lleoliad/cy?lang=cy'
   }) }}
   {% endif %}
-    {#{{
+    {{
       dwpLanguageToggle({
           selectedLang: lang,
           href: {
@@ -125,7 +125,7 @@
               cy: "?lang=cy"
           }
       })
-    }}#}
+    }}
   </div>
   {% endif %}
   {% endif %}

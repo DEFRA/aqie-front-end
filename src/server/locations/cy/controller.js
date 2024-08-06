@@ -164,6 +164,7 @@ const getLocationDataController = {
             userLocation: locationNameOrPostcode,
             pageTitle: `We could not find ${userLocation} - Check local air quality - GOV.UK`,
             paragraph: notFoundLocation.paragraphs,
+            serviceName: searchLocation.serviceName,
             footerTxt,
             phaseBanner,
             backlink,
@@ -288,6 +289,7 @@ const getLocationDataController = {
             pageTitle: `${notFoundLocation.heading} ${locationNameOrPostcode} - Check local air quality - GOV.UK`,
             paragraph: notFoundLocation.paragraphs,
             footerTxt,
+            serviceName: searchLocation.serviceName,
             phaseBanner,
             backlink,
             cookieBanner,
@@ -304,6 +306,7 @@ const getLocationDataController = {
             pageTitle: `${notFoundLocation.heading} ${userLocation} - Check local air quality - GOV.UK`,
             paragraph: notFoundLocation.paragraphs,
             footerTxt,
+            serviceName: searchLocation.serviceName,
             phaseBanner,
             backlink,
             cookieBanner,
@@ -431,6 +434,7 @@ const getLocationDetailsController = {
         backlink,
         cookieBanner,
         notFoundLocation,
+        searchLocation,
         daqi
       } = welsh
       const locationData = request.yar.get('locationData') || []
@@ -483,6 +487,7 @@ const getLocationDetailsController = {
           summaryDate: locationData.forecastSummary.issue_date,
           footerTxt,
           phaseBanner,
+          serviceName: searchLocation.serviceName,
           backlink,
           cookieBanner,
           languageDate: lang === 'cy' ? welshDate : englishDate,
