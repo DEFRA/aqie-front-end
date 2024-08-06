@@ -21,7 +21,7 @@
     position: relative;
 
     margin-top: govuk-spacing(3);
-    margin-bottom: govuk-spacing(3);
+    margin-bottom: 25px;
 
     // Allow space for the arrow
     padding-left: govuk-em(14px, $font-size);
@@ -35,7 +35,7 @@
     // Vertically align with the parent element
     position: absolute;
     top: 0;
-    bottom: 14px;
+    bottom: 31px;
     left: govuk-em(3px, $font-size);
 
     width: $chevron-size;
