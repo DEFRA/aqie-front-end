@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { english } from '~/src/server/data/en/en.js'
+import { welsh } from '~/src/server/data/cy/cy.js'
 const privacyController = {
   handler: (request, h) => {
     const {
@@ -8,10 +8,11 @@ const privacyController = {
       phaseBanner,
       footerTxt,
       multipleLocations
-    } = english
+    } = welsh
     const { query } = request
-    if (query?.lang && query?.lang === 'cy') {
-      return h.redirect('/preifatrwydd/cy')
+    const lang = 'cy'
+    if (query?.lang && query?.lang === 'en') {
+      return h.redirect('/privacy')
     }
     return h.view('privacy/index', {
       userId: query?.userId,
@@ -27,7 +28,7 @@ const privacyController = {
       cookieBanner,
       serviceName: multipleLocations.serviceName,
       page: 'privacy',
-      lang: request.query.lang
+      lang: request?.query?.lang ?? lang
     })
   }
 }

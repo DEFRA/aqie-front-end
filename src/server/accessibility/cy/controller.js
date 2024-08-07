@@ -1,4 +1,4 @@
-import { english } from '~/src/server/data/en/en.js'
+import { welsh } from '~/src/server/data/cy/cy.js'
 
 const accessibilityController = {
   handler: (request, h) => {
@@ -8,10 +8,10 @@ const accessibilityController = {
       phaseBanner,
       footerTxt,
       multipleLocations
-    } = english
+    } = welsh
     const { query } = request
-    if (query?.lang && query?.lang === 'cy') {
-      return h.redirect('/hygyrchedd/cy')
+    if (query?.lang && query?.lang === 'en') {
+      return h.redirect('/accessibility')
     }
     return h.view('accessibility/index', {
       userId: query?.userId,

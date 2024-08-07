@@ -406,8 +406,8 @@ export const english = {
       headings: {
         a: 'Essential cookies (strictly necessary)',
         b: 'Analytics cookies (optional)',
-        d: 'Analytics cookies we us',
-        e: 'Do you want to accept analytics cookies?'
+        c: 'Analytics cookies we use',
+        d: 'Do you want to accept analytics cookies?'
       },
       table1: {
         title: 'Essential cookies we use',
@@ -419,7 +419,6 @@ export const english = {
         text6: '1 year'
       },
       table2: {
-        title: 'Analytics cookies we use',
         text1: 'Name',
         text2: 'Purpose',
         text3: 'Expires',
