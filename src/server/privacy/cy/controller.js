@@ -28,7 +28,7 @@ const privacyController = {
       cookieBanner,
       serviceName: multipleLocations.serviceName,
       page: 'privacy',
-      lang: request?.query?.lang ?? lang
+      lang: query?.lang ?? lang
     })
   }
 }

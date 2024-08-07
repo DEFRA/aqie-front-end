@@ -29,7 +29,7 @@ const cookiesController = {
       cookieBanner,
       serviceName: multipleLocations.serviceName,
       page: 'cookies',
-      lang: request?.query?.lang ?? lang
+      lang: query?.lang ?? lang
     })
   }
 }

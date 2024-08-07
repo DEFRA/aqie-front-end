@@ -9,6 +9,7 @@ const accessibilityController = {
       footerTxt,
       multipleLocations
     } = english
+    const lang = 'en'
     const { query } = request
     if (query?.lang && query?.lang === 'cy') {
       return h.redirect('/hygyrchedd/cy')
@@ -26,7 +27,7 @@ const accessibilityController = {
       footerTxt,
       cookieBanner,
       serviceName: multipleLocations.serviceName,
-      lang: request.query.lang
+      lang: query.lang ?? lang
     })
   }
 }

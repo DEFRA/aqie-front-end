@@ -10,6 +10,7 @@ const privacyController = {
       multipleLocations
     } = english
     const { query } = request
+    const lang = 'en'
     if (query?.lang && query?.lang === 'cy') {
       return h.redirect('/preifatrwydd/cy')
     }
@@ -27,7 +28,7 @@ const privacyController = {
       cookieBanner,
       serviceName: multipleLocations.serviceName,
       page: 'privacy',
-      lang: request.query.lang
+      lang: query?.lang ?? lang
     })
   }
 }

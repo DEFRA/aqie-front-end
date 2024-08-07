@@ -20,6 +20,8 @@ const cookiesController = {
       title: cookies.title,
       heading: cookies.heading,
       headings: cookies.headings,
+      table1: cookies.table1,
+      table2: cookies.table2,
       paragraphs: cookies.paragraphs,
       displayBacklink: false,
       phaseBanner,
@@ -27,7 +29,7 @@ const cookiesController = {
       cookieBanner,
       serviceName: multipleLocations.serviceName,
       page: 'cookies',
-      lang: request?.query?.lang ?? lang
+      lang: lang ?? lang
     })
   }
 }
