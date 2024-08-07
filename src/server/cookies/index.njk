@@ -18,79 +18,79 @@
         }
       }) }}
 
-      <h1 class="govuk-heading-xl">Cookies</h1>
-      <p class="govuk-body"><a href="/" class="govuk-link">Check local air quality</a> puts small files (known as ‘cookies’) on your computer.</p>
+      <h1 class="govuk-heading-xl">{{title}}</h1>
+      <p class="govuk-body"><a href="/" class="govuk-link">{{paragraphs.a}}</a> {{paragraphs.b}}</p>
 
-      <p class="govuk-body">These cookies are used across the Check local air quality website.</p>
+      <p class="govuk-body">{{paragraphs.c}}</p>
 
-      <p class="govuk-body">We only set cookies when JavaScript is running in your browser and you’ve accepted them. If you choose not to run Javascript, the information on this page will not apply to you.</p>
+      <p class="govuk-body">{{paragraphs.d}}</p>
 
-      <p class="govuk-body">Find out <a href="https://ico.org.uk/for-the-public/online/cookies" class="govuk-link">how to manage cookies</a> from the Information Commissioner's Office.</p>
+      <p class="govuk-body">{{paragraphs.e}} <a href="https://ico.org.uk/for-the-public/online/cookies" class="govuk-link">{{paragraphs.f}}</a> {{paragraphs.g}}</p>
 
       <form class="js-cookies-page-form">
 
-        <h2 class="govuk-heading-m">Essential cookies (strictly necessary)</h2>
+        <h2 class="govuk-heading-m">{{headings.a}}</h2>
 
-        <p class="govuk-body">We use an essential cookie to remember when you accept or reject cookies on our website.</p>
+        <p class="govuk-body">{{paragraphs.h}}</p>
 
         {{ govukTable({
           firstCellIsHeader: true,
-          caption: "Essential cookies we use",
+          caption: table1.title,
           head: [
-            { text: "Name" },
-            { text: "Purpose"},
-            { text: "Expires"}
+            { text: table1.text1 },
+            { text: table1.text2},
+            { text: table1.text3}
           ],
           rows: [
             [
-              {text: "airaqie_cookies_analytics"},
-              {text: "Saves your cookie consent settings"},
-              {text: "1 year"}
+              {text: table1.text4},
+              {text: table1.text5},
+              {text: table1.text6}
             ]
           ]
         }) }}
 
-        <h2 class="govuk-heading-m">Analytics cookies (optional)</h2>
+        <h2 class="govuk-heading-m">{{headings.b}}</h2>
 
-        <p class="govuk-body">We use Google Analytics software to understand how people use the Check local air quality. We do this to help make sure the site is meeting the needs of its users and to help us make improvements.</p>
+        <p class="govuk-body">{{paragraphs.i}}</p>
 
-        <p class="govuk-body">We do not collect or store your personal information (for example your name or address) so this information cannot be used to identify who you are.</p>
+        <p class="govuk-body">{{paragraphs.j}}</p>
 
-        <p class="govuk-body">We do not allow Google to use or share our analytics data.</p>
+        <p class="govuk-body">{{paragraphs.k}}</p>
 
-        <p class="govuk-body">Google Analytics stores information about:</p>
+        <p class="govuk-body">{{paragraphs.l}}</p>
 
         <ul class="govuk-list govuk-list--bullet">
-          <li>the pages you visit</li>
-          <li>how long you spend on each page</li>
-          <li>how you arrived at the site</li>
-          <li>what you click on while you visit the site</li>
-          <li>the device and browser you use</li>
+          <li>{{paragraphs.m}}</li>
+          <li>{{paragraphs.n}}</li>
+          <li>{{paragraphs.o}}</li>
+          <li>{{paragraphs.p}}/li>
+          <li>t{{paragraphs.q}}</li>
         </ul>
 
         {{ govukTable({
           firstCellIsHeader: true,
-          caption: "Analytics cookies we use",
+          caption: headings.c,
           head: [
-            { text: "Name" },
-            { text: "Purpose" },
-            { text: "Expires" }
+            { text: table2.text1 },
+            { text: table2.text2 },
+            { text: table2.text3 }
           ],
           rows: [
             [
               { text: "_ga" },
-              { text: "Helps us count how many people visit the Check local air quality by telling us if you’ve visited before." },
-              { text: "2 years" }
+              { text: table2.text4 },
+              { text: table2.text5 }
             ],
             [
               { text: "_gid" },
-              { text: "Helps us count how many people visit the Check local air quality by telling us if you’ve visited before." },
-              { text: "24 hours" }
+              { text: table2.text7 },
+              { text: table8.text8 }
             ],
             [
               { text: "_gat_UA-[G-8CMZBTDQBC]" },
-              { text: "Used to reduce the number of requests." },
-              { text: "1 minute" }
+              { text: table2.text9 },
+              { text: table2.text10 }
             ]
           ]
         }) }}
@@ -100,7 +100,7 @@
           idPrefix: "cookies-analytics",
           fieldset: {
             legend: {
-              text: "Do you want to accept analytics cookies?",
+              text: headings.d,
               classes: "govuk-fieldset__legend--s"
             },
             classes: "js-cookies-page-form-fieldset",
@@ -111,18 +111,18 @@
           },
           items: [
             {
-              text: "Yes",
+              text: paragraphs.r,
               value: "yes"
             },
             {
-              text: "No",
+              text: paragraphs.s,
               value: "no"
             }
           ]
         }) }} 
 
         {{ govukButton({
-          text: "Save cookie settings",
+          text: paragraphs.buttonText,
           classes: "js-cookies-form-button",
           attributes: {
             hidden: ""

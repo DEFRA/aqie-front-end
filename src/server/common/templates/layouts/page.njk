@@ -150,9 +150,9 @@
 {% endblock %}
 
 {% block footer %}
-  {% set privacyhref %}/privacy?userId={{ userId }}&utm_source={{utm_source}}{% endset %}
-  {% set cookieshref %}/cookies?userId={{ userId }}&utm_source={{utm_source}}{% endset %}
-  {% set accessibilityhref %}/accessibility?userId={{ userId }}&utm_source={{utm_source}}{% endset %}
+  {% set privacyhref %}/privacy?userId={{ userId }}&utm_source={{utm_source}}&lang={{htmlLang}}{% endset %}
+  {% set cookieshref %}/cookies?userId={{ userId }}&utm_source={{utm_source}}&lang={{htmlLang}}{% endset %}
+  {% set accessibilityhref %}/accessibility?userId={{ userId }}&utm_source={{utm_source}}&lang={{htmlLang}}{% endset %}
   {{ govukFooterWelsh({
     meta: {
       items: [

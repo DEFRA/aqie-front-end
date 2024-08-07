@@ -20,9 +20,12 @@ import { particulateMatter25Cy } from '~/src/server/particulate-matter-25/cy/ind
 import { sulphurDioxide } from '~/src/server/sulphur-dioxide/index'
 import { sulphurDioxideCy } from '~/src/server/sulphur-dioxide/cy/index'
 import { privacy } from '~/src/server/privacy/index'
+import { privacyCy } from '~/src/server/privacy/cy/index'
 import { home } from '~/src/server/home/index'
 import { cookies } from '~/src/server/cookies/index'
+import { cookiesCy } from '~/src/server/cookies/cy/index'
 import { accessibility } from '~/src/server/accessibility/index'
+import { accessibilityCy } from '~/src/server/accessibility/cy/index'
 import { health } from '~/src/server/health/index'
 import { config } from '~/src/config'
 
@@ -67,9 +70,12 @@ const router = {
         sulphurDioxide,
         sulphurDioxideCy,
         privacy,
+        privacyCy,
         home,
         cookies,
+        cookiesCy,
         accessibility,
+        accessibilityCy,
         health
       ])
       await server.register({

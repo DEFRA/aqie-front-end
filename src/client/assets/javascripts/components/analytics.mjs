@@ -38,8 +38,6 @@ export default function loadAnalytics() {
         const urlParams = new URLSearchParams(window.location.search);
         const userId = urlParams.get('userId');
         const utm_source = urlParams.get('utm_source');
-        const utm_campaign = urlParams.get('utm_campaign');
-        const utm_medium = urlParams.get('utm_medium');
         window.dataLayer.push('js', new Date())
         window.dataLayer.push('config', 'G-8CMZBTDQBC',{
           'user_id': utm_source
@@ -48,9 +46,7 @@ export default function loadAnalytics() {
           'event': 'airQualityData',
           'userSeg': userId,
           'login_status': 'logged in',
-          'utm_source': utm_source,
-          utm_medium: utm_medium,
-          utm_campaign: utm_campaign
+          'utm_source': utm_source
         })
         ///
         const f = d.getElementsByTagName(s)[0],
