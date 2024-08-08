@@ -2,34 +2,45 @@ import { english } from '~/src/server/data/en/en.js'
 const cookiesController = {
   handler: (request, h) => {
     const {
-      footer: { cookies },
+      footer: {
+        cookies: {
+          pageTitle,
+          title,
+          headings,
+          heading,
+          table1,
+          table2,
+          paragraphs
+        }
+      },
       cookieBanner,
       phaseBanner,
       footerTxt,
-      multipleLocations
+      multipleLocations: { serviceName }
     } = english
-    const { query } = request
-    const lang = 'en'
-    if (query?.lang && query?.lang === 'cy') {
+    /* eslint-disable camelcase */
+    const { query: lang, userId, utm_source } = request
+    const language = 'en'
+    if (lang && lang === 'cy') {
       return h.redirect('/briwsion/cy')
     }
     return h.view('cookies/index', {
-      userId: query?.userId,
-      utm_source: query?.utm_source,
-      pageTitle: cookies.pageTitle,
-      title: cookies.title,
-      heading: cookies.heading,
-      headings: cookies.headings,
-      table1: cookies.table1,
-      table2: cookies.table2,
-      paragraphs: cookies.paragraphs,
+      userId,
+      utm_source,
+      pageTitle,
+      title,
+      heading,
+      headings,
+      table1,
+      table2,
+      paragraphs,
       displayBacklink: false,
       phaseBanner,
       footerTxt,
       cookieBanner,
-      serviceName: multipleLocations.serviceName,
+      serviceName,
       page: 'cookies',
-      lang: lang ?? lang
+      lang: lang ?? language
     })
   }
 }

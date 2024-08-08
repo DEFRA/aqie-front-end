@@ -3,32 +3,37 @@ import { welsh } from '~/src/server/data/cy/cy.js'
 const privacyController = {
   handler: (request, h) => {
     const {
-      footer: { privacy },
+      footer: {
+        privacy: { pageTitle, title, heading, headings, paragraphs }
+      },
       cookieBanner,
       phaseBanner,
       footerTxt,
-      multipleLocations
+      multipleLocations: { serviceName }
     } = welsh
-    const { query } = request
-    const lang = 'cy'
-    if (query?.lang && query?.lang === 'en') {
+    /* eslint-disable camelcase */
+    const {
+      query: { lang, userId, utm_source }
+    } = request
+    const language = 'cy'
+    if (lang && lang === 'en') {
       return h.redirect('/privacy')
     }
     return h.view('privacy/index', {
-      userId: query?.userId,
-      utm_source: query?.utm_source,
-      pageTitle: privacy.pageTitle,
-      title: privacy.title,
-      heading: privacy.heading,
-      headings: privacy.headings,
-      paragraphs: privacy.paragraphs,
+      userId,
+      utm_source,
+      pageTitle,
+      title,
+      heading,
+      headings,
+      paragraphs,
       displayBacklink: false,
       phaseBanner,
       footerTxt,
       cookieBanner,
-      serviceName: multipleLocations.serviceName,
+      serviceName,
       page: 'privacy',
-      lang: query?.lang ?? lang
+      lang: lang ?? language
     })
   }
 }
