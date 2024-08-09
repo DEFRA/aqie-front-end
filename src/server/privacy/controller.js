@@ -12,10 +12,13 @@ const privacyController = {
       multipleLocations: serviceName
     } = english
     /* eslint-disable camelcase */
-    const { query: lang, userId, utm_source } = request
-    const language = 'en'
+    const {
+      query: { lang, userId, utm_source }
+    } = request
     if (lang && lang === 'cy') {
-      return h.redirect('/preifatrwydd/cy')
+      return h.redirect(
+        `/preifatrwydd/cy?lang=cy&userId=${userId}&utm_source=${utm_source}`
+      )
     }
     return h.view('privacy/index', {
       userId,
@@ -31,7 +34,7 @@ const privacyController = {
       cookieBanner,
       serviceName,
       page: 'privacy',
-      lang: lang ?? language
+      lang
     })
   }
 }

@@ -15,9 +15,10 @@ const accessibilityController = {
     const {
       query: { lang, userId, utm_source }
     } = request
-    const language = 'cy'
     if (lang && lang === 'en') {
-      return h.redirect('/accessibility')
+      return h.redirect(
+        `/accessibility?lang=en&userId=${userId}&utm_source=${utm_source}`
+      )
     }
     return h.view('accessibility/index', {
       userId,
@@ -32,7 +33,7 @@ const accessibilityController = {
       footerTxt,
       cookieBanner,
       serviceName,
-      lang: lang ?? language
+      lang
     })
   }
 }

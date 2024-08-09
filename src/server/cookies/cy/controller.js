@@ -2,34 +2,48 @@ import { welsh } from '~/src/server/data/cy/cy.js'
 const cookiesController = {
   handler: (request, h) => {
     const {
-      footer: { cookies },
+      footer: {
+        cookies: {
+          pageTitle,
+          title,
+          heading,
+          headings,
+          table1,
+          table2,
+          paragraphs
+        }
+      },
       cookieBanner,
       phaseBanner,
       footerTxt,
-      multipleLocations
+      multipleLocations: { serviceName }
     } = welsh
-    const lang = 'cy'
-    const { query } = request
-    if (query?.lang && query?.lang === 'en') {
-      return h.redirect('/cookies')
+    /* eslint-disable camelcase */
+    const {
+      query: { lang, userId, utm_source }
+    } = request
+    if (lang && lang === 'en') {
+      return h.redirect(
+        `/cookies?lang=en&userId=${userId}&utm_source=${utm_source}`
+      )
     }
     return h.view('cookies/index', {
-      userId: query?.userId,
-      utm_source: query?.utm_source,
-      pageTitle: cookies.pageTitle,
-      title: cookies.title,
-      heading: cookies.heading,
-      headings: cookies.headings,
-      table1: cookies.table1,
-      table2: cookies.table2,
-      paragraphs: cookies.paragraphs,
+      userId,
+      utm_source,
+      pageTitle,
+      title,
+      heading,
+      headings,
+      table1,
+      table2,
+      paragraphs,
       displayBacklink: false,
       phaseBanner,
       footerTxt,
       cookieBanner,
-      serviceName: multipleLocations.serviceName,
+      serviceName,
       page: 'cookies',
-      lang: query?.lang ?? lang
+      lang
     })
   }
 }

@@ -19,19 +19,19 @@
       }) }}
 
       <h1 class="govuk-heading-xl">{{title}}</h1>
-      <p class="govuk-body"><a href="/" class="govuk-link">{{paragraphs.a}}</a> {{paragraphs.b}}</p>
-
-      <p class="govuk-body">{{paragraphs.c}}</p>
+      <p class="govuk-body">{{paragraphs.a}} <a href="/" class="govuk-link">{{paragraphs.b}}</a> {{paragraphs.c}}</p>
 
       <p class="govuk-body">{{paragraphs.d}}</p>
 
-      <p class="govuk-body">{{paragraphs.e}} <a href="https://ico.org.uk/for-the-public/online/cookies" class="govuk-link">{{paragraphs.f}}</a> {{paragraphs.g}}</p>
+      <p class="govuk-body">{{paragraphs.e}}</p>
+
+      <p class="govuk-body">{{paragraphs.f}} <a href="https://ico.org.uk/for-the-public/online/cookies" class="govuk-link">{{paragraphs.g}}</a> {{paragraphs.h}}</p>
 
       <form class="js-cookies-page-form">
 
         <h2 class="govuk-heading-m">{{headings.a}}</h2>
 
-        <p class="govuk-body">{{paragraphs.h}}</p>
+        <p class="govuk-body">{{paragraphs.i}}</p>
 
         {{ govukTable({
           firstCellIsHeader: true,
@@ -52,25 +52,24 @@
 
         <h2 class="govuk-heading-m">{{headings.b}}</h2>
 
-        <p class="govuk-body">{{paragraphs.i}}</p>
-
         <p class="govuk-body">{{paragraphs.j}}</p>
 
         <p class="govuk-body">{{paragraphs.k}}</p>
 
         <p class="govuk-body">{{paragraphs.l}}</p>
 
+        <p class="govuk-body">{{paragraphs.m}}</p>
+
         <ul class="govuk-list govuk-list--bullet">
-          <li>{{paragraphs.m}}</li>
           <li>{{paragraphs.n}}</li>
           <li>{{paragraphs.o}}</li>
-          <li>{{paragraphs.p}}/li>
-          <li>t{{paragraphs.q}}</li>
+          <li>{{paragraphs.p}}</li>
+          <li>{{paragraphs.q}}</li>
+          <li>{{paragraphs.r}}</li>
         </ul>
-
         {{ govukTable({
           firstCellIsHeader: true,
-          caption: headings.c,
+          caption: headings.d,
           head: [
             { text: table2.text1 },
             { text: table2.text2 },
@@ -85,7 +84,7 @@
             [
               { text: "_gid" },
               { text: table2.text7 },
-              { text: table8.text8 }
+              { text: table2.text8 }
             ],
             [
               { text: "_gat_UA-[G-8CMZBTDQBC]" },
@@ -100,7 +99,7 @@
           idPrefix: "cookies-analytics",
           fieldset: {
             legend: {
-              text: headings.d,
+              text: headings.e,
               classes: "govuk-fieldset__legend--s"
             },
             classes: "js-cookies-page-form-fieldset",
@@ -111,11 +110,11 @@
           },
           items: [
             {
-              text: paragraphs.r,
+              text: paragraphs.s,
               value: "yes"
             },
             {
-              text: paragraphs.s,
+              text: paragraphs.t,
               value: "no"
             }
           ]

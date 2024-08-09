@@ -19,10 +19,13 @@ const cookiesController = {
       multipleLocations: { serviceName }
     } = english
     /* eslint-disable camelcase */
-    const { query: lang, userId, utm_source } = request
-    const language = 'en'
+    const {
+      query: { lang, userId, utm_source }
+    } = request
     if (lang && lang === 'cy') {
-      return h.redirect('/briwsion/cy')
+      return h.redirect(
+        `/briwsion/cy?lang=cy&userId=${userId}&utm_source=${utm_source}`
+      )
     }
     return h.view('cookies/index', {
       userId,
@@ -40,7 +43,7 @@ const cookiesController = {
       cookieBanner,
       serviceName,
       page: 'cookies',
-      lang: lang ?? language
+      lang
     })
   }
 }

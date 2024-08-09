@@ -35,3 +35,16 @@
         padding-top: 20px;
     }
     
+    .govuk-main-wrapper.govuk-main-wrapper:has(.govuk-radios){
+        padding-top: 0;
+    }
+
+    .govuk-main-wrapper.govuk-main-wrapper:has(.govuk-list){
+        padding-top: 0;
+    }
+
+    .govuk-main-wrapper.govuk-main-wrapper:has(.govuk-grid-column-two-thirds-from-desktop.govuk-grid-column-full){
+        padding-top: 20px;
+    }
+    
+    

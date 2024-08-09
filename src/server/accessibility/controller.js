@@ -5,27 +5,20 @@ const accessibilityController = {
     /* eslint-disable camelcase */
     const {
       footer: {
-        accessibility: {
-          paragraphs,
-          pageTitle,
-          title,
-          utm_source,
-          userId,
-          headings,
-          heading
-        }
+        accessibility: { paragraphs, pageTitle, title, headings, heading }
       },
       cookieBanner,
       phaseBanner,
       footerTxt,
       multipleLocations: { serviceName }
     } = english
-    const language = 'en'
     const {
-      query: { lang }
+      query: { lang, utm_source, userId }
     } = request
     if (lang && lang === 'cy') {
-      return h.redirect('/hygyrchedd/cy')
+      return h.redirect(
+        `/hygyrchedd/cy?lang=${lang}&userId=${userId}&utm_source=${utm_source}`
+      )
     }
     return h.view('accessibility/index', {
       userId,
@@ -40,7 +33,7 @@ const accessibilityController = {
       footerTxt,
       cookieBanner,
       serviceName,
-      lang: lang ?? language
+      lang
     })
   }
 }

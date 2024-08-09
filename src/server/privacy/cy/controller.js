@@ -15,9 +15,10 @@ const privacyController = {
     const {
       query: { lang, userId, utm_source }
     } = request
-    const language = 'cy'
     if (lang && lang === 'en') {
-      return h.redirect('/privacy')
+      return h.redirect(
+        `/privacy?lang=en&userId=${userId}&utm_source=${utm_source}`
+      )
     }
     return h.view('privacy/index', {
       userId,
@@ -33,7 +34,7 @@ const privacyController = {
       cookieBanner,
       serviceName,
       page: 'privacy',
-      lang: lang ?? language
+      lang
     })
   }
 }
