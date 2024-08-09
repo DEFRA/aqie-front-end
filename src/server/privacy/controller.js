@@ -3,31 +3,38 @@ import { english } from '~/src/server/data/en/en.js'
 const privacyController = {
   handler: (request, h) => {
     const {
-      footer: { privacy },
+      footer: {
+        privacy: { title, pageTitle, heading, headings, paragraphs }
+      },
       cookieBanner,
       phaseBanner,
       footerTxt,
-      multipleLocations
+      multipleLocations: serviceName
     } = english
-    const { query } = request
-    if (query?.lang && query?.lang === 'cy') {
-      return h.redirect('/preifatrwydd/cy')
+    /* eslint-disable camelcase */
+    const {
+      query: { lang, userId, utm_source }
+    } = request
+    if (lang && lang === 'cy') {
+      return h.redirect(
+        `/preifatrwydd/cy?lang=cy&userId=${userId}&utm_source=${utm_source}`
+      )
     }
     return h.view('privacy/index', {
-      userId: query?.userId,
-      utm_source: query?.utm_source,
-      pageTitle: privacy.pageTitle,
-      title: privacy.title,
-      heading: privacy.heading,
-      headings: privacy.headings,
-      paragraphs: privacy.paragraphs,
+      userId,
+      utm_source,
+      pageTitle,
+      title,
+      heading,
+      headings,
+      paragraphs,
       displayBacklink: false,
       phaseBanner,
       footerTxt,
       cookieBanner,
-      serviceName: multipleLocations.serviceName,
+      serviceName,
       page: 'privacy',
-      lang: request.query.lang
+      lang
     })
   }
 }

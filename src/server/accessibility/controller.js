@@ -2,31 +2,38 @@ import { english } from '~/src/server/data/en/en.js'
 
 const accessibilityController = {
   handler: (request, h) => {
+    /* eslint-disable camelcase */
     const {
-      footer: { accessibility },
+      footer: {
+        accessibility: { paragraphs, pageTitle, title, headings, heading }
+      },
       cookieBanner,
       phaseBanner,
       footerTxt,
-      multipleLocations
+      multipleLocations: { serviceName }
     } = english
-    const { query } = request
-    if (query?.lang && query?.lang === 'cy') {
-      return h.redirect('/hygyrchedd/cy')
+    const {
+      query: { lang, utm_source, userId }
+    } = request
+    if (lang && lang === 'cy') {
+      return h.redirect(
+        `/hygyrchedd/cy?lang=${lang}&userId=${userId}&utm_source=${utm_source}`
+      )
     }
     return h.view('accessibility/index', {
-      userId: query?.userId,
-      utm_source: query?.utm_source,
-      pageTitle: accessibility.pageTitle,
-      title: accessibility.title,
-      heading: accessibility.heading,
-      headings: accessibility.headings,
-      paragraphs: accessibility.paragraphs,
+      userId,
+      utm_source,
+      pageTitle,
+      title,
+      heading,
+      headings,
+      paragraphs,
       displayBacklink: false,
       phaseBanner,
       footerTxt,
       cookieBanner,
-      serviceName: multipleLocations.serviceName,
-      lang: request.query.lang
+      serviceName,
+      lang
     })
   }
 }

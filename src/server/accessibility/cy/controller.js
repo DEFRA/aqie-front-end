@@ -3,30 +3,37 @@ import { welsh } from '~/src/server/data/cy/cy.js'
 const accessibilityController = {
   handler: (request, h) => {
     const {
-      footer: { accessibility },
+      footer: {
+        accessibility: { pageTitle, title, heading, headings, paragraphs }
+      },
       cookieBanner,
       phaseBanner,
       footerTxt,
-      multipleLocations
+      multipleLocations: { serviceName }
     } = welsh
-    const { query } = request
-    if (query?.lang && query?.lang === 'en') {
-      return h.redirect('/accessibility')
+    /* eslint-disable camelcase */
+    const {
+      query: { lang, userId, utm_source }
+    } = request
+    if (lang && lang === 'en') {
+      return h.redirect(
+        `/accessibility?lang=en&userId=${userId}&utm_source=${utm_source}`
+      )
     }
     return h.view('accessibility/index', {
-      userId: query?.userId,
-      utm_source: query?.utm_source,
-      pageTitle: accessibility.pageTitle,
-      title: accessibility.title,
-      heading: accessibility.heading,
-      headings: accessibility.headings,
-      paragraphs: accessibility.paragraphs,
+      userId,
+      utm_source,
+      pageTitle,
+      title,
+      heading,
+      headings,
+      paragraphs,
       displayBacklink: false,
       phaseBanner,
       footerTxt,
       cookieBanner,
-      serviceName: multipleLocations.serviceName,
-      lang: request.query.lang
+      serviceName,
+      lang
     })
   }
 }

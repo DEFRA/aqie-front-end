@@ -1,8 +1,10 @@
+import { WELSH_TITLE } from './constants'
+
 export const welsh = {
   checkLocalAirQuality: {
     pageTitle: 'Gwirio ansawdd aer lleol - GOV.UK',
-    heading: 'Gwirio ansawdd aer lleol',
-    page: 'Gwirio ansawdd aer lleol',
+    heading: `${WELSH_TITLE}`,
+    page: `${WELSH_TITLE}`,
     paragraphs: {
       a: 'Defnyddiwch y gwasanaeth yma:',
       b: 'i wirio ansawdd yr aer mewn ardal leol',
@@ -188,7 +190,7 @@ export const welsh = {
     ozone: {
       title: 'Osôn (O3)',
       pageTitle: 'Ozone(O₃) – Check local air quality – GOV.UK',
-      headerText: 'Gwirio ansawdd aer lleol',
+      headerText: `${WELSH_TITLE}`,
       headings: {
         a: 'Ffynonellau osôn',
         b: 'Effeithiau ar iechyd'
@@ -211,7 +213,7 @@ export const welsh = {
     nitrogenDioxide: {
       title: 'Nitrogen deuocsid (NO₂)',
       pageTitle: 'Nitrogen deuocsid (NO₂) – Check local air quality – GOV.UK',
-      headerText: 'Gwirio ansawdd aer lleol',
+      headerText: `${WELSH_TITLE}`,
       headings: {
         a: 'Ffynonellau nitrogen deuocsid',
         b: 'Effeithiau ar iechyd'
@@ -236,7 +238,7 @@ export const welsh = {
     sulphurDioxide: {
       title: 'Sylffwr deuocsid (SO₂)',
       pageTitle: 'Sylffwr deuocsid (SO₂) – Gwirio ansawdd aer lleol – GOV.UK',
-      headerText: 'Gwirio ansawdd aer lleol',
+      headerText: `${WELSH_TITLE}`,
       headings: {
         a: 'Ffynonellau sylffwr deuocsid',
         b: 'Effeithiau ar iechyd'
@@ -261,7 +263,7 @@ export const welsh = {
     particulateMatter10: {
       title: 'Mater gronynnol (PM10)',
       pageTitle: 'Mater gronynnol (PM10) – Gwirio ansawdd aer lleol – GOV.UK',
-      headerText: 'Gwirio ansawdd aer lleol',
+      headerText: `${WELSH_TITLE}`,
       headings: {
         a: 'Ffynonellau PM10',
         b: 'Effeithiau ar iechyd'
@@ -420,31 +422,30 @@ export const welsh = {
         text7:
           'Mae’n ein helpu i gyfrif faint o bobl sy’n ymweld â Gwirio ansawdd aer lleol trwy ddweud wrthon ni a ydych chi wedi ymweld o’r blaen. ',
         text8: '24 awr',
-        text9: '_gat_UA-[GTM-WHV4RRMR]',
-        text10: 'Mae’n cael ei ddefnyddio i leihau nifer y ceisiadau.',
-        text11: '1 funud'
+        text9: 'Mae’n cael ei ddefnyddio i leihau nifer y ceisiadau.',
+        text10: '1 funud'
       },
       paragraphs: {
-        aa: 'Mae',
-        a: 'Gwirio ansawdd aer lleol',
-        b: 'puts small files (known as ‘cookies’) on your computer.',
-        c: 'Mae’r cwcis yma yn cael eu defnyddio ar draws gwefan Gwirio ansawdd aer lleol.',
-        d: 'Dim pan fydd JavaScript yn rhedeg yn eich porwr a phan fyddwch chi wedi’u derbyn y byddwn ni’n gosod cwcis. Os dewiswch chi beidio â rhedeg Javascript, fydd yr wybodaeth ar y tudalen yma ddim yn gymwys i chi.',
-        e: 'Darganfyddwch',
-        f: 'sut i reoli cwcis',
-        g: 'drwy Swyddfa’r Comisiynydd Gwybodaeth.',
-        h: 'Rydyn ni’n defnyddio cwci hanfodol i gofio pryd y byddwch chi’n derbyn neu’n gwrthod cwcis ar ein gwefan.',
-        i: 'Rydyn ni’n defnyddio meddalwedd Google Analytics i ddeall sut mae pobl yn defnyddio Gwirio ansawdd aer lleol. Rydyn ni’n gwneud hyn er mwyn helpu i sicrhau bod y wefan yn ateb anghenion ei defnyddwyr ac i’n helpu i wneud gwelliannau. ',
-        j: 'Dydyn ni ddim yn casglu nac yn storio’ch gwybodaeth bersonol (er enghraifft eich enw neu’ch cyfeiriad) felly does dim modd defnyddio’r wybodaeth yma i wybod pwy ydych chi. ',
-        k: 'Dydyn ni ddim yn caniatáu i Google ddefnyddio na rhannu’n data dadansoddeg.',
-        l: 'Mae Google Analytics yn cadw gwybodaeth am y canlynol:',
-        m: 'Y tudalennau rydych chi’n ymweld â nhw ',
-        n: 'Pa mor hir rydych chi’n ei dreulio ar bob tudalen',
-        o: 'Sut gwnaethoch chi gyrraedd y wefan',
-        p: 'Beth rydych chi’n clicio arno wrth ymweld â’r wefan',
-        q: 'Y ddyfais a’r porwr rydych chi’n eu defnyddio',
-        r: 'Oes',
-        s: 'Nac ydw',
+        a: 'Mae',
+        b: `${WELSH_TITLE}`,
+        c: 'yn rhoi ffeiliau bach (o’r enw ’cwcis’) ar eich cyfrifiadur. ',
+        d: 'Mae’r cwcis yma yn cael eu defnyddio ar draws gwefan Gwirio ansawdd aer lleol.',
+        e: 'Dim pan fydd JavaScript yn rhedeg yn eich porwr a phan fyddwch chi wedi’u derbyn y byddwn ni’n gosod cwcis. Os dewiswch chi beidio â rhedeg Javascript, fydd yr wybodaeth ar y tudalen yma ddim yn gymwys i chi.',
+        f: 'Darganfyddwch',
+        g: 'sut i reoli cwcis',
+        h: 'drwy Swyddfa’r Comisiynydd Gwybodaeth.',
+        i: 'Rydyn ni’n defnyddio cwci hanfodol i gofio pryd y byddwch chi’n derbyn neu’n gwrthod cwcis ar ein gwefan.',
+        j: 'Rydyn ni’n defnyddio meddalwedd Google Analytics i ddeall sut mae pobl yn defnyddio Gwirio ansawdd aer lleol. Rydyn ni’n gwneud hyn er mwyn helpu i sicrhau bod y wefan yn ateb anghenion ei defnyddwyr ac i’n helpu i wneud gwelliannau. ',
+        k: 'Dydyn ni ddim yn casglu nac yn storio’ch gwybodaeth bersonol (er enghraifft eich enw neu’ch cyfeiriad) felly does dim modd defnyddio’r wybodaeth yma i wybod pwy ydych chi. ',
+        l: 'Dydyn ni ddim yn caniatáu i Google ddefnyddio na rhannu’n data dadansoddeg.',
+        m: 'Mae Google Analytics yn cadw gwybodaeth am y canlynol:',
+        n: 'Y tudalennau rydych chi’n ymweld â nhw ',
+        o: 'Pa mor hir rydych chi’n ei dreulio ar bob tudalen',
+        p: 'Sut gwnaethoch chi gyrraedd y wefan',
+        q: 'Beth rydych chi’n clicio arno wrth ymweld â’r wefan',
+        r: 'Y ddyfais a’r porwr rydych chi’n eu defnyddio',
+        s: 'Hoffwn',
+        t: 'Na hoffwn',
         buttonText: 'Cadw gosodiadau cwcis'
       }
     },
@@ -460,11 +461,12 @@ export const welsh = {
         a: 'Mae Adran yr Amgylchedd, Bwyd a Materion Gwledig wedi ymrwymo i wneud ei gwefannau yn hygyrch yn unol â Rheoliadau Hygyrchedd Cyrff y Sector Cyhoeddus (Gwefannau a Chymwysiadau Symudol) (Rhif 2) 2018. ',
         b: 'Mae’r datganiad hygyrchedd yma yn gymwys i',
         c: 'Mae’r wefan yma yn cydymffurfio’n llawn â safon AA fersiwn 2.2 o Ganllawiau Hygyrchedd Cynnwys y We (WCAG).',
+
         d: 'Cafodd y datganiad yma ei baratoi ar 20 Mawrth 2024.',
         e: 'Cafodd y wefan ei gwerthuso gan Adran yr Amgylchedd, Bwyd a Materion Gwledig. ',
         f: 'Y tro diwethaf i’r datganiad gael ei adolygu oedd 11 Mawrth 2024.',
         g: 'Os byddwch yn sylwi ar unrhyw fethiannau cydymffurfiaeth neu os oes angen ichi ofyn am wybodaeth a chynnwys sydd heb gael eu darparu yn y ddogfen yma, anfonwch neges ebost at',
-        h: 'Y Comisiwn Cydraddoldeb a Hawliau Dynol (EHRC) sy’n gyfrifol am orfodi Rheoliadau Hygyrchedd Cyrff y Sector Cyhoeddus (Gwefannau a Chymwysiadau Symudol) (Rhif 2) 2018 (y ’rheoliadau hygyrchedd). ',
+        h: 'Y Comisiwn Cydraddoldeb a Hawliau Dynol (EHRC) sy’n gyfrifol am orfodi Rheoliadau Hygyrchedd Cyrff y Sector Cyhoeddus (Gwefannau a Chymwysiadau Symudol) (Rhif 2) 2018 (y ’rheoliadau hygyrchedd’). ',
         i: 'Os nad ydych chi’n fodlon ar y ffordd rydyn ni’n ymateb i’ch cwyn, cysylltwch â’r Gwasanaeth Cynghori a Chymorth Cydraddoldeb (EASS).'
       }
     }
