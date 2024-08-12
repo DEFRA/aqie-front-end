@@ -75,11 +75,11 @@ export const welsh = {
     }
   },
   multipleLocations: {
-    title: 'Lleoliadau sy’n cyfateb',
+    title: 'Lleoliadau yn cyfateb',
     heading: 'Gwirio ansawdd aer lleol ',
     serviceName: 'Gwirio ansawdd aer lleol ',
     paragraphs: {
-      a: 'Cafwyd hyd i fwy nag un gêm ar gyfer eich lleoliad. Dewiswch y lleoliad cywir o’r opsiynau canlynol:',
+      a: 'Canfuwyd mwy nag un cyfatebiaeth ar gyfer eich lleoliad. Dewiswch y lleoliad cywir o’r opsiynau canlynol:',
       b: 'Fel arall,',
       c: 'ceisiwch chwilio eto'
     }
