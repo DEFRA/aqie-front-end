@@ -1,4 +1,4 @@
-import { WELSH_TITLE } from './constants'
+import { WELSH_TITLE } from '~/src/server/data/constants'
 
 export const welsh = {
   checkLocalAirQuality: {
@@ -327,7 +327,7 @@ export const welsh = {
   footer: {
     privacy: {
       pageTitle: 'Gwiriwch ansawdd aer lleol - GOV.UK',
-      title: 'Gwiriwch hysbysiad preifatrwydd ansawdd aer lleol',
+      title: 'Hysbysiad preifatrwydd Gwirio ansawdd aer lleol',
       heading: 'Gwiriwch ansawdd aer lleol',
       headings: {
         a: 'Pwy sy’n casglu’ch data personol',
