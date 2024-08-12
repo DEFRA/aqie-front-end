@@ -9,7 +9,7 @@ const privacyController = {
       cookieBanner,
       phaseBanner,
       footerTxt,
-      multipleLocations: serviceName
+      multipleLocations: { serviceName }
     } = english
     /* eslint-disable camelcase */
     const {

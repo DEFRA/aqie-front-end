@@ -9,6 +9,7 @@ const webpackConfig = {
     components: path.resolve(__dirname, 'src', 'server', 'common', 'components')
   }
 }
+const ASSETS_RESOURCE_PATH = 'asset/resource'
 
 module.exports = {
   entry: {
@@ -74,21 +75,21 @@ module.exports = {
       },
       {
         test: /\.(png|svg|jpe?g|gif)$/,
-        type: 'asset/resource',
+        type: ASSETS_RESOURCE_PATH,
         generator: {
           filename: 'images/[name].[contenthash][ext]'
         }
       },
       {
         test: /\.(ico)$/,
-        type: 'asset/resource',
+        type: ASSETS_RESOURCE_PATH,
         generator: {
           filename: 'images/[name][ext]'
         }
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/,
-        type: 'asset/resource',
+        type: ASSETS_RESOURCE_PATH,
         generator: {
           filename: 'fonts/[name].[contenthash][ext]'
         }

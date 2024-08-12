@@ -1,4 +1,4 @@
-import { WELSH_TITLE } from './constants'
+import { WELSH_TITLE } from '~/src/server/data/constants'
 
 export const welsh = {
   checkLocalAirQuality: {
@@ -75,11 +75,11 @@ export const welsh = {
     }
   },
   multipleLocations: {
-    title: 'Lleoliadau sy’n cyfateb',
+    title: 'Lleoliadau yn cyfateb',
     heading: 'Gwirio ansawdd aer lleol ',
     serviceName: 'Gwirio ansawdd aer lleol ',
     paragraphs: {
-      a: 'Cafwyd hyd i fwy nag un gêm ar gyfer eich lleoliad. Dewiswch y lleoliad cywir o’r opsiynau canlynol:',
+      a: 'Canfuwyd mwy nag un cyfatebiaeth ar gyfer eich lleoliad. Dewiswch y lleoliad cywir o’r opsiynau canlynol:',
       b: 'Fel arall,',
       c: 'ceisiwch chwilio eto'
     }
@@ -327,7 +327,7 @@ export const welsh = {
   footer: {
     privacy: {
       pageTitle: 'Gwiriwch ansawdd aer lleol - GOV.UK',
-      title: 'Gwiriwch hysbysiad preifatrwydd ansawdd aer lleol',
+      title: 'Hysbysiad preifatrwydd Gwirio ansawdd aer lleol',
       heading: 'Gwiriwch ansawdd aer lleol',
       headings: {
         a: 'Pwy sy’n casglu’ch data personol',

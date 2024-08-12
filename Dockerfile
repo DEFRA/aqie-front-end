@@ -21,7 +21,7 @@ RUN npm run build
 
 CMD [ "npm", "run", "docker:dev" ]
 
-FROM development as productionBuild
+FROM development AS productionBuild
 
 ENV NODE_ENV production
 
@@ -35,7 +35,8 @@ ENV TZ="Europe/London"
 # CDP PLATFORM HEALTHCHECK REQUIREMENT
 USER root
 RUN apk update && \
-    apk add curl
+    apk add nginx && \
+    rm -rf /var/cache/apk/*
 USER node
 
 ARG PARENT_VERSION
