@@ -35,7 +35,7 @@ ENV TZ="Europe/London"
 # CDP PLATFORM HEALTHCHECK REQUIREMENT
 USER root
 RUN apk update && \
-    apk add curl
+    apk add nginx
 USER node
 
 ARG PARENT_VERSION
