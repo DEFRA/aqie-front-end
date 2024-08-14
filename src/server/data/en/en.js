@@ -434,6 +434,7 @@ export const english = {
         text11: '1 minute'
       },
       paragraphs: {
+        w: '',
         a: 'Check local air quality',
         b: 'puts small files (known as ‘cookies’) on your computer.',
         c: 'These cookies are used across the Check local air quality website.',

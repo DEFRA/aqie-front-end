@@ -110,11 +110,16 @@ function getNearestLocation(
   const forecastNum =
     matches.length !== 0
       ? nearestLocation.map((current) => {
-          let val = ''
-          current.forecast.forEach((item) => {
-            if (item.day === forecastDay) val = item.value
+          let todayDate = []
+          const otherdays = []
+          current.forecast.forEach(({ day, value }) => {
+            if (day === forecastDay) {
+              todayDate = [{ today: value }]
+            } else {
+              otherdays.push({ [day]: value })
+            }
           })
-          return val
+          return [...todayDate, ...otherdays]
         })
       : 0
   return { forecastNum, nearestLocationsRange }

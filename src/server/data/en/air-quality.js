@@ -62,7 +62,7 @@ export function getCommonMessage(band) {
   return commonMessages[band] || commonMessages.unknown
 }
 
-export function getAirQuality(aqValue) {
+export function getDetailedInfo(aqValue) {
   const value = aqValue || '4'
 
   const lookup = {
@@ -93,6 +93,50 @@ export function getAirQuality(aqValue) {
     readableBand,
     advice: message.advice,
     atrisk: message.atrisk,
-    outlook: message.outlook
+    outlook: message.outlook,
+    ukToday: message.ukToday, // Consider updating these messages to be relevant for each day
+    ukTomorrow: message.ukTomorrow,
+    ukOutlook: message.ukOutlook
   }
+}
+
+// Function to get air quality labelling for today and the next 4 days
+export function getAirQuality(
+  aqValueToday,
+  aqValueDay2,
+  aqValueDay3,
+  aqValueDay4,
+  aqValueDay5
+) {
+  return {
+    today: getDetailedInfo(aqValueToday),
+    day2: getDetailedInfo(aqValueDay2),
+    day3: getDetailedInfo(aqValueDay3),
+    day4: getDetailedInfo(aqValueDay4),
+    day5: getDetailedInfo(aqValueDay5)
+  }
+}
+
+// Function for determining the highest air quality value
+export function getHighestAQDetails(
+  aqValueToday,
+  aqValueDay2,
+  aqValueDay3,
+  aqValueDay4,
+  aqValueDay5
+) {
+  const highestAQValue = Math.max(
+    aqValueToday,
+    aqValueDay2,
+    aqValueDay3,
+    aqValueDay4,
+    aqValueDay5
+  )
+  return getAirQuality(
+    highestAQValue,
+    highestAQValue,
+    highestAQValue,
+    highestAQValue,
+    highestAQValue
+  ).today
 }
