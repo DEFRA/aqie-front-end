@@ -19,19 +19,19 @@
       }) }}
 
       <h1 class="govuk-heading-xl">{{title}}</h1>
-      <p class="govuk-body">{{paragraphs.a}} <a href="/" class="govuk-link">{{paragraphs.b}}</a> {{paragraphs.c}}</p>
+      <p class="govuk-body">{{paragraphs.w}} <a href="/" class="govuk-link">{{paragraphs.a}}</a> {{paragraphs.b}}</p>
+
+      <p class="govuk-body">{{paragraphs.c}}</p>
 
       <p class="govuk-body">{{paragraphs.d}}</p>
 
-      <p class="govuk-body">{{paragraphs.e}}</p>
-
-      <p class="govuk-body">{{paragraphs.f}} <a href="https://ico.org.uk/for-the-public/online/cookies" class="govuk-link">{{paragraphs.g}}</a> {{paragraphs.h}}</p>
+      <p class="govuk-body">{{paragraphs.e}} <a href="https://ico.org.uk/for-the-public/online/cookies" class="govuk-link">{{paragraphs.f}}</a> {{paragraphs.g}}</p>
 
       <form class="js-cookies-page-form">
 
         <h2 class="govuk-heading-m">{{headings.a}}</h2>
 
-        <p class="govuk-body">{{paragraphs.i}}</p>
+        <p class="govuk-body">{{paragraphs.h}}</p>
 
         {{ govukTable({
           firstCellIsHeader: true,
@@ -52,20 +52,20 @@
 
         <h2 class="govuk-heading-m">{{headings.b}}</h2>
 
+        <p class="govuk-body">{{paragraphs.i}}</p>
+
         <p class="govuk-body">{{paragraphs.j}}</p>
 
         <p class="govuk-body">{{paragraphs.k}}</p>
 
         <p class="govuk-body">{{paragraphs.l}}</p>
 
-        <p class="govuk-body">{{paragraphs.m}}</p>
-
         <ul class="govuk-list govuk-list--bullet">
+          <li>{{paragraphs.m}}</li>
           <li>{{paragraphs.n}}</li>
           <li>{{paragraphs.o}}</li>
           <li>{{paragraphs.p}}</li>
-          <li>{{paragraphs.q}}</li>
-          <li>{{paragraphs.r}}</li>
+          <li>{paragraphs.q}</li>
         </ul>
         {{ govukTable({
           firstCellIsHeader: true,
@@ -110,11 +110,11 @@
           },
           items: [
             {
-              text: paragraphs.s,
+              text: paragraphs.r,
               value: "yes"
             },
             {
-              text: paragraphs.t,
+              text: paragraphs.s,
               value: "no"
             }
           ]

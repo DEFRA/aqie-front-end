@@ -37,6 +37,7 @@ USER root
 RUN apk update && \
     apk add curl && \
     rm -rf /var/cache/apk/*
+    
 USER node
 
 ARG PARENT_VERSION

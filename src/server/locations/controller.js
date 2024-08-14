@@ -37,7 +37,8 @@ const getLocationDataController = {
       daqi
     } = english
     let locationType = request?.payload?.locationType
-    const airQuality = getAirQuality(request.payload?.aq)
+    // const airQuality = getAirQuality(request.payload?.aq)
+    const airQuality = getAirQuality(request.payload?.aq, 2, 4, 5, 7)
     let locationNameOrPostcode = ''
     if (locationType === 'uk-location') {
       locationNameOrPostcode = request.payload.engScoWal.trim()
@@ -228,8 +229,13 @@ const getLocationDataController = {
               title = locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
             }
           }
-          //
-          const airQuality = getAirQuality(forecastNum[0])
+          const airQuality = getAirQuality(
+            forecastNum[0][0].today,
+            Object.values(forecastNum[0][1])[0],
+            Object.values(forecastNum[0][2])[0],
+            Object.values(forecastNum[0][3])[0],
+            Object.values(forecastNum[0][4])[0]
+          )
           return h.view('locations/location', {
             userId: query?.userId,
             utm_source: query?.utm_source,
@@ -340,7 +346,14 @@ const getLocationDataController = {
               locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
           }
         }
-        const airQuality = getAirQuality(forecastNum[0])
+        // const airQuality = getAirQuality(forecastNum[0])
+        const airQuality = getAirQuality(
+          forecastNum[0][0].today,
+          Object.values(forecastNum[0][1])[0],
+          Object.values(forecastNum[0][2])[0],
+          Object.values(forecastNum[0][3])[0],
+          Object.values(forecastNum[0][4])[0]
+        )
         if (lang === 'en') {
           if (query.lang === 'cy') {
             return h.redirect('/lleoliad/cy?lang=cy')
@@ -443,7 +456,13 @@ const getLocationDetailsController = {
           locationIndex,
           request.query?.lang
         )
-        const airQuality = getAirQuality(forecastNum[0])
+        const airQuality = getAirQuality(
+          forecastNum[0][0].today,
+          Object.values(forecastNum[0][1])[0],
+          Object.values(forecastNum[0][2])[0],
+          Object.values(forecastNum[0][3])[0],
+          Object.values(forecastNum[0][4])[0]
+        )
         return h.view('locations/location', {
           userId: query?.userId,
           utm_source: query?.utm_source,
