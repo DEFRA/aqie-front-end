@@ -1,60 +1,60 @@
 export const commonMessages = {
-  isel: {
+  low: {
     values: [1, 2, 3],
-    advice: 'Mwynhewch eich gweithgareddau awyr agored arferol.',
+    advice: 'Enjoy your usual outdoor activities.',
     atrisk: {
-      adults: 'Mwynhewch eich gweithgareddau awyr agored arferol.',
-      asthma: 'Mwynhewch eich gweithgareddau awyr agored arferol.',
-      oldPeople: 'Mwynhewch eich gweithgareddau awyr agored arferol.'
+      adults: 'Enjoy your usual outdoor activities.',
+      asthma: 'Enjoy your usual outdoor activities.',
+      oldPeople: 'Enjoy your usual outdoor activities.'
     },
     outlook:
       'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.'
   },
-  cymedrol: {
+  moderate: {
     values: [4, 5, 6],
     advice:
-      'I’r rhan fwyaf o bobl, dyw amlygiad byrdymor i lefelau cymedrol o lygredd aer ddim yn broblem.',
+      'For most people, short term exposure to moderate levels of air pollution is not an issue.',
     atrisk: {
       adults:
-        'Dylai oedolion sydd â phroblemau’r galon ac sy’n teimlo’n sâl ystyried gwneud ymarfer corff llai egnïol, yn enwedig y tu allan.',
+        'Adults who have heart problems and feel unwell should consider doing less strenuous exercise, especially outside.',
       asthma:
-        'Dylai pobl sydd ag asthma fod yn barod i ddefnyddio’u hanadlydd lliniaru.',
+        'People with asthma should be prepared to use their reliever inhaler.',
       oldPeople:
-        'Dylai pobl hŷn ystyried gwneud gweithgareddau llai egnïol, yn enwedig y tu allan.'
+        'Older people should consider doing less strenuous activity, especially outside.'
     },
     outlook:
       'The influx of warm air from the continent is resulting in moderate air pollution levels throughout many areas today.'
   },
-  uchel: {
+  high: {
     values: [7, 8, 9],
     advice:
-      'Dylai unrhyw un sy’n profi anghysur fel dolur llygaid, peswch neu ddolur gwddf ystyried lleihau eu gweithgareddau, yn enwedig yn yr awyr agored.',
+      'Anyone experiencing discomfort such as sore eyes, cough or sore throat should consider reducing activity, particularly outdoors.',
     atrisk: {
       adults:
-        'Dylai oedolion sydd â phroblemau’r galon leihau ymdrech gorfforol egnïol, yn arbennig yn yr awyr agored, yn enwedig os ydynt yn profi symptomau.',
+        'Adults with heart problems should reduce strenuous physical exertion, particularly outdoors, especially if they experience symptoms.',
       asthma:
-        'Efallai y bydd pobl sydd ag asthma yn gweld bod angen defnyddio’u hnanadlydd llliniaru yn amlach.',
-      oldPeople: 'Dylai pobl hŷn leihau eu hymdrech gorfforol.'
+        'People with asthma may find they need to use their reliever inhaler more often.',
+      oldPeople: 'Older people should reduce physical exertion.'
     },
     outlook:
-      'Mae disgwyl i dymheredd cynnes gynyddu lefelau llygredd i lefel uchel ar draws sawl ardal heddiw.'
+      'Warm temperatures are expected to increase pollution levels to high across many areas today.'
   },
-  uchelIawn: {
+  veryHigh: {
     values: [10],
     advice:
-      'Ewch ati i leihau’ch ymdrech gorfforol, yn enwedig yn yr awyr agored, yn arbennig os ydych chi’n profi symptomau fel peswch neu ddolur gwddf.',
+      'Reduce physical exertion, particularly outdoors, especially if you experience symptoms such as cough or sore throat.',
     atrisk: {
       adults:
-        'Dylai oedolion sydd â phroblemau’r galon osgoi gweithgareddau corfforol egnïol.',
+        'Adults with heart problems should avoid strenuous physical activity.',
       asthma:
-        'Efallai y bydd angen i bobl sydd ag asthma ddefnyddio’u hanadlydd lliniaru yn amlach.',
-      oldPeople: 'Dylai pobl hŷn osgoi gweithgareddau corfforol egnïol.'
+        'People with asthma may need to use their reliever inhaler more often.',
+      oldPeople: 'Older people should avoid strenuous physical activity.'
     },
     outlook:
-      'Nid yw’r tywydd poeth presennol yn dangos unrhyw arwyddion o ad- daliad, gan achosi i lefelau llygredd aer barhau’n uchel iawn ar draws sawl ardal heddiw.'
+      'The current heatwave shows no signs of relenting, causing air pollution levels to remain very high across many areas today.'
   },
   unknown: {
-    advice: 'Dim data ar gael.'
+    advice: 'No data available.'
   }
 }
 
@@ -62,20 +62,20 @@ export function getCommonMessage(band) {
   return commonMessages[band] || commonMessages.unknown
 }
 
-export function getDetailedInfo(aqValue) {
+export function getAirQuality(aqValue) {
   const value = aqValue || '4'
 
   const lookup = {
-    1: { band: 'isel', readableBand: 'isel' },
-    2: { band: 'isel', readableBand: 'isel' },
-    3: { band: 'isel', readableBand: 'isel' },
-    4: { band: 'cymedrol', readableBand: 'cymedrol' },
-    5: { band: 'cymedrol', readableBand: 'cymedrol' },
-    6: { band: 'cymedrol', readableBand: 'cymedrol' },
-    7: { band: 'uchel', readableBand: 'uchel' },
-    8: { band: 'uchel', readableBand: 'uchel' },
-    9: { band: 'uchel', readableBand: 'uchel' },
-    10: { band: 'uchelIawn', readableBand: 'uchel iawn' }
+    1: { band: 'low', readableBand: 'low' },
+    2: { band: 'low', readableBand: 'low' },
+    3: { band: 'low', readableBand: 'low' },
+    4: { band: 'moderate', readableBand: 'moderate' },
+    5: { band: 'moderate', readableBand: 'moderate' },
+    6: { band: 'moderate', readableBand: 'moderate' },
+    7: { band: 'high', readableBand: 'high' },
+    8: { band: 'high', readableBand: 'high' },
+    9: { band: 'high', readableBand: 'high' },
+    10: { band: 'veryHigh', readableBand: 'very high' }
   }
 
   const bandInfo = lookup[value] || {
@@ -93,50 +93,6 @@ export function getDetailedInfo(aqValue) {
     readableBand,
     advice: message.advice,
     atrisk: message.atrisk,
-    outlook: message.outlook,
-    ukToday: message.ukToday, // Consider updating these messages to be relevant for each day
-    ukTomorrow: message.ukTomorrow,
-    ukOutlook: message.ukOutlook
+    outlook: message.outlook
   }
-}
-
-// Function to get air quality labelling for today and the next 4 days
-export function getAirQuality(
-  aqValueToday,
-  aqValueDay2,
-  aqValueDay3,
-  aqValueDay4,
-  aqValueDay5
-) {
-  return {
-    today: getDetailedInfo(aqValueToday),
-    day2: getDetailedInfo(aqValueDay2),
-    day3: getDetailedInfo(aqValueDay3),
-    day4: getDetailedInfo(aqValueDay4),
-    day5: getDetailedInfo(aqValueDay5)
-  }
-}
-
-// Function for determining the highest air quality value
-export function getHighestAQDetails(
-  aqValueToday,
-  aqValueDay2,
-  aqValueDay3,
-  aqValueDay4,
-  aqValueDay5
-) {
-  const highestAQValue = Math.max(
-    aqValueToday,
-    aqValueDay2,
-    aqValueDay3,
-    aqValueDay4,
-    aqValueDay5
-  )
-  return getAirQuality(
-    highestAQValue,
-    highestAQValue,
-    highestAQValue,
-    highestAQValue,
-    highestAQValue
-  ).today
 }
