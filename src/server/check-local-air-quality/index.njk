@@ -30,7 +30,7 @@
       }) }}
       {%endif%}
       {%if htmlLang == 'en'%}
-      {% set queryhref %}/search-location?userId={{ userId }}&utm_source={{utm_source}}{% endset %}
+      {% set queryhref %}/search-location?userId={{ userId }}&utm_source={{utm_source}}&lang=en{% endset %}
       {{ govukButton({
         text: label,
         href: queryhref,
@@ -38,9 +38,10 @@
       }) }}
       {%endif%}
       {%if htmlLang == 'cy'%}
+       {% set queryhref %}/chwilio-lleoliad/cy?userId={{ userId }}&utm_source={{utm_source}}&lang=cy{% endset %}
       {{ govukButton({
         text: label,
-        href: '/chwilio-lleoliad/cy',
+        href: queryhref,
         isStartButton: true
       }) }}
       {%endif%}

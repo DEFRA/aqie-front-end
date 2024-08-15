@@ -136,7 +136,9 @@ const getLocationDataController = {
           }
         })
         request.yar.set('locationType', 'uk-location')
-        return h.redirect('/chwilio-lleoliad/cy')
+        return h.redirect(
+          `/chwilio-lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
+        )
       }
       if (!userLocation && locationType === 'ni-location') {
         request.yar.set('errors', {
@@ -156,7 +158,9 @@ const getLocationDataController = {
           }
         })
         request.yar.set('locationType', 'ni-location')
-        return h.redirect('/chwilio-lleoliad/cy')
+        return h.redirect(
+          `/chwilio-lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
+        )
       }
 
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =

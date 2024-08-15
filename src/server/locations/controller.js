@@ -75,10 +75,14 @@ const getLocationDataController = {
       request.yar.set('locationType', '')
       request.yar.get('', '')
       if (lang === 'cy') {
-        return h.redirect('/chwilio-lleoliad/cy')
+        return h.redirect(
+          `/chwilio-lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
+        )
       }
       if (query.lang === 'cy') {
-        return h.redirect('/lleoliad/cy')
+        return h.redirect(
+          `/lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
+        )
       }
       /* eslint-disable camelcase */
       const { userId, utm_source } = request.query

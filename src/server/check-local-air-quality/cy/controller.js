@@ -12,7 +12,7 @@ const checkLocalAirController = {
     } = welsh
     //
     if (query.lang === 'en') {
-      return h.redirect('/check-local-air-quality?lang=en')
+      return h.redirect(`/check-local-air-quality?lang=en`)
     }
     return h.view('check-local-air-quality/index', {
       pageTitle: checkLocalAirQuality.pageTitle,
