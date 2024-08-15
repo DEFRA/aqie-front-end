@@ -398,8 +398,8 @@ export const welsh = {
       headings: {
         a: 'Cwcis hanfodol (cwbl angenrheidiol)',
         b: 'Cwcis dadansoddeg (dewisol)',
-        d: 'Cwcis dadansoddeg rydyn ni’n eu defnyddio',
-        e: 'Hoffech chi dderbyn cwcis dadansoddeg?'
+        c: 'Cwcis dadansoddeg rydyn ni’n eu defnyddio',
+        d: 'Hoffech chi dderbyn cwcis dadansoddeg?'
       },
       table1: {
         title: 'Cwcis hanfodol rydyn ni’n eu defnyddio',
