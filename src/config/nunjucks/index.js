@@ -6,7 +6,7 @@ import { config } from '~/src/config'
 import { context } from './context'
 import * as filters from './filters'
 import * as globals from './globals'
-import { addMomentFilters, addDaysToTodayAbrev } from './filters/index'
+import { addMomentFilters } from './filters/index'
 
 const nunjucksEnvironment = nunjucks.configure(
   [
@@ -69,6 +69,5 @@ Object.keys(filters).forEach((filter) => {
 })
 
 addMomentFilters(nunjucksEnvironment)
-addDaysToTodayAbrev(nunjucksEnvironment)
 
 export { nunjucksConfig }
