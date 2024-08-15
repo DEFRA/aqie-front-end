@@ -170,9 +170,9 @@ export const siteTypeDescriptions = {
   'Background Rural':
     "Mae'r ardal fonitro hon mewn aneddiadau bach neu ardaloedd ag ecosystemau, coedwigoedd neu gnydau naturiol. Mae wedi'i leoli fel nad yw mesuriadau llygryddion yn dod o un ffynhonnell benodol.",
   'Industrial Suburban':
-    "Mae'r ardal fonitro hon ar gyrion ardal drefol neu mewn ardal ar ei phen ei hun ac i lawr y gwynt o ffynhonnell ddiwydiannol.",
+    "Mae'r ardal fonitro hon ar gyrion ardal drefol neu mewn ardal ar ei phen ei hun ac i lawr y gwynt o ffynhonnell ddiwydiannol",
   'Industrial Urban':
     "Mae'r ardal fonitro hon wedi'i lleoli mewn dinas neu dref i lawr y gwynt o ffynhonnell ddiwydiannol.",
   'Traffic Urban':
-    "Mae'r safle monitro yma wedi'i leoli mewn lleoliad cefndir. Mae wedi cael ei leoli er mwyn sicrhau nad yw mesuriadau llygryddion yn dod o un ffynhonnell benodol. Mae'r safle yma yn groes i'r gwynt o ffynonellau llygredd mewn dinasoedd, ffynonellau diwydiannol ac ardaloedd gwledig. Bydd y pwynt samplu yma yn rhoi syniad o lefel y llygryddion am sawl cilometr sgwâr."
+    'Mae’r ardal fonitro hon wedi’i lleoli mewn dinas neu dref sy’n agos at ffyrdd, traffyrdd neu briffyrdd.'
 }

@@ -18,7 +18,10 @@ const getLocationDataController = {
     const lang = 'en'
 
     if (query.lang && query.lang === 'cy') {
-      return h.redirect('/lleoliad/cy?lang=cy')
+      /* eslint-disable camelcase */
+      return h.redirect(
+        `/lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
+      )
     }
     const formattedDate = moment().format('DD MMMM YYYY').split(' ')
     const getMonth = calendarEnglish.findIndex(function (item) {
@@ -342,7 +345,10 @@ const getLocationDataController = {
         const airQuality = getAirQuality(forecastNum[0])
         if (lang === 'en') {
           if (query.lang === 'cy') {
-            return h.redirect('/lleoliad/cy?lang=cy')
+            /* eslint-disable camelcase */
+            return h.redirect(
+              `/lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
+            )
           }
         }
         return h.view('locations/location', {
@@ -390,7 +396,10 @@ const getLocationDetailsController = {
         lang = 'en'
       }
       if (query?.lang && query?.lang === 'cy') {
-        return h.redirect(`/lleoliad/cy/${locationId}?lang=${query.lang}`)
+        /* eslint-disable camelcase */
+        return h.redirect(
+          `/lleoliad/cy/${locationId}/?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
+        )
       }
       lang = request.query.lang ?? lang
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')

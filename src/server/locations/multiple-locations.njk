@@ -7,10 +7,11 @@
     <h1 class="govuk-heading-l">{{title}} '{{ userLocation }}'</h1>
     <p class="govuk-body">{{paragraphs.a}}</p>
     {% set queryhref %}?userId={{ userId }}&utm_source={{utm_source}}&lang=en{% endset %}
+    {% set queryhrefCy %}?userId={{ userId }}&utm_source={{utm_source}}&lang=cy{% endset %}
     {% for item in results %}
     <ul class="govuk-list govuk-!-margin-bottom-2">
       <li>
-        <a href={%if htmlLang == 'en' %}{{['/location/',item.GAZETTEER_ENTRY.ID, queryhref] | join}}{%else%}{{['/lleoliad/cy/',item.GAZETTEER_ENTRY.ID, '?lang=cy'] | join}}{%endif%} class="govuk-link">
+        <a href={%if htmlLang == 'en' %}{{['/location/',item.GAZETTEER_ENTRY.ID, queryhref] | join}}{%else%}{{['/lleoliad/cy/',item.GAZETTEER_ENTRY.ID, queryhrefCy] | join}}{%endif%} class="govuk-link">
         {% if name2 %}  
         <mark>{{ name2 }}</mark>, 
         {% else %}
@@ -25,8 +26,9 @@
       </li>
     </ul>
         {% endfor %}
-        {% set queryhref %}/search-location?userId={{ userId }}&utm_source={{utm_source}}{% endset %}
-    <p class="govuk-body govuk-!-margin-top-6">{{paragraphs.b}} <a href={% if htmlLang == 'en' %} "{{queryhref}}" {%else%}'/chwilio-lleoliad/cy?lang=cy'{%endif%}>{{paragraphs.c}}</a></p>
+        {% set queryhrefEn %}/search-location?lang=en&userId={{ userId }}&utm_source={{utm_source}}{% endset %}
+        {% set queryhrefCy %}/chwilio-lleoliad/cy?lang=cy?lang=cy&userId={{ userId }}&utm_source={{utm_source}}{% endset %}
+    <p class="govuk-body govuk-!-margin-top-6">{{paragraphs.b}} <a href={% if htmlLang == 'en' %} "{{queryhrefEn}}" {%else%} "{{queryhrefCy}}" {%endif%}>{{paragraphs.c}}</a></p>
   </div>
 </div>
 {% endblock %}

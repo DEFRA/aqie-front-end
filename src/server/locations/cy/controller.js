@@ -16,7 +16,10 @@ const getLocationDataController = {
     const { query } = request
     const lang = 'cy'
     if (query?.lang && query?.lang === 'en') {
-      return h.redirect('/location?lang=en')
+      /* eslint-disable camelcase */
+      return h.redirect(
+        `/location?lang=en&userId=${query.userId}&utm_source=${query.utm_source}`
+      )
     }
     const formattedDate = moment().format('DD MMMM YYYY').split(' ')
     const calendarWelsh = [
@@ -96,7 +99,9 @@ const getLocationDataController = {
         errorMessage: { text: searchLocation.errorText.radios.list.text } // 'Select where you want to check' }
       })
       request.yar.set('locationType', '')
-      return h.redirect('/chwilio-lleoliad/cy')
+      return h.redirect(
+        `/chwilio-lleoliad/cy'?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
+      )
     }
     try {
       let userLocation = locationNameOrPostcode.toUpperCase() // Use 'let' to allow reassignment
