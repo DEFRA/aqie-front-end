@@ -429,9 +429,8 @@ export const english = {
         text7:
           'Helps us count how many people visit the Check local air quality by telling us if you’ve visited before.',
         text8: '24 hours',
-        text9: '_gat_UA-[GTM-WHV4RRMR]',
-        text10: 'Used to reduce the number of requests.',
-        text11: '1 minute'
+        text9: 'Used to reduce the number of requests.',
+        text10: '1 minute'
       },
       paragraphs: {
         w: '',
