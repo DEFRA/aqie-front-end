@@ -1,60 +1,60 @@
 export const commonMessages = {
-  low: {
+  isel: {
     values: [1, 2, 3],
-    advice: 'Enjoy your usual outdoor activities.',
+    advice: 'Mwynhewch eich gweithgareddau awyr agored arferol.',
     atrisk: {
-      adults: 'Enjoy your usual outdoor activities.',
-      asthma: 'Enjoy your usual outdoor activities.',
-      oldPeople: 'Enjoy your usual outdoor activities.'
+      adults: 'Mwynhewch eich gweithgareddau awyr agored arferol.',
+      asthma: 'Mwynhewch eich gweithgareddau awyr agored arferol.',
+      oldPeople: 'Mwynhewch eich gweithgareddau awyr agored arferol.'
     },
     outlook:
       'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.'
   },
-  moderate: {
+  cymedrol: {
     values: [4, 5, 6],
     advice:
-      'For most people, short term exposure to moderate levels of air pollution is not an issue.',
+      'I’r rhan fwyaf o bobl, dyw amlygiad byrdymor i lefelau cymedrol o lygredd aer ddim yn broblem.',
     atrisk: {
       adults:
-        'Adults who have heart problems and feel unwell should consider doing less strenuous exercise, especially outside.',
+        'Dylai oedolion sydd â phroblemau’r galon ac sy’n teimlo’n sâl ystyried gwneud ymarfer corff llai egnïol, yn enwedig y tu allan.',
       asthma:
-        'People with asthma should be prepared to use their reliever inhaler.',
+        'Dylai pobl sydd ag asthma fod yn barod i ddefnyddio’u hanadlydd lliniaru.',
       oldPeople:
-        'Older people should consider doing less strenuous activity, especially outside.'
+        'Dylai pobl hŷn ystyried gwneud gweithgareddau llai egnïol, yn enwedig y tu allan.'
     },
     outlook:
       'The influx of warm air from the continent is resulting in moderate air pollution levels throughout many areas today.'
   },
-  high: {
+  uchel: {
     values: [7, 8, 9],
     advice:
-      'Anyone experiencing discomfort such as sore eyes, cough or sore throat should consider reducing activity, particularly outdoors.',
+      'Dylai unrhyw un sy’n profi anghysur fel dolur llygaid, peswch neu ddolur gwddf ystyried lleihau eu gweithgareddau, yn enwedig yn yr awyr agored.',
     atrisk: {
       adults:
-        'Adults with heart problems should reduce strenuous physical exertion, particularly outdoors, especially if they experience symptoms.',
+        'Dylai oedolion sydd â phroblemau’r galon leihau ymdrech gorfforol egnïol, yn arbennig yn yr awyr agored, yn enwedig os ydynt yn profi symptomau.',
       asthma:
-        'People with asthma may find they need to use their reliever inhaler more often.',
-      oldPeople: 'Older people should reduce physical exertion.'
+        'Efallai y bydd pobl sydd ag asthma yn gweld bod angen defnyddio’u hnanadlydd llliniaru yn amlach.',
+      oldPeople: 'Dylai pobl hŷn leihau eu hymdrech gorfforol.'
     },
     outlook:
-      'Warm temperatures are expected to increase pollution levels to high across many areas today.'
+      'Mae disgwyl i dymheredd cynnes gynyddu lefelau llygredd i lefel uchel ar draws sawl ardal heddiw.'
   },
-  veryHigh: {
+  uchelIawn: {
     values: [10],
     advice:
-      'Reduce physical exertion, particularly outdoors, especially if you experience symptoms such as cough or sore throat.',
+      'Ewch ati i leihau’ch ymdrech gorfforol, yn enwedig yn yr awyr agored, yn arbennig os ydych chi’n profi symptomau fel peswch neu ddolur gwddf.',
     atrisk: {
       adults:
-        'Adults with heart problems should avoid strenuous physical activity.',
+        'Dylai oedolion sydd â phroblemau’r galon osgoi gweithgareddau corfforol egnïol.',
       asthma:
-        'People with asthma may need to use their reliever inhaler more often.',
-      oldPeople: 'Older people should avoid strenuous physical activity.'
+        'Efallai y bydd angen i bobl sydd ag asthma ddefnyddio’u hanadlydd lliniaru yn amlach.',
+      oldPeople: 'Dylai pobl hŷn osgoi gweithgareddau corfforol egnïol.'
     },
     outlook:
-      'The current heatwave shows no signs of relenting, causing air pollution levels to remain very high across many areas today.'
+      'Nid yw’r tywydd poeth presennol yn dangos unrhyw arwyddion o ad- daliad, gan achosi i lefelau llygredd aer barhau’n uchel iawn ar draws sawl ardal heddiw.'
   },
   unknown: {
-    advice: 'No data available.'
+    advice: 'Dim data ar gael.'
   }
 }
 
@@ -66,16 +66,16 @@ export function getAirQuality(aqValue) {
   const value = aqValue || '4'
 
   const lookup = {
-    1: { band: 'low', readableBand: 'low' },
-    2: { band: 'low', readableBand: 'low' },
-    3: { band: 'low', readableBand: 'low' },
-    4: { band: 'moderate', readableBand: 'moderate' },
-    5: { band: 'moderate', readableBand: 'moderate' },
-    6: { band: 'moderate', readableBand: 'moderate' },
-    7: { band: 'high', readableBand: 'high' },
-    8: { band: 'high', readableBand: 'high' },
-    9: { band: 'high', readableBand: 'high' },
-    10: { band: 'veryHigh', readableBand: 'very high' }
+    1: { band: 'isel', readableBand: 'isel' },
+    2: { band: 'isel', readableBand: 'isel' },
+    3: { band: 'isel', readableBand: 'isel' },
+    4: { band: 'cymedrol', readableBand: 'cymedrol' },
+    5: { band: 'cymedrol', readableBand: 'cymedrol' },
+    6: { band: 'cymedrol', readableBand: 'cymedrol' },
+    7: { band: 'uchel', readableBand: 'uchel' },
+    8: { band: 'uchel', readableBand: 'uchel' },
+    9: { band: 'uchel', readableBand: 'uchel' },
+    10: { band: 'uchelIawn', readableBand: 'uchel iawn' }
   }
 
   const bandInfo = lookup[value] || {
