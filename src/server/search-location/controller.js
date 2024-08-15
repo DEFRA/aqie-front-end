@@ -4,7 +4,10 @@ const searchLocationController = {
   handler: (request, h) => {
     const { query } = request
     if (query.lang === 'cy') {
-      return h.redirect('/chwilio-lleoliad/cy')
+      /* eslint-disable camelcase */
+      return h.redirect(
+        `/chwilio-lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
+      )
     }
     const errors = request.yar.get('errors')
     const errorMessage = request.yar.get('errorMessage')

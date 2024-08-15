@@ -11,7 +11,7 @@ const checkLocalAirController = {
       cookieBanner
     } = english
     if (query.lang === 'cy') {
-      return h.redirect('/check-lleol-ansawdd-aer/cy')
+      return h.redirect(`/check-lleol-ansawdd-aer/cy`)
     }
     return h.view('check-local-air-quality/index', {
       userId: query?.userId,
