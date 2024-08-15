@@ -34,4 +34,17 @@ function addMomentFilters(env) {
     return error
   }
 }
-export { addMomentFilters }
+
+function addDaysToTodayAbrev(env) {
+  try {
+    env.addFilter('addDaysToTodayAbrev', function (days) {
+      if (typeof days !== 'number') {
+        days = 0;
+    }
+    return days
+    })
+  } catch (error) {
+    return error
+  }
+}
+export { addMomentFilters, addDaysToTodayAbrev }
