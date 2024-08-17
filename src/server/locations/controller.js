@@ -257,7 +257,7 @@ const getLocationDataController = {
             cookieBanner,
             daqi,
             languageDate: lang === 'cy' ? welshDate : englishDate,
-            lang: request.query.lang ?? lang
+            lang
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
           return h.view('locations/multiple-locations', {
@@ -294,7 +294,7 @@ const getLocationDataController = {
             phaseBanner,
             backlink,
             cookieBanner,
-            lang: 'en'
+            lang
           })
         }
       } else if (locationType === 'ni-location') {
@@ -313,7 +313,7 @@ const getLocationDataController = {
             phaseBanner,
             backlink,
             cookieBanner,
-            lang: 'en'
+            lang
           })
         }
         const locationData = {
@@ -374,7 +374,7 @@ const getLocationDataController = {
           cookieBanner,
           daqi,
           languageDate: lang === 'cy' ? welshDate : englishDate,
-          lang: request.query?.lang ?? lang
+          lang
         })
       }
     } catch (error) {
@@ -383,7 +383,7 @@ const getLocationDataController = {
         userId: query?.userId,
         utm_source: query?.utm_source,
         msError: error.message,
-        lang: request.query?.lang
+        lang
       })
     }
   }
@@ -394,18 +394,18 @@ const getLocationDetailsController = {
     try {
       const { query } = request
       const locationId = request.params.id
-      const { referer } = request.headers
-      let lang = referer.slice(-2)
-      if (lang === 'on') {
-        lang = 'en'
-      }
+      // Extract query parameters using URLSearchParams
+      const urlParams = new URLSearchParams(request.url.search)
+      const userId = urlParams.get('userId')
+      const utm_source = urlParams.get('utm_source')
+
       if (query?.lang && query?.lang === 'cy') {
         /* eslint-disable camelcase */
         return h.redirect(
-          `/lleoliad/cy/${locationId}/?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
+          `/lleoliad/cy/${locationId}/?lang=cy&userId=${userId}&utm_source=${utm_source}`
         )
       }
-      lang = request.query.lang ?? lang
+      const lang = 'en'
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')
       const getMonth = calendarEnglish.findIndex(function (item) {
         return item.indexOf(formattedDate[1]) !== -1
@@ -457,8 +457,8 @@ const getLocationDetailsController = {
         )
         const airQuality = getAirQuality(forecastNum[0])
         return h.view('locations/location', {
-          userId: query?.userId,
-          utm_source: query?.utm_source,
+          userId,
+          utm_source,
           result: locationDetails,
           airQuality,
           airQualityData: airQualityData.commonMessages,
@@ -475,19 +475,19 @@ const getLocationDetailsController = {
           cookieBanner,
           daqi,
           languageDate: lang === 'cy' ? welshDate : englishDate,
-          lang: request.query.lang ?? lang
+          lang
         })
       } else {
         return h.view('location-not-found', {
-          userId: query?.userId,
-          utm_source: query?.utm_source,
+          userId,
+          utm_source,
           paragraph: notFoundLocation.paragraphs,
           serviceName: notFoundLocation.heading,
           footerTxt,
           phaseBanner,
           backlink,
           cookieBanner,
-          lang: request.query.lang ?? lang
+          lang
         })
       }
     } catch (error) {

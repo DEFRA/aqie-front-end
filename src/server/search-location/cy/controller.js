@@ -2,15 +2,15 @@ import { welsh } from '~/src/server/data/cy/cy.js'
 const searchLocationController = {
   handler: (request, h) => {
     const { query } = request
-    const { referer } = request.headers
-    let lang = referer.slice(-2)
-    if (lang === 'on') {
-      lang = 'en'
-    }
+    // Extract query parameters using URLSearchParams
+    /* eslint-disable camelcase */
+    const urlParams = new URLSearchParams(request.url.search)
+    const userId = urlParams.get('userId')
+    const utm_source = urlParams.get('utm_source')
     if (query.lang === 'en') {
       /* eslint-disable camelcase */
       return h.redirect(
-        `/search-location?lang=en&userId=${query.userId}&utm_source=${query.utm_source}`
+        `/search-location?lang=en&userId=${userId}&utm_source=${utm_source}`
       )
     }
     const errors = request.yar.get('errors')

@@ -26,8 +26,8 @@
       </li>
     </ul>
         {% endfor %}
-        {% set queryhrefEn %}/search-location?lang=en&userId={{ userId }}&utm_source={{utm_source}}{% endset %}
-        {% set queryhrefCy %}/chwilio-lleoliad/cy?lang=cy?lang=cy&userId={{ userId }}&utm_source={{utm_source}}{% endset %}
+        {% set queryhrefEn %}/search-location?userId={{ userId }}&utm_source={{utm_source}}&lang=en{% endset %}
+        {% set queryhrefCy %}/chwilio-lleoliad/cy?userId={{ userId }}&utm_source={{utm_source}}&lang=cy{% endset %}
     <p class="govuk-body govuk-!-margin-top-6">{{paragraphs.b}} <a href={% if htmlLang == 'en' %} "{{queryhrefEn}}" {%else%} "{{queryhrefCy}}" {%endif%}>{{paragraphs.c}}</a></p>
   </div>
 </div>
