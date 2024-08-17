@@ -15,6 +15,8 @@ const checkLocalAirController = {
       return h.redirect(`/check-local-air-quality?lang=en`)
     }
     return h.view('check-local-air-quality/index', {
+      userId: query?.userId,
+      utm_source: query?.utm_source,
       pageTitle: checkLocalAirQuality.pageTitle,
       heading: checkLocalAirQuality.heading,
       page: checkLocalAirQuality.page,

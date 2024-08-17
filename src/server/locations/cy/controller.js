@@ -15,10 +15,14 @@ const getLocationDataController = {
   handler: async (request, h) => {
     const { query } = request
     const lang = 'cy'
+    // Extract query parameters using URLSearchParams
+    /* eslint-disable camelcase */
+    const urlParams = new URLSearchParams(request.url.search)
+    const userId = urlParams.get('userId')
+    const utm_source = urlParams.get('utm_source')
     if (query?.lang && query?.lang === 'en') {
-      /* eslint-disable camelcase */
       return h.redirect(
-        `/location?lang=en&userId=${query.userId}&utm_source=${query.utm_source}`
+        `/location?lang=en&userId=${userId}&utm_source=${utm_source}`
       )
     }
     const formattedDate = moment().format('DD MMMM YYYY').split(' ')
@@ -79,9 +83,11 @@ const getLocationDataController = {
       request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
       request.yar.set('airQuality', airQuality)
     } else {
-      locationType = request.yar.get('locationType')
-      locationNameOrPostcode = request.yar.get('locationNameOrPostcode')
-      request.yar.get('airQuality', airQuality)
+      if (!locationNameOrPostcode || !locationType) {
+        locationType = request.yar.get('locationType')
+        locationNameOrPostcode = request.yar.get('locationNameOrPostcode')
+      }
+      // request.yar.get('airQuality', airQuality)
     }
     if (!locationNameOrPostcode && !locationType) {
       request.yar.set('errors', {
@@ -100,7 +106,7 @@ const getLocationDataController = {
       })
       request.yar.set('locationType', '')
       return h.redirect(
-        `/chwilio-lleoliad/cy'?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
+        `/chwilio-lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
       )
     }
     try {
@@ -270,9 +276,13 @@ const getLocationDataController = {
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
           if (lang === 'en') {
-            return h.redirect('/location')
+            return h.redirect(
+              `/location&userId=${query.userId}&utm_source=${query.utm_source}`
+            )
           }
           return h.view('locations/multiple-locations', {
+            userId: query?.userId,
+            utm_source: query?.utm_source,
             results: matches,
             title: multipleLocations.title,
             paragraphs: multipleLocations.paragraphs,
@@ -294,6 +304,8 @@ const getLocationDataController = {
           })
         } else {
           return h.view('locations/location-not-found', {
+            userId: query?.userId,
+            utm_source: query?.utm_source,
             userLocation: locationNameOrPostcode,
             pageTitle: `${notFoundLocation.heading} ${locationNameOrPostcode} - Check local air quality - GOV.UK`,
             paragraph: notFoundLocation.paragraphs,
@@ -311,6 +323,8 @@ const getLocationDataController = {
 
         if (!result || result.length === 0) {
           return h.view('locations/location-not-found', {
+            userId: query?.userId,
+            utm_source: query?.utm_source,
             userLocation: locationNameOrPostcode,
             pageTitle: `${notFoundLocation.heading} ${userLocation} - Check local air quality - GOV.UK`,
             paragraph: notFoundLocation.paragraphs,
@@ -353,10 +367,14 @@ const getLocationDataController = {
           }
         }
         if (query.lang === 'en') {
-          return h.redirect('/location')
+          return h.redirect(
+            `/location&userId=${query.userId}&utm_source=${query.utm_source}`
+          )
         }
         const airQuality = getAirQuality(forecastNum[0])
         return h.view('locations/location', {
+          userId: query?.userId,
+          utm_source: query?.utm_source,
           result: locationData,
           airQuality,
           airQualityData: airQualityData.commonMessages,
@@ -382,6 +400,8 @@ const getLocationDataController = {
     } catch (error) {
       logger.info(`error from location refresh ${error.message}`)
       return h.view('error/index', {
+        userId: query?.userId,
+        utm_source: query?.utm_source,
         msError: error.message,
         lang: request.query?.lang
       })
@@ -394,15 +414,17 @@ const getLocationDetailsController = {
     try {
       const { query } = request
       const locationId = request.params.id
-      const { referer } = request.headers
-      let lang = referer.slice(-2)
-      if (lang === 'on') {
-        lang = 'en'
-      }
+      // Extract query parameters using URLSearchParams
+      const urlParams = new URLSearchParams(request.url.search)
+      const userId = urlParams.get('userId')
+      const utm_source = urlParams.get('utm_source')
+
       if (query?.lang && query?.lang === 'en') {
-        return h.redirect(`/location/${locationId}?lang=${query.lang}`)
+        return h.redirect(
+          `/location/${locationId}?userId=${userId}&utm_source=${utm_source}&lang=${query.lang}`
+        )
       }
-      lang = request.query.lang ?? lang
+      const lang = 'cy'
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')
       const calendarWelsh = [
         'Ionawr',
@@ -483,6 +505,8 @@ const getLocationDetailsController = {
         )
         const airQuality = getAirQuality(forecastNum[0])
         return h.view('locations/location', {
+          userId,
+          utm_source,
           result: locationDetails,
           airQuality,
           airQualityData: airQualityData.commonMessages,
@@ -500,16 +524,18 @@ const getLocationDetailsController = {
           backlink,
           cookieBanner,
           languageDate: lang === 'cy' ? welshDate : englishDate,
-          lang: request.query.lang ?? lang
+          lang
         })
       } else {
         return h.view('location-not-found', {
+          userId,
+          utm_source,
           paragraph: notFoundLocation.paragraphs,
           footerTxt,
           phaseBanner,
           backlink,
           cookieBanner,
-          lang: request.query.lang ?? lang
+          lang
         })
       }
     } catch (error) {

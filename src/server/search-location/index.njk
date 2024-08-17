@@ -12,9 +12,9 @@
   {% endif %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-    {% set queryhref %}/location?userId={{ userId }}&utm_source={{utm_source}}{% endset %}
-   
-      <form  id="itembox" action={%if htmlLang == 'en' %} "{{queryhref}}" {%else%}'/lleoliad/cy'{%endif%} method="POST"  name="search-form" value="search">
+    {% set queryhrefEn %}/location?userId={{ userId }}&utm_source={{utm_source}}{% endset %}
+    {% set queryhrefCy %}/lleoliad/cy?userId={{ userId }}&utm_source={{utm_source}}{% endset %}
+      <form  id="itembox" action={%if htmlLang == 'en' %} "{{queryhrefEn}}" {%else%} "{{queryhrefCy}}" {%endif%} method="POST"  name="search-form" value="search">
       {% if locationType |length %}
       {%set errorMessage = ""%}
       {%else%}
