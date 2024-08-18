@@ -69,7 +69,7 @@ export const welsh = {
     }
   },
   notFoundUrl: {
-    heading: 'Ni allem ddod o hyd i’r dudalen hon',
+    heading: 'Mae’r gwasanaeth i lawr ar hyn o bryd',
     paragraphs: {
       a: 'Ewch yn ôl i ansawdd aer lleol'
     }

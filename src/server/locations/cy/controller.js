@@ -78,16 +78,14 @@ const getLocationDataController = {
     } else if (locationType === 'ni-location') {
       locationNameOrPostcode = request.payload.ni
     }
-    if (Object.values(query).length === 0) {
+    if (!query.lang) {
       request.yar.set('locationType', locationType)
       request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
       request.yar.set('airQuality', airQuality)
     } else {
-      if (!locationNameOrPostcode || !locationType) {
-        locationType = request.yar.get('locationType')
-        locationNameOrPostcode = request.yar.get('locationNameOrPostcode')
-      }
-      // request.yar.get('airQuality', airQuality)
+      locationType = request.yar.get('locationType')
+      locationNameOrPostcode = request.yar.get('locationNameOrPostcode')
+      request.yar.get('airQuality', airQuality)
     }
     if (!locationNameOrPostcode && !locationType) {
       request.yar.set('errors', {
@@ -231,6 +229,7 @@ const getLocationDataController = {
           measurements: getMeasurements.measurements
         })
         //
+
         if (matches.length === 1) {
           const locationDetails = matches[0]
           let title = ''
@@ -402,8 +401,14 @@ const getLocationDataController = {
       return h.view('error/index', {
         userId: query?.userId,
         utm_source: query?.utm_source,
-        msError: error.message,
-        lang: request.query?.lang
+        footerTxt,
+        url: request.path,
+        phaseBanner,
+        displayBacklink: false,
+        cookieBanner,
+        serviceName: welsh.multipleLocations.serviceName,
+        notFoundUrl: welsh.notFoundUrl,
+        lang
       })
     }
   }

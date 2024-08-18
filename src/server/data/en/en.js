@@ -76,7 +76,7 @@ export const english = {
     }
   },
   notFoundUrl: {
-    heading: 'We could not find that page',
+    heading: 'Service is down at the moment',
     paragraphs: {
       a: 'Go back to local air quality'
     }

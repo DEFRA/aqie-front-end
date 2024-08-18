@@ -24,8 +24,8 @@ function catchAll(request, h) {
   } else {
     lang = 'en'
   }
-  lang = query.lang ?? lang
-  if (!response.isBoom) {
+  lang = query?.lang ?? lang
+  if (!response?.isBoom) {
     return h.continue
   }
 
@@ -37,7 +37,6 @@ function catchAll(request, h) {
   if (lang === 'cy') {
     return h
       .view('error/index', {
-        pageTitle: errorMessage,
         heading: statusCode,
         message: errorMessage,
         url: request.path,

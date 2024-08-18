@@ -74,11 +74,6 @@ const getLocationDataController = {
 
       request.yar.set('locationType', '')
       request.yar.get('', '')
-      if (lang === 'cy') {
-        return h.redirect(
-          `/chwilio-lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
-        )
-      }
       if (query.lang === 'cy') {
         return h.redirect(
           `/lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
@@ -382,7 +377,13 @@ const getLocationDataController = {
       return h.view('error/index', {
         userId: query?.userId,
         utm_source: query?.utm_source,
-        msError: error.message,
+        footerTxt,
+        url: request.path,
+        phaseBanner,
+        displayBacklink: false,
+        cookieBanner,
+        serviceName: english.multipleLocations.serviceName,
+        notFoundUrl: english.notFoundUrl,
         lang
       })
     }
@@ -392,6 +393,7 @@ const getLocationDataController = {
 const getLocationDetailsController = {
   handler: (request, h) => {
     try {
+      let title = ''
       const { query } = request
       const locationId = request.params.id
       // Extract query parameters using URLSearchParams
@@ -431,7 +433,6 @@ const getLocationDetailsController = {
       })
 
       if (locationDetails) {
-        let title = ''
         if (locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY) {
           if (locationDetails.GAZETTEER_ENTRY.NAME2) {
             title =
