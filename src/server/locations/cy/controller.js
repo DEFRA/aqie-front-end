@@ -84,15 +84,7 @@ const getLocationDataController = {
     } else {
       request.yar.set('locationType', locationType)
       request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
-    }
-    if (!query.lang) {
-      request.yar.set('locationType', locationType)
-      request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
       request.yar.set('airQuality', airQuality)
-    } else {
-      locationType = request.yar.get('locationType')
-      locationNameOrPostcode = request.yar.get('locationNameOrPostcode')
-      request.yar.get('airQuality', airQuality)
     }
     if (!locationNameOrPostcode && !locationType) {
       request.yar.set('errors', {
@@ -173,11 +165,8 @@ const getLocationDataController = {
           `/chwilio-lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
         )
       }
-      const locationData = request.yar.get('locationData')
       locationType = request.yar.get('locationType')
-      if (locationData?.data.length === 1) {
-        userLocation = locationData?.data[0].GAZETTEER_ENTRY.ID
-      }
+
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
         await fetchData('uk-location', userLocation)
       if (locationType === 'uk-location') {
@@ -270,6 +259,8 @@ const getLocationDataController = {
 
           const airQuality = getAirQuality(forecastNum[0])
           return h.view('locations/location', {
+            userId: query?.userId,
+            utm_source: query?.utm_source,
             result: matches[0],
             name2: matches[0].GAZETTEER_ENTRY?.NAME2,
             airQuality,
