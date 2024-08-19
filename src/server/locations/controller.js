@@ -40,7 +40,6 @@ const getLocationDataController = {
       daqi
     } = english
     let locationType = request?.payload?.locationType
-
     const airQuality = getAirQuality(request.payload?.aq)
     let locationNameOrPostcode = ''
     if (locationType === 'uk-location') {
@@ -54,15 +53,7 @@ const getLocationDataController = {
     } else {
       request.yar.set('locationType', locationType)
       request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
-    }
-    if (!query.lang) {
-      request.yar.set('locationType', locationType)
-      request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
       request.yar.set('airQuality', airQuality)
-    } else {
-      locationType = request.yar.get('locationType')
-      locationNameOrPostcode = request.yar.get('locationNameOrPostcode')
-      request.yar.get('airQuality', airQuality)
     }
     if (!locationNameOrPostcode && !locationType) {
       request.yar.set('errors', {
@@ -149,11 +140,8 @@ const getLocationDataController = {
           `/search-location?userId=${userId}&utm_source=${utm_source}`
         )
       }
-      const locationData = request.yar.get('locationData')
       locationType = request.yar.get('locationType')
-      if (locationData?.data.length === 1) {
-        userLocation = locationData?.data[0].GAZETTEER_ENTRY.ID
-      }
+
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
         await fetchData('uk-location', userLocation)
       if (locationType === 'uk-location') {
