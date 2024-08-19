@@ -78,6 +78,13 @@ const getLocationDataController = {
     } else if (locationType === 'ni-location') {
       locationNameOrPostcode = request.payload.ni
     }
+    if (!locationType) {
+      locationType = request.yar.get('locationType')
+      locationNameOrPostcode = request.yar.get('locationNameOrPostcode')
+    } else {
+      request.yar.set('locationType', locationType)
+      request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
+    }
     if (!query.lang) {
       request.yar.set('locationType', locationType)
       request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
@@ -166,7 +173,11 @@ const getLocationDataController = {
           `/chwilio-lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
         )
       }
-
+      const locationData = request.yar.get('locationData')
+      locationType = request.yar.get('locationType')
+      if (locationData?.data.length === 1) {
+        userLocation = locationData?.data[0].GAZETTEER_ENTRY.ID
+      }
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
         await fetchData('uk-location', userLocation)
       if (locationType === 'uk-location') {
@@ -187,10 +198,16 @@ const getLocationDataController = {
         }
 
         let matches = results.filter((item) => {
-          const name = item?.GAZETTEER_ENTRY.NAME1.toUpperCase()
-          const name2 = item?.GAZETTEER_ENTRY.NAME2?.toUpperCase()
+          const name = item?.GAZETTEER_ENTRY.NAME1.toUpperCase().replace(
+            /\s+/g,
+            ''
+          )
+          const name2 = item?.GAZETTEER_ENTRY.NAME2?.toUpperCase().replace(
+            /\s+/g,
+            ''
+          )
           return (
-            name.includes(userLocation) ||
+            name.includes(userLocation.replace(/\s+/g, '')) ||
             userLocation.includes(name) ||
             userLocation.includes(name2)
           )
