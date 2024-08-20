@@ -25,8 +25,8 @@ const homeController = {
       /* eslint-disable camelcase */
       request.yar.set('queryValues', { userId, utm_source })
       return h.view('home/index', {
-        userId,
-        utm_source,
+        userId: query?.userId ?? userId,
+        utm_source: query?.utm_source ?? utm_source,
         pageTitle: login.pageTitle,
         heading: login.heading,
         texts: login.texts,

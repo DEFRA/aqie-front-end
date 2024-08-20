@@ -18,8 +18,14 @@ const getLocationDataController = {
     // Extract query parameters using URLSearchParams
     /* eslint-disable camelcase */
     const urlParams = new URLSearchParams(request.url.search)
-    const userId = urlParams.get('userId')
-    const utm_source = urlParams.get('utm_source')
+    let userId = urlParams.get('userId')
+    let utm_source = urlParams.get('utm_source')
+    const tempString = request.headers.referer.split('/')[3]
+    const str = tempString.split('?')[0]
+    if (utm_source === '' && userId === '') {
+      utm_source = request.yar.get('utm_source')
+      userId = request.yar.get('userId')
+    }
     if (query?.lang && query?.lang === 'en') {
       return h.redirect(
         `/location?lang=en&userId=${userId}&utm_source=${utm_source}`
@@ -78,7 +84,7 @@ const getLocationDataController = {
     } else if (locationType === 'ni-location') {
       locationNameOrPostcode = request.payload.ni
     }
-    if (!locationType) {
+    if (!locationType && str !== 'chwilio-lleoliad') {
       locationType = request.yar.get('locationType')
       locationNameOrPostcode = request.yar.get('locationNameOrPostcode')
     } else {
@@ -87,6 +93,8 @@ const getLocationDataController = {
       request.yar.set('airQuality', airQuality)
     }
     if (!locationNameOrPostcode && !locationType) {
+      userId = request.yar.set('userId', userId)
+      utm_source = request.yar.set('utm_source', utm_source)
       request.yar.set('errors', {
         errors: {
           titleText: searchLocation.errorText.radios.title, // 'There is a problem',
@@ -102,9 +110,11 @@ const getLocationDataController = {
         errorMessage: { text: searchLocation.errorText.radios.list.text } // 'Select where you want to check' }
       })
       request.yar.set('locationType', '')
-      return h.redirect(
-        `/chwilio-lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
-      )
+      if (str === 'chwilio-lleoliad') {
+        return h.redirect(
+          `/chwilio-lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
+        )
+      }
     }
     try {
       let userLocation = locationNameOrPostcode.toUpperCase() // Use 'let' to allow reassignment
@@ -166,7 +176,6 @@ const getLocationDataController = {
         )
       }
       locationType = request.yar.get('locationType')
-
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
         await fetchData('uk-location', userLocation)
       if (locationType === 'uk-location') {
@@ -258,9 +267,10 @@ const getLocationDataController = {
           }
 
           const airQuality = getAirQuality(forecastNum[0])
+
           return h.view('locations/location', {
-            userId: query?.userId,
-            utm_source: query?.utm_source,
+            userId,
+            utm_source,
             result: matches[0],
             name2: matches[0].GAZETTEER_ENTRY?.NAME2,
             airQuality,
