@@ -15,12 +15,22 @@ const logger = createLogger()
 const getLocationDataController = {
   handler: async (request, h) => {
     const { query } = request
+    // Extract query parameters using URLSearchParams
+    /* eslint-disable camelcase */
+    const urlParams = new URLSearchParams(request.url.search)
+    let userId = urlParams.get('userId')
+    let utm_source = urlParams.get('utm_source')
     const lang = 'en'
-
+    const tempString = request.headers.referer.split('/')[3]
+    const str = tempString.split('?')[0]
+    if (utm_source === '' && userId === '') {
+      utm_source = request.yar.get('utm_source')
+      userId = request.yar.get('userId')
+    }
     if (query.lang && query.lang === 'cy') {
       /* eslint-disable camelcase */
       return h.redirect(
-        `/lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
+        `/lleoliad/cy?lang=cy&userId=${userId}&utm_source=${utm_source}`
       )
     }
     const formattedDate = moment().format('DD MMMM YYYY').split(' ')
@@ -47,7 +57,7 @@ const getLocationDataController = {
     } else if (locationType === 'ni-location') {
       locationNameOrPostcode = request.payload.ni
     }
-    if (!locationType) {
+    if (!locationType && str !== 'search-location') {
       locationType = request.yar.get('locationType')
       locationNameOrPostcode = request.yar.get('locationNameOrPostcode')
     } else {
@@ -56,6 +66,8 @@ const getLocationDataController = {
       request.yar.set('airQuality', airQuality)
     }
     if (!locationNameOrPostcode && !locationType) {
+      userId = request.yar.set('userId', userId)
+      utm_source = request.yar.set('utm_source', utm_source)
       request.yar.set('errors', {
         errors: {
           titleText: searchLocation.errorText.radios.title, // 'There is a problem',
@@ -73,9 +85,15 @@ const getLocationDataController = {
 
       request.yar.set('locationType', '')
       request.yar.get('', '')
+
       if (query.lang === 'cy') {
         return h.redirect(
-          `/lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
+          `/lleoliad/cy?lang=cy&userId=${userId}&utm_source=${utm_source}`
+        )
+      }
+      if (str === 'search-location') {
+        return h.redirect(
+          `/search-location?lang=en&userId=${userId}&utm_source=${utm_source}`
         )
       }
     }
@@ -232,9 +250,10 @@ const getLocationDataController = {
             }
           }
           const airQuality = getAirQuality(forecastNum[0])
+
           return h.view('locations/location', {
-            userId: query?.userId,
-            utm_source: query?.utm_source,
+            userId,
+            utm_source,
             result: matches[0],
             name2: matches[0].GAZETTEER_ENTRY?.NAME2,
             airQuality,
@@ -347,7 +366,7 @@ const getLocationDataController = {
           if (query.lang === 'cy') {
             /* eslint-disable camelcase */
             return h.redirect(
-              `/lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
+              `/lleoliad/cy?lang=cy&userId=${userId}&utm_source=${utm_source}`
             )
           }
         }
