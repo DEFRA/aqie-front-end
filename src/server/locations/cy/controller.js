@@ -20,8 +20,8 @@ const getLocationDataController = {
     const urlParams = new URLSearchParams(request.url.search)
     let userId = urlParams.get('userId')
     let utm_source = urlParams.get('utm_source')
-    const tempString = request.headers.referer.split('/')[3]
-    const str = tempString.split('?')[0]
+    const tempString = request?.headers?.referer?.split('/')[3]
+    const str = tempString?.split('?')[0]
     if (utm_source === '' && userId === '') {
       utm_source = request.yar.get('utm_source')
       userId = request.yar.get('userId')
