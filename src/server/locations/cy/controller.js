@@ -7,7 +7,8 @@ import { getAirQuality } from '~/src/server/data/cy/air-quality.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { fetchData } from '~/src/server/locations/helpers/fetch-data'
-import { welsh } from '~/src/server/data/cy/cy.js'
+import { welsh, calendarWelsh } from '~/src/server/data/cy/cy.js'
+import { calendarEnglish } from '~/src/server/data/en/en.js'
 import moment from 'moment-timezone'
 
 const logger = createLogger()
@@ -22,44 +23,12 @@ const getLocationDataController = {
     let utm_source = urlParams.get('utm_source')
     const tempString = request?.headers?.referer?.split('/')[3]
     const str = tempString?.split('?')[0]
-    if (utm_source === '' && userId === '') {
-      utm_source = request.yar.get('utm_source')
-      userId = request.yar.get('userId')
-    }
     if (query?.lang && query?.lang === 'en') {
       return h.redirect(
         `/location?lang=en&userId=${userId}&utm_source=${utm_source}`
       )
     }
     const formattedDate = moment().format('DD MMMM YYYY').split(' ')
-    const calendarWelsh = [
-      'Ionawr',
-      'Chwefror',
-      'Mawrth',
-      'Ebrill',
-      'Mai',
-      'Mehefin',
-      'Gorffennaf',
-      'Awst',
-      'Medi',
-      'Hydref',
-      'Tachwedd',
-      'Rhagfyr'
-    ]
-    const calendarEnglish = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ]
     const getMonth = calendarEnglish.findIndex(function (item) {
       return item.indexOf(formattedDate[1]) !== -1
     })
@@ -77,10 +46,10 @@ const getLocationDataController = {
       daqi
     } = welsh
     let locationType = request?.payload?.locationType
-    const airQuality = getAirQuality(request.payload?.aq)
+    const airQuality = getAirQuality(request.payload?.aq, 2, 4, 5, 7)
     let locationNameOrPostcode = ''
     if (locationType === 'uk-location') {
-      locationNameOrPostcode = request.payload.engScoWal
+      locationNameOrPostcode = request.payload.engScoWal.trim()
     } else if (locationType === 'ni-location') {
       locationNameOrPostcode = request.payload.ni
     }
@@ -265,9 +234,13 @@ const getLocationDataController = {
               title = locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
             }
           }
-
-          const airQuality = getAirQuality(forecastNum[0])
-
+          const airQuality = getAirQuality(
+            forecastNum[0][0].today,
+            Object.values(forecastNum[0][1])[0],
+            Object.values(forecastNum[0][2])[0],
+            Object.values(forecastNum[0][3])[0],
+            Object.values(forecastNum[0][4])[0]
+          )
           return h.view('locations/location', {
             userId,
             utm_source,
@@ -388,7 +361,13 @@ const getLocationDataController = {
             `/location&userId=${query.userId}&utm_source=${query.utm_source}`
           )
         }
-        const airQuality = getAirQuality(forecastNum[0])
+        const airQuality = getAirQuality(
+          forecastNum[0][0].today,
+          Object.values(forecastNum[0][1])[0],
+          Object.values(forecastNum[0][2])[0],
+          Object.values(forecastNum[0][3])[0],
+          Object.values(forecastNum[0][4])[0]
+        )
         return h.view('locations/location', {
           userId: query?.userId,
           utm_source: query?.utm_source,
@@ -526,7 +505,13 @@ const getLocationDetailsController = {
           locationIndex,
           lang
         )
-        const airQuality = getAirQuality(forecastNum[0])
+        const airQuality = getAirQuality(
+          forecastNum[0][0].today,
+          Object.values(forecastNum[0][1])[0],
+          Object.values(forecastNum[0][2])[0],
+          Object.values(forecastNum[0][3])[0],
+          Object.values(forecastNum[0][4])[0]
+        )
         return h.view('locations/location', {
           userId,
           utm_source,
