@@ -261,6 +261,7 @@ const getLocationDataController = {
             serviceName: multipleLocations.serviceName,
             forecastSummary: getDailySummary.today,
             summaryDate: getDailySummary.issue_date,
+            dailySummary: getDailySummary,
             languageDate: lang === 'cy' ? welshDate : englishDate,
             lang: request.query.lang ?? lang
           })
@@ -285,6 +286,9 @@ const getLocationDataController = {
             pollutantTypes,
             pageTitle: `${multipleLocations.heading} ${userLocation}`,
             serviceName: multipleLocations.serviceName,
+            forecastSummary: getDailySummary.today,
+            summaryDate: getDailySummary.issue_date,
+            dailySummary: getDailySummary,
             footerTxt,
             phaseBanner,
             backlink,
@@ -380,6 +384,7 @@ const getLocationDataController = {
           displayBacklink: true,
           forecastSummary: getDailySummary.today,
           summaryDate: getDailySummary.issue_date,
+          dailySummary: getDailySummary,
           daqi,
           nearestLocationsRange,
           title,
@@ -526,6 +531,7 @@ const getLocationDetailsController = {
           displayBacklink: true,
           forecastSummary: locationData.forecastSummary.today,
           summaryDate: locationData.forecastSummary.issue_date,
+          dailySummary: locationData.forecastSummary,
           footerTxt,
           phaseBanner,
           serviceName: searchLocation.serviceName,
