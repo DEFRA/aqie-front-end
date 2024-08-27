@@ -1,38 +1,43 @@
 .aq-forecast-table {
-    @include govuk-responsive-margin(8, 'bottom');
+  @include govuk-responsive-margin(8, 'bottom');
 }
 
 // Define a placeholder selector
 %daqi-table-cell {
-    // Move styles from .daqi-table__cell here
-    padding: 10px;
-    border: 1px solid #cccccc;
-    text-align: center;
-    // Add other styles as needed
-  }
-  
-  // Update .daqi-table__cell to extend the placeholder
-  .daqi-table__cell {
-    @extend %daqi-table-cell;
-  }
+  // Move styles from .daqi-table__cell here
+  padding: 10px;
+  border: 0;
+  border-right: 2px solid #ffffff;
+  text-align: center;
+  // Add other styles as needed
+}
+
+// Update .daqi-table__cell to extend the placeholder
+.daqi-table__cell {
+  @extend %daqi-table-cell;
+}
 
 .aq-forecast-table__cell {
-    @extend %daqi-table__cell;
-    @include govuk-font($size: 19);
+  @include govuk-font($size: 19);
+  padding-bottom: 10px;
+    padding-left: 0;
+    padding-right: 0;
+    text-align: center;
+    border: 0;
+    width: 10%;
+    background-color: #f3f2f1;
+    border-right: 2px solid #ffffff;
 }
 
 .aq-daqi-table__cell {
-    @include govuk-font($size: 16, $weight: regular, $line-height: 1);
-    padding: 6px 0;
-    border:0;
-    text-align: center;
-    border-right: 2px solid #ffffff; /* Add a 3px white vertical border to data cells */
-    width: 25%;
+  @include govuk-font($size: 16, $weight: regular, $line-height: 1);
+  padding: 6px 0;
+  border:0;
+  text-align: center;
+  border-right: 2px solid #ffffff; /* Add a 3px white vertical border to data cells */
+  width: 25%;
 }
 
 .daqi-scale-hidden {
-        @include defra-visually-hidden;
+      @include defra-visually-hidden;
 } 
-
-
-

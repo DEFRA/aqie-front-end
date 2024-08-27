@@ -16,7 +16,15 @@
   letter-spacing: 1px;
 
   text-decoration: none;
-}
+
+
+  @include govuk-font($size: 16, $weight: regular, $line-height: 1);
+  padding-top: 4px;
+  padding-right: 6px;
+  padding-bottom: 4px;
+  padding-left: 6px;
+  }
+
 
 .daqi-tag--round {
   border-radius: 50%; 
@@ -27,6 +35,7 @@ mark {
   font-weight: bold;
   color: inherit;
 }
+
 
 .daqi-tag--1 {
   color: govuk-colour("white");

@@ -2,8 +2,8 @@ import {
   siteTypeDescriptions,
   pollutantTypes
 } from '~/src/server/data/en/monitoring-sites.js'
-import * as airQualityData from '~/src/server/data/air-quality.js'
-import { getAirQuality } from '~/src/server/data/air-quality.js'
+import * as airQualityData from '~/src/server/data/en/air-quality.js'
+import { getAirQuality } from '~/src/server/data/en/air-quality.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { fetchData } from '~/src/server/locations/helpers/fetch-data'
@@ -50,7 +50,7 @@ const getLocationDataController = {
       daqi
     } = english
     let locationType = request?.payload?.locationType
-    const airQuality = getAirQuality(request.payload?.aq)
+    const airQuality = getAirQuality(request.payload?.aq, 2, 4, 5, 7)
     let locationNameOrPostcode = ''
     if (locationType === 'uk-location') {
       locationNameOrPostcode = request.payload.engScoWal.trim()
@@ -249,8 +249,13 @@ const getLocationDataController = {
               title = locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
             }
           }
-          const airQuality = getAirQuality(forecastNum[0])
-
+          const airQuality = getAirQuality(
+            forecastNum[0][0].today,
+            Object.values(forecastNum[0][1])[0],
+            Object.values(forecastNum[0][2])[0],
+            Object.values(forecastNum[0][3])[0],
+            Object.values(forecastNum[0][4])[0]
+          )
           return h.view('locations/location', {
             userId,
             utm_source,
@@ -266,6 +271,7 @@ const getLocationDataController = {
             serviceName: 'Check local air quality',
             forecastSummary: getDailySummary.today,
             summaryDate: getDailySummary.issue_date,
+            dailySummary: getDailySummary,
             footerTxt,
             phaseBanner,
             backlink,
@@ -361,7 +367,13 @@ const getLocationDataController = {
               locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
           }
         }
-        const airQuality = getAirQuality(forecastNum[0])
+        const airQuality = getAirQuality(
+          forecastNum[0][0].today,
+          Object.values(forecastNum[0][1])[0],
+          Object.values(forecastNum[0][2])[0],
+          Object.values(forecastNum[0][3])[0],
+          Object.values(forecastNum[0][4])[0]
+        )
         if (lang === 'en') {
           if (query.lang === 'cy') {
             /* eslint-disable camelcase */
@@ -476,7 +488,13 @@ const getLocationDetailsController = {
           locationIndex,
           request.query?.lang
         )
-        const airQuality = getAirQuality(forecastNum[0])
+        const airQuality = getAirQuality(
+          forecastNum[0][0].today,
+          Object.values(forecastNum[0][1])[0],
+          Object.values(forecastNum[0][2])[0],
+          Object.values(forecastNum[0][3])[0],
+          Object.values(forecastNum[0][4])[0]
+        )
         return h.view('locations/location', {
           userId,
           utm_source,

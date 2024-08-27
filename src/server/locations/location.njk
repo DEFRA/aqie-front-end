@@ -27,8 +27,8 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop govuk-grid-column-full govuk-!-margin-bottom-9">
       {% include "daqi.njk" %}
-      {#{% include "forecast.njk" %}#}
-      {# {% include "uk-forecastclear.njk" %} #}
+      {% include "forecast.njk" %}
+      {% include "uk-forecast.njk" %}
       {% if airQuality.value >= 1 and airQuality.value <= 3 %}
           <h2 class="govuk-heading-m">{{daqi.healthAdvice.paragraphs.a}} {{ airQuality.readableBand }} {{daqi.healthAdvice.paragraphs.b}}</h2>
           <p>{{ airQuality.advice }}</p>
@@ -57,10 +57,6 @@
       {%if lang == "cy"%}
       {% include "daqi-index-welsh.njk" %}
       {% endif %} 
-      <h2 class="govuk-heading-m">{{daqi.pageTexts.a}}</h2>
-      <p class="govuk-!-margin-bottom-6">
-        {{ forecastSummary }}
-      </p>
       <p class="govuk-caption-s govuk-!-margin-bottom-4">{{daqi.pageTexts.b}} {{languageDate }}</p>
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6">
       <h2 class="govuk-heading-m">{{daqi.pageTexts.c}}</h2>

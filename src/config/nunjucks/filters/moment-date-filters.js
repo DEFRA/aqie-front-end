@@ -35,4 +35,19 @@ function addMomentFilters(env) {
   }
 }
 
-export { addMomentFilters }
+function addDaysToTodayAbrev(env) {
+  try {
+    env.addFilter('addDaysToTodayAbrev', function (days) {
+      if (typeof days !== 'number') {
+        days = 0
+      }
+      // Create a new moment object for today and add days
+      const futureDate = moment().add(days, 'days')
+      // Return the formatted future date
+      return futureDate.format('ddd')
+    })
+  } catch (error) {
+    return error
+  }
+}
+export { addMomentFilters, addDaysToTodayAbrev }
