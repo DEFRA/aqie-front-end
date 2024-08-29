@@ -80,6 +80,13 @@ const config = convict({
     default: '',
     env: 'OS_PLACES_API_KEY'
   },
+  newApiKey: {
+    doc: 'New Northern Ireland key',
+    format: '*',
+    sensitive: true,
+    default: '',
+    env: 'NEW_NORTHERN_IRELAND_API_KEY'
+  },
   osPlacesApiUrl: {
     doc: 'OS Name Places url',
     format: String,
