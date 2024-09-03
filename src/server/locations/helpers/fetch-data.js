@@ -28,7 +28,7 @@ async function fetchData(locationType, userLocation) {
 
     const newApiUrl =
       'https://dev-api-gateway.azure.defra.cloud/api/address-lookup/v2.0/addresses?postcode=CV34BF'
-    const newApi = `&subscription-key=a3141056c9da45af845063835516d391&maxresults=1`
+    const newApi = `&subscription-key=973bf59a57ee492cab8c4edc69a92b0e&maxresults=1`
     const newApiUrlFull = `${newApiUrl}${newApi}`
     let newApiData = {}
     logger.info(`::::::::: NEW API URL ::::::::::::: ${newApiUrlFull}`)
