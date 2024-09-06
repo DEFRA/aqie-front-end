@@ -2,10 +2,28 @@
 import { proxyFetch } from '~/src/helpers/proxy-fetch.js'
 import { config } from '~/src/config'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
+import xml2js from 'xml2js'
 const options = { method: 'GET', headers: { 'Content-Type': 'text/json' } }
 const logger = createLogger()
 
 async function fetchData(locationType, userLocation) {
+  // Parse the XML
+  const xml =
+    "<xs:element name='note'><xs:complexType><xs:sequence><xs:element name='to' type='xs:string'/><xs:element name='from' type='xs:string'/><xs:element name='heading' type='xs:string'/><xs:element name='body' type='xs:string'/></xs:sequence></xs:complexType></xs:element>"
+  xml2js.parseString(xml, (err, result) => {
+    if (err) {
+      throw err
+    }
+
+    // Access attributes
+    const elements =
+      result['xs:element']['xs:complexType'][0]['xs:sequence'][0]['xs:element']
+
+    elements.forEach((element) => {
+      const attributeValue = element.$.name
+      logger.info(attributeValue)
+    })
+  })
   const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
   let getOSPlaces = { data: [] }
   if (locationType === 'uk-location') {
@@ -28,7 +46,7 @@ async function fetchData(locationType, userLocation) {
 
     const newApiUrl =
       'https://dev-api-gateway.azure.defra.cloud/api/address-lookup/v2.0/addresses?postcode=CV34BF'
-    const newApi = `&subscription-key=973bf59a57ee492cab8c4edc69a92b0e&maxresults=1`
+    const newApi = `&subscription-key=7b2f88485b3340fcae0684cea21c531b&maxresults=1`
     const newApiUrlFull = `${newApiUrl}${newApi}`
     let newApiData = {}
     logger.info(`::::::::: NEW API URL ::::::::::::: ${newApiUrlFull}`)
