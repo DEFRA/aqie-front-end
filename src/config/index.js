@@ -138,6 +138,45 @@ const config = convict({
     default: 'https://api.postcodes.io/postcodes?q=',
     env: 'POSTCODE_NORTHERN_IRELAND_URL'
   },
+  oauthTokenUrlNIreland: {
+    doc: 'Search postcode Northern Ireland oauth token url',
+    format: String,
+    default: 'https://login.microsoftonline.com/6f504113-6b64-43f2-ade9-242e05780007/oauth2/v2.0/token',
+    env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_OAUTH_TOKEN_URL'
+  },
+  osPlacesApiPostcodeNorthernIrelandUrl: {
+    doc: 'Search postcode Northern Ireland with osPlaces url',
+    format: String,
+    default: 'https://dev-api-gateway.azure.defra.cloud/api/address-lookup/v2.0/addresses?postcode=',
+    env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_URL'
+  },
+  osPlacesApiPostcodeNorthernIrelandKey: {
+    doc: 'OS Name Places Postcode Northern Ireland key',
+    format: '*',
+    sensitive: true,
+    default: '',
+    env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_API_KEY'
+  },
+  redirectUriNIreland: {
+    doc: 'Redirect URI for Northern Ireland',
+    format: String,
+    default: 'https://aqie-front-end.dev.cdp-int.defra.cloud',
+    env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_REDIRECT_URI'
+  },
+  clientIdNIreland: {
+    doc: 'OS Name Places Postcode Northern Ireland client id',
+    format: '*',
+    sensitive: true,
+    default: '',
+    env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_CLIENT_ID'
+  },
+  clientSecretNIreland: {
+    doc: 'OS Name Places Postcode Northern Ireland client secret',
+    format: '*',
+    sensitive: true,
+    default: '',
+    env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_CLIENT_SECRET'
+  },
   redis: {
     enabled: {
       doc: 'Enable Redis on your Frontend. Before you enable Redis, contact the CDP platform team as we need to set up config so you can run Redis in CDP environments',
