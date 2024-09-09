@@ -3,27 +3,38 @@ import { proxyFetch } from '~/src/helpers/proxy-fetch.js'
 import { config } from '~/src/config'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import xml2js from 'xml2js'
-const options = { method: 'GET', headers: { 'Content-Type': 'text/json' } }
+// import { XMLParser } from 'fast-xml-parser'
+
+const options = {
+  method: 'get',
+  headers: { 'Content-Type': 'text/json', preserveWhitespace: true }
+}
 const logger = createLogger()
 
 async function fetchData(locationType, userLocation) {
   // Parse the XML
-  const xml =
-    "<xs:element name='note'><xs:complexType><xs:sequence><xs:element name='to' type='xs:string'/><xs:element name='from' type='xs:string'/><xs:element name='heading' type='xs:string'/><xs:element name='body' type='xs:string'/></xs:sequence></xs:complexType></xs:element>"
-  xml2js.parseString(xml, (err, result) => {
-    if (err) {
-      throw err
-    }
+  const url =
+    'https://uk-air.defra.gov.uk/data/atom-dls/observations/auto/GB_FixedObservations_2024_HORS.xml'
+  try {
+    const response = await proxyFetch(url, options)
+    const xml = await response.text()
 
-    // Access attributes
-    const elements =
-      result['xs:element']['xs:complexType'][0]['xs:sequence'][0]['xs:element']
+    // Parse the XML
+    xml2js.parseString(xml, (err, result) => {
+      if (err) {
+        logger.error('Error parsing XML:', err)
+      }
 
-    elements.forEach((element) => {
-      const attributeValue = element.$.name
-      logger.info(attributeValue)
+      // Access attributes of the XML
+      // const elements = result.root.ElementName
+      // elements.forEach(element => {
+      //   const attributeValue = element.$.attributeName
+      //   console.log(attributeValue)
+      // })
     })
-  })
+  } catch (error) {
+    logger.error('Error fetching data:', error)
+  }
   const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
   let getOSPlaces = { data: [] }
   if (locationType === 'uk-location') {
@@ -46,7 +57,7 @@ async function fetchData(locationType, userLocation) {
 
     const newApiUrl =
       'https://dev-api-gateway.azure.defra.cloud/api/address-lookup/v2.0/addresses?postcode=CV34BF'
-    const newApi = `&subscription-key=7b2f88485b3340fcae0684cea21c531b&maxresults=1`
+    const newApi = `&subscription-key=5ac25fa5415144c497a5426e2bd6de59&maxresults=1`
     const newApiUrlFull = `${newApiUrl}${newApi}`
     let newApiData = {}
     logger.info(`::::::::: NEW API URL ::::::::::::: ${newApiUrlFull}`)
