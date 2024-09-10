@@ -154,6 +154,8 @@ async function fetchData(locationType, userLocation, code) {
     )
     if (northerIrelandRes.ok) {
       getNIPlaces = await northerIrelandRes.json()
+    }else {
+      throw new Error('Failed to fetch Northern Ireland places')
     }
     logger.info(
       `::::::::: getNIPlaces ::::::::::::: ${JSON.stringify(getNIPlaces)}`
