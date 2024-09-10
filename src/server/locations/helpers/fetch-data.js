@@ -81,17 +81,21 @@ async function fetchData(locationType, userLocation, code) {
     const forecastsAPIurl = config.get('forecastsApiUrl')
     const measurementsAPIurl = config.get('measurementsApiUrl')
 
-    // let newApiData = {}
-    // logger.info(`::::::::: NEW API URL ::::::::::::: ${newApiUrlFull}`)
-    // const newApiRes = await proxyFetch(newApiUrlFull, options).catch((err) => {
-    //   logger.info(
-    //     `::::::::: NEW API ERROR  ::::::::::::: ${JSON.stringify(err.message)}`
-    //   )
-    // })
-    // newApiData = await newApiRes.json()
-    // logger.info(
-    //   `:::::::::  NEW API DATA  :::::::::::: ${JSON.stringify(newApiData)}`
-    // )
+    const newApiUrl =
+      'https://dev-api-gateway.azure.defra.cloud/api/address-lookup/v2.0/addresses?postcode=CV34BF'
+    const newApi = `&subscription-key=${newApiKey}&maxresults=1`
+    const newApiUrlFull = `${newApiUrl}${newApi}`
+    let newApiData = {}
+    logger.info(`::::::::: NEW API URL ::::::::::::: ${newApiUrlFull}`)
+    const newApiRes = await proxyFetch(newApiUrlFull, options).catch((err) => {
+      logger.info(
+        `::::::::: NEW API ERROR  ::::::::::::: ${JSON.stringify(err.message)}`
+      )
+    })
+    newApiData = await newApiRes.json()
+    logger.info(
+      `:::::::::  NEW API DATA  :::::::::::: ${JSON.stringify(newApiData)}`
+    )
 
     const forecastsRes = await fetch(`${forecastsAPIurl}`, options).catch(
       (err) => {
