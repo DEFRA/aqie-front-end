@@ -141,13 +141,15 @@ const config = convict({
   oauthTokenUrlNIreland: {
     doc: 'Search postcode Northern Ireland oauth token url',
     format: String,
-    default: 'https://login.microsoftonline.com/6f504113-6b64-43f2-ade9-242e05780007/oauth2/v2.0/token',
+    default:
+      'https://login.microsoftonline.com/6f504113-6b64-43f2-ade9-242e05780007/oauth2/v2.0/token',
     env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_OAUTH_TOKEN_URL'
   },
   osPlacesApiPostcodeNorthernIrelandUrl: {
     doc: 'Search postcode Northern Ireland with osPlaces url',
     format: String,
-    default: 'https://dev-api-gateway.azure.defra.cloud/api/address-lookup/v2.0/addresses?postcode=',
+    default:
+      'https://dev-api-gateway.azure.defra.cloud/api/address-lookup/v2.0/addresses?postcode=',
     env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_URL'
   },
   osPlacesApiPostcodeNorthernIrelandKey: {
