@@ -2,8 +2,7 @@
 import { proxyFetch } from '~/src/helpers/proxy-fetch.js'
 import { config } from '~/src/config'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import xml2js from 'xml2js'
-// import { XMLParser } from 'fast-xml-parser'
+import { request } from '~/node_modules/undici/index'
 
 const options = {
   method: 'get',
@@ -11,30 +10,57 @@ const options = {
 }
 const logger = createLogger()
 
-async function fetchData(locationType, userLocation) {
-  // Parse the XML
-  const url =
-    'https://uk-air.defra.gov.uk/data/atom-dls/observations/auto/GB_FixedObservations_2024_HORS.xml'
-  try {
-    const response = await proxyFetch(url, options)
-    const xml = await response.text()
+const fetchOAuthToken = async (code) => {
+  const tokenUrl = config.get('oauthTokenUrlNIreland');
+  const clientId = config.get('clientIdNIreland');
+  const clientSecret = config.get('clientSecretNIreland');
+  const redirectUri = config.get('redirectUriNIreland');
+  const grantType = 'authorization_code';
 
-    // Parse the XML
-    xml2js.parseString(xml, (err, result) => {
-      if (err) {
-        logger.error('Error parsing XML:', err)
-      }
-
-      // Access attributes of the XML
-      // const elements = result.root.ElementName
-      // elements.forEach(element => {
-      //   const attributeValue = element.$.attributeName
-      //   console.log(attributeValue)
-      // })
+  const response = await fetch(tokenUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams({
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uri: redirectUri,
+      code: code,
+      grant_type: grantType
     })
-  } catch (error) {
-    logger.error('Error fetching data:', error)
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    logger.error(`Failed to fetch OAuth token: ${JSON.stringify(error)}`);
+    throw new Error('Failed to fetch OAuth token');
   }
+
+  const data = await response.json();
+  logger.info(`OAuth token fetched: ${JSON.stringify(data)}`);
+  return data.access_token;
+};
+
+async function fetchData(locationType, userLocation) {
+  let accessToken
+  savedAccessToken = request.yar.get('savedAccessToken')
+  if(savedAccessToken) {
+    accessToken = savedAccessToken
+    logger.info(`Access token from session: ${accessToken}`);
+  } else {
+    accessToken = await fetchOAuthToken(code);
+    request.yar.set('savedAccessToken', accessToken)
+    logger.info(`Access token from fetch: ${accessToken}`);
+  }
+  logger.info(`Access token: ${accessToken}`);
+  const optionsOAuth = {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    }
+  };
   const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
   let getOSPlaces = { data: [] }
   if (locationType === 'uk-location') {
@@ -55,21 +81,17 @@ async function fetchData(locationType, userLocation) {
     const forecastsAPIurl = config.get('forecastsApiUrl')
     const measurementsAPIurl = config.get('measurementsApiUrl')
 
-    const newApiUrl =
-      'https://dev-api-gateway.azure.defra.cloud/api/address-lookup/v2.0/addresses?postcode=CV34BF'
-    const newApi = `&subscription-key=5ac25fa5415144c497a5426e2bd6de59&maxresults=1`
-    const newApiUrlFull = `${newApiUrl}${newApi}`
-    let newApiData = {}
-    logger.info(`::::::::: NEW API URL ::::::::::::: ${newApiUrlFull}`)
-    const newApiRes = await proxyFetch(newApiUrlFull, options).catch((err) => {
-      logger.info(
-        `::::::::: NEW API ERROR  ::::::::::::: ${JSON.stringify(err.message)}`
-      )
-    })
-    newApiData = await newApiRes.json()
-    logger.info(
-      `:::::::::  NEW API DATA  :::::::::::: ${JSON.stringify(newApiData)}`
-    )
+    // let newApiData = {}
+    // logger.info(`::::::::: NEW API URL ::::::::::::: ${newApiUrlFull}`)
+    // const newApiRes = await proxyFetch(newApiUrlFull, options).catch((err) => {
+    //   logger.info(
+    //     `::::::::: NEW API ERROR  ::::::::::::: ${JSON.stringify(err.message)}`
+    //   )
+    // })
+    // newApiData = await newApiRes.json()
+    // logger.info(
+    //   `:::::::::  NEW API DATA  :::::::::::: ${JSON.stringify(newApiData)}`
+    // )
 
     const forecastsRes = await fetch(`${forecastsAPIurl}`, options).catch(
       (err) => {
@@ -115,16 +137,21 @@ async function fetchData(locationType, userLocation) {
     }
     return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
   } else if (locationType === 'ni-location') {
+    const osPlacesApiPostcodeNorthernIrelandKey = config.get('osPlacesApiPostcodeNorthernIrelandKey')
+    const osPlacesApiPostcodeNorthernIrelandUrl = config.get('osPlacesApiPostcodeNorthernIrelandUrl')
+    // const newApiUrlFull = `${osPlacesApiPostcodeNorthernIrelandUrl}CV34BF&subscription-key=${osPlacesApiPostcodeNorthernIrelandKey}&maxresults=1`
+    
     let getNIPlaces
     const postcodeNIURL = config.get('postcodeNortherIrelandUrl')
-    const postcodeNortherIrelandURL = `${postcodeNIURL}${encodeURIComponent(userLocation)}`
+    const postcodeNortherIrelandURL = `${postcodeNIURL}${encodeURIComponent(userLocation)}&maxresults=1`
     const northerIrelandRes = await proxyFetch(
       postcodeNortherIrelandURL,
-      options
+      optionsOAuth
     )
     if (northerIrelandRes.ok) {
       getNIPlaces = await northerIrelandRes.json()
     }
+    logger.info(`::::::::: getNIPlaces ::::::::::::: ${JSON.stringify(getNIPlaces)}`)
     return { getNIPlaces }
   }
 }
