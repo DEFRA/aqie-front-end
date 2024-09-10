@@ -11,11 +11,11 @@ const options = {
 const logger = createLogger()
 
 const fetchOAuthToken = async (code) => {
-  const tokenUrl = config.get('oauthTokenUrlNIreland');
-  const clientId = config.get('clientIdNIreland');
-  const clientSecret = config.get('clientSecretNIreland');
-  const redirectUri = config.get('redirectUriNIreland');
-  const grantType = 'authorization_code';
+  const tokenUrl = config.get('oauthTokenUrlNIreland')
+  const clientId = config.get('clientIdNIreland')
+  const clientSecret = config.get('clientSecretNIreland')
+  const redirectUri = config.get('redirectUriNIreland')
+  const grantType = 'authorization_code'
 
   const response = await fetch(tokenUrl, {
     method: 'POST',
@@ -26,41 +26,41 @@ const fetchOAuthToken = async (code) => {
       client_id: clientId,
       client_secret: clientSecret,
       redirect_uri: redirectUri,
-      code: code,
+      code,
       grant_type: grantType
     })
-  });
+  })
 
   if (!response.ok) {
-    const error = await response.json();
-    logger.error(`Failed to fetch OAuth token: ${JSON.stringify(error)}`);
-    throw new Error('Failed to fetch OAuth token');
+    const error = await response.json()
+    logger.error(`Failed to fetch OAuth token: ${JSON.stringify(error)}`)
+    throw new Error('Failed to fetch OAuth token')
   }
 
-  const data = await response.json();
-  logger.info(`OAuth token fetched: ${JSON.stringify(data)}`);
-  return data.access_token;
-};
+  const data = await response.json()
+  logger.info(`OAuth token fetched: ${JSON.stringify(data)}`)
+  return data.access_token
+}
 
-async function fetchData(locationType, userLocation) {
+async function fetchData(locationType, userLocation, code) {
   let accessToken
-  savedAccessToken = request.yar.get('savedAccessToken')
-  if(savedAccessToken) {
+  const savedAccessToken = request.yar.get('savedAccessToken')
+  if (savedAccessToken) {
     accessToken = savedAccessToken
-    logger.info(`Access token from session: ${accessToken}`);
+    logger.info(`Access token from session: ${accessToken}`)
   } else {
-    accessToken = await fetchOAuthToken(code);
+    accessToken = await fetchOAuthToken(code)
     request.yar.set('savedAccessToken', accessToken)
-    logger.info(`Access token from fetch: ${accessToken}`);
+    logger.info(`Access token from fetch: ${accessToken}`)
   }
-  logger.info(`Access token: ${accessToken}`);
+  logger.info(`Access token: ${accessToken}`)
   const optionsOAuth = {
     method: 'GET',
     headers: {
-      'Authorization': `Bearer ${accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/json'
     }
-  };
+  }
   const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
   let getOSPlaces = { data: [] }
   if (locationType === 'uk-location') {
@@ -137,10 +137,14 @@ async function fetchData(locationType, userLocation) {
     }
     return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
   } else if (locationType === 'ni-location') {
-    const osPlacesApiPostcodeNorthernIrelandKey = config.get('osPlacesApiPostcodeNorthernIrelandKey')
-    const osPlacesApiPostcodeNorthernIrelandUrl = config.get('osPlacesApiPostcodeNorthernIrelandUrl')
+    const osPlacesApiPostcodeNorthernIrelandKey = config.get(
+      'osPlacesApiPostcodeNorthernIrelandKey'
+    )
+    const osPlacesApiPostcodeNorthernIrelandUrl = config.get(
+      'osPlacesApiPostcodeNorthernIrelandUrl'
+    )
     // const newApiUrlFull = `${osPlacesApiPostcodeNorthernIrelandUrl}CV34BF&subscription-key=${osPlacesApiPostcodeNorthernIrelandKey}&maxresults=1`
-    
+
     let getNIPlaces
     const postcodeNIURL = config.get('postcodeNortherIrelandUrl')
     const postcodeNortherIrelandURL = `${postcodeNIURL}${encodeURIComponent(userLocation)}&maxresults=1`
@@ -151,7 +155,9 @@ async function fetchData(locationType, userLocation) {
     if (northerIrelandRes.ok) {
       getNIPlaces = await northerIrelandRes.json()
     }
-    logger.info(`::::::::: getNIPlaces ::::::::::::: ${JSON.stringify(getNIPlaces)}`)
+    logger.info(
+      `::::::::: getNIPlaces ::::::::::::: ${JSON.stringify(getNIPlaces)}`
+    )
     return { getNIPlaces }
   }
 }
