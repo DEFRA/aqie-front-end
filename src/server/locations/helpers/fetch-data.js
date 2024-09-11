@@ -19,7 +19,7 @@ const fetchOAuthToken = async () => {
   const oauthTokenNorthernIrelandTenantId = config.get(
     'oauthTokenNorthernIrelandTenantId'
   )
-  logger.info(`::::::::::::: fetchOAuthToken proxyFetch :::::::::::`)
+  logger.info(`::::::::::::: fetchOAuthToken proxyFetch ::::::::::::::::`)
   const response = await proxyFetch(
     `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`,
     {
