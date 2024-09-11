@@ -141,8 +141,7 @@ const config = convict({
   oauthTokenUrlNIreland: {
     doc: 'Search postcode Northern Ireland oauth token url',
     format: String,
-    default:
-      'https://login.microsoftonline.com',
+    default: 'https://login.microsoftonline.com',
     env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_OAUTH_TOKEN_URL'
   },
   oauthTokenNorthernIrelandTenantId: {

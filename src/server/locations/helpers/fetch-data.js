@@ -16,22 +16,27 @@ const fetchOAuthToken = async () => {
   const clientSecret = config.get('clientSecretNIreland')
   const redirectUri = config.get('redirectUriNIreland')
   const scope = config.get('scopeNIreland')
-  const oauthTokenNorthernIrelandTenantId = config.get('oauthTokenNorthernIrelandTenantId')
+  const oauthTokenNorthernIrelandTenantId = config.get(
+    'oauthTokenNorthernIrelandTenantId'
+  )
 
-  const response = await proxyFetch(`${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: new URLSearchParams({
-      client_id: clientId,
-      client_secret: clientSecret,
-      redirect_uri: redirectUri,
-      scope,
-      grant_type: 'client_credentials',
-      state: '1245'
-    })
-  }).catch((err) => {
+  const response = await proxyFetch(
+    `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        client_id: clientId,
+        client_secret: clientSecret,
+        redirect_uri: redirectUri,
+        scope,
+        grant_type: 'client_credentials',
+        state: '1245'
+      })
+    }
+  ).catch((err) => {
     logger.info(
       `:::::::: POST error fetching TOKEN generation ::::::: ${JSON.stringify(err.message)}`
     )
