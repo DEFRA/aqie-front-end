@@ -10,6 +10,7 @@ const options = {
 const logger = createLogger()
 
 const fetchOAuthToken = async () => {
+  logger.info(`::::::::::::: fetchOAuthToken :::::::::::`)
   const tokenUrl = config.get('oauthTokenUrlNIreland')
   const clientId = config.get('clientIdNIreland')
   const clientSecret = config.get('clientSecretNIreland')
@@ -18,7 +19,7 @@ const fetchOAuthToken = async () => {
   const oauthTokenNorthernIrelandTenantId = config.get(
     'oauthTokenNorthernIrelandTenantId'
   )
-
+  logger.info(`::::::::::::: fetchOAuthToken proxyFetch :::::::::::`)
   const response = await proxyFetch(
     `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`,
     {
@@ -55,6 +56,7 @@ const fetchOAuthToken = async () => {
 async function fetchData(locationType, userLocation, request) {
   let accessToken
   const savedAccessToken = request.yar.get('savedAccessToken')
+  logger.info(`::::::::::::: fetchData :::::::::::`)
   if (savedAccessToken) {
     accessToken = savedAccessToken
     logger.info(
