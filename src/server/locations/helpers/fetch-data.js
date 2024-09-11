@@ -10,12 +10,12 @@ const options = {
 }
 const logger = createLogger()
 
-const fetchOAuthToken = async (code) => {
+const fetchOAuthToken = async () => {
   const tokenUrl = config.get('oauthTokenUrlNIreland')
   const clientId = config.get('clientIdNIreland')
   const clientSecret = config.get('clientSecretNIreland')
   const redirectUri = config.get('redirectUriNIreland')
-  const grantType = 'authorization_code'
+  const scope = config.get('scopeNIreland')
 
   const response = await fetch(tokenUrl, {
     method: 'POST',
@@ -26,8 +26,9 @@ const fetchOAuthToken = async (code) => {
       client_id: clientId,
       client_secret: clientSecret,
       redirect_uri: redirectUri,
-      code,
-      grant_type: grantType
+      scope,
+      grant_type: 'client_credentials',
+      state: '1245'
     })
   })
 
@@ -42,14 +43,14 @@ const fetchOAuthToken = async (code) => {
   return data.access_token
 }
 
-async function fetchData(locationType, userLocation, code) {
+async function fetchData(locationType, userLocation) {
   let accessToken
   const savedAccessToken = request.yar.get('savedAccessToken')
   if (savedAccessToken) {
     accessToken = savedAccessToken
     logger.info(`Access token from session: ${accessToken}`)
   } else {
-    accessToken = await fetchOAuthToken(code)
+    accessToken = await fetchOAuthToken()
     request.yar.set('savedAccessToken', accessToken)
     logger.info(`Access token from fetch: ${accessToken}`)
   }
@@ -80,22 +81,6 @@ async function fetchData(locationType, userLocation, code) {
     const forecastSummaryURL = config.get('forecastSummaryUrl')
     const forecastsAPIurl = config.get('forecastsApiUrl')
     const measurementsAPIurl = config.get('measurementsApiUrl')
-
-    const newApiUrl =
-      'https://dev-api-gateway.azure.defra.cloud/api/address-lookup/v2.0/addresses?postcode=CV34BF'
-    const newApi = `&subscription-key=${newApiKey}&maxresults=1`
-    const newApiUrlFull = `${newApiUrl}${newApi}`
-    let newApiData = {}
-    logger.info(`::::::::: NEW API URL ::::::::::::: ${newApiUrlFull}`)
-    const newApiRes = await proxyFetch(newApiUrlFull, options).catch((err) => {
-      logger.info(
-        `::::::::: NEW API ERROR  ::::::::::::: ${JSON.stringify(err.message)}`
-      )
-    })
-    newApiData = await newApiRes.json()
-    logger.info(
-      `:::::::::  NEW API DATA  :::::::::::: ${JSON.stringify(newApiData)}`
-    )
 
     const forecastsRes = await fetch(`${forecastsAPIurl}`, options).catch(
       (err) => {
@@ -141,14 +126,6 @@ async function fetchData(locationType, userLocation, code) {
     }
     return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
   } else if (locationType === 'ni-location') {
-    const osPlacesApiPostcodeNorthernIrelandKey = config.get(
-      'osPlacesApiPostcodeNorthernIrelandKey'
-    )
-    const osPlacesApiPostcodeNorthernIrelandUrl = config.get(
-      'osPlacesApiPostcodeNorthernIrelandUrl'
-    )
-    // const newApiUrlFull = `${osPlacesApiPostcodeNorthernIrelandUrl}CV34BF&subscription-key=${osPlacesApiPostcodeNorthernIrelandKey}&maxresults=1`
-
     let getNIPlaces
     const postcodeNIURL = config.get('postcodeNortherIrelandUrl')
     const postcodeNortherIrelandURL = `${postcodeNIURL}${encodeURIComponent(userLocation)}&maxresults=1`
@@ -158,7 +135,7 @@ async function fetchData(locationType, userLocation, code) {
     )
     if (northerIrelandRes.ok) {
       getNIPlaces = await northerIrelandRes.json()
-    }else {
+    } else {
       throw new Error('Failed to fetch Northern Ireland places')
     }
     logger.info(
