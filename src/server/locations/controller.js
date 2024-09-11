@@ -161,7 +161,7 @@ const getLocationDataController = {
       locationType = request.yar.get('locationType')
 
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
-        await fetchData('uk-location', userLocation)
+        await fetchData('uk-location', userLocation, request)
       if (locationType === 'uk-location') {
         const { results } = getOSPlaces
 
@@ -322,7 +322,11 @@ const getLocationDataController = {
           })
         }
       } else if (locationType === 'ni-location') {
-        const { getNIPlaces } = await fetchData('ni-location', userLocation)
+        const { getNIPlaces } = await fetchData(
+          'ni-location',
+          userLocation,
+          request
+        )
         const { result } = getNIPlaces
 
         if (!result || result.length === 0) {

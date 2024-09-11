@@ -2,7 +2,6 @@
 import { proxyFetch } from '~/src/helpers/proxy-fetch.js'
 import { config } from '~/src/config'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { request } from '~/node_modules/undici/index'
 
 const options = {
   method: 'get',
@@ -53,7 +52,7 @@ const fetchOAuthToken = async () => {
   return data.access_token
 }
 
-async function fetchData(locationType, userLocation) {
+async function fetchData(locationType, userLocation, request) {
   let accessToken
   const savedAccessToken = request.yar.get('savedAccessToken')
   if (savedAccessToken) {
