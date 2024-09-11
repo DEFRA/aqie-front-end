@@ -16,8 +16,9 @@ const fetchOAuthToken = async () => {
   const clientSecret = config.get('clientSecretNIreland')
   const redirectUri = config.get('redirectUriNIreland')
   const scope = config.get('scopeNIreland')
+  const oauthTokenNorthernIrelandTenantId = config.get('oauthTokenNorthernIrelandTenantId')
 
-  const response = await proxyFetch(tokenUrl, {
+  const response = await proxyFetch(`${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
