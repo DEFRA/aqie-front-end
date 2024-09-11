@@ -17,7 +17,7 @@ const fetchOAuthToken = async () => {
   const redirectUri = config.get('redirectUriNIreland')
   const scope = config.get('scopeNIreland')
 
-  const response = await fetch(tokenUrl, {
+  const response = await proxyFetch(tokenUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
@@ -30,6 +30,10 @@ const fetchOAuthToken = async () => {
       grant_type: 'client_credentials',
       state: '1245'
     })
+  }).catch((err) => {
+    logger.info(
+      `:::::::: POST error fetching TOKEN generation ::::::: ${JSON.stringify(err.message)}`
+    )
   })
 
   if (!response.ok) {
@@ -48,13 +52,17 @@ async function fetchData(locationType, userLocation) {
   const savedAccessToken = request.yar.get('savedAccessToken')
   if (savedAccessToken) {
     accessToken = savedAccessToken
-    logger.info(`Access token from session: ${accessToken}`)
+    logger.info(
+      `::::::::::::: Access token from session ::::::::::: ${accessToken}`
+    )
   } else {
     accessToken = await fetchOAuthToken()
     request.yar.set('savedAccessToken', accessToken)
-    logger.info(`Access token from fetch: ${accessToken}`)
+    logger.info(
+      `::::::::::::  Access token from fetch ::::::::::::: ${accessToken}`
+    )
   }
-  logger.info(`Access token: ${accessToken}`)
+  logger.info(`:::::::::::: Access token :::::::::::: ${accessToken}`)
   const optionsOAuth = {
     method: 'GET',
     headers: {
@@ -127,12 +135,21 @@ async function fetchData(locationType, userLocation) {
     return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
   } else if (locationType === 'ni-location') {
     let getNIPlaces
-    const postcodeNIURL = config.get('postcodeNortherIrelandUrl')
-    const postcodeNortherIrelandURL = `${postcodeNIURL}${encodeURIComponent(userLocation)}&maxresults=1`
+    const osPlacesApiPostcodeNorthernIrelandKey = config.get(
+      'osPlacesApiPostcodeNorthernIrelandKey'
+    )
+    const osPlacesApiPostcodeNorthernIrelandUrl = config.get(
+      'osPlacesApiPostcodeNorthernIrelandUrl'
+    )
+    const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&subscription-key=${osPlacesApiPostcodeNorthernIrelandKey}&maxresults=1`
     const northerIrelandRes = await proxyFetch(
       postcodeNortherIrelandURL,
       optionsOAuth
-    )
+    ).catch((err) => {
+      logger.info(
+        `:::::::::::  OAuth token error ::::::::: ${JSON.stringify(err.message)}`
+      )
+    })
     if (northerIrelandRes.ok) {
       getNIPlaces = await northerIrelandRes.json()
     } else {
