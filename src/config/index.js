@@ -174,14 +174,14 @@ const config = convict({
     doc: 'OS Name Places Postcode Northern Ireland client id',
     format: '*',
     sensitive: true,
-    default: '',
+    default: '615a53b5-bf44-4371-ae68-417408b89033',
     env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_CLIENT_ID'
   },
   clientSecretNIreland: {
     doc: 'OS Name Places Postcode Northern Ireland client secret',
     format: '*',
     sensitive: true,
-    default: '',
+    default: 'pxx8Q~w-vAhL86Qt2~30k_JL.8SkHd-Ps9DTUaAq',
     env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_CLIENT_SECRET'
   },
   scopeNIreland: {
