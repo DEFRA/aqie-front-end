@@ -77,7 +77,7 @@ const config = convict({
     doc: 'OS Name Places key',
     format: '*',
     sensitive: true,
-    default: 'vvR3FiaNjSWCnFzSKBst23TX6efl0oL9',
+    default: '',
     env: 'OS_PLACES_API_KEY'
   },
   newApiKey: {
@@ -137,6 +137,60 @@ const config = convict({
     format: String,
     default: 'https://api.postcodes.io/postcodes?q=',
     env: 'POSTCODE_NORTHERN_IRELAND_URL'
+  },
+  oauthTokenUrlNIreland: {
+    doc: 'Search postcode Northern Ireland oauth token url',
+    format: String,
+    default: 'https://login.microsoftonline.com',
+    env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_OAUTH_TOKEN_URL'
+  },
+  oauthTokenNorthernIrelandTenantId: {
+    doc: 'oauthToken Northern Ireland tenant id',
+    format: '*',
+    sensitive: true,
+    default: '',
+    env: 'OAUTH_TOKEN_NORTHERN_IRELAND_API_TENANT_ID'
+  },
+  osPlacesApiPostcodeNorthernIrelandUrl: {
+    doc: 'Search postcode Northern Ireland with osPlaces url',
+    format: String,
+    default:
+      'https://dev-api-gateway.azure.defra.cloud/api/address-lookup/v2.0/addresses?postcode=',
+    env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_URL'
+  },
+  osPlacesApiPostcodeNorthernIrelandKey: {
+    doc: 'OS Name Places Postcode Northern Ireland key',
+    format: '*',
+    sensitive: true,
+    default: '',
+    env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_API_KEY'
+  },
+  redirectUriNIreland: {
+    doc: 'Redirect URI for Northern Ireland',
+    format: String,
+    default: 'https://aqie-front-end.dev.cdp-int.defra.cloud',
+    env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_REDIRECT_URI'
+  },
+  clientIdNIreland: {
+    doc: 'OS Name Places Postcode Northern Ireland client id',
+    format: '*',
+    sensitive: true,
+    default: '',
+    env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_CLIENT_ID'
+  },
+  clientSecretNIreland: {
+    doc: 'OS Name Places Postcode Northern Ireland client secret',
+    format: '*',
+    sensitive: true,
+    default: '',
+    env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_CLIENT_SECRET'
+  },
+  scopeNIreland: {
+    doc: 'OS Name Places Postcode Northern Ireland client scope',
+    format: '*',
+    sensitive: true,
+    default: '',
+    env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_CLIENT_SCOPE'
   },
   redis: {
     enabled: {
