@@ -165,6 +165,9 @@ async function fetchData(locationType, userLocation, request) {
       'osPlacesApiPostcodeNorthernIrelandUrl'
     )
     const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
+    logger.info(
+      `::::::::::::: postcodeNortherIrelandURL ::::::::::: ${postcodeNortherIrelandURL}`
+    )
     const northerIrelandRes = await proxyFetch(
       postcodeNortherIrelandURL,
       optionsOAuth
