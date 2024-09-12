@@ -10,9 +10,28 @@ const nonProxyFetch = (url, opts) => {
 
 const proxyFetch = (url, opts) => {
   const proxy = config.get('httpsProxy') ?? config.get('httpProxy')
+  logger.info(`::::::::::::: fetchOAuthToken proxy  :::::::::::::::: ${proxy}`)
   if (!proxy) {
+    logger.info(
+      `::::::::::::: fetchOAuthToken !proxy  :::::::::::::::: ${proxy}`
+    )
+    logger.info(
+      `::::::::::::: fetchOAuthToken !proxy url  :::::::::::::::: ${url}`
+    )
+    logger.info(
+      `::::::::::::: fetchOAuthToken !proxy opts  :::::::::::::::: ${opts}`
+    )
     return nonProxyFetch(url, opts)
   } else {
+    logger.info(
+      `::::::::::::: fetchOAuthToken proxy  :::::::::::::::: ${proxy}`
+    )
+    logger.info(
+      `::::::::::::: fetchOAuthToken proxy url  :::::::::::::::: ${url}`
+    )
+    logger.info(
+      `::::::::::::: fetchOAuthToken proxy opts  :::::::::::::::: ${opts}`
+    )
     return undiciFetch(url, {
       ...opts,
       dispatcher: new ProxyAgent({
