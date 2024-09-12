@@ -46,6 +46,9 @@ function convertPointToLonLat(matches, location, index) {
     lat = latlon._lat
     lon = latlon._lon
   } else {
+    logger.info(
+      `::::::::::::: matches ::::::::::: ${matches}`
+    )
     lat = matches[index].xCoordinate
     lon = matches[index].yCoordinate
   }
@@ -63,6 +66,9 @@ function coordinatesTotal(matches, location) {
         }
       ]
     }
+    logger.info(
+      `::::::::::::: current ::::::::::: ${current}`
+    )
     return [
       ...acc,
       {
