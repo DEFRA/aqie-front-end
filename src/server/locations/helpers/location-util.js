@@ -46,19 +46,28 @@ function convertPointToLonLat(matches, location, index) {
     lat = latlon._lat
     lon = latlon._lon
   } else {
-    lat = matches[index].latitude
-    lon = matches[index].longitude
+    lat = matches[index].xCoordinate
+    lon = matches[index].yCoordinate
   }
   return { lat, lon }
 }
 
-function coordinatesTotal(matches) {
+function coordinatesTotal(matches, location) {
   const coordinates = matches.reduce((acc, current, index) => {
+    if (location === 'uk-location') {
+      return [
+        ...acc,
+        {
+          latitude: current.location.coordinates[0],
+          longitude: current.location.coordinates[1]
+        }
+      ]
+    }
     return [
       ...acc,
       {
-        latitude: current.location.coordinates[0],
-        longitude: current.location.coordinates[1]
+        latitude: current.xCoordinate,
+        longitude: current.yCoordinate
       }
     ]
   }, [])

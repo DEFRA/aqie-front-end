@@ -10,7 +10,6 @@ const options = {
 const logger = createLogger()
 
 const fetchOAuthToken = async () => {
-  logger.info(`::::::::::::: fetchOAuthToken :::::::::::`)
   const tokenUrl = config.get('oauthTokenUrlNIreland')
   const clientId = config.get('clientIdNIreland')
   const clientSecret = config.get('clientSecretNIreland')
@@ -18,26 +17,6 @@ const fetchOAuthToken = async () => {
   const scope = config.get('scopeNIreland')
   const oauthTokenNorthernIrelandTenantId = config.get(
     'oauthTokenNorthernIrelandTenantId'
-  )
-  logger.info(`::::::::::::: fetchOAuthToken proxyFetch ::::::::::::::::`)
-
-  logger.info(
-    `::::::::::::: fetchOAuthToken tokenUrl:::::::::::::::: ${tokenUrl}`
-  )
-  logger.info(
-    `::::::::::::: fetchOAuthToken oauthTokenNorthernIrelandTenantId  :::::::::::::::: ${oauthTokenNorthernIrelandTenantId}`
-  )
-  logger.info(
-    `::::::::::::: fetchOAuthToken clientId  :::::::::::::::: ${clientId}`
-  )
-  logger.info(
-    `::::::::::::: fetchOAuthToken clientSecret  :::::::::::::::: ${clientSecret}`
-  )
-  logger.info(
-    `::::::::::::: fetchOAuthToken redirectUri  :::::::::::::::: ${redirectUri}`
-  )
-  logger.info(
-    `::::::::::::: fetchOAuthToken scope   :::::::::::::::::: ${scope}`
   )
   const response = await proxyFetch(
     `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`,
@@ -75,20 +54,12 @@ const fetchOAuthToken = async () => {
 async function fetchData(locationType, userLocation, request) {
   let accessToken
   const savedAccessToken = request.yar.get('savedAccessToken')
-  logger.info(`::::::::::::: fetchData :::::::::::`)
   if (savedAccessToken) {
     accessToken = savedAccessToken
-    logger.info(
-      `::::::::::::: Access token from session ::::::::::: ${accessToken}`
-    )
   } else {
     accessToken = await fetchOAuthToken()
     request.yar.set('savedAccessToken', accessToken)
-    logger.info(
-      `::::::::::::  Access token from fetch ::::::::::::: ${accessToken}`
-    )
   }
-  logger.info(`:::::::::::: Access token :::::::::::: ${accessToken}`)
   const optionsOAuth = {
     method: 'GET',
     headers: {
@@ -165,9 +136,6 @@ async function fetchData(locationType, userLocation, request) {
       'osPlacesApiPostcodeNorthernIrelandUrl'
     )
     const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
-    logger.info(
-      `::::::::::::: postcodeNortherIrelandURL ::::::::::: ${postcodeNortherIrelandURL}`
-    )
     const northerIrelandRes = await proxyFetch(
       postcodeNortherIrelandURL,
       optionsOAuth

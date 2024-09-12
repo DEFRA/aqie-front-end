@@ -317,9 +317,9 @@ const getLocationDataController = {
           userLocation,
           request
         )
-        const { result } = getNIPlaces
+        const { results } = getNIPlaces
 
-        if (!result || result.length === 0) {
+        if (!results || results.length === 0) {
           return h.view('locations/location-not-found', {
             userId: query?.userId,
             utm_source: query?.utm_source,
@@ -336,14 +336,14 @@ const getLocationDataController = {
         }
         const locationData = {
           GAZETTEER_ENTRY: {
-            NAME1: result[0].postcode,
-            DISTRICT_BOROUGH: result[0].admin_district,
-            LONGITUDE: result[0].longitude,
-            LATITUDE: result[0].latitude
+            NAME1: results[0].postcode,
+            DISTRICT_BOROUGH: results[0].administrativeArea,
+            LONGITUDE: results[0].xCoordinate,
+            LATITUDE: results[0].yCoordinate
           }
         }
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
-          result,
+          results,
           getForecasts.forecasts,
           getMeasurements.measurements,
           'Ireland',
