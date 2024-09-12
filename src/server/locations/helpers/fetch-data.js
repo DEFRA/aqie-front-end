@@ -36,7 +36,9 @@ const fetchOAuthToken = async () => {
   logger.info(
     `::::::::::::: fetchOAuthToken redirectUri  :::::::::::::::: ${redirectUri}`
   )
-  logger.info(`::::::::::::: fetchOAuthToken scope  :::::::::::::::: ${scope}`)
+  logger.info(
+    `::::::::::::: fetchOAuthToken scope   :::::::::::::::::: ${scope}`
+  )
   const response = await proxyFetch(
     `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`,
     {
