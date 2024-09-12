@@ -161,13 +161,10 @@ async function fetchData(locationType, userLocation, request) {
     return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
   } else if (locationType === 'ni-location') {
     let getNIPlaces
-    const osPlacesApiPostcodeNorthernIrelandKey = config.get(
-      'osPlacesApiPostcodeNorthernIrelandKey'
-    )
     const osPlacesApiPostcodeNorthernIrelandUrl = config.get(
       'osPlacesApiPostcodeNorthernIrelandUrl'
     )
-    const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&subscription-key=${osPlacesApiPostcodeNorthernIrelandKey}&maxresults=1`
+    const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
     const northerIrelandRes = await proxyFetch(
       postcodeNortherIrelandURL,
       optionsOAuth
