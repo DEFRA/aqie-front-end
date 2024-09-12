@@ -22,9 +22,9 @@ function getNearestLocation(
   const latlon =
     matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
   const forecastCoordinates =
-    matches.length !== 0 ? coordinatesTotal(forecasts) : []
+    matches.length !== 0 ? coordinatesTotal(forecasts, location) : []
   const measurementsCoordinates =
-    matches.length !== 0 ? coordinatesTotal(measurements) : []
+    matches.length !== 0 ? coordinatesTotal(measurements, location) : []
   const nearestLocation =
     matches.length !== 0
       ? getNearLocation(latlon.lat, latlon.lon, forecastCoordinates, forecasts)
