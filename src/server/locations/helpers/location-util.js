@@ -39,7 +39,9 @@ function convertPointToLonLat(matches, location, index) {
   let lat = ''
   let lon = ''
   let point
-  logger.info(`::::::::::::: matches 1 ::::::::::: ${matches}`)
+  logger.info(
+    `::::::::::::: convertPointToLonLat matches 1 ::::::::::: ${JSON.stringify(matches)}`
+  )
   if (location === 'uk-location') {
     point = new OsGridRef(
       matches[index].GAZETTEER_ENTRY.GEOMETRY_X,
@@ -49,7 +51,9 @@ function convertPointToLonLat(matches, location, index) {
     lat = latlon._lat
     lon = latlon._lon
   } else {
-    logger.info(`::::::::::::: matches 2 ::::::::::: ${matches}`)
+    logger.info(
+      `::::::::::::: convertPointToLonLat matches 2 ::::::::::: ${JSON.stringify(matches)}`
+    )
     lat = matches[index].xCoordinate
     lon = matches[index].yCoordinate
   }
@@ -57,6 +61,9 @@ function convertPointToLonLat(matches, location, index) {
 }
 
 function coordinatesTotal(matches, location) {
+  logger.info(
+    `::::::::::::: coordinatesTotal matches  ::::::::::: ${JSON.stringify(matches)}`
+  )
   const coordinates = matches.reduce((acc, current, index) => {
     if (location === 'uk-location') {
       return [
@@ -67,7 +74,7 @@ function coordinatesTotal(matches, location) {
         }
       ]
     }
-    logger.info(`::::::::::::: current ::::::::::: ${current}`)
+
     return [
       ...acc,
       {

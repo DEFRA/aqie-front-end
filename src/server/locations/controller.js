@@ -215,6 +215,7 @@ const getLocationDataController = {
           }
           matches = [matches[0]]
         }
+
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
           matches,
           getForecasts.forecasts,
@@ -502,6 +503,7 @@ const getLocationDetailsController = {
         } else {
           title = locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
         }
+
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
           locationData.data,
           locationData.rawForecasts,
