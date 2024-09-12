@@ -25,7 +25,7 @@ const fetchOAuthToken = async () => {
     `::::::::::::: fetchOAuthToken tokenUrl:::::::::::::::: ${tokenUrl}`
   )
   logger.info(
-    `::::::::::::: fetchOAuthToken oauthTokenNorthernIrelandTenantId:::::::::::::::: ${oauthTokenNorthernIrelandTenantId}`
+    `::::::::::::: fetchOAuthToken oauthTokenNorthernIrelandTenantId  :::::::::::::::: ${oauthTokenNorthernIrelandTenantId}`
   )
   const response = await proxyFetch(
     `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`,
