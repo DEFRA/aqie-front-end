@@ -164,6 +164,9 @@ async function fetchData(locationType, userLocation, request) {
     const osPlacesApiPostcodeNorthernIrelandUrl = config.get(
       'osPlacesApiPostcodeNorthernIrelandUrl'
     )
+    logger.info(
+      `:::::::::::::::;; osPlacesApiPostcodeNorthernIrelandUrl :::::::::::::::::: ${osPlacesApiPostcodeNorthernIrelandUrl}`
+    )
     const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
     logger.info(
       `::::::::::::: postcodeNortherIrelandURL ::::::::::: ${postcodeNortherIrelandURL}`

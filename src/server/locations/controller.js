@@ -159,12 +159,16 @@ const getLocationDataController = {
         )
       }
       locationType = request.yar.get('locationType')
-
+      logger.info(
+        `:::::::::::::::;;  ni-location uk-location 1 :::::::::::::::::: ${locationType}`
+      )
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
         await fetchData('uk-location', userLocation, request)
       if (locationType === 'uk-location') {
         const { results } = getOSPlaces
-
+        logger.info(
+          `:::::::::::::::;;  ni-location uk-location 2 :::::::::::::::::: ${locationType}`
+        )
         if (!results || results.length === 0) {
           return h.view('locations/location-not-found', {
             userId: query?.userId,
@@ -322,12 +326,19 @@ const getLocationDataController = {
           })
         }
       } else if (locationType === 'ni-location') {
+        logger.info(
+          `:::::::::::::::;;  ni-location:::::::::::::::::: ${locationType}`
+        )
         const { getNIPlaces } = await fetchData(
           'ni-location',
           userLocation,
           request
         )
+
         const { results } = getNIPlaces
+        logger.info(
+          `:::::::::::::::;;  results after token auth passed :::::::::::::::::: ${JSON.stringify(results)}`
+        )
 
         if (!results || results.length === 0) {
           return h.view('locations/location-not-found', {
@@ -412,6 +423,9 @@ const getLocationDataController = {
           lang
         })
       }
+      logger.info(
+        `:::::::::::::::;;  ni-location 2:::::::::::::::::: ${locationType}`
+      )
     } catch (error) {
       logger.info(`error from location refresh ${error.message}`)
       return h.view('error/index', {
