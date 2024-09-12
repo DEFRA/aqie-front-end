@@ -39,6 +39,7 @@ function convertPointToLonLat(matches, location, index) {
   let lat = ''
   let lon = ''
   let point
+  logger.info(`::::::::::::: matches 1 ::::::::::: ${matches}`)
   if (location === 'uk-location') {
     point = new OsGridRef(
       matches[index].GAZETTEER_ENTRY.GEOMETRY_X,
@@ -48,7 +49,7 @@ function convertPointToLonLat(matches, location, index) {
     lat = latlon._lat
     lon = latlon._lon
   } else {
-    logger.info(`::::::::::::: matches ::::::::::: ${matches}`)
+    logger.info(`::::::::::::: matches 2 ::::::::::: ${matches}`)
     lat = matches[index].xCoordinate
     lon = matches[index].yCoordinate
   }
