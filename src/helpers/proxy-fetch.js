@@ -1,6 +1,9 @@
 /* eslint-disable no-console */
 import { config } from '~/src/config'
 import { ProxyAgent, fetch as undiciFetch } from 'undici'
+import { createLogger } from '~/src/server/common/helpers/logging/logger'
+
+const logger = createLogger()
 
 const nonProxyFetch = (url, opts) => {
   return undiciFetch(url, {
