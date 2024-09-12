@@ -154,8 +154,7 @@ const config = convict({
   osPlacesApiPostcodeNorthernIrelandUrl: {
     doc: 'Search postcode Northern Ireland with osPlaces url',
     format: String,
-    default:
-      'https://dev-api-gateway.azure.defra.cloud/api/address-lookup/v2.0/addresses?postcode=',
+    default: '',
     env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_URL'
   },
   osPlacesApiPostcodeNorthernIrelandKey: {
