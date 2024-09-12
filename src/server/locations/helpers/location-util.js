@@ -1,6 +1,8 @@
 /* eslint-disable prettier/prettier */
 import * as geolib from 'geolib'
 import OsGridRef from 'mt-osgridref'
+import { createLogger } from '~/src/server/common/helpers/logging/logger'
+const logger = createLogger()
 
 function pointsInRange(point1, point2) {
   const isPoint = geolib.isPointWithinRadius(
@@ -46,6 +48,7 @@ function convertPointToLonLat(matches, location, index) {
     lat = latlon._lat
     lon = latlon._lon
   } else {
+    logger.info(`::::::::::::: matches ::::::::::: ${matches}`)
     lat = matches[index].xCoordinate
     lon = matches[index].yCoordinate
   }
@@ -63,6 +66,7 @@ function coordinatesTotal(matches, location) {
         }
       ]
     }
+    logger.info(`::::::::::::: current ::::::::::: ${current}`)
     return [
       ...acc,
       {
