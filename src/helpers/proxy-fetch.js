@@ -27,8 +27,8 @@ const proxyFetch = (url, opts) => {
       ...opts,
       dispatcher: new ProxyAgent({
         uri: proxy,
-        keepAliveTimeout: 100,
-        keepAliveMaxTimeout: 100
+        keepAliveTimeout: 10,
+        keepAliveMaxTimeout: 10
       })
     })
   }
