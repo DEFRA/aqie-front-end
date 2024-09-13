@@ -74,7 +74,7 @@ const fetchOAuthToken = async () => {
 
 async function fetchData(locationType, userLocation, request) {
   let optionsOAuth
-  if(userLocation === 'ni-location') {
+  if (userLocation === 'ni-location') {
     let accessToken
     const savedAccessToken = request.yar.get('savedAccessToken')
     logger.info(`::::::::::::: fetchData ::::::::::: ${savedAccessToken}`)
