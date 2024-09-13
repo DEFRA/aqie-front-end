@@ -179,6 +179,9 @@ async function fetchData(locationType, userLocation, request) {
         `:::::::::::  OAuth token error ::::::::: ${JSON.stringify(err.message)}`
       )
     })
+    logger.info(
+      `::::::::::::: northerIrelandRes ::::::::::: ${northerIrelandRes}`
+    )
     if (northerIrelandRes.ok) {
       getNIPlaces = await northerIrelandRes.json()
     } else {
