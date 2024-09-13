@@ -356,6 +356,18 @@ const getLocationDataController = {
             lang
           })
         }
+        logger.info(
+          `:::::::::::::::;;  results after token auth passed results[0].postcode :::::::::::::::::: ${JSON.stringify(results[0].postcodesults)}`
+        )
+        logger.info(
+          `:::::::::::::::;;  results after token auth passed results[0].administrativeArea :::::::::::::::::: ${JSON.stringify(results[0].administrativeArea)}`
+        )
+        logger.info(
+          `:::::::::::::::;;  results after token auth passed results[0].xCoordinate:::::::::::::::::: ${JSON.stringify(results[0].xCoordinate)}`
+        )
+        logger.info(
+          `:::::::::::::::;;  results after token auth passed results[0].yCoordinate :::::::::::::::::: ${JSON.stringify(results[0].yCoordinate)}`
+        )
         const locationData = {
           GAZETTEER_ENTRY: {
             NAME1: results[0].postcode,
