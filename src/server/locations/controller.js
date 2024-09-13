@@ -163,7 +163,7 @@ const getLocationDataController = {
         `:::::::::::::::;;  ni-location uk-location 1 :::::::::::::::::: ${locationType}`
       )
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
-        await fetchData('uk-location', userLocation, request)
+        await fetchData(locationType, userLocation, request)
       if (locationType === 'uk-location') {
         const { results } = getOSPlaces
         logger.info(
