@@ -23,9 +23,6 @@ const proxyFetch = (url, opts) => {
     logger.info(
       `::::::::::::: fetchOAuthToken proxy url  :::::::::::::::: ${url}`
     )
-    logger.info(
-      `::::::::::::: fetchOAuthToken proxy opts  :::::::::::::::: ${opts}`
-    )
     return undiciFetch(url, {
       ...opts,
       dispatcher: new ProxyAgent({

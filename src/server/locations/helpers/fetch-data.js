@@ -74,6 +74,12 @@ const fetchOAuthToken = async () => {
 
 async function fetchData(locationType, userLocation, request) {
   let optionsOAuth
+  logger.info(
+    `::::::::::::: fetchData userLocation ::::::::::: ${userLocation}`
+  )
+  logger.info(
+    `::::::::::::: fetchData locationType ::::::::::: ${locationType}`
+  )
   if (userLocation === 'ni-location') {
     let accessToken
     const savedAccessToken = request.yar.get('savedAccessToken')
@@ -170,9 +176,15 @@ async function fetchData(locationType, userLocation, request) {
     logger.info(
       `:::::::::::::::;; osPlacesApiPostcodeNorthernIrelandUrl :::::::::::::::::: ${osPlacesApiPostcodeNorthernIrelandUrl}`
     )
+    logger.info(
+      `:::::::::::::::;; userLocation :::::::::::::::::: ${userLocation}`
+    )
     const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
     logger.info(
       `::::::::::::: postcodeNortherIrelandURL ::::::::::: ${postcodeNortherIrelandURL}`
+    )
+    logger.info(
+      `::::::::::::: optionsOAuth ::::::::::: ${JSON.stringify(optionsOAuth)}`
     )
     const northerIrelandRes = await proxyFetch(
       postcodeNortherIrelandURL,
