@@ -39,6 +39,7 @@ function convertPointToLonLat(matches, location, index) {
   let lat = ''
   let lon = ''
   let point
+  let pointNI
   logger.info(
     `::::::::::::: convertPointToLonLat matches 1 ::::::::::: ${JSON.stringify(matches)}`
   )
@@ -54,8 +55,13 @@ function convertPointToLonLat(matches, location, index) {
     logger.info(
       `::::::::::::: convertPointToLonLat matches 2 ::::::::::: ${JSON.stringify(matches)}`
     )
-    lat = matches[index].xCoordinate
-    lon = matches[index].yCoordinate
+    pointNI = new OsGridRef(
+      matches[index].xCoordinate,
+      matches[index].yCoordinate
+    )
+    const latlon = OsGridRef.osGridToLatLong(pointNI)
+    lat = latlon._lat
+    lon = latlon._lon
   }
   return { lat, lon }
 }
