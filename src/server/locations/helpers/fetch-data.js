@@ -131,6 +131,7 @@ async function fetchData(locationType, userLocation, request) {
       }
     )
     let getForecasts
+    logger.info(`:::::::: forecastsRes.ok ::::::: ${forecastsRes.ok}`)
     if (forecastsRes.ok) {
       getForecasts = await forecastsRes.json()
     }
@@ -169,7 +170,6 @@ async function fetchData(locationType, userLocation, request) {
     }
     return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
   } else if (locationType === 'ni-location') {
-    let getNIPlaces
     const osPlacesApiPostcodeNorthernIrelandUrl = config.get(
       'osPlacesApiPostcodeNorthernIrelandUrl'
     )
@@ -195,13 +195,10 @@ async function fetchData(locationType, userLocation, request) {
       )
     })
     logger.info(
-      `::::::::::::: northerIrelandRes ::::::::::: ${northerIrelandRes}`
+      `::::::::::::: northerIrelandRes ::::::::::: ${JSON.stringify(northerIrelandRes)}`
     )
-    if (northerIrelandRes.ok) {
-      getNIPlaces = await northerIrelandRes.json()
-    } else {
-      throw new Error('Failed to fetch Northern Ireland places')
-    }
+    const getNIPlaces = await northerIrelandRes.json()
+
     logger.info(
       `::::::::: getNIPlaces ::::::::::::: ${JSON.stringify(getNIPlaces)}`
     )
