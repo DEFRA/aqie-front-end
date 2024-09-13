@@ -125,6 +125,9 @@ async function fetchData(locationType, userLocation, request) {
     const forecastsAPIurl = config.get('forecastsApiUrl')
     const measurementsAPIurl = config.get('measurementsApiUrl')
 
+    logger.info(`:::::::: forecastSummaryURL ::::::: ${forecastSummaryURL}`)
+    logger.info(`:::::::: forecastsAPIurl ::::::: ${forecastsAPIurl}`)
+    logger.info(`:::::::: measurementsAPIurl ::::::: ${measurementsAPIurl}`)
     const forecastsRes = await fetch(`${forecastsAPIurl}`, options).catch(
       (err) => {
         logger.info(`err ${JSON.stringify(err.message)}`)
@@ -135,6 +138,7 @@ async function fetchData(locationType, userLocation, request) {
     if (forecastsRes.ok) {
       getForecasts = await forecastsRes.json()
     }
+
     const measurementsRes = await fetch(measurementsAPIurl, options).catch(
       (err) => {
         logger.info(`err ${JSON.stringify(err.message)}`)
