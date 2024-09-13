@@ -357,7 +357,7 @@ const getLocationDataController = {
           })
         }
         logger.info(
-          `:::::::::::::::;;  results after token auth passed results[0].postcode :::::::::::::::::: ${JSON.stringify(results[0].postcodesults)}`
+          `:::::::::::::::;;  results after token auth passed results[0].postcode :::::::::::::::::: ${JSON.stringify(results[0].postcode)}`
         )
         logger.info(
           `:::::::::::::::;;  results after token auth passed results[0].administrativeArea :::::::::::::::::: ${JSON.stringify(results[0].administrativeArea)}`
@@ -376,6 +376,9 @@ const getLocationDataController = {
             LATITUDE: results[0].yCoordinate
           }
         }
+        logger.info(
+          `:::::::::::::::;;  results after token auth passed locationData 1 :::::::::::::::::: ${JSON.stringify(locationData)}`
+        )
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
           results,
           getForecasts.forecasts,
@@ -385,6 +388,9 @@ const getLocationDataController = {
           lang
         )
         let title = ''
+        logger.info(
+          `:::::::::::::::;;  results after token auth passed locationData 2 :::::::::::::::::: ${JSON.stringify(locationData)}`
+        )
         if (locationData) {
           if (locationData.GAZETTEER_ENTRY.NAME2) {
             title =
