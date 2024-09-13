@@ -380,15 +380,15 @@ const getLocationDataController = {
           `:::::::::::::::;;  results after token auth passed locationData 1 :::::::::::::::::: ${JSON.stringify(locationData)}`
         )
         logger.info(
-          `:::::::::::::::;;  results after token auth passed getForecasts.forecasts :::::::::::::::::: ${JSON.stringify(getForecasts.forecasts)}`
+          `:::::::::::::::;;  results after token auth passed getForecasts :::::::::::::::::: ${JSON.stringify(getForecasts)}`
         )
         logger.info(
-          `:::::::::::::::;;  results after token auth passed getMeasurements.measurements :::::::::::::::::: ${JSON.stringify(getMeasurements.measurements)}`
+          `:::::::::::::::;;  results after token auth passed getMeasurements :::::::::::::::::: ${JSON.stringify(getMeasurements)}`
         )
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
           results,
-          getForecasts.forecasts,
-          getMeasurements.measurements,
+          getForecasts?.forecasts,
+          getMeasurements?.measurements,
           'Ireland',
           0,
           lang
