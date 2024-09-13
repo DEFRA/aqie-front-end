@@ -73,27 +73,30 @@ const fetchOAuthToken = async () => {
 }
 
 async function fetchData(locationType, userLocation, request) {
-  let accessToken
-  const savedAccessToken = request.yar.get('savedAccessToken')
-  logger.info(`::::::::::::: fetchData :::::::::::`)
-  if (savedAccessToken) {
-    accessToken = savedAccessToken
-    logger.info(
-      `::::::::::::: Access token from session ::::::::::: ${accessToken}`
-    )
-  } else {
-    accessToken = await fetchOAuthToken()
-    request.yar.set('savedAccessToken', accessToken)
-    logger.info(
-      `::::::::::::  Access token from fetch ::::::::::::: ${accessToken}`
-    )
-  }
-  logger.info(`:::::::::::: Access token :::::::::::: ${accessToken}`)
-  const optionsOAuth = {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json'
+  let optionsOAuth
+  if (userLocation === 'ni-location') {
+    let accessToken
+    const savedAccessToken = request.yar.get('savedAccessToken')
+    logger.info(`::::::::::::: fetchData ::::::::::: ${savedAccessToken}`)
+    if (savedAccessToken) {
+      accessToken = savedAccessToken
+      logger.info(
+        `::::::::::::: Access token from session ::::::::::: ${accessToken}`
+      )
+    } else {
+      accessToken = await fetchOAuthToken()
+      request.yar.set('savedAccessToken', accessToken)
+      logger.info(
+        `::::::::::::  Access token from fetch ::::::::::::: ${accessToken}`
+      )
+    }
+    logger.info(`:::::::::::: Access token :::::::::::: ${accessToken}`)
+    optionsOAuth = {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      }
     }
   }
   const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
