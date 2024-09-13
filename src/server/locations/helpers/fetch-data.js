@@ -80,7 +80,7 @@ async function fetchData(locationType, userLocation, request) {
   logger.info(
     `::::::::::::: fetchData locationType ::::::::::: ${locationType}`
   )
-  if (userLocation === 'ni-location') {
+  if (locationType === 'ni-location') {
     let accessToken
     const savedAccessToken = request.yar.get('savedAccessToken')
     logger.info(`::::::::::::: fetchData ::::::::::: ${savedAccessToken}`)
