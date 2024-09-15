@@ -213,7 +213,9 @@ async function fetchData(locationType, userLocation, request) {
     logger.info(
       `::::::::::::: northerIrelandRes ::::::::::: ${JSON.stringify(northerIrelandRes)}`
     )
-    const getNIPlaces = await northerIrelandRes.json()
+    const getNIPlaces = await northerIrelandRes.json().catch((error) => {
+      logger.error('Error getNIPlaces:', error)
+    })
 
     logger.info(
       `::::::::: getNIPlaces ::::::::::::: ${JSON.stringify(getNIPlaces)}`
