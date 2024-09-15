@@ -144,6 +144,12 @@ async function fetchData(locationType, userLocation, request) {
         logger.info(`err ${JSON.stringify(err.message)}`)
       }
     )
+    logger.info(
+      `:::::::::::::::;; measurementsRes :::::::::::::::::: ${measurementsRes}`
+    )
+    logger.info(
+      `:::::::::::::::;; measurementsRes.ok :::::::::::::::::: ${measurementsRes.ok}`
+    )
     let getMeasurements
     if (measurementsRes.ok) {
       getMeasurements = await measurementsRes.json()
@@ -155,6 +161,12 @@ async function fetchData(locationType, userLocation, request) {
     ).catch((err) => {
       logger.info(`err ${JSON.stringify(err.message)}`)
     })
+    logger.info(
+      `:::::::::::::::;; forecastSummaryRes :::::::::::::::::: ${forecastSummaryRes}`
+    )
+    logger.info(
+      `:::::::::::::::;; forecastSummaryRes.ok :::::::::::::::::: ${forecastSummaryRes.ok}`
+    )
     let getDailySummary
     if (forecastSummaryRes.ok) {
       getDailySummary = await forecastSummaryRes.json()
