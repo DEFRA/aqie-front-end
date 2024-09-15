@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import * as geolib from 'geolib'
 import moment from 'moment-timezone'
-
+import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import {
   getNearLocation,
   convertPointToLonLat,
@@ -10,6 +10,7 @@ import {
 } from '~/src/server/locations/helpers/location-util.js'
 import { getPollutantLevel } from '~/src/server/locations/helpers/pollutant-level-calculation'
 import { getPollutantLevelCy } from '~/src/server/locations/helpers/cy/pollutant-level-calculation'
+const logger = createLogger()
 
 function getNearestLocation(
   matches,
@@ -39,7 +40,13 @@ function getNearestLocation(
   const pointsToDisplay = nearestMeasurementsPoints.filter((p) =>
     pointsInRange(latlon, p)
   )
+  logger.info(
+    `:::::::::::::::;;  measurements :::::::::::::::::: ${JSON.stringify(measurements)}`
+  )
   const nearestLocationsRangeCal = measurements.filter((item, i) => {
+    logger.info(
+      `:::::::::::::::;;  nearestLocationsRangeCal measurements item :::::::::::::::::: ${JSON.stringify(item)}`
+    )
     const opt = pointsToDisplay.some((dis, index) => {
       return (
         item.location.coordinates[0] === dis.latitude &&
@@ -48,6 +55,9 @@ function getNearestLocation(
     })
     return opt
   })
+  logger.info(
+    `:::::::::::::::;;  nearestLocationsRangeCal:::::::::::::::::: ${JSON.stringify(nearestLocationsRangeCal)}`
+  )
   // TODO select and filter locations and pollutants which are not null or don't have exceptions
   const nearestLocationsRange = nearestLocationsRangeCal.reduce(
     (acc, curr, index) => {
