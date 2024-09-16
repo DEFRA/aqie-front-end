@@ -97,6 +97,7 @@ const getLocationDataController = {
         )
       }
     }
+    logger.info(`::::::::::::: locationType 1:::::::::::::::: ${locationType}`)
     try {
       let userLocation = locationNameOrPostcode.toUpperCase() // Use 'let' to allow reassignment
       // Regex patterns to check for full and partial postcodes
@@ -112,6 +113,9 @@ const getLocationDataController = {
           spaceIndex
         )}`
       }
+      logger.info(
+        `::::::::::::: locationType 2:::::::::::::::: ${locationType}`
+      )
       if (!userLocation && locationType === 'uk-location') {
         request.yar.set('errors', {
           errors: {
@@ -135,7 +139,13 @@ const getLocationDataController = {
           `/search-location?userId=${userId}&utm_source=${utm_source}`
         )
       }
+      logger.info(
+        `::::::::::::: locationType 3:::::::::::::::: ${locationType}`
+      )
       if (!userLocation && locationType === 'ni-location') {
+        logger.info(
+          `::::::::::::: locationType 3:::::::::::::::: ${locationType}`
+        )
         request.yar.set('errors', {
           errors: {
             titleText: searchLocation.errorText.ni.fields.title, // 'There is a problem',
