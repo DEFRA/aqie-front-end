@@ -72,8 +72,9 @@ function coordinatesTotal(matches, location) {
   logger.info(
     `::::::::::::: coordinatesTotal matches  ::::::::::: ${JSON.stringify(matches)}`
   )
-  const coordinates = matches
-    .reduce((acc, current, index) => {
+  let coordinates = []
+  try {
+    coordinates = matches.reduce((acc, current, index) => {
       if (location === 'uk-location') {
         return [
           ...acc,
@@ -92,9 +93,12 @@ function coordinatesTotal(matches, location) {
         }
       ]
     }, [])
-    .catch((err) => {
-      logger.info(`err in matches.reduce ${JSON.stringify(err.message)}`)
-    })
+  } catch (error) {
+    logger.error(
+      `Failed to fetch coordinatesTotal matches
+    .reduce: ${JSON.stringify(error)}`
+    )
+  }
   return coordinates
 }
 
