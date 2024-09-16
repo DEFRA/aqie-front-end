@@ -90,8 +90,14 @@ function getNearestLocation(
               daqi: getDaqi,
               band: getBand
             }
+          }).catch((err) => {
+            logger.error(`Failed to fetch nearest locations 1a: ${JSON.stringify(err)}`)
+            throw new Error('Failed to fetch nearest locations 1a')
           })
         }
+      }).catch((err) => {
+        logger.error(`Failed to fetch nearest locations 1: ${JSON.stringify(err)}`)
+        throw new Error('Failed to fetch nearest locations 1')
       })
       if (Object.keys(newpollutants).length !== 0) {
         acc.push({
@@ -115,7 +121,10 @@ function getNearestLocation(
       return acc
     },
     []
-  )
+  ).catch((err) => {
+    logger.error(`Failed to fetch nearest locations 2: ${JSON.stringify(err)}`)
+    throw new Error('Failed to fetch nearest locations 2')
+  })
 
   const forecastDay = moment.tz('Europe/London').format('dddd').substring(0, 3)
   const forecastNum =
@@ -123,6 +132,7 @@ function getNearestLocation(
       ? nearestLocation.map((current) => {
           let todayDate = []
           const otherdays = []
+
           current.forecast.forEach(({ day, value }) => {
             if (day === forecastDay) {
               todayDate = [{ today: value }]
@@ -131,6 +141,9 @@ function getNearestLocation(
             }
           })
           return [...todayDate, ...otherdays]
+        }).catch((err) => {
+          logger.error(`Failed to fetch forecast: ${JSON.stringify(err)}`)
+          throw new Error('Failed to fetch forecast')
         })
       : 0
   return { forecastNum, nearestLocationsRange }
