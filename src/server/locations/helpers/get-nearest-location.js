@@ -23,7 +23,7 @@ function getNearestLocation(
   logger.info(`:::: the beginning lang  :::::::: ${lang}`)
   const latlon =
     matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
-  logger.info(`:::: matches  :::::::: ${matches}`)
+  logger.info(`:::: matches  :::::::: ${JSON.stringify(matches)}`)
   const forecastCoordinates =
     matches.length !== 0 ? coordinatesTotal(forecasts, location) : []
   logger.info(`:::: forecasts  :::::::: ${forecasts}`)
@@ -45,22 +45,22 @@ function getNearestLocation(
     pointsInRange(latlon, p)
   )
   logger.info(
-    `:::::::::::::::;;  measurements :::::::::::::::::: ${JSON.stringify(measurements)}`
+    `:::::::::::::::;;  measurements :::::::::::::::::: ${measurements}`
   )
   const nearestLocationsRangeCal = measurements.filter((item, i) => {
-    logger.info(
-      `:::::::::::::::;;  nearestLocationsRangeCal measurements item :::::::::::::::::: ${JSON.stringify(item)}`
-    )
     const opt = pointsToDisplay.some((dis, index) => {
       return (
         item.location.coordinates[0] === dis.latitude &&
         item.location.coordinates[1] === dis.longitude
       )
     })
+    logger.info(
+      `:::::::::::::::;;  nearestLocationsRangeCal opt:::::::::::::::::: ${opt}`
+    )
     return opt
   })
   logger.info(
-    `:::::::::::::::;;  nearestLocationsRangeCal:::::::::::::::::: ${JSON.stringify(nearestLocationsRangeCal)}`
+    `:::::::::::::::;;  nearestLocationsRangeCal:::::::::::::::::: ${nearestLocationsRangeCal}`
   )
   // TODO select and filter locations and pollutants which are not null or don't have exceptions
   const nearestLocationsRange = nearestLocationsRangeCal.reduce(
