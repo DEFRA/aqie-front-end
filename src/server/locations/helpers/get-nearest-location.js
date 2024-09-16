@@ -20,17 +20,21 @@ function getNearestLocation(
   index,
   lang
 ) {
+  logger.info(`:::: the beginning lang  :::::::: ${lang}`)
   const latlon =
     matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
+  logger.info(`:::: matches  :::::::: ${matches}`)
   const forecastCoordinates =
     matches.length !== 0 ? coordinatesTotal(forecasts, location) : []
+  logger.info(`:::: forecasts  :::::::: ${forecasts}`)
   const measurementsCoordinates =
     matches.length !== 0 ? coordinatesTotal(measurements, location) : []
+  logger.info(`:::: measurements  :::::::: ${measurements}`)
   const nearestLocation =
     matches.length !== 0
       ? getNearLocation(latlon.lat, latlon.lon, forecastCoordinates, forecasts)
       : {}
-
+  logger.info(`:::: location  :::::::: ${location}`)
   const orderByDistanceMeasurements = geolib.orderByDistance(
     { latitude: latlon.lat, longitude: latlon.lon },
     measurementsCoordinates

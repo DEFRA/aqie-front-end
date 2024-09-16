@@ -124,7 +124,9 @@ async function fetchData(locationType, userLocation, request) {
   if (forecastsRes.ok) {
     getForecasts = await forecastsRes.json()
   }
-
+  logger.info(
+    `:::::::::::::::;; getForecasts inside fetch-data :::::::::::::::::: ${getForecasts}`
+  )
   const measurementsRes = await fetch(measurementsAPIurl, options).catch(
     (err) => {
       logger.info(`err ${JSON.stringify(err.message)}`)
@@ -140,7 +142,9 @@ async function fetchData(locationType, userLocation, request) {
   if (measurementsRes.ok) {
     getMeasurements = await measurementsRes.json()
   }
-
+  logger.info(
+    `:::::::::::::::;; getMeasurements inside fetch-data :::::::::::::::::: ${getMeasurements}`
+  )
   const forecastSummaryRes = await proxyFetch(
     forecastSummaryURL,
     options
@@ -157,6 +161,9 @@ async function fetchData(locationType, userLocation, request) {
   if (forecastSummaryRes.ok) {
     getDailySummary = await forecastSummaryRes.json()
   }
+  logger.info(
+    `:::::::::::::::;; getDailySummary inside fetch-data :::::::::::::::::: ${getDailySummary}`
+  )
   if (locationType === 'uk-location') {
     const filters = [
       'LOCAL_TYPE:City',
