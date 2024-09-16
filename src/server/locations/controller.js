@@ -502,6 +502,9 @@ const getLocationDetailsController = {
         daqi
       } = english
       const locationData = request.yar.get('locationData') || []
+      logger.info(
+        `:::::::: locationData.data ::::::: ${JSON.stringify(locationData.data)}`
+      )
       let locationIndex = 0
       const locationDetails = locationData?.data?.find((item, index) => {
         if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {

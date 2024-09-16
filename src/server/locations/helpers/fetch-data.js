@@ -107,6 +107,56 @@ async function fetchData(locationType, userLocation, request) {
   }
   const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
   let getOSPlaces = { data: [] }
+  const forecastSummaryURL = config.get('forecastSummaryUrl')
+  const forecastsAPIurl = config.get('forecastsApiUrl')
+  const measurementsAPIurl = config.get('measurementsApiUrl')
+
+  logger.info(`:::::::: forecastSummaryURL ::::::: ${forecastSummaryURL}`)
+  logger.info(`:::::::: forecastsAPIurl ::::::: ${forecastsAPIurl}`)
+  logger.info(`:::::::: measurementsAPIurl ::::::: ${measurementsAPIurl}`)
+  const forecastsRes = await fetch(`${forecastsAPIurl}`, options).catch(
+    (err) => {
+      logger.info(`err ${JSON.stringify(err.message)}`)
+    }
+  )
+  let getForecasts
+  logger.info(`:::::::: forecastsRes.ok ::::::: ${forecastsRes.ok}`)
+  if (forecastsRes.ok) {
+    getForecasts = await forecastsRes.json()
+  }
+
+  const measurementsRes = await fetch(measurementsAPIurl, options).catch(
+    (err) => {
+      logger.info(`err ${JSON.stringify(err.message)}`)
+    }
+  )
+  logger.info(
+    `:::::::::::::::;; measurementsRes :::::::::::::::::: ${measurementsRes}`
+  )
+  logger.info(
+    `:::::::::::::::;; measurementsRes.ok :::::::::::::::::: ${measurementsRes.ok}`
+  )
+  let getMeasurements
+  if (measurementsRes.ok) {
+    getMeasurements = await measurementsRes.json()
+  }
+
+  const forecastSummaryRes = await proxyFetch(
+    forecastSummaryURL,
+    options
+  ).catch((err) => {
+    logger.info(`err ${JSON.stringify(err.message)}`)
+  })
+  logger.info(
+    `:::::::::::::::;; forecastSummaryRes :::::::::::::::::: ${forecastSummaryRes}`
+  )
+  logger.info(
+    `:::::::::::::::;; forecastSummaryRes.ok :::::::::::::::::: ${forecastSummaryRes.ok}`
+  )
+  let getDailySummary
+  if (forecastSummaryRes.ok) {
+    getDailySummary = await forecastSummaryRes.json()
+  }
   if (locationType === 'uk-location') {
     const filters = [
       'LOCAL_TYPE:City',
@@ -121,56 +171,7 @@ async function fetchData(locationType, userLocation, request) {
     const osPlacesApiUrlFull = `${osPlacesApiUrl}${encodeURIComponent(
       userLocation
     )}&fq=${encodeURIComponent(filters)}&key=${osPlacesApiKey}`
-    const forecastSummaryURL = config.get('forecastSummaryUrl')
-    const forecastsAPIurl = config.get('forecastsApiUrl')
-    const measurementsAPIurl = config.get('measurementsApiUrl')
 
-    logger.info(`:::::::: forecastSummaryURL ::::::: ${forecastSummaryURL}`)
-    logger.info(`:::::::: forecastsAPIurl ::::::: ${forecastsAPIurl}`)
-    logger.info(`:::::::: measurementsAPIurl ::::::: ${measurementsAPIurl}`)
-    const forecastsRes = await fetch(`${forecastsAPIurl}`, options).catch(
-      (err) => {
-        logger.info(`err ${JSON.stringify(err.message)}`)
-      }
-    )
-    let getForecasts
-    logger.info(`:::::::: forecastsRes.ok ::::::: ${forecastsRes.ok}`)
-    if (forecastsRes.ok) {
-      getForecasts = await forecastsRes.json()
-    }
-
-    const measurementsRes = await fetch(measurementsAPIurl, options).catch(
-      (err) => {
-        logger.info(`err ${JSON.stringify(err.message)}`)
-      }
-    )
-    logger.info(
-      `:::::::::::::::;; measurementsRes :::::::::::::::::: ${measurementsRes}`
-    )
-    logger.info(
-      `:::::::::::::::;; measurementsRes.ok :::::::::::::::::: ${measurementsRes.ok}`
-    )
-    let getMeasurements
-    if (measurementsRes.ok) {
-      getMeasurements = await measurementsRes.json()
-    }
-
-    const forecastSummaryRes = await proxyFetch(
-      forecastSummaryURL,
-      options
-    ).catch((err) => {
-      logger.info(`err ${JSON.stringify(err.message)}`)
-    })
-    logger.info(
-      `:::::::::::::::;; forecastSummaryRes :::::::::::::::::: ${forecastSummaryRes}`
-    )
-    logger.info(
-      `:::::::::::::::;; forecastSummaryRes.ok :::::::::::::::::: ${forecastSummaryRes.ok}`
-    )
-    let getDailySummary
-    if (forecastSummaryRes.ok) {
-      getDailySummary = await forecastSummaryRes.json()
-    }
     const shouldCallApi = symbolsArr.some((symbol) =>
       userLocation.includes(symbol)
     )
