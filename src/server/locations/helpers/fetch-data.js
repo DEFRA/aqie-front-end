@@ -125,7 +125,7 @@ async function fetchData(locationType, userLocation, request) {
     getForecasts = await forecastsRes.json()
   }
   logger.info(
-    `:::::::::::::::;; getForecasts inside fetch-data :::::::::::::::::: ${getForecasts}`
+    `:::::::::::::::;; getForecasts inside fetch-data :::::::::::::::::: ${JSON.stringify(getForecasts)}`
   )
   const measurementsRes = await fetch(measurementsAPIurl, options).catch(
     (err) => {
@@ -143,7 +143,7 @@ async function fetchData(locationType, userLocation, request) {
     getMeasurements = await measurementsRes.json()
   }
   logger.info(
-    `:::::::::::::::;; getMeasurements inside fetch-data :::::::::::::::::: ${getMeasurements}`
+    `:::::::::::::::;; getMeasurements inside fetch-data :::::::::::::::::: ${JSON.stringify(getMeasurements)}`
   )
   const forecastSummaryRes = await proxyFetch(
     forecastSummaryURL,
@@ -162,7 +162,7 @@ async function fetchData(locationType, userLocation, request) {
     getDailySummary = await forecastSummaryRes.json()
   }
   logger.info(
-    `:::::::::::::::;; getDailySummary inside fetch-data :::::::::::::::::: ${getDailySummary}`
+    `:::::::::::::::;; getDailySummary inside fetch-data :::::::::::::::::: ${JSON.stringify(getDailySummary)}`
   )
   if (locationType === 'uk-location') {
     const filters = [
@@ -228,7 +228,7 @@ async function fetchData(locationType, userLocation, request) {
     logger.info(
       `::::::::: getNIPlaces ::::::::::::: ${JSON.stringify(getNIPlaces)}`
     )
-    return { getNIPlaces }
+    return { getDailySummary, getForecasts, getMeasurements, getNIPlaces }
   }
 }
 
