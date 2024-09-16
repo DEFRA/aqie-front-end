@@ -50,6 +50,9 @@ const getLocationDataController = {
       daqi
     } = english
     let locationType = request?.payload?.locationType
+    logger.info(
+      `::::::::::::: locationType fromrequest.payload:::::::::::::::: ${locationType}`
+    )
     const airQuality = getAirQuality(request.payload?.aq, 2, 4, 5, 7)
     let locationNameOrPostcode = ''
     if (locationType === 'uk-location') {
