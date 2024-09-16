@@ -390,10 +390,10 @@ const getLocationDataController = {
           `:::::::::::::::;;  results after token auth passed locationData 1 :::::::::::::::::: ${JSON.stringify(locationData)}`
         )
         logger.info(
-          `:::::::::::::::;;  results after token auth passed getForecasts :::::::::::::::::: ${JSON.stringify(getForecasts)}`
+          `:::::::::::::::;;  results after token auth passed getForecasts :::::::::::::::::: ${getForecasts}`
         )
         logger.info(
-          `:::::::::::::::;;  results after token auth passed getMeasurements :::::::::::::::::: ${JSON.stringify(getMeasurements)}`
+          `:::::::::::::::;;  results after token auth passed getMeasurements :::::::::::::::::: ${getMeasurements}`
         )
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
           results,
@@ -402,6 +402,12 @@ const getLocationDataController = {
           'Ireland',
           0,
           lang
+        )
+        logger.info(
+          `:::::::::::::::;;  forecastNum :::::::::::::::::: ${forecastNum}`
+        )
+        logger.info(
+          `:::::::::::::::;;  nearestLocationsRange :::::::::::::::::: ${nearestLocationsRange}`
         )
         let title = ''
         logger.info(
@@ -435,6 +441,9 @@ const getLocationDataController = {
             )
           }
         }
+        logger.info(
+          `:::::::::::::::;;  results after token auth passed lresults :::::::::::::::::: ${JSON.stringify(results)}`
+        )
         return h.view('locations/location', {
           userId: query?.userId,
           utm_source: query?.utm_source,
