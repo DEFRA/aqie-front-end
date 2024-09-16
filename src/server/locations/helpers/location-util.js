@@ -72,25 +72,29 @@ function coordinatesTotal(matches, location) {
   logger.info(
     `::::::::::::: coordinatesTotal matches  ::::::::::: ${JSON.stringify(matches)}`
   )
-  const coordinates = matches.reduce((acc, current, index) => {
-    if (location === 'uk-location') {
+  const coordinates = matches
+    .reduce((acc, current, index) => {
+      if (location === 'uk-location') {
+        return [
+          ...acc,
+          {
+            latitude: current.location.coordinates[0],
+            longitude: current.location.coordinates[1]
+          }
+        ]
+      }
+
       return [
         ...acc,
         {
-          latitude: current.location.coordinates[0],
-          longitude: current.location.coordinates[1]
+          latitude: current.xCoordinate,
+          longitude: current.yCoordinate
         }
       ]
-    }
-
-    return [
-      ...acc,
-      {
-        latitude: current.xCoordinate,
-        longitude: current.yCoordinate
-      }
-    ]
-  }, [])
+    }, [])
+    .catch((err) => {
+      logger.info(`err in matches.reduce ${JSON.stringify(err.message)}`)
+    })
   return coordinates
 }
 
