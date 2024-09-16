@@ -63,6 +63,8 @@ function convertPointToLonLat(matches, location, index) {
     lat = latlon._lat
     lon = latlon._lon
   }
+  logger.info(`::::::::::::: lat ::::::::::: ${lat}`)
+  logger.info(`::::::::::::: lon ::::::::::: ${lon}`)
   return { lat, lon }
 }
 
