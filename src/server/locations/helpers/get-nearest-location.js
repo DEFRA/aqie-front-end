@@ -54,9 +54,6 @@ function getNearestLocation(
         item.location.coordinates[1] === dis.longitude
       )
     })
-    logger.info(
-      `:::::::::::::::;;  nearestLocationsRangeCal opt:::::::::::::::::: ${opt}`
-    )
     return opt
   })
   logger.info(
