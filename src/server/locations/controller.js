@@ -399,7 +399,7 @@ const getLocationDataController = {
           results,
           getForecasts?.forecasts,
           getMeasurements?.measurements,
-          'Ireland',
+          'ni-location',
           0,
           lang
         )
