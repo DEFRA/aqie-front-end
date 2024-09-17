@@ -17,11 +17,16 @@ function getNearLocation(lat, lon, forecastCoordinates, forecasts) {
   let getLocation
   logger.info(`::::::::::::: itemlat ::::::::::: ${lat}`)
   logger.info(`::::::::::::: itemlon ::::::::::: ${lon}`)
+  if (lat === undefined || lon === undefined) {
+    throw new Error('Latitude or Longitude is undefined')
+  }
   try {
-    getLocation = geolib.findNearest(
-      { latitude: lat, longitude: lon },
-      forecastCoordinates
-    )
+    if (lat && lon && forecastCoordinates) {
+      getLocation = geolib.findNearest(
+        { latitude: lat, longitude: lon },
+        forecastCoordinates
+      )
+    }
   } catch (error) {
     logger.error(
       `Failed to fetch getNearLocation: ${JSON.stringify(error.message)}`
