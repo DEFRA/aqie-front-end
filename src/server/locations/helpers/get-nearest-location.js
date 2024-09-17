@@ -47,18 +47,12 @@ function getNearestLocation(
   )
   logger.info(`:::::::::::::::;;  pointsToDisplay ::::::::::::::::::`)
   const nearestLocationsRangeCal = measurements.filter((item, i) => {
-    const opt = pointsToDisplay
-      .some((dis, index) => {
-        return (
-          item.location.coordinates[0] === dis.latitude &&
-          item.location.coordinates[1] === dis.longitude
-        )
-      })
-      .catch((err) => {
-        logger.error(
-          `Failed to fetch nearest locations 0: ${JSON.stringify(err)}`
-        )
-      })
+    const opt = pointsToDisplay.some((dis, index) => {
+      return (
+        item.location.coordinates[0] === dis.latitude &&
+        item.location.coordinates[1] === dis.longitude
+      )
+    })
     logger.info(`:::: nearestLocationsRangeCal 1  ::::::::`)
     return opt
   })
