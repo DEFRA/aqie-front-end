@@ -1,7 +1,6 @@
 /* eslint-disable prettier/prettier */
 import * as geolib from 'geolib'
 import moment from 'moment-timezone'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import {
   getNearLocation,
   convertPointToLonLat,
@@ -10,7 +9,6 @@ import {
 } from '~/src/server/locations/helpers/location-util.js'
 import { getPollutantLevel } from '~/src/server/locations/helpers/pollutant-level-calculation'
 import { getPollutantLevelCy } from '~/src/server/locations/helpers/cy/pollutant-level-calculation'
-const logger = createLogger()
 
 function getNearestLocation(
   matches,
@@ -20,32 +18,24 @@ function getNearestLocation(
   index,
   lang
 ) {
-  logger.info(`:::: the beginning lang  :::::::: ${lang}`)
   const latlon =
     matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
-  logger.info(`:::: matches  :::::::: ${JSON.stringify(matches)}`)
   const forecastCoordinates =
     matches.length !== 0 ? coordinatesTotal(forecasts, location) : []
-  logger.info(`:::: forecasts  ::::::::`)
   const measurementsCoordinates =
     matches.length !== 0 ? coordinatesTotal(measurements, location) : []
-  logger.info(`:::: measurements  ::::::::`)
   const nearestLocation =
     matches.length !== 0
       ? getNearLocation(latlon.lat, latlon.lon, forecastCoordinates, forecasts)
       : {}
-  logger.info(`:::: location1 ::::::::`)
   const orderByDistanceMeasurements = geolib.orderByDistance(
     { latitude: latlon.lat, longitude: latlon.lon },
     measurementsCoordinates
   )
-  logger.info(`:::: location2  ::::::::`)
   const nearestMeasurementsPoints = orderByDistanceMeasurements.slice(0, 3)
-  logger.info(`:::: location3  ::::::::`)
   const pointsToDisplay = nearestMeasurementsPoints.filter((p) =>
     pointsInRange(latlon, p)
   )
-  logger.info(`:::::::::::::::;;  pointsToDisplay ::::::::::::::::::`)
   const nearestLocationsRangeCal = measurements?.filter((item, i) => {
     const opt = pointsToDisplay.some((dis, index) => {
       return (
@@ -53,12 +43,8 @@ function getNearestLocation(
         item.location.coordinates[1] === dis.longitude
       )
     })
-    logger.info(`:::: nearestLocationsRangeCal 1  ::::::::`)
     return opt
   })
-  logger.info(
-    `:::::::::::::::;;  nearestLocationsRangeCal 2 :::::::::::::::::: ${nearestLocationsRangeCal}`
-  )
   // TODO select and filter locations and pollutants which are not null or don't have exceptions
   const nearestLocationsRange = nearestLocationsRangeCal.reduce(
     (acc, curr, index) => {

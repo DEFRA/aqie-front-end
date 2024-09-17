@@ -17,11 +17,6 @@ function getNearLocation(lat, lon, forecastCoordinates, forecasts) {
   let getLocation
   try {
     if (lat && lon && forecastCoordinates) {
-      logger.info(`::::::::::::: itemlat 1 ::::::::::: ${lat}`)
-      logger.info(`::::::::::::: itemlon 1 ::::::::::: ${lon}`)
-      logger.info(
-        `::::::::::::: forecastCoordinates 1 ::::::::::: ${JSON.stringify(forecastCoordinates)}`
-      )
       getLocation = geolib.findNearest(
         { latitude: lat.toString().trim(), longitude: lon.toString().trim() },
         forecastCoordinates
@@ -36,12 +31,6 @@ function getNearLocation(lat, lon, forecastCoordinates, forecasts) {
     logger.error('getLocation is undefined or missing properties')
     return []
   }
-  logger.info(
-    `::::::::::::: getLocation.latitude ::::::::::: ${getLocation.latitude}`
-  )
-  logger.info(
-    `::::::::::::: getLocation.longitude ::::::::::: ${getLocation.longitude}`
-  )
   const nearestLocation = forecasts?.filter((item) => {
     return (
       item.location.coordinates[0] === getLocation.latitude &&
@@ -56,7 +45,6 @@ function orderByDistance(lat, lon, forecastCoordinates) {
     { latitude: lat, longitude: lon },
     forecastCoordinates
   )
-  logger.info(`::::::::::::: getLocation ::::::::::: ${getLocation}`)
   return getLocation
 }
 
@@ -65,9 +53,6 @@ function convertPointToLonLat(matches, location, index) {
   let lon = ''
   let point
   let pointNI
-  logger.info(
-    `::::::::::::: convertPointToLonLat matches 1 ::::::::::: ${JSON.stringify(matches)}`
-  )
   if (location === 'uk-location') {
     point = new OsGridRef(
       matches[index].GAZETTEER_ENTRY.GEOMETRY_X,
@@ -77,9 +62,6 @@ function convertPointToLonLat(matches, location, index) {
     lat = latlon._lat
     lon = latlon._lon
   } else {
-    logger.info(
-      `::::::::::::: convertPointToLonLat matches 2 ::::::::::: ${JSON.stringify(matches)}`
-    )
     try {
       pointNI = new OsGridRef(
         matches[index].xCoordinate,
@@ -95,15 +77,10 @@ function convertPointToLonLat(matches, location, index) {
     lat = latlon._lat
     lon = latlon._lon
   }
-  logger.info(`::::::::::::: lat ::::::::::: ${lat}`)
-  logger.info(`::::::::::::: lon ::::::::::: ${lon}`)
   return { lat, lon }
 }
 
 function coordinatesTotal(matches, location) {
-  logger.info(
-    `::::::::::::: coordinatesTotal matches  ::::::::::: ${JSON.stringify(matches)}`
-  )
   let coordinates = []
   try {
     coordinates = matches.reduce((acc, current, index) => {

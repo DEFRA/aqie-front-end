@@ -403,7 +403,7 @@ const getLocationDataController = {
         })
       }
     } catch (error) {
-      logger.info(`error from location refresh ${error.message}`)
+      logger.error(`error from location refresh ${error.message}`)
       return h.view('error/index', {
         userId: query?.userId,
         utm_source: query?.utm_source,
@@ -557,7 +557,7 @@ const getLocationDetailsController = {
         })
       }
     } catch (error) {
-      logger.info(`error on single location ${error.message}`)
+      logger.error(`error on single location ${error.message}`)
       return h.status(500).render('error', {
         error: 'An error occurred while retrieving location details.'
       })
