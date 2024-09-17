@@ -81,7 +81,7 @@ const getLocationDataController = {
       request.yar.set('locationType', '')
       if (str === 'chwilio-lleoliad') {
         return h.redirect(
-          `/chwilio-lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
+          `/chwilio-lleoliad/cy?lang=cy&userId=${query?.userId}&utm_source=${query?.utm_source}`
         )
       }
     }
@@ -119,7 +119,7 @@ const getLocationDataController = {
         })
         request.yar.set('locationType', 'uk-location')
         return h.redirect(
-          `/chwilio-lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
+          `/chwilio-lleoliad/cy?lang=cy&userId=${query?.userId}&utm_source=${query?.utm_source}`
         )
       }
       if (!userLocation && locationType === 'ni-location') {
@@ -141,7 +141,7 @@ const getLocationDataController = {
         })
         request.yar.set('locationType', 'ni-location')
         return h.redirect(
-          `/chwilio-lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
+          `/chwilio-lleoliad/cy?lang=cy&userId=${query?.userId}&utm_source=${query?.utm_source}`
         )
       }
       locationType = request.yar.get('locationType')
@@ -160,7 +160,7 @@ const getLocationDataController = {
             phaseBanner,
             backlink,
             cookieBanner,
-            lang: request.query.lang ?? lang
+            lang: request.query?.lang ?? lang
           })
         }
 
@@ -263,12 +263,12 @@ const getLocationDataController = {
             summaryDate: getDailySummary.issue_date,
             dailySummary: getDailySummary,
             languageDate: lang === 'cy' ? welshDate : englishDate,
-            lang: request.query.lang ?? lang
+            lang: request.query?.lang ?? lang
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
           if (lang === 'en') {
             return h.redirect(
-              `/location&userId=${query.userId}&utm_source=${query.utm_source}`
+              `/location&userId=${query?.userId}&utm_source=${query?.utm_source}`
             )
           }
           return h.view('locations/multiple-locations', {
@@ -294,7 +294,7 @@ const getLocationDataController = {
             backlink,
             cookieBanner,
             languageDate: lang === 'cy' ? welshDate : englishDate,
-            lang: request.query.lang ?? lang
+            lang: request.query?.lang ?? lang
           })
         } else {
           return h.view('locations/location-not-found', {
@@ -308,7 +308,7 @@ const getLocationDataController = {
             phaseBanner,
             backlink,
             cookieBanner,
-            lang: request.query.lang ?? lang
+            lang: request.query?.lang ?? lang
           })
         }
       } else if (locationType === 'ni-location') {
@@ -331,7 +331,7 @@ const getLocationDataController = {
             phaseBanner,
             backlink,
             cookieBanner,
-            lang: request.query.lang ?? lang
+            lang: request.query?.lang ?? lang
           })
         }
         const locationData = {
@@ -344,9 +344,9 @@ const getLocationDataController = {
         }
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
           results,
-          getForecasts.forecasts,
-          getMeasurements.measurements,
-          'Ireland',
+          getForecasts?.forecasts,
+          getMeasurements?.measurements,
+          'ni-location',
           0,
           lang
         )
@@ -364,9 +364,9 @@ const getLocationDataController = {
               locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
           }
         }
-        if (query.lang === 'en') {
+        if (query?.lang === 'en') {
           return h.redirect(
-            `/location&userId=${query.userId}&utm_source=${query.utm_source}`
+            `/location&userId=${query?.userId}&utm_source=${query?.utm_source}`
           )
         }
         const airQuality = getAirQuality(
@@ -432,7 +432,7 @@ const getLocationDetailsController = {
 
       if (query?.lang && query?.lang === 'en') {
         return h.redirect(
-          `/location/${locationId}?userId=${userId}&utm_source=${utm_source}&lang=${query.lang}`
+          `/location/${locationId}?userId=${userId}&utm_source=${utm_source}&lang=${query?.lang}`
         )
       }
       const lang = 'cy'
