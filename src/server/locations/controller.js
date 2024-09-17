@@ -392,12 +392,6 @@ const getLocationDataController = {
         logger.info(
           `:::::::::::::::;;  results after token auth passed locationData 1 :::::::::::::::::: ${JSON.stringify(locationData)}`
         )
-        logger.info(
-          `:::::::::::::::;;  results after token auth passed getForecasts :::::::::::::::::: ${getForecasts}`
-        )
-        logger.info(
-          `:::::::::::::::;;  results after token auth passed getMeasurements :::::::::::::::::: ${getMeasurements}`
-        )
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
           results,
           getForecasts?.forecasts,

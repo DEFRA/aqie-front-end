@@ -26,10 +26,10 @@ function getNearestLocation(
   logger.info(`:::: matches  :::::::: ${JSON.stringify(matches)}`)
   const forecastCoordinates =
     matches.length !== 0 ? coordinatesTotal(forecasts, location) : []
-  logger.info(`:::: forecasts  :::::::: ${forecasts}`)
+  logger.info(`:::: forecasts  ::::::::`)
   const measurementsCoordinates =
     matches.length !== 0 ? coordinatesTotal(measurements, location) : []
-  logger.info(`:::: measurements  :::::::: ${measurements}`)
+  logger.info(`:::: measurements  ::::::::`)
   const nearestLocation =
     matches.length !== 0
       ? getNearLocation(latlon.lat, latlon.lon, forecastCoordinates, forecasts)
@@ -46,9 +46,6 @@ function getNearestLocation(
   )
   logger.info(
     `:::::::::::::::;;  pointsToDisplay :::::::::::::::::: ${pointsToDisplay}`
-  )
-  logger.info(
-    `:::::::::::::::;;  measurements :::::::::::::::::: ${measurements}`
   )
   const nearestLocationsRangeCal = measurements.filter((item, i) => {
     const opt = pointsToDisplay
