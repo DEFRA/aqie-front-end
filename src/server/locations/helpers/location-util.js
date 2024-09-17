@@ -37,18 +37,12 @@ function getNearLocation(lat, lon, forecastCoordinates, forecasts) {
   logger.info(
     `::::::::::::: getLocation.longitude ::::::::::: ${getLocation.longitude}`
   )
-  const nearestLocation = forecasts
-    .filter((item) => {
-      return (
-        item.location.coordinates[0] === getLocation.latitude &&
-        item.location.coordinates[1] === getLocation.longitude
-      )
-    })
-    .catch((err) => {
-      logger.error(
-        `Failed to fetch getNearLocation: ${JSON.stringify(err.message)}`
-      )
-    })
+  const nearestLocation = forecasts.filter((item) => {
+    return (
+      item.location.coordinates[0] === getLocation.latitude &&
+      item.location.coordinates[1] === getLocation.longitude
+    )
+  })
   return nearestLocation
 }
 
