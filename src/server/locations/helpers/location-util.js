@@ -17,12 +17,9 @@ function getNearLocation(lat, lon, forecastCoordinates, forecasts) {
   let getLocation
   logger.info(`::::::::::::: itemlat ::::::::::: ${lat}`)
   logger.info(`::::::::::::: itemlon ::::::::::: ${lon}`)
-  logger.info(
-    `::::::::::::: forecastCoordinates ::::::::::: ${forecastCoordinates}`
-  )
   try {
     getLocation = geolib.findNearest(
-      { latitude: lat, longitude: lon },
+      { latitude: lat.toFixed(2), longitude: lon.toFixed(2) },
       forecastCoordinates
     )
   } catch (error) {
