@@ -45,6 +45,9 @@ function getNearestLocation(
     pointsInRange(latlon, p)
   )
   logger.info(
+    `:::::::::::::::;;  pointsToDisplay :::::::::::::::::: ${pointsToDisplay}`
+  )
+  logger.info(
     `:::::::::::::::;;  measurements :::::::::::::::::: ${measurements}`
   )
   const nearestLocationsRangeCal = measurements.filter((item, i) => {
@@ -58,6 +61,11 @@ function getNearestLocation(
       .catch((err) => {
         logger.error(
           `Failed to fetch nearest locations 0: ${JSON.stringify(err)}`
+        )
+      })
+      .catch((err) => {
+        logger.error(
+          `Failed to fetch nearest locations 1: ${JSON.stringify(err)}`
         )
       })
     return opt
