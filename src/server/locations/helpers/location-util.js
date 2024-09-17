@@ -15,13 +15,10 @@ function pointsInRange(point1, point2) {
 
 function getNearLocation(lat, lon, forecastCoordinates, forecasts) {
   let getLocation
-  logger.info(`::::::::::::: itemlat ::::::::::: ${lat}`)
-  logger.info(`::::::::::::: itemlon ::::::::::: ${lon}`)
-  if (lat === undefined || lon === undefined) {
-    throw new Error('Latitude or Longitude is undefined')
-  }
   try {
     if (lat && lon && forecastCoordinates) {
+      logger.info(`::::::::::::: itemlat 1 ::::::::::: ${lat}`)
+      logger.info(`::::::::::::: itemlon 1 ::::::::::: ${lon}`)
       getLocation = geolib.findNearest(
         { latitude: lat, longitude: lon },
         forecastCoordinates
