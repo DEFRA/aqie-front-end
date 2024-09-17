@@ -14,10 +14,19 @@ function pointsInRange(point1, point2) {
 }
 
 function getNearLocation(lat, lon, forecastCoordinates, forecasts) {
-  const getLocation = geolib.findNearest(
-    { latitude: lat, longitude: lon },
-    forecastCoordinates
-  )
+  let getLocation
+  logger.info(`::::::::::::: itemlat ::::::::::: ${lat}`)
+  logger.info(`::::::::::::: itemlon ::::::::::: ${lon}`)
+  try {
+    getLocation = geolib.findNearest(
+      { latitude: lat, longitude: lon },
+      forecastCoordinates
+    )
+  } catch (error) {
+    logger.error(
+      `Failed to fetch getNearLocation: ${JSON.stringify(error.message)}`
+    )
+  }
   if (!getLocation || !getLocation.latitude || !getLocation.longitude) {
     logger.error('getLocation is undefined or missing properties')
     return []
