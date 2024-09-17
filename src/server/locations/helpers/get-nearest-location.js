@@ -46,7 +46,7 @@ function getNearestLocation(
     pointsInRange(latlon, p)
   )
   logger.info(`:::::::::::::::;;  pointsToDisplay ::::::::::::::::::`)
-  const nearestLocationsRangeCal = measurements.filter((item, i) => {
+  const nearestLocationsRangeCal = measurements?.filter((item, i) => {
     const opt = pointsToDisplay.some((dis, index) => {
       return (
         item.location.coordinates[0] === dis.latitude &&

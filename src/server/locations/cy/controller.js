@@ -197,20 +197,20 @@ const getLocationDataController = {
 
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
           matches,
-          getForecasts.forecasts,
-          getMeasurements.measurements,
+          getForecasts?.forecasts,
+          getMeasurements?.measurements,
           'uk-location',
           0,
           lang
         )
         request.yar.set('locationData', {
           data: matches,
-          rawForecasts: getForecasts.forecasts,
+          rawForecasts: getForecasts?.forecasts,
           forecastNum: matches.length !== 0 ? forecastNum : 0,
           forecastSummary: getDailySummary,
           nearestLocationsRange:
             matches.length !== 0 ? nearestLocationsRange : [],
-          measurements: getMeasurements.measurements
+          measurements: getMeasurements?.measurements
         })
         //
 
