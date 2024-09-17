@@ -19,8 +19,11 @@ function getNearLocation(lat, lon, forecastCoordinates, forecasts) {
     if (lat && lon && forecastCoordinates) {
       logger.info(`::::::::::::: itemlat 1 ::::::::::: ${lat}`)
       logger.info(`::::::::::::: itemlon 1 ::::::::::: ${lon}`)
+      logger.info(
+        `::::::::::::: forecastCoordinates 1 ::::::::::: ${JSON.stringify(forecastCoordinates)}`
+      )
       getLocation = geolib.findNearest(
-        { latitude: lat, longitude: lon },
+        { latitude: lat.toString().trim(), longitude: lon.toString().trim() },
         forecastCoordinates
       )
     }
