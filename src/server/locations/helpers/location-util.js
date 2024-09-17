@@ -44,7 +44,7 @@ function getNearLocation(lat, lon, forecastCoordinates, forecasts) {
         item.location.coordinates[1] === getLocation.longitude
       )
     })
-    .cath((err) => {
+    .catch((err) => {
       logger.error(
         `Failed to fetch getNearLocation: ${JSON.stringify(err.message)}`
       )
