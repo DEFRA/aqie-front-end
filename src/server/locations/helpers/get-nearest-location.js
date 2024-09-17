@@ -34,19 +34,18 @@ function getNearestLocation(
     matches.length !== 0
       ? getNearLocation(latlon.lat, latlon.lon, forecastCoordinates, forecasts)
       : {}
-  logger.info(`:::: location  :::::::: ${location}`)
+  logger.info(`:::: location1 ::::::::`)
   const orderByDistanceMeasurements = geolib.orderByDistance(
     { latitude: latlon.lat, longitude: latlon.lon },
     measurementsCoordinates
   )
+  logger.info(`:::: location2  ::::::::`)
   const nearestMeasurementsPoints = orderByDistanceMeasurements.slice(0, 3)
-
+  logger.info(`:::: location3  ::::::::`)
   const pointsToDisplay = nearestMeasurementsPoints.filter((p) =>
     pointsInRange(latlon, p)
   )
-  logger.info(
-    `:::::::::::::::;;  pointsToDisplay :::::::::::::::::: ${pointsToDisplay}`
-  )
+  logger.info(`:::::::::::::::;;  pointsToDisplay ::::::::::::::::::`)
   const nearestLocationsRangeCal = measurements.filter((item, i) => {
     const opt = pointsToDisplay
       .some((dis, index) => {
@@ -60,15 +59,11 @@ function getNearestLocation(
           `Failed to fetch nearest locations 0: ${JSON.stringify(err)}`
         )
       })
-      .catch((err) => {
-        logger.error(
-          `Failed to fetch nearest locations 1: ${JSON.stringify(err)}`
-        )
-      })
+    logger.info(`:::: nearestLocationsRangeCal 1  ::::::::`)
     return opt
   })
   logger.info(
-    `:::::::::::::::;;  nearestLocationsRangeCal:::::::::::::::::: ${nearestLocationsRangeCal}`
+    `:::::::::::::::;;  nearestLocationsRangeCal 2 :::::::::::::::::: ${nearestLocationsRangeCal}`
   )
   // TODO select and filter locations and pollutants which are not null or don't have exceptions
   const nearestLocationsRange = nearestLocationsRangeCal
