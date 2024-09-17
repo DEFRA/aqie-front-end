@@ -19,7 +19,7 @@ function getNearLocation(lat, lon, forecastCoordinates, forecasts) {
   logger.info(`::::::::::::: itemlon ::::::::::: ${lon}`)
   try {
     getLocation = geolib.findNearest(
-      { latitude: lat.toFixed(2), longitude: lon.toFixed(2) },
+      { latitude: lat, longitude: lon },
       forecastCoordinates
     )
   } catch (error) {
@@ -39,8 +39,6 @@ function getNearLocation(lat, lon, forecastCoordinates, forecasts) {
   )
   const nearestLocation = forecasts
     .filter((item) => {
-      logger.info(`::::::::::::: item ::::::::::: ${item}`)
-      logger.info(`::::::::::::: getLocation ::::::::::: ${getLocation}`)
       return (
         item.location.coordinates[0] === getLocation.latitude &&
         item.location.coordinates[1] === getLocation.longitude
