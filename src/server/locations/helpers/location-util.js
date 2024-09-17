@@ -107,21 +107,11 @@ function coordinatesTotal(matches, location) {
   let coordinates = []
   try {
     coordinates = matches.reduce((acc, current, index) => {
-      if (location === 'uk-location') {
-        return [
-          ...acc,
-          {
-            latitude: current.location.coordinates[0],
-            longitude: current.location.coordinates[1]
-          }
-        ]
-      }
-
       return [
         ...acc,
         {
-          latitude: current.xCoordinate,
-          longitude: current.yCoordinate
+          latitude: current.location.coordinates[0],
+          longitude: current.location.coordinates[1]
         }
       ]
     }, [])
