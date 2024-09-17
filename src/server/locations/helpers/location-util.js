@@ -20,6 +20,8 @@ function getNearLocation(lat, lon, forecastCoordinates, forecasts) {
   )
   const nearestLocation = forecasts
     .filter((item) => {
+      logger.info(`::::::::::::: item ::::::::::: ${item}`)
+      logger.info(`::::::::::::: getLocation ::::::::::: ${getLocation}`)
       return (
         item.location.coordinates[0] === getLocation.latitude &&
         item.location.coordinates[1] === getLocation.longitude
@@ -38,6 +40,7 @@ function orderByDistance(lat, lon, forecastCoordinates) {
     { latitude: lat, longitude: lon },
     forecastCoordinates
   )
+  logger.info(`::::::::::::: getLocation ::::::::::: ${getLocation}`)
   return getLocation
 }
 
