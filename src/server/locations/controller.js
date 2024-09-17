@@ -381,24 +381,29 @@ const getLocationDataController = {
         logger.info(
           `:::::::::::::::;;  results after token auth passed results[0].yCoordinate :::::::::::::::::: ${JSON.stringify(results[0].yCoordinate)}`
         )
+
+        const { forecastNum, nearestLocationsRange, latlon } =
+          getNearestLocation(
+            results,
+            getForecasts?.forecasts,
+            getMeasurements?.measurements,
+            'ni-location',
+            0,
+            lang
+          )
+        logger.info(
+          `:::::::::::::::;;  latlon :::::::::::::::::: ${JSON.stringify(latlon)}`
+        )
         const locationData = {
           GAZETTEER_ENTRY: {
             NAME1: results[0].postcode,
             DISTRICT_BOROUGH: results[0].administrativeArea,
-            LONGITUDE: results[0].xCoordinate,
-            LATITUDE: results[0].yCoordinate
+            LONGITUDE: latlon.lon,
+            LATITUDE: latlon.lat
           }
         }
         logger.info(
           `:::::::::::::::;;  results after token auth passed locationData 1 :::::::::::::::::: ${JSON.stringify(locationData)}`
-        )
-        const { forecastNum, nearestLocationsRange } = getNearestLocation(
-          results,
-          getForecasts?.forecasts,
-          getMeasurements?.measurements,
-          'ni-location',
-          0,
-          lang
         )
         logger.info(
           `:::::::::::::::;;  forecastNum :::::::::::::::::: ${forecastNum}`

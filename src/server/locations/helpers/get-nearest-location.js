@@ -134,7 +134,7 @@ function getNearestLocation(
           return [...todayDate, ...otherdays]
         })
       : 0
-  return { forecastNum, nearestLocationsRange }
+  return { forecastNum, nearestLocationsRange, latlon }
 }
 
 export { getNearestLocation }
