@@ -18,6 +18,16 @@ function getNearLocation(lat, lon, forecastCoordinates, forecasts) {
     { latitude: lat, longitude: lon },
     forecastCoordinates
   )
+  if (!getLocation || !getLocation.latitude || !getLocation.longitude) {
+    logger.error('getLocation is undefined or missing properties')
+    return []
+  }
+  logger.info(
+    `::::::::::::: getLocation.latitude ::::::::::: ${getLocation.latitude}`
+  )
+  logger.info(
+    `::::::::::::: getLocation.longitude ::::::::::: ${getLocation.longitude}`
+  )
   const nearestLocation = forecasts
     .filter((item) => {
       logger.info(`::::::::::::: item ::::::::::: ${item}`)
@@ -64,10 +74,17 @@ function convertPointToLonLat(matches, location, index) {
     logger.info(
       `::::::::::::: convertPointToLonLat matches 2 ::::::::::: ${JSON.stringify(matches)}`
     )
-    pointNI = new OsGridRef(
-      matches[index].xCoordinate,
-      matches[index].yCoordinate
-    )
+    try {
+      pointNI = new OsGridRef(
+        matches[index].xCoordinate,
+        matches[index].yCoordinate
+      )
+    } catch (error) {
+      logger.error(
+        `Failed to fetch convertPointToLonLat matches
+      .reduce: ${JSON.stringify(error)}`
+      )
+    }
     const latlon = OsGridRef.osGridToLatLong(pointNI)
     lat = latlon._lat
     lon = latlon._lon

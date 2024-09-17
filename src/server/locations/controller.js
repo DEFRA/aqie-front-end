@@ -27,7 +27,7 @@ const getLocationDataController = {
       utm_source = request.yar.get('utm_source')
       userId = request.yar.get('userId')
     }
-    if (query.lang && query.lang === 'cy') {
+    if (query?.lang && query?.lang === 'cy') {
       /* eslint-disable camelcase */
       return h.redirect(
         `/lleoliad/cy?lang=cy&userId=${userId}&utm_source=${utm_source}`
@@ -89,7 +89,7 @@ const getLocationDataController = {
       request.yar.set('locationType', '')
       request.yar.get('', '')
 
-      if (query.lang === 'cy') {
+      if (query?.lang === 'cy') {
         return h.redirect(
           `/lleoliad/cy?lang=cy&userId=${userId}&utm_source=${utm_source}`
         )
@@ -437,7 +437,7 @@ const getLocationDataController = {
           Object.values(forecastNum[0][4])[0]
         )
         if (lang === 'en') {
-          if (query.lang === 'cy') {
+          if (query?.lang === 'cy') {
             /* eslint-disable camelcase */
             return h.redirect(
               `/lleoliad/cy?lang=cy&userId=${userId}&utm_source=${utm_source}`
@@ -474,7 +474,7 @@ const getLocationDataController = {
         `:::::::::::::::;;  ni-location 2:::::::::::::::::: ${locationType}`
       )
     } catch (error) {
-      logger.info(`error from location refresh ${error.message}`)
+      logger.info(`error from location  loc refresh ${error}`)
       return h.view('error/index', {
         userId: query?.userId,
         utm_source: query?.utm_source,
