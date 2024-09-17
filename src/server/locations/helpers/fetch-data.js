@@ -10,7 +10,6 @@ const options = {
 const logger = createLogger()
 
 const fetchOAuthToken = async () => {
-  logger.info(`::::::::::::: fetchOAuthToken :::::::::::`)
   const tokenUrl = config.get('oauthTokenUrlNIreland')
   const clientId = config.get('clientIdNIreland')
   const clientSecret = config.get('clientSecretNIreland')
@@ -18,26 +17,6 @@ const fetchOAuthToken = async () => {
   const scope = config.get('scopeNIreland')
   const oauthTokenNorthernIrelandTenantId = config.get(
     'oauthTokenNorthernIrelandTenantId'
-  )
-  logger.info(`::::::::::::: fetchOAuthToken proxyFetch ::::::::::::::::`)
-
-  logger.info(
-    `::::::::::::: fetchOAuthToken tokenUrl:::::::::::::::: ${tokenUrl}`
-  )
-  logger.info(
-    `::::::::::::: fetchOAuthToken oauthTokenNorthernIrelandTenantId  :::::::::::::::: ${oauthTokenNorthernIrelandTenantId}`
-  )
-  logger.info(
-    `::::::::::::: fetchOAuthToken clientId  :::::::::::::::: ${clientId}`
-  )
-  logger.info(
-    `::::::::::::: fetchOAuthToken clientSecret  :::::::::::::::: ${clientSecret}`
-  )
-  logger.info(
-    `::::::::::::: fetchOAuthToken redirectUri  :::::::::::::::: ${redirectUri}`
-  )
-  logger.info(
-    `::::::::::::: fetchOAuthToken scope   :::::::::::::::::: ${scope}`
   )
   const response = await proxyFetch(
     `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`,
@@ -56,7 +35,7 @@ const fetchOAuthToken = async () => {
       })
     }
   ).catch((err) => {
-    logger.info(
+    logger.error(
       `:::::::: POST error fetching TOKEN generation ::::::: ${JSON.stringify(err.message)}`
     )
   })
@@ -74,29 +53,15 @@ const fetchOAuthToken = async () => {
 
 async function fetchData(locationType, userLocation, request) {
   let optionsOAuth
-  logger.info(
-    `::::::::::::: fetchData userLocation ::::::::::: ${userLocation}`
-  )
-  logger.info(
-    `::::::::::::: fetchData locationType ::::::::::: ${locationType}`
-  )
   if (locationType === 'ni-location') {
     let accessToken
     const savedAccessToken = request.yar.get('savedAccessToken')
-    logger.info(`::::::::::::: fetchData ::::::::::: ${savedAccessToken}`)
     if (savedAccessToken) {
       accessToken = savedAccessToken
-      logger.info(
-        `::::::::::::: Access token from session ::::::::::: ${accessToken}`
-      )
     } else {
       accessToken = await fetchOAuthToken()
       request.yar.set('savedAccessToken', accessToken)
-      logger.info(
-        `::::::::::::  Access token from fetch ::::::::::::: ${accessToken}`
-      )
     }
-    logger.info(`:::::::::::: Access token :::::::::::: ${accessToken}`)
     optionsOAuth = {
       method: 'GET',
       headers: {
@@ -110,30 +75,19 @@ async function fetchData(locationType, userLocation, request) {
   const forecastSummaryURL = config.get('forecastSummaryUrl')
   const forecastsAPIurl = config.get('forecastsApiUrl')
   const measurementsAPIurl = config.get('measurementsApiUrl')
-
-  logger.info(`:::::::: forecastSummaryURL ::::::: ${forecastSummaryURL}`)
-  logger.info(`:::::::: forecastsAPIurl ::::::: ${forecastsAPIurl}`)
-  logger.info(`:::::::: measurementsAPIurl ::::::: ${measurementsAPIurl}`)
   const forecastsRes = await fetch(`${forecastsAPIurl}`, options).catch(
     (err) => {
-      logger.info(`err ${JSON.stringify(err.message)}`)
+      logger.error(`err ${JSON.stringify(err.message)}`)
     }
   )
   let getForecasts
-  logger.info(`:::::::: forecastsRes.ok ::::::: ${forecastsRes.ok}`)
   if (forecastsRes.ok) {
     getForecasts = await forecastsRes.json()
   }
   const measurementsRes = await fetch(measurementsAPIurl, options).catch(
     (err) => {
-      logger.info(`err ${JSON.stringify(err.message)}`)
+      logger.error(`err ${JSON.stringify(err.message)}`)
     }
-  )
-  logger.info(
-    `:::::::::::::::;; measurementsRes :::::::::::::::::: ${measurementsRes}`
-  )
-  logger.info(
-    `:::::::::::::::;; measurementsRes.ok :::::::::::::::::: ${measurementsRes.ok}`
   )
   let getMeasurements
   if (measurementsRes.ok) {
@@ -143,21 +97,12 @@ async function fetchData(locationType, userLocation, request) {
     forecastSummaryURL,
     options
   ).catch((err) => {
-    logger.info(`err ${JSON.stringify(err.message)}`)
+    logger.error(`err ${JSON.stringify(err.message)}`)
   })
-  logger.info(
-    `:::::::::::::::;; forecastSummaryRes :::::::::::::::::: ${forecastSummaryRes}`
-  )
-  logger.info(
-    `:::::::::::::::;; forecastSummaryRes.ok :::::::::::::::::: ${forecastSummaryRes.ok}`
-  )
   let getDailySummary
   if (forecastSummaryRes.ok) {
     getDailySummary = await forecastSummaryRes.json()
   }
-  logger.info(
-    `:::::::::::::::;; getDailySummary inside fetch-data :::::::::::::::::: ${JSON.stringify(getDailySummary)}`
-  )
   if (locationType === 'uk-location') {
     const filters = [
       'LOCAL_TYPE:City',
@@ -179,7 +124,7 @@ async function fetchData(locationType, userLocation, request) {
     if (!shouldCallApi) {
       const osPlacesRes = await proxyFetch(osPlacesApiUrlFull, options).catch(
         (err) => {
-          logger.info(`err ${JSON.stringify(err.message)}`)
+          logger.error(`err ${JSON.stringify(err.message)}`)
         }
       )
       if (osPlacesRes.ok) {
@@ -191,37 +136,19 @@ async function fetchData(locationType, userLocation, request) {
     const osPlacesApiPostcodeNorthernIrelandUrl = config.get(
       'osPlacesApiPostcodeNorthernIrelandUrl'
     )
-    logger.info(
-      `:::::::::::::::;; osPlacesApiPostcodeNorthernIrelandUrl :::::::::::::::::: ${osPlacesApiPostcodeNorthernIrelandUrl}`
-    )
-    logger.info(
-      `:::::::::::::::;; userLocation :::::::::::::::::: ${userLocation}`
-    )
     const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
-    logger.info(
-      `::::::::::::: postcodeNortherIrelandURL ::::::::::: ${postcodeNortherIrelandURL}`
-    )
-    logger.info(
-      `::::::::::::: optionsOAuth ::::::::::: ${JSON.stringify(optionsOAuth)}`
-    )
+
     const northerIrelandRes = await proxyFetch(
       postcodeNortherIrelandURL,
       optionsOAuth
     ).catch((err) => {
-      logger.info(
+      logger.error(
         `:::::::::::  OAuth token error ::::::::: ${JSON.stringify(err.message)}`
       )
     })
-    logger.info(
-      `::::::::::::: northerIrelandRes ::::::::::: ${JSON.stringify(northerIrelandRes)}`
-    )
     const getNIPlaces = await northerIrelandRes.json().catch((error) => {
       logger.error('Error getNIPlaces:', error)
     })
-
-    logger.info(
-      `::::::::: getNIPlaces ::::::::::::: ${JSON.stringify(getNIPlaces)}`
-    )
     return { getDailySummary, getForecasts, getMeasurements, getNIPlaces }
   }
 }

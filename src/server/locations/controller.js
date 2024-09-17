@@ -50,9 +50,6 @@ const getLocationDataController = {
       daqi
     } = english
     let locationType = request?.payload?.locationType
-    logger.info(
-      `::::::::::::: locationType fromrequest.payload:::::::::::::::: ${locationType}`
-    )
     const airQuality = getAirQuality(request.payload?.aq, 2, 4, 5, 7)
     let locationNameOrPostcode = ''
     if (locationType === 'uk-location') {
@@ -100,7 +97,6 @@ const getLocationDataController = {
         )
       }
     }
-    logger.info(`::::::::::::: locationType 1:::::::::::::::: ${locationType}`)
     try {
       let userLocation = locationNameOrPostcode.toUpperCase() // Use 'let' to allow reassignment
       // Regex patterns to check for full and partial postcodes
@@ -116,9 +112,6 @@ const getLocationDataController = {
           spaceIndex
         )}`
       }
-      logger.info(
-        `::::::::::::: locationType 2:::::::::::::::: ${locationType}`
-      )
       if (!userLocation && locationType === 'uk-location') {
         request.yar.set('errors', {
           errors: {
@@ -142,13 +135,7 @@ const getLocationDataController = {
           `/search-location?userId=${userId}&utm_source=${utm_source}`
         )
       }
-      logger.info(
-        `::::::::::::: locationType 3:::::::::::::::: ${locationType}`
-      )
       if (!userLocation && locationType === 'ni-location') {
-        logger.info(
-          `::::::::::::: locationType 3:::::::::::::::: ${locationType}`
-        )
         request.yar.set('errors', {
           errors: {
             titleText: searchLocation.errorText.ni.fields.title, // 'There is a problem',
@@ -172,16 +159,11 @@ const getLocationDataController = {
         )
       }
       locationType = request.yar.get('locationType')
-      logger.info(
-        `:::::::::::::::;;  ni-location uk-location 1 :::::::::::::::::: ${locationType}`
-      )
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
         await fetchData(locationType, userLocation, request)
       if (locationType === 'uk-location') {
         const { results } = getOSPlaces
-        logger.info(
-          `:::::::::::::::;;  ni-location uk-location 2 :::::::::::::::::: ${locationType}`
-        )
+
         if (!results || results.length === 0) {
           return h.view('locations/location-not-found', {
             userId: query?.userId,
@@ -244,7 +226,7 @@ const getLocationDataController = {
           forecastSummary: getDailySummary,
           nearestLocationsRange:
             matches.length !== 0 ? nearestLocationsRange : [],
-          measurements: getMeasurements.measurements
+          measurements: getMeasurements?.measurements
         })
         //
         if (matches.length === 1) {
@@ -340,19 +322,12 @@ const getLocationDataController = {
           })
         }
       } else if (locationType === 'ni-location') {
-        logger.info(
-          `:::::::::::::::;;  ni-location:::::::::::::::::: ${locationType}`
-        )
         const { getNIPlaces } = await fetchData(
           'ni-location',
           userLocation,
           request
         )
-
         const { results } = getNIPlaces
-        logger.info(
-          `:::::::::::::::;;  results after token auth passed :::::::::::::::::: ${JSON.stringify(results)}`
-        )
 
         if (!results || results.length === 0) {
           return h.view('locations/location-not-found', {
@@ -369,18 +344,6 @@ const getLocationDataController = {
             lang
           })
         }
-        logger.info(
-          `:::::::::::::::;;  results after token auth passed results[0].postcode :::::::::::::::::: ${JSON.stringify(results[0].postcode)}`
-        )
-        logger.info(
-          `:::::::::::::::;;  results after token auth passed results[0].administrativeArea :::::::::::::::::: ${JSON.stringify(results[0].administrativeArea)}`
-        )
-        logger.info(
-          `:::::::::::::::;;  results after token auth passed results[0].xCoordinate:::::::::::::::::: ${JSON.stringify(results[0].xCoordinate)}`
-        )
-        logger.info(
-          `:::::::::::::::;;  results after token auth passed results[0].yCoordinate :::::::::::::::::: ${JSON.stringify(results[0].yCoordinate)}`
-        )
 
         const { forecastNum, nearestLocationsRange, latlon } =
           getNearestLocation(
@@ -391,9 +354,6 @@ const getLocationDataController = {
             0,
             lang
           )
-        logger.info(
-          `:::::::::::::::;;  latlon :::::::::::::::::: ${JSON.stringify(latlon)}`
-        )
         const locationData = {
           GAZETTEER_ENTRY: {
             NAME1: results[0].postcode,
@@ -402,19 +362,7 @@ const getLocationDataController = {
             LATITUDE: latlon.lat
           }
         }
-        logger.info(
-          `:::::::::::::::;;  results after token auth passed locationData 1 :::::::::::::::::: ${JSON.stringify(locationData)}`
-        )
-        logger.info(
-          `:::::::::::::::;;  forecastNum :::::::::::::::::: ${forecastNum}`
-        )
-        logger.info(
-          `:::::::::::::::;;  nearestLocationsRange :::::::::::::::::: ${nearestLocationsRange}`
-        )
         let title = ''
-        logger.info(
-          `:::::::::::::::;;  results after token auth passed locationData 2 :::::::::::::::::: ${JSON.stringify(locationData)}`
-        )
         if (locationData) {
           if (locationData.GAZETTEER_ENTRY.NAME2) {
             title =
@@ -443,9 +391,7 @@ const getLocationDataController = {
             )
           }
         }
-        logger.info(
-          `:::::::::::::::;;  results after token auth passed lresults :::::::::::::::::: ${JSON.stringify(results)}`
-        )
+
         return h.view('locations/location', {
           userId: query?.userId,
           utm_source: query?.utm_source,
@@ -469,11 +415,8 @@ const getLocationDataController = {
           lang
         })
       }
-      logger.info(
-        `:::::::::::::::;;  ni-location 2:::::::::::::::::: ${locationType}`
-      )
     } catch (error) {
-      logger.info(`error from location  loc refresh ${error}`)
+      logger.error(`error from location refresh ${error.message}`)
       return h.view('error/index', {
         userId: query?.userId,
         utm_source: query?.utm_source,
@@ -523,9 +466,6 @@ const getLocationDetailsController = {
         daqi
       } = english
       const locationData = request.yar.get('locationData') || []
-      logger.info(
-        `:::::::: locationData.data ::::::: ${JSON.stringify(locationData.data)}`
-      )
       let locationIndex = 0
       const locationDetails = locationData?.data?.find((item, index) => {
         if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
@@ -603,7 +543,7 @@ const getLocationDetailsController = {
         })
       }
     } catch (error) {
-      logger.info(`error on single location ${error.message}`)
+      logger.error(`error on single location ${error.message}`)
       return h.status(500).render('error', {
         error: 'An error occurred while retrieving location details.'
       })
