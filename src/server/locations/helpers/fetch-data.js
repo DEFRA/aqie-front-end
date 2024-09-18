@@ -18,6 +18,7 @@ const fetchOAuthToken = async () => {
   const oauthTokenNorthernIrelandTenantId = config.get(
     'oauthTokenNorthernIrelandTenantId'
   )
+  logger.info(`OAuth token requested:`)
   const response = await proxyFetch(
     `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`,
     {
@@ -47,7 +48,7 @@ const fetchOAuthToken = async () => {
   }
 
   const data = await response.json()
-  logger.info(`OAuth token fetched: ${JSON.stringify(data)}`)
+  logger.info(`OAuth token fetched:`)
   return data.access_token
 }
 
@@ -75,6 +76,7 @@ async function fetchData(locationType, userLocation, request) {
   const forecastSummaryURL = config.get('forecastSummaryUrl')
   const forecastsAPIurl = config.get('forecastsApiUrl')
   const measurementsAPIurl = config.get('measurementsApiUrl')
+  logger.info(`forecasts data requested:`)
   const forecastsRes = await fetch(`${forecastsAPIurl}`, options).catch(
     (err) => {
       logger.error(`err ${JSON.stringify(err.message)}`)
@@ -84,6 +86,8 @@ async function fetchData(locationType, userLocation, request) {
   if (forecastsRes.ok) {
     getForecasts = await forecastsRes.json()
   }
+  logger.info(`forecasts data fetched:`)
+  logger.info(`measurements data requested:`)
   const measurementsRes = await fetch(measurementsAPIurl, options).catch(
     (err) => {
       logger.error(`err ${JSON.stringify(err.message)}`)
@@ -93,6 +97,8 @@ async function fetchData(locationType, userLocation, request) {
   if (measurementsRes.ok) {
     getMeasurements = await measurementsRes.json()
   }
+  logger.info(`measurements data fetched:`)
+  logger.info(`forecasts summary data requested:`)
   const forecastSummaryRes = await proxyFetch(
     forecastSummaryURL,
     options
@@ -103,6 +109,7 @@ async function fetchData(locationType, userLocation, request) {
   if (forecastSummaryRes.ok) {
     getDailySummary = await forecastSummaryRes.json()
   }
+  logger.info(`forecasts summary data fetched:`)
   if (locationType === 'uk-location') {
     const filters = [
       'LOCAL_TYPE:City',
@@ -122,6 +129,7 @@ async function fetchData(locationType, userLocation, request) {
       userLocation.includes(symbol)
     )
     if (!shouldCallApi) {
+      logger.info(`osPlace data requested:`)
       const osPlacesRes = await proxyFetch(osPlacesApiUrlFull, options).catch(
         (err) => {
           logger.error(`err ${JSON.stringify(err.message)}`)
@@ -130,6 +138,7 @@ async function fetchData(locationType, userLocation, request) {
       if (osPlacesRes.ok) {
         getOSPlaces = await osPlacesRes.json()
       }
+      logger.info(`osPlace data fetched:`)
     }
     return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
   } else if (locationType === 'ni-location') {
@@ -137,7 +146,7 @@ async function fetchData(locationType, userLocation, request) {
       'osPlacesApiPostcodeNorthernIrelandUrl'
     )
     const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
-
+    logger.info(`osPlace Northern Ireland data requested:`)
     const northerIrelandRes = await proxyFetch(
       postcodeNortherIrelandURL,
       optionsOAuth
@@ -149,6 +158,7 @@ async function fetchData(locationType, userLocation, request) {
     const getNIPlaces = await northerIrelandRes.json().catch((error) => {
       logger.error('Error getNIPlaces:', error)
     })
+    logger.info(`osPlace Northern Ireland data fetched:`)
     return { getDailySummary, getForecasts, getMeasurements, getNIPlaces }
   }
 }
