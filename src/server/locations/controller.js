@@ -328,6 +328,10 @@ const getLocationDataController = {
           request
         )
         const { results } = getNIPlaces
+        logger.info(`::::::::::: results ::::::::: ${JSON.stringify(results)}`)
+        logger.info(
+          `::::::::::: getNIPlaces ::::::::: ${JSON.stringify(getNIPlaces)}`
+        )
 
         if (!results || results.length === 0) {
           return h.view('locations/location-not-found', {
