@@ -331,7 +331,20 @@ const getLocationDataController = {
         logger.info(
           `::::::::::: getNIPlaces ::::::::: ${JSON.stringify(testError)}`
         )
-
+        if (getOSPlaces.statusCode === 500) {
+          return h.view('error/index', {
+            userId: query?.userId,
+            utm_source: query?.utm_source,
+            footerTxt,
+            url: request.path,
+            phaseBanner,
+            displayBacklink: false,
+            cookieBanner,
+            serviceName: english.multipleLocations.serviceName,
+            notFoundUrl: english.notFoundUrl,
+            lang
+          })
+        }
         if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
           return h.view('locations/location-not-found', {
             userId: query?.userId,
