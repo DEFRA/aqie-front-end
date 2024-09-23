@@ -327,11 +327,10 @@ const getLocationDataController = {
           userLocation,
           request
         )
-        const testError = await getNIPlaces()
         logger.info(
-          `::::::::::: getNIPlaces ::::::::: ${JSON.stringify(testError)}`
+          `::::::::::: getNIPlaces statusCode ::::::::: ${getNIPlaces?.statusCode}`
         )
-        if (getOSPlaces.statusCode === 500) {
+        if (getOSPlaces?.statusCode === 500) {
           return h.view('error/index', {
             userId: query?.userId,
             utm_source: query?.utm_source,

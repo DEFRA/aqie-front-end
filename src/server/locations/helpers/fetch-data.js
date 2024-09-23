@@ -148,33 +148,18 @@ async function fetchData(locationType, userLocation, request) {
       'osPlacesApiPostcodeNorthernIrelandUrl'
     )
     const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
-    logger.info(
-      `osPlace Northern Ireland data requested: ${optionsOAuth} ${postcodeNortherIrelandURL}`
-    )
-    // const northerIrelandRes = await proxyFetch(
-    //   postcodeNortherIrelandURL,
-    //   optionsOAuth
-    // ).catch((err) => {
-    //   logger.error(
-    //     `:::::::::::  OAuth token error ::::::::: ${JSON.stringify(err.message)}`
-    //   )
-    // })
-    // const getNIPlaces = await northerIrelandRes.json().catch((error) => {
-    //   logger.error('Error getNIPlaces:', error)
-    // })
-    const getNIPlaces = async () => {
-      try {
-        // Simulate a 500 error
-        throw new Error('Internal Server Error')
-      } catch (error) {
-        logger.error('Error fetching NI places:', error.message)
-        // Handle the error appropriately, e.g., return a response with a 500 status code
-        return {
-          statusCode: 500,
-          body: JSON.stringify({ message: 'Internal Server Error' })
-        }
-      }
-    }
+    logger.info(`osPlace Northern Ireland data requested:`)
+    const northerIrelandRes = await proxyFetch(
+      postcodeNortherIrelandURL,
+      optionsOAuth
+    ).catch((err) => {
+      logger.error(
+        `:::::::::::  OAuth token error ::::::::: ${JSON.stringify(err.message)}`
+      )
+    })
+    const getNIPlaces = await northerIrelandRes.json().catch((error) => {
+      logger.error('Error getNIPlaces:', error)
+    })
     logger.info(`osPlace Northern Ireland data fetched:`)
     return { getDailySummary, getForecasts, getMeasurements, getNIPlaces }
   }
