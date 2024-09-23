@@ -317,9 +317,25 @@ const getLocationDataController = {
           userLocation,
           request
         )
-        const { results } = getNIPlaces
+        logger.info(
+          `::::::::::: getNIPlaces statusCode ::::::::: ${getNIPlaces?.statusCode}`
+        )
+        if (getOSPlaces?.statusCode === 500) {
+          return h.view('error/index', {
+            userId: query?.userId,
+            utm_source: query?.utm_source,
+            footerTxt,
+            url: request.path,
+            phaseBanner,
+            displayBacklink: false,
+            cookieBanner,
+            serviceName: welsh.multipleLocations.serviceName,
+            notFoundUrl: welsh.notFoundUrl,
+            lang
+          })
+        }
 
-        if (!results || results.length === 0) {
+        if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
           return h.view('locations/location-not-found', {
             userId: query?.userId,
             utm_source: query?.utm_source,
@@ -334,6 +350,7 @@ const getLocationDataController = {
             lang: request.query?.lang ?? lang
           })
         }
+        const { results } = getNIPlaces
         const locationData = {
           GAZETTEER_ENTRY: {
             NAME1: results[0].postcode,
