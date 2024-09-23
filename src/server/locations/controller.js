@@ -327,13 +327,11 @@ const getLocationDataController = {
           userLocation,
           request
         )
-        const { results } = getNIPlaces
-        logger.info(`::::::::::: results ::::::::: ${JSON.stringify(results)}`)
         logger.info(
           `::::::::::: getNIPlaces ::::::::: ${JSON.stringify(getNIPlaces)}`
         )
 
-        if (!results || results.length === 0) {
+        if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
           return h.view('locations/location-not-found', {
             userId: query?.userId,
             utm_source: query?.utm_source,
@@ -348,7 +346,7 @@ const getLocationDataController = {
             lang
           })
         }
-
+        const { results } = getNIPlaces
         const { forecastNum, nearestLocationsRange, latlon } =
           getNearestLocation(
             results,
