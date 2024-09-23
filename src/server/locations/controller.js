@@ -327,8 +327,9 @@ const getLocationDataController = {
           userLocation,
           request
         )
+        const testError = await getNIPlaces()
         logger.info(
-          `::::::::::: getNIPlaces ::::::::: ${JSON.stringify(getNIPlaces)}`
+          `::::::::::: getNIPlaces ::::::::: ${JSON.stringify(testError)}`
         )
 
         if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
