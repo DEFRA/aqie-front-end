@@ -429,6 +429,7 @@ const getLocationDataController = {
           cookieBanner,
           daqi,
           languageDate: lang === 'cy' ? welshDate : englishDate,
+          dailySummaryTexts: english.dailySummaryTexts,
           lang
         })
       }
@@ -544,6 +545,7 @@ const getLocationDetailsController = {
           cookieBanner,
           daqi,
           languageDate: lang === 'cy' ? welshDate : englishDate,
+          dailySummaryTexts: english.dailySummaryTexts,
           lang
         })
       } else {

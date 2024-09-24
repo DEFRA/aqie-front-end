@@ -418,6 +418,7 @@ const getLocationDataController = {
           backlink,
           cookieBanner,
           languageDate: lang === 'cy' ? welshDate : englishDate,
+          dailySummaryTexts: welsh.dailySummaryTexts,
           lang: request.query?.lang ?? lang
         })
       }
@@ -561,6 +562,7 @@ const getLocationDetailsController = {
           backlink,
           cookieBanner,
           languageDate: lang === 'cy' ? welshDate : englishDate,
+          dailySummaryTexts: welsh.dailySummaryTexts,
           lang
         })
       } else {
