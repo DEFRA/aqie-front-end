@@ -42,7 +42,7 @@ function addDaysToTodayAbrev(env) {
         days = 0
       }
       // Create a new moment object for today and add days
-      const futureDate = moment().add(days, 'days')
+      const futureDate = moment().locale('en').add(days, 'days')
       // Return the formatted future date
       return futureDate.format('ddd')
     })
@@ -50,4 +50,19 @@ function addDaysToTodayAbrev(env) {
     return error
   }
 }
-export { addMomentFilters, addDaysToTodayAbrev }
+function addDaysToTodayAbrevWelsh(env) {
+  try {
+    env.addFilter('addDaysToTodayAbrevWelsh', function (days) {
+      if (typeof days !== 'number') {
+        days = 0
+      }
+      // Create a new moment object for today and add days
+      const futureDate = moment().locale('cy').add(days, 'days')
+      // Return the formatted future date
+      return futureDate.format('ddd')
+    })
+  } catch (error) {
+    return error
+  }
+}
+export { addMomentFilters, addDaysToTodayAbrev, addDaysToTodayAbrevWelsh }
