@@ -326,7 +326,7 @@ export const welsh = {
   },
   dailySummaryTexts: {
     paragraphs: {
-      a: 'Rhagelwg y DU',
+      a: 'Rhagolwg y DU',
       b: 'Heddiw',
       c: 'Yfory',
       d: 'Rhagolwg'
