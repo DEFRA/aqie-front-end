@@ -241,6 +241,7 @@ const getLocationDataController = {
             Object.values(forecastNum[0][3])[0],
             Object.values(forecastNum[0][4])[0]
           )
+
           return h.view('locations/location', {
             userId,
             utm_source,
@@ -263,6 +264,7 @@ const getLocationDataController = {
             summaryDate: getDailySummary.issue_date,
             dailySummary: getDailySummary,
             languageDate: lang === 'cy' ? welshDate : englishDate,
+            dailySummaryTexts: welsh.dailySummaryTexts,
             lang: request.query?.lang ?? lang
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {

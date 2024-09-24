@@ -324,6 +324,14 @@ export const welsh = {
       }
     }
   },
+  dailySummaryTexts: {
+    paragraphs: {
+      a: 'Rhagelwg y DU',
+      b: 'Heddiw',
+      c: 'Yfory',
+      d: 'Rhagolwg'
+    }
+  },
   footer: {
     privacy: {
       pageTitle: 'Gwiriwch ansawdd aer lleol - GOV.UK',

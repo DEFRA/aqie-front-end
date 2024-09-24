@@ -331,6 +331,14 @@ export const english = {
       }
     }
   },
+  dailySummaryTexts: {
+    paragraphs: {
+      a: 'UK forecast',
+      b: 'Today',
+      c: 'Tomorrow',
+      d: 'Outlook'
+    }
+  },
   footer: {
     privacy: {
       pageTitle: 'Check local air quality - GOV.UK',
