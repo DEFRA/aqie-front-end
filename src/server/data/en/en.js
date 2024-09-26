@@ -1,6 +1,6 @@
 export const english = {
   login: {
-    pageTitle: 'Sign in - Private beta air quality',
+    pageTitle: 'Sign in - Check local air quality - GOV.UK',
     heading: 'This is a private beta',
     texts: {
       a: 'You should only continue if you have been invited to.',
@@ -20,7 +20,7 @@ export const english = {
     button: 'Start now'
   },
   searchLocation: {
-    pageTitle: 'Check local air quality - GOV.UK',
+    pageTitle: 'Where do you want to check? - Check local air quality - GOV.UK',
     heading: 'Check local air quality',
     page: 'search-location',
     serviceName: 'Check local air quality',
@@ -341,7 +341,7 @@ export const english = {
   },
   footer: {
     privacy: {
-      pageTitle: 'Check local air quality - GOV.UK',
+      pageTitle: 'Privacy - Check local air quality - GOV.UK',
       title: 'Check local air quality privacy notice',
       heading: 'Check local air quality',
       headings: {
@@ -411,6 +411,7 @@ export const english = {
     },
     cookies: {
       title: 'Cookies',
+      pageTitle: 'Cookies - Check local air quality - GOV.UK',
       headings: {
         a: 'Essential cookies (strictly necessary)',
         b: 'Analytics cookies (optional)',
@@ -466,6 +467,7 @@ export const english = {
     },
     accessibility: {
       title: 'Accessibility Statement',
+      pageTitle: 'Accessibility Statement - Check local air quality - GOV.UK',
       headings: {
         a: 'Compliance status',
         b: 'Preparation of this accessibility statement',

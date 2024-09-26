@@ -13,7 +13,7 @@ export const welsh = {
     button: 'Dechrau nawr'
   },
   searchLocation: {
-    pageTitle: 'Gwirio ansawdd aer lleol  - GOV.UK',
+    pageTitle: 'Ble hoffech chi wirio? - Gwirio ansawdd aer lleol  - GOV.UK',
     heading: 'Gwirio ansawdd aer lleol ',
     page: 'search-location',
     serviceName: 'Gwirio ansawdd aer lleol ',
@@ -189,7 +189,7 @@ export const welsh = {
   pollutants: {
     ozone: {
       title: 'Osôn (O3)',
-      pageTitle: 'Ozone(O₃) – Check local air quality – GOV.UK',
+      pageTitle: 'Osôn(O₃) – Check local air quality – GOV.UK',
       headerText: `${WELSH_TITLE}`,
       headings: {
         a: 'Ffynonellau osôn',
