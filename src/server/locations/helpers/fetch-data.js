@@ -19,11 +19,8 @@ const fetchOAuthToken = async () => {
     'oauthTokenNorthernIrelandTenantId'
   )
   logger.info(`OAuth token requested:`)
-  logger.info(
-    `tokenUrl + oauthTokenNorthernIrelandTenantId : ${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`
-  )
-  logger.info(`::::::::::: clientId ::::::::: ${clientId}`)
-  logger.info(`::::::::::: clientSecret ::::::::: ${clientSecret}`)
+  logger.info(`::::::::::: clientId :::::::::`)
+  logger.info(`::::::::::: clientSecret :::::::::`)
   const response = await proxyFetch(
     `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`,
     {
@@ -106,7 +103,7 @@ async function fetchData(locationType, userLocation, request) {
   }
   logger.info(`measurements data fetched:`)
   logger.info(`forecasts summary data requested:`)
-  logger.info(`forecasts summary data requested: ${forecastSummaryURL}`)
+  logger.info(`forecasts summary data requested:`)
   const forecastSummaryRes = await proxyFetch(
     forecastSummaryURL,
     options
@@ -137,7 +134,6 @@ async function fetchData(locationType, userLocation, request) {
       userLocation.includes(symbol)
     )
     logger.info(`osPlace data requested:`)
-    logger.info(`osPlace data requested: ${osPlacesApiUrlFull}`)
     if (!shouldCallApi) {
       const osPlacesRes = await proxyFetch(osPlacesApiUrlFull, options).catch(
         (err) => {
@@ -156,9 +152,6 @@ async function fetchData(locationType, userLocation, request) {
     )
     const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
     logger.info(`osPlace Northern Ireland data requested:`)
-    logger.info(
-      `osPlace Northern Ireland data requested: ${postcodeNortherIrelandURL}`
-    )
     const northerIrelandRes = await proxyFetch(
       postcodeNortherIrelandURL,
       optionsOAuth

@@ -157,13 +157,6 @@ const config = convict({
     default: '',
     env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_URL'
   },
-  osPlacesApiPostcodeNorthernIrelandKey: {
-    doc: 'OS Name Places Postcode Northern Ireland key',
-    format: '*',
-    sensitive: true,
-    default: '',
-    env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_API_KEY'
-  },
   redirectUriNIreland: {
     doc: 'Redirect URI for Northern Ireland',
     format: String,
