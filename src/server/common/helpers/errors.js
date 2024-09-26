@@ -33,10 +33,17 @@ function catchAll(request, h) {
 
   const statusCode = response.output.statusCode
   const errorMessage = statusCodeMessage(statusCode)
-  const { footerTxt, notFoundUrl, cookieBanner, multipleLocations } = english
+  const {
+    footerTxt,
+    notFoundUrl,
+    cookieBanner,
+    multipleLocations,
+    searchLocation
+  } = english
   if (lang === 'cy') {
     return h
       .view('error/index', {
+        pageTitle: `${errorMessage} - ${welsh.searchLocation.pageTitle}`,
         heading: statusCode,
         message: errorMessage,
         url: request.path,
@@ -51,7 +58,7 @@ function catchAll(request, h) {
   }
   return h
     .view('error/index', {
-      pageTitle: errorMessage,
+      pageTitle: `${errorMessage} - ${searchLocation.pageTitle}`,
       heading: statusCode,
       message: errorMessage,
       url: request.path,

@@ -238,15 +238,22 @@ const getLocationDataController = {
                 title =
                   locationDetails.GAZETTEER_ENTRY.NAME2 +
                   ', ' +
-                  locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
+                  locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
+                  '-' +
+                  searchLocation.pageTitle
               } else {
                 title =
                   locationDetails.GAZETTEER_ENTRY.NAME1 +
                   ', ' +
-                  locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
+                  locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
+                  '-' +
+                  searchLocation.pageTitle
               }
             } else {
-              title = locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+              title =
+                locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
+                '-' +
+                searchLocation.pageTitle
             }
           }
           const airQuality = getAirQuality(
@@ -296,7 +303,7 @@ const getLocationDataController = {
             monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
-            pageTitle: `${multipleLocations.title} ${userLocation}`,
+            pageTitle: `${multipleLocations.title} ${userLocation} -  ${multipleLocations.pageTitle}`,
             serviceName: multipleLocations.serviceName,
             forecastSummary: getDailySummary.today,
             summaryDate: getDailySummary.issue_date,
@@ -385,12 +392,16 @@ const getLocationDataController = {
             title =
               locationData.GAZETTEER_ENTRY.NAME2 +
               ', ' +
-              locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+              locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
+              '-' +
+              searchLocation.pageTitle
           } else {
             title =
               locationData.GAZETTEER_ENTRY.NAME1 +
               ', ' +
-              locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+              locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
+              '-' +
+              searchLocation.pageTitle
           }
         }
         const airQuality = getAirQuality(
@@ -499,15 +510,22 @@ const getLocationDetailsController = {
             title =
               locationDetails.GAZETTEER_ENTRY.NAME2 +
               ', ' +
-              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
+              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
+              '-' +
+              english.multipleLocations.pageTitle
           } else {
             title =
               locationDetails.GAZETTEER_ENTRY.NAME1 +
               ', ' +
-              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
+              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
+              '-' +
+              english.multipleLocations.pageTitle
           }
         } else {
-          title = locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+          title =
+            locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
+            '-' +
+            english.multipleLocations.pageTitle
         }
 
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
