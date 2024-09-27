@@ -61,11 +61,15 @@ async function fetchData(locationType, userLocation, request) {
     const savedAccessToken = request.yar.get('savedAccessToken')
     if (savedAccessToken) {
       accessToken = savedAccessToken
-      logger.info(`::::::::::: OAuth token from the cache :::::::::`)
+      logger.info(
+        `::::::::::: OAuth token from the cache ::::::::: ${savedAccessToken}`
+      )
     } else {
       accessToken = await fetchOAuthToken()
       request.yar.set('savedAccessToken', accessToken)
-      logger.info(`::::::::: OAuth token newly created ::::::::::`)
+      logger.info(
+        `::::::::: OAuth token newly created :::::::::: ${accessToken}`
+      )
     }
     optionsOAuth = {
       method: 'GET',
@@ -163,7 +167,9 @@ async function fetchData(locationType, userLocation, request) {
     const getNIPlaces = await northerIrelandRes.json().catch((error) => {
       logger.error('Error getNIPlaces:', error)
     })
-    logger.info(`osPlace Northern Ireland data fetched:`)
+    logger.info(
+      `osPlace Northern Ireland data fetched: ${JSON.stringify(getNIPlaces)}`
+    )
     return { getDailySummary, getForecasts, getMeasurements, getNIPlaces }
   }
 }

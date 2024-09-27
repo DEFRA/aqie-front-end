@@ -42,6 +42,7 @@ const getLocationDataController = {
       footerTxt,
       phaseBanner,
       backlink,
+      checkLocalAirQuality,
       cookieBanner,
       daqi
     } = welsh
@@ -153,7 +154,7 @@ const getLocationDataController = {
         if (!results || results.length === 0) {
           return h.view('locations/location-not-found', {
             userLocation: locationNameOrPostcode,
-            pageTitle: `We could not find ${userLocation} -  ${searchLocation.pageTitle}`,
+            pageTitle: `We could not find ${userLocation} -  ${checkLocalAirQuality.pageTitle}`,
             paragraph: notFoundLocation.paragraphs,
             serviceName: searchLocation.serviceName,
             footerTxt,
@@ -223,15 +224,22 @@ const getLocationDataController = {
                 title =
                   locationDetails.GAZETTEER_ENTRY.NAME2 +
                   ', ' +
-                  locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
+                  locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
+                  '-' +
+                  checkLocalAirQuality.pageTitle
               } else {
                 title =
                   locationDetails.GAZETTEER_ENTRY.NAME1 +
                   ', ' +
-                  locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
+                  locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
+                  '-' +
+                  checkLocalAirQuality.pageTitle
               }
             } else {
-              title = locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+              title =
+                locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
+                '-' +
+                checkLocalAirQuality.pageTitle
             }
           }
           const airQuality = getAirQuality(
@@ -286,7 +294,7 @@ const getLocationDataController = {
             monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
-            pageTitle: `${multipleLocations.heading} ${userLocation} -  ${searchLocation.pageTitle}`,
+            pageTitle: `${multipleLocations.heading} ${userLocation} -  ${checkLocalAirQuality.pageTitle}`,
             serviceName: multipleLocations.serviceName,
             forecastSummary: getDailySummary.today,
             summaryDate: getDailySummary.issue_date,
@@ -303,7 +311,7 @@ const getLocationDataController = {
             userId: query?.userId,
             utm_source: query?.utm_source,
             userLocation: locationNameOrPostcode,
-            pageTitle: `${notFoundLocation.heading} ${locationNameOrPostcode} - ${searchLocation.pageTitle}`,
+            pageTitle: `${notFoundLocation.heading} ${locationNameOrPostcode} - ${checkLocalAirQuality.pageTitle}`,
             paragraph: notFoundLocation.paragraphs,
             footerTxt,
             serviceName: searchLocation.serviceName,
@@ -342,7 +350,7 @@ const getLocationDataController = {
             userId: query?.userId,
             utm_source: query?.utm_source,
             userLocation: locationNameOrPostcode,
-            pageTitle: `${notFoundLocation.heading} ${userLocation} -  ${searchLocation.pageTitle}`,
+            pageTitle: `${notFoundLocation.heading} ${userLocation} -  ${checkLocalAirQuality.pageTitle}`,
             paragraph: notFoundLocation.paragraphs,
             footerTxt,
             serviceName: searchLocation.serviceName,
@@ -411,7 +419,7 @@ const getLocationDataController = {
           daqi,
           nearestLocationsRange,
           title,
-          pageTitle: `${multipleLocations.title} ${userLocation} - ${searchLocation.pageTitle}`,
+          pageTitle: `${multipleLocations.title} ${userLocation} - ${checkLocalAirQuality.pageTitle}`,
           serviceName: multipleLocations.serviceName,
           footerTxt,
           phaseBanner,
@@ -497,7 +505,8 @@ const getLocationDetailsController = {
         cookieBanner,
         notFoundLocation,
         searchLocation,
-        daqi
+        daqi,
+        checkLocalAirQuality
       } = welsh
       const locationData = request.yar.get('locationData') || []
       let locationIndex = 0
@@ -516,15 +525,22 @@ const getLocationDetailsController = {
             title =
               locationDetails.GAZETTEER_ENTRY.NAME2 +
               ', ' +
-              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
+              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
+              '-' +
+              checkLocalAirQuality.pageTitle
           } else {
             title =
               locationDetails.GAZETTEER_ENTRY.NAME1 +
               ', ' +
-              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
+              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
+              '-' +
+              checkLocalAirQuality.pageTitle
           }
         } else {
-          title = locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+          title =
+            locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
+            '-' +
+            checkLocalAirQuality.pageTitle
         }
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
           locationData.data,
