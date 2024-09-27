@@ -74,6 +74,7 @@ async function fetchData(locationType, userLocation, request) {
         `::::::::: OAuth token newly created :::::::::: ${accessToken}`
       )
     }
+    logger.info(`::::::::: OAuth accessToken final :::::::::: ${accessToken}`)
     optionsOAuth = {
       method: 'GET',
       headers: {
@@ -182,7 +183,7 @@ async function fetchData(locationType, userLocation, request) {
       )
     })
     const getNIPlaces = await northerIrelandRes.json().catch((error) => {
-      logger.error('Error getNIPlaces:', error)
+      logger.error('Error getNIPlaces:', JSON.stringify(error.message))
     })
     logger.info(
       `osPlace Northern Ireland data fetched: ${JSON.stringify(getNIPlaces)}`
