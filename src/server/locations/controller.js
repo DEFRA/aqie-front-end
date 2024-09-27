@@ -47,6 +47,7 @@ const getLocationDataController = {
       cookieBanner,
       notFoundLocation,
       multipleLocations,
+      checkLocalAirQuality,
       daqi
     } = english
     let locationType = request?.payload?.locationType
@@ -171,7 +172,7 @@ const getLocationDataController = {
             userLocation: locationNameOrPostcode,
             serviceName: notFoundLocation.heading,
             paragraph: notFoundLocation.paragraphs,
-            pageTitle: `${notFoundLocation.paragraphs.a} ${userLocation} - ${searchLocation.pageTitle}`,
+            pageTitle: `${notFoundLocation.paragraphs.a} ${userLocation} - ${checkLocalAirQuality.pageTitle}`,
             footerTxt,
             phaseBanner,
             backlink,
@@ -240,20 +241,20 @@ const getLocationDataController = {
                   ', ' +
                   locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
                   '-' +
-                  searchLocation.pageTitle
+                  checkLocalAirQuality.pageTitle
               } else {
                 title =
                   locationDetails.GAZETTEER_ENTRY.NAME1 +
                   ', ' +
                   locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
                   '-' +
-                  searchLocation.pageTitle
+                  checkLocalAirQuality.pageTitle
               }
             } else {
               title =
                 locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
                 '-' +
-                searchLocation.pageTitle
+                checkLocalAirQuality.pageTitle
             }
           }
           const airQuality = getAirQuality(
@@ -360,7 +361,7 @@ const getLocationDataController = {
             userLocation: locationNameOrPostcode,
             serviceName: notFoundLocation.heading,
             paragraph: notFoundLocation.paragraphs,
-            pageTitle: `${notFoundLocation.paragraphs.a} ${userLocation} - ${searchLocation.pageTitle}`,
+            pageTitle: `${notFoundLocation.paragraphs.a} ${userLocation} - ${checkLocalAirQuality.pageTitle}`,
             footerTxt,
             phaseBanner,
             backlink,
@@ -394,14 +395,14 @@ const getLocationDataController = {
               ', ' +
               locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
               '-' +
-              searchLocation.pageTitle
+              checkLocalAirQuality.pageTitle
           } else {
             title =
               locationData.GAZETTEER_ENTRY.NAME1 +
               ', ' +
               locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
               '-' +
-              searchLocation.pageTitle
+              checkLocalAirQuality.pageTitle
           }
         }
         const airQuality = getAirQuality(
