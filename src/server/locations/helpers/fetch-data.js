@@ -67,6 +67,12 @@ async function fetchData(locationType, userLocation, request) {
       logger.info(
         `::::::::::: OAuth token from the cache ::::::::: ${savedAccessToken}`
       )
+    } else {
+      accessToken = await fetchOAuthToken()
+      request.yar.set('savedAccessToken', accessToken)
+      logger.info(
+        `::::::::: OAuth token newly created :::::::::: ${accessToken}`
+      )
     }
     optionsOAuth = {
       method: 'GET',
