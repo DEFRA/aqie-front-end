@@ -59,16 +59,13 @@ async function fetchData(locationType, userLocation, request) {
   if (locationType === 'ni-location') {
     let accessToken
     const savedAccessToken = request.yar.get('savedAccessToken')
+    logger.info(
+      `::::::::: OAuth token in session :::::::::: ${savedAccessToken}`
+    )
     if (savedAccessToken) {
       accessToken = savedAccessToken
       logger.info(
         `::::::::::: OAuth token from the cache ::::::::: ${savedAccessToken}`
-      )
-    } else {
-      accessToken = await fetchOAuthToken()
-      request.yar.set('savedAccessToken', accessToken)
-      logger.info(
-        `::::::::: OAuth token newly created :::::::::: ${accessToken}`
       )
     }
     optionsOAuth = {
@@ -79,6 +76,20 @@ async function fetchData(locationType, userLocation, request) {
       }
     }
   }
+
+  // Function to refresh the OAuth token and update the session
+  const refreshOAuthToken = async (request) => {
+    const newToken = await fetchOAuthToken()
+    request.yar.set('savedAccessToken', newToken)
+    logger.info(`::::::::::: OAuth token refreshed ::::::::: ${newToken}`)
+  }
+
+  // Set an interval to refresh the OAuth token every 19 minutes (1140 seconds)
+  setInterval(() => {
+    // Assuming you have access to the request object here
+    refreshOAuthToken(request)
+  }, 1140 * 1000) // 19 minutes in milliseconds
+
   const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
   let getOSPlaces = { data: [] }
   const forecastSummaryURL = config.get('forecastSummaryUrl')
