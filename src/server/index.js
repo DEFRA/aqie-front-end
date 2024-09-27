@@ -72,6 +72,7 @@ async function createServer() {
       path: '/',
       password: cookiePassword,
       isSecure: isProduction
+      // ttl: 20 * 60 * 1000 // 20 minutes in milliseconds
     },
     redirectTo: '/',
     keepAlive: true,
