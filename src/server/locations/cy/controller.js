@@ -328,7 +328,7 @@ const getLocationDataController = {
           request
         )
         logger.info(
-          `::::::::::: getNIPlaces statusCode ::::::::: ${getNIPlaces?.statusCode}`
+          `::::::::::: getNIPlaces statusCode cy ::::::::: ${getNIPlaces?.statusCode}`
         )
         if (getOSPlaces?.statusCode === 500) {
           return h.view('error/index', {
