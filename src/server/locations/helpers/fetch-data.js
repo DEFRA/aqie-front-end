@@ -44,9 +44,13 @@ const fetchOAuthToken = async () => {
   })
 
   if (!response.ok) {
-    const error = await response.json()
-    logger.error(`Failed to fetch OAuth token: ${JSON.stringify(error)}`)
-    throw new Error('Failed to fetch OAuth token')
+    const data = await response.json()
+    logger.error(
+      `Failed to fetch OAuth token: ${data.error_description || response.statusText}`
+    )
+    throw new Error(
+      `Failed to fetch OAuth token: ${data.error_description || response.statusText}`
+    )
   }
 
   const data = await response.json()
@@ -78,8 +82,7 @@ async function fetchData(locationType, userLocation, request) {
     optionsOAuth = {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${accessToken}`
       }
     }
   }
@@ -177,14 +180,13 @@ async function fetchData(locationType, userLocation, request) {
     const northerIrelandRes = await proxyFetch(
       postcodeNortherIrelandURL,
       optionsOAuth
-    ).catch((err) => {
-      logger.error(
-        `:::::::::::  OAuth token error ::::::::: ${JSON.stringify(err.message)}`
+    )
+    const getNIPlaces = await northerIrelandRes.json()
+    if (!getNIPlaces.ok) {
+      throw new Error(
+        `Failed to fetch Error getNIPlaces: ${getNIPlaces.error_description || northerIrelandRes.statusText}`
       )
-    })
-    const getNIPlaces = await northerIrelandRes.json().catch((error) => {
-      logger.error('Error getNIPlaces:', JSON.stringify(error.message))
-    })
+    }
     logger.info(
       `osPlace Northern Ireland data fetched: ${JSON.stringify(getNIPlaces)}`
     )
