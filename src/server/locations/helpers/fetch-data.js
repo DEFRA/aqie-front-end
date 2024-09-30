@@ -56,9 +56,10 @@ const fetchOAuthToken = async () => {
 
 async function fetchData(locationType, userLocation, request) {
   let optionsOAuth
+  let savedAccessToken
+  let accessToken
   if (locationType === 'ni-location') {
-    let accessToken
-    const savedAccessToken = request.yar.get('savedAccessToken')
+    savedAccessToken = request.yar.get('savedAccessToken')
     logger.info(
       `::::::::: OAuth token in session :::::::::: ${savedAccessToken}`
     )
@@ -88,19 +89,9 @@ async function fetchData(locationType, userLocation, request) {
   const refreshOAuthToken = async (request) => {
     request.yar.clear() // Clear the session data
     request.cookieAuth.clear() // Clear the cookie data
-    const newToken = await fetchOAuthToken()
-    const savedAccessToken = request.yar.get('savedAccessToken')
     logger.info(
-      `::::::::: OAuth token from session :::::::::: ${savedAccessToken}`
+      `::::::::: savedAccessToken cleared :::::::::: ${savedAccessToken}`
     )
-    request.yar.set('savedAccessToken', newToken)
-    logger.info(`::::::::::: OAuth token refreshed ::::::::: ${newToken}`)
-    optionsOAuth = {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${newToken}`
-      }
-    }
   }
 
   // Set an interval to refresh the OAuth token every 19 minutes (1140 seconds)
