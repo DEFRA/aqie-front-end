@@ -95,6 +95,13 @@ async function fetchData(locationType, userLocation, request) {
     )
     request.yar.set('savedAccessToken', newToken)
     logger.info(`::::::::::: OAuth token refreshed ::::::::: ${newToken}`)
+    optionsOAuth = {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${newToken}`,
+        'Content-Type': 'application/json'
+      }
+    }
   }
 
   // Set an interval to refresh the OAuth token every 19 minutes (1140 seconds)
