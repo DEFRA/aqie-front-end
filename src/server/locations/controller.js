@@ -75,7 +75,7 @@ const getLocationDataController = {
           errorList: [
             {
               text: searchLocation.errorText.radios.list.text, // 'Select where you want to check',
-              href: '#itembox'
+              href: '#locationType'
             }
           ]
         }

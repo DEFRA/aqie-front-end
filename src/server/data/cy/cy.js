@@ -334,7 +334,7 @@ export const welsh = {
   },
   footer: {
     privacy: {
-      pageTitle: 'Gwiriwch ansawdd aer lleol - GOV.UK',
+      pageTitle: 'Preifatrwydd: Gwiriwch ansawdd aer lleol - GOV.UK',
       title: 'Hysbysiad preifatrwydd Gwirio ansawdd aer lleol',
       heading: 'Gwiriwch ansawdd aer lleol',
       headings: {
@@ -403,6 +403,7 @@ export const welsh = {
     },
     cookies: {
       title: 'Cwcis',
+      pageTitle: 'Cwcis: Gwiriwch ansawdd aer lleol - GOV.UK',
       headings: {
         a: 'Cwcis hanfodol (cwbl angenrheidiol)',
         b: 'Cwcis dadansoddeg (dewisol)',
@@ -459,6 +460,7 @@ export const welsh = {
     },
     accessibility: {
       title: 'Datganiad Hygyrchedd',
+      pageTitle: 'Hygyrchedd: Gwiriwch ansawdd aer lleol - GOV.UK',
       headings: {
         a: 'Statws cydymffurfio',
         b: 'Paratoi’r datganiad hygyrchedd yma ',
