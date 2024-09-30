@@ -87,12 +87,12 @@ async function fetchData(locationType, userLocation, request, h) {
 
   // Function to refresh the OAuth token and update the session
   const refreshOAuthToken = async (request) => {
-    request.yar.clear() // Clear the session data
-    request.cookieAuth.clear() // Clear the cookie data
+    // request.yar.clear() // Clear the session data
+    // request.cookieAuth.clear() // Clear the cookie data
     logger.info(
       `::::::::: savedAccessToken cleared :::::::::: ${savedAccessToken}`
     )
-    return h.redirect('/')
+    // return h.redirect('/')
   }
 
   // Set an interval to refresh the OAuth token every 19 minutes (1140 seconds)

@@ -71,8 +71,8 @@ async function createServer() {
       name: 'airaqie_cookie',
       path: '/',
       password: cookiePassword,
-      isSecure: isProduction
-      // ttl: 20 * 60 * 1000 // 20 minutes in milliseconds
+      isSecure: isProduction,
+      ttl: 1 * 60 * 1000 // 20 minutes in milliseconds
     },
     redirectTo: '/',
     keepAlive: true,
