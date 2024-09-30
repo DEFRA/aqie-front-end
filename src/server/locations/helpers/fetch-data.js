@@ -98,8 +98,7 @@ async function fetchData(locationType, userLocation, request) {
     optionsOAuth = {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${newToken}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${newToken}`
       }
     }
   }
@@ -108,7 +107,7 @@ async function fetchData(locationType, userLocation, request) {
   setInterval(() => {
     // Assuming you have access to the request object here
     refreshOAuthToken(request)
-  }, 1140 * 1000) // 19 minutes in milliseconds
+  }, 60 * 1000) // 19 minutes in milliseconds
 
   const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
   let getOSPlaces = { data: [] }
