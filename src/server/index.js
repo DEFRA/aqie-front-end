@@ -75,7 +75,7 @@ async function createServer() {
       ttl: 1 * 60 * 1000 // 20 minutes in milliseconds
     },
     redirectTo: '/',
-    keepAlive: true,
+    keepAlive: false,
     validate: async (request, session) => {
       if (session.password === config.get('daqiePassword')) {
         return { isValid: true }
