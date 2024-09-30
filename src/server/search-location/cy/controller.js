@@ -23,7 +23,7 @@ const searchLocationController = {
       return h.view('search-location/index', {
         userId: queryValues?.userId,
         utm_source: queryValues?.utm_source,
-        pageTitle: welsh.searchLocation.pageTitle,
+        pageTitle: `Gwall: ${welsh.searchLocation.pageTitle}`,
         heading: welsh.searchLocation.heading,
         page: welsh.searchLocation.page,
         serviceName: welsh.searchLocation.serviceName,

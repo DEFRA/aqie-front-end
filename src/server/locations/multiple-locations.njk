@@ -8,24 +8,24 @@
     <p class="govuk-body">{{paragraphs.a}}</p>
     {% set queryhref %}?userId={{ userId }}&utm_source={{utm_source}}&lang=en{% endset %}
     {% set queryhrefCy %}?userId={{ userId }}&utm_source={{utm_source}}&lang=cy{% endset %}
-    {% for item in results %}
     <ul class="govuk-list govuk-!-margin-bottom-2">
-      <li>
-        <a href={%if htmlLang == 'en' %}{{['/location/',item.GAZETTEER_ENTRY.ID, queryhref] | join}}{%else%}{{['/lleoliad/cy/',item.GAZETTEER_ENTRY.ID, queryhrefCy] | join}}{%endif%} class="govuk-link">
-        {% if name2 %}  
-        <span>{{ name2 }}</span>, 
-        {% else %}
-        <span class="govuk-!-font-weight-bold">{{ item.GAZETTEER_ENTRY.NAME1}}</span>, 
-        {% endif %}
-        {% if item.GAZETTEER_ENTRY.COUNTY_UNITARY %}
-          {{ item.GAZETTEER_ENTRY.COUNTY_UNITARY }}
-        {% else %}
-          {{ item.GAZETTEER_ENTRY.DISTRICT_BOROUGH }}
-        {% endif %}
-        </a>
-      </li>
+      {% for item in results %}
+        <li>
+          <a href={%if htmlLang == 'en' %}{{['/location/',item.GAZETTEER_ENTRY.ID, queryhref] | join}}{%else%}{{['/lleoliad/cy/',item.GAZETTEER_ENTRY.ID, queryhrefCy] | join}}{%endif%} class="govuk-link">
+          {% if name2 %}  
+          <span>{{ name2 }}</span>, 
+          {% else %}
+          <span class="govuk-!-font-weight-bold">{{ item.GAZETTEER_ENTRY.NAME1}}</span>, 
+          {% endif %}
+          {% if item.GAZETTEER_ENTRY.COUNTY_UNITARY %}
+            {{ item.GAZETTEER_ENTRY.COUNTY_UNITARY }}
+          {% else %}
+            {{ item.GAZETTEER_ENTRY.DISTRICT_BOROUGH }}
+          {% endif %}
+          </a>
+        </li>
+      {% endfor %}
     </ul>
-        {% endfor %}
         {% set queryhrefEn %}/search-location?userId={{ userId }}&utm_source={{utm_source}}&lang=en{% endset %}
         {% set queryhrefCy %}/chwilio-lleoliad/cy?userId={{ userId }}&utm_source={{utm_source}}&lang=cy{% endset %}
     <p class="govuk-body govuk-!-margin-top-6">{{paragraphs.b}} <a href={% if htmlLang == 'en' %} "{{queryhrefEn}}" {%else%} "{{queryhrefCy}}" {%endif%}>{{paragraphs.c}}</a></p>
