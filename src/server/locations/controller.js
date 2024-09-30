@@ -269,7 +269,9 @@ const getLocationDataController = {
             userId,
             utm_source,
             result: matches[0],
-            name2: matches[0].GAZETTEER_ENTRY?.NAME2,
+            name2:
+              matches[0].GAZETTEER_ENTRY?.NAME2 ??
+              matches[0].GAZETTEER_ENTRY?.NAME1,
             airQuality,
             airQualityData: airQualityData.commonMessages,
             monitoringSites: nearestLocationsRange,
