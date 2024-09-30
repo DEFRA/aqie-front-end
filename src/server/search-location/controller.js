@@ -19,7 +19,7 @@ const searchLocationController = {
       return h.view('search-location/index', {
         userId: queryValues?.userId,
         utm_source: queryValues?.utm_source,
-        pageTitle: english.searchLocation.pageTitle,
+        pageTitle: `Error: ${english.searchLocation.pageTitle}`,
         heading: english.searchLocation.heading,
         page: english.searchLocation.page,
         serviceName: english.searchLocation.serviceName,

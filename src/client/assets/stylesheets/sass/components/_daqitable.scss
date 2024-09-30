@@ -31,6 +31,12 @@
   border-right: 2px solid #ffffff; /* Add a 3px white vertical border to data cells */
 }
 
+.daqi-band-head {
+  border: 0;
+  visibility: hidden; /* Hides the content but keeps the layout */
+  height: 0; /* Optionally set height to 0 */
+  overflow: hidden; /* Ensure no overflow is visible */
+}
 
 // .daqi-table__cell:last-child {
 //   padding: govuk-spacing(2) govuk-spacing(2) govuk-spacing(2) 9px;

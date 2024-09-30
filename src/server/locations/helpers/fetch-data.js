@@ -44,8 +44,8 @@ const fetchOAuthToken = async () => {
   })
 
   if (!response.ok) {
-    const error = await response.json()
-    logger.error(`Failed to fetch OAuth token: ${JSON.stringify(error)}`)
+    // const error = await response.json()
+    // logger.error(`Failed to fetch OAuth token: ${JSON.stringify(error)}`)
     throw new Error('Failed to fetch OAuth token')
   }
 
@@ -87,6 +87,10 @@ async function fetchData(locationType, userLocation, request) {
   // Function to refresh the OAuth token and update the session
   const refreshOAuthToken = async (request) => {
     const newToken = await fetchOAuthToken()
+    const savedAccessToken = request.yar.get('savedAccessToken')
+    logger.info(
+      `::::::::: OAuth token from session :::::::::: ${savedAccessToken}`
+    )
     request.yar.set('savedAccessToken', newToken)
     logger.info(`::::::::::: OAuth token refreshed ::::::::: ${newToken}`)
   }

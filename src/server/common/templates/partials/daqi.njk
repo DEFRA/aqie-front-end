@@ -11,9 +11,20 @@
 {% endfor %}
 <h2 class="govuk-heading-m govuk-!-margin-bottom-6">{{daqi.paragraphs.a}} {{airQuality.today.readableBand | default('unknown')}}<span class="daqi-scale-hidden">, {{daqiValue}} {{daqi.paragraphs.b}}</span></h2>
 {{ govukTable({
-  caption: "",
+  caption: "Forcast index level",
   captionClasses: "govuk-heading-m daqi-table__caption govuk-!-margin-bottom-6",
-  head: [], 
+  head: [
+    { text: "", classes: "daqi-band-head" },
+    { text: "", classes: "daqi-band-head" },
+    { text: "", classes: "daqi-band-head" },
+    { text: "", classes: "daqi-band-head" },
+    { text: "", classes: "daqi-band-head" },
+    { text: "", classes: "daqi-band-head" },
+    { text: "", classes: "daqi-band-head" },
+    { text: "", classes: "daqi-band-head" },
+    { text: "", classes: "daqi-band-head" },
+    { text: "", classes: "daqi-band-head" }
+  ], 
   rows: [firstRow, [
       { text: daqi.levels.a, classes: "daqi-band", colspan: 3 },
       { text: daqi.levels.b, classes: "daqi-band", colspan: 3 },
