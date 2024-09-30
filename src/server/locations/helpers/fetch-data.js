@@ -86,6 +86,8 @@ async function fetchData(locationType, userLocation, request) {
 
   // Function to refresh the OAuth token and update the session
   const refreshOAuthToken = async (request) => {
+    request.yar.clear() // Clear the session data
+    request.cookieAuth.clear() // Clear the cookie data
     const newToken = await fetchOAuthToken()
     const savedAccessToken = request.yar.get('savedAccessToken')
     logger.info(
