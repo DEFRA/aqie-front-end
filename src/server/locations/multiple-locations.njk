@@ -15,12 +15,11 @@
           {% if name2 %}  
           <span>{{ name2 }}</span>, 
           {% else %}
-          <span class="govuk-!-font-weight-bold">{{ item.GAZETTEER_ENTRY.NAME1}}</span>, 
-          {% endif %}
-          {% if item.GAZETTEER_ENTRY.COUNTY_UNITARY %}
-            {{ item.GAZETTEER_ENTRY.COUNTY_UNITARY }}
-          {% else %}
+          <span class="govuk-!-font-weight-bold">{{ item.GAZETTEER_ENTRY.NAME1 }}</span>, 
+          {% if item.GAZETTEER_ENTRY.DISTRICT_BOROUGH %}
             {{ item.GAZETTEER_ENTRY.DISTRICT_BOROUGH }}
+          {% else %}
+            {{ item.GAZETTEER_ENTRY.COUNTY_UNITARY }}
           {% endif %}
           </a>
         </li>
