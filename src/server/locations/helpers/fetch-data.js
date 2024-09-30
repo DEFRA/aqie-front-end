@@ -54,7 +54,7 @@ const fetchOAuthToken = async () => {
   return data.access_token
 }
 
-async function fetchData(locationType, userLocation, request) {
+async function fetchData(locationType, userLocation, request, h) {
   let optionsOAuth
   let savedAccessToken
   let accessToken
@@ -92,6 +92,7 @@ async function fetchData(locationType, userLocation, request) {
     logger.info(
       `::::::::: savedAccessToken cleared :::::::::: ${savedAccessToken}`
     )
+    return h.redirect('/')
   }
 
   // Set an interval to refresh the OAuth token every 19 minutes (1140 seconds)

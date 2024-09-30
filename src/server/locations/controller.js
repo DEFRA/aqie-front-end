@@ -161,7 +161,7 @@ const getLocationDataController = {
       }
       locationType = request.yar.get('locationType')
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
-        await fetchData(locationType, userLocation, request)
+        await fetchData(locationType, userLocation, request, h)
       if (locationType === 'uk-location') {
         const { results } = getOSPlaces
 
@@ -337,7 +337,8 @@ const getLocationDataController = {
         const { getNIPlaces } = await fetchData(
           'ni-location',
           userLocation,
-          request
+          request,
+          h
         )
         logger.info(
           `::::::::::: getNIPlaces statusCode en ::::::::: ${getNIPlaces?.statusCode}`
