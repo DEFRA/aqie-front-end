@@ -1,34 +1,20 @@
 {% set daqiValue = airQuality.today.value %}
-{% set firstRow = [] %}
-{% for i in range(1, 11) %}
-    {% if i <= daqiValue %}
-        {% set cellClass = "daqi-table__cell daqi-selected daqi-" ~ daqiValue %}
-    {% else %}
-        {% set cellClass = "daqi-table__cell daqi-0" %}
-    {% endif %}
-    {% set cell = { classes: cellClass, text: " " } %}
-    {% set _ = firstRow.push(cell) %}
-{% endfor %}
-<h2 class="govuk-heading-m govuk-!-margin-bottom-6">{{daqi.paragraphs.a}} {{airQuality.today.readableBand | default('unknown')}}<span class="daqi-scale-hidden">, {{daqiValue}} {{daqi.paragraphs.b}}</span></h2>
-{{ govukTable({
-  caption: "Forcast index level",
-  captionClasses: "govuk-heading-m daqi-table__caption govuk-!-margin-bottom-6",
-  head: [
-    { text: "", classes: "daqi-band-head" },
-    { text: "", classes: "daqi-band-head" },
-    { text: "", classes: "daqi-band-head" },
-    { text: "", classes: "daqi-band-head" },
-    { text: "", classes: "daqi-band-head" },
-    { text: "", classes: "daqi-band-head" },
-    { text: "", classes: "daqi-band-head" },
-    { text: "", classes: "daqi-band-head" },
-    { text: "", classes: "daqi-band-head" },
-    { text: "", classes: "daqi-band-head" }
-  ], 
-  rows: [firstRow, [
-      { text: daqi.levels.a, classes: "daqi-band", colspan: 3 },
-      { text: daqi.levels.b, classes: "daqi-band", colspan: 3 },
-      { text: daqi.levels.c, classes: "daqi-band", colspan: 2 },
-      { text: daqi.levels.d, classes: "daqi-band", colspan: 2 }
-  ]]
-}) }}
+  <h2 class="govuk-heading-m govuk-!-margin-bottom-6">{{daqi.paragraphs.a}} {{airQuality.today.readableBand | default('unknown')}}<span class="daqi-scale-hidden">, {{daqiValue}} {{daqi.paragraphs.b}}</span></h2>
+  <div class="daqi-scale govuk-!-margin-bottom-7" role="img" aria-describedby="air-pollution-forecast-today" aria-hidden="true">
+  <div class="daqi-bar">
+    {% for i in range(1, 11) %}
+        {% if i <= daqiValue %}
+            <div class="daqi-bar-segment daqi-selected daqi-{{ daqiValue }}"></div>
+        {% else %}
+            <div class="daqi-bar-segment daqi-0"></div>
+        {% endif %}
+    {% endfor %}
+  </div>
+  <div class="daqi-labels">
+    <span class="daqi-band">Low</span>
+    <span class="daqi-band">Moderate</span>
+    <span class="daqi-band">High</span>
+    <span class="daqi-band">Very high</span>
+  </div>
+
+
