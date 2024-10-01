@@ -89,22 +89,22 @@ async function fetchData(locationType, userLocation, request, h) {
 
   // Function to refresh the OAuth token and update the session
   // const refreshOAuthToken = async (request) => {
-    try {
-      // logger.info('data before cleared:', JSON.stringify(request.yar))
-      // request.yar.clear() // Clear the session data
-      // request.cookieAuth.clear() // Clear the cookie data
-      // logger.info('data has been cleared:', JSON.stringify(request.yar))
-      // return h.redirect('/')
-    } catch (err) {
-      logger.error('Error clearing cache:', err)
-      // return h.response('Failed to clear cache').code(500)
-    }
+  try {
+    // logger.info('data before cleared:', JSON.stringify(request.yar))
     // request.yar.clear() // Clear the session data
     // request.cookieAuth.clear() // Clear the cookie data
-    // logger.info(
-    //   `::::::::: savedAccessToken cleared :::::::::: ${savedAccessToken}`
-    // )
+    // logger.info('data has been cleared:', JSON.stringify(request.yar))
     // return h.redirect('/')
+  } catch (err) {
+    logger.error('Error clearing cache:', err)
+    // return h.response('Failed to clear cache').code(500)
+  }
+  // request.yar.clear() // Clear the session data
+  // request.cookieAuth.clear() // Clear the cookie data
+  // logger.info(
+  //   `::::::::: savedAccessToken cleared :::::::::: ${savedAccessToken}`
+  // )
+  // return h.redirect('/')
   // }
 
   // Set an interval to refresh the OAuth token every 19 minutes (1140 seconds)
