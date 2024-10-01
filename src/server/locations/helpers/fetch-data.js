@@ -50,8 +50,8 @@ const fetchOAuthToken = async () => {
   }
 
   const data = await response.json()
-  logger.info(`OAuth token fetched::: ${JSON.stringify(data.access_token)}`)
-  return data.access_token
+  logger.info(`OAuth token fetched::: ${JSON.stringify(data.refresh_token)}`)
+  return data.refresh_token
 }
 
 async function fetchData(locationType, userLocation, request, h) {
