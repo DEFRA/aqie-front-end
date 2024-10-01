@@ -8,16 +8,16 @@ const options = {
   headers: { 'Content-Type': 'text/json', preserveWhitespace: true }
 }
 const logger = createLogger()
+const clientId = config.get('clientIdNIreland')
+const clientSecret = config.get('clientSecretNIreland')
+const redirectUri = config.get('redirectUriNIreland')
+const scope = config.get('scopeNIreland')
+const oauthTokenNorthernIrelandTenantId = config.get(
+  'oauthTokenNorthernIrelandTenantId'
+)
 
 const fetchOAuthToken = async () => {
   const tokenUrl = config.get('oauthTokenUrlNIreland')
-  const clientId = config.get('clientIdNIreland')
-  const clientSecret = config.get('clientSecretNIreland')
-  const redirectUri = config.get('redirectUriNIreland')
-  const scope = config.get('scopeNIreland')
-  const oauthTokenNorthernIrelandTenantId = config.get(
-    'oauthTokenNorthernIrelandTenantId'
-  )
   logger.info(`OAuth token requested:`)
   logger.info(`::::::::::: clientId :::::::::`)
   logger.info(`::::::::::: clientSecret :::::::::`)
@@ -50,16 +50,54 @@ const fetchOAuthToken = async () => {
   }
 
   const data = await response.json()
-  logger.info(`OAuth token fetched::: ${JSON.stringify(data.refresh_token)}`)
-  return data.refresh_token
+  logger.info(`OAuth token fetched::: ${JSON.stringify(data.access_token)}`)
+  return data.access_token
+}
+
+const revokeToken = async (token) => {
+  try {
+    const response = await proxyFetch(
+      `${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/revoke`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          token,
+          token_type_hint: 'access_token',
+          client_id: clientId,
+          client_secret: clientSecret,
+          redirect_uri: redirectUri,
+          scope,
+          grant_type: 'client_credentials',
+          state: '1245'
+        })
+      }
+    ).catch((err) => {
+      logger.error(
+        `:::::::: POST error fetching revokeToken::::::: ${JSON.stringify(err.message)}`
+      )
+    })
+
+    if (response.status === 200) {
+      logger.info('Token revoked successfully')
+    } else {
+      logger.info('Failed to revoke token', response.data)
+    }
+  } catch (error) {
+    logger.error(
+      'Error revoking token:',
+      error.response ? error.response.data : error.message
+    )
+  }
 }
 
 async function fetchData(locationType, userLocation, request, h) {
   let optionsOAuth
   // let savedAccessToken
-  // let accessToken
+  let accessToken = 'accessToken'
   if (locationType === 'ni-location') {
-    let accessToken = 'accessToken'
     logger.info(`::::::::: accessTokennnn :::::::::: ${accessToken}`)
     const savedAccessToken = request.yar.get('savedAccessToken')
     logger.info(
@@ -86,32 +124,23 @@ async function fetchData(locationType, userLocation, request, h) {
       }
     }
   }
-
   // Function to refresh the OAuth token and update the session
-  // const refreshOAuthToken = async (request) => {
-  try {
-    // logger.info('data before cleared:', JSON.stringify(request.yar))
-    // request.yar.clear() // Clear the session data
-    // request.cookieAuth.clear() // Clear the cookie data
-    // logger.info('data has been cleared:', JSON.stringify(request.yar))
-    // return h.redirect('/')
-  } catch (err) {
-    logger.error('Error clearing cache:', err)
-    // return h.response('Failed to clear cache').code(500)
+  const refreshOAuthToken = async (request) => {
+    try {
+      revokeToken(accessToken)
+    } catch (err) {
+      logger.error('Error clearing cache:', err)
+    }
   }
-  // request.yar.clear() // Clear the session data
-  // request.cookieAuth.clear() // Clear the cookie data
-  // logger.info(
-  //   `::::::::: savedAccessToken cleared :::::::::: ${savedAccessToken}`
-  // )
-  // return h.redirect('/')
-  // }
 
   // Set an interval to refresh the OAuth token every 19 minutes (1140 seconds)
-  // setInterval(() => {
-  //   // Assuming you have access to the request object here
-  //   refreshOAuthToken(request)
-  // }, 1 * 1000) // 19 minutes in milliseconds
+  setInterval(
+    () => {
+      // Assuming you have access to the request object here
+      refreshOAuthToken(request)
+    },
+    1 * 60 * 1000
+  ) // 1 minute in milliseconds
 
   const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
   let getOSPlaces = { data: [] }
