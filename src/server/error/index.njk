@@ -1,7 +1,7 @@
 {% extends 'layouts/page.njk' %}
 
 {% set displayBreadcrumbs = false %}
-{% set title = "We could not find" + " " + data['q'] %}
+{% set title = pageTitle + " " + data['q'] %}
 
 {% block content %}
 <div class="govuk-grid-row">

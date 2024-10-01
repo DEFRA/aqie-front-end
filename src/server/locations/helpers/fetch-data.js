@@ -88,13 +88,13 @@ async function fetchData(locationType, userLocation, request, h) {
   }
 
   // Function to refresh the OAuth token and update the session
-  const refreshOAuthToken = async (request) => {
+  // const refreshOAuthToken = async (request) => {
     try {
-      logger.info('data before cleared:', JSON.stringify(request.yar))
-      request.yar.clear() // Clear the session data
-      request.cookieAuth.clear() // Clear the cookie data
-      logger.info('data has been cleared:', JSON.stringify(request.yar))
-      return h.redirect('/')
+      // logger.info('data before cleared:', JSON.stringify(request.yar))
+      // request.yar.clear() // Clear the session data
+      // request.cookieAuth.clear() // Clear the cookie data
+      // logger.info('data has been cleared:', JSON.stringify(request.yar))
+      // return h.redirect('/')
     } catch (err) {
       logger.error('Error clearing cache:', err)
       // return h.response('Failed to clear cache').code(500)
@@ -105,13 +105,13 @@ async function fetchData(locationType, userLocation, request, h) {
     //   `::::::::: savedAccessToken cleared :::::::::: ${savedAccessToken}`
     // )
     // return h.redirect('/')
-  }
+  // }
 
   // Set an interval to refresh the OAuth token every 19 minutes (1140 seconds)
-  setInterval(() => {
-    // Assuming you have access to the request object here
-    refreshOAuthToken(request)
-  }, 1 * 1000) // 19 minutes in milliseconds
+  // setInterval(() => {
+  //   // Assuming you have access to the request object here
+  //   refreshOAuthToken(request)
+  // }, 1 * 1000) // 19 minutes in milliseconds
 
   const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
   let getOSPlaces = { data: [] }
