@@ -50,7 +50,7 @@ const fetchOAuthToken = async () => {
   }
 
   const data = await response.json()
-  logger.info(`OAuth token fetched:`)
+  logger.info(`OAuth token fetched::: ${JSON.stringify(data.access_token)}`)
   return data.access_token
 }
 
@@ -59,7 +59,7 @@ async function fetchData(locationType, userLocation, request, h) {
   // let savedAccessToken
   // let accessToken
   if (locationType === 'ni-location') {
-    let accessToken
+    let accessToken = 'accessToken'
     logger.info(`::::::::: accessTokennnn :::::::::: ${accessToken}`)
     const savedAccessToken = request.yar.get('savedAccessToken')
     logger.info(
