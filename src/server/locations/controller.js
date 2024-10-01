@@ -299,7 +299,9 @@ const getLocationDataController = {
             results: matches,
             title: multipleLocations.title,
             paragraphs: multipleLocations.paragraphs,
-            name2: matches[0].GAZETTEER_ENTRY?.NAME2,
+            name2:
+              matches[0].GAZETTEER_ENTRY?.NAME2 ??
+              matches[0].GAZETTEER_ENTRY?.NAME1,
             userLocation: locationNameOrPostcode,
             airQuality,
             airQualityData: airQualityData.commonMessages,

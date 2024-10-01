@@ -20,7 +20,7 @@ export const english = {
     button: 'Start now'
   },
   searchLocation: {
-    pageTitle: 'Where do you want to check? - Check local air quality - GOV.UK',
+    pageTitle: 'Check local air quality - GOV.UK',
     heading: 'Check local air quality',
     page: 'search-location',
     serviceName: 'Check local air quality',
@@ -243,7 +243,7 @@ export const english = {
     },
     sulphurDioxide: {
       title: 'Sulphur dioxide (SO₂)',
-      pageTitle: 'Sulphur dioxide (NO₂) – Check local air quality – GOV.UK',
+      pageTitle: 'Sulphur dioxide (SO₂) – Check local air quality – GOV.UK',
       headerText: 'Check local air quality',
       headings: {
         a: 'Sources of sulphur dioxide',

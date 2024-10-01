@@ -1,9 +1,12 @@
 import { english } from '~/src/server/data/en/en.js'
 import { welsh } from '~/src/server/data/cy/cy.js'
 
-function statusCodeMessage(statusCode) {
+function statusCodeMessage(statusCode, lang) {
   switch (true) {
     case statusCode === 404:
+      if (lang === 'cy') {
+        return 'Tudalen heb ei chanfod'
+      }
       return 'Page not found'
     case statusCode === 403:
       return 'Forbidden'
@@ -32,7 +35,7 @@ function catchAll(request, h) {
   request.logger.error(response?.stack)
 
   const statusCode = response.output.statusCode
-  const errorMessage = statusCodeMessage(statusCode)
+  const errorMessage = statusCodeMessage(statusCode, lang)
   const {
     footerTxt,
     notFoundUrl,
