@@ -57,18 +57,22 @@ const fetchOAuthToken = async () => {
 const revokeToken = async (token) => {
   try {
     logger.info(`tokenUrl ${tokenUrl}`)
-    const response = await proxyFetch(`${tokenUrl}/oauth2/v2.0/revoke`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: new URLSearchParams({
-        token,
-        token_type_hint: 'access_token',
-        client_id: clientId,
-        client_secret: clientSecret
-      })
-    }).catch((err) => {
+    logger.info(`tokentoken ${token}`)
+    const response = await proxyFetch(
+      `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/revoke`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          token,
+          token_type_hint: 'access_token',
+          client_id: clientId,
+          client_secret: clientSecret
+        })
+      }
+    ).catch((err) => {
       logger.error(
         `:::::::: POST error fetching revokeToken::::::: ${JSON.stringify(err.message)}`
       )
