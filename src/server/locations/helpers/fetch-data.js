@@ -12,12 +12,12 @@ const clientId = config.get('clientIdNIreland')
 const clientSecret = config.get('clientSecretNIreland')
 const redirectUri = config.get('redirectUriNIreland')
 const scope = config.get('scopeNIreland')
+const tokenUrl = config.get('oauthTokenUrlNIreland')
 const oauthTokenNorthernIrelandTenantId = config.get(
   'oauthTokenNorthernIrelandTenantId'
 )
 
 const fetchOAuthToken = async () => {
-  const tokenUrl = config.get('oauthTokenUrlNIreland')
   logger.info(`OAuth token requested:`)
   logger.info(`::::::::::: clientId :::::::::`)
   logger.info(`::::::::::: clientSecret :::::::::`)
@@ -56,25 +56,19 @@ const fetchOAuthToken = async () => {
 
 const revokeToken = async (token) => {
   try {
-    const response = await proxyFetch(
-      `${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/revoke`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: new URLSearchParams({
-          token,
-          token_type_hint: 'access_token',
-          client_id: clientId,
-          client_secret: clientSecret,
-          redirect_uri: redirectUri,
-          scope,
-          grant_type: 'client_credentials',
-          state: '1245'
-        })
-      }
-    ).catch((err) => {
+    logger.info(`tokenUrl ${tokenUrl}`)
+    const response = await proxyFetch(`${tokenUrl}/oauth2/v2.0/revoke`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        token,
+        token_type_hint: 'access_token',
+        client_id: clientId,
+        client_secret: clientSecret
+      })
+    }).catch((err) => {
       logger.error(
         `:::::::: POST error fetching revokeToken::::::: ${JSON.stringify(err.message)}`
       )
