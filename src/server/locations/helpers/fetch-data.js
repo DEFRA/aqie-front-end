@@ -2,6 +2,7 @@
 import { proxyFetch } from '~/src/helpers/proxy-fetch.js'
 import { config } from '~/src/config'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
+import { buildRedisClient } from '~/src/common/helpers/redis-client'
 
 const options = {
   method: 'get',
@@ -56,10 +57,12 @@ const fetchOAuthToken = async () => {
 
 async function fetchData(locationType, userLocation, request, h) {
   let optionsOAuth
-  let savedAccessToken
-  let accessToken
+  // let savedAccessToken
+  // let accessToken
   if (locationType === 'ni-location') {
-    savedAccessToken = request.yar.get('savedAccessToken')
+    let accessToken
+    logger.info(`::::::::: accessTokennnn :::::::::: ${accessToken}`)
+    const savedAccessToken = request.yar.get('savedAccessToken')
     logger.info(
       `::::::::: OAuth token in session :::::::::: ${savedAccessToken}`
     )
@@ -87,11 +90,19 @@ async function fetchData(locationType, userLocation, request, h) {
 
   // Function to refresh the OAuth token and update the session
   const refreshOAuthToken = async (request) => {
+    const redisClient = buildRedisClient()
+    try {
+      await redisClient.flushall() // Clear all keys in the Redis database
+      return 'Cache cleared'
+    } catch (err) {
+      logger.error('Error clearing cache:', err)
+      return h.response('Failed to clear cache').code(500)
+    }
     // request.yar.clear() // Clear the session data
     // request.cookieAuth.clear() // Clear the cookie data
-    logger.info(
-      `::::::::: savedAccessToken cleared :::::::::: ${savedAccessToken}`
-    )
+    // logger.info(
+    //   `::::::::: savedAccessToken cleared :::::::::: ${savedAccessToken}`
+    // )
     // return h.redirect('/')
   }
 
