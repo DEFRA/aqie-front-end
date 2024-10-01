@@ -56,7 +56,7 @@ const fetchOAuthToken = async () => {
 
 const revokeToken = async (token) => {
   try {
-    logger.info(`tokenUrl ${tokenUrl}`)
+    logger.info(`tokenUrlll ${tokenUrl}`)
     logger.info(`tokentoken ${token}`)
     const response = await proxyFetch(
       `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/revoke`,
