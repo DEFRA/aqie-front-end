@@ -254,7 +254,9 @@ const getLocationDataController = {
             userId,
             utm_source,
             result: matches[0],
-            name2: matches[0].GAZETTEER_ENTRY?.NAME2,
+            name2:
+              matches[0].GAZETTEER_ENTRY?.NAME2 ??
+              matches[0].GAZETTEER_ENTRY?.NAME1,
             airQuality,
             airQualityData: airQualityData.commonMessages,
             monitoringSites: nearestLocationsRange,
@@ -287,7 +289,9 @@ const getLocationDataController = {
             results: matches,
             title: multipleLocations.title,
             paragraphs: multipleLocations.paragraphs,
-            name2: matches[0].GAZETTEER_ENTRY?.NAME2,
+            name2:
+              matches[0].GAZETTEER_ENTRY?.NAME2 ??
+              matches[0].GAZETTEER_ENTRY?.NAME1,
             userLocation: locationNameOrPostcode,
             airQuality,
             airQualityData: airQualityData.commonMessages,
@@ -384,12 +388,16 @@ const getLocationDataController = {
             title =
               locationData.GAZETTEER_ENTRY.NAME2 +
               ', ' +
-              locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+              locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
+              '-' +
+              checkLocalAirQuality.pageTitle
           } else {
             title =
               locationData.GAZETTEER_ENTRY.NAME1 +
               ', ' +
-              locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+              locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
+              '-' +
+              checkLocalAirQuality.pageTitle
           }
         }
         if (query?.lang === 'en') {
@@ -420,7 +428,7 @@ const getLocationDataController = {
           daqi,
           nearestLocationsRange,
           title,
-          pageTitle: `${multipleLocations.title} ${userLocation} - ${checkLocalAirQuality.pageTitle}`,
+          pageTitle: title, // `${multipleLocations.title} ${userLocation} - ${checkLocalAirQuality.pageTitle}`,
           serviceName: multipleLocations.serviceName,
           footerTxt,
           phaseBanner,
