@@ -2,7 +2,6 @@
 import { proxyFetch } from '~/src/helpers/proxy-fetch.js'
 import { config } from '~/src/config'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { buildRedisClient } from '~/src/common/helpers/redis-client'
 
 const options = {
   method: 'get',
@@ -90,13 +89,15 @@ async function fetchData(locationType, userLocation, request, h) {
 
   // Function to refresh the OAuth token and update the session
   const refreshOAuthToken = async (request) => {
-    const redisClient = buildRedisClient()
     try {
-      await redisClient.flushall() // Clear all keys in the Redis database
-      return 'Cache cleared'
+      logger.info('data before cleared:', JSON.stringify(request.yar))
+      request.yar.clear() // Clear the session data
+      request.cookieAuth.clear() // Clear the cookie data
+      logger.info('data has been cleared:', JSON.stringify(request.yar))
+      return h.redirect('/')
     } catch (err) {
       logger.error('Error clearing cache:', err)
-      return h.response('Failed to clear cache').code(500)
+      // return h.response('Failed to clear cache').code(500)
     }
     // request.yar.clear() // Clear the session data
     // request.cookieAuth.clear() // Clear the cookie data
@@ -110,7 +111,7 @@ async function fetchData(locationType, userLocation, request, h) {
   setInterval(() => {
     // Assuming you have access to the request object here
     refreshOAuthToken(request)
-  }, 60 * 1000) // 19 minutes in milliseconds
+  }, 1 * 1000) // 19 minutes in milliseconds
 
   const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
   let getOSPlaces = { data: [] }
