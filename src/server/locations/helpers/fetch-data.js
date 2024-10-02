@@ -102,7 +102,7 @@ async function fetchData(locationType, userLocation, request, h) {
       `::::::::: OAuth token in session :::::::::: ${savedAccessToken}`
     )
     if (savedAccessToken) {
-      accessToken = savedAccessToken
+      // accessToken = savedAccessToken
       logger.info(
         `::::::::::: OAuth token from the cache ::::::::: ${savedAccessToken}`
       )
