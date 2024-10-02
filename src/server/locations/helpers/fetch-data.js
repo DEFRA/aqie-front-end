@@ -54,66 +54,19 @@ const fetchOAuthToken = async () => {
   return data.access_token
 }
 
-const revokeToken = async (token) => {
-  try {
-    logger.info(`tokenUrlll ${tokenUrl}`)
-    logger.info(`tokentoken ${token}`)
-    const response = await proxyFetch(
-      `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/revoke`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: new URLSearchParams({
-          token,
-          token_type_hint: 'access_token',
-          client_id: clientId,
-          client_secret: clientSecret
-        })
-      }
-    ).catch((err) => {
-      logger.error(
-        `:::::::: POST error fetching revokeToken::::::: ${JSON.stringify(err.message)}`
-      )
-    })
-
-    if (response.status === 200) {
-      logger.info('Token revoked successfully')
-    } else {
-      logger.info('Failed to revoke token', response.data)
-    }
-  } catch (error) {
-    logger.error(
-      'Error revoking token:',
-      error.response ? error.response.data : error.message
-    )
-  }
-}
-
 async function fetchData(locationType, userLocation, request, h) {
   let optionsOAuth
-  // let savedAccessToken
-  let accessToken = 'accessToken'
+  let savedAccessToken
+  let accessToken
   if (locationType === 'ni-location') {
-    logger.info(`::::::::: accessTokennnn :::::::::: ${accessToken}`)
-    const savedAccessToken = request.yar.get('savedAccessToken')
+    savedAccessToken = request.yar.get('savedAccessToken')
     logger.info(
-      `::::::::: OAuth token in session :::::::::: ${savedAccessToken}`
+      `::::::::: OAuth token in session 1 :::::::::: ${savedAccessToken}`
     )
-    if (savedAccessToken) {
-      // accessToken = savedAccessToken
-      logger.info(
-        `::::::::::: OAuth token from the cache ::::::::: ${savedAccessToken}`
-      )
-    } else {
-      accessToken = await fetchOAuthToken()
-      request.yar.set('savedAccessToken', accessToken)
-      logger.info(
-        `::::::::: OAuth token newly created :::::::::: ${accessToken}`
-      )
-    }
-    logger.info(`::::::::: OAuth accessToken final :::::::::: ${accessToken}`)
+    accessToken = await fetchOAuthToken()
+    request.yar.clear('savedAccessToken')
+    request.yar.set('savedAccessToken', accessToken)
+    logger.info(`::::::::: accessTokennnn :::::::::: ${accessToken}`)
     optionsOAuth = {
       method: 'GET',
       headers: {
@@ -121,11 +74,14 @@ async function fetchData(locationType, userLocation, request, h) {
         'Content-Type': 'application/json'
       }
     }
+    logger.info(
+      `::::::::: OAuth token in session 2 :::::::::: ${savedAccessToken}`
+    )
   }
   // Function to refresh the OAuth token and update the session
   const refreshOAuthToken = async (request) => {
     try {
-      revokeToken(accessToken)
+      accessToken = await fetchOAuthToken()
     } catch (err) {
       logger.error('Error clearing cache:', err)
     }
