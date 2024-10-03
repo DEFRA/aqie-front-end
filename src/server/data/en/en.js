@@ -20,7 +20,7 @@ export const english = {
     button: 'Start now'
   },
   searchLocation: {
-    pageTitle: 'Check local air quality - GOV.UK',
+    pageTitle: 'Where do you want to check? - Check local air quality - GOV.UK',
     heading: 'Check local air quality',
     page: 'search-location',
     serviceName: 'Check local air quality',
