@@ -1,9 +1,9 @@
 {% extends 'layouts/page.njk' %}
 {% set caption = "" %}
 {% if name2 %}
-{% set title = name2 + ", " + (result.GAZETTEER_ENTRY.COUNTY_UNITARY if result.GAZETTEER_ENTRY.COUNTY_UNITARY else result.GAZETTEER_ENTRY.DISTRICT_BOROUGH) %}
+{% set title = name2 + ", " + (result.GAZETTEER_ENTRY.DISTRICT_BOROUGH if result.GAZETTEER_ENTRY.DISTRICT_BOROUGH else result.GAZETTEER_ENTRY.COUNTY_UNITARY) %}
 {% else %}
-{% set title = result.GAZETTEER_ENTRY.NAME1 + ", " + (result.GAZETTEER_ENTRY.COUNTY_UNITARY if result.GAZETTEER_ENTRY.COUNTY_UNITARY else result.GAZETTEER_ENTRY.DISTRICT_BOROUGH) %}
+{% set title = result.GAZETTEER_ENTRY.NAME1 + ", " + (result.GAZETTEER_ENTRY.DISTRICT_BOROUGH if result.GAZETTEER_ENTRY.DISTRICT_BOROUGH else result.GAZETTEER_ENTRY.COUNTY_UNITARY) %}
 {% endif %}
 {% set pollutantTime = '' %}
 {% set pageHeadingSize = pageHeadingSize or "xl" %}
