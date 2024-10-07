@@ -9,6 +9,7 @@
   display: flex;
   height: govuk-spacing(4);
   margin-bottom: govuk-spacing(2);
+  margin-bottom: 25px;
 }
 
 .daqi-bar-segment {
@@ -16,6 +17,10 @@
   height: 100%;
   margin-right: 2px;
   border-right: 1px solid transparent;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-family: "GDS Transport", arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 .daqi-bar-segment:last-child {

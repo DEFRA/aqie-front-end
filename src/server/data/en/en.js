@@ -333,7 +333,7 @@ export const english = {
   },
   dailySummaryTexts: {
     paragraphs: {
-      a: 'UK forecast',
+      a: 'UK air pollution summary',
       b: 'Today',
       c: 'Tomorrow',
       d: 'Outlook'

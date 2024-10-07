@@ -3,10 +3,10 @@
   <div class="daqi-scale govuk-!-margin-bottom-7" role="img" aria-hidden="true">
   <div class="daqi-bar">
     {% for i in range(1, 11) %}
-        {% if i <= daqiValue %}
-            <div class="daqi-bar-segment daqi-selected daqi-{{ daqiValue }}"></div>
+        {% if daqiValue == i %}
+            <div class="daqi-bar-segment daqi-selected daqi-{{ i }}">{{i}}</div>
         {% else %}
-            <div class="daqi-bar-segment daqi-0"></div>
+            <div class="daqi-bar-segment daqi-0">{{i}}</div>
         {% endif %}
     {% endfor %}
   </div>
