@@ -27,21 +27,20 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop govuk-grid-column-full govuk-!-margin-bottom-9">
       {% include "daqi.njk" %}
-      {% include "uk-forecast.njk" %}
-      {% if airQuality.value >= 1 and airQuality.value <= 3 %}
-          <h2 class="govuk-heading-m">{{daqi.healthAdvice.paragraphs.a}} {{ airQuality.readableBand }} {{daqi.healthAdvice.paragraphs.b}}</h2>
-          <p>{{ airQuality.advice }}</p>
-      {% elseif airQuality.value >= 4 %}
-          <h2 class="govuk-heading-m">{{daqi.healthAdvice.paragraphs.a}} {{ airQuality.readableBand }} {{daqi.healthAdvice.paragraphs.b}}</h2>
-          <p>{{ airQuality.advice }}</p>
+      {% if airQuality.today.value >= 1 and airQuality.today.value <= 3 %}
+          <h2 class="govuk-heading-m">{{daqi.healthAdvice.paragraphs.a}} {{ airQuality.today.readableBand }} {{daqi.healthAdvice.paragraphs.b}}</h2>
+          <p>{{ airQuality.today.advice }}</p>
+      {% elseif airQuality.today.value >= 4 %}
+          <h2 class="govuk-heading-m">{{daqi.healthAdvice.paragraphs.a}} {{ airQuality.today.readableBand }} {{daqi.healthAdvice.paragraphs.b}}</h2>
+          <p>{{ airQuality.today.advice }}</p>
           {% set adultsText %}
-            {{ (airQuality.atrisk.adults) }}
+            {{ (airQuality.today.atrisk.adults) }}
           {% endset %}
           {% set asthmaText %}
-            {{ (airQuality.atrisk.asthma) }}
+            {{ (airQuality.today.atrisk.asthma) }}
           {% endset %}
           {% set oldPeopleText %}
-          {{ (airQuality.atrisk.oldPeople) }}
+          {{ (airQuality.today.atrisk.oldPeople) }}
           {% endset %}
           {{ govukInsetText({
             html: 
@@ -56,6 +55,10 @@
       {%if lang == "cy"%}
       {% include "daqi-index-welsh.njk" %}
       {% endif %} 
+      <h2 class="govuk-heading-m">{{daqi.pageTexts.a}}</h2>
+      <p class="govuk-!-margin-bottom-6">
+        {{ forecastSummary }}
+      </p>
       <p class="govuk-caption-s govuk-!-margin-bottom-4">{{daqi.pageTexts.b}} {{languageDate }}</p>
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6">
       <h2 class="govuk-heading-m">{{daqi.pageTexts.c}}</h2>

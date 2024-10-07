@@ -94,7 +94,9 @@ async function fetchData(locationType, userLocation, request, h) {
   setInterval(
     () => {
       // Assuming you have access to the request object here
-      refreshOAuthToken(request)
+      if (locationType === 'ni-location') {
+        refreshOAuthToken(request)
+      }
     },
     30 * 60 * 1000
   ) // 1 minute in milliseconds
