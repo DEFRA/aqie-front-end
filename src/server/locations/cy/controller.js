@@ -219,25 +219,25 @@ const getLocationDataController = {
           const locationDetails = matches[0]
           let title = ''
           if (locationDetails) {
-            if (locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY) {
+            if (locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH) {
               if (locationDetails.GAZETTEER_ENTRY.NAME2) {
                 title =
                   locationDetails.GAZETTEER_ENTRY.NAME2 +
                   ', ' +
-                  locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
+                  locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
                   '-' +
                   checkLocalAirQuality.pageTitle
               } else {
                 title =
                   locationDetails.GAZETTEER_ENTRY.NAME1 +
                   ', ' +
-                  locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
+                  locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
                   '-' +
                   checkLocalAirQuality.pageTitle
               }
             } else {
               title =
-                locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
+                locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
                 '-' +
                 checkLocalAirQuality.pageTitle
             }
@@ -530,25 +530,25 @@ const getLocationDetailsController = {
 
       if (locationDetails) {
         let title = ''
-        if (locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY) {
+        if (locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH) {
           if (locationDetails.GAZETTEER_ENTRY.NAME2) {
             title =
               locationDetails.GAZETTEER_ENTRY.NAME2 +
               ', ' +
-              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
+              locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
               '-' +
               checkLocalAirQuality.pageTitle
           } else {
             title =
               locationDetails.GAZETTEER_ENTRY.NAME1 +
               ', ' +
-              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
+              locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
               '-' +
               checkLocalAirQuality.pageTitle
           }
         } else {
           title =
-            locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
+            locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
             '-' +
             checkLocalAirQuality.pageTitle
         }
