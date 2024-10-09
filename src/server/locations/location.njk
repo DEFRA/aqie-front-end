@@ -67,6 +67,7 @@
 {% if monitoringSites|length %}
 <h2 class="govuk-heading-m">{{daqi.pageTexts.d}}</h2>
 {% endif %}
+<p>{{daqi.tooltipText.latest | safe}}</p>
 {% for site in monitoringSites %}
 {% set time %}
     {{ "now" | date | minusOneHour }}
@@ -74,33 +75,34 @@
 
 {% set measurementToggletip %}
 {% set microgramcubic = daqi.tooltipText.latest%}
-  {{ toggletip(
+  {#{{ toggletip(
     daqi.pollutantTable.c,
     'More information about measurement',
     microgramcubic | safe,
     daqi.pollutantTable.c
-  )}}
+  )}}#}
 {% endset %}
 
 {% set levelToggletip %}
-  {{ toggletip(
+  {#{{ toggletip(
     daqi.pollutantTable.d,
     'More information about the level',
     daqi.tooltipText.level,
     daqi.pollutantTable.d
-  )}}
+  )}}#}
 {% endset %}
 
 {% set siteNameToggletip %}
-  {{ toggletip(
+  {#{{ toggletip(
     site.name,
     'More information about ' + site.name,
     siteTypeDescriptions[site.areaType],
     site.id
-  )}}
+  )}}#}
 {% endset %}
-  <h3 class="govuk-heading-s govuk-!-margin-bottom-1 pollutant-table">{{ siteNameToggletip | safe }}</h3>
+  <h3 class="govuk-heading-s govuk-!-margin-bottom-1 pollutant-table">{{site.name}}{{ siteNameToggletip | safe }}</h3>
   <p class="govuk-caption-m govuk-!-margin-bottom-3">{{ site.distance }} {{daqi.pollutantTable.a}}</p>
+ <p>{{siteTypeDescriptions[site.areaType]}}</p>
   {% set rows = [] %}
 
   {% for key, pollutant in site.pollutants %}
@@ -128,8 +130,8 @@
       firstCellIsHeader: false,
       head: [
         { text: daqi.pollutantTable.b, classes: "defra-aq-levels-table__cell--pollutant"},
-        { html: measurementToggletip, classes: "defra-aq-levels-table__cell--reading" },
-        { html: levelToggletip, classes: "defra-aq-levels-table__cell--level" }
+        { html: daqi.pollutantTable.c, classes: "defra-aq-levels-table__cell--reading" },
+        { html: daqi.pollutantTable.d, classes: "defra-aq-levels-table__cell--level" }
       ],
       rows: rows
   }) }}
