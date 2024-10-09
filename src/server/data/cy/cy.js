@@ -2,7 +2,7 @@ import { WELSH_TITLE } from '~/src/server/data/constants'
 
 export const welsh = {
   checkLocalAirQuality: {
-    pageTitle: 'Gwiriwch ansawdd aer lleol - GOV.UK',
+    pageTitle: 'Gwirio ansawdd aer lleol - GOV.UK',
     heading: `${WELSH_TITLE}`,
     page: `${WELSH_TITLE}`,
     paragraphs: {
@@ -13,10 +13,10 @@ export const welsh = {
     button: 'Dechrau nawr'
   },
   searchLocation: {
-    pageTitle: 'Ble hoffech chi wirio? - Gwiriwch ansawdd aer lleol  - GOV.UK',
-    heading: 'Gwiriwch ansawdd aer lleol ',
+    pageTitle: 'Ble hoffech chi wirio? - Gwirio ansawdd aer lleol  - GOV.UK',
+    heading: 'Gwirio ansawdd aer lleol ',
     page: 'search-location',
-    serviceName: 'Gwiriwch ansawdd aer lleol ',
+    serviceName: 'Gwirio ansawdd aer lleol ',
     searchParams: {
       label: {
         text: 'Ble hoffech chi wirio?'
@@ -57,14 +57,14 @@ export const welsh = {
     }
   },
   notFoundLocation: {
-    heading: 'Gwiriwch ansawdd aer lleol ',
+    heading: 'Gwirio ansawdd aer lleol ',
     paragraphs: {
       a: 'Rydyn ni wedi methu dod o hyd i',
       b: 'Os buoch chi’n chwilio am le yng Nghymru, Lloegr neu’r Alban, fe ddylech chi:',
       c: 'gwirio’r sillafu',
       d: 'rhoi lleoliad ehangach',
       e: 'rhoi cod post cywir',
-      f: 'Os buoch chi’n chwilio am le yng Ngogledd Iwerddon, gwiriwch eich bod wedi rhoi’r cod post cywir.',
+      f: 'Os buoch chi’n chwilio am le yng Ngogledd Iwerddon, Gwirio eich bod wedi rhoi’r cod post cywir.',
       g: 'Ewch yn ôl i chwilio am leoliad',
       h: 'Tudalen heb ei chanfod'
     }
@@ -77,8 +77,8 @@ export const welsh = {
   },
   multipleLocations: {
     title: 'Lleoliadau yn cyfateb',
-    heading: 'Gwiriwch ansawdd aer lleol ',
-    serviceName: 'Gwiriwch ansawdd aer lleol ',
+    heading: 'Gwirio ansawdd aer lleol ',
+    serviceName: 'Gwirio ansawdd aer lleol ',
     paragraphs: {
       a: 'Canfuwyd mwy nag un cyfatebiaeth ar gyfer eich lleoliad. Dewiswch y lleoliad cywir o’r opsiynau canlynol:',
       b: 'Fel arall,',
@@ -97,7 +97,7 @@ export const welsh = {
     text: 'Newid lleoliad'
   },
   cookieBanner: {
-    title: 'Cwcis ar Gwiriwch ansawdd aer lleol',
+    title: 'Cwcis ar Gwirio ansawdd aer lleol',
     paragraphs: {
       a: "Rydym yn defnyddio rhai cwcis hanfodol i wneud i'r gwasanaeth hwn weithio.",
       b: "Hoffem hefyd ddefnyddio cwcis dadansoddol fel y gallwn ddeall sut rydych yn defnyddio'r gwasanaeth a gwneud gwelliannau."
@@ -238,7 +238,7 @@ export const welsh = {
     },
     sulphurDioxide: {
       title: 'Sylffwr deuocsid (SO₂)',
-      pageTitle: 'Sylffwr deuocsid (SO₂) – Gwiriwch ansawdd aer lleol – GOV.UK',
+      pageTitle: 'Sylffwr deuocsid (SO₂) – Gwirio ansawdd aer lleol – GOV.UK',
       headerText: `${WELSH_TITLE}`,
       headings: {
         a: 'Ffynonellau sylffwr deuocsid',
@@ -263,7 +263,7 @@ export const welsh = {
     },
     particulateMatter10: {
       title: 'Mater gronynnol (PM10)',
-      pageTitle: 'Mater gronynnol (PM10) – Gwiriwch ansawdd aer lleol – GOV.UK',
+      pageTitle: 'Mater gronynnol (PM10) – Gwirio ansawdd aer lleol – GOV.UK',
       headerText: `${WELSH_TITLE}`,
       headings: {
         a: 'Ffynonellau PM10',
@@ -335,9 +335,9 @@ export const welsh = {
   },
   footer: {
     privacy: {
-      pageTitle: 'Preifatrwydd - Gwiriwch ansawdd aer lleol - GOV.UK',
-      title: 'Hysbysiad preifatrwydd Gwiriwch ansawdd aer lleol',
-      heading: 'Gwiriwch ansawdd aer lleol',
+      pageTitle: 'Preifatrwydd - Gwirio ansawdd aer lleol - GOV.UK',
+      title: 'Hysbysiad preifatrwydd Gwirio ansawdd aer lleol',
+      heading: 'Gwirio ansawdd aer lleol',
       headings: {
         a: 'Pwy sy’n casglu’ch data personol',
         b: 'Pa ddata personol rydyn ni’n ei gasglu a sut mae’n cael ei ddefnyddio',
@@ -367,8 +367,8 @@ export const welsh = {
         l: 'y cod post neu’r enw lle rydych chi’n chwilio amdano gan fod hwn yn ddata hanfodol er mwyn i’r gwasanaeth roi data perthnasol',
         m: 'eich cyfeiriad IP er mwyn inni allu casglu gwybodaeth am ble mae defnyddwyr wedi’u lleoli',
         n: 'eich dyfais a’ch system weithredu i’n galluogi i wella’n gwasanaeth',
-        o: "y term chwilio rydych chi wedi’i ddefnyddio i ddod o hyd i 'Gwiriwch ansawdd aer lleol' i'n galluogi i wella’n gwasanaeth",
-        p: "y tudalennau rydych chi'n rhyngweithio â nhw yn 'Gwiriwch ansawdd aer lleol' i'n galluogi i wella’n gwasanaeth",
+        o: "y term chwilio rydych chi wedi’i ddefnyddio i ddod o hyd i 'Gwirio ansawdd aer lleol' i'n galluogi i wella’n gwasanaeth",
+        p: "y tudalennau rydych chi'n rhyngweithio â nhw yn 'Gwirio ansawdd aer lleol' i'n galluogi i wella’n gwasanaeth",
         q: 'Y sail gyfreithlon dros brosesu’ch data personol er mwyn gwneud ymchwil ar effeithiolrwydd y gwasanaeth yw cydsyniad. Does dim rhaid ichi roi’ch cydsyniad a gallwch dynnu’ch cydsyniad yn ôl unrhyw bryd.',
         r: 'Mae’r gwaith o brosesu’ch data personol wedi’i seilio ar gydsyniad. Gallwch dynnu’ch cydsyniad yn ôl unrhyw bryd drwy anfon neges ebost at ',
         s: 'Dydyn ni ddim yn rhannu’r data personol sy’n cael ei gasglu dan yr hysbysiad preifatrwydd yma gyda sefydliadau eraill.',
@@ -404,7 +404,7 @@ export const welsh = {
     },
     cookies: {
       title: 'Cwcis',
-      pageTitle: 'Cwcis - Gwiriwch ansawdd aer lleol - GOV.UK',
+      pageTitle: 'Cwcis - Gwirio ansawdd aer lleol - GOV.UK',
       headings: {
         a: 'Cwcis hanfodol (cwbl angenrheidiol)',
         b: 'Cwcis dadansoddeg (dewisol)',
@@ -426,11 +426,11 @@ export const welsh = {
         text2: 'Diben',
         text3: 'Yn dod i ben',
         text4:
-          'Mae’n ein helpu i gyfrif faint o bobl sy’n ymweld â Gwiriwch ansawdd aer lleol trwy ddweud wrthon ni a ydych chi wedi ymweld o’r blaen.',
+          'Mae’n ein helpu i gyfrif faint o bobl sy’n ymweld â Gwirio ansawdd aer lleol trwy ddweud wrthon ni a ydych chi wedi ymweld o’r blaen.',
         text5: '2 flynedd',
         text6: '_gid',
         text7:
-          'Mae’n ein helpu i gyfrif faint o bobl sy’n ymweld â Gwiriwch ansawdd aer lleol trwy ddweud wrthon ni a ydych chi wedi ymweld o’r blaen. ',
+          'Mae’n ein helpu i gyfrif faint o bobl sy’n ymweld â Gwirio ansawdd aer lleol trwy ddweud wrthon ni a ydych chi wedi ymweld o’r blaen. ',
         text8: '24 awr',
         text9: 'Mae’n cael ei ddefnyddio i leihau nifer y ceisiadau.',
         text10: '1 funud'
@@ -439,13 +439,13 @@ export const welsh = {
         w: 'Mae',
         a: `${WELSH_TITLE}`,
         b: 'yn rhoi ffeiliau bach (o’r enw ’cwcis’) ar eich cyfrifiadur. ',
-        c: 'Mae’r cwcis yma yn cael eu defnyddio ar draws gwefan Gwiriwch ansawdd aer lleol.',
+        c: 'Mae’r cwcis yma yn cael eu defnyddio ar draws gwefan Gwirio ansawdd aer lleol.',
         d: 'Dim pan fydd JavaScript yn rhedeg yn eich porwr a phan fyddwch chi wedi’u derbyn y byddwn ni’n gosod cwcis. Os dewiswch chi beidio â rhedeg Javascript, fydd yr wybodaeth ar y tudalen yma ddim yn gymwys i chi.',
         e: 'Darganfyddwch',
         f: 'sut i reoli cwcis',
         g: 'drwy Swyddfa’r Comisiynydd Gwybodaeth.',
         h: 'Rydyn ni’n defnyddio cwci hanfodol i gofio pryd y byddwch chi’n derbyn neu’n gwrthod cwcis ar ein gwefan.',
-        i: 'Rydyn ni’n defnyddio meddalwedd Google Analytics i ddeall sut mae pobl yn defnyddio Gwiriwch ansawdd aer lleol. Rydyn ni’n gwneud hyn er mwyn helpu i sicrhau bod y wefan yn ateb anghenion ei defnyddwyr ac i’n helpu i wneud gwelliannau. ',
+        i: 'Rydyn ni’n defnyddio meddalwedd Google Analytics i ddeall sut mae pobl yn defnyddio Gwirio ansawdd aer lleol. Rydyn ni’n gwneud hyn er mwyn helpu i sicrhau bod y wefan yn ateb anghenion ei defnyddwyr ac i’n helpu i wneud gwelliannau. ',
         j: 'Dydyn ni ddim yn casglu nac yn storio’ch gwybodaeth bersonol (er enghraifft eich enw neu’ch cyfeiriad) felly does dim modd defnyddio’r wybodaeth yma i wybod pwy ydych chi. ',
         k: 'Dydyn ni ddim yn caniatáu i Google ddefnyddio na rhannu’n data dadansoddeg.',
         l: 'Mae Google Analytics yn cadw gwybodaeth am y canlynol:',
@@ -461,7 +461,7 @@ export const welsh = {
     },
     accessibility: {
       title: 'Datganiad Hygyrchedd',
-      pageTitle: 'Datganiad Hygyrchedd - Gwiriwch ansawdd aer lleol - GOV.UK',
+      pageTitle: 'Datganiad Hygyrchedd - Gwirio ansawdd aer lleol - GOV.UK',
       headings: {
         a: 'Statws cydymffurfio',
         b: 'Paratoi’r datganiad hygyrchedd yma ',
