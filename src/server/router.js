@@ -21,7 +21,7 @@ import { sulphurDioxide } from '~/src/server/sulphur-dioxide/index'
 import { sulphurDioxideCy } from '~/src/server/sulphur-dioxide/cy/index'
 import { privacy } from '~/src/server/privacy/index'
 import { privacyCy } from '~/src/server/privacy/cy/index'
-import { home } from '~/src/server/home/index'
+// import { home } from '~/src/server/home/index'
 import { cookies } from '~/src/server/cookies/index'
 import { cookiesCy } from '~/src/server/cookies/cy/index'
 import { accessibility } from '~/src/server/accessibility/index'
@@ -71,7 +71,7 @@ const router = {
         sulphurDioxideCy,
         privacy,
         privacyCy,
-        home,
+        // home,
         cookies,
         cookiesCy,
         accessibility,

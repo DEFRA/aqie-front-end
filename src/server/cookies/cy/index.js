@@ -8,8 +8,8 @@ const cookiesCy = {
         {
           method: 'GET',
           path: '/briwsion/cy',
-          ...cookiesController,
-          options: { auth: { mode: 'try' } }
+          ...cookiesController
+          // options: { auth: { mode: 'try' } }
         }
       ])
     }

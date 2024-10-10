@@ -10,11 +10,11 @@ const homeController = {
     if (request.auth.isAuthenticated) {
       if (query) {
         return h.redirect(
-          `/check-local-air-quality?userId=${query.userId ?? userId}&utm_source=${query.utm_source ?? utm_source}`
+          `/?userId=${query.userId ?? userId}&utm_source=${query.utm_source ?? utm_source}`
         )
       } else {
         return h.redirect(
-          `/check-local-air-quality?userId=${userId ?? userId}&utm_source=${utm_source ?? utm_source}`
+          `/?userId=${userId ?? userId}&utm_source=${utm_source ?? utm_source}`
         )
       }
     } else {
@@ -47,9 +47,7 @@ const loginController = {
       request.cookieAuth.set({ password: request.payload.password })
       /* eslint-disable camelcase */
       const { userId, utm_source } = request.query
-      return h.redirect(
-        `/check-local-air-quality?userId=${userId}&utm_source=${utm_source}`
-      )
+      return h.redirect(`/?userId=${userId}&utm_source=${utm_source}`)
     } else {
       request.yar.set('errors', {
         errors: {

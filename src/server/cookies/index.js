@@ -8,8 +8,8 @@ const cookies = {
         {
           method: 'GET',
           path: '/cookies',
-          ...cookiesController,
-          options: { auth: { mode: 'try' } }
+          ...cookiesController
+          // options: { auth: { mode: 'try' } }
         }
       ])
     }

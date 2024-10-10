@@ -7,7 +7,7 @@ const checkLocalAirQuality = {
       server.route([
         {
           method: 'GET',
-          path: '/check-local-air-quality',
+          path: '/',
           ...checkLocalAirController
         }
       ])

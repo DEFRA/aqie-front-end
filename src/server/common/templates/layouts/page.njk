@@ -48,7 +48,7 @@
 {%if page == "Check local air quality"%}{% set serviceName = ""%}{%endif%}
 {%if page != "home"%}
   {%if htmlLang == "en"%}
-  {% set queryhref = "/check-local-air-quality?userId=" + userId + "&utm_source=" + utm_source %}
+  {% set queryhref = "/?userId=" + userId + "&utm_source=" + utm_source %}
   {{ govukHeader({
     homepageUrl: "https://www.gov.uk/",
     classes: "app-header",
@@ -59,7 +59,7 @@
   }) }}
   {%endif%}
   {%if htmlLang == "cy"%}
-  {% set queryhref = "/check-lleol-ansawdd-aer/cy?userId=" + userId + "&utm_source=" + utm_source %}
+  {% set queryhref = "/cy?userId=" + userId + "&utm_source=" + utm_source %}
   {{ govukHeader({
     homepageUrl: "https://www.gov.uk/",
     classes: "app-header",
