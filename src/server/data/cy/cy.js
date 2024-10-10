@@ -1,7 +1,7 @@
 import { WELSH_TITLE } from '~/src/server/data/constants'
 
 export const welsh = {
-  checkLocalAirQuality: {
+  home: {
     pageTitle: 'Gwirio ansawdd aer lleol - GOV.UK',
     heading: `${WELSH_TITLE}`,
     page: `${WELSH_TITLE}`,

@@ -1,13 +1,13 @@
-import { homeController } from '~/src/server/home/controller'
+import { homeController } from '~/src/server/home/cy/controller'
 
-const home = {
+const homeCy = {
   plugin: {
-    name: 'Check local air quality',
+    name: 'Gwirio ansawdd aer lleol',
     register: async (server) => {
       server.route([
         {
           method: 'GET',
-          path: '/',
+          path: '/cy',
           ...homeController
         }
       ])
@@ -15,4 +15,4 @@ const home = {
   }
 }
 
-export { home }
+export { homeCy }

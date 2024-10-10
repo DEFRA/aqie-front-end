@@ -1,11 +1,12 @@
-import { english } from '~/src/server/data/en/en.js'
+import { welsh } from '~/src/server/data/cy/cy.js'
 
 const homeController = {
   handler: (request, h) => {
     const { query } = request
-    const { home, footerTxt, phaseBanner, backlink, cookieBanner } = english
-    if (query.lang === 'cy') {
-      return h.redirect(`cy`)
+    const { home, footerTxt, phaseBanner, backlink, cookieBanner } = welsh
+    //
+    if (query.lang === 'en') {
+      return h.redirect(`/?lang=en`)
     }
     return h.view('home/index', {
       userId: query?.userId,
@@ -20,7 +21,7 @@ const homeController = {
       backlink,
       cookieBanner,
       serviceName: '',
-      lang: 'en'
+      lang: 'cy'
     })
   }
 }

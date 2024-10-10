@@ -8,7 +8,7 @@ export const english = {
       buttonText: 'Continue'
     }
   },
-  checkLocalAirQuality: {
+  home: {
     pageTitle: 'Check local air quality - GOV.UK',
     heading: 'Check local air quality',
     page: 'Check local air quality',

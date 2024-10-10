@@ -42,7 +42,7 @@ const getLocationDataController = {
       footerTxt,
       phaseBanner,
       backlink,
-      checkLocalAirQuality,
+      home,
       cookieBanner,
       daqi
     } = welsh
@@ -154,7 +154,7 @@ const getLocationDataController = {
         if (!results || results.length === 0) {
           return h.view('locations/location-not-found', {
             userLocation: locationNameOrPostcode,
-            pageTitle: `${notFoundLocation.paragraphs.a} ${userLocation} - ${checkLocalAirQuality.pageTitle}`,
+            pageTitle: `${notFoundLocation.paragraphs.a} ${userLocation} - ${home.pageTitle}`,
             paragraph: notFoundLocation.paragraphs,
             serviceName: searchLocation.serviceName,
             footerTxt,
@@ -226,20 +226,20 @@ const getLocationDataController = {
                   ', ' +
                   locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
                   '-' +
-                  checkLocalAirQuality.pageTitle
+                  home.pageTitle
               } else {
                 title =
                   locationDetails.GAZETTEER_ENTRY.NAME1 +
                   ', ' +
                   locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
                   '-' +
-                  checkLocalAirQuality.pageTitle
+                  home.pageTitle
               }
             } else {
               title =
                 locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
                 '-' +
-                checkLocalAirQuality.pageTitle
+                home.pageTitle
             }
           }
           const airQuality = getAirQuality(
@@ -298,7 +298,7 @@ const getLocationDataController = {
             monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
-            pageTitle: `${multipleLocations.title} ${userLocation} -  ${checkLocalAirQuality.pageTitle}`,
+            pageTitle: `${multipleLocations.title} ${userLocation} -  ${home.pageTitle}`,
             serviceName: multipleLocations.serviceName,
             forecastSummary: getDailySummary.today,
             summaryDate: getDailySummary.issue_date,
@@ -315,7 +315,7 @@ const getLocationDataController = {
             userId: query?.userId,
             utm_source: query?.utm_source,
             userLocation: locationNameOrPostcode,
-            pageTitle: `${notFoundLocation.paragraphs.a} ${locationNameOrPostcode} - ${checkLocalAirQuality.pageTitle}`,
+            pageTitle: `${notFoundLocation.paragraphs.a} ${locationNameOrPostcode} - ${home.pageTitle}`,
             paragraph: notFoundLocation.paragraphs,
             footerTxt,
             serviceName: searchLocation.serviceName,
@@ -339,7 +339,7 @@ const getLocationDataController = {
             userId: query?.userId,
             utm_source: query?.utm_source,
             footerTxt,
-            pageTitle: `${notFoundLocation.paragraphs.h} ${locationNameOrPostcode} - ${checkLocalAirQuality.pageTitle}`,
+            pageTitle: `${notFoundLocation.paragraphs.h} ${locationNameOrPostcode} - ${home.pageTitle}`,
             url: request.path,
             phaseBanner,
             displayBacklink: false,
@@ -355,7 +355,7 @@ const getLocationDataController = {
             userId: query?.userId,
             utm_source: query?.utm_source,
             userLocation: locationNameOrPostcode,
-            pageTitle: `${notFoundLocation.paragraphs.a} ${userLocation} -  ${checkLocalAirQuality.pageTitle}`,
+            pageTitle: `${notFoundLocation.paragraphs.a} ${userLocation} -  ${home.pageTitle}`,
             paragraph: notFoundLocation.paragraphs,
             footerTxt,
             serviceName: searchLocation.serviceName,
@@ -390,14 +390,14 @@ const getLocationDataController = {
               ', ' +
               locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
               '-' +
-              checkLocalAirQuality.pageTitle
+              home.pageTitle
           } else {
             title =
               locationData.GAZETTEER_ENTRY.NAME1 +
               ', ' +
               locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
               '-' +
-              checkLocalAirQuality.pageTitle
+              home.pageTitle
           }
         }
         if (query?.lang === 'en') {
@@ -428,7 +428,7 @@ const getLocationDataController = {
           daqi,
           nearestLocationsRange,
           title,
-          pageTitle: title, // `${multipleLocations.title} ${userLocation} - ${checkLocalAirQuality.pageTitle}`,
+          pageTitle: title, // `${multipleLocations.title} ${userLocation} - ${home.pageTitle}`,
           serviceName: multipleLocations.serviceName,
           footerTxt,
           phaseBanner,
@@ -445,7 +445,7 @@ const getLocationDataController = {
         userId: query?.userId,
         utm_source: query?.utm_source,
         footerTxt,
-        pageTitle: `${notFoundLocation.paragraphs.h} ${locationNameOrPostcode} - ${checkLocalAirQuality.pageTitle}`,
+        pageTitle: `${notFoundLocation.paragraphs.h} ${locationNameOrPostcode} - ${home.pageTitle}`,
         url: request.path,
         phaseBanner,
         displayBacklink: false,
@@ -516,7 +516,7 @@ const getLocationDetailsController = {
         notFoundLocation,
         searchLocation,
         daqi,
-        checkLocalAirQuality
+        home
       } = welsh
       const locationData = request.yar.get('locationData') || []
       let locationIndex = 0
@@ -537,20 +537,20 @@ const getLocationDetailsController = {
               ', ' +
               locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
               '-' +
-              checkLocalAirQuality.pageTitle
+              home.pageTitle
           } else {
             title =
               locationDetails.GAZETTEER_ENTRY.NAME1 +
               ', ' +
               locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
               '-' +
-              checkLocalAirQuality.pageTitle
+              home.pageTitle
           }
         } else {
           title =
             locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
             '-' +
-            checkLocalAirQuality.pageTitle
+            home.pageTitle
         }
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
           locationData.data,

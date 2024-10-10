@@ -1,7 +1,7 @@
 import inert from '@hapi/inert'
 import yar from '@hapi/yar'
-import { checkLocalAirQuality } from '~/src/server/check-local-air-quality/index'
-import { checkLocalAirQualityCy } from '~/src/server/check-local-air-quality/cy/index'
+import { home } from '~/src/server/home/index'
+import { homeCy } from '~/src/server/home/cy/index'
 import { searchLocation } from '~/src/server/search-location/index'
 import { searchLocationCy } from '~/src/server/search-location/cy/index'
 import { locations } from '~/src/server/locations/index'
@@ -21,7 +21,6 @@ import { sulphurDioxide } from '~/src/server/sulphur-dioxide/index'
 import { sulphurDioxideCy } from '~/src/server/sulphur-dioxide/cy/index'
 import { privacy } from '~/src/server/privacy/index'
 import { privacyCy } from '~/src/server/privacy/cy/index'
-// import { home } from '~/src/server/home/index'
 import { cookies } from '~/src/server/cookies/index'
 import { cookiesCy } from '~/src/server/cookies/cy/index'
 import { accessibility } from '~/src/server/accessibility/index'
@@ -50,8 +49,8 @@ const router = {
     register: async (server) => {
       await server.register([inert])
       await server.register([
-        checkLocalAirQuality,
-        checkLocalAirQualityCy,
+        home,
+        homeCy,
         searchLocation,
         searchLocationCy,
         locations,
@@ -71,7 +70,6 @@ const router = {
         sulphurDioxideCy,
         privacy,
         privacyCy,
-        // home,
         cookies,
         cookiesCy,
         accessibility,
