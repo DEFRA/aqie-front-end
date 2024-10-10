@@ -14,7 +14,6 @@ import { Engine as CatboxMemory } from '@hapi/catbox-memory'
 
 const isProduction = config.get('isProduction')
 const redisEnabled = config.get('redis.enabled')
-const cookiePassword = config.get('cookiePassword')
 async function createServer() {
   const server = hapi.server({
     port: config.get('port'),
@@ -66,25 +65,25 @@ async function createServer() {
 
   await server.register([hapiCookie])
 
-  server.auth.strategy('login', 'cookie', {
-    cookie: {
-      name: 'airaqie_cookie',
-      path: '/',
-      password: cookiePassword,
-      isSecure: isProduction
-      // ttl: 2 * 60 * 1000 // 20 minutes in milliseconds
-    },
-    redirectTo: '/',
-    keepAlive: true,
-    validate: async (request, session) => {
-      if (session.password === config.get('daqiePassword')) {
-        return { isValid: true }
-      } else {
-        return { isValid: true }
-      }
-    }
-  })
-  server.auth.default({ strategy: 'login', mode: 'required' })
+  // server.auth.strategy('login', 'cookie', {
+  //   cookie: {
+  //     name: 'airaqie_cookie',
+  //     path: '/',
+  //     password: cookiePassword,
+  //     isSecure: isProduction
+  //     // ttl: 2 * 60 * 1000 // 20 minutes in milliseconds
+  //   },
+  //   redirectTo: '/',
+  //   keepAlive: true,
+  //   validate: async (request, session) => {
+  //     if (session.password === config.get('daqiePassword')) {
+  //       return { isValid: true }
+  //     } else {
+  //       return { isValid: true }
+  //     }
+  //   }
+  // })
+  // server.auth.default({ strategy: 'login', mode: 'required' })
 
   await server.register(router)
 

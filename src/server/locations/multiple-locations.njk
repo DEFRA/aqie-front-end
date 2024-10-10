@@ -12,8 +12,8 @@
       {% for item in results %}
         <li>
           <a href={%if htmlLang == 'en' %}{{['/location/',item.GAZETTEER_ENTRY.ID, queryhref] | join}}{%else%}{{['/lleoliad/cy/',item.GAZETTEER_ENTRY.ID, queryhrefCy] | join}}{%endif%} class="govuk-link">
-          {% if name2 %}  
-          <span class="govuk-!-font-weight-bold">{{ name2 }}</span>, 
+          {% if item.name2 %}  
+          <span class="govuk-!-font-weight-bold">{{ item.name2 }}</span>, 
           {% else %}
           <span class="govuk-!-font-weight-bold">{{ item.GAZETTEER_ENTRY.NAME1 }}</span>, 
           {% endif %}

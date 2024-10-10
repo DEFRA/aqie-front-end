@@ -8,8 +8,8 @@ const accessibilityCy = {
         {
           method: 'GET',
           path: '/hygyrchedd/cy',
-          ...accessibilityController,
-          options: { auth: { mode: 'try' } }
+          ...accessibilityController
+          // options: { auth: { mode: 'try' } }
         }
       ])
     }

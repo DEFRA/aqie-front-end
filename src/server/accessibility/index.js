@@ -8,8 +8,8 @@ const accessibility = {
         {
           method: 'GET',
           path: '/accessibility',
-          ...accessibilityController,
-          options: { auth: { mode: 'try' } }
+          ...accessibilityController
+          // options: { auth: { mode: 'try' } }
         }
       ])
     }

@@ -8,14 +8,14 @@ const home = {
         {
           method: 'GET',
           path: '/',
-          ...homeController,
-          options: { auth: { mode: 'try' } }
+          ...homeController
+          // options: { auth: { mode: 'try' } }
         },
         {
           method: 'POST',
           path: '/',
-          ...loginController,
-          options: { auth: { mode: 'try' } }
+          ...loginController
+          // options: { auth: { mode: 'try' } }
         }
       ])
     }

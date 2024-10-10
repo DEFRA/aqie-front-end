@@ -9,8 +9,8 @@ const privacyCy = {
         {
           method: 'GET',
           path: '/preifatrwydd/cy',
-          ...privacyController,
-          options: { auth: { mode: 'try' } }
+          ...privacyController
+          // options: { auth: { mode: 'try' } }
         }
       ])
     }
