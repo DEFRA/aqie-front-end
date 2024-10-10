@@ -65,26 +65,6 @@ async function createServer() {
 
   await server.register([hapiCookie])
 
-  // server.auth.strategy('login', 'cookie', {
-  //   cookie: {
-  //     name: 'airaqie_cookie',
-  //     path: '/',
-  //     password: cookiePassword,
-  //     isSecure: isProduction
-  //     // ttl: 2 * 60 * 1000 // 20 minutes in milliseconds
-  //   },
-  //   redirectTo: '/',
-  //   keepAlive: true,
-  //   validate: async (request, session) => {
-  //     if (session.password === config.get('daqiePassword')) {
-  //       return { isValid: true }
-  //     } else {
-  //       return { isValid: true }
-  //     }
-  //   }
-  // })
-  // server.auth.default({ strategy: 'login', mode: 'required' })
-
   await server.register(router)
 
   await server.register(nunjucksConfig)
