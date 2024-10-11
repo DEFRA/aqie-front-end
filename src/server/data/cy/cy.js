@@ -190,7 +190,7 @@ export const welsh = {
   pollutants: {
     ozone: {
       title: 'Osôn(O₃)',
-      pageTitle: 'Osôn(O₃) – Check local air quality – GOV.UK',
+      pageTitle: 'Osôn(O₃) – Gwirio ansawdd aer lleol – GOV.UK',
       headerText: `${WELSH_TITLE}`,
       headings: {
         a: 'Ffynonellau osôn',
@@ -213,7 +213,7 @@ export const welsh = {
     },
     nitrogenDioxide: {
       title: 'Nitrogen deuocsid (NO₂)',
-      pageTitle: 'Nitrogen deuocsid (NO₂) – Check local air quality – GOV.UK',
+      pageTitle: 'Nitrogen deuocsid (NO₂) – Gwirio ansawdd aer lleol – GOV.UK',
       headerText: `${WELSH_TITLE}`,
       headings: {
         a: 'Ffynonellau nitrogen deuocsid',
@@ -294,8 +294,8 @@ export const welsh = {
     },
     particulateMatter25: {
       title: 'Mater gronynnol (PM2.5)',
-      pageTitle: 'Mater gronynnol (PM2.5) – Check local air quality – GOV.UK',
-      headerText: 'Check local air quality',
+      pageTitle: 'Mater gronynnol (PM2.5) – Gwirio ansawdd aer lleol – GOV.UK',
+      headerText: 'Gwirio ansawdd aer lleol',
       headings: {
         a: 'Ffynonellau PM2.5',
         b: 'Effeithiau ar iechyd'
