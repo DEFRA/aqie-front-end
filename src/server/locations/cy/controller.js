@@ -237,6 +237,8 @@ const getLocationDataController = {
               }
             } else {
               title =
+                locationNameOrPostcode +
+                ', ' +
                 locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
                 '-' +
                 home.pageTitle

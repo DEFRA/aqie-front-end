@@ -13,16 +13,12 @@ const accessibilityController = {
     } = welsh
     /* eslint-disable camelcase */
     const {
-      query: { lang, userId, utm_source }
+      query: { lang }
     } = request
     if (lang && lang === 'en') {
-      return h.redirect(
-        `/accessibility?lang=en&userId=${userId}&utm_source=${utm_source}`
-      )
+      return h.redirect(`/accessibility?lang=en`)
     }
     return h.view('accessibility/index', {
-      userId,
-      utm_source,
       pageTitle,
       title,
       heading,
