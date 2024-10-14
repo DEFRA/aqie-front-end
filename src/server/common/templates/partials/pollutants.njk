@@ -5,13 +5,13 @@
 {%if htmlLang == 'en'%}
 <ul class="govuk-list">
   <li>
-    <a class="govuk-link" href={{['/pollutants/ozone', queryhref, '&lang=en'] | join}}>{{daqi.pollutantsNames.a}}</a>
+    <a class="govuk-link" href={{['/pollutants/ozone', queryhref, '?lang=en'] | join}}>{{daqi.pollutantsNames.a}}</a>
   </li>
   <li>
-    <a class="govuk-link" href={{['/pollutants/nitrogen-dioxide', queryhref, '&lang=en'] | join}}>{{daqi.pollutantsNames.b}}</a>
+    <a class="govuk-link" href={{['/pollutants/nitrogen-dioxide', queryhref, '?lang=en'] | join}}>{{daqi.pollutantsNames.b}}</a>
   </li>
   <li>
-    <a class="govuk-link" href={{['/pollutants/sulphur-dioxide', queryhref, '&lang=en'] | join}}>{{daqi.pollutantsNames.c}}</a>
+    <a class="govuk-link" href={{['/pollutants/sulphur-dioxide', queryhref, '?lang=en'] | join}}>{{daqi.pollutantsNames.c}}</a>
   </li>
 </ul>
 <h2 class="govuk-heading-s">{{daqi.pollutantText.d}}</h2>
@@ -35,10 +35,10 @@
 {%if htmlLang == 'en'%}
 <ul class="govuk-list">
   <li>
-    <a class="govuk-link" href={{['/pollutants/particulate-matter-25', queryhref, '&lang=en'] | join}}>{{daqi.pollutantsNames.d}}</a>
+    <a class="govuk-link" href={{['/pollutants/particulate-matter-25', queryhref, '?lang=en'] | join}}>{{daqi.pollutantsNames.d}}</a>
   </li>
   <li>
-    <a class="govuk-link" href={{['/pollutants/particulate-matter-10', queryhref, '&lang=en'] | join}}>{{daqi.pollutantsNames.e}}</a>
+    <a class="govuk-link" href={{['/pollutants/particulate-matter-10', queryhref, '?lang=en'] | join}}>{{daqi.pollutantsNames.e}}</a>
   </li>
 </ul>
 {%endif%}

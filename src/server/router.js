@@ -81,6 +81,14 @@ const router = {
         options
       })
     }
+  },
+  cors: {
+    origin: ['https://check-local-air-quality.defra.gov.uk'], // Allow only this domain
+    headers:
+      'Access-Control-Allow-Headers: Origin, Content-Type, Accept, X-Requested-With', // all default apart from Accept-language
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // all default apart from PATCH
+    credentials: true,
+    preflightContinue: false
   }
 }
 
