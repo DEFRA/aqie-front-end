@@ -8,8 +8,6 @@ const homeController = {
       return h.redirect(`cy`)
     }
     return h.view('home/index', {
-      userId: query?.userId,
-      utm_source: query?.utm_source,
       pageTitle: home.pageTitle,
       heading: home.heading,
       page: home.page,

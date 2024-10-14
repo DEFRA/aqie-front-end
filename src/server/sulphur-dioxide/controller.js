@@ -8,13 +8,9 @@ const sulphurDioxideController = {
     const { query } = request
     const lang = 'en'
     if (query?.lang && query?.lang === 'cy') {
-      return h.redirect(
-        `/llygryddion/sylffwr-deuocsid/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
-      )
+      return h.redirect(`/llygryddion/sylffwr-deuocsid/cy?lang=cy`)
     }
     return h.view('sulphur-dioxide/index', {
-      userId: query?.userId,
-      utm_source: query?.utm_source,
       pageTitle: sulphurDioxide.pageTitle,
       sulphurDioxide,
       page: 'Sulphur dioxide (SO₂)',

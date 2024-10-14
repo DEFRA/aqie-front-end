@@ -8,13 +8,9 @@ const particulateMatter10Controller = {
     const { query } = request
     const lang = 'cy'
     if (query?.lang && query?.lang === 'en') {
-      return h.redirect(
-        `/pollutants/particulate-matter-10?lang=en&userId=${query.userId}&utm_source=${query.utm_source}`
-      )
+      return h.redirect(`/pollutants/particulate-matter-10?lang=en`)
     }
     return h.view('particulate-matter-10/index', {
-      userId: query?.userId,
-      utm_source: query?.utm_source,
       pageTitle: particulateMatter10.pageTitle,
       particulateMatter10,
       page: 'particulate matter 10',

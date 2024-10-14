@@ -48,7 +48,7 @@
 {%if page == "Check local air quality"%}{% set serviceName = ""%}{%endif%}
 {%if page != "home"%}
   {%if htmlLang == "en"%}
-  {% set queryhref = "/?userId=" + userId + "&utm_source=" + utm_source %}
+  {% set queryhref = "/" %}
   {{ govukHeader({
     homepageUrl: "https://www.gov.uk/",
     classes: "app-header",
@@ -59,7 +59,7 @@
   }) }}
   {%endif%}
   {%if htmlLang == "cy"%}
-  {% set queryhref = "/cy?userId=" + userId + "&utm_source=" + utm_source %}
+  {% set queryhref = "/cy" %}
   {{ govukHeader({
     homepageUrl: "https://www.gov.uk/",
     classes: "app-header",
@@ -90,9 +90,9 @@
   {%if (page != "Check local air quality") and (page != "Gwirio ansawdd aer lleol") %}
   {% if displayBacklink %}
    {%else%}
-   {% set queryhref = "?userId=" + userId + "&utm_source=" + utm_source %}
-   {% set fullHrefEn = queryhref + "&lang=en" %}
-   {% set fullHrefCy = queryhref + "&lang=cy" %}
+   {% set queryhref = "" %}
+   {% set fullHrefEn = queryhref + "?lang=en" %}
+   {% set fullHrefCy = queryhref + "?lang=cy" %}
        {{
         dwpLanguageToggle({
             selectedLang: lang,
@@ -110,22 +110,22 @@
   {%if displayBacklink %}
   <div class='top-nav'>
   {%if htmlLang == "en"%}
-  {% set queryhrefSearchEn %}/search-location?lang=en&userId={{ userId }}&utm_source={{utm_source}}{% endset %}
+  {% set queryhrefSearchEn %}/search-location?lang=en{% endset %}
     {{ govukBackLink({
     text: backlink.text,
     href: queryhrefSearchEn
   }) }}
   {% endif %}
   {%if htmlLang == "cy"%}
-  {% set queryhrefSearchCy %}/chwilio-lleoliad/cy?lang=cy&userId={{ userId }}&utm_source={{utm_source}}{% endset %}
+  {% set queryhrefSearchCy %}/chwilio-lleoliad/cy?lang=cy{% endset %}
     {{ govukBackLink({
     text: backlink.text,
     href: queryhrefSearchCy
   }) }}
   {% endif %}
-    {% set queryhref = "?userId=" + userId + "&utm_source=" + utm_source %}
-    {% set fullHrefEn = queryhref + "&lang=en" %}
-    {% set fullHrefCy = queryhref + "&lang=cy" %}
+    {% set queryhref = "" %}
+    {% set fullHrefEn = queryhref + "?lang=en" %}
+    {% set fullHrefCy = queryhref + "?lang=cy" %}
     {{
       dwpLanguageToggle({
           selectedLang: lang,
@@ -159,9 +159,9 @@
 {% endblock %}
 
 {% block footer %}
-  {% set privacyhref %}/privacy?userId={{ userId }}&utm_source={{utm_source}}&lang={{htmlLang}}{% endset %}
-  {% set cookieshref %}/cookies?userId={{ userId }}&utm_source={{utm_source}}&lang={{htmlLang}}{% endset %}
-  {% set accessibilityhref %}/accessibility?userId={{ userId }}&utm_source={{utm_source}}&lang={{htmlLang}}{% endset %}
+  {% set privacyhref %}/privacy?lang={{htmlLang}}{% endset %}
+  {% set cookieshref %}/cookies?lang={{htmlLang}}{% endset %}
+  {% set accessibilityhref %}/accessibility?lang={{htmlLang}}{% endset %}
   {{ govukFooterWelsh({
     meta: {
       items: [

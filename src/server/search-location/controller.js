@@ -5,9 +5,7 @@ const searchLocationController = {
     const { query } = request
     if (query.lang === 'cy') {
       /* eslint-disable camelcase */
-      return h.redirect(
-        `/chwilio-lleoliad/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
-      )
+      return h.redirect(`/chwilio-lleoliad/cy?lang=cy`)
     }
     const errors = request.yar.get('errors')
     const errorMessage = request.yar.get('errorMessage')
@@ -15,10 +13,7 @@ const searchLocationController = {
     if (errors) {
       request.yar.set('errors', null)
       request.yar.set('errorMessage', null)
-      const queryValues = request.yar.get('queryValues')
       return h.view('search-location/index', {
-        userId: queryValues?.userId,
-        utm_source: queryValues?.utm_source,
         pageTitle: `Error: ${english.searchLocation.pageTitle}`,
         heading: english.searchLocation.heading,
         page: english.searchLocation.page,
@@ -49,8 +44,6 @@ const searchLocationController = {
       })
     } else {
       return h.view('search-location/index', {
-        userId: query?.userId,
-        utm_source: query?.utm_source,
         pageTitle: english.searchLocation.pageTitle,
         heading: english.searchLocation.heading,
         page: english.searchLocation.page,

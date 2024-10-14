@@ -17,21 +17,12 @@ const getLocationDataController = {
     const { query } = request
     // Extract query parameters using URLSearchParams
     /* eslint-disable camelcase */
-    const urlParams = new URLSearchParams(request.url.search)
-    let userId = urlParams.get('userId')
-    let utm_source = urlParams.get('utm_source')
     const lang = 'en'
     const tempString = request?.headers?.referer?.split('/')[3]
     const str = tempString?.split('?')[0]
-    if (utm_source === '' && userId === '') {
-      utm_source = request.yar.get('utm_source')
-      userId = request.yar.get('userId')
-    }
     if (query?.lang && query?.lang === 'cy') {
       /* eslint-disable camelcase */
-      return h.redirect(
-        `/lleoliad/cy?lang=cy&userId=${userId}&utm_source=${utm_source}`
-      )
+      return h.redirect(`/lleoliad/cy?lang=cy`)
     }
     const formattedDate = moment().format('DD MMMM YYYY').split(' ')
     const getMonth = calendarEnglish.findIndex(function (item) {
@@ -67,8 +58,6 @@ const getLocationDataController = {
       request.yar.set('airQuality', airQuality)
     }
     if (!locationNameOrPostcode && !locationType) {
-      userId = request.yar.set('userId', userId)
-      utm_source = request.yar.set('utm_source', utm_source)
       request.yar.set('errors', {
         errors: {
           titleText: searchLocation.errorText.radios.title, // 'There is a problem',
@@ -88,14 +77,10 @@ const getLocationDataController = {
       request.yar.get('', '')
 
       if (query?.lang === 'cy') {
-        return h.redirect(
-          `/lleoliad/cy?lang=cy&userId=${userId}&utm_source=${utm_source}`
-        )
+        return h.redirect(`/lleoliad/cy?lang=cy`)
       }
       if (str === 'search-location') {
-        return h.redirect(
-          `/search-location?lang=en&userId=${userId}&utm_source=${utm_source}`
-        )
+        return h.redirect(`/search-location?lang=en`)
       }
     }
     try {
@@ -131,10 +116,7 @@ const getLocationDataController = {
           }
         })
         request.yar.set('locationType', 'uk-location')
-        const { userId, utm_source } = request.query
-        return h.redirect(
-          `/search-location?userId=${userId}&utm_source=${utm_source}`
-        )
+        return h.redirect(`/search-location`)
       }
       if (!userLocation && locationType === 'ni-location') {
         request.yar.set('errors', {
@@ -154,10 +136,7 @@ const getLocationDataController = {
           }
         })
         request.yar.set('locationType', 'ni-location')
-        const { userId, utm_source } = request.query
-        return h.redirect(
-          `/search-location?userId=${userId}&utm_source=${utm_source}`
-        )
+        return h.redirect(`/search-location`)
       }
       locationType = request.yar.get('locationType')
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
@@ -167,8 +146,6 @@ const getLocationDataController = {
 
         if (!results || results.length === 0) {
           return h.view('locations/location-not-found', {
-            userId: query?.userId,
-            utm_source: query?.utm_source,
             userLocation: locationNameOrPostcode,
             serviceName: notFoundLocation.heading,
             paragraph: notFoundLocation.paragraphs,
@@ -268,8 +245,6 @@ const getLocationDataController = {
           )
 
           return h.view('locations/location', {
-            userId,
-            utm_source,
             result: matches[0],
             name2:
               matches[0].GAZETTEER_ENTRY?.NAME2 ??
@@ -296,8 +271,6 @@ const getLocationDataController = {
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
           return h.view('locations/multiple-locations', {
-            userId: query?.userId,
-            utm_source: query?.utm_source,
             results: matches,
             title: multipleLocations.title,
             paragraphs: multipleLocations.paragraphs,
@@ -324,8 +297,6 @@ const getLocationDataController = {
           })
         } else {
           return h.view('locations/location-not-found', {
-            userId: query?.userId,
-            utm_source: query?.utm_source,
             userLocation: locationNameOrPostcode,
             serviceName: notFoundLocation.heading,
             paragraph: notFoundLocation.paragraphs,
@@ -349,8 +320,6 @@ const getLocationDataController = {
         )
         if (getOSPlaces?.statusCode === 500) {
           return h.view('error/index', {
-            userId: query?.userId,
-            utm_source: query?.utm_source,
             footerTxt,
             url: request.path,
             phaseBanner,
@@ -363,8 +332,6 @@ const getLocationDataController = {
         }
         if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
           return h.view('locations/location-not-found', {
-            userId: query?.userId,
-            utm_source: query?.utm_source,
             userLocation: locationNameOrPostcode,
             serviceName: notFoundLocation.heading,
             paragraph: notFoundLocation.paragraphs,
@@ -422,15 +389,11 @@ const getLocationDataController = {
         if (lang === 'en') {
           if (query?.lang === 'cy') {
             /* eslint-disable camelcase */
-            return h.redirect(
-              `/lleoliad/cy?lang=cy&userId=${userId}&utm_source=${utm_source}`
-            )
+            return h.redirect(`/lleoliad/cy?lang=cy`)
           }
         }
 
         return h.view('locations/location', {
-          userId: query?.userId,
-          utm_source: query?.utm_source,
           result: locationData,
           airQuality,
           airQualityData: airQualityData.commonMessages,
@@ -455,8 +418,6 @@ const getLocationDataController = {
     } catch (error) {
       logger.error(`error from location refresh ${error.message}`)
       return h.view('error/index', {
-        userId: query?.userId,
-        utm_source: query?.utm_source,
         footerTxt,
         url: request.path,
         phaseBanner,
@@ -476,16 +437,10 @@ const getLocationDetailsController = {
       let title = ''
       const { query } = request
       const locationId = request.params.id
-      // Extract query parameters using URLSearchParams
-      const urlParams = new URLSearchParams(request.url.search)
-      const userId = urlParams.get('userId')
-      const utm_source = urlParams.get('utm_source')
 
       if (query?.lang && query?.lang === 'cy') {
         /* eslint-disable camelcase */
-        return h.redirect(
-          `/lleoliad/cy/${locationId}/?lang=cy&userId=${userId}&utm_source=${utm_source}`
-        )
+        return h.redirect(`/lleoliad/cy/${locationId}/?lang=cy`)
       }
       const lang = 'en'
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')
@@ -552,8 +507,6 @@ const getLocationDetailsController = {
           Object.values(forecastNum[0][4])[0]
         )
         return h.view('locations/location', {
-          userId,
-          utm_source,
           result: locationDetails,
           airQuality,
           airQualityData: airQualityData.commonMessages,
@@ -576,8 +529,6 @@ const getLocationDetailsController = {
         })
       } else {
         return h.view('location-not-found', {
-          userId,
-          utm_source,
           paragraph: notFoundLocation.paragraphs,
           serviceName: notFoundLocation.heading,
           footerTxt,

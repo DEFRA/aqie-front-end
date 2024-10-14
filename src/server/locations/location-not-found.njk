@@ -13,7 +13,7 @@
       <li>{{paragraph.d}}</li>
       <li>{{paragraph.e}}</li>
     </ul>
-    {% set queryhref %}/search-location?userId={{ userId }}&utm_source={{utm_source}}&lang=en{% endset %}
+    {% set queryhref %}/search-location?lang=en{% endset %}
     <p class="govuk-body">{{paragraph.f}}</p>
     <p class="govuk-body"><a href={%if htmlLang == 'en' %}"{{queryhref}}" {%else%}'/chwilio-lleoliad/cy?lang=cy'{%endif%}>{{paragraph.g}}</a></p>
   </div>

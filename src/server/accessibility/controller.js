@@ -13,16 +13,12 @@ const accessibilityController = {
       multipleLocations: { serviceName }
     } = english
     const {
-      query: { lang, utm_source, userId }
+      query: { lang }
     } = request
     if (lang && lang === 'cy') {
-      return h.redirect(
-        `/hygyrchedd/cy?lang=${lang}&userId=${userId}&utm_source=${utm_source}`
-      )
+      return h.redirect(`/hygyrchedd/cy?lang=${lang}`)
     }
     return h.view('accessibility/index', {
-      userId,
-      utm_source,
       pageTitle,
       title,
       heading,

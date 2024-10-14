@@ -2,16 +2,9 @@ import { welsh } from '~/src/server/data/cy/cy.js'
 const searchLocationController = {
   handler: (request, h) => {
     const { query } = request
-    // Extract query parameters using URLSearchParams
-    /* eslint-disable camelcase */
-    const urlParams = new URLSearchParams(request.url.search)
-    const userId = urlParams.get('userId')
-    const utm_source = urlParams.get('utm_source')
     if (query.lang === 'en') {
       /* eslint-disable camelcase */
-      return h.redirect(
-        `/search-location?lang=en&userId=${userId}&utm_source=${utm_source}`
-      )
+      return h.redirect(`/search-location?lang=en`)
     }
     const errors = request.yar.get('errors')
     const errorMessage = request.yar.get('errorMessage')
@@ -19,10 +12,7 @@ const searchLocationController = {
     if (errors) {
       request.yar.set('errors', null)
       request.yar.set('errorMessage', null)
-      const queryValues = request.yar.get('queryValues')
       return h.view('search-location/index', {
-        userId: queryValues?.userId,
-        utm_source: queryValues?.utm_source,
         pageTitle: `Gwall: ${welsh.searchLocation.pageTitle}`,
         heading: welsh.searchLocation.heading,
         page: welsh.searchLocation.page,
@@ -53,8 +43,6 @@ const searchLocationController = {
       })
     } else {
       return h.view('search-location/index', {
-        userId: query?.userId,
-        utm_source: query?.utm_source,
         pageTitle: welsh.searchLocation.pageTitle,
         heading: welsh.searchLocation.heading,
         page: welsh.searchLocation.page,

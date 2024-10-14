@@ -20,16 +20,12 @@ const cookiesController = {
     } = welsh
     /* eslint-disable camelcase */
     const {
-      query: { lang, userId, utm_source }
+      query: { lang }
     } = request
     if (lang && lang === 'en') {
-      return h.redirect(
-        `/cookies?lang=en&userId=${userId}&utm_source=${utm_source}`
-      )
+      return h.redirect(`/cookies?lang=en`)
     }
     return h.view('cookies/index', {
-      userId,
-      utm_source,
       pageTitle,
       title,
       heading,
