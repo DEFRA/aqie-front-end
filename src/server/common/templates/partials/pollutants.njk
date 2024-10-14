@@ -1,6 +1,6 @@
 
 <h2 class="govuk-heading-s">{{daqi.pollutantText.a}}</h2>
-{% set queryhref %}?userId={{ userId }}&utm_source={{utm_source}}{% endset %}
+{% set queryhref %}{% endset %}
 <p>{{daqi.pollutantText.b}}</p>
 {%if htmlLang == 'en'%}
 <ul class="govuk-list">
@@ -20,13 +20,13 @@
 {%if htmlLang == 'cy'%}
 <ul class="govuk-list">
   <li>
-    <a class="govuk-link" href={{['/llygryddion/oson/cy', queryhref, '&lang=cy'] | join}}>{{daqi.pollutantsNames.a}}</a>
+    <a class="govuk-link" href={{['/llygryddion/oson/cy', queryhref, '?lang=cy'] | join}}>{{daqi.pollutantsNames.a}}</a>
   </li>
   <li>
-    <a class="govuk-link" href={{['/llygryddion/nitrogen-deuocsid/cy', queryhref, '&lang=cy'] | join}}>{{daqi.pollutantsNames.b}}</a>
+    <a class="govuk-link" href={{['/llygryddion/nitrogen-deuocsid/cy', queryhref, '?lang=cy'] | join}}>{{daqi.pollutantsNames.b}}</a>
   </li>
   <li>
-    <a class="govuk-link" href={{['/llygryddion/sylffwr-deuocsid/cy', queryhref, '&lang=cy'] | join}}>{{daqi.pollutantsNames.c}}</a>
+    <a class="govuk-link" href={{['/llygryddion/sylffwr-deuocsid/cy', queryhref, '?lang=cy'] | join}}>{{daqi.pollutantsNames.c}}</a>
   </li>
 </ul>
 <h2 class="govuk-heading-s">{{daqi.pollutantText.d}}</h2>
@@ -45,10 +45,10 @@
 {%if htmlLang == 'cy'%}
 <ul class="govuk-list">
   <li>
-    <a class="govuk-link" href={{['/llygryddion/mater-gronynnol-25/cy', queryhref, '&lang=cy'] | join}}>{{daqi.pollutantsNames.d}}</a>
+    <a class="govuk-link" href={{['/llygryddion/mater-gronynnol-25/cy', queryhref, '?lang=cy'] | join}}>{{daqi.pollutantsNames.d}}</a>
   </li>
   <li>
-    <a class="govuk-link" href={{['/llygryddion/mater-gronynnol-10/cy', queryhref, '&lang=cy'] | join}}>{{daqi.pollutantsNames.e}}</a>
+    <a class="govuk-link" href={{['/llygryddion/mater-gronynnol-10/cy', queryhref, '?lang=cy'] | join}}>{{daqi.pollutantsNames.e}}</a>
   </li>
 </ul>
 {%endif%}

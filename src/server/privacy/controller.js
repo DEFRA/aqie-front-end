@@ -13,16 +13,12 @@ const privacyController = {
     } = english
     /* eslint-disable camelcase */
     const {
-      query: { lang, userId, utm_source }
+      query: { lang }
     } = request
     if (lang && lang === 'cy') {
-      return h.redirect(
-        `/preifatrwydd/cy?lang=cy&userId=${userId}&utm_source=${utm_source}`
-      )
+      return h.redirect(`/preifatrwydd/cy?lang=cy`)
     }
     return h.view('privacy/index', {
-      userId,
-      utm_source,
       pageTitle,
       title,
       heading,

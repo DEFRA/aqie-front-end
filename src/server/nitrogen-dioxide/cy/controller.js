@@ -8,13 +8,9 @@ const nitrogenDioxideController = {
     const { query } = request
     const lang = 'cy'
     if (query?.lang && query?.lang === 'en') {
-      return h.redirect(
-        `/pollutants/nitrogen-dioxide?lang=en&userId=${query.userId}&utm_source=${query.utm_source}`
-      )
+      return h.redirect(`/pollutants/nitrogen-dioxide?lang=en`)
     }
     return h.view('nitrogen-dioxide/index', {
-      userId: query?.userId,
-      utm_source: query?.utm_source,
       pageTitle: nitrogenDioxide.pageTitle,
       nitrogenDioxide,
       page: 'Nitrogen dioxide (NO₂)',

@@ -8,13 +8,9 @@ const nitrogenDioxideController = {
     const { query } = request
     const lang = 'en'
     if (query?.lang && query?.lang === 'cy') {
-      return h.redirect(
-        `/llygryddion/nitrogen-deuocsid/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
-      )
+      return h.redirect(`/llygryddion/nitrogen-deuocsid/cy?lang=cy`)
     }
     return h.view('nitrogen-dioxide/index', {
-      userId: query?.userId,
-      utm_source: query?.utm_source,
       pageTitle: nitrogenDioxide.pageTitle,
       nitrogenDioxide,
       page: 'Nitrogen dioxide (NO₂)',

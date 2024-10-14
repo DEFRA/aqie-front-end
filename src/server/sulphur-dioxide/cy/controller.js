@@ -8,13 +8,9 @@ const sulphurDioxideController = {
     const { query } = request
     const lang = 'cy'
     if (query?.lang && query?.lang === 'en') {
-      return h.redirect(
-        `/pollutants/sulphur-dioxide?lang=en&userId=${query.userId}&utm_source=${query.utm_source}`
-      )
+      return h.redirect(`/pollutants/sulphur-dioxide?lang=en`)
     }
     return h.view('sulphur-dioxide/index', {
-      userId: query?.userId,
-      utm_source: query?.utm_source,
       pageTitle: sulphurDioxide.pageTitle,
       sulphurDioxide,
       page: 'Sulphur dioxide (SO₂)',

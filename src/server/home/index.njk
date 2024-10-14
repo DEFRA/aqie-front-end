@@ -16,21 +16,21 @@
        <!-- That this is not required for the MVP <li>access the local authority website to find out what is being done to improve air quality</li> -->
       </ul>
       {%if lang == 'en' %}
-      {% set queryhref %}/cy?userId={{ userId }}&utm_source={{utm_source}}{% endset %}
+      {% set queryhref %}/cy{% endset %}
       {{ govukInsetText({
         html: "<p class='govuk-body'>This page is also available <a class='govuk-link' href='" + queryhref + "'> in Welsh</a> (<a href='" + queryhref + "' hreflang='cy'>Cymraeg</a>).</p>",
         classes: "check-local-air-quality"
       }) }}
       {%endif%}
       {%if lang == 'cy'%}
-      {% set queryhref %}/?userId={{ userId }}&utm_source={{utm_source}}{% endset %}
+      {% set queryhref %}/{% endset %}
       {{ govukInsetText({
         html: "<p class='govuk-body'>Mae'r dudalen hon hefyd ar gael <a class='govuk-link' href='" + queryhref + "'> yn Saesneg</a> (<a href='" + queryhref + "' hreflang='en'>English</a>).</p>",
         classes: "check-local-air-quality"
       }) }}
       {%endif%}
       {%if htmlLang == 'en'%}
-      {% set queryhref %}/search-location?userId={{ userId }}&utm_source={{utm_source}}&lang=en{% endset %}
+      {% set queryhref %}/search-location?lang=en{% endset %}
       {{ govukButton({
         text: label,
         href: queryhref,
@@ -38,7 +38,7 @@
       }) }}
       {%endif%}
       {%if htmlLang == 'cy'%}
-       {% set queryhref %}/chwilio-lleoliad/cy?userId={{ userId }}&utm_source={{utm_source}}&lang=cy{% endset %}
+       {% set queryhref %}/chwilio-lleoliad/cy?lang=cy{% endset %}
       {{ govukButton({
         text: label,
         href: queryhref,

@@ -8,13 +8,9 @@ const ozoneController = {
     const { query } = request
     const lang = 'cy'
     if (query?.lang && query?.lang === 'en') {
-      return h.redirect(
-        `/pollutants/ozone?lang=en&userId=${query.userId}&utm_source=${query.utm_source}`
-      )
+      return h.redirect(`/pollutants/ozone?lang=en`)
     }
     return h.view('ozone/index', {
-      userId: query?.userId,
-      utm_source: query?.utm_source,
       pageTitle: ozone.pageTitle,
       ozone,
       page: 'ozone-cy',

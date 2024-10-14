@@ -8,13 +8,9 @@ const particulateMatter10Controller = {
     const { query } = request
     const lang = 'en'
     if (query?.lang && query?.lang === 'cy') {
-      return h.redirect(
-        `/llygryddion/mater-gronynnol-10/cy?lang=cy&userId=${query.userId}&utm_source=${query.utm_source}`
-      )
+      return h.redirect(`/llygryddion/mater-gronynnol-10/cy?lang=cy`)
     }
     return h.view('particulate-matter-10/index', {
-      userId: query?.userId,
-      utm_source: query?.utm_source,
       pageTitle: particulateMatter10.pageTitle,
       particulateMatter10,
       page: 'particulate matter 10',

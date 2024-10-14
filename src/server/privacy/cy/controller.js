@@ -13,16 +13,12 @@ const privacyController = {
     } = welsh
     /* eslint-disable camelcase */
     const {
-      query: { lang, userId, utm_source }
+      query: { lang }
     } = request
     if (lang && lang === 'en') {
-      return h.redirect(
-        `/privacy?lang=en&userId=${userId}&utm_source=${utm_source}`
-      )
+      return h.redirect(`/privacy?lang=en`)
     }
     return h.view('privacy/index', {
-      userId,
-      utm_source,
       pageTitle,
       title,
       heading,
