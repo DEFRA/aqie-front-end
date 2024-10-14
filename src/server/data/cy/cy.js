@@ -473,9 +473,9 @@ export const welsh = {
         b: 'Mae’r datganiad hygyrchedd yma yn gymwys i',
         c: 'Mae’r wefan yma yn cydymffurfio’n llawn â safon AA fersiwn 2.2 o Ganllawiau Hygyrchedd Cynnwys y We (WCAG).',
 
-        d: 'Cafodd y datganiad yma ei baratoi ar 20 Mawrth 2024.',
+        d: 'Cafodd y datganiad yma ei baratoi ar 18 Medi 2024.',
         e: 'Cafodd y wefan ei gwerthuso gan Adran yr Amgylchedd, Bwyd a Materion Gwledig. ',
-        f: 'Y tro diwethaf i’r datganiad gael ei adolygu oedd 11 Mawrth 2024.',
+        f: 'Y tro diwethaf i’r datganiad gael ei adolygu oedd 16 Medi 2024.',
         g: 'Os byddwch yn sylwi ar unrhyw fethiannau cydymffurfiaeth neu os oes angen ichi ofyn am wybodaeth a chynnwys sydd heb gael eu darparu yn y ddogfen yma, anfonwch neges ebost at',
         h: 'Y Comisiwn Cydraddoldeb a Hawliau Dynol (EHRC) sy’n gyfrifol am orfodi Rheoliadau Hygyrchedd Cyrff y Sector Cyhoeddus (Gwefannau a Chymwysiadau Symudol) (Rhif 2) 2018 (y ’rheoliadau hygyrchedd’). ',
         i: 'Os nad ydych chi’n fodlon ar y ffordd rydyn ni’n ymateb i’ch cwyn, cysylltwch â’r Gwasanaeth Cynghori a Chymorth Cydraddoldeb (EASS).'
