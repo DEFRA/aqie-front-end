@@ -62,7 +62,7 @@ const fetchOAuthToken = async () => {
   }
 
   const data = await response.json()
-  logger.info(`OAuth token fetched::: ${JSON.stringify(data.access_token)}`)
+  logger.info(`OAuth token fetched:::`)
   return data.access_token
 }
 
@@ -72,15 +72,13 @@ async function fetchData(locationType, userLocation, request, h) {
   let accessToken
   if (locationType === 'ni-location') {
     savedAccessToken = request.yar.get('savedAccessToken')
-    logger.info(
-      `::::::::: OAuth token in session 1 :::::::::: ${savedAccessToken}`
-    )
+    logger.info(`::::::::: OAuth token in session 1 ::::::::::`)
     if (savedAccessToken) {
       accessToken = savedAccessToken
     } else {
       accessToken = await fetchOAuthToken()
     }
-    logger.info(`::::::::: accessTokennnn :::::::::: ${accessToken}`)
+    logger.info(`::::::::: accessTokennnn ::::::::::`)
     optionsOAuth = {
       method: 'GET',
       headers: {
@@ -95,9 +93,7 @@ async function fetchData(locationType, userLocation, request, h) {
       accessToken = await fetchOAuthToken()
       request.yar.clear('savedAccessToken')
       request.yar.set('savedAccessToken', accessToken)
-      logger.info(
-        `::::::::: OAuth token in session 2 :::::::::: ${savedAccessToken}`
-      )
+      logger.info(`::::::::: OAuth token in session 2 ::::::::::`)
     } catch (err) {
       logger.error('Error clearing cache:', err)
     }
@@ -128,7 +124,7 @@ async function fetchData(locationType, userLocation, request, h) {
   if (forecastsRes.ok) {
     getForecasts = await forecastsRes.json()
   }
-  logger.info(`forecasts data fetched: ${getForecasts}`)
+  logger.info(`forecasts data fetched:`)
   logger.info(`measurements data requested:`)
   const measurementsRes = await fetch(measurementsAPIurl, optionsCors).catch(
     (err) => {
@@ -139,7 +135,7 @@ async function fetchData(locationType, userLocation, request, h) {
   if (measurementsRes.ok) {
     getMeasurements = await measurementsRes.json()
   }
-  logger.info(`measurements data fetched:${getMeasurements}`)
+  logger.info(`measurements data fetched:`)
   logger.info(`forecasts summary data requested:`)
   logger.info(`forecasts summary data requested:`)
   const forecastSummaryRes = await proxyFetch(
@@ -152,7 +148,7 @@ async function fetchData(locationType, userLocation, request, h) {
   if (forecastSummaryRes.ok) {
     getDailySummary = await forecastSummaryRes.json()
   }
-  logger.info(`forecasts summary data fetched: ${getDailySummary}`)
+  logger.info(`forecasts summary data fetched:`)
   if (locationType === 'uk-location') {
     const filters = [
       'LOCAL_TYPE:City',
@@ -190,9 +186,7 @@ async function fetchData(locationType, userLocation, request, h) {
     )
     const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
     logger.info(`osPlace Northern Ireland data requested:`)
-    logger.info(
-      `::::::::: optionsOAuth final :::::::::: ${JSON.stringify(optionsOAuth)}`
-    )
+    logger.info(`::::::::: optionsOAuth final ::::::::::`)
     const northerIrelandRes = await proxyFetch(
       postcodeNortherIrelandURL,
       optionsOAuth

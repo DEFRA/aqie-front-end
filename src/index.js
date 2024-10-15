@@ -21,6 +21,6 @@ async function startServer() {
 }
 
 startServer().catch((error) => {
-  logger.info('Server failed to start :(')
+  logger.error('Server failed to start :(')
   logger.error(error)
 })
