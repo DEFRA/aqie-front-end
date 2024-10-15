@@ -72,9 +72,7 @@ async function fetchData(locationType, userLocation, request, h) {
   let accessToken
   if (locationType === 'ni-location') {
     savedAccessToken = request.yar.get('savedAccessToken')
-    logger.info(
-      `::::::::: OAuth token in session 1 ::::::::::`
-    )
+    logger.info(`::::::::: OAuth token in session 1 ::::::::::`)
     if (savedAccessToken) {
       accessToken = savedAccessToken
     } else {
@@ -95,9 +93,7 @@ async function fetchData(locationType, userLocation, request, h) {
       accessToken = await fetchOAuthToken()
       request.yar.clear('savedAccessToken')
       request.yar.set('savedAccessToken', accessToken)
-      logger.info(
-        `::::::::: OAuth token in session 2 ::::::::::`
-      )
+      logger.info(`::::::::: OAuth token in session 2 ::::::::::`)
     } catch (err) {
       logger.error('Error clearing cache:', err)
     }
@@ -190,9 +186,7 @@ async function fetchData(locationType, userLocation, request, h) {
     )
     const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
     logger.info(`osPlace Northern Ireland data requested:`)
-    logger.info(
-      `::::::::: optionsOAuth final ::::::::::`
-    )
+    logger.info(`::::::::: optionsOAuth final ::::::::::`)
     const northerIrelandRes = await proxyFetch(
       postcodeNortherIrelandURL,
       optionsOAuth

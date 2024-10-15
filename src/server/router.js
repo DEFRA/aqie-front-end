@@ -83,9 +83,9 @@ const router = {
       })
       await server.register({
         plugin: cors,
-        options:{
+        options: {
           origins: ['https://check-local-air-quality.defra.gov.uk']
-      }
+        }
       })
     }
   },
