@@ -7,18 +7,6 @@ const options = {
   method: 'get',
   headers: { 'Content-Type': 'text/json', preserveWhitespace: true }
 }
-const optionsCors = {
-  method: 'get',
-  mode: 'cors', // Enable CORS
-  headers: {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin':
-      'https://check-local-air-quality.defra.gov.uk', // Allow only this domain
-    'Access-Control-Allow-Headers':
-      'Origin, Content-Type, Authorization, Accept, X-Requested-With' // Add other headers as needed
-    // Add any other headers you need here
-  }
-}
 const logger = createLogger()
 const clientId = config.get('clientIdNIreland')
 const clientSecret = config.get('clientSecretNIreland')
@@ -115,7 +103,7 @@ async function fetchData(locationType, userLocation, request, h) {
   const forecastsAPIurl = config.get('forecastsApiUrl')
   const measurementsAPIurl = config.get('measurementsApiUrl')
   logger.info(`forecasts data requested:`)
-  const forecastsRes = await fetch(`${forecastsAPIurl}`, optionsCors).catch(
+  const forecastsRes = await fetch(`${forecastsAPIurl}`, options).catch(
     (err) => {
       logger.error(`err ${JSON.stringify(err.message)}`)
     }
@@ -126,7 +114,7 @@ async function fetchData(locationType, userLocation, request, h) {
   }
   logger.info(`forecasts data fetched:`)
   logger.info(`measurements data requested:`)
-  const measurementsRes = await fetch(measurementsAPIurl, optionsCors).catch(
+  const measurementsRes = await fetch(measurementsAPIurl, options).catch(
     (err) => {
       logger.error(`err ${JSON.stringify(err.message)}`)
     }

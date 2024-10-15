@@ -27,7 +27,6 @@ import { accessibility } from '~/src/server/accessibility/index'
 import { accessibilityCy } from '~/src/server/accessibility/cy/index'
 import { health } from '~/src/server/health/index'
 import { config } from '~/src/config'
-import cors from 'hapi-cors'
 
 const sessionCookiePassword = config.get('sessionCookiePassword')
 
@@ -81,21 +80,7 @@ const router = {
         plugin: yar,
         options
       })
-      await server.register({
-        plugin: cors,
-        options: {
-          origins: ['https://check-local-air-quality.defra.gov.uk']
-        }
-      })
     }
-  },
-  cors: {
-    origin: ['https://check-local-air-quality.defra.gov.uk'], // Allow only this domain
-    headers:
-      'Access-Control-Allow-Headers: Origin, Content-Type, Accept, X-Requested-With', // all default apart from Accept-language
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // all default apart from PATCH
-    credentials: true,
-    preflightContinue: false
   }
 }
 
