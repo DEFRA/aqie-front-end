@@ -10,6 +10,7 @@ import { fetchData } from '~/src/server/locations/helpers/fetch-data'
 import { english, calendarEnglish } from '~/src/server/data/en/en.js'
 import { calendarWelsh } from '~/src/server/data/cy/cy.js'
 import moment from 'moment-timezone'
+import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 
 const logger = createLogger()
 const getLocationDataController = {
@@ -356,7 +357,7 @@ const getLocationDataController = {
         const locationData = {
           GAZETTEER_ENTRY: {
             NAME1: results[0].postcode,
-            DISTRICT_BOROUGH: results[0].administrativeArea,
+            DISTRICT_BOROUGH: sentenceCase(results[0].administrativeArea),
             LONGITUDE: latlon.lon,
             LATITUDE: latlon.lat
           }
