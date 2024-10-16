@@ -29,16 +29,18 @@
          <li>{{paragraphs.m}} </li>
          <li>{{paragraphs.n}}</li>
          <li>{{paragraphs.o}}</li>
-         <li>{{paragraphs.p}}</li>
       </ul>
-      
-
+      {% if lang == "cy" %}
+      <p>{{paragraphs.a23}}<a href="/briwsion/cy">{{paragraphs.a24}}</a></p>
+      {% else  %}
+      <p>{{paragraphs.a23}}<a href="/cookies"> {{paragraphs.a24}}</a></p>
+      {% endif %}
       <h2 class="govuk-heading-m">{{headings.c}} </h2>
       <p>{{paragraphs.q}}</p>
 
       <h2 class="govuk-heading-m">{{headings.d}}</h2>
-      <p>{{paragraphs.r}} <a href="mailto:data.protection@defra.gov.uk">data.protection@defra.gov.uk.</a></p>
-
+      <p>{{paragraphs.r}}</p>
+      <p>{{paragraphs.r2}}</p>
 
       <h2 class="govuk-heading-m">{{headings.e}}</h2>
       <p>{{paragraphs.s}}</p>
