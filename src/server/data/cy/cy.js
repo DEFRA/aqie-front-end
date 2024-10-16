@@ -363,6 +363,7 @@ export const welsh = {
         h: 'Os oes arnoch chi angen rhagor o wybodaeth am sut mae Defra yn defnyddio’ch data personol a’ch hawliau cysylltiedig, gallwch gysylltu â rheolwr diogelu data Defra yn ',
         i: 'neu yn y cyfeiriad uchod.',
         j: 'Swyddog diogelu data Defra sy’n gyfrifol am wirio bod Defra yn cydymffurfio â’r ddeddfwriaeth. Gallwch gysylltu â nhw yn',
+        k0: 'Er mwyn i’r gwasanaeth fod yn weithredol, rydym yn casglu’r cod post neu’r enw lle rydych yn chwilio amdano gan fod hwn yn ddata hanfodol er mwyn i’r gwasanaeth roi data perthnasol.',
         k: 'Os byddwch yn derbyn y cwcis dadansoddol Google, yna byddwn yn casglu:',
 
         l: 'eich cyfeiriad IP fel y gallwn gasglu gwybodaeth am leoliad defnyddwyr ein gwasanaeth.',
@@ -437,7 +438,10 @@ export const welsh = {
           'Mae’n ein helpu i gyfrif faint o bobl sy’n ymweld â Gwirio ansawdd aer lleol trwy ddweud wrthon ni a ydych chi wedi ymweld o’r blaen. ',
         text8: '24 awr',
         text9: 'Mae’n cael ei ddefnyddio i leihau nifer y ceisiadau.',
-        text10: '1 funud'
+        text10: '1 funud',
+        text11:
+          'Rheolir data sy’n ymwneud â rhaglenni yn y cwci hwn ac mae’n ofynnol er mwyn i ymarferoldeb y rhaglen weithio.',
+        text12: '30 munud'
       },
       paragraphs: {
         w: 'Mae',
