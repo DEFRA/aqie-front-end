@@ -46,10 +46,20 @@
               {text: table1.text4},
               {text: table1.text5},
               {text: table1.text6}
+            ],
+            [
+              { text: "_ga" },
+              { text: table2.text4 },
+              { text: table2.text5 }
+            ],
+            [
+              { text: "_gat_UA-[G-8CMZBTDQBC]" },
+              { text: table2.text9 },
+              { text: table2.text10 }
             ]
           ]
         }) }}
-
+        <p class="govuk-body">{{paragraphs.ga1}} <strong>{{paragraphs.ga2}} </strong> {{paragraphs.ga4}} <strong>{{paragraphs.ga3}}</strong> {{paragraphs.ga5}}</p>
         <h2 class="govuk-heading-m">{{headings.b}}</h2>
 
         <p class="govuk-body">{{paragraphs.i}}</p>
@@ -67,33 +77,6 @@
           <li>{{paragraphs.p}}</li>
           <li>{{paragraphs.q}}</li>
         </ul>
-        {{ govukTable({
-          firstCellIsHeader: true,
-          caption: headings.c,
-          head: [
-            { text: table2.text1 },
-            { text: table2.text2 },
-            { text: table2.text3 }
-          ],
-          rows: [
-            [
-              { text: "_ga" },
-              { text: table2.text4 },
-              { text: table2.text5 }
-            ],
-            [
-              { text: "_gid" },
-              { text: table2.text7 },
-              { text: table2.text8 }
-            ],
-            [
-              { text: "_gat_UA-[G-8CMZBTDQBC]" },
-              { text: table2.text9 },
-              { text: table2.text10 }
-            ]
-          ]
-        }) }}
-
         {{ govukRadios({
           name: "cookies[analytics]",
           idPrefix: "cookies-analytics",

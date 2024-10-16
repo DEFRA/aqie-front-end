@@ -363,14 +363,16 @@ export const welsh = {
         h: 'Os oes arnoch chi angen rhagor o wybodaeth am sut mae Defra yn defnyddio’ch data personol a’ch hawliau cysylltiedig, gallwch gysylltu â rheolwr diogelu data Defra yn ',
         i: 'neu yn y cyfeiriad uchod.',
         j: 'Swyddog diogelu data Defra sy’n gyfrifol am wirio bod Defra yn cydymffurfio â’r ddeddfwriaeth. Gallwch gysylltu â nhw yn',
-        k: 'Rydyn ni’n casglu:',
-        l: 'y cod post neu’r enw lle rydych chi’n chwilio amdano gan fod hwn yn ddata hanfodol er mwyn i’r gwasanaeth roi data perthnasol',
-        m: 'eich cyfeiriad IP er mwyn inni allu casglu gwybodaeth am ble mae defnyddwyr wedi’u lleoli',
-        n: 'eich dyfais a’ch system weithredu i’n galluogi i wella’n gwasanaeth',
-        o: "y term chwilio rydych chi wedi’i ddefnyddio i ddod o hyd i 'Gwirio ansawdd aer lleol' i'n galluogi i wella’n gwasanaeth",
-        p: "y tudalennau rydych chi'n rhyngweithio â nhw yn 'Gwirio ansawdd aer lleol' i'n galluogi i wella’n gwasanaeth",
+        k: 'Os byddwch yn derbyn y cwcis dadansoddol Google, yna byddwn yn casglu:',
+
+        l: 'eich cyfeiriad IP fel y gallwn gasglu gwybodaeth am leoliad defnyddwyr ein gwasanaeth.',
+        m: 'Bydd hyn yn ein helpu i weld pa leoliadau daearyddol sy’n defnyddio ein gwasanaeth.',
+        n: "eich dyfais a’ch system weithredu i’n galluogi i wella ein gwasanaeth y term chwilio a ddefnyddiwyd gennych i ddod o hyd i 'Gwirio ansawdd aer' i’n galluogi i wella ein gwasanaeth",
+        o: "y tudalennau rydych yn rhyngweithio â nhw yn 'Gwirio ansawdd aer' i'n galluogi i wella ein gwasanaeth",
         q: 'Y sail gyfreithlon dros brosesu’ch data personol er mwyn gwneud ymchwil ar effeithiolrwydd y gwasanaeth yw cydsyniad. Does dim rhaid ichi roi’ch cydsyniad a gallwch dynnu’ch cydsyniad yn ôl unrhyw bryd.',
-        r: 'Mae’r gwaith o brosesu’ch data personol wedi’i seilio ar gydsyniad. Gallwch dynnu’ch cydsyniad yn ôl unrhyw bryd drwy anfon neges ebost at ',
+
+        r: 'Mae prosesu eich data personol yn seiliedig ar ganiatâd. Nid ydym yn casglu unrhyw wybodaeth a allai fod yn gysylltiedig yn bersonol ag unigolyn; fodd bynnag, bydd y cyfeiriad IP yn cael ei gofnodi ar gyfer ymarferoldeb y gwasanaeth. ',
+        r2: 'Os ydych wedi cydsynio i dderbyn cwcis, ni ellir dileu unrhyw wybodaeth a gasglwn yn ystod y broses hon gan na fyddwn yn gallu adnabod y wybodaeth honno i unigolyn penodol.',
         s: 'Dydyn ni ddim yn rhannu’r data personol sy’n cael ei gasglu dan yr hysbysiad preifatrwydd yma gyda sefydliadau eraill.',
         t: 'Rydyn ni’n parchu’ch preifatrwydd personol wrth ymateb i geisiadau am wybodaeth. Dim ond pan fo angen gwneud hynny er mwyn bodloni gofynion statudol Rheoliadau Gwybodaeth Amgylcheddol 2004 a Deddf Rhyddid Gwybodaeth 2000 y byddwn ni’n rhannu gwybodaeth.',
         u: 'Byddwn yn cadw’ch data personol am 7 mlynedd yn unol â gofynion y ddeddfwriaeth.',
@@ -399,7 +401,9 @@ export const welsh = {
         a19: 'Personal information charter',
         a20: 'Mae ein',
         a21: 'siarter gwybodaeth bersonol',
-        a22: 'yn esbonio rhagor am eich hawliau dros eich data personol.'
+        a22: 'yn esbonio rhagor am eich hawliau dros eich data personol.',
+        a23: 'Gallwch ',
+        a24: 'optio i mewn ac allan o dderbyn cwcis.'
       }
     },
     cookies: {
@@ -456,7 +460,12 @@ export const welsh = {
         q: 'Y ddyfais a’r porwr rydych chi’n eu defnyddio',
         r: 'Hoffwn',
         s: 'Na hoffwn',
-        buttonText: 'Cadw gosodiadau cwcis'
+        buttonText: 'Cadw gosodiadau cwcis',
+        ga1: 'Bydd y cwcis',
+        ga2: '_ga_',
+        ga3: '_gat_UA-[G-8CMZBTDQBC]',
+        ga4: 'a',
+        ga5: 'ond yn weithredol os byddwch yn derbyn y cwcis. Fodd bynnag, os nad ydych yn derbyn cwcis, efallai y byddant yn dal i ymddangos yn eich sesiwn cwci, ond ni fyddant yn weithredol.'
       }
     },
     accessibility: {

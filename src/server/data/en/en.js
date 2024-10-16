@@ -369,14 +369,14 @@ export const english = {
         h: 'If you need further information about how Defra uses your personal data and your associated rights you can contact the Defra data protection manager at ',
         i: 'or at the above address.',
         j: 'The data protection officer for Defra is responsible for checking that Defra complies with legislation. You can contact them at',
-        k: 'We collect:',
-        l: 'the postcode or placename that you search for as this is essential data for the service to give relevant data',
-        m: 'your IP address so that we can collect information on where users are based',
-        n: 'your device and operating system to enable us to improve our service',
-        o: "the search term you used to find 'Check local air quality' to enable us to improve our service",
-        p: "the pages you interact with in 'Check local air quality' to enable us to improve our service",
+        k: 'If you accept the Google analytical cookies, then we will collect:',
+        l: 'your IP address so that we can collect location information of users to our service. This will help us see what geographical locations are using our service. ',
+        m: 'your device and operating system to enable us to improve our service',
+        n: "the search term you used to find 'Check air quality' to enable us to improve our service",
+        o: "the pages you interact with in 'Check air quality' to enable us to improve our service",
         q: 'The legal basis for processing your personal data to conduct research on the effectiveness of the service is consent. You do not have to provide your consent and you can withdraw your consent at any time.',
-        r: 'The processing of your personal data is based on consent. You can withdraw consent at any time by emailing ',
+        r: 'The processing of your personal data is based on consent. We do not collect any information that could be personally linked to an individual; however, the IP address will be recorded for functionality of the service.',
+        r2: 'If you have consented to accepting cookies, any information that we collect during this process cannot be removed as we will be unable to identify that information to a specific individual.',
         s: 'We do not share the personal data collected under this privacy notice with other organisations.',
         t: 'We respect your personal privacy when responding to access to information requests. We only share information when necessary to meet the statutory requirements of the Environmental Information Regulations 2004 and the Freedom of Information Act 2000.',
         u: 'We will keep your personal data for 7 years in line with legislative requirements which is 7 years.',
@@ -406,7 +406,9 @@ export const english = {
         a19: 'Personal information charter',
         a20: 'Our',
         a21: 'personal information charter',
-        a22: 'explains more about your rights over your personal data.'
+        a22: 'explains more about your rights over your personal data.',
+        a23: 'You can',
+        a24: 'opt in and out of cookie acceptance.'
       }
     },
     cookies: {
@@ -462,7 +464,12 @@ export const english = {
         q: 'the device and browser you use',
         r: 'Yes',
         s: 'No',
-        buttonText: 'Save cookie settings'
+        buttonText: 'Save cookie settings',
+        ga1: 'The cookies',
+        ga2: '_ga_',
+        ga3: '_gat_UA-[G-8CMZBTDQBC]',
+        ga4: 'and',
+        ga5: 'will only be active if you accept the cookies. However, if you do not accept cookies, they may still appear in your cookie session, but they will not be active.'
       }
     },
     accessibility: {
