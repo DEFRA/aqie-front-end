@@ -16,7 +16,6 @@
 .daqi-bar-segment {
   width: 10%;
   height: 100%;
-  margin-right: 2px;
   border-right: 1px solid govuk-colour("white");
   padding-top: 10px;
   padding-bottom: 10px;
@@ -24,8 +23,8 @@
   -webkit-font-smoothing: antialiased;
 }
 
-.daqi-bar-segment:last-child {
-  border-right: none;
+.daqi-bar-segment:last-child, .daqi-bar-segment:first-child {
+  border-right: 1px solid govuk-colour("white");
   margin-right: 0;
 }
 
