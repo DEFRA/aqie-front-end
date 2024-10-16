@@ -369,6 +369,7 @@ export const english = {
         h: 'If you need further information about how Defra uses your personal data and your associated rights you can contact the Defra data protection manager at ',
         i: 'or at the above address.',
         j: 'The data protection officer for Defra is responsible for checking that Defra complies with legislation. You can contact them at',
+        k0: 'For the service to be functional, we collect the postcode or placename that you search for as this is essential data for the service to give relevant data.',
         k: 'If you accept the Google analytical cookies, then we will collect:',
         l: 'your IP address so that we can collect location information of users to our service. This will help us see what geographical locations are using our service. ',
         m: 'your device and operating system to enable us to improve our service',
@@ -441,7 +442,10 @@ export const english = {
           'Helps us count how many people visit the Check local air quality by telling us if you’ve visited before.',
         text8: '24 hours',
         text9: 'Used to reduce the number of requests.',
-        text10: '1 minute'
+        text10: '1 minute',
+        text11:
+          'Application related data is managed in this cookie and it is required for application functionality to work',
+        text12: '30 minutes'
       },
       paragraphs: {
         w: '',
