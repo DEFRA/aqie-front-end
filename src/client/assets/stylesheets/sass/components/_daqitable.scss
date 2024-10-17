@@ -51,11 +51,23 @@
 }
 
 .daqi-selected {
-  font-weight: bold; 
+  font-weight: bold;
   border-width: 0 5px 3px 3px;
-  border-color: transparent;
+  border-color: rgba(0, 0, 0, 0);
   border-style: solid;
   padding-bottom: 7px;
+}
+
+@media (prefers-contrast: less) {
+  .daqi-selected {
+    font-weight: bold;
+    border-width: 0 5px 3px 3px;
+    border-color: rgba(0, 0, 0, 0);
+    border-style: solid;
+    padding-bottom: 9px;
+    outline: 4px solid govuk-colour("black");
+    outline-offset: -4px;
+  }
 }
 
 .daqi-0 {
