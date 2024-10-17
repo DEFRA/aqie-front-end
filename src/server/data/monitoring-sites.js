@@ -9,7 +9,7 @@ export const monitoringSites = [
         type: 'ozone',
         measurement: 39.914,
         trend: 'Rising',
-        band: 'Low',
+        band: 'Low2',
         aqi: 2,
         low_range: '0 to 100'
       },

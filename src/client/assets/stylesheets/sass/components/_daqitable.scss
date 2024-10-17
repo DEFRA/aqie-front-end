@@ -13,13 +13,13 @@
   border: 1px solid transparent;
 }
 
+
 .daqi-bar-segment {
   width: 10%;
   height: 100%;
-  border-right: 1px solid govuk-colour("white");
-  border-bottom: 1px solid govuk-colour("white");
-  padding-top: 10px;
-  padding-bottom: 10px;
+  border-right: 2px solid govuk-colour("white");
+  border-bottom: 2px solid govuk-colour("white");
+  padding: 10px 0;
   font-family: "GDS Transport", arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -39,18 +39,23 @@
   border: 0;
   vertical-align: top;
   text-align: left;
+  width: 30%;
 }
 
 .daqi-band:last-child {
-  text-align: 20%;
+  width: 20%;
+}
+
+.daqi-band:nth-child(3) {
+  width: 20%;
 }
 
 .daqi-selected {
   font-weight: bold; 
-  border-width: 3px 5px 3px 3px;
+  border-width: 0 5px 3px 3px;
   border-color: transparent;
   border-style: solid;
-  padding-bottom: 5px;
+  padding-bottom: 7px;
 }
 
 .daqi-0 {
