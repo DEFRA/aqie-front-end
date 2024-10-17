@@ -174,7 +174,7 @@ async function fetchData(locationType, userLocation, request, h) {
     )
     const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
     logger.info(
-      `osPlace Northern Ireland data requested: ${{ postcodeNortherIrelandURL }}`
+      `osPlace Northern Ireland data requested: ${JSON.stringify(postcodeNortherIrelandURL)}`
     )
     logger.info(
       `::::::::: optionsOAuth final :::::::::: ${JSON.stringify(optionsOAuth)}`
