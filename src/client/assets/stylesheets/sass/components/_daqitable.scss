@@ -66,6 +66,12 @@
     padding-bottom: 9px;
     outline: 4px solid govuk-colour("black");
     outline-offset: -4px;
+    
+    .daqi-bar {
+      border-left: 0;
+      border-right: 0;
+      border-bottom: 0;
+    }
   }
 }
 @media (min-width: 40.0625em) {
