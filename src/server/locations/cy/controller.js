@@ -201,6 +201,7 @@ const getLocationDataController = {
               Object.keys(nearestLocationsRange[0].pollutants).length - 1
             ]
           ].time.date
+
         const formattedDate = moment(pollutantDate)
           .format('DD MMMM YYYY')
           .split(' ')
