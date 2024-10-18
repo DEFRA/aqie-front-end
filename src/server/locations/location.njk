@@ -6,6 +6,9 @@
 {% set title = result.GAZETTEER_ENTRY.NAME1 + ", " + (result.GAZETTEER_ENTRY.DISTRICT_BOROUGH if result.GAZETTEER_ENTRY.DISTRICT_BOROUGH else result.GAZETTEER_ENTRY.COUNTY_UNITARY) %}
 {% endif %}
 {% set pollutantTime = '' %}
+{% set pollutantDay = '' %}
+{% set pollutantMonth = '' %}
+{% set pollutantYear = '' %}
 {% set pageHeadingSize = pageHeadingSize or "xl" %}
 {% if onlyShowTwoPages == "Yes" %}
 {% block content %}
@@ -106,7 +109,10 @@
   {% set rows = [] %}
 
   {% for key, pollutant in site.pollutants %}
-  {% set pollutantTime = pollutant.time.date %}
+  {% set pollutantTime = pollutant.time.hour %}
+  {% set pollutantDay = pollutant.time.day %}
+  {% set pollutantMonth = pollutant.time.month %}
+  {% set pollutantYear = pollutant.time.year %}
       {% set pollutantDetail = pollutantTypes[key] %}
       {% set row = [
           { 
@@ -135,9 +141,12 @@
       ],
       rows: rows
   }) }}
-  {# {% if loop.index == monitoringSites.length %} #}
-  <p class='govuk-caption-s govuk-!-margin-bottom-6'>{{daqi.pollutantTable.f}} {{pollutantTime}} {{daqi.pollutantTable.g}} {{ languageDate }}</p>
-  {# {%endif%} #}
+  {% if lang == 'cy'%}
+   <p class='govuk-caption-s govuk-!-margin-bottom-6'>{{daqi.pollutantTable.f}} {{pollutantTime}} {{daqi.pollutantTable.g}} {{ pollutantDay }} {{welshMonth}} {{pollutantYear}}</p>
+  {% else %}
+  <p class='govuk-caption-s govuk-!-margin-bottom-6'>{{daqi.pollutantTable.f}} {{pollutantTime}} {{daqi.pollutantTable.g}} {{ pollutantDay }} {{pollutantMonth}} {{pollutantYear}}</p>
+  {% endif %}
+
 {% endfor %}
     </div>
   </div>

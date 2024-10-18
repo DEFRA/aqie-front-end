@@ -64,14 +64,28 @@ function getNearestLocation(
             lang === 'cy'
               ? getPollutantLevelCy(polValue, pollutant)
               : getPollutantLevel(polValue, pollutant)
-          const formatDate = moment(
+          const formatHour = moment(
             curr.pollutants[pollutant].time.date
           ).format('ha')
+          const dayNumber = moment(curr.pollutants[pollutant].time.date).format(
+            'D'
+          )
+          const yearNumber = moment(
+            curr.pollutants[pollutant].time.date
+          ).format('YYYY')
+          const monthNumber = moment(
+            curr.pollutants[pollutant].time.date
+          ).format('MMMM')
           Object.assign(newpollutants, {
             [pollutant]: {
               exception: curr.pollutants[pollutant].exception,
               featureOfInterest: curr.pollutants[pollutant].featureOfInterest,
-              time: { date: formatDate },
+              time: {
+                hour: formatHour,
+                day: dayNumber,
+                month: monthNumber,
+                year: yearNumber
+              },
               value: polValue,
               daqi: getDaqi,
               band: getBand

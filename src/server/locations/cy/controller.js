@@ -26,8 +26,6 @@ const getLocationDataController = {
     const getMonth = calendarEnglish.findIndex(function (item) {
       return item.indexOf(formattedDate[1]) !== -1
     })
-    const englishDate = `${formattedDate[0]} ${calendarEnglish[getMonth]} ${formattedDate[2]}`
-    const welshDate = `${formattedDate[0]} ${calendarWelsh[getMonth]} ${formattedDate[2]}`
 
     const {
       searchLocation,
@@ -259,7 +257,7 @@ const getLocationDataController = {
             forecastSummary: getDailySummary.today,
             summaryDate: getDailySummary.issue_date,
             dailySummary: getDailySummary,
-            languageDate: lang === 'cy' ? welshDate : englishDate,
+            welshMonth: calendarWelsh[getMonth],
             dailySummaryTexts: welsh.dailySummaryTexts,
             lang: request.query?.lang ?? lang
           })
@@ -289,7 +287,7 @@ const getLocationDataController = {
             phaseBanner,
             backlink,
             cookieBanner,
-            languageDate: lang === 'cy' ? welshDate : englishDate,
+            welshMonth: calendarWelsh[getMonth],
             lang: request.query?.lang ?? lang
           })
         } else {
@@ -406,7 +404,7 @@ const getLocationDataController = {
           phaseBanner,
           backlink,
           cookieBanner,
-          languageDate: lang === 'cy' ? welshDate : englishDate,
+          welshMonth: calendarWelsh[getMonth],
           dailySummaryTexts: welsh.dailySummaryTexts,
           lang: request.query?.lang ?? lang
         })
@@ -453,25 +451,10 @@ const getLocationDetailsController = {
         'Tachwedd',
         'Rhagfyr'
       ]
-      const calendarEnglish = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December'
-      ]
       const getMonth = calendarEnglish.findIndex(function (item) {
         return item.indexOf(formattedDate[1]) !== -1
       })
-      const englishDate = `${formattedDate[0]} ${calendarEnglish[getMonth]} ${formattedDate[2]}`
-      const welshDate = `${formattedDate[0]} ${calendarWelsh[getMonth]} ${formattedDate[2]}`
+
       const {
         footerTxt,
         phaseBanner,
@@ -549,7 +532,7 @@ const getLocationDetailsController = {
           serviceName: searchLocation.serviceName,
           backlink,
           cookieBanner,
-          languageDate: lang === 'cy' ? welshDate : englishDate,
+          welshMonth: calendarWelsh[getMonth],
           dailySummaryTexts: welsh.dailySummaryTexts,
           lang
         })
