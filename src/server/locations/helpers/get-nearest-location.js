@@ -81,6 +81,7 @@ function getNearestLocation(
               exception: curr.pollutants[pollutant].exception,
               featureOfInterest: curr.pollutants[pollutant].featureOfInterest,
               time: {
+                date: curr.pollutants[pollutant].time.date,
                 hour: formatHour,
                 day: dayNumber,
                 month: monthNumber,

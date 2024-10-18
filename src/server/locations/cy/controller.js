@@ -22,10 +22,6 @@ const getLocationDataController = {
     if (query?.lang && query?.lang === 'en') {
       return h.redirect(`/location?lang=en`)
     }
-    const formattedDate = moment().format('DD MMMM YYYY').split(' ')
-    const getMonth = calendarEnglish.findIndex(function (item) {
-      return item.indexOf(formattedDate[1]) !== -1
-    })
 
     const {
       searchLocation,
@@ -198,6 +194,19 @@ const getLocationDataController = {
           0,
           lang
         )
+
+        const pollutantDate =
+          nearestLocationsRange[0].pollutants[
+            Object.keys(nearestLocationsRange[0].pollutants)[
+              Object.keys(nearestLocationsRange[0].pollutants).length - 1
+            ]
+          ].time.date
+        const formattedDate = moment(pollutantDate)
+          .format('DD MMMM YYYY')
+          .split(' ')
+        const getMonth = calendarEnglish.findIndex(function (item) {
+          return item.indexOf(formattedDate[1]) !== -1
+        })
         request.yar.set('locationData', {
           data: matches,
           rawForecasts: getForecasts?.forecasts,
@@ -207,7 +216,8 @@ const getLocationDataController = {
             matches.length !== 0 ? nearestLocationsRange : [],
           measurements: getMeasurements?.measurements,
           englishDate,
-          welshDate
+          welshDate,
+          getMonth
         })
         //
 
@@ -368,6 +378,18 @@ const getLocationDataController = {
           0,
           lang
         )
+        const pollutantDate =
+          nearestLocationsRange[0].pollutants[
+            Object.keys(nearestLocationsRange[0].pollutants)[
+              Object.keys(nearestLocationsRange[0].pollutants).length - 1
+            ]
+          ].time.date
+        const formattedDate = moment(pollutantDate)
+          .format('DD MMMM YYYY')
+          .split(' ')
+        const getMonth = calendarEnglish.findIndex(function (item) {
+          return item.indexOf(formattedDate[1]) !== -1
+        })
         let title = ''
         if (locationData) {
           if (locationData.GAZETTEER_ENTRY.NAME2) {
@@ -448,7 +470,6 @@ const getLocationDetailsController = {
         return h.redirect(`/location/${locationId}?lang=${query?.lang}`)
       }
       const lang = 'cy'
-      const formattedDate = moment().format('DD MMMM YYYY').split(' ')
       const calendarWelsh = [
         'Ionawr',
         'Chwefror',
@@ -463,9 +484,6 @@ const getLocationDetailsController = {
         'Tachwedd',
         'Rhagfyr'
       ]
-      const getMonth = calendarEnglish.findIndex(function (item) {
-        return item.indexOf(formattedDate[1]) !== -1
-      })
 
       const {
         footerTxt,
@@ -519,6 +537,7 @@ const getLocationDetailsController = {
           locationIndex,
           lang
         )
+
         const airQuality = getAirQuality(
           forecastNum[0][0].today,
           Object.values(forecastNum[0][1])[0],
@@ -545,7 +564,7 @@ const getLocationDetailsController = {
           serviceName: searchLocation.serviceName,
           backlink,
           cookieBanner,
-          welshMonth: calendarWelsh[getMonth],
+          welshMonth: calendarWelsh[locationData.getMonth],
           dailySummaryTexts: welsh.dailySummaryTexts,
           lang
         })
