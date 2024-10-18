@@ -110,7 +110,7 @@ async function fetchData(locationType, userLocation, request, h) {
   const forecastSummaryURL = config.get('forecastSummaryUrl')
   const forecastsAPIurl = config.get('forecastsApiUrl')
   const measurementsAPIurl = config.get('measurementsApiUrl')
-  logger.info(`forecasts data requested:`)
+  logger.info(`forecasts data requested: ${forecastsAPIurl}`)
   const forecastsRes = await fetch(`${forecastsAPIurl}`, options).catch(
     (err) => {
       logger.error(`err  forcasts ${JSON.stringify(err.message)}`)
@@ -121,7 +121,7 @@ async function fetchData(locationType, userLocation, request, h) {
     getForecasts = await forecastsRes.json()
   }
   logger.info(`forecasts data fetched:`)
-  logger.info(`measurements data requested:`)
+  logger.info(`measurements data requested: ${measurementsAPIurl}`)
   const measurementsRes = await fetch(measurementsAPIurl, options).catch(
     (err) => {
       logger.error(`err measurements ${JSON.stringify(err.message)}`)
@@ -134,6 +134,7 @@ async function fetchData(locationType, userLocation, request, h) {
   logger.info(`measurements data fetched:`)
   logger.info(`forecasts summary data requested:`)
   logger.info(`forecasts summary data requested:`)
+  logger.info(`forecasts forecastSummaryURL: ${forecastSummaryURL}`)
   const forecastSummaryRes = await proxyFetch(
     forecastSummaryURL,
     options
@@ -163,7 +164,9 @@ async function fetchData(locationType, userLocation, request, h) {
     const shouldCallApi = symbolsArr.some((symbol) =>
       userLocation.includes(symbol)
     )
-    logger.info(`osPlace data requested:`)
+    logger.info(
+      `osPlace data requested osPlacesApiUrlFull: ${osPlacesApiUrlFull}`
+    )
     if (!shouldCallApi) {
       const osPlacesRes = await proxyFetch(osPlacesApiUrlFull, options).catch(
         (err) => {
@@ -182,7 +185,7 @@ async function fetchData(locationType, userLocation, request, h) {
     )
     const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
     logger.info(
-      `osPlace Northern Ireland data requested: ${osPlacesApiPostcodeNorthernIrelandUrl}`
+      `osPlace Northern Ireland data postcodeNortherIrelandURL: ${postcodeNortherIrelandURL}`
     )
     logger.info(
       `::::::::: optionsOAuth final 00 :::::::::: ${JSON.stringify(optionsOAuth)}`
