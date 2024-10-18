@@ -29,8 +29,7 @@ const getLocationDataController = {
     const getMonth = calendarEnglish.findIndex(function (item) {
       return item.indexOf(formattedDate[1]) !== -1
     })
-    const englishDate = `${formattedDate[0]} ${calendarEnglish[getMonth]} ${formattedDate[2]}`
-    const welshDate = `${formattedDate[0]} ${calendarWelsh[getMonth]} ${formattedDate[2]}`
+
     const {
       searchLocation,
       footerTxt,
@@ -266,7 +265,7 @@ const getLocationDataController = {
             backlink,
             cookieBanner,
             daqi,
-            languageDate: lang === 'cy' ? welshDate : englishDate,
+            welshMonth: calendarWelsh[getMonth],
             dailySummaryTexts: english.dailySummaryTexts,
             lang
           })
@@ -293,7 +292,7 @@ const getLocationDataController = {
             phaseBanner,
             backlink,
             cookieBanner,
-            languageDate: lang === 'cy' ? welshDate : englishDate,
+            welshMonth: calendarWelsh[getMonth],
             lang: 'en'
           })
         } else {
@@ -411,7 +410,7 @@ const getLocationDataController = {
           backlink,
           cookieBanner,
           daqi,
-          languageDate: lang === 'cy' ? welshDate : englishDate,
+          welshMonth: calendarWelsh[getMonth],
           dailySummaryTexts: english.dailySummaryTexts,
           lang
         })
@@ -448,8 +447,7 @@ const getLocationDetailsController = {
       const getMonth = calendarEnglish.findIndex(function (item) {
         return item.indexOf(formattedDate[1]) !== -1
       })
-      const englishDate = `${formattedDate[0]} ${calendarEnglish[getMonth]} ${formattedDate[2]}`
-      const welshDate = `${formattedDate[0]} ${calendarWelsh[getMonth]} ${formattedDate[2]}`
+
       const {
         notFoundLocation,
         footerTxt,
@@ -524,7 +522,7 @@ const getLocationDetailsController = {
           backlink,
           cookieBanner,
           daqi,
-          languageDate: lang === 'cy' ? welshDate : englishDate,
+          welshMonth: calendarWelsh[getMonth],
           dailySummaryTexts: english.dailySummaryTexts,
           lang
         })
