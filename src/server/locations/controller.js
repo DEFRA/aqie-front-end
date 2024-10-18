@@ -141,6 +141,16 @@ const getLocationDataController = {
       locationType = request.yar.get('locationType')
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
         await fetchData(locationType, userLocation, request, h)
+
+      const formattedDateSummary = moment(getDailySummary.issue_date)
+        .format('DD MMMM YYYY')
+        .split(' ')
+      const getMonthSummary = calendarEnglish.findIndex(function (item) {
+        return item.indexOf(formattedDateSummary[1]) !== -1
+      })
+      const englishDate = `${formattedDateSummary[0]} ${calendarEnglish[getMonthSummary]} ${formattedDateSummary[2]}`
+      const welshDate = `${formattedDateSummary[0]} ${calendarWelsh[getMonthSummary]} ${formattedDateSummary[2]}`
+
       if (locationType === 'uk-location') {
         const { results } = getOSPlaces
 
@@ -204,7 +214,9 @@ const getLocationDataController = {
           forecastSummary: getDailySummary,
           nearestLocationsRange:
             matches.length !== 0 ? nearestLocationsRange : [],
-          measurements: getMeasurements?.measurements
+          measurements: getMeasurements?.measurements,
+          englishDate,
+          welshDate
         })
         //
         if (matches.length === 1) {
@@ -258,7 +270,6 @@ const getLocationDataController = {
             pageTitle: title,
             serviceName: 'Check local air quality',
             forecastSummary: getDailySummary.today,
-            summaryDate: getDailySummary.issue_date,
             dailySummary: getDailySummary,
             footerTxt,
             phaseBanner,
@@ -266,6 +277,7 @@ const getLocationDataController = {
             cookieBanner,
             daqi,
             welshMonth: calendarWelsh[getMonth],
+            summaryDate: lang === 'cy' ? welshDate : englishDate,
             dailySummaryTexts: english.dailySummaryTexts,
             lang
           })
@@ -286,13 +298,13 @@ const getLocationDataController = {
             pageTitle: `${multipleLocations.title} ${userLocation} -  ${multipleLocations.pageTitle}`,
             serviceName: multipleLocations.serviceName,
             forecastSummary: getDailySummary.today,
-            summaryDate: getDailySummary.issue_date,
             dailySummary: getDailySummary,
             footerTxt,
             phaseBanner,
             backlink,
             cookieBanner,
             welshMonth: calendarWelsh[getMonth],
+            summaryDate: lang === 'cy' ? welshDate : englishDate,
             lang: 'en'
           })
         } else {
@@ -403,7 +415,6 @@ const getLocationDataController = {
           pageTitle: title,
           displayBacklink: true,
           forecastSummary: getDailySummary.today,
-          summaryDate: getDailySummary.issue_date,
           dailySummary: getDailySummary,
           footerTxt,
           phaseBanner,
@@ -411,6 +422,7 @@ const getLocationDataController = {
           cookieBanner,
           daqi,
           welshMonth: calendarWelsh[getMonth],
+          summaryDate: lang === 'cy' ? welshDate : englishDate,
           dailySummaryTexts: english.dailySummaryTexts,
           lang
         })
@@ -515,7 +527,6 @@ const getLocationDetailsController = {
           pageTitle: title,
           displayBacklink: true,
           forecastSummary: locationData.forecastSummary.today,
-          summaryDate: locationData.forecastSummary.issue_date,
           dailySummary: locationData.forecastSummary,
           footerTxt,
           phaseBanner,
@@ -523,6 +534,8 @@ const getLocationDetailsController = {
           cookieBanner,
           daqi,
           welshMonth: calendarWelsh[getMonth],
+          summaryDate:
+            lang === 'cy' ? locationData.welshDate : locationData.englishDate,
           dailySummaryTexts: english.dailySummaryTexts,
           lang
         })

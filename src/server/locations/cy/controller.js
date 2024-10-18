@@ -132,6 +132,16 @@ const getLocationDataController = {
       locationType = request.yar.get('locationType')
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
         await fetchData('uk-location', userLocation, request)
+
+      const formattedDateSummary = moment(getDailySummary.issue_date)
+        .format('DD MMMM YYYY')
+        .split(' ')
+      const getMonthSummary = calendarEnglish.findIndex(function (item) {
+        return item.indexOf(formattedDateSummary[1]) !== -1
+      })
+      const englishDate = `${formattedDateSummary[0]} ${calendarEnglish[getMonthSummary]} ${formattedDateSummary[2]}`
+      const welshDate = `${formattedDateSummary[0]} ${calendarWelsh[getMonthSummary]} ${formattedDateSummary[2]}`
+
       if (locationType === 'uk-location') {
         const { results } = getOSPlaces
 
@@ -195,7 +205,9 @@ const getLocationDataController = {
           forecastSummary: getDailySummary,
           nearestLocationsRange:
             matches.length !== 0 ? nearestLocationsRange : [],
-          measurements: getMeasurements?.measurements
+          measurements: getMeasurements?.measurements,
+          englishDate,
+          welshDate
         })
         //
 
@@ -255,9 +267,9 @@ const getLocationDataController = {
             cookieBanner,
             serviceName: multipleLocations.serviceName,
             forecastSummary: getDailySummary.today,
-            summaryDate: getDailySummary.issue_date,
             dailySummary: getDailySummary,
             welshMonth: calendarWelsh[getMonth],
+            summaryDate: lang === 'cy' ? welshDate : englishDate,
             dailySummaryTexts: welsh.dailySummaryTexts,
             lang: request.query?.lang ?? lang
           })
@@ -281,7 +293,7 @@ const getLocationDataController = {
             pageTitle: `${multipleLocations.title} ${userLocation} -  ${home.pageTitle}`,
             serviceName: multipleLocations.serviceName,
             forecastSummary: getDailySummary.today,
-            summaryDate: getDailySummary.issue_date,
+            summaryDate: lang === 'cy' ? welshDate : englishDate,
             dailySummary: getDailySummary,
             footerTxt,
             phaseBanner,
@@ -393,7 +405,7 @@ const getLocationDataController = {
           pollutantTypes,
           displayBacklink: true,
           forecastSummary: getDailySummary.today,
-          summaryDate: getDailySummary.issue_date,
+          summaryDate: lang === 'cy' ? welshDate : englishDate,
           dailySummary: getDailySummary,
           daqi,
           nearestLocationsRange,
@@ -525,7 +537,8 @@ const getLocationDetailsController = {
           daqi,
           displayBacklink: true,
           forecastSummary: locationData.forecastSummary.today,
-          summaryDate: locationData.forecastSummary.issue_date,
+          summaryDate:
+            lang === 'cy' ? locationData.welshDate : locationData.englishDate,
           dailySummary: locationData.forecastSummary,
           footerTxt,
           phaseBanner,
