@@ -87,15 +87,23 @@ async function fetchData(locationType, userLocation, request, h) {
     }
   }
   // Set an interval to refresh the OAuth token every 19 minutes (1140 seconds)
-  setInterval(
+  const refreshIntervalId = setInterval(
     () => {
       // Assuming you have access to the request object here
       if (locationType === 'ni-location') {
         refreshOAuthToken(request)
+      } else {
+        clearRefreshInterval()
       }
     },
     30 * 60 * 1000
   ) // 1 minute in milliseconds
+
+  // Function to clear the interval
+  const clearRefreshInterval = () => {
+    clearInterval(refreshIntervalId)
+    logger.info('::::::::: OAuth token refresh interval cleared ::::::::::')
+  }
 
   const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
   let getOSPlaces = { data: [] }
@@ -105,7 +113,7 @@ async function fetchData(locationType, userLocation, request, h) {
   logger.info(`forecasts data requested:`)
   const forecastsRes = await fetch(`${forecastsAPIurl}`, options).catch(
     (err) => {
-      logger.error(`err ${JSON.stringify(err.message)}`)
+      logger.error(`err  forcasts ${JSON.stringify(err.message)}`)
     }
   )
   let getForecasts
@@ -116,7 +124,7 @@ async function fetchData(locationType, userLocation, request, h) {
   logger.info(`measurements data requested:`)
   const measurementsRes = await fetch(measurementsAPIurl, options).catch(
     (err) => {
-      logger.error(`err ${JSON.stringify(err.message)}`)
+      logger.error(`err measurements ${JSON.stringify(err.message)}`)
     }
   )
   let getMeasurements
@@ -130,7 +138,7 @@ async function fetchData(locationType, userLocation, request, h) {
     forecastSummaryURL,
     options
   ).catch((err) => {
-    logger.error(`err ${JSON.stringify(err.message)}`)
+    logger.error(`err from forecast Summary ${JSON.stringify(err.message)}`)
   })
   let getDailySummary
   if (forecastSummaryRes.ok) {
@@ -159,7 +167,7 @@ async function fetchData(locationType, userLocation, request, h) {
     if (!shouldCallApi) {
       const osPlacesRes = await proxyFetch(osPlacesApiUrlFull, options).catch(
         (err) => {
-          logger.error(`err ${JSON.stringify(err.message)}`)
+          logger.error(`err osPlaces ${JSON.stringify(err.message)}`)
         }
       )
       if (osPlacesRes.ok) {
@@ -176,7 +184,9 @@ async function fetchData(locationType, userLocation, request, h) {
     logger.info(
       `osPlace Northern Ireland data requested: ${osPlacesApiPostcodeNorthernIrelandUrl}`
     )
-    logger.info(`::::::::: optionsOAuth final :::::::::: ${optionsOAuth}`)
+    logger.info(
+      `::::::::: optionsOAuth final 00 :::::::::: ${JSON.stringify(optionsOAuth)}`
+    )
     const northerIrelandRes = await proxyFetch(
       postcodeNortherIrelandURL,
       optionsOAuth
