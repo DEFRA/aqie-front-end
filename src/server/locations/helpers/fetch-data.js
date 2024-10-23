@@ -1,7 +1,8 @@
 /* eslint-disable prettier/prettier */
-import { proxyFetch } from '~/src/helpers/proxy-fetch.js'
 import { config } from '~/src/config'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
+import { catchFetchError } from '~/src/server/common/helpers/catch-fetch-error'
+import { catchProxyFetchError } from '~/src/server/common/helpers/catch-proxy-fetch-error'
 
 const options = {
   method: 'get',
@@ -19,39 +20,29 @@ const oauthTokenNorthernIrelandTenantId = config.get(
 
 const fetchOAuthToken = async () => {
   logger.info(`OAuth token requested:`)
-  logger.info(`::::::::::: clientId :::::::::`)
-  logger.info(`::::::::::: clientSecret :::::::::`)
-  const response = await proxyFetch(
-    `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: new URLSearchParams({
-        client_id: clientId,
-        client_secret: clientSecret,
-        redirect_uri: redirectUri,
-        scope,
-        grant_type: 'client_credentials',
-        state: '1245'
-      })
-    }
-  ).catch((err) => {
-    logger.error(
-      `:::::::: POST error fetching TOKEN generation ::::::: ${JSON.stringify(err.message)}`
-    )
-  })
-
-  if (!response.ok) {
-    // const error = await response.json()
-    // logger.error(`Failed to fetch OAuth token: ${JSON.stringify(error)}`)
-    throw new Error('Failed to fetch OAuth token')
+  const url = `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams({
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uri: redirectUri,
+      scope,
+      grant_type: 'client_credentials',
+      state: '1245'
+    })
+  }
+  const [errorToken, dataToken] = await catchProxyFetchError(url, options, true)
+  if (errorToken) {
+    logger.error('Error OAuth token fetched:', errorToken)
+  } else {
+    logger.info(`OAuth token fetched:::`)
   }
 
-  const data = await response.json()
-  logger.info(`OAuth token fetched:::`)
-  return data.access_token
+  return dataToken.access_token
 }
 
 async function fetchData(locationType, userLocation, request, h) {
@@ -77,14 +68,10 @@ async function fetchData(locationType, userLocation, request, h) {
   }
   // Function to refresh the OAuth token and update the session
   const refreshOAuthToken = async (request) => {
-    try {
-      accessToken = await fetchOAuthToken()
-      request.yar.clear('savedAccessToken')
-      request.yar.set('savedAccessToken', accessToken)
-      logger.info(`::::::::: OAuth token in session 2 ::::::::::`)
-    } catch (err) {
-      logger.error('Error clearing cache:', err)
-    }
+    accessToken = await fetchOAuthToken()
+    request.yar.clear('savedAccessToken')
+    request.yar.set('savedAccessToken', accessToken)
+    logger.info(`::::::::: OAuth token in session 2 ::::::::::`)
   }
   // Set an interval to refresh the OAuth token every 19 minutes (1140 seconds)
   const refreshIntervalId = setInterval(
@@ -106,46 +93,40 @@ async function fetchData(locationType, userLocation, request, h) {
   }
 
   const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
-  let getOSPlaces = { data: [] }
   const forecastSummaryURL = config.get('forecastSummaryUrl')
   const forecastsAPIurl = config.get('forecastsApiUrl')
   const measurementsAPIurl = config.get('measurementsApiUrl')
-  logger.info(`forecasts data requested: ${forecastsAPIurl}`)
-  const forecastsRes = await fetch(`${forecastsAPIurl}`, options).catch(
-    (err) => {
-      logger.error(`err  forcasts ${JSON.stringify(err.message)}`)
-    }
-  )
-  let getForecasts
-  if (forecastsRes.ok) {
-    getForecasts = await forecastsRes.json()
-  }
-  logger.info(`forecasts data fetched:`)
-  logger.info(`measurements data requested: ${measurementsAPIurl}`)
-  const measurementsRes = await fetch(measurementsAPIurl, options).catch(
-    (err) => {
-      logger.error(`err measurements ${JSON.stringify(err.message)}`)
-    }
-  )
-  let getMeasurements
-  if (measurementsRes.ok) {
-    getMeasurements = await measurementsRes.json()
-  }
-  logger.info(`measurements data fetched:`)
-  logger.info(`forecasts summary data requested:`)
-  logger.info(`forecasts summary data requested:`)
-  logger.info(`forecasts forecastSummaryURL: ${forecastSummaryURL}`)
-  const forecastSummaryRes = await proxyFetch(
-    forecastSummaryURL,
+  const [forecastError, getForecasts] = await catchFetchError(
+    forecastsAPIurl,
     options
-  ).catch((err) => {
-    logger.error(`err from forecast Summary ${JSON.stringify(err.message)}`)
-  })
-  let getDailySummary
-  if (forecastSummaryRes.ok) {
-    getDailySummary = await forecastSummaryRes.json()
+  )
+  if (forecastError) {
+    logger.error(`Error fetching forecasts data: ${forecastError.message}`)
+  } else {
+    logger.info(`forecasts data fetched:`)
   }
-  logger.info(`forecasts summary data fetched:`)
+  const [errorMeasurements, getMeasurements] = await catchFetchError(
+    measurementsAPIurl,
+    options
+  )
+  if (errorMeasurements) {
+    logger.error(
+      `Error fetching Measurements data: ${errorMeasurements.message}`
+    )
+  } else {
+    logger.info(`getMeasurements data fetched:`)
+  }
+  const [errorSummary, getDailySummary] = await catchProxyFetchError(
+    forecastSummaryURL,
+    options,
+    true
+  )
+  if (errorSummary) {
+    logger.error(`Error fetching getDailySummary data: ${errorSummary.message}`)
+  } else {
+    logger.info(`getDailySummary data fetched:`)
+  }
+
   if (locationType === 'uk-location') {
     const filters = [
       'LOCAL_TYPE:City',
@@ -167,16 +148,17 @@ async function fetchData(locationType, userLocation, request, h) {
     logger.info(
       `osPlace data requested osPlacesApiUrlFull: ${osPlacesApiUrlFull}`
     )
-    if (!shouldCallApi) {
-      const osPlacesRes = await proxyFetch(osPlacesApiUrlFull, options).catch(
-        (err) => {
-          logger.error(`err osPlaces ${JSON.stringify(err.message)}`)
-        }
+    const [osPlacesError, getOSPlaces] = await catchProxyFetchError(
+      osPlacesApiUrlFull,
+      options,
+      !shouldCallApi
+    )
+    if (errorSummary) {
+      logger.error(
+        `Error fetching osPlacesError data: ${osPlacesError.message}`
       )
-      if (osPlacesRes.ok) {
-        getOSPlaces = await osPlacesRes.json()
-      }
-      logger.info(`osPlace data fetched:`)
+    } else {
+      logger.info(`getOSPlaces data fetched:`)
     }
     return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
   } else if (locationType === 'ni-location') {
@@ -184,26 +166,18 @@ async function fetchData(locationType, userLocation, request, h) {
       'osPlacesApiPostcodeNorthernIrelandUrl'
     )
     const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
-    logger.info(
-      `osPlace Northern Ireland data postcodeNortherIrelandURL: ${postcodeNortherIrelandURL}`
-    )
-    logger.info(
-      `::::::::: optionsOAuth final 00 :::::::::: ${JSON.stringify(optionsOAuth)}`
-    )
-    const northerIrelandRes = await proxyFetch(
+    const [errorNortherIreland, getNIPlaces] = await catchProxyFetchError(
       postcodeNortherIrelandURL,
-      optionsOAuth
-    ).catch((err) => {
-      logger.error(
-        `:::::::::::  OAuth token error ::::::::: ${JSON.stringify(err.message)}`
-      )
-    })
-    const getNIPlaces = await northerIrelandRes.json().catch((error) => {
-      logger.error('Error getNIPlaces:', JSON.stringify(error.message))
-    })
-    logger.info(
-      `osPlace Northern Ireland data fetched: ${JSON.stringify(getNIPlaces)}`
+      optionsOAuth,
+      true
     )
+    if (errorNortherIreland) {
+      logger.error(
+        `Error fetching errorNortherIreland data: ${errorNortherIreland.message}`
+      )
+    } else {
+      logger.info(`getNIPlaces data fetched:`)
+    }
     return { getDailySummary, getForecasts, getMeasurements, getNIPlaces }
   }
 }
