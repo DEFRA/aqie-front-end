@@ -80,18 +80,11 @@ const config = convict({
     default: 'vvR3FiaNjSWCnFzSKBst23TX6efl0oL9',
     env: 'OS_PLACES_API_KEY'
   },
-  newApiKey: {
-    doc: 'New Northern Ireland key',
-    format: '*',
-    sensitive: true,
-    default: '',
-    env: 'NEW_NORTHERN_IRELAND_API_KEY'
-  },
   osPlacesApiUrl: {
     doc: 'OS Name Places url',
     format: String,
     default: 'https://api.os.uk/search/names/v1/find?query=',
-    env: 'OS_PLACES_API_URL'
+    env: 'OS_NAMES_API_URL'
   },
   daqiePassword: {
     doc: 'password for daqie',
