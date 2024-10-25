@@ -73,14 +73,14 @@ const config = convict({
     default: null,
     env: 'CDP_HTTPS_PROXY'
   },
-  osPlacesApiKey: {
+  osNamesApiKey: {
     doc: 'OS Name Places key',
     format: '*',
     sensitive: true,
     default: 'vvR3FiaNjSWCnFzSKBst23TX6efl0oL9',
-    env: 'OS_PLACES_API_KEY'
+    env: 'OS_NAMES_API_KEY'
   },
-  osPlacesApiUrl: {
+  osNamesApiUrl: {
     doc: 'OS Name Places url',
     format: String,
     default: 'https://api.os.uk/search/names/v1/find?query=',
