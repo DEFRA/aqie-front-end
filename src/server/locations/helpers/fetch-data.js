@@ -136,20 +136,20 @@ async function fetchData(locationType, userLocation, request, h) {
       'LOCAL_TYPE:Postcode',
       'LOCAL_TYPE:Airport'
     ].join('+')
-    const osPlacesApiUrl = config.get('osPlacesApiUrl')
-    const osPlacesApiKey = config.get('osPlacesApiKey')
-    const osPlacesApiUrlFull = `${osPlacesApiUrl}${encodeURIComponent(
+    const osNamesApiUrl = config.get('osNamesApiUrl')
+    const osNamesApiKey = config.get('osNamesApiKey')
+    const osNamesApiUrlFull = `${osNamesApiUrl}${encodeURIComponent(
       userLocation
-    )}&fq=${encodeURIComponent(filters)}&key=${osPlacesApiKey}`
+    )}&fq=${encodeURIComponent(filters)}&key=${osNamesApiKey}`
 
     const shouldCallApi = symbolsArr.some((symbol) =>
       userLocation.includes(symbol)
     )
     logger.info(
-      `osPlace data requested osPlacesApiUrlFull: ${osPlacesApiUrlFull}`
+      `osPlace data requested osNamesApiUrlFull: ${osNamesApiUrlFull}`
     )
     const [osPlacesError, getOSPlaces] = await catchProxyFetchError(
-      osPlacesApiUrlFull,
+      osNamesApiUrlFull,
       options,
       !shouldCallApi
     )
