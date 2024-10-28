@@ -69,8 +69,8 @@
 {% if monitoringSites|length %}
 <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6 govuk-!-margin-top-6">
 <h2 class="govuk-heading-m">{{daqi.pageTexts.d}}</h2>
-{% endif %}
 <p>{{daqi.tooltipText.latest | safe}}</p>
+{% endif %}
 {% for site in monitoringSites %}
 {% set time %}
     {{ "now" | date | minusOneHour }}
