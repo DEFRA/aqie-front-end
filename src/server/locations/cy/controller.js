@@ -196,11 +196,11 @@ const getLocationDataController = {
         )
 
         const pollutantDate =
-          nearestLocationsRange[0].pollutants[
-            Object.keys(nearestLocationsRange[0].pollutants)[
-              Object.keys(nearestLocationsRange[0].pollutants).length - 1
+          nearestLocationsRange[0]?.pollutants[
+            Object.keys(nearestLocationsRange[0]?.pollutants)[
+              Object.keys(nearestLocationsRange[0]?.pollutants).length - 1
             ]
-          ].time.date
+          ]?.time.date
 
         const formattedDate = moment(pollutantDate)
           .format('DD MMMM YYYY')
@@ -380,11 +380,11 @@ const getLocationDataController = {
           lang
         )
         const pollutantDate =
-          nearestLocationsRange[0].pollutants[
-            Object.keys(nearestLocationsRange[0].pollutants)[
-              Object.keys(nearestLocationsRange[0].pollutants).length - 1
+          nearestLocationsRange[0]?.pollutants[
+            Object.keys(nearestLocationsRange[0]?.pollutants)[
+              Object.keys(nearestLocationsRange[0]?.pollutants).length - 1
             ]
-          ].time.date
+          ]?.time.date
         const formattedDate = moment(pollutantDate)
           .format('DD MMMM YYYY')
           .split(' ')
