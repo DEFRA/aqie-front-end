@@ -76,9 +76,29 @@ export const english = {
     }
   },
   notFoundUrl: {
-    heading: 'We could not find that page',
-    paragraphs: {
-      a: 'Go back to local air quality'
+    serviceAll: {
+      heading: 'Sorry, this service is unavailable',
+      paragraphs: {
+        a: 'Try again later',
+        b: 'You can contact the ',
+        c: 'air quality team ',
+        d: ' if this error continues'
+      }
+    },
+    serviceAPI: {
+      heading: 'Sorry, there is a problem with the service',
+      paragraphs: {
+        a: 'Try again later',
+        b: 'You can contact the ',
+        c: 'air quality team ',
+        d: ' if this error continues'
+      }
+    },
+    nonService: {
+      heading: 'We could not find that page',
+      paragraphs: {
+        a: 'Go back to local air quality'
+      }
     }
   },
   multipleLocations: {

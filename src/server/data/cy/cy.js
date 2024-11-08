@@ -70,9 +70,11 @@ export const welsh = {
     }
   },
   notFoundUrl: {
-    heading: 'Ni allem ddod o hyd i’r dudalen hon',
-    paragraphs: {
-      a: 'Ewch yn ôl i ansawdd aer lleol'
+    nonService: {
+      heading: 'Ni allem ddod o hyd i’r dudalen hon',
+      paragraphs: {
+        a: 'Ewch yn ôl i ansawdd aer lleol'
+      }
     }
   },
   multipleLocations: {

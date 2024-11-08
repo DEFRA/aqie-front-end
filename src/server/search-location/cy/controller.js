@@ -1,14 +1,19 @@
 import { welsh } from '~/src/server/data/cy/cy.js'
 const searchLocationController = {
   handler: (request, h) => {
-    const { query } = request
-    if (query.lang === 'en') {
+    const { query, path } = request
+    let lang = query?.lang.slice(0, 2)
+    if (lang !== 'cy' && lang !== 'en' && path === '/chwilio-lleoliad/cy') {
+      lang = 'cy'
+    }
+    if (lang === 'en') {
       /* eslint-disable camelcase */
       return h.redirect(`/search-location?lang=en`)
     }
     const errors = request.yar.get('errors')
     const errorMessage = request.yar.get('errorMessage')
     const locationType = request.yar.get('locationType')
+
     if (errors) {
       request.yar.set('errors', null)
       request.yar.set('errorMessage', null)
@@ -39,7 +44,7 @@ const searchLocationController = {
         phaseBanner: welsh.phaseBanner,
         backlink: welsh.backlink,
         cookieBanner: welsh.cookieBanner,
-        lang: request.query.lang
+        lang
       })
     } else {
       return h.view('search-location/index', {
@@ -65,7 +70,7 @@ const searchLocationController = {
         phaseBanner: welsh.phaseBanner,
         backlink: welsh.backlink,
         cookieBanner: welsh.cookieBanner,
-        lang: request.query.lang
+        lang
       })
     }
   }
