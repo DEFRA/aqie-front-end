@@ -330,7 +330,28 @@ const getLocationDataController = {
         logger.info(
           `::::::::::: getNIPlaces statusCode en  ::::::::::: ${getNIPlaces?.statusCode}`
         )
-        if (getOSPlaces?.statusCode === 500) {
+        if (
+          getOSPlaces?.statusCode === 500 ||
+          getForecasts?.statusCode === 500 ||
+          getMeasurements?.statusCode === 500 ||
+          getDailySummary?.statusCode === 500 ||
+          getOSPlaces?.statusCode === 400 ||
+          getForecasts?.statusCode === 400 ||
+          getMeasurements?.statusCode === 400 ||
+          getDailySummary?.statusCode === 400 ||
+          getOSPlaces?.statusCode === 401 ||
+          getForecasts?.statusCode === 401 ||
+          getMeasurements?.statusCode === 401 ||
+          getDailySummary?.statusCode === 401 ||
+          getOSPlaces?.statusCode === 403 ||
+          getForecasts?.statusCode === 403 ||
+          getMeasurements?.statusCode === 403 ||
+          getDailySummary?.statusCode === 403 ||
+          getOSPlaces?.statusCode === 404 ||
+          getForecasts?.statusCode === 404 ||
+          getMeasurements?.statusCode === 404 ||
+          getDailySummary?.statusCode === 404
+        ) {
           return h.view('error/index', {
             footerTxt,
             url: request.path,
@@ -339,6 +360,11 @@ const getLocationDataController = {
             cookieBanner,
             serviceName: english.multipleLocations.serviceName,
             notFoundUrl: english.notFoundUrl,
+            statusCode:
+              getOSPlaces?.statusCode ||
+              getForecasts?.statusCode ||
+              getMeasurements?.statusCode ||
+              getDailySummary?.statusCode,
             lang
           })
         }
@@ -428,7 +454,9 @@ const getLocationDataController = {
         })
       }
     } catch (error) {
-      logger.error(`error from location refresh ${error.message}`)
+      logger.error(
+        `error from location refresh outside fetch APIs: ${error.message}`
+      )
       return h.view('error/index', {
         footerTxt,
         url: request.path,

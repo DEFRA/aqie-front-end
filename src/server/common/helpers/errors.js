@@ -4,7 +4,7 @@ import { welsh } from '~/src/server/data/cy/cy.js'
 function statusCodeMessage(statusCode, lang) {
   switch (true) {
     case statusCode === 404:
-      if (lang === 'cy') {
+      if (lang.slice(0, 2) === 'cy') {
         return 'Tudalen heb ei chanfod'
       }
       return 'Page not found'
@@ -14,6 +14,8 @@ function statusCodeMessage(statusCode, lang) {
       return 'Unauthorized'
     case statusCode === 400:
       return 'Bad Request'
+    case statusCode === 500:
+      return 'Sorry, there is a problem with the service'
     default:
       return 'Something went wrong'
   }
@@ -28,6 +30,13 @@ function catchAll(request, h) {
     lang = 'en'
   }
   lang = query?.lang ?? lang
+  if (lang !== 'cy' && lang !== 'en' && path === '/search-location') {
+    lang = 'en'
+  }
+  if (lang !== 'cy' && lang !== 'en' && path === '/chwilio-lleoliad/cy') {
+    lang = 'cy'
+  }
+
   if (!response?.isBoom) {
     return h.continue
   }
@@ -40,14 +49,13 @@ function catchAll(request, h) {
     footerTxt,
     notFoundUrl,
     cookieBanner,
-    multipleLocations,
-    searchLocation
+    multipleLocations
   } = english
   if (lang === 'cy') {
     return h
       .view('error/index', {
-        pageTitle: `${errorMessage} - ${welsh.searchLocation.pageTitle}`,
-        heading: statusCode,
+        pageTitle: `${errorMessage}`,
+        statusCode,
         message: errorMessage,
         url: request.path,
         notFoundUrl: welsh.notFoundUrl,
@@ -61,8 +69,8 @@ function catchAll(request, h) {
   }
   return h
     .view('error/index', {
-      pageTitle: `${errorMessage} - ${searchLocation.pageTitle}`,
-      heading: statusCode,
+      pageTitle: `${errorMessage}`,
+      statusCode,
       message: errorMessage,
       url: request.path,
       notFoundUrl,

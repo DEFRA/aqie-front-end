@@ -2,7 +2,11 @@ import { english } from '~/src/server/data/en/en.js'
 
 const searchLocationController = {
   handler: (request, h) => {
-    const { query } = request
+    const { query, path } = request
+    let lang = query?.lang.slice(0, 2)
+    if (lang !== 'cy' && lang !== 'en' && path === '/search-location') {
+      lang = 'en'
+    }
     if (query.lang === 'cy') {
       /* eslint-disable camelcase */
       return h.redirect(`/chwilio-lleoliad/cy?lang=cy`)
