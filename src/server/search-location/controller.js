@@ -3,7 +3,7 @@ import { english } from '~/src/server/data/en/en.js'
 const searchLocationController = {
   handler: (request, h) => {
     const { query, path } = request
-    let lang = query?.lang.slice(0, 2)
+    let lang = query?.lang?.slice(0, 2)
     if (lang !== 'cy' && lang !== 'en' && path === '/search-location') {
       lang = 'en'
     }
@@ -44,7 +44,7 @@ const searchLocationController = {
         phaseBanner: english.phaseBanner,
         backlink: english.backlink,
         cookieBanner: english.cookieBanner,
-        lang: request.query.lang
+        lang
       })
     } else {
       return h.view('search-location/index', {
@@ -70,7 +70,7 @@ const searchLocationController = {
         phaseBanner: english.phaseBanner,
         backlink: english.backlink,
         cookieBanner: english.cookieBanner,
-        lang: request.query.lang
+        lang
       })
     }
   }

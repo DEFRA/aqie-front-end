@@ -23,7 +23,7 @@ function statusCodeMessage(statusCode, lang) {
 
 function catchAll(request, h) {
   const { query, response, path } = request
-  let lang = path?.split('/').pop().slice(0, 2)
+  let lang = path?.split('/').pop()?.slice(0, 2)
   if (lang === 'cy') {
     lang = 'cy'
   } else {
