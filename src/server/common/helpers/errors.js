@@ -45,12 +45,7 @@ function catchAll(request, h) {
 
   const statusCode = response.output.statusCode
   const errorMessage = statusCodeMessage(statusCode, lang)
-  const {
-    footerTxt,
-    notFoundUrl,
-    cookieBanner,
-    multipleLocations
-  } = english
+  const { footerTxt, notFoundUrl, cookieBanner, multipleLocations } = english
   if (lang === 'cy') {
     return h
       .view('error/index', {
