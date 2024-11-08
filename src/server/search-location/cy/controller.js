@@ -2,7 +2,7 @@ import { welsh } from '~/src/server/data/cy/cy.js'
 const searchLocationController = {
   handler: (request, h) => {
     const { query, path } = request
-    let lang = query?.lang.slice(0, 2)
+    let lang = query?.lang?.slice(0, 2)
     if (lang !== 'cy' && lang !== 'en' && path === '/chwilio-lleoliad/cy') {
       lang = 'cy'
     }
