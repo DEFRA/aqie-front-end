@@ -45,7 +45,7 @@
 {% endblock %}
 
 {% block header %}
-{%if page == "Check local air quality"%}{% set serviceName = ""%}{%endif%}
+{%if page == "Check air quality"%}{% set serviceName = ""%}{%endif%}
 {%if page != "home"%}
   {%if htmlLang == "en"%}
   {% set queryhref = "/" %}
@@ -87,7 +87,7 @@
     },
     html: phaseBanner.paragraphs.b + " <a class='govuk-link' href='https://defragroup.eu.qualtrics.com/jfe/form/SV_dj4wJCoOkFQLXfM'>" + phaseBanner.paragraphs.c + " </a>" + phaseBanner.paragraphs.d
   }) }}
-  {%if (page != "Check local air quality") and (page != "Gwirio ansawdd aer lleol") %}
+  {%if (page != "Check air quality") and (page != "Gwirio aer lleol") %}
   {% if displayBacklink %}
    {%else%}
    {% set queryhref = "" %}
@@ -106,7 +106,7 @@
   {%endif%}
 {% endif %}
  {{ super() }}
-{%if page != "Check local air quality"%}
+{%if page != "Check air quality"%}
   {%if displayBacklink %}
   <div class='top-nav'>
   {%if htmlLang == "en"%}
@@ -142,7 +142,7 @@
    {% set htmlLang = "cy" %}
    {% endif %}
   {% endif %}
- {%if (page != "home") and (page != "Check local air quality") %} 
+ {%if (page != "home") and (page != "Check air quality") %} 
   {%if lang == "en"%}
   {% set htmlLang = "en" %}
   {% elif lang == "cy" %}

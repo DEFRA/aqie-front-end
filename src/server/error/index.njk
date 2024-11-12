@@ -2,19 +2,23 @@
 
 {% set displayBreadcrumbs = false %}
 {% set title = pageTitle + " " + data['q'] %}
+{% set mainClasses = "govuk-main-wrapper--l" %}
 
 {% block content %}
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
+  <div class="govuk-grid-column-two-thirds">
+  {{statusCode | dump}}
   {% if statusCode == '500' %}
     <h1 class="govuk-heading-l">{{notFoundUrl.serviceAll.heading}}</h1>
     <p>{{notFoundUrl.serviceAll.paragraphs.a}}</p>
     <p class="govuk-body">{{notFoundUrl.serviceAll.paragraphs.b}} <a href="mailto:checklocalairquality@defra.gov.uk">{{notFoundUrl.serviceAll.paragraphs.c}}</a>{{notFoundUrl.serviceAll.paragraphs.d}}</p>
    {% elif statusCode == '404' %}
     <h1 class="govuk-heading-l">{{notFoundUrl.nonService.heading}} {{msError}}</h1>
-    <p class="govuk-body"><a href="/">{{notFoundUrl.nonService.paragraphs.a}}</a></p>
+     <p class="govuk-body">{{notFoundUrl.nonService.paragraphs.a}}</p>
+    <p class="govuk-body">{{notFoundUrl.nonService.paragraphs.b}}</p>
+    <p class="govuk-body">{{notFoundUrl.nonService.paragraphs.c}}<a href="mailto:checklocalairquality@defra.gov.uk">{{notFoundUrl.nonService.paragraphs.d}}</a>{{notFoundUrl.nonService.paragraphs.e}}</p>
   {%else%}
-    <h1 class="govuk-heading-l">{{notFoundUrl.serviceAPI.heading}}</h1>
+    <h1 class="govuk-heading-l">{{notFoundUrl.serviceAPI.heading}} hello</h1>
     <p>{{notFoundUrl.serviceAPI.paragraphs.a}}</p>
     <p class="govuk-body">{{notFoundUrl.serviceAPI.paragraphs.b}} <a href="mailto:checklocalairquality@defra.gov.uk">{{notFoundUrl.serviceAPI.paragraphs.c}}</a>{{notFoundUrl.serviceAPI.paragraphs.d}}</p>
   </div>

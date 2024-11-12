@@ -1,1 +1,1 @@
-export const WELSH_TITLE = 'Gwirio ansawdd aer lleol'
+export const WELSH_TITLE = 'Gwirio ansawdd aer'

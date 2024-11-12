@@ -17,7 +17,7 @@ function statusCodeMessage(statusCode, lang) {
     case statusCode === 500:
       return 'Sorry, there is a problem with the service'
     default:
-      return 'Something went wrong'
+      return 'Sorry, there is a problem with the service'
   }
 }
 

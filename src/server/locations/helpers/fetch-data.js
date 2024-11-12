@@ -153,7 +153,7 @@ async function fetchData(locationType, userLocation, request, h) {
       options,
       !shouldCallApi
     )
-    if (errorSummary) {
+    if (osPlacesError) {
       logger.error(
         `Error fetching osPlacesError data: ${osPlacesError.message}`
       )
