@@ -95,7 +95,7 @@ export const english = {
       }
     },
     nonService: {
-      heading: 'We could not find that page',
+      heading: 'Page not found',
       paragraphs: {
         a: 'If you typed the web address, check it is correct.',
         b: 'If you pasted the web address, check you copied the entire address.',

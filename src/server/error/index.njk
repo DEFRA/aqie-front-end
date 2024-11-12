@@ -7,6 +7,7 @@
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
+  {{statusCode |dump}}
   {% if statusCode == '500' %}
     <h1 class="govuk-heading-l">{{notFoundUrl.serviceAll.heading}}</h1>
     <p>{{notFoundUrl.serviceAll.paragraphs.a}}</p>
@@ -23,7 +24,7 @@
        <p class="govuk-body"><a href="/">{{notFoundUrl.nonService.paragraphs.a}}</a></p>
     {% endif %}
   {%else%}
-    <h1 class="govuk-heading-l">{{notFoundUrl.serviceAPI.headings}}</h1>
+    <h1 class="govuk-heading-l">{{notFoundUrl.serviceAPI.heading}}</h1>
     <p>{{notFoundUrl.serviceAPI.paragraphs.a}}</p>
     <p class="govuk-body">{{notFoundUrl.serviceAPI.paragraphs.b}} <a href="mailto:checklocalairquality@defra.gov.uk">{{notFoundUrl.serviceAPI.paragraphs.c}}</a>{{notFoundUrl.serviceAPI.paragraphs.d}}</p>
   </div>
