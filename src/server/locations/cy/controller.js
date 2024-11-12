@@ -335,7 +335,7 @@ const getLocationDataController = {
         logger.info(
           `::::::::::: getNIPlaces statusCode cy ::::::::: ${getNIPlaces?.statusCode}`
         )
-        if (getOSPlaces?.statusCode === 500) {
+        if (getOSPlaces?.statusCode !== 200) {
           return h.view('error/index', {
             footerTxt,
             pageTitle: `${notFoundLocation.paragraphs.h} ${locationNameOrPostcode} - ${home.pageTitle}`,
@@ -448,7 +448,6 @@ const getLocationDataController = {
       logger.error(`error from location refresh ${error.message}`)
       return h.view('error/index', {
         footerTxt,
-        pageTitle: `${notFoundLocation.paragraphs.h} ${locationNameOrPostcode} - ${home.pageTitle}`,
         url: request.path,
         phaseBanner,
         displayBacklink: false,

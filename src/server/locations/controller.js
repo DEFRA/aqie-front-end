@@ -154,7 +154,11 @@ const getLocationDataController = {
       if (locationType === 'uk-location') {
         const { results } = getOSPlaces
 
-        if (!results || results.length === 0) {
+        if (
+          !results ||
+          results.length === 0 ||
+          getOSPlaces === 'wrong postcode'
+        ) {
           return h.view('locations/location-not-found', {
             userLocation: locationNameOrPostcode,
             serviceName: notFoundLocation.heading,
@@ -268,7 +272,7 @@ const getLocationDataController = {
             pollutantTypes,
             displayBacklink: true,
             pageTitle: title,
-            serviceName: 'Check local air quality',
+            serviceName: 'Check air quality',
             forecastSummary: getDailySummary.today,
             dailySummary: getDailySummary,
             footerTxt,
@@ -330,28 +334,7 @@ const getLocationDataController = {
         logger.info(
           `::::::::::: getNIPlaces statusCode en  ::::::::::: ${getNIPlaces?.statusCode}`
         )
-        if (
-          getOSPlaces?.statusCode === 500 ||
-          getForecasts?.statusCode === 500 ||
-          getMeasurements?.statusCode === 500 ||
-          getDailySummary?.statusCode === 500 ||
-          getOSPlaces?.statusCode === 400 ||
-          getForecasts?.statusCode === 400 ||
-          getMeasurements?.statusCode === 400 ||
-          getDailySummary?.statusCode === 400 ||
-          getOSPlaces?.statusCode === 401 ||
-          getForecasts?.statusCode === 401 ||
-          getMeasurements?.statusCode === 401 ||
-          getDailySummary?.statusCode === 401 ||
-          getOSPlaces?.statusCode === 403 ||
-          getForecasts?.statusCode === 403 ||
-          getMeasurements?.statusCode === 403 ||
-          getDailySummary?.statusCode === 403 ||
-          getOSPlaces?.statusCode === 404 ||
-          getForecasts?.statusCode === 404 ||
-          getMeasurements?.statusCode === 404 ||
-          getDailySummary?.statusCode === 404
-        ) {
+        if (getOSPlaces?.statusCode !== 200) {
           return h.view('error/index', {
             footerTxt,
             url: request.path,

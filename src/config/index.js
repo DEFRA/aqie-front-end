@@ -25,7 +25,7 @@ const config = convict({
   serviceName: {
     doc: 'Applications Service Name',
     format: String,
-    default: 'Check local air quality'
+    default: 'Check air quality'
   },
   root: {
     doc: 'Project root',
@@ -77,7 +77,7 @@ const config = convict({
     doc: 'OS Name Places key',
     format: '*',
     sensitive: true,
-    default: 'vvR3FiaNjSWCnFzSKBst23TX6efl0oL9',
+    default: 'vvR3FiaNjSWCnFzSKBst23TX6efl0oL9cc',
     env: 'OS_NAMES_API_KEY'
   },
   osNamesApiUrl: {
