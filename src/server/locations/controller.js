@@ -440,6 +440,13 @@ const getLocationDataController = {
       logger.error(
         `error from location refresh outside fetch APIs: ${error.message}`
       )
+      let statusCode = 500
+      if (
+        error.message ===
+        "Cannot read properties of undefined (reading 'access_token')"
+      ) {
+        statusCode = 401
+      }
       return h.view('error/index', {
         footerTxt,
         url: request.path,
@@ -448,6 +455,7 @@ const getLocationDataController = {
         cookieBanner,
         serviceName: english.multipleLocations.serviceName,
         notFoundUrl: english.notFoundUrl,
+        statusCode,
         lang
       })
     }
