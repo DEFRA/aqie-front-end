@@ -3,6 +3,7 @@ import { createLogger } from '~/src/server/common/helpers/logging/logger'
 const logger = createLogger()
 
 async function catchProxyFetchError(url, options, shouldCallApi) {
+  let statusCode = 500
   if (shouldCallApi) {
     try {
       const startTime = performance.now()
@@ -11,6 +12,7 @@ async function catchProxyFetchError(url, options, shouldCallApi) {
       const endTime = performance.now()
       const duration = endTime - startTime
       logger.info(`API from ${url} fetch took ${date} ${duration} milliseconds`)
+      statusCode = response.status
       if (!response.ok) {
         logger.info(
           `Failed to fetch data from ${url}: ${JSON.stringify(response)}`
@@ -18,13 +20,13 @@ async function catchProxyFetchError(url, options, shouldCallApi) {
         throw new Error(`HTTP error! status from ${url}: ${response.status}`)
       }
       const data = await response.json()
-      return [undefined, data]
+      return [statusCode, data]
     } catch (error) {
       logger.error(`Failed to proxyFetch data from ${url}: ${error.message}`)
       return [error]
     }
   }
-  return [undefined, 'wrong postcode']
+  return [statusCode, 'wrong postcode']
 }
 
 export { catchProxyFetchError }
