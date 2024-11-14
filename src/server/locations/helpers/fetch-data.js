@@ -122,7 +122,7 @@ async function fetchData(locationType, userLocation, request, h) {
     true
   )
   if (errorSummary) {
-    logger.error(`Error fetching getDailySummary data: ${errorSummary.message}`)
+    logger.error(`Error fetching getDailySummary data: ${errorSummary}`)
   } else {
     logger.info(`getDailySummary data fetched:`)
   }
@@ -154,9 +154,7 @@ async function fetchData(locationType, userLocation, request, h) {
       !shouldCallApi
     )
     if (osPlacesError) {
-      logger.error(
-        `Error fetching osPlacesError data: ${osPlacesError.message}`
-      )
+      logger.error(`Error fetching osPlacesError data: ${osPlacesError}`)
     } else {
       logger.info(`getOSPlaces data fetched:`)
     }
@@ -173,7 +171,7 @@ async function fetchData(locationType, userLocation, request, h) {
     )
     if (errorNortherIreland) {
       logger.error(
-        `Error fetching errorNortherIreland data: ${errorNortherIreland.message}`
+        `Error fetching errorNortherIreland data: ${errorNortherIreland}`
       )
     } else {
       logger.info(`getNIPlaces data fetched:`)
