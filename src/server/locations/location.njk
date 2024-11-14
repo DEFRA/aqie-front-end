@@ -35,7 +35,6 @@
       {% else %}
       {% include "forecast.njk" %}
       {%endif%}
-      {% include "uk-forecast.njk" %}
       {% if airQuality.value >= 1 and airQuality.value <= 3 %}
           <h2 class="govuk-heading-m">{{daqi.healthAdvice.paragraphs.a}} {{ airQuality.readableBand }} {{daqi.healthAdvice.paragraphs.b}}</h2>
           <p>{{ airQuality.advice }}</p>
