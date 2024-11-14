@@ -334,7 +334,10 @@ const getLocationDataController = {
         logger.info(
           `::::::::::: getNIPlaces statusCode en  ::::::::::: ${getNIPlaces?.statusCode}`
         )
-        if (getOSPlaces?.statusCode !== 200) {
+        if (
+          getOSPlaces?.statusCode !== 200 &&
+          getOSPlaces.statusCode !== undefined
+        ) {
           return h.view('error/index', {
             footerTxt,
             url: request.path,
