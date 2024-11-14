@@ -335,7 +335,10 @@ const getLocationDataController = {
         logger.info(
           `::::::::::: getNIPlaces statusCode cy ::::::::: ${getNIPlaces?.statusCode}`
         )
-        if (getOSPlaces?.statusCode !== 200) {
+        if (
+          getOSPlaces?.statusCode !== 200 &&
+          getNIPlaces?.statusCode !== undefined
+        ) {
           return h.view('error/index', {
             footerTxt,
             pageTitle: `${notFoundLocation.paragraphs.h} ${locationNameOrPostcode} - ${home.pageTitle}`,
