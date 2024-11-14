@@ -30,20 +30,25 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop govuk-grid-column-full govuk-!-margin-bottom-9">
       {% include "daqi.njk" %}
-      {% if airQuality.today.value >= 1 and airQuality.today.value <= 3 %}
-          <h2 class="govuk-heading-m">{{daqi.healthAdvice.paragraphs.a}} {{ airQuality.today.readableBand }} {{daqi.healthAdvice.paragraphs.b}}</h2>
-          <p>{{ airQuality.today.advice }}</p>
-      {% elseif airQuality.today.value >= 4 %}
-          <h2 class="govuk-heading-m">{{daqi.healthAdvice.paragraphs.a}} {{ airQuality.today.readableBand }} {{daqi.healthAdvice.paragraphs.b}}</h2>
-          <p>{{ airQuality.today.advice }}</p>
+      {%if lang == "cy"%}
+      {% include "forecast-welsh.njk" %}
+      {% else %}
+      {% include "forecast.njk" %}
+      {%endif%}
+      {% if airQuality.value >= 1 and airQuality.value <= 3 %}
+          <h2 class="govuk-heading-m">{{daqi.healthAdvice.paragraphs.a}} {{ airQuality.readableBand }} {{daqi.healthAdvice.paragraphs.b}}</h2>
+          <p>{{ airQuality.advice }}</p>
+      {% elseif airQuality.value >= 4 %}
+          <h2 class="govuk-heading-m">{{daqi.healthAdvice.paragraphs.a}} {{ airQuality.readableBand }} {{daqi.healthAdvice.paragraphs.b}}</h2>
+          <p>{{ airQuality.advice }}</p>
           {% set adultsText %}
-            {{ (airQuality.today.atrisk.adults) }}
+            {{ (airQuality.atrisk.adults) }}
           {% endset %}
           {% set asthmaText %}
-            {{ (airQuality.today.atrisk.asthma) }}
+            {{ (airQuality.atrisk.asthma) }}
           {% endset %}
           {% set oldPeopleText %}
-          {{ (airQuality.today.atrisk.oldPeople) }}
+          {{ (airQuality.atrisk.oldPeople) }}
           {% endset %}
           {{ govukInsetText({
             html: 
@@ -51,12 +56,6 @@
               "<p>" + asthmaText + "</p>" +
               "<p>" + oldPeopleText + "</p>" 
           }) }}
-      {% endif %}  
-      {%if lang == "en"%}
-      {% include "daqi-index.njk" %}
-      {% endif %} 
-      {%if lang == "cy"%}
-      {% include "daqi-index-welsh.njk" %}
       {% endif %} 
       <h2 class="govuk-heading-m">{{daqi.pageTexts.a}}</h2>
       <p class="govuk-!-margin-bottom-6">
