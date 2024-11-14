@@ -331,12 +331,13 @@ const getLocationDataController = {
           request,
           h
         )
+        logger.info(`::::::::::: getNIPlaces en  ::::::::::: ${getNIPlaces}`)
         logger.info(
           `::::::::::: getNIPlaces statusCode en  ::::::::::: ${getNIPlaces?.statusCode}`
         )
         if (
           getOSPlaces?.statusCode !== 200 &&
-          getOSPlaces.statusCode !== undefined
+          getOSPlaces?.statusCode !== undefined
         ) {
           return h.view('error/index', {
             footerTxt,
