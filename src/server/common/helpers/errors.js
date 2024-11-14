@@ -46,7 +46,7 @@ function catchAll(request, h) {
 
   request.logger.error(response?.stack)
 
-  const statusCode = response.output.statusCode
+  const statusCode = response?.output?.statusCode
   const errorMessage = statusCodeMessage(statusCode, lang)
   const { footerTxt, notFoundUrl, cookieBanner, multipleLocations } = english
   logger.info(
