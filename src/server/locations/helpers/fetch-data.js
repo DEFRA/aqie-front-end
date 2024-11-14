@@ -35,9 +35,13 @@ const fetchOAuthToken = async () => {
       state: '1245'
     })
   }
-  const [errorToken, dataToken] = await catchProxyFetchError(url, options, true)
-  if (errorToken) {
-    logger.error('Error OAuth token fetched:', errorToken)
+  const [statusCodeToken, dataToken] = await catchProxyFetchError(
+    url,
+    options,
+    true
+  )
+  if (statusCodeToken !== 200) {
+    logger.error('Error OAuth statusCodeToken fetched:', statusCodeToken)
   } else {
     logger.info(`OAuth token fetched:::`)
   }
@@ -116,13 +120,13 @@ async function fetchData(locationType, userLocation, request, h) {
   } else {
     logger.info(`getMeasurements data fetched:`)
   }
-  const [errorSummary, getDailySummary] = await catchProxyFetchError(
+  const [statusCodeSummary, getDailySummary] = await catchProxyFetchError(
     forecastSummaryURL,
     options,
     true
   )
-  if (errorSummary) {
-    logger.error(`Error fetching getDailySummary data: ${errorSummary}`)
+  if (statusCodeSummary !== 200) {
+    logger.error(`Error fetching statusCodeSummary data: ${statusCodeSummary}`)
   } else {
     logger.info(`getDailySummary data fetched:`)
   }
@@ -148,13 +152,15 @@ async function fetchData(locationType, userLocation, request, h) {
     logger.info(
       `osPlace data requested osNamesApiUrlFull: ${osNamesApiUrlFull}`
     )
-    const [osPlacesError, getOSPlaces] = await catchProxyFetchError(
+    const [statusCodeOSPlace, getOSPlaces] = await catchProxyFetchError(
       osNamesApiUrlFull,
       options,
       !shouldCallApi
     )
-    if (osPlacesError) {
-      logger.error(`Error fetching osPlacesError data: ${osPlacesError}`)
+    if (statusCodeOSPlace !== 200) {
+      logger.error(
+        `Error fetching statusCodeOSPlace data: ${statusCodeOSPlace}`
+      )
     } else {
       logger.info(`getOSPlaces data fetched:`)
     }
@@ -164,15 +170,13 @@ async function fetchData(locationType, userLocation, request, h) {
       'osPlacesApiPostcodeNorthernIrelandUrl'
     )
     const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
-    const [errorNortherIreland, getNIPlaces] = await catchProxyFetchError(
+    const [statusCodeNI, getNIPlaces] = await catchProxyFetchError(
       postcodeNortherIrelandURL,
       optionsOAuth,
       true
     )
-    if (errorNortherIreland) {
-      logger.error(
-        `Error fetching errorNortherIreland data: ${errorNortherIreland}`
-      )
+    if (statusCodeNI !== 200) {
+      logger.error(`Error fetching statusCodeNI data: ${statusCodeNI}`)
     } else {
       logger.info(`getNIPlaces data fetched:`)
     }
