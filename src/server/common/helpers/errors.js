@@ -1,5 +1,8 @@
 import { english } from '~/src/server/data/en/en.js'
 import { welsh } from '~/src/server/data/cy/cy.js'
+import { createLogger } from '~/src/server/common/helpers/logging/logger'
+
+const logger = createLogger()
 
 function statusCodeMessage(statusCode, lang) {
   switch (true) {
@@ -46,6 +49,9 @@ function catchAll(request, h) {
   const statusCode = response.output.statusCode
   const errorMessage = statusCodeMessage(statusCode, lang)
   const { footerTxt, notFoundUrl, cookieBanner, multipleLocations } = english
+  logger.info(
+    `Error: ${errorMessage} statusCode- ${statusCode} -path ${request.path}`
+  )
   if (lang === 'cy') {
     return h
       .view('error/index', {
