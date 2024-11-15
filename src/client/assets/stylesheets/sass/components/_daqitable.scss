@@ -9,6 +9,7 @@
   display: flex;
   height: govuk-spacing(4);
   margin-bottom: govuk-spacing(2);
+  border: 1px solid transparent;
 }
 
 .daqi-bar-segment {
@@ -28,10 +29,16 @@
   border: 0;
   vertical-align: top;
   text-align: left;
+  width: 30%;
+}
+
+.daqi-band:last-child, .daqi-band:nth-child(3) {
+  width: 20%;
 }
 
 .daqi-band:last-child {
-  text-align: 20%;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .daqi-selected {
@@ -101,11 +108,4 @@
   background-color: $daqi-colour-10;
   color: govuk-colour("white");
   font-weight: bold; 
-}
-
-
-@for $i from 0 through 10 {
-  .daqi-#{$i} {
-    text-align: center;
-  }
 }
