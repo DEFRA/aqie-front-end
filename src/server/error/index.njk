@@ -7,7 +7,6 @@
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-  {{statusCode | dump}}
   {% if statusCode == '500' %}
     <h1 class="govuk-heading-l">{{notFoundUrl.serviceAPI.heading}}</h1>
     <p>{{notFoundUrl.serviceAPI.paragraphs.a}}</p>
