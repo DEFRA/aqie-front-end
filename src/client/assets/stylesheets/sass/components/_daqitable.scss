@@ -45,6 +45,13 @@
   font-weight: bold; 
 }
 
+@media (prefers-contrast: less) {
+  .daqi-selected {
+    background-color: #ffffff;
+    color: #ffffff;
+  }
+}
+
 .daqi-0 {
   background-color: $daqi-colour-0;
   color: govuk-colour("black");
