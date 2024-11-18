@@ -66,6 +66,12 @@
     color: #ffffff;
   }
 }
+@media (forced-colors: active) {
+  .daqi-selected {
+    background-color: #000000;
+    color: #ffffff;
+  }
+}
 
 .daqi-0 {
   background-color: $daqi-colour-0;
