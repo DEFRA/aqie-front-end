@@ -1,4 +1,14 @@
 // Daqi table
+@namespace "http://www.w3.org/2000/svg";
+
+svg|svg { 
+  forced-color-adjust: preserve-parent-color; 
+}
+
+svg|foreignObject { 
+  forced-color-adjust: auto; 
+}
+
 .daqi-labels {
   display: flex;
   white-space: nowrap;
@@ -45,13 +55,6 @@
   font-weight: bold; 
 }
 
-@media (prefers-contrast: less) {
-  .daqi-selected {
-    background-color: #ffffff;
-    color: #000000;
-  }
-}
-
 @media (prefers-contrast: more) {
   .daqi-selected {
     background-color: #000000;
@@ -59,17 +62,18 @@
   }
 }
 
-@media (-ms-high-contrast: active) {
+@media (forced-colors: active) {
   .daqi-selected {
-    background-color: window;
-    color: windowText;
+    forced-color-adjust: none; /* Prevents the element from being adjusted by the forced colors mode */
+    background-color: #000000; /* Uses system color for button face */
+    color: #ffffff; /* Uses system color for button text */
   }
 }
 
-@media (-ms-low-contrast: active) {
+@media (inverted-colors: inverted) {
   .daqi-selected {
-    background-color: window;
-    color: windowText;
+    background-color: #ffffff;
+    color: #ffffff;
   }
 }
 
