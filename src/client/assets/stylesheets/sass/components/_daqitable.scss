@@ -45,13 +45,19 @@
   font-weight: bold; 
 }
 
+@media (prefers-contrast: less) {
+  .daqi-selected {
+    background-color: #ffffff;
+    color: #000000;
+  }
+}
+
 @media (prefers-contrast: more) {
   .daqi-selected {
     background-color: #000000;
     color: #ffffff;
   }
 }
-
 
 @media (-ms-high-contrast: active) {
   .daqi-selected {
@@ -60,16 +66,10 @@
   }
 }
 
-@media (inverted-colors: inverted) {
+@media (-ms-low-contrast: active) {
   .daqi-selected {
-    background-color: #ffffff;
-    color: #ffffff;
-  }
-}
-@media (forced-colors: active) {
-  .daqi-selected {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: window;
+    color: windowText;
   }
 }
 
