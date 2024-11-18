@@ -56,24 +56,25 @@ svg|foreignObject {
 }
 
 @media (prefers-contrast: more) {
-  .daqi-selected {
-    background-color: #000000;
-    color: #ffffff;
+  .daqi-selected, .aq-forecast-dd.daqi-tag--2 {
+    background-color: #ffffff;
+    color: #000000;
   }
 }
 
 @media (forced-colors: active) {
-  .daqi-selected {
-    forced-color-adjust: none; /* Prevents the element from being adjusted by the forced colors mode */
-    background-color: #000000; /* Uses system color for button face */
-    color: #ffffff; /* Uses system color for button text */
+  .daqi-selected, .aq-forecast-dd.daqi-tag--2 {
+    // stylelint-disable-next-line declaration-no-important
+    background-color: #ffffff!important;
+    forced-color-adjust: none; 
+    color: #000000;
   }
 }
 
 @media (inverted-colors: inverted) {
-  .daqi-selected {
+  .daqi-selected, .aq-forecast-dd.daqi-tag--2 {
     background-color: #ffffff;
-    color: #ffffff;
+    color: #000000;
   }
 }
 
