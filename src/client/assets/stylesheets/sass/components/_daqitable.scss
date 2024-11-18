@@ -45,7 +45,7 @@
   font-weight: bold; 
 }
 
-@media (prefers-contrast: less) {
+@media (prefers-contrast: more) {
   .daqi-selected {
     background-color: #ffffff;
     color: #ffffff;
