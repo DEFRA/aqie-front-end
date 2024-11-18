@@ -47,8 +47,16 @@
 
 @media (prefers-contrast: more) {
   .daqi-selected {
-    background-color: #ffffff;
+    background-color: #000000;
     color: #ffffff;
+  }
+}
+
+
+@media (-ms-high-contrast: active) {
+  .daqi-selected {
+    background-color: window;
+    color: windowText;
   }
 }
 
@@ -56,13 +64,6 @@
   .daqi-selected {
     background-color: #ffffff;
     color: #ffffff;
-  }
-}
-
-@media (-ms-high-contrast: active) {
-  .daqi-selected {
-    background-color: window;
-    color: windowText;
   }
 }
 
