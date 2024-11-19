@@ -19,11 +19,13 @@ const cookiesController = {
       multipleLocations: { serviceName }
     } = welsh
     /* eslint-disable camelcase */
-    const {
-      query: { lang }
-    } = request
-    if (lang && lang === 'en') {
+    const { query, path } = request
+    if (query?.lang && query?.lang === 'en') {
       return h.redirect(`/cookies?lang=en`)
+    }
+    let lang = query?.lang?.slice(0, 2)
+    if (lang !== 'cy' && lang !== 'en' && path === '/preifatrwydd/cy') {
+      lang = 'cy'
     }
     return h.view('cookies/index', {
       pageTitle,
