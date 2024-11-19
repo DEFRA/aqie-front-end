@@ -68,15 +68,15 @@ svg|foreignObject {
       background-color: #ffffff !important;
       forced-color-adjust: none;
       color: #000000;
-      width: 100%;
   }
 
   .aq-forecast-item {
     .aq-forecast-dd.daqi-tag--2 {
-      border-right: 2px solid #000000;            
+      border-right: 2px solid #000000;  
+      width: 100%;          
     } 
   }
-  
+
  .aq-forecast-item:last-child { 
   .aq-forecast-dd.daqi-tag--2 {
       border-right: 1px solid #ffffff; 
