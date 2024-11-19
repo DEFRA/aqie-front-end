@@ -5,10 +5,13 @@ const particulateMatter25Controller = {
   handler: (request, h) => {
     const { particulateMatter25 } = welsh.pollutants
     const { footerTxt, cookieBanner, phaseBanner, multipleLocations } = welsh
-    const { query } = request
-    const lang = 'cy'
+    const { query, path } = request
     if (query?.lang && query?.lang === 'en') {
       return h.redirect(`/pollutants/particulate-matter-25?lang=en`)
+    }
+    let lang = query?.lang?.slice(0, 2)
+    if (lang !== 'cy' && lang !== 'en' && path === '/chwilio-lleoliad/cy') {
+      lang = 'cy'
     }
     return h.view('particulate-matter-25/index', {
       pageTitle: particulateMatter25.pageTitle,
@@ -19,7 +22,7 @@ const particulateMatter25Controller = {
       footerTxt,
       cookieBanner,
       serviceName: multipleLocations.serviceName,
-      lang: query.lang ?? lang
+      lang
     })
   }
 }

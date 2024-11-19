@@ -15,10 +15,13 @@ import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 const logger = createLogger()
 const getLocationDataController = {
   handler: async (request, h) => {
-    const { query } = request
-    const lang = 'cy'
+    const { query, path } = request
     const tempString = request?.headers?.referer?.split('/')[3]
     const str = tempString?.split('?')[0]
+    let lang = query?.lang?.slice(0, 2)
+    if (lang !== 'cy' && lang !== 'en' && path === '/lleoliad/cy') {
+      lang = 'cy'
+    }
     if (query?.lang && query?.lang === 'en') {
       return h.redirect(`/location?lang=en`)
     }
@@ -151,7 +154,7 @@ const getLocationDataController = {
             phaseBanner,
             backlink,
             cookieBanner,
-            lang: request.query?.lang ?? lang
+            lang
           })
         }
 
@@ -282,7 +285,7 @@ const getLocationDataController = {
             welshMonth: calendarWelsh[getMonth],
             summaryDate: lang === 'cy' ? welshDate : englishDate,
             dailySummaryTexts: welsh.dailySummaryTexts,
-            lang: request.query?.lang ?? lang
+            lang
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
           if (lang === 'en') {
