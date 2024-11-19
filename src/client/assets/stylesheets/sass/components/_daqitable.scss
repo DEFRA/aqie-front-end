@@ -56,23 +56,36 @@ svg|foreignObject {
 }
 
 @media (prefers-contrast: more) {
-  .daqi-selected, .aq-forecast-dd.daqi-tag--2 {
+  .daqi-selected {
     background-color: #ffffff;
     color: #000000;
   }
 }
 
-@media (forced-colors: active) {
-  .daqi-selected, .aq-forecast-dd.daqi-tag--2 {
+@media(forced-colors: active) {
+  .daqi-selected,.aq-forecast-dd.daqi-tag--2 {
     // stylelint-disable-next-line declaration-no-important
-    background-color: #ffffff!important;
-    forced-color-adjust: none; 
-    color: #000000;
+      background-color: #ffffff !important;
+      forced-color-adjust: none;
+      color: #000000;
+      width: 100%;
+  }
+
+  .aq-forecast-item {
+    .aq-forecast-dd.daqi-tag--2 {
+      border-right: 2px solid #000000;            
+    } 
+  }
+  
+ .aq-forecast-item:last-child { 
+  .aq-forecast-dd.daqi-tag--2 {
+      border-right: 1px solid #ffffff; 
+   } 
   }
 }
 
 @media (inverted-colors: inverted) {
-  .daqi-selected, .aq-forecast-dd.daqi-tag--2 {
+  .daqi-selected {
     background-color: #ffffff;
     color: #000000;
   }
