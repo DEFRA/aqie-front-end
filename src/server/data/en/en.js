@@ -159,7 +159,8 @@ export const english = {
   daqi: {
     paragraphs: {
       a: 'The air pollution forecast for today is',
-      b: 'out of 10'
+      b: 'on a scale of low to very high',
+      c: 'out of 10'
     },
     caption:
       'The daily air quality index (DAQI) tells you about levels of air pollution. It provides health advice for current levels.',

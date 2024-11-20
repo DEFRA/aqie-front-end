@@ -1,5 +1,5 @@
 {% set daqiValue = airQuality.today.value %}
-  <h2 class="govuk-heading-m govuk-!-margin-bottom-6">{{daqi.paragraphs.a}} {{airQuality.today.readableBand | default('unknown')}}<span class="daqi-scale-hidden">, {{daqiValue}} {{daqi.paragraphs.b}}</span></h2>
+  <h2 class="govuk-heading-m govuk-!-margin-bottom-4"><span>{{daqi.paragraphs.a}} {{airQuality.today.readableBand | default('unknown')}}<span class="govuk-visually-hidden"> {{daqi.paragraphs.b}}</span><span class="govuk-visually-hidden">, {{daqiValue}} {{daqi.paragraphs.c}}</span></h2>
   <div class="daqi-scale govuk-!-margin-bottom-7" role="img" aria-hidden="true">
   <div class="daqi-bar">
     {% for i in range(1, 11) %}
