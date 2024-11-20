@@ -137,7 +137,8 @@ export const welsh = {
   daqi: {
     paragraphs: {
       a: 'Y rhagolwg llygredd aer heddiw yw',
-      b: 'allan o 10'
+      b: 'on a scale of low to very high',
+      c: 'allan o 10'
     },
     caption:
       'Mae’r mynegai ansawdd aer dyddiol(DAQI) yn dweud wrthoch chi am lefelau llygredd aer.Mae’n darparu cyngor iechyd ar gyfer y lefelau presennol.',
