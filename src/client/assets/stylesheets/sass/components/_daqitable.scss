@@ -71,7 +71,17 @@ svg|foreignObject {
   }
 }
 @media(forced-colors: active) {
-  .daqi-selected,.aq-forecast-dd.daqi-tag--2 {
+  .daqi-selected,
+  .aq-forecast-dd.daqi-tag--1, 
+  .aq-forecast-dd.daqi-tag--2, 
+  .aq-forecast-dd.daqi-tag--3, 
+  .aq-forecast-dd.daqi-tag--4, 
+  .aq-forecast-dd.daqi-tag--5, 
+  .aq-forecast-dd.daqi-tag--6, 
+  .aq-forecast-dd.daqi-tag--7, 
+  .aq-forecast-dd.daqi-tag--8, 
+  .aq-forecast-dd.daqi-tag--9, 
+  .aq-forecast-dd.daqi-tag--10  {
     // stylelint-disable-next-line declaration-no-important
       background-color: windowText !important;
       forced-color-adjust: none;
