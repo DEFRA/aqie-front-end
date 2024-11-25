@@ -78,7 +78,7 @@
 {% block beforeContent %}
 {%if page != "home"%}
 {% if notFoundUrl %}
-{% if (statusCode == '500') or ( statusCode == '404') %}
+{% if (statusCode == '500') or ( statusCode == '404') or ( statusCode == '401') %}
   {{ govukPhaseBanner({
     tag: {
       text: phaseBanner.paragraphs.a

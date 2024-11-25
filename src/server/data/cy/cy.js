@@ -71,6 +71,8 @@ export const welsh = {
   },
   notFoundUrl: {
     nonService: {
+      pageTitle:
+        'Ni allem ddod o hyd i’r dudalen hon - Gwirio ansawdd aer - GOV.UK',
       heading: 'Ni allem ddod o hyd i’r dudalen hon',
       paragraphs: {
         a: 'Ewch yn ôl i ansawdd aer'

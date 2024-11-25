@@ -86,6 +86,8 @@ export const english = {
       }
     },
     serviceAPI: {
+      pageTitle:
+        'Sorry, there is a problem with the service - Check air quality - GOV.UK',
       heading: 'Sorry, there is a problem with the service',
       paragraphs: {
         a: 'Try again later',
@@ -95,6 +97,7 @@ export const english = {
       }
     },
     nonService: {
+      pageTitle: 'Page not found - Check air quality - GOV.UK',
       heading: 'Page not found',
       paragraphs: {
         a: 'If you typed the web address, check it is correct.',
