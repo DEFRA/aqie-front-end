@@ -24,7 +24,7 @@
             margin-left: 0.66rem;
             }
         }
-        padding-bottom: 20px;
+        padding-bottom: 30px;
     }
 
     .govuk-grid-column-two-thirds-from-desktop.language-toggle {
@@ -32,15 +32,14 @@
     }
 
     .govuk-main-wrapper.govuk-main-wrapper{
-    // stylelint-disable-next-line declaration-no-important
-        padding-top: 40px!important;
+        padding-top: 40px;
     }
     
     .govuk-main-wrapper.govuk-main-wrapper:has(.govuk-radios){
         padding-top: 0;
     }
 
-    .govuk-main-wrapper.govuk-main-wrapper:has(.govuk-list){
+    .govuk-main-wrapper.govuk-main-wrapper:has(.multiple-search){
         padding-top: 0;
     }
 
