@@ -73,13 +73,13 @@ export const welsh = {
     nonService: {
       heading: 'Ni allem ddod o hyd i’r dudalen hon',
       paragraphs: {
-        a: 'Ewch yn ôl i ansawdd aer lleol'
+        a: 'Ewch yn ôl i ansawdd aer'
       }
     },
     serviceAPI: {
       heading: 'Ni allem ddod o hyd i’r dudalen hon',
       paragraphs: {
-        a: 'Ewch yn ôl i ansawdd aer lleol'
+        a: 'Ewch yn ôl i ansawdd aer'
       }
     }
   },
