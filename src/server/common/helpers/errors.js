@@ -48,7 +48,14 @@ function catchAll(request, h) {
 
   const statusCode = response?.output?.statusCode
   const errorMessage = statusCodeMessage(statusCode, lang)
-  const { footerTxt, notFoundUrl, cookieBanner, multipleLocations } = english
+  const {
+    footerTxt,
+    notFoundUrl,
+    cookieBanner,
+    multipleLocations,
+    phaseBanner
+  } = english
+
   logger.info(
     `Error: ${errorMessage} statusCode- ${statusCode} -path ${request.path}`
   )
@@ -61,10 +68,11 @@ function catchAll(request, h) {
         url: request.path,
         notFoundUrl: welsh.notFoundUrl,
         displayBacklink: false,
+        phaseBanner: welsh.phaseBanner,
         footerTxt: welsh.footerTxt,
         cookieBanner: welsh.cookieBanner,
         serviceName: welsh.multipleLocations.serviceName,
-        lang: request.query.lang ?? lang
+        lang
       })
       .code(statusCode)
   }
@@ -76,11 +84,11 @@ function catchAll(request, h) {
       url: request.path,
       notFoundUrl,
       displayBacklink: false,
-      phaseBanner: false,
+      phaseBanner,
       footerTxt,
       cookieBanner,
       serviceName: multipleLocations.serviceName,
-      lang: request.query.lang ?? lang
+      lang
     })
     .code(statusCode)
 }
