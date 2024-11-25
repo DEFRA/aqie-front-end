@@ -5,7 +5,7 @@
 
 {% block content %}
   {% if statusCode == '500' %}
-  <div class="govuk-grid-row app-heading" data-testid="app-heading">
+  <div class="govuk-grid-row app-heading not-found" data-testid="app-heading">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl">{{notFoundUrl.serviceAPI.heading}}</h1>
     </div>
@@ -14,7 +14,7 @@
     <p class="govuk-body">{{notFoundUrl.serviceAPI.paragraphs.b}} <a href="mailto:checklocalairquality@defra.gov.uk">{{notFoundUrl.serviceAPI.paragraphs.c}}</a>{{notFoundUrl.serviceAPI.paragraphs.d}}</p>
    {% elif statusCode == '404' %}
     {% if lang == 'en' %}
-      <div class="govuk-grid-row app-heading" data-testid="app-heading">
+      <div class="govuk-grid-row app-heading not-found" data-testid="app-heading">
   <div class="govuk-grid-column-two-thirds">
      <h1 class="govuk-heading-xl">{{notFoundUrl.nonService.heading}} {{msError}}</h1>
      </div>
@@ -24,7 +24,7 @@
      <p class="govuk-body">{{notFoundUrl.nonService.paragraphs.c}}<a href="mailto:checklocalairquality@defra.gov.uk">{{notFoundUrl.nonService.paragraphs.d}}</a>{{notFoundUrl.nonService.paragraphs.e}}</p>
     {% endif %}
     {% if lang == 'cy' %}
-      <div class="govuk-grid-row app-heading" data-testid="app-heading">
+      <div class="govuk-grid-row app-heading not-found" data-testid="app-heading">
   <div class="govuk-grid-column-two-thirds">
        <h1 class="govuk-heading-xl">{{notFoundUrl.nonService.heading}}</h1>
        </div>
@@ -34,7 +34,7 @@
     
   {%else%}
   {% if lang == 'en' %}
-    <div class="govuk-grid-row app-heading" data-testid="app-heading">
+    <div class="govuk-grid-row app-heading not-found" data-testid="app-heading">
   <div class="govuk-grid-column-two-thirds">
    <h1 class="govuk-heading-xl">{{notFoundUrl.serviceAPI.heading}}</h1>
    </div>
@@ -43,7 +43,7 @@
     <p class="govuk-body">{{notFoundUrl.serviceAPI.paragraphs.b}} <a href="mailto:checklocalairquality@defra.gov.uk">{{notFoundUrl.serviceAPI.paragraphs.c}}</a>{{notFoundUrl.serviceAPI.paragraphs.d}}</p>
   {% endif %}
   {% if lang == 'cy' %}
-    <div class="govuk-grid-row app-heading" data-testid="app-heading">
+    <div class="govuk-grid-row app-heading not-found" data-testid="app-heading">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl">{{notFoundUrl.serviceAPI.heading}}</h1>
     </div>

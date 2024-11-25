@@ -32,7 +32,8 @@
     }
 
     .govuk-main-wrapper.govuk-main-wrapper{
-        padding-top: 40px;
+    // stylelint-disable-next-line declaration-no-important
+        padding-top: 40px!important;
     }
     
     .govuk-main-wrapper.govuk-main-wrapper:has(.govuk-radios){
