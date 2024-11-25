@@ -85,7 +85,7 @@ svg|foreignObject {
     // stylelint-disable-next-line declaration-no-important
       background-color: windowText !important;
       forced-color-adjust: none;
-      color: govuk-colour("black");
+      color: Window;
   }
 
   .aq-forecast-item {
@@ -99,7 +99,7 @@ svg|foreignObject {
     .aq-forecast-dd.daqi-tag--8, 
     .aq-forecast-dd.daqi-tag--9, 
     .aq-forecast-dd.daqi-tag--10 {
-      border-right: 2px solid govuk-colour("black");;  
+      border-right: 2px solid Window;  
       width: 100%;          
     } 
   }
@@ -115,7 +115,7 @@ svg|foreignObject {
   .aq-forecast-dd.daqi-tag--8, 
   .aq-forecast-dd.daqi-tag--9, 
   .aq-forecast-dd.daqi-tag--10  {
-      border-right: 1px solid windowText; 
+      border-right: 1px solid Window; 
    } 
   }
 }
