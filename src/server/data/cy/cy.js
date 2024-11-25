@@ -137,7 +137,7 @@ export const welsh = {
   daqi: {
     paragraphs: {
       a: 'Y rhagolwg llygredd aer heddiw yw',
-      b: 'on a scale of low to very high',
+      b: 'ar raddfa o isel i uchel iawn',
       c: 'allan o 10'
     },
     caption:

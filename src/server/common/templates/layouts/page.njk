@@ -30,7 +30,6 @@
 {% block bodyStart %}
 {% include "cookie-banner.njk" %}
 {% endblock %}
-{% set mainClasses = "govuk-main-wrapper" %}
 
 {% block headIcons %}
   <link rel="icon" sizes="48x48" href="{{ getAssetPath("images/favicon.ico") }}">
@@ -78,8 +77,15 @@
 
 {% block beforeContent %}
 {%if page != "home"%}
-
 {% if notFoundUrl %}
+{% if statusCode == 500 %}
+  {{ govukPhaseBanner({
+    tag: {
+      text: phaseBanner.paragraphs.a
+    },
+    html: phaseBanner.paragraphs.b + " <a class='govuk-link' href='https://defragroup.eu.qualtrics.com/jfe/form/SV_dj4wJCoOkFQLXfM'>" + phaseBanner.paragraphs.c + " </a>" + phaseBanner.paragraphs.d
+  }) }}
+  {%endif%}
 {% else %}
   {{ govukPhaseBanner({
     tag: {
@@ -87,12 +93,14 @@
     },
     html: phaseBanner.paragraphs.b + " <a class='govuk-link' href='https://defragroup.eu.qualtrics.com/jfe/form/SV_dj4wJCoOkFQLXfM'>" + phaseBanner.paragraphs.c + " </a>" + phaseBanner.paragraphs.d
   }) }}
+
   {%if (page != "Check air quality") and (page != "Gwirio ansawdd aer") %}
   {% if displayBacklink %}
    {%else%}
    {% set queryhref = "" %}
    {% set fullHrefEn = queryhref + "?lang=en" %}
    {% set fullHrefCy = queryhref + "?lang=cy" %}
+   {% if statusCode != 500 %}
        {{
         dwpLanguageToggle({
             selectedLang: lang,
@@ -102,6 +110,7 @@
             }
         })
       }}
+    {%endif%}
   {%endif%}
   {%endif%}
 {% endif %}
