@@ -452,6 +452,7 @@ const getLocationDataController = {
         statusCode = 401
       }
       return h.view('error/index', {
+        pageTitle: english.notFoundUrl.serviceAPI.pageTitle,
         footerTxt,
         url: request.path,
         phaseBanner,

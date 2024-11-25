@@ -62,7 +62,8 @@ function catchAll(request, h) {
   if (lang === 'cy') {
     return h
       .view('error/index', {
-        pageTitle: `${errorMessage}`,
+        pageTitle: welsh.notFoundUrl.nonService.pageTitle,
+        heading: errorMessage,
         statusCode,
         message: errorMessage,
         url: request.path,
@@ -78,7 +79,8 @@ function catchAll(request, h) {
   }
   return h
     .view('error/index', {
-      pageTitle: `${errorMessage}`,
+      pageTitle: notFoundUrl.nonService.pageTitle,
+      heading: errorMessage,
       statusCode,
       message: errorMessage,
       url: request.path,
