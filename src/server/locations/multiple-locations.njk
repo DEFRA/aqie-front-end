@@ -8,7 +8,7 @@
     <p class="govuk-body">{{paragraphs.a}}</p>
     {% set queryhref %}?lang=en{% endset %}
     {% set queryhrefCy %}?lang=cy{% endset %}
-    <ul class="govuk-list govuk-!-margin-bottom-2 multiple-search">
+    <ul class="govuk-list govuk-!-margin-bottom-2 odd-page">
       {% for item in results %}
         <li>
           <a href={%if htmlLang == 'en' %}{{['/location/',item.GAZETTEER_ENTRY.ID, queryhref] | join}}{%else%}{{['/lleoliad/cy/',item.GAZETTEER_ENTRY.ID, queryhrefCy] | join}}{%endif%} class="govuk-link">
