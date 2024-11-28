@@ -191,3 +191,9 @@ svg|foreignObject {
   color: govuk-colour("white");
   font-weight: bold; 
 }
+
+.govuk-details__text {
+  .health-advice tr:last-child td, .health-advice tr:last-child th {
+    border-bottom: 1px solid transparent;
+  }
+}
