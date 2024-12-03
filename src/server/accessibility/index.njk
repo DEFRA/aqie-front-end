@@ -1,34 +1,17 @@
 {% extends 'layouts/page.njk' %}
 
 {% block content %}
-{% set successNotificationBannerHtml %}
-  <p class="govuk-notification-banner__heading">You’ve set your cookie preferences.</p>
-{% endset %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="app-accessibility-page" data-module="app-accessibility-page">
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <div class="app-accessibility-page" data-module="app-accessibility-page">
+        <!-- Page Title -->
+        {% include 'partials/page-title.njk' %}
 
-      <h1 class="govuk-heading-xl odd-page">{{title}}</h1>
-      <p class="govuk-body">{{paragraphs.a}}</p>
+        <!-- Paragraphs and Headings -->
+        {% include 'partials/paragraphs-and-headings.njk' %}
 
-      <p class="govuk-body">{{paragraphs.b}} <a href="https://check-air-quality.service.gov.uk/">https://check-air-quality.service.gov.uk/</a></p>
-
-      <h2 class="govuk-heading-m">{{headings.a}}</h2>
-
-      <p class="govuk-body">{{paragraphs.c}}</p>
-
-      <h2 class="govuk-heading-m">{{headings.b}}</h2>
-
-      <p class="govuk-body">{{paragraphs.d}}</p>
-      <p class="govuk-body">{{paragraphs.e}}</p>
-      <p class="govuk-body">{{paragraphs.f}}</p>
-      <h2 class="govuk-heading-m">{{headings.c}}</h2>
-      <p class="govuk-body">{{paragraphs.g}} <a href="mailto:accessibility@defra.gov.uk">accessibility@defra.gov.uk.</a></p>
-      <h2 class="govuk-heading-m">{{headings.d}}</h2>
-      <p class="govuk-body">{{paragraphs.h}}</p>
-      <p class="govuk-body">{{paragraphs.i}}</p>
+      </div>
     </div>
   </div>
-</div>
 {% endblock %}

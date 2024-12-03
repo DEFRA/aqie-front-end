@@ -1,17 +1,10 @@
-import { accessibilityController } from '~/src/server/accessibility/cy/controller'
+import { routes } from './routes'
 
 const accessibilityCy = {
   plugin: {
     name: 'accessibilityCy',
     register: async (server) => {
-      server.route([
-        {
-          method: 'GET',
-          path: '/hygyrchedd/cy',
-          ...accessibilityController
-          // options: { auth: { mode: 'try' } }
-        }
-      ])
+      server.route(routes)
     }
   }
 }

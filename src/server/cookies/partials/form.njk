@@ -1,0 +1,91 @@
+<!-- Form -->
+<form class="js-cookies-page-form">
+  <h2 class="govuk-heading-m">{{ headings.a }}</h2>
+  <p class="govuk-body">{{ paragraphs.h }}</p>
+
+  <!-- Table -->
+  {{ govukTable({
+    firstCellIsHeader: true,
+    caption: table1.title,
+    head: [
+      { text: table1.text1 },
+      { text: table1.text2 },
+      { text: table1.text3 }
+    ],
+    rows: [
+      [
+        { text: table1.text4 },
+        { text: table1.text5 },
+        { text: table1.text6 }
+      ],
+      [
+        { text: "_ga" },
+        { text: table2.text4 },
+        { text: table2.text5 }
+      ],
+      [
+        { text: "_gat_UA-[G-8CMZBTDQBC]" },
+        { text: table2.text9 },
+        { text: table2.text10 }
+      ],
+      [
+        { text: "session" },
+        { text: table2.text11 },
+        { text: table2.text12 }
+      ]
+    ]
+  }) }}
+
+  <p class="govuk-body">{{ paragraphs.ga1 }} <strong>{{ paragraphs.ga2 }}</strong> {{ paragraphs.ga4 }} <strong>{{ paragraphs.ga3 }}</strong> {{ paragraphs.ga5 }}</p>
+
+  <h2 class="govuk-heading-m">{{ headings.b }}</h2>
+  <p class="govuk-body">{{ paragraphs.i }}</p>
+  <p class="govuk-body">{{ paragraphs.j }}</p>
+  <p class="govuk-body">{{ paragraphs.k }}</p>
+  <p class="govuk-body">{{ paragraphs.l }}</p>
+
+  <!-- Bullet List -->
+  <ul class="govuk-list govuk-list--bullet">
+    <li>{{ paragraphs.m }}</li>
+    <li>{{ paragraphs.n }}</li>
+    <li>{{ paragraphs.o }}</li>
+    <li>{{ paragraphs.p }}</li>
+    <li>{{ paragraphs.q }}</li>
+  </ul>
+
+  <!-- Radio Buttons -->
+  {{ govukRadios({
+    name: "cookies[analytics]",
+    idPrefix: "cookies-analytics",
+    fieldset: {
+      legend: {
+        text: headings.d,
+        classes: "govuk-fieldset__legend--s"
+      },
+      classes: "js-cookies-page-form-fieldset",
+      attributes: {
+        "data-cookie-type": 'analytics',
+        hidden: ""
+      }
+    },
+    items: [
+      {
+        text: paragraphs.r,
+        value: "yes"
+      },
+      {
+        text: paragraphs.s,
+        value: "no"
+      }
+    ]
+  }) }}
+
+  <!-- Submit Button -->
+  {{ govukButton({
+    text: paragraphs.buttonText,
+    classes: "js-cookies-form-button",
+    attributes: {
+      hidden: ""
+    }
+  }) }}
+</form>
