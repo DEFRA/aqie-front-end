@@ -1,22 +1,14 @@
 .dwp-language-toggle {
-        @include govuk-font($size: 16);
+        @include govuk-font($size: 19);
         @include govuk-clearfix;
 
         &__list {
-            margin-top: 1em;
+            margin-top: 15px;
             float: right;
             text-align: right;
         }
         
         &__list-item {
             display: inline-block;
-        
-            &:first-child::after {
-            content: "";
-            display: inline-block;
-            position: relative;
-            top: 0.1875em;
-            height: 1em;
-            }
         }
     }

@@ -5,51 +5,12 @@
 
 {% block content %}
   {% if statusCode == '500' %}
-  <div class="govuk-grid-row app-heading not-found" data-testid="app-heading">
-  <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-xl">{{notFoundUrl.serviceAPI.heading}}</h1>
-    </div>
-    </div>
-    <p>{{notFoundUrl.serviceAPI.paragraphs.a}}</p>
-    <p class="govuk-body">{{notFoundUrl.serviceAPI.paragraphs.b}} <a href="mailto:checklocalairquality@defra.gov.uk">{{notFoundUrl.serviceAPI.paragraphs.c}}</a>{{notFoundUrl.serviceAPI.paragraphs.d}}</p>
-   {% elif statusCode == '404' %}
+    {% include 'partials/error-500.njk' %}
+  {% elif statusCode == '404' %}
     {% if lang == 'en' %}
-      <div class="govuk-grid-row app-heading not-found" data-testid="app-heading">
-  <div class="govuk-grid-column-two-thirds">
-     <h1 class="govuk-heading-xl">{{notFoundUrl.nonService.heading}} {{msError}}</h1>
-     </div>
-     </div>
-     <p class="govuk-body">{{notFoundUrl.nonService.paragraphs.a}}</p>
-     <p class="govuk-body">{{notFoundUrl.nonService.paragraphs.b}}</p>
-     <p class="govuk-body">{{notFoundUrl.nonService.paragraphs.c}}<a href="mailto:checklocalairquality@defra.gov.uk">{{notFoundUrl.nonService.paragraphs.d}}</a>{{notFoundUrl.nonService.paragraphs.e}}</p>
+      {% include 'partials/error-404-en.njk' %}
+    {% elif lang == 'cy' %}
+      {% include 'partials/error-404-cy.njk' %}
     {% endif %}
-    {% if lang == 'cy' %}
-      <div class="govuk-grid-row app-heading not-found" data-testid="app-heading">
-  <div class="govuk-grid-column-two-thirds">
-       <h1 class="govuk-heading-xl">{{notFoundUrl.nonService.heading}}</h1>
-       </div>
-       </div>
-       <p class="govuk-body"><a href="/">{{notFoundUrl.nonService.paragraphs.a}}</a></p>
-    {% endif %}
-    
-  {%else%}
-  {% if lang == 'en' %}
-    <div class="govuk-grid-row app-heading not-found" data-testid="app-heading">
-  <div class="govuk-grid-column-two-thirds">
-   <h1 class="govuk-heading-xl">{{notFoundUrl.serviceAPI.heading}}</h1>
-   </div>
-   </div>
-    <p>{{notFoundUrl.serviceAPI.paragraphs.a}}</p>
-    <p class="govuk-body">{{notFoundUrl.serviceAPI.paragraphs.b}} <a href="mailto:checklocalairquality@defra.gov.uk">{{notFoundUrl.serviceAPI.paragraphs.c}}</a>{{notFoundUrl.serviceAPI.paragraphs.d}}</p>
   {% endif %}
-  {% if lang == 'cy' %}
-    <div class="govuk-grid-row app-heading not-found" data-testid="app-heading">
-  <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-xl">{{notFoundUrl.serviceAPI.heading}}</h1>
-    </div>
-    </div>
-    <p class="govuk-body"><a href="/">{{notFoundUrl.serviceAPI.paragraphs.a}}</a></p>
-  {%endif%}
-  {%endif%}
-</div>
 {% endblock %}

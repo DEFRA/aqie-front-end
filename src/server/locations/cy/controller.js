@@ -291,6 +291,9 @@ const getLocationDataController = {
           if (lang === 'en') {
             return h.redirect(`/location`)
           }
+          userLocation = userLocation.toLowerCase()
+          userLocation =
+            userLocation.charAt(0).toUpperCase() + userLocation.slice(1)
           return h.view('locations/multiple-locations', {
             results: matches,
             title: multipleLocations.title,
@@ -476,20 +479,6 @@ const getLocationDetailsController = {
         return h.redirect(`/location/${locationId}?lang=${query?.lang}`)
       }
       const lang = 'cy'
-      const calendarWelsh = [
-        'Ionawr',
-        'Chwefror',
-        'Mawrth',
-        'Ebrill',
-        'Mai',
-        'Mehefin',
-        'Gorffennaf',
-        'Awst',
-        'Medi',
-        'Hydref',
-        'Tachwedd',
-        'Rhagfyr'
-      ]
 
       const {
         footerTxt,

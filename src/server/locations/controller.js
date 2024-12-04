@@ -98,6 +98,7 @@ const getLocationDataController = {
           spaceIndex
         )}`
       }
+
       if (!userLocation && locationType === 'uk-location') {
         request.yar.set('errors', {
           errors: {
@@ -211,6 +212,21 @@ const getLocationDataController = {
           0,
           lang
         )
+
+        const pollutantDate =
+          nearestLocationsRange[0]?.pollutants[
+            Object.keys(nearestLocationsRange[0]?.pollutants)[
+              Object.keys(nearestLocationsRange[0]?.pollutants).length - 1
+            ]
+          ]?.time.date
+
+        const formattedDate = moment(pollutantDate)
+          .format('DD MMMM YYYY')
+          .split(' ')
+        const getMonth = calendarEnglish.findIndex(function (item) {
+          return item.indexOf(formattedDate[1]) !== -1
+        })
+
         request.yar.set('locationData', {
           data: matches,
           rawForecasts: getForecasts?.forecasts,
@@ -220,7 +236,8 @@ const getLocationDataController = {
             matches.length !== 0 ? nearestLocationsRange : [],
           measurements: getMeasurements?.measurements,
           englishDate,
-          welshDate
+          welshDate,
+          getMonth
         })
         //
         if (matches.length === 1) {
@@ -286,6 +303,9 @@ const getLocationDataController = {
             lang
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
+          userLocation = userLocation.toLowerCase()
+          userLocation =
+            userLocation.charAt(0).toUpperCase() + userLocation.slice(1)
           return h.view('locations/multiple-locations', {
             results: matches,
             title: multipleLocations.title,
@@ -509,21 +529,32 @@ const getLocationDetailsController = {
               locationDetails.GAZETTEER_ENTRY.NAME2 +
               ', ' +
               locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
-              '-' +
+              ' - ' +
               english.multipleLocations.pageTitle
           } else {
             title =
               locationDetails.GAZETTEER_ENTRY.NAME1 +
               ', ' +
               locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
-              '-' +
+              ' - ' +
               english.multipleLocations.pageTitle
           }
         } else {
-          title =
-            locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
-            '-' +
-            english.multipleLocations.pageTitle
+          if (locationDetails.GAZETTEER_ENTRY.NAME2) {
+            title =
+              locationDetails.GAZETTEER_ENTRY.NAME2 +
+              ', ' +
+              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
+              ' - ' +
+              english.multipleLocations.pageTitle
+          } else {
+            title =
+              locationDetails.GAZETTEER_ENTRY.NAME1 +
+              ', ' +
+              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
+              ' - ' +
+              english.multipleLocations.pageTitle
+          }
         }
 
         const { forecastNum, nearestLocationsRange } = getNearestLocation(

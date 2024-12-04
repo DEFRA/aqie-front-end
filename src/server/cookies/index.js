@@ -1,17 +1,10 @@
-import { cookiesController } from '~/src/server/cookies/controller'
+import { routes } from './routes'
 
 const cookies = {
   plugin: {
     name: 'cookies',
     register: async (server) => {
-      server.route([
-        {
-          method: 'GET',
-          path: '/cookies',
-          ...cookiesController
-          // options: { auth: { mode: 'try' } }
-        }
-      ])
+      server.route(routes)
     }
   }
 }

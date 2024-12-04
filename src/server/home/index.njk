@@ -1,13 +1,9 @@
 {% extends 'layouts/page.njk' %}
 
 {% block content %}
-  {{ appHeading({
-    text: heading,
-    caption: ""
-  }) }}
-  {% call appPageBody() %}
-      <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds-from-desktop language-toggle">
+    <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop govuk-!-margin-top-8 language-toggle">
+    <h1 class="govuk-heading-xl">{{heading}}</h1>
       <p class="govuk-body">{{paragraphs.a}}</p>
 
       <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-6">
@@ -47,6 +43,4 @@
       {%endif%}
     </div>
   </div>  
-  {% endcall %}
-
 {% endblock %}
