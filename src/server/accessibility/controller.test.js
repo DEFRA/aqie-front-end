@@ -1,13 +1,13 @@
-import { accessibilityHandler } from './controller';
+import { accessibilityHandler } from './controller'
 
 describe('Accessibility Handler', () => {
   const mockRequest = {
     query: {}
-  };
+  }
   const mockH = {
     redirect: jest.fn().mockReturnValue('redirected'),
     view: jest.fn().mockReturnValue('view rendered')
-  };
+  }
   const mockContent = {
     footer: {
       accessibility: {
@@ -22,19 +22,19 @@ describe('Accessibility Handler', () => {
     phaseBanner: 'mock phaseBanner',
     footerTxt: 'mock footerTxt',
     multipleLocations: { serviceName: 'mock serviceName' }
-  };
+  }
 
   it('should redirect to the Welsh version if the language is "cy"', () => {
-    mockRequest.query.lang = 'cy';
-    const result = accessibilityHandler(mockRequest, mockH, mockContent);
-    expect(result).toBe('redirected');
-    expect(mockH.redirect).toHaveBeenCalledWith('/hygyrchedd/cy?lang=cy');
-  });
+    mockRequest.query.lang = 'cy'
+    const result = accessibilityHandler(mockRequest, mockH, mockContent)
+    expect(result).toBe('redirected')
+    expect(mockH.redirect).toHaveBeenCalledWith('/hygyrchedd/cy?lang=cy')
+  })
 
   it('should render the accessibility page with the necessary data', () => {
-    mockRequest.query.lang = 'en';
-    const result = accessibilityHandler(mockRequest, mockH, mockContent);
-    expect(result).toBe('view rendered');
+    mockRequest.query.lang = 'en'
+    const result = accessibilityHandler(mockRequest, mockH, mockContent)
+    expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('accessibility/index', {
       pageTitle: 'mock pageTitle',
       title: 'mock title',
@@ -46,6 +46,6 @@ describe('Accessibility Handler', () => {
       footerTxt: 'mock footerTxt',
       serviceName: 'mock serviceName',
       cookieBanner: 'mock cookieBanner'
-    });
-  });
-});
+    })
+  })
+})

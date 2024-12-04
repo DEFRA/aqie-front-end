@@ -27,7 +27,6 @@ import { accessibility } from '~/src/server/accessibility/index'
 import { accessibilityCy } from '~/src/server/accessibility/cy/index'
 import { health } from '~/src/server/health/index'
 import { config } from '~/src/config'
-import Boom from '@hapi/boom'
 
 const sessionCookiePassword = config.get('sessionCookiePassword')
 
@@ -77,47 +76,6 @@ const router = {
         accessibilityCy,
         health
       ])
-
-      // Route to simulate a 500 error
-      server.route({
-        method: 'GET',
-        path: '/simulate-500',
-        handler: (request, h) => {
-          throw Boom.internal('Simulated Internal Server Error')
-        }
-      })
-      // Route to simulate a 404 error
-      server.route({
-        method: 'GET',
-        path: '/simulate-404',
-        handler: (request, h) => {
-          throw Boom.notFound('Simulated Page Not Found')
-        }
-      })
-      // Route to simulate a 403 error
-      server.route({
-        method: 'GET',
-        path: '/simulate-403',
-        handler: (request, h) => {
-          throw Boom.forbidden('Simulated Forbidden Error')
-        }
-      })
-      // Route to simulate a 401 error
-      server.route({
-        method: 'GET',
-        path: '/simulate-401',
-        handler: (request, h) => {
-          throw Boom.unauthorized('Simulated Unauthorized Error')
-        }
-      })
-      // Route to simulate a 400 error
-      server.route({
-        method: 'GET',
-        path: '/simulate-400',
-        handler: (request, h) => {
-          throw Boom.badRequest('Simulated Bad Request Error')
-        }
-      })
       await server.register({
         plugin: yar,
         options

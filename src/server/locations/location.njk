@@ -9,7 +9,7 @@
 {% set pollutantDay = '' %}
 {% set pollutantMonth = '' %}
 {% set pollutantYear = '' %}
-{% set pageHeadingSize = pageHeadingSize or "xl" %}
+{% set pageHeadingSize = pageHeadingSize or "xl govuk-!-margin-top-4" %}
 {% if onlyShowTwoPages == "Yes" %}
 {% block content %}
 {%if lang == "en"%}
@@ -116,6 +116,7 @@
   {% set rows = [] %}
 
   {% for key, pollutant in site.pollutants %}
+ 
   {% set pollutantTime = pollutant.time.hour %}
   {% set pollutantDay = pollutant.time.day %}
   {% set pollutantMonth = pollutant.time.month %}

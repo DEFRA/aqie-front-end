@@ -1,4 +1,4 @@
-import { english } from '~/src/server/data/en/en.js';
+import { english } from '~/src/server/data/en/en.js'
 
 // Define the handler function
 const accessibilityHandler = (request, h, content = english) => {
@@ -11,14 +11,14 @@ const accessibilityHandler = (request, h, content = english) => {
     phaseBanner,
     footerTxt,
     multipleLocations: { serviceName }
-  } = content;
+  } = content
 
   // Extract the language query parameter from the request
-  const { lang } = request.query;
+  const { lang } = request.query
 
   // Redirect to the Welsh version if the language is 'cy'
   if (lang === 'cy') {
-    return h.redirect(`/hygyrchedd/cy?lang=${lang}`);
+    return h.redirect(`/hygyrchedd/cy?lang=${lang}`)
   }
 
   // Render the accessibility page with the necessary data
@@ -33,12 +33,12 @@ const accessibilityHandler = (request, h, content = english) => {
     footerTxt,
     serviceName,
     cookieBanner
-  });
-};
+  })
+}
 
 // Define the controller using the handler function
 const accessibilityController = {
   handler: accessibilityHandler
-};
+}
 
-export { accessibilityController, accessibilityHandler };
+export { accessibilityController, accessibilityHandler }

@@ -35,7 +35,7 @@ describe('Cookies Handler', () => {
 
   it('should render the cookies page with the necessary data', () => {
     mockRequest.query.lang = 'en'
-    const result = cookiesHandler(mockRequest, mockH, mockContent);
+    const result = cookiesHandler(mockRequest, mockH, mockContent)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('cookies/index', {
       pageTitle: 'mock pageTitle',

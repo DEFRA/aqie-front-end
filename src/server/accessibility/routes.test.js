@@ -1,7 +1,7 @@
-import { routes } from './routes';
-import { accessibilityController } from '~/src/server/accessibility/controller';
+import { routes } from './routes'
+import { accessibilityController } from '~/src/server/accessibility/controller'
 
-jest.mock('~/src/server/accessibility/controller');
+jest.mock('~/src/server/accessibility/controller')
 
 describe('Accessibility Routes', () => {
   it('should define the accessibility route', () => {
@@ -11,6 +11,6 @@ describe('Accessibility Routes', () => {
         path: '/accessibility',
         ...accessibilityController
       }
-    ]);
-  });
-});
+    ])
+  })
+})

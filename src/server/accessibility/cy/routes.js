@@ -1,4 +1,4 @@
-import { accessibilityController } from '~/src/server/accessibility/cy/controller';
+import { accessibilityController } from '~/src/server/accessibility/cy/controller'
 
 const routes = [
   {
@@ -6,6 +6,6 @@ const routes = [
     path: '/hygyrchedd/cy',
     ...accessibilityController
   }
-];
+]
 
-export { routes };
+export { routes }

@@ -1,16 +1,12 @@
 {% extends 'layouts/page.njk' %}
 
 {% block content %}
-  {% set successNotificationBannerHtml %}
-    <p class="govuk-notification-banner__heading">You’ve set your cookie preferences.</p>
-  {% endset %}
-
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <div class="app-cookies-page" data-module="app-cookies-page">
 
         <!-- Page Title -->
-        {% include 'partials/page-title.njk' %}
+        {% include 'partials/title.njk' %}
 
         <!-- Paragraphs -->
         {% include 'partials/paragraphs.njk' %}

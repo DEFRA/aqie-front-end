@@ -24,12 +24,8 @@ const nunjucksEnvironment = nunjucks.configure(
     path.normalize(
       path.resolve(__dirname, '..', '..', 'server', 'accessibility')
     ),
-    path.normalize(
-      path.resolve(__dirname, '..', '..', 'server', 'cookies')
-    ),
-    path.normalize(
-      path.resolve(__dirname, '..', '..', 'server', 'error')
-    ),
+    path.normalize(path.resolve(__dirname, '..', '..', 'server', 'cookies')),
+    path.normalize(path.resolve(__dirname, '..', '..', 'server', 'error')),
     path.normalize(
       path.resolve(
         __dirname,

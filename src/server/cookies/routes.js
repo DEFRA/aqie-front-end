@@ -6,6 +6,6 @@ const routes = [
     path: '/cookies',
     ...cookiesController
   }
-];
+]
 
 export { routes }

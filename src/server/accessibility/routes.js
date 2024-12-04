@@ -6,6 +6,6 @@ const routes = [
     path: '/accessibility',
     ...accessibilityController
   }
-];
+]
 
 export { routes }

@@ -11,7 +11,7 @@ describe('Nunjucks Template', () => {
   it('should render the page title correctly', () => {
     const context = { title: 'Cookies Page' }
     const result = env.render('partials/page-title.njk', context)
-    expect(result).toContain('<h1 class="govuk-heading-xl odd-page">Cookies Page</h1>')
+    expect(result).toContain('<h1 class="govuk-heading-xl">Cookies Page</h1>')
   })
 
   it('should render paragraphs correctly', () => {
@@ -28,10 +28,14 @@ describe('Nunjucks Template', () => {
       }
     }
     const result = env.render('partials/paragraphs.njk', context)
-    expect(result).toContain('<p class="govuk-body">Paragraph W content <a href="/" class="govuk-link">Paragraph A content</a> Paragraph B content</p>')
+    expect(result).toContain(
+      '<p class="govuk-body">Paragraph W content <a href="/" class="govuk-link">Paragraph A content</a> Paragraph B content</p>'
+    )
     expect(result).toContain('<p class="govuk-body">Paragraph C content</p>')
     expect(result).toContain('<p class="govuk-body">Paragraph D content</p>')
-    expect(result).toContain('<p class="govuk-body">Paragraph E content <a href="https://ico.org.uk/for-the-public/online/cookies" class="govuk-link">Paragraph F content</a> Paragraph G content</p>')
+    expect(result).toContain(
+      '<p class="govuk-body">Paragraph E content <a href="https://ico.org.uk/for-the-public/online/cookies" class="govuk-link">Paragraph F content</a> Paragraph G content</p>'
+    )
   })
 
   it('should render the form correctly', () => {
@@ -93,6 +97,8 @@ describe('Nunjucks Template', () => {
     expect(result).toContain('<li>Form Paragraph O</li>')
     expect(result).toContain('<li>Form Paragraph P</li>')
     expect(result).toContain('<li>Form Paragraph Q</li>')
-    expect(result).toContain('<button class="govuk-button js-cookies-form-button" hidden="">Submit</button>')
+    expect(result).toContain(
+      '<button class="govuk-button js-cookies-form-button" hidden="">Submit</button>'
+    )
   })
 })
