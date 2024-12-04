@@ -5,12 +5,12 @@ describe('Nunjucks Template', () => {
   let env
 
   beforeAll(() => {
-    env = nunjucks.configure(path.join(__dirname, 'views'))
+    env = nunjucks.configure(path.join(__dirname, 'cookies'))
   })
 
   it('should render the page title correctly', () => {
     const context = { title: 'Cookies Page' }
-    const result = env.render('partials/page-title.njk', context)
+    const result = env.render('partials/title.njk', context)
     expect(result).toContain('<h1 class="govuk-heading-xl">Cookies Page</h1>')
   })
 

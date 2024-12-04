@@ -5,7 +5,7 @@ describe('Nunjucks Template', () => {
   let env
 
   beforeAll(() => {
-    env = nunjucks.configure(path.join(__dirname, 'views'))
+    env = nunjucks.configure(path.join(__dirname, 'server/accessibility/'))
   })
 
   it('should render the page title correctly', () => {

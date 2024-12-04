@@ -5,7 +5,7 @@ describe('Nunjucks Template', () => {
   let env
 
   beforeAll(() => {
-    env = nunjucks.configure(path.join(__dirname, 'views'))
+    env = nunjucks.configure(path.join(__dirname, 'server/error/'))
   })
 
   it('should render the 500 error correctly', () => {
