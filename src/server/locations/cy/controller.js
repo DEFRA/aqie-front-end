@@ -230,6 +230,7 @@ const getLocationDataController = {
         if (matches.length === 1) {
           const locationDetails = matches[0]
           let title = ''
+          let headerTitle = ''
           if (locationDetails) {
             if (locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH) {
               if (locationDetails.GAZETTEER_ENTRY.NAME2) {
@@ -239,6 +240,14 @@ const getLocationDataController = {
                   locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
                   '-' +
                   home.pageTitle
+                headerTitle =
+                  locationDetails.GAZETTEER_ENTRY.NAME2 +
+                  ', ' +
+                  locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+                headerTitle =
+                  locationDetails.GAZETTEER_ENTRY.NAME1 +
+                  ', ' +
+                  locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
               } else {
                 title =
                   locationDetails.GAZETTEER_ENTRY.NAME1 +
@@ -246,6 +255,10 @@ const getLocationDataController = {
                   locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
                   '-' +
                   home.pageTitle
+                headerTitle =
+                  locationDetails.GAZETTEER_ENTRY.NAME1 +
+                  ', ' +
+                  locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
               }
             } else {
               title =
@@ -254,6 +267,10 @@ const getLocationDataController = {
                 locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
                 '-' +
                 home.pageTitle
+              headerTitle =
+                locationNameOrPostcode +
+                ', ' +
+                locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
             }
           }
           const airQuality = getAirQuality(
@@ -263,12 +280,11 @@ const getLocationDataController = {
             Object.values(forecastNum[0][3])[0],
             Object.values(forecastNum[0][4])[0]
           )
+          title = firstLetterUppercase(title)
+          headerTitle = firstLetterUppercase(headerTitle)
 
           return h.view('locations/location', {
             result: matches[0],
-            name2:
-              matches[0].GAZETTEER_ENTRY?.NAME2 ??
-              matches[0].GAZETTEER_ENTRY?.NAME1,
             airQuality,
             airQualityData: airQualityData.commonMessages,
             monitoringSites: nearestLocationsRange,
@@ -276,6 +292,7 @@ const getLocationDataController = {
             pollutantTypes,
             displayBacklink: true,
             pageTitle: title,
+            title: headerTitle,
             backlink,
             daqi,
             phaseBanner,
@@ -296,13 +313,10 @@ const getLocationDataController = {
           userLocation = userLocation.toLowerCase()
           userLocation =
             userLocation.charAt(0).toUpperCase() + userLocation.slice(1)
+
           return h.view('locations/multiple-locations', {
             results: matches,
-            title: multipleLocations.title,
             paragraphs: multipleLocations.paragraphs,
-            name2:
-              matches[0].GAZETTEER_ENTRY?.NAME2 ??
-              matches[0].GAZETTEER_ENTRY?.NAME1,
             userLocation: locationNameOrPostcode,
             airQuality,
             airQualityData: airQualityData.commonMessages,
@@ -310,6 +324,7 @@ const getLocationDataController = {
             siteTypeDescriptions,
             pollutantTypes,
             pageTitle: `${multipleLocations.title} ${userLocation} -  ${home.pageTitle}`,
+            title: multipleLocations.title,
             serviceName: multipleLocations.serviceName,
             forecastSummary: getDailySummary.today,
             summaryDate: lang === 'cy' ? welshDate : englishDate,
@@ -403,6 +418,7 @@ const getLocationDataController = {
           return item.indexOf(formattedDate[1]) !== -1
         })
         let title = ''
+        let headerTitle = ''
         if (locationData) {
           if (locationData.GAZETTEER_ENTRY.NAME2) {
             title =
@@ -411,6 +427,10 @@ const getLocationDataController = {
               locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
               '-' +
               home.pageTitle
+            headerTitle =
+              locationData.GAZETTEER_ENTRY.NAME2 +
+              ', ' +
+              locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
           } else {
             title =
               locationData.GAZETTEER_ENTRY.NAME1 +
@@ -418,6 +438,10 @@ const getLocationDataController = {
               locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
               '-' +
               home.pageTitle
+            headerTitle =
+              locationData.GAZETTEER_ENTRY.NAME1 +
+              ', ' +
+              locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
           }
         }
         if (query?.lang === 'en') {
@@ -431,6 +455,7 @@ const getLocationDataController = {
           Object.values(forecastNum[0][4])[0]
         )
         title = firstLetterUppercase(title)
+        headerTitle = firstLetterUppercase(headerTitle)
         return h.view('locations/location', {
           result: locationData,
           airQuality,
@@ -444,8 +469,8 @@ const getLocationDataController = {
           dailySummary: getDailySummary,
           daqi,
           nearestLocationsRange,
-          title,
-          pageTitle: title, // `${multipleLocations.title} ${userLocation} - ${home.pageTitle}`,
+          title: headerTitle,
+          pageTitle: title,
           serviceName: multipleLocations.serviceName,
           footerTxt,
           phaseBanner,
@@ -475,6 +500,8 @@ const getLocationDataController = {
 const getLocationDetailsController = {
   handler: (request, h) => {
     try {
+      let title = ''
+      let headerTitle = ''
       const { query } = request
       const locationId = request.params.id
 
@@ -504,7 +531,6 @@ const getLocationDetailsController = {
       })
 
       if (locationDetails) {
-        let title = ''
         if (locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH) {
           if (locationDetails.GAZETTEER_ENTRY.NAME2) {
             title =
@@ -513,6 +539,10 @@ const getLocationDetailsController = {
               locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
               '-' +
               home.pageTitle
+            headerTitle =
+              locationDetails.GAZETTEER_ENTRY.NAME2 +
+              ', ' +
+              locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
           } else {
             title =
               locationDetails.GAZETTEER_ENTRY.NAME1 +
@@ -520,12 +550,35 @@ const getLocationDetailsController = {
               locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
               '-' +
               home.pageTitle
+            headerTitle =
+              locationDetails.GAZETTEER_ENTRY.NAME1 +
+              ', ' +
+              locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
           }
         } else {
-          title =
-            locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
-            '-' +
-            home.pageTitle
+          if (locationDetails.GAZETTEER_ENTRY.NAME2) {
+            title =
+              locationDetails.GAZETTEER_ENTRY.NAME2 +
+              ', ' +
+              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
+              ' - ' +
+              welsh.multipleLocations.pageTitle
+            headerTitle =
+              locationDetails.GAZETTEER_ENTRY.NAME2 +
+              ', ' +
+              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
+          } else {
+            title =
+              locationDetails.GAZETTEER_ENTRY.NAME1 +
+              ', ' +
+              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
+              ' - ' +
+              welsh.multipleLocations.pageTitle
+            headerTitle =
+              locationDetails.GAZETTEER_ENTRY.NAME1 +
+              ', ' +
+              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
+          }
         }
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
           locationData.data,
@@ -543,6 +596,9 @@ const getLocationDetailsController = {
           Object.values(forecastNum[0][3])[0],
           Object.values(forecastNum[0][4])[0]
         )
+        title = firstLetterUppercase(title)
+        headerTitle = firstLetterUppercase(headerTitle)
+
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
@@ -551,6 +607,7 @@ const getLocationDetailsController = {
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: title,
+          title: headerTitle,
           daqi,
           displayBacklink: true,
           forecastSummary: locationData.forecastSummary.today,
