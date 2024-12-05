@@ -244,6 +244,7 @@ const getLocationDataController = {
         if (matches.length === 1) {
           const locationDetails = matches[0]
           let title = ''
+          let headerTitle = ''
           if (locationDetails) {
             if (locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH) {
               if (locationDetails.GAZETTEER_ENTRY.NAME2) {
@@ -251,23 +252,35 @@ const getLocationDataController = {
                   locationDetails.GAZETTEER_ENTRY.NAME2 +
                   ', ' +
                   locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
-                  '-' +
+                  ' - ' +
                   home.pageTitle
+                headerTitle =
+                  locationDetails.GAZETTEER_ENTRY.NAME2 +
+                  ', ' +
+                  locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
               } else {
                 title =
                   locationDetails.GAZETTEER_ENTRY.NAME1 +
                   ', ' +
                   locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
-                  '-' +
+                  ' - ' +
                   home.pageTitle
+                headerTitle =
+                  locationDetails.GAZETTEER_ENTRY.NAME1 +
+                  ', ' +
+                  locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
               }
             } else {
               title =
                 locationNameOrPostcode +
                 ', ' +
                 locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
-                '-' +
+                ' - ' +
                 home.pageTitle
+              headerTitle =
+                locationNameOrPostcode +
+                ', ' +
+                locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
             }
           }
           const airQuality = getAirQuality(
@@ -277,12 +290,11 @@ const getLocationDataController = {
             Object.values(forecastNum[0][3])[0],
             Object.values(forecastNum[0][4])[0]
           )
+          title = firstLetterUppercase(title)
+          headerTitle = firstLetterUppercase(headerTitle)
 
           return h.view('locations/location', {
             result: matches[0],
-            name2:
-              matches[0].GAZETTEER_ENTRY?.NAME2 ??
-              matches[0].GAZETTEER_ENTRY?.NAME1,
             airQuality,
             airQualityData: airQualityData.commonMessages,
             monitoringSites: nearestLocationsRange,
@@ -290,6 +302,7 @@ const getLocationDataController = {
             pollutantTypes,
             displayBacklink: true,
             pageTitle: title,
+            title: headerTitle,
             serviceName: 'Check air quality',
             forecastSummary: getDailySummary.today,
             dailySummary: getDailySummary,
@@ -311,9 +324,6 @@ const getLocationDataController = {
             results: matches,
             title: multipleLocations.title,
             paragraphs: multipleLocations.paragraphs,
-            name2:
-              matches[0].GAZETTEER_ENTRY?.NAME2 ??
-              matches[0].GAZETTEER_ENTRY?.NAME1,
             userLocation: locationNameOrPostcode,
             airQuality,
             airQualityData: airQualityData.commonMessages,
@@ -408,24 +418,34 @@ const getLocationDataController = {
           }
         }
         let title = ''
+        let headerTitle = ''
         if (locationData) {
           if (locationData.GAZETTEER_ENTRY.NAME2) {
             title =
               locationData.GAZETTEER_ENTRY.NAME2 +
               ', ' +
               locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
-              '-' +
+              ' - ' +
               home.pageTitle
+            headerTitle =
+              locationData.GAZETTEER_ENTRY.NAME2 +
+              ', ' +
+              locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
           } else {
             title =
               locationData.GAZETTEER_ENTRY.NAME1 +
               ', ' +
               locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
-              '-' +
+              ' - ' +
               home.pageTitle
+            headerTitle =
+              locationData.GAZETTEER_ENTRY.NAME1 +
+              ', ' +
+              locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
           }
         }
         title = firstLetterUppercase(title)
+        headerTitle = firstLetterUppercase(headerTitle)
         logger.info(`::::::::::: title en 1  ::::::::::: ${title}`)
         const airQuality = getAirQuality(
           forecastNum[0][0].today,
@@ -449,6 +469,7 @@ const getLocationDataController = {
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: title,
+          title: headerTitle,
           displayBacklink: true,
           forecastSummary: getDailySummary.today,
           dailySummary: getDailySummary,
@@ -494,6 +515,7 @@ const getLocationDetailsController = {
   handler: (request, h) => {
     try {
       let title = ''
+      let headerTitle = ''
       const { query } = request
       const locationId = request.params.id
 
@@ -534,6 +556,10 @@ const getLocationDetailsController = {
               locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
               ' - ' +
               english.multipleLocations.pageTitle
+            headerTitle =
+              locationDetails.GAZETTEER_ENTRY.NAME2 +
+              ', ' +
+              locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
           } else {
             title =
               locationDetails.GAZETTEER_ENTRY.NAME1 +
@@ -541,6 +567,10 @@ const getLocationDetailsController = {
               locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
               ' - ' +
               english.multipleLocations.pageTitle
+            headerTitle =
+              locationDetails.GAZETTEER_ENTRY.NAME1 +
+              ', ' +
+              locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
           }
         } else {
           if (locationDetails.GAZETTEER_ENTRY.NAME2) {
@@ -550,6 +580,10 @@ const getLocationDetailsController = {
               locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
               ' - ' +
               english.multipleLocations.pageTitle
+            headerTitle =
+              locationDetails.GAZETTEER_ENTRY.NAME2 +
+              ', ' +
+              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
           } else {
             title =
               locationDetails.GAZETTEER_ENTRY.NAME1 +
@@ -557,6 +591,10 @@ const getLocationDetailsController = {
               locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
               ' - ' +
               english.multipleLocations.pageTitle
+            headerTitle =
+              locationDetails.GAZETTEER_ENTRY.NAME1 +
+              ', ' +
+              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
           }
         }
 
@@ -576,7 +614,8 @@ const getLocationDetailsController = {
           Object.values(forecastNum[0][4])[0]
         )
         title = firstLetterUppercase(title)
-        logger.info(`::::::::::: title en 2  ::::::::::: ${title}`)
+        headerTitle = firstLetterUppercase(headerTitle)
+
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
@@ -585,6 +624,7 @@ const getLocationDetailsController = {
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: title,
+          title: headerTitle,
           displayBacklink: true,
           forecastSummary: locationData.forecastSummary.today,
           dailySummary: locationData.forecastSummary,
