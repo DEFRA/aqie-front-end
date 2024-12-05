@@ -31,7 +31,6 @@ const getLocationDataController = {
     const getMonth = calendarEnglish.findIndex(function (item) {
       return item.indexOf(formattedDate[1]) !== -1
     })
-
     const {
       searchLocation,
       footerTxt,
@@ -427,6 +426,7 @@ const getLocationDataController = {
           }
         }
         title = firstLetterUppercase(title)
+        logger.info(`::::::::::: title en 1  ::::::::::: ${title}`)
         const airQuality = getAirQuality(
           forecastNum[0][0].today,
           Object.values(forecastNum[0][1])[0],
@@ -575,6 +575,8 @@ const getLocationDetailsController = {
           Object.values(forecastNum[0][3])[0],
           Object.values(forecastNum[0][4])[0]
         )
+        title = firstLetterUppercase(title)
+        logger.info(`::::::::::: title en 2  ::::::::::: ${title}`)
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
