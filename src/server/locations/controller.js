@@ -292,7 +292,12 @@ const getLocationDataController = {
           )
           title = firstLetterUppercase(title)
           headerTitle = firstLetterUppercase(headerTitle)
-
+          logger.info(
+            `::::::::::: multipleLocations.title  1 ::::::::::: ${headerTitle}`
+          )
+          logger.info(
+            `::::::::::: multipleLocations.title 1  ::::::::::: ${title}`
+          )
           return h.view('locations/location', {
             result: matches[0],
             airQuality,
@@ -320,6 +325,12 @@ const getLocationDataController = {
           userLocation = userLocation.toLowerCase()
           userLocation =
             userLocation.charAt(0).toUpperCase() + userLocation.slice(1)
+          logger.info(
+            `::::::::::: multipleLocations.title  1 ::::::::::: ${multipleLocations.title}`
+          )
+          logger.info(
+            `::::::::::: multipleLocations.title 2  ::::::::::: ${multipleLocations.title}`
+          )
           return h.view('locations/multiple-locations', {
             results: matches,
             title: multipleLocations.title,
@@ -446,7 +457,7 @@ const getLocationDataController = {
         }
         title = firstLetterUppercase(title)
         headerTitle = firstLetterUppercase(headerTitle)
-        logger.info(`::::::::::: title en 1  ::::::::::: ${title}`)
+        logger.info(`::::::::::: headerTitle en 4  ::::::::::: ${headerTitle}`)
         const airQuality = getAirQuality(
           forecastNum[0][0].today,
           Object.values(forecastNum[0][1])[0],
@@ -460,6 +471,8 @@ const getLocationDataController = {
             return h.redirect(`/lleoliad/cy?lang=cy`)
           }
         }
+        logger.info(`::::::::::: title  3 ::::::::::: ${title}`)
+        logger.info(`::::::::::: headerTitle 3  ::::::::::: ${headerTitle}`)
 
         return h.view('locations/location', {
           result: locationData,
