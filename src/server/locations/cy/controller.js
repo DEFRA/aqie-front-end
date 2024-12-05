@@ -11,20 +11,9 @@ import { welsh, calendarWelsh } from '~/src/server/data/cy/cy.js'
 import { calendarEnglish } from '~/src/server/data/en/en.js'
 import moment from 'moment-timezone'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
+import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
 
 const logger = createLogger()
-
-const firstLetterUppercase = (str) => {
-  const words = str.toLowerCase().split(' ')
-  for (let i = 0; i < words.length; i++) {
-    if (words[i] !== 'and' && words[i] !== 'the') {
-      const letters = words[i].split('')
-      letters[0] = letters[0].toUpperCase()
-      words[i] = letters.join('')
-    }
-  }
-  return words.join(' ')
-}
 
 const getLocationDataController = {
   handler: async (request, h) => {
