@@ -5,7 +5,9 @@ describe('Nunjucks Template', () => {
   let env
 
   beforeAll(() => {
-    env = nunjucks.configure(path.join(__dirname, 'cookies'))
+    env = nunjucks.configure(
+      path.normalize(path.resolve(__dirname, '..', '..', 'server', 'cookies'))
+    )
   })
 
   it('should render the page title correctly', () => {

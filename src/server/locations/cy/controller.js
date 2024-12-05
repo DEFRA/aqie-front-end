@@ -13,6 +13,19 @@ import moment from 'moment-timezone'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 
 const logger = createLogger()
+
+const firstLetterUppercase = (str) => {
+  const words = str.toLowerCase().split(' ')
+  for (let i = 0; i < words.length; i++) {
+    if (words[i] !== 'and' && words[i] !== 'the') {
+      const letters = words[i].split('')
+      letters[0] = letters[0].toUpperCase()
+      words[i] = letters.join('')
+    }
+  }
+  return words.join(' ')
+}
+
 const getLocationDataController = {
   handler: async (request, h) => {
     const { query, path } = request
@@ -428,6 +441,7 @@ const getLocationDataController = {
           Object.values(forecastNum[0][3])[0],
           Object.values(forecastNum[0][4])[0]
         )
+        title = firstLetterUppercase(title)
         return h.view('locations/location', {
           result: locationData,
           airQuality,
