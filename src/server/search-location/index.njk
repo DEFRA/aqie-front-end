@@ -1,110 +1,111 @@
 {% extends 'layouts/page.njk' %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-  {% if errors %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-  {{ govukErrorSummary(errors) }}
-    </div>
-  </div>
-  {% endif %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-    {% set queryhrefEn %}/location{% endset %}
-    {% set queryhrefCy %}/lleoliad/cy{% endset %}
-      <form  id="itembox" action={%if htmlLang == 'en' %} "{{queryhrefEn}}" {%else%} "{{queryhrefCy}}" {%endif%} method="POST"  name="search-form" value="search">
-      {% if locationType |length %}
-      {%set errorMessage = ""%}
-      {%else%}
+      {% if errors %}
+        {{ govukErrorSummary(errors) }}
       {% endif %}
-      {% if locationType === 'uk-location' %}
-        {% set ukHtml %}
-        {{ govukInput({
-          id: "engScoWal",
-          name: "engScoWal",
-          classes: "govuk-!-width-one-half",
-          errorMessage:errorMessageRadio
-        }) }}
-        {% endset %}
-      {% else %}
-        {% set ukHtml %}
-        {%if htmlLang == 'en' %}
-        {{ govukInput({
-          id: "engScoWal",
-          name: "engScoWal",
-          classes: "govuk-!-width-one-half",
-          label: { text: 'Enter a location or postcode' }
-        }) }}
-        {%else%}
-          {{ govukInput({
-          id: "engScoWal",
-          name: "engScoWal",
-          classes: "govuk-!-width-one-half",
-          label: { text: 'Rhowch leoliad neu god post' }
-        }) }}
-        {%endif%}
-        {% endset %}
-      {% endif %}
-      {% if locationType === 'ni-location' %}
-        {% set niHtml %}
-        {{ govukInput({
-          id: "ni",
-          name: "ni",
-          classes: "govuk-!-width-one-half",
-          errorMessage:errorMessageRadio
-        }) }}
-        {% endset %}
-      {% else %}
-        {% set niHtml %}
-        {%if htmlLang == 'en' %}
-        {{ govukInput({
-          id: "ni",
-          name: "ni",
-          classes: "govuk-!-width-one-half",
-          label: { text: 'Enter a postcode' }
-        }) }}
-        {%else%}
-          {{ govukInput({
-          id: "ni",
-          name: "ni",
-          classes: "govuk-!-width-one-half",
-          label: { text: 'Rhowch god post' }
-        }) }}
-        {%endif%}
-        {% endset %}
-      {% endif %}
-      {{ govukRadios({
-        name: "locationType",
-        fieldset: {
-          legend: {
-            text: searchParams.label.text,
-            isPageHeading: true,
-            classes: "govuk-fieldset__legend--l govuk-label--l govuk-!-margin-bottom-6"
-          }
-        },
-        items: [
-          {
-            value: "uk-location",
-            text: locations.a,
-            checked: locationType === 'uk-location',
-            conditional: { html: ukHtml }
+
+      {% set queryhrefEn = "/location" %}
+      {% set queryhrefCy = "/lleoliad/cy" %}
+
+      <form id="itembox" action="{% if htmlLang == 'en' %}{{ queryhrefEn }}{% else %}{{ queryhrefCy }}{% endif %}" method="POST" name="search-form" value="search">
+        {% if locationType | length %}
+          {% set errorMessage = "" %}
+        {% endif %}
+
+        {% if locationType === 'uk-location' %}
+          {% set ukHtml %}
+            {{ govukInput({
+              id: "engScoWal",
+              name: "engScoWal",
+              classes: "govuk-!-width-one-half",
+              errorMessage: errorMessageRadio
+            }) }}
+          {% endset %}
+        {% else %}
+          {% set ukHtml %}
+            {% if htmlLang == 'en' %}
+              {{ govukInput({
+                id: "engScoWal",
+                name: "engScoWal",
+                classes: "govuk-!-width-one-half",
+                label: { text: 'Enter a location or postcode' }
+              }) }}
+            {% else %}
+              {{ govukInput({
+                id: "engScoWal",
+                name: "engScoWal",
+                classes: "govuk-!-width-one-half",
+                label: { text: 'Rhowch leoliad neu god post' }
+              }) }}
+            {% endif %}
+          {% endset %}
+        {% endif %}
+
+        {% if locationType === 'ni-location' %}
+          {% set niHtml %}
+            {{ govukInput({
+              id: "ni",
+              name: "ni",
+              classes: "govuk-!-width-one-half",
+              errorMessage: errorMessageRadio
+            }) }}
+          {% endset %}
+        {% else %}
+          {% set niHtml %}
+            {% if htmlLang == 'en' %}
+              {{ govukInput({
+                id: "ni",
+                name: "ni",
+                classes: "govuk-!-width-one-half",
+                label: { text: 'Enter a postcode' }
+              }) }}
+            {% else %}
+              {{ govukInput({
+                id: "ni",
+                name: "ni",
+                classes: "govuk-!-width-one-half",
+                label: { text: 'Rhowch god post' }
+              }) }}
+            {% endif %}
+          {% endset %}
+        {% endif %}
+
+        {{ govukRadios({
+          name: "locationType",
+          fieldset: {
+            legend: {
+              text: searchParams.label.text,
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--l govuk-label--l govuk-!-margin-bottom-6"
+            }
           },
-          {
-            value: "ni-location",
-            text: locations.b,
-            checked: locationType === 'ni-location',
-            conditional: { html: niHtml }
-          }
-        ],
-        errorMessage: errorMessage
-      }) }}
-      {{ govukButton({
-        classes: "app-search__button",
-        text: button
-      }) }}
-      <input type="hidden" name="aq" value="{{ airQuality.value }}" />
-    </form>
+          items: [
+            {
+              value: "uk-location",
+              text: locations.a,
+              checked: locationType === 'uk-location',
+              conditional: { html: ukHtml }
+            },
+            {
+              value: "ni-location",
+              text: locations.b,
+              checked: locationType === 'ni-location',
+              conditional: { html: niHtml }
+            }
+          ],
+          errorMessage: errorMessage
+        }) }}
+
+        {{ govukButton({
+          classes: "app-search__button",
+          text: button
+        }) }}
+
+        <input type="hidden" name="aq" value="{{ airQuality.value }}" />
+      </form>
     </div>
   </div>
 {% endblock %}
