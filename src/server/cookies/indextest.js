@@ -6,7 +6,33 @@ describe('Nunjucks Template', () => {
 
   beforeAll(() => {
     env = nunjucks.configure(
-      path.normalize(path.resolve(__dirname, '..', '..', 'server', 'cookies'))
+      [
+        'node_modules/govuk-frontend/',
+        path.normalize(
+          path.resolve(__dirname, '..', '..', 'server', 'common', 'templates')
+        ),
+        path.normalize(
+          path.resolve(__dirname, '..', '..', 'server', 'cookies')
+        ),
+        path.normalize(
+          path.resolve(__dirname, '..', '..', 'server', 'common', 'components')
+        ),
+        path.normalize(
+          path.resolve(
+            __dirname,
+            '..',
+            '..',
+            'server',
+            'common',
+            'components',
+            'table'
+          )
+        ) // Add this line
+      ],
+      {
+        trimBlocks: true,
+        lstripBlocks: true
+      }
     )
   })
 

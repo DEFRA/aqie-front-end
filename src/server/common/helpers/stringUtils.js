@@ -5,17 +5,21 @@ export const firstLetterUppercase = (str) => {
   if (hasNumber) {
     // Split the string at the first comma
     const [beforeComma, afterComma] = str.split(/,(.+)/)
+
     // Process the part after the comma
     const processedAfterComma = afterComma
       .toLowerCase()
       .split(' ')
       .map((word) => {
         if (word !== 'and' && word !== 'the' && word !== 'of') {
-          return word.charAt(0).toUpperCase() + word.slice(1)
+          return word === 'gov.uk'
+            ? word.toUpperCase()
+            : word.charAt(0).toUpperCase() + word.slice(1)
         }
         return word
       })
       .join(' ')
+
     // Concatenate the unprocessed part with the processed part
     return `${beforeComma},${processedAfterComma}`
   }
@@ -24,7 +28,9 @@ export const firstLetterUppercase = (str) => {
     .split(' ')
     .map((word) => {
       if (word !== 'and' && word !== 'the' && word !== 'of') {
-        return word.charAt(0).toUpperCase() + word.slice(1)
+        return word === 'gov.uk'
+          ? word.toUpperCase()
+          : word.charAt(0).toUpperCase() + word.slice(1)
       }
       return word
     })
