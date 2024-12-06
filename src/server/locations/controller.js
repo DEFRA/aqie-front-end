@@ -457,7 +457,6 @@ const getLocationDataController = {
         }
         title = firstLetterUppercase(title)
         headerTitle = firstLetterUppercase(headerTitle)
-        logger.info(`::::::::::: headerTitle en 4  ::::::::::: ${headerTitle}`)
         const airQuality = getAirQuality(
           forecastNum[0][0].today,
           Object.values(forecastNum[0][1])[0],
@@ -471,8 +470,6 @@ const getLocationDataController = {
             return h.redirect(`/lleoliad/cy?lang=cy`)
           }
         }
-        logger.info(`::::::::::: title  3 ::::::::::: ${title}`)
-        logger.info(`::::::::::: headerTitle 3  ::::::::::: ${headerTitle}`)
 
         return h.view('locations/location', {
           result: locationData,
