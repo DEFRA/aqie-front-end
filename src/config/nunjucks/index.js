@@ -16,6 +16,17 @@ const nunjucksEnvironment = nunjucks.configure(
   [
     'node_modules/govuk-frontend/dist/',
     path.normalize(
+      path.resolve(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        'node_modules',
+        'govuk-frontend',
+        'dist'
+      )
+    ),
+    path.normalize(
       path.resolve(__dirname, '..', '..', 'server', 'common', 'templates')
     ),
     path.normalize(
@@ -26,6 +37,7 @@ const nunjucksEnvironment = nunjucks.configure(
     ),
     path.normalize(path.resolve(__dirname, '..', '..', 'server', 'cookies')),
     path.normalize(path.resolve(__dirname, '..', '..', 'server', 'error')),
+    path.normalize(path.resolve(__dirname, '..', '..', 'server', 'home')),
     path.normalize(
       path.resolve(
         __dirname,

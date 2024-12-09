@@ -22,11 +22,17 @@ const cookiesHandler = (request, h, content = english) => {
   } = content
 
   // Extract the language query parameter from the request
-  const { lang } = request.query
+  const { query, path } = request
 
   // Redirect to the Welsh version if the language is 'cy'
-  if (lang === 'cy') {
-    return h.redirect(`/briwsion/cy?lang=${lang}`)
+  if (query?.lang === 'cy') {
+    return h.redirect(`/briwsion/cy?lang=${query?.lang}`)
+  }
+
+  // Determine the language
+  let lang = query?.lang?.slice(0, 2)
+  if (lang !== 'cy' && lang !== 'en' && path === '/cookies') {
+    lang = 'en'
   }
 
   // Render the cookies page with the necessary data
@@ -42,7 +48,8 @@ const cookiesHandler = (request, h, content = english) => {
     phaseBanner,
     footerTxt,
     serviceName,
-    cookieBanner
+    cookieBanner,
+    lang
   })
 }
 
