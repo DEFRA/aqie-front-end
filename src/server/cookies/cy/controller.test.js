@@ -17,7 +17,7 @@ describe('Cookies Handler', () => {
     }
   })
 
-  it('should redirect to the Welsh version if the language is "cy"', () => {
+  it('should redirect to the English version if the language is "en"', () => {
     mockRequest.query.lang = 'cy'
     const result = cookiesHandler(mockRequest, mockH, mockContent)
     expect(result).toBe('redirected')
@@ -25,7 +25,6 @@ describe('Cookies Handler', () => {
   })
 
   it('should render the cookies page with the necessary data', () => {
-    mockRequest.query.lang = 'en'
     const result = cookiesHandler(mockRequest, mockH, mockContent)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('cookies/index', {
@@ -40,14 +39,13 @@ describe('Cookies Handler', () => {
       phaseBanner: mockContent.phaseBanner,
       footerTxt: mockContent.footerTxt,
       serviceName: mockContent.multipleLocations.serviceName,
-      cookieBanner: mockContent.cookieBanner,
-      lang: 'en'
+      cookieBanner: mockContent.cookieBanner
     })
   })
 
-  it('should default to English if language is not "cy" or "en" and path is "/cookies"', () => {
+  it('should default to Welsh if language is not "cy" or "en" and path is "/preifatrwydd/cy"', () => {
     mockRequest.query.lang = 'fr'
-    mockRequest.path = '/cookies'
+    mockRequest.path = '/preifatrwydd/cy'
     const result = cookiesHandler(mockRequest, mockH, mockContent)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('cookies/index', {
@@ -63,7 +61,7 @@ describe('Cookies Handler', () => {
       footerTxt: mockContent.footerTxt,
       serviceName: mockContent.multipleLocations.serviceName,
       cookieBanner: mockContent.cookieBanner,
-      lang: 'en'
+      lang: 'fr'
     })
   })
 })

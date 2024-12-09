@@ -1,0 +1,14 @@
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+
+{% set successNotificationBannerHtml %}
+  <p class="govuk-notification-banner__heading">You’ve set your cookie preferences.</p>
+{% endset %}
+
+{{ govukNotificationBanner({
+  type: "success",
+  html: successNotificationBannerHtml,
+  classes: "js-cookies-page-success",
+  attributes: {
+    hidden: ""
+  }
+}) }}

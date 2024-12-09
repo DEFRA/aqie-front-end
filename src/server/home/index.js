@@ -1,16 +1,10 @@
-import { homeController } from '~/src/server/home/controller'
+import { routes } from '~/src/server/home/routes'
 
 const home = {
   plugin: {
     name: 'Check air quality',
     register: async (server) => {
-      server.route([
-        {
-          method: 'GET',
-          path: '/',
-          ...homeController
-        }
-      ])
+      server.route(routes)
     }
   }
 }

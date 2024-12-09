@@ -1,16 +1,10 @@
-import { homeController } from '~/src/server/home/cy/controller'
+import { routes } from './routes'
 
 const homeCy = {
   plugin: {
     name: 'Gwirio ansawdd aer',
     register: async (server) => {
-      server.route([
-        {
-          method: 'GET',
-          path: '/cy',
-          ...homeController
-        }
-      ])
+      server.route(routes)
     }
   }
 }
