@@ -238,7 +238,7 @@ const getLocationDataController = {
                   locationDetails.GAZETTEER_ENTRY.NAME2 +
                   ', ' +
                   locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
-                  '-' +
+                  ' - ' +
                   home.pageTitle
                 headerTitle =
                   locationDetails.GAZETTEER_ENTRY.NAME2 +
@@ -253,7 +253,7 @@ const getLocationDataController = {
                   locationDetails.GAZETTEER_ENTRY.NAME1 +
                   ', ' +
                   locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
-                  '-' +
+                  ' - ' +
                   home.pageTitle
                 headerTitle =
                   locationDetails.GAZETTEER_ENTRY.NAME1 +
@@ -265,7 +265,7 @@ const getLocationDataController = {
                 locationNameOrPostcode +
                 ', ' +
                 locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
-                '-' +
+                ' - ' +
                 home.pageTitle
               headerTitle =
                 locationNameOrPostcode +
@@ -425,7 +425,7 @@ const getLocationDataController = {
               locationData.GAZETTEER_ENTRY.NAME2 +
               ', ' +
               locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
-              '-' +
+              ' - ' +
               home.pageTitle
             headerTitle =
               locationData.GAZETTEER_ENTRY.NAME2 +
@@ -436,7 +436,7 @@ const getLocationDataController = {
               locationData.GAZETTEER_ENTRY.NAME1 +
               ', ' +
               locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
-              '-' +
+              ' - ' +
               home.pageTitle
             headerTitle =
               locationData.GAZETTEER_ENTRY.NAME1 +
@@ -537,7 +537,7 @@ const getLocationDetailsController = {
               locationDetails.GAZETTEER_ENTRY.NAME2 +
               ', ' +
               locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
-              '-' +
+              ' - ' +
               home.pageTitle
             headerTitle =
               locationDetails.GAZETTEER_ENTRY.NAME2 +
@@ -548,7 +548,7 @@ const getLocationDetailsController = {
               locationDetails.GAZETTEER_ENTRY.NAME1 +
               ', ' +
               locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
-              '-' +
+              ' - ' +
               home.pageTitle
             headerTitle =
               locationDetails.GAZETTEER_ENTRY.NAME1 +

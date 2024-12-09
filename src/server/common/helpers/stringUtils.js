@@ -11,7 +11,13 @@ export const firstLetterUppercase = (str) => {
       .toLowerCase()
       .split(' ')
       .map((word) => {
-        if (word === 'air' || word === 'quality') return word.toLowerCase()
+        if (
+          word === 'air' ||
+          word === 'quality' ||
+          word === 'aer' ||
+          word === 'ansawdd'
+        )
+          return word.toLowerCase()
         if (word !== 'and' && word !== 'the' && word !== 'of') {
           return word === 'gov.uk'
             ? word.toUpperCase()
@@ -28,6 +34,13 @@ export const firstLetterUppercase = (str) => {
     .toLowerCase()
     .split(' ')
     .map((word) => {
+      if (
+        word === 'air' ||
+        word === 'quality' ||
+        word === 'aer' ||
+        word === 'ansawdd'
+      )
+        return word.toLowerCase()
       if (word !== 'and' && word !== 'the' && word !== 'of') {
         return word === 'gov.uk'
           ? word.toUpperCase()
