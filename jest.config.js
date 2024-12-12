@@ -19,14 +19,14 @@ module.exports = {
     '<rootDir>/src/server/common/components'
   ],
   coverageDirectory: '<rootDir>/coverage',
-  collectCoverage: false
-  // coverageReporters: ['text', 'lcov', 'text-summary'],
-  // coverageThreshold: {
-  //   global: {
-  //     branches: 90,
-  //     functions: 90,
-  //     lines: 90,
-  //     statements: 90
-  //   }
-  // }
+  collectCoverage: true,
+  coverageReporters: ['text', 'lcov', 'text-summary'],
+  coverageThreshold: {
+    global: {
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90
+    }
+  }
 }
