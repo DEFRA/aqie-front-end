@@ -11,7 +11,7 @@
     <ul class="govuk-list govuk-!-margin-bottom-2 odd-page">
       {% for item in results %}
         <li>
-          <a href={%if htmlLang == 'en' %}{{['/location/',item.GAZETTEER_ENTRY.ID, queryhref] | join}}{%else%}{{['/lleoliad/cy/',item.GAZETTEER_ENTRY.ID, queryhrefCy] | join}}{%endif%} class="govuk-link">
+          <a href={%if htmlLang == 'en' %}{{['/location/',item.GAZETTEER_ENTRY.ROUTE_PATH, queryhref] | join}}{%else%}{{['/lleoliad/',item.GAZETTEER_ENTRY.ROUTE_PATH, queryhrefCy] | join}}{%endif%} class="govuk-link">
           {% if item.name2 %}  
           <span class="govuk-!-font-weight-bold">{{ item.name2 }}</span>, 
           {% else %}

@@ -2,12 +2,12 @@ import { getLocationDetailsController } from '~/src/server/locations/cy/controll
 
 const locationIdCy = {
   plugin: {
-    name: 'lleoliad{id}',
+    name: 'lleoliad/{id}',
     register: async (server) => {
       server.route([
         {
           method: 'GET',
-          path: '/lleoliad/cy/{id}',
+          path: '/lleoliad/{id}',
           ...getLocationDetailsController
         }
       ])

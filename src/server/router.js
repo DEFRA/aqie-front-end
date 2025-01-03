@@ -27,7 +27,8 @@ import { accessibility } from '~/src/server/accessibility/index'
 import { accessibilityCy } from '~/src/server/accessibility/cy/index'
 import { health } from '~/src/server/health/index'
 import { config } from '~/src/config'
-import { locationMultiple } from '~/src/server/locations-multiple/index'
+import { multipleResults } from '~/src/server/multiple-results/index'
+import { multipleResultsCy } from '~/src/server/multiple-results/cy/index'
 
 const sessionCookiePassword = config.get('sessionCookiePassword')
 
@@ -75,7 +76,8 @@ const router = {
         cookiesCy,
         accessibility,
         accessibilityCy,
-        locationMultiple,
+        multipleResults,
+        multipleResultsCy,
         health
       ])
       await server.register({

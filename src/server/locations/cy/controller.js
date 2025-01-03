@@ -21,7 +21,7 @@ const getLocationDataController = {
     const tempString = request?.headers?.referer?.split('/')[3]
     const str = tempString?.split('?')[0]
     let lang = query?.lang?.slice(0, 2)
-    if (lang !== 'cy' && lang !== 'en' && path === '/lleoliad/cy') {
+    if (lang !== 'cy' && lang !== 'en' && path === '/lleoliad') {
       lang = 'cy'
     }
     if (query?.lang && query?.lang === 'en') {
@@ -214,7 +214,7 @@ const getLocationDataController = {
           return item.indexOf(formattedDate[1]) !== -1
         })
         request.yar.set('locationData', {
-          data: matches,
+          results: matches,
           rawForecasts: getForecasts?.forecasts,
           forecastNum: matches.length !== 0 ? forecastNum : 0,
           forecastSummary: getDailySummary,
@@ -522,10 +522,12 @@ const getLocationDetailsController = {
       } = welsh
       const locationData = request.yar.get('locationData') || []
       let locationIndex = 0
-      const locationDetails = locationData?.data?.find((item, index) => {
-        if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
+      const locationDetails = locationData?.results?.find((item, index) => {
+        if (item.GAZETTEER_ENTRY.ROUTE_PATH === locationId.replace(/\s/g, '')) {
           locationIndex = index
-          return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
+          return (
+            item.GAZETTEER_ENTRY.ROUTE_PATH === locationId.replace(/\s/g, '')
+          )
         }
         return null
       })
@@ -581,7 +583,7 @@ const getLocationDetailsController = {
           }
         }
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
-          locationData.data,
+          locationData.results,
           locationData.rawForecasts,
           locationData.measurements,
           'uk-location',
@@ -612,7 +614,9 @@ const getLocationDetailsController = {
           displayBacklink: true,
           forecastSummary: locationData.forecastSummary.today,
           summaryDate:
-            lang === 'cy' ? locationData.welshDate : locationData.englishDate,
+            lang === 'cy'
+              ? locationData.welshDate ?? locationData.summaryDate
+              : locationData.englishDate ?? locationData.summaryDate,
           dailySummary: locationData.forecastSummary,
           footerTxt,
           phaseBanner,

@@ -103,7 +103,7 @@ const selectNIUKLocationType = async (
     )
 
     request.yar.set('locationData', {
-      data: matches,
+      results: matches,
       rawForecasts: getForecasts?.forecasts,
       forecastNum: matches.length !== 0 ? forecastNum : 0,
       forecastSummary: getDailySummary,
@@ -281,6 +281,7 @@ const selectNIUKLocationType = async (
         lang
       })
     }
+
     const { results } = getNIPlaces
     const { forecastNum, nearestLocationsRange, latlon } = getNearestLocation(
       results,
@@ -337,7 +338,7 @@ const selectNIUKLocationType = async (
     if (lang === 'en') {
       if (query?.lang === 'cy') {
         /* eslint-disable camelcase */
-        return h.redirect(`/lleoliad/cy?lang=cy`)
+        return h.redirect(`/lleoliad?lang=cy`)
       }
     }
 

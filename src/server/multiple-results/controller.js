@@ -6,75 +6,67 @@ import * as airQualityData from '~/src/server/data/en/air-quality.js'
 import { getAirQuality } from '~/src/server/data/en/air-quality.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
-import { fetchData } from '~/src/server/locations/helpers/fetch-data'
 import { english, calendarEnglish } from '~/src/server/data/en/en.js'
 import { calendarWelsh } from '~/src/server/data/cy/cy.js'
 import moment from 'moment-timezone'
 import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
-import { LANG_EN } from '~/src/server/data/constants'
-import {
-  getLocationNameOrPostcode,
-  handleRedirect,
-  configureLocationTypeAndRedirects,
-  filteredAndSelectedLocationType
-} from '~/src/server/locations/helpers/location-type-util'
-import { selectNIUKLocationType } from '~/src/server/locations/helpers/uk-ni-select-util'
+import { handleRedirect } from '~/src/server/locations/helpers/location-type-util'
 import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-util'
 
 const logger = createLogger()
 
 const getLocationDataController = {
   handler: async (request, h) => {
-    const { query, payload, headers } = request
-    const lang = LANG_EN
-    const tempString = headers?.referer?.split('/')[3]
-    const str = tempString?.split('?')[0]
-    const partialPostcodePattern = /^([A-Z]{1,2}\d[A-Z\d]?)$/
+    const locationData = request.yar.get('locationData') || []
+    const {
+      results,
+      monitoringSites,
+      airQuality,
+      airQualityData,
+      backlink,
+      cookieBanner,
+      footerTxt,
+      phaseBanner,
+      multipleLocations,
+      dailySummary,
+      forecastSummary,
+      calendarWelsh,
+      englishDate,
+      welshDate,
+      siteTypeDescriptions,
+      pollutantTypes,
+      getMonth,
+      lang,
+      userLocation
+    } = locationData
+    const { query } = request
 
     const redirectResponse = handleRedirect(query, h)
     if (redirectResponse) return redirectResponse
-    const { searchLocation, footerTxt, phaseBanner, cookieBanner } = english
-    const locationType = payload?.locationType
-    const airQuality = getAirQuality(payload?.aq, 2, 4, 5, 7)
-    const locationNameOrPostcode = getLocationNameOrPostcode(
-      locationType,
-      payload
-    )
-    const userLocation = locationNameOrPostcode.toUpperCase()
-    configureLocationTypeAndRedirects(
-      request,
-      h,
-      locationType,
-      locationNameOrPostcode,
-      str,
-      query,
-      searchLocation,
-      airQuality
-    )
-    filteredAndSelectedLocationType(
-      locationType,
-      userLocation,
-      request,
-      searchLocation,
-      h
-    )
-    try {
-      const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
-        await fetchData(locationType, userLocation, request, h)
 
-      return selectNIUKLocationType(
-        request,
-        getForecasts,
-        getMeasurements,
-        getDailySummary,
-        locationType,
+    try {
+      return h.view('multiple-results/multiple-locations', {
+        results,
+        title: multipleLocations.title,
+        paragraphs: multipleLocations.paragraphs,
         userLocation,
-        locationNameOrPostcode,
-        getOSPlaces,
-        partialPostcodePattern,
-        lang,
-        h
-      )
+        airQuality,
+        airQualityData: airQualityData.commonMessages,
+        monitoringSites,
+        siteTypeDescriptions,
+        pollutantTypes,
+        pageTitle: `${multipleLocations.title} ${userLocation} -  ${multipleLocations.pageTitle}`,
+        serviceName: multipleLocations.serviceName,
+        forecastSummary,
+        dailySummary,
+        footerTxt,
+        phaseBanner,
+        backlink,
+        cookieBanner,
+        welshMonth: calendarWelsh[getMonth],
+        summaryDate: lang === 'cy' ? welshDate : englishDate,
+        lang: 'en'
+      })
     } catch (error) {
       logger.error(
         `error from location refresh outside fetch APIs: ${error.message}`
@@ -139,7 +131,7 @@ const getLocationDetailsController = {
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
         const { forecastNum, nearestLocationsRange } = getNearestLocation(
-          locationData.data,
+          locationData.results,
           locationData.rawForecasts,
           locationData.measurements,
           'uk-location',

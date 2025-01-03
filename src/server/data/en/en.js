@@ -383,7 +383,7 @@ export const english = {
         i: 'Transfer of your personal data outside of the UK',
         j: 'Your rights',
         k: 'Complaints',
-        l: 'Persona information charter'
+        l: 'Personal information charter'
       },
       paragraphs: {
         a: 'This privacy notice explains how the Check air quality service processes and shares your personal data. If you have any queries about the content of this privacy notice, please email',
