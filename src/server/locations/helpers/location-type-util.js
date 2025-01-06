@@ -18,8 +18,8 @@ const getLocationNameOrPostcode = (locationType, payload) => {
   return ''
 }
 
-const handleRedirect = (query, h) => {
-  if (query?.lang && query?.lang === LANG_CY) {
+const handleRedirect = (h, lang) => {
+  if (lang === LANG_CY) {
     return h.redirect(REDIRECT_PATH_CY)
   }
   return null
@@ -72,8 +72,8 @@ const configureLocationTypeAndRedirects = (
       errorMessage: { text: searchLocation.errorText.radios.list.text }
     })
 
-    request.yar.set('locationType', '')
-    request.yar.get('', '')
+    // request.yar.set('locationType', '')
+    // request.yar.get('', '')
 
     if (query?.lang === LANG_CY) {
       return h.redirect(REDIRECT_PATH_CY)

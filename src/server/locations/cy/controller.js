@@ -314,7 +314,7 @@ const getLocationDataController = {
           userLocation =
             userLocation.charAt(0).toUpperCase() + userLocation.slice(1)
 
-          return h.view('locations/multiple-locations', {
+          return h.view('multiple-results/multiple-locations', {
             results: matches,
             paragraphs: multipleLocations.paragraphs,
             userLocation: locationNameOrPostcode,

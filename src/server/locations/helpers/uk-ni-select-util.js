@@ -202,7 +202,7 @@ const selectNIUKLocationType = async (
       logger.info(
         `::::::::::: multipleLocations.title 2  ::::::::::: ${multipleLocations.title}`
       )
-      return h.view('locations/multiple-locations', {
+      return h.view('multiple-results/multiple-locations', {
         results: matches,
         title: multipleLocations.title,
         paragraphs: multipleLocations.paragraphs,
