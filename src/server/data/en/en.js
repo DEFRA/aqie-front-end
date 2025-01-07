@@ -186,17 +186,17 @@ export const english = {
       d: 'Air pollutants monitored near by'
     },
     pollutantText: {
-      a: 'Gases',
-      b: 'Produced by burning fossil fuels. For example, in cars, power stations and factories.',
-      c: 'Particulate matter are tiny pieces of solid or liquid particles suspended in the air. They come from sources like car tyres, brakes, exhausts, dust, wood burning and pollen.',
-      d: 'Particulate matter (PM)'
+      a: 'Particulate matter (PM)',
+      b: 'Particulate matter are tiny pieces of solid or liquid particles suspended in the air. They come from sources like car tyres, brakes, exhausts, dust, wood burning and pollen.',
+      c: 'Produced by burning fossil fuels. For example, in cars, power stations and factories.',
+      d: 'Gases'
     },
     pollutantsNames: {
-      a: 'Ozone',
-      b: 'Nitrogen dioxide',
-      c: 'Sulphur dioxide',
-      d: 'PM2.5',
-      e: 'PM10'
+      a: 'PM2.5',
+      b: 'PM10',
+      c: 'Nitrogen dioxide',
+      d: 'Ozone',
+      e: 'Sulphur dioxide'
     },
     pollutantTable: {
       a: 'miles away',
