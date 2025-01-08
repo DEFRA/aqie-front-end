@@ -3,7 +3,6 @@ import {
   pollutantTypes
 } from '~/src/server/data/en/monitoring-sites.js'
 import * as airQualityData from '~/src/server/data/en/air-quality.js'
-import { getAirQuality } from '~/src/server/data/en/air-quality.js'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { english, calendarEnglish } from '~/src/server/data/en/en.js'
 import { calendarWelsh } from '~/src/server/data/cy/cy.js'
@@ -53,20 +52,13 @@ const getLocationDetailsController = {
 
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
-        const { forecastNum, nearestLocationsRange } = getNearestLocation(
+        const { nearestLocationsRange, airQuality } = getNearestLocation(
           locationData.results,
           locationData.rawForecasts,
           locationData.measurements,
           'uk-location',
           locationIndex,
           request.query?.lang
-        )
-        const airQuality = getAirQuality(
-          forecastNum[0][0].today,
-          Object.values(forecastNum[0][1])[0],
-          Object.values(forecastNum[0][2])[0],
-          Object.values(forecastNum[0][3])[0],
-          Object.values(forecastNum[0][4])[0]
         )
         title = firstLetterUppercase(title)
         headerTitle = firstLetterUppercase(headerTitle)

@@ -9,6 +9,7 @@ import {
 } from '~/src/server/locations/helpers/location-util.js'
 import { getPollutantLevel } from '~/src/server/locations/helpers/pollutant-level-calculation'
 import { getPollutantLevelCy } from '~/src/server/locations/helpers/cy/pollutant-level-calculation'
+import { getAirQuality } from '~/src/server/data/en/air-quality.js'
 
 function getNearestLocation(
   matches,
@@ -135,7 +136,14 @@ function getNearestLocation(
           return [...todayDate, ...otherdays]
         })
       : 0
-  return { forecastNum, nearestLocationsRange, latlon }
+  const airQuality = getAirQuality(
+    forecastNum[0][0].today,
+    Object.values(forecastNum[0][1])[0],
+    Object.values(forecastNum[0][2])[0],
+    Object.values(forecastNum[0][3])[0],
+    Object.values(forecastNum[0][4])[0]
+  )
+  return { forecastNum, nearestLocationsRange, airQuality, latlon }
 }
 
 export { getNearestLocation }
