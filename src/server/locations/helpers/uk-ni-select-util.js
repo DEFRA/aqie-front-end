@@ -13,6 +13,10 @@ import {
 } from '~/src/server/data/en/monitoring-sites.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { fetchData } from '~/src/server/locations/helpers/fetch-data'
+import {
+  LOCATION_TYPE_UK,
+  LOCATION_NOT_FOUND
+} from '~/src/server/data/constants'
 
 const {
   footerTxt,
@@ -50,10 +54,10 @@ const selectNIUKLocationType = async (
   })
   const englishDate = `${formattedDateSummary[0]} ${calendarEnglish[getMonthSummary]} ${formattedDateSummary[2]}`
   const welshDate = `${formattedDateSummary[0]} ${calendarWelsh[getMonthSummary]} ${formattedDateSummary[2]}`
-  if (locationType === 'uk-location') {
+  if (locationType === LOCATION_TYPE_UK) {
     const { results } = getOSPlaces
     if (!results || results.length === 0 || getOSPlaces === 'wrong postcode') {
-      return h.view('locations/location-not-found', {
+      return h.view(LOCATION_NOT_FOUND, {
         userLocation: locationNameOrPostcode,
         serviceName: notFoundLocation.heading,
         paragraph: notFoundLocation.paragraphs,
@@ -97,7 +101,7 @@ const selectNIUKLocationType = async (
       matches,
       getForecasts?.forecasts,
       getMeasurements?.measurements,
-      'uk-location',
+      LOCATION_TYPE_UK,
       0,
       lang
     )
@@ -225,7 +229,7 @@ const selectNIUKLocationType = async (
         lang: 'en'
       })
     } else {
-      return h.view('locations/location-not-found', {
+      return h.view(LOCATION_NOT_FOUND, {
         userLocation: locationNameOrPostcode,
         serviceName: notFoundLocation.heading,
         paragraph: notFoundLocation.paragraphs,
@@ -269,7 +273,7 @@ const selectNIUKLocationType = async (
       })
     }
     if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
-      return h.view('locations/location-not-found', {
+      return h.view(LOCATION_NOT_FOUND, {
         userLocation: locationNameOrPostcode,
         serviceName: notFoundLocation.heading,
         paragraph: notFoundLocation.paragraphs,

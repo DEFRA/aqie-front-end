@@ -17,7 +17,7 @@ import {
   getLanguageDates,
   getFormattedDateSummary
 } from '~/src/server/locations/helpers/middleware-helpers'
-import { LANG_EN } from '~/src/server/data/constants'
+import { LANG_EN, LOCATION_TYPE_UK } from '~/src/server/data/constants'
 import {
   handleRedirect,
   getMonth
@@ -67,12 +67,11 @@ const searchMiddleware = async (request, h) => {
     calendarWelsh
   )
 
-  if (locationType === 'uk-location') {
+  if (locationType === LOCATION_TYPE_UK) {
     const { results } = getOSPlaces
 
     if (!results || results.length === 0 || getOSPlaces === 'wrong postcode') {
-      return handleLocationNotFound(
-        h,
+      return handleLocationNotFound(h, {
         locationNameOrPostcode,
         notFoundLocation,
         home,
@@ -80,8 +79,8 @@ const searchMiddleware = async (request, h) => {
         phaseBanner,
         backlink,
         cookieBanner,
-        'en'
-      )
+        lang
+      })
     }
 
     const selectedMatches = processMatches(
@@ -103,7 +102,7 @@ const searchMiddleware = async (request, h) => {
         selectedMatches,
         getForecasts?.forecasts,
         getMeasurements?.measurements,
-        'uk-location',
+        LOCATION_TYPE_UK,
         0,
         lang
       )
@@ -153,8 +152,7 @@ const searchMiddleware = async (request, h) => {
         lang
       })
     } else {
-      return handleLocationNotFound(
-        h,
+      return handleLocationNotFound(h, {
         locationNameOrPostcode,
         notFoundLocation,
         home,
@@ -163,7 +161,7 @@ const searchMiddleware = async (request, h) => {
         backlink,
         cookieBanner,
         lang
-      )
+      })
     }
   } else if (locationType === 'ni-location') {
     const { getNIPlaces } = await fetchData(
@@ -180,8 +178,7 @@ const searchMiddleware = async (request, h) => {
       getOSPlaces?.statusCode !== 200 &&
       getOSPlaces?.statusCode !== undefined
     ) {
-      return handleLocationNotFound(
-        h,
+      return handleLocationNotFound(h, {
         locationNameOrPostcode,
         notFoundLocation,
         home,
@@ -189,9 +186,21 @@ const searchMiddleware = async (request, h) => {
         phaseBanner,
         backlink,
         cookieBanner,
-        'en'
-      )
+        lang
+      })
     }
+  } else {
+    // handle other location types
+    return handleLocationNotFound(h, {
+      locationNameOrPostcode,
+      notFoundLocation,
+      home,
+      footerTxt,
+      phaseBanner,
+      backlink,
+      cookieBanner,
+      lang
+    })
   }
   return null
 }

@@ -1,5 +1,5 @@
 import { configureRoutes } from '~/src/server/locations/index'
-import { getLocationDetailsController } from '~/src/server/locations/controller'
+import { getLocationDetailsController } from '~/src/server/location-id/controller'
 
 describe('Route Configuration', () => {
   let mockServer

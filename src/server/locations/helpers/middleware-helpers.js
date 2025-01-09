@@ -2,20 +2,23 @@ import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
 import { english } from '~/src/server/data/en/en.js'
 import moment from 'moment-timezone'
 import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
+import { LOCATION_NOT_FOUND } from '~/src/server/data/constants'
 
 // Helper function to handle location not found
 const handleLocationNotFound = (
   h,
-  locationNameOrPostcode,
-  notFoundLocation,
-  home,
-  footerTxt,
-  phaseBanner,
-  backlink,
-  cookieBanner,
-  lang
+  {
+    locationNameOrPostcode,
+    notFoundLocation,
+    home,
+    footerTxt,
+    phaseBanner,
+    backlink,
+    cookieBanner,
+    lang
+  }
 ) => {
-  return h.view('locations/location-not-found', {
+  return h.view(LOCATION_NOT_FOUND, {
     userLocation: locationNameOrPostcode,
     serviceName: notFoundLocation.heading,
     paragraph: notFoundLocation.paragraphs,

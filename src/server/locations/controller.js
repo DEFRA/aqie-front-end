@@ -22,7 +22,9 @@ const getLocationDataController = {
     const partialPostcodePattern = /^([A-Z]{1,2}\d[A-Z\d]?)$/
 
     const redirectResponse = handleRedirect(query, h)
-    if (redirectResponse) return redirectResponse
+    if (redirectResponse) {
+      return redirectResponse
+    }
     const { searchLocation, footerTxt, phaseBanner, cookieBanner } = english
     const locationType = payload?.locationType
     const airQuality = getAirQuality(payload?.aq, 2, 4, 5, 7)

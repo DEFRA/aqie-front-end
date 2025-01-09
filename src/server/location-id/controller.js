@@ -10,6 +10,7 @@ import moment from 'moment-timezone'
 import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
 import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-util'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
+import { LOCATION_TYPE_UK } from '~/src/server/data/constants'
 
 const logger = createLogger()
 
@@ -54,7 +55,7 @@ const getLocationDetailsController = {
           locationData.results,
           locationData.rawForecasts,
           locationData.measurements,
-          'uk-location',
+          LOCATION_TYPE_UK,
           locationIndex,
           request.query?.lang
         )

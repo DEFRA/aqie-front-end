@@ -2,6 +2,7 @@ import { getAirQuality } from '~/src/server/data/en/air-quality.js'
 import { english } from '~/src/server/data/en/en.js'
 import { getLocationNameOrPostcode } from '~/src/server/locations/helpers/location-type-util'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
+import { LOCATION_TYPE_UK } from '~/src/server/data/constants'
 
 const logger = createLogger()
 
@@ -64,7 +65,7 @@ const handleErrorInputAndRedirect = (request, h, lang, payload) => {
       )}`
     }
 
-    if (!userLocation && locationType === 'uk-location') {
+    if (!userLocation && locationType === LOCATION_TYPE_UK) {
       request.yar.set('errors', {
         errors: {
           titleText: searchLocation.errorText.uk.fields.title, // 'There is a problem',
@@ -81,7 +82,7 @@ const handleErrorInputAndRedirect = (request, h, lang, payload) => {
           text: searchLocation.errorText.uk.fields.list.text // 'Enter a location or postcode'
         }
       })
-      request.yar.set('locationType', 'uk-location')
+      request.yar.set('locationType', LOCATION_TYPE_UK)
       request.yar.set('locationNameOrPostcode', 'locationNameOrPostcode')
 
       return h.redirect(`/search-location`).takeover()
@@ -103,7 +104,7 @@ const handleErrorInputAndRedirect = (request, h, lang, payload) => {
           text: searchLocation.errorText.ni.fields.list.text // 'Enter a postcode'
         }
       })
-      request.yar.set('locationType', 'uk-location')
+      request.yar.set('locationType', LOCATION_TYPE_UK)
       request.yar.set('locationNameOrPostcode', 'locationNameOrPostcode')
       return h.redirect(`/search-location`).takeover()
     }
