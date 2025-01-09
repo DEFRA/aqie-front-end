@@ -41,11 +41,9 @@ const getLocationDetailsController = {
 
       let locationIndex = 0
       const locationDetails = locationData?.results?.find((item, index) => {
-        if (item.GAZETTEER_ENTRY.ROUTE_PATH === locationId.replace(/\s/g, '')) {
+        if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
           locationIndex = index
-          return (
-            item.GAZETTEER_ENTRY.ROUTE_PATH === locationId.replace(/\s/g, '')
-          )
+          return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
         }
         return null
       })

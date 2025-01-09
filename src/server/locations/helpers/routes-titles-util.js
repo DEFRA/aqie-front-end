@@ -5,19 +5,12 @@ const routesTitles = (matches, locationNameOrPostcode) => {
     let headerTitle = ''
     if (item.GAZETTEER_ENTRY.DISTRICT_BOROUGH) {
       if (item.GAZETTEER_ENTRY.NAME2) {
-        headerTitle =
-          item.GAZETTEER_ENTRY.NAME2 +
-          ', ' +
-          item.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+        headerTitle = `${item.GAZETTEER_ENTRY.NAME2}, ${item.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
       } else {
-        headerTitle =
-          item.GAZETTEER_ENTRY.NAME1 +
-          ', ' +
-          item.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+        headerTitle = `${item.GAZETTEER_ENTRY.NAME1}, ${item.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
       }
     } else {
-      headerTitle =
-        locationNameOrPostcode + ', ' + item.GAZETTEER_ENTRY.COUNTY_UNITARY
+      headerTitle = `${locationNameOrPostcode}, ${item.GAZETTEER_ENTRY.COUNTY_UNITARY}`
     }
     headerTitle = convertStringToHyphenatedLowercaseWords(headerTitle)
     item.GAZETTEER_ENTRY.ROUTE_PATH = headerTitle

@@ -1,9 +1,7 @@
-import {
-  convertStringToHyphenatedLowercaseWords,
-  firstLetterUppercase
-} from '~/src/server/common/helpers/stringUtils'
+import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
 import { english } from '~/src/server/data/en/en.js'
-import { routesTitles } from '~/src/server/locations/helpers/routes-titles-util'
+import moment from 'moment-timezone'
+import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
 
 // Helper function to handle location not found
 const handleLocationNotFound = (
@@ -31,30 +29,33 @@ const handleLocationNotFound = (
 }
 
 // Helper function to handle single match
-const handleSingleMatch = ({
+const handleSingleMatch = (
   h,
   request,
-  matches,
-  forecastNum,
-  getForecasts,
-  getMeasurements,
-  getDailySummary,
-  nearestLocationsRange,
-  englishDate,
-  welshDate,
-  month,
-  headerTitle,
-  titleRoute,
-  headerTitleRoute,
-  title
-}) => {
-  const customId = convertStringToHyphenatedLowercaseWords(title) // Use the helper function to generate the custom ID
+  {
+    selectedMatches,
+    forecastNum,
+    getForecasts,
+    getMeasurements,
+    getDailySummary,
+    nearestLocationsRange,
+    englishDate,
+    welshDate,
+    month,
+    headerTitle,
+    titleRoute,
+    headerTitleRoute,
+    title
+  }
+) => {
+  const customId = headerTitleRoute // Use the helper function to generate the custom ID
   request.yar.set('locationData', {
-    results: matches,
+    results: selectedMatches,
     rawForecasts: getForecasts?.forecasts,
-    forecastNum: matches.length !== 0 ? forecastNum : 0,
+    forecastNum: selectedMatches.length !== 0 ? forecastNum : 0,
     forecastSummary: getDailySummary,
-    nearestLocationsRange: matches.length !== 0 ? nearestLocationsRange : [],
+    nearestLocationsRange:
+      selectedMatches.length !== 0 ? nearestLocationsRange : [],
     measurements: getMeasurements?.measurements,
     englishDate,
     welshDate,
@@ -68,35 +69,35 @@ const handleSingleMatch = ({
 }
 
 // Helper function to handle multiple matches
-const handleMultipleMatches = ({
+const handleMultipleMatches = (
   h,
   request,
-  matches,
-  locationNameOrPostcode,
-  userLocation,
-  getForecasts,
-  getMeasurements,
-  multipleLocations,
-  airQuality,
-  airQualityData,
-  nearestLocationsRange,
-  siteTypeDescriptions,
-  pollutantTypes,
-  getDailySummary,
-  footerTxt,
-  phaseBanner,
-  backlink,
-  cookieBanner,
-  calendarWelsh,
-  month,
-  welshDate,
-  englishDate,
-  lang
-}) => {
-  const refactoredForRouteTitle = routesTitles(matches, locationNameOrPostcode)
-
+  {
+    selectedMatches,
+    locationNameOrPostcode,
+    userLocation,
+    getForecasts,
+    getMeasurements,
+    multipleLocations,
+    airQuality,
+    airQualityData,
+    nearestLocationsRange,
+    siteTypeDescriptions,
+    pollutantTypes,
+    getDailySummary,
+    footerTxt,
+    phaseBanner,
+    backlink,
+    cookieBanner,
+    calendarWelsh,
+    month,
+    welshDate,
+    englishDate,
+    lang
+  }
+) => {
   request.yar.set('locationData', {
-    results: refactoredForRouteTitle,
+    results: selectedMatches,
     rawForecasts: getForecasts?.forecasts,
     measurements: getMeasurements?.measurements,
     multipleLocations,
@@ -173,18 +174,18 @@ const getTitleAndHeaderTitle = (locationDetails, locationNameOrPostcode) => {
   let title = ''
   let headerTitle = ''
   const { home } = english
-  if (locationDetails) {
-    if (locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH) {
-      if (locationDetails.GAZETTEER_ENTRY.NAME2) {
-        title = `${locationDetails.GAZETTEER_ENTRY.NAME2}, ${locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
-        headerTitle = `${locationDetails.GAZETTEER_ENTRY.NAME2}, ${locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
+  if (locationDetails[0]) {
+    if (locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH) {
+      if (locationDetails[0].GAZETTEER_ENTRY.NAME2) {
+        title = `${locationDetails[0].GAZETTEER_ENTRY.NAME2}, ${locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
+        headerTitle = `${locationDetails[0].GAZETTEER_ENTRY.NAME2}, ${locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
       } else {
-        title = `${locationDetails.GAZETTEER_ENTRY.NAME1}, ${locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
-        headerTitle = `${locationDetails.GAZETTEER_ENTRY.NAME1}, ${locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
+        title = `${locationDetails[0].GAZETTEER_ENTRY.NAME1}, ${locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
+        headerTitle = `${locationDetails[0].GAZETTEER_ENTRY.NAME1}, ${locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
       }
     } else {
-      title = `${locationNameOrPostcode}, ${locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY} - ${home.pageTitle}`
-      headerTitle = `${locationNameOrPostcode}, ${locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY}`
+      title = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY} - ${home.pageTitle}`
+      headerTitle = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
     }
   }
   title = firstLetterUppercase(title)
@@ -199,9 +200,19 @@ const getLanguageDates = (
   calendarWelsh
 ) => {
   return {
-    englishDate: `${calendarEnglish[getMonthSummary.month]} ${formattedDateSummary}`,
-    welshDate: `${calendarWelsh[getMonthSummary.month]} ${formattedDateSummary}`
+    englishDate: `${formattedDateSummary[0]} ${calendarEnglish[getMonthSummary]} ${formattedDateSummary[2]}`,
+    welshDate: `${formattedDateSummary[0]} ${calendarWelsh[getMonthSummary]} ${formattedDateSummary[2]}`
   }
+}
+
+const getFormattedDateSummary = (issueDate, calendarEnglish) => {
+  const formattedDateSummary = moment(issueDate)
+    .format('DD MMMM YYYY')
+    .split(' ')
+  const getMonthSummary = calendarEnglish.findIndex(function (item) {
+    return item.indexOf(formattedDateSummary[1]) !== -1
+  })
+  return { getMonthSummary, formattedDateSummary }
 }
 
 export {
@@ -210,5 +221,6 @@ export {
   handleMultipleMatches,
   processMatches,
   getTitleAndHeaderTitle,
-  getLanguageDates
+  getLanguageDates,
+  getFormattedDateSummary
 }

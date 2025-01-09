@@ -14,13 +14,13 @@ import {
   handleMultipleMatches,
   processMatches,
   getTitleAndHeaderTitle,
-  getLanguageDates
+  getLanguageDates,
+  getFormattedDateSummary
 } from '~/src/server/locations/helpers/middleware-helpers'
 import { LANG_EN } from '~/src/server/data/constants'
 import {
   handleRedirect,
-  getMonth,
-  getFormattedDateSummary
+  getMonth
 } from '~/src/server/locations/helpers/location-type-util'
 import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
@@ -56,6 +56,8 @@ const searchMiddleware = async (request, h) => {
     await fetchData(locationType, userLocation, request, h)
   const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
     getDailySummary.issue_date,
+    calendarEnglish,
+    calendarWelsh,
     lang
   )
   const { englishDate, welshDate } = getLanguageDates(
@@ -106,9 +108,7 @@ const searchMiddleware = async (request, h) => {
         lang
       )
     if (selectedMatches.length === 1) {
-      return handleSingleMatch(
-        h,
-        request,
+      return handleSingleMatch(h, request, {
         selectedMatches,
         forecastNum,
         getForecasts,
@@ -122,14 +122,12 @@ const searchMiddleware = async (request, h) => {
         titleRoute,
         headerTitleRoute,
         title
-      )
+      })
     } else if (
       selectedMatches.length > 1 &&
       locationNameOrPostcode.length > 3
     ) {
-      return handleMultipleMatches(
-        h,
-        request,
+      return handleMultipleMatches(h, request, {
         selectedMatches,
         headerTitleRoute,
         titleRoute,
@@ -152,8 +150,8 @@ const searchMiddleware = async (request, h) => {
         month,
         welshDate,
         englishDate,
-        'en'
-      )
+        lang
+      })
     } else {
       return handleLocationNotFound(
         h,
@@ -164,7 +162,7 @@ const searchMiddleware = async (request, h) => {
         phaseBanner,
         backlink,
         cookieBanner,
-        'en'
+        lang
       )
     }
   } else if (locationType === 'ni-location') {
