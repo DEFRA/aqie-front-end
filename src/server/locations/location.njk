@@ -110,14 +110,14 @@
  <p>{{siteTypeDescriptions[site.areaType]}}</p>
   {% set rows = [] %}
 
-  {% for key, pollutant in site.pollutants %}
- 
-  {% set pollutantTime = pollutant.time.hour %}
-  {% set pollutantDay = pollutant.time.day %}
-  {% set pollutantMonth = pollutant.time.month %}
-  {% set pollutantYear = pollutant.time.year %}
-      {% set pollutantDetail = pollutantTypes[key] %}
-      {% set row = [
+  {% for key, pollutantDetail in pollutantTypes %}
+   {% set pollutant = site.pollutants[key] %}
+    {% if pollutant %}
+      {% set pollutantTime = pollutant.time.hour %}
+      {% set pollutantDay = pollutant.time.day %}
+      {% set pollutantMonth = pollutant.time.month %}
+      {% set pollutantYear = pollutant.time.year %}
+        {% set row = [
           { 
               html: "<a class='govuk-!-margin-bottom-1' href='" + pollutantDetail.href + "'>" + pollutantDetail.title + "</a><span class='govuk-caption-s govuk-!-margin-bottom-1'>" + daqi.pollutantTable.e + ' ' + pollutantDetail.low_range + "</span>",
               classes: "defra-aq-levels-table__cell--pollutant" 
@@ -130,8 +130,9 @@
               html: "<strong class='daqi-tag daqi-tag--" + (pollutant.daqi if pollutant.daqi else "default-aqi-value") + "'>" + pollutant.band + "</strong>",
               classes: "defra-aq-levels-table__cell--level" 
           }
-      ] %}
+        ] %}
       {% set _ = rows.push(row) %}
+    {% endif %}
   {% endfor %}
   {{ aqLevelsTable({
       id:loop.index,
