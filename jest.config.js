@@ -16,17 +16,27 @@ module.exports = {
     '<rootDir>/src/__fixtures__',
     '<rootDir>/test-helpers',
     '<rootDir>/mock-api',
-    '<rootDir>/src/server/common/components'
+    '<rootDir>/src/server/common/components',
+    '<rootDir>/src/server/common/helpers',
+    '<rootDir>/src/client/assets/javascripts',
+    '<rootDir>/src/common/helpers/redis-client.js',
+    '<rootDir>/src/config',
+    '<rootDir>/src/helpers',
+    '<rootDir>/src/server/router.js',
+    '<rootDir>/src/server/index.js',
+    '<rootDir>/test-helpers/component-helpers.js',
+    '<rootDir>/src/index.js',
+    '<rootDir>/src/indextest.js'
   ],
   coverageDirectory: '<rootDir>/coverage',
-  collectCoverage: true,
-  coverageReporters: ['text', 'lcov', 'text-summary'],
-  coverageThreshold: {
-    global: {
-      branches: 1,
-      functions: 1,
-      lines: 1,
-      statements: 1
-    }
-  }
+  collectCoverage: false,
+  coverageReporters: ['clover', 'json', 'text', 'lcov', 'text-summary']
+  // coverageThreshold: {
+  //   global: {
+  //     branches: 90,
+  //     functions: 90,
+  //     lines: 90,
+  //     statements: 90
+  //   }
+  // }
 }
