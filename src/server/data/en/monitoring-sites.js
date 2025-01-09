@@ -2,10 +2,10 @@
 // Pollutant reference data
 
 export const pollutantTypes = {
-  NO2: {
-    title: 'Nitrogen dioxide',
-    href: '/pollutants/nitrogen-dioxide',
-    low_range: '0 to 200'
+  PM25: {
+    title: 'PM2.5',
+    href: '/pollutants/particulate-matter-25',
+    low_range: '0 to 35'
   },
   MP10: {
     title: 'PM10',
@@ -17,10 +17,10 @@ export const pollutantTypes = {
     href: '/pollutants/particulate-matter-10',
     low_range: '0 to 50'
   },
-  PM25: {
-    title: 'PM2.5',
-    href: '/pollutants/particulate-matter-25',
-    low_range: '0 to 35'
+  NO2: {
+    title: 'Nitrogen dioxide',
+    href: '/pollutants/nitrogen-dioxide',
+    low_range: '0 to 200'
   },
   O3: {
     title: 'Ozone',
