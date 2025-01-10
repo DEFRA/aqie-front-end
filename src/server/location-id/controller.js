@@ -72,7 +72,7 @@ const getLocationDetailsController = {
           pageTitle: title,
           title: headerTitle,
           displayBacklink: true,
-          forecastSummary: locationData.forecastSummary.today,
+          forecastSummary: locationData.forecastSummary,
           dailySummary: locationData.forecastSummary,
           footerTxt,
           phaseBanner,

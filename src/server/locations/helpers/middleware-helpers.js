@@ -56,7 +56,7 @@ const handleSingleMatch = (
     results: selectedMatches,
     rawForecasts: getForecasts?.forecasts,
     forecastNum: selectedMatches.length !== 0 ? forecastNum : 0,
-    forecastSummary: getDailySummary,
+    forecastSummary: getDailySummary.today,
     nearestLocationsRange:
       selectedMatches.length !== 0 ? nearestLocationsRange : [],
     measurements: getMeasurements?.measurements,

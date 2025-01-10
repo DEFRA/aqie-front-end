@@ -2,7 +2,7 @@ import { getAirQuality } from '~/src/server/data/en/air-quality.js'
 import { english } from '~/src/server/data/en/en.js'
 import { getLocationNameOrPostcode } from '~/src/server/locations/helpers/location-type-util'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { LOCATION_TYPE_UK } from '~/src/server/data/constants'
+import { LOCATION_TYPE_UK, LOCATION_TYPE_NI } from '~/src/server/data/constants'
 
 const logger = createLogger()
 
@@ -87,7 +87,7 @@ const handleErrorInputAndRedirect = (request, h, lang, payload) => {
 
       return h.redirect(`/search-location`).takeover()
     }
-    if (!userLocation && locationType === 'ni-location') {
+    if (!userLocation && locationType === LOCATION_TYPE_NI) {
       request.yar.set('errors', {
         errors: {
           titleText: searchLocation.errorText.ni.fields.title, // 'There is a problem',
