@@ -1,18 +1,18 @@
-import { searchLocationController } from '~/src/server/search-location/controller'
+import { locationNotFoundController } from '~/src/server/location-not-found/controller'
 
-const searchLocation = {
+const locationNotFound = {
   plugin: {
-    name: 'location',
+    name: 'location-not-found',
     register: async (server) => {
       server.route([
         {
-          method: 'POST',
-          path: '/location{id}',
-          ...searchLocationController
+          method: 'GET',
+          path: '/location-not-found',
+          ...locationNotFoundController
         }
       ])
     }
   }
 }
 
-export { searchLocation }
+export { locationNotFound }

@@ -82,7 +82,7 @@ async function fetchData(locationType, userLocation, request, h) {
     () => {
       // Assuming you have access to the request object here
       if (locationType === 'ni-location') {
-        refreshOAuthToken(request)
+        refreshOAuthToken()
       } else {
         clearRefreshInterval()
       }
