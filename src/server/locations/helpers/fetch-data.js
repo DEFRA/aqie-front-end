@@ -71,7 +71,7 @@ async function fetchData(locationType, userLocation, request, h) {
     }
   }
   // Function to refresh the OAuth token and update the session
-  const refreshOAuthToken = async (request) => {
+  const refreshOAuthToken = async () => {
     accessToken = await fetchOAuthToken()
     request.yar.clear('savedAccessToken')
     request.yar.set('savedAccessToken', accessToken)
@@ -97,6 +97,8 @@ async function fetchData(locationType, userLocation, request, h) {
   }
 
   const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
+  const northernIrelandPostcodeRegex = /^BT\d{1,2}\s?\d?[A-Z]{0,2}$/
+  const niPoscode = northernIrelandPostcodeRegex.test(userLocation)
   const forecastSummaryURL = config.get('forecastSummaryUrl')
   const forecastsAPIurl = config.get('forecastsApiUrl')
   const measurementsAPIurl = config.get('measurementsApiUrl')
@@ -146,16 +148,19 @@ async function fetchData(locationType, userLocation, request, h) {
       userLocation
     )}&fq=${encodeURIComponent(filters)}&key=${osNamesApiKey}`
 
-    const shouldCallApi = symbolsArr.some((symbol) =>
-      userLocation.includes(symbol)
+    let shouldCallApi = symbolsArr.some(
+      (symbol) => !userLocation.includes(symbol)
     )
+    if (niPoscode) {
+      shouldCallApi = false
+    }
     logger.info(
       `osPlace data requested osNamesApiUrlFull: ${osNamesApiUrlFull}`
     )
     const [statusCodeOSPlace, getOSPlaces] = await catchProxyFetchError(
       osNamesApiUrlFull,
       options,
-      !shouldCallApi
+      shouldCallApi
     )
     if (statusCodeOSPlace !== 200) {
       logger.error(

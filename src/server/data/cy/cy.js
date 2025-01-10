@@ -164,17 +164,17 @@ export const welsh = {
       d: 'Llygryddion aer sy’n cael eu monitro gerllaw'
     },
     pollutantText: {
-      a: 'Nwyon',
-      b: 'Yn cael eu cynhyrchu trwy losgi tanwyddau ffosil, er enghraifft, mewn ceir, gorsafoedd pŵer a ffatrïoedd.',
-      c: 'Mae mater gronynnol yn ddarnau mân iawn o ronynnau solet neu hylif sydd wedi’u dal yn yr awyr.Maen nhw’n dod o ffynonellau fel teiars ceir, breciau, pibellau gwacáu, llwch, llosgi coed a phaill.',
-      d: 'Mater gronynnol (PM)'
+      a: 'Mater gronynnol (PM)',
+      b: 'Mae mater gronynnol yn ddarnau mân iawn o ronynnau solet neu hylif sydd wedi’u dal yn yr awyr.Maen nhw’n dod o ffynonellau fel teiars ceir, breciau, pibellau gwacáu, llwch, llosgi coed a phaill.',
+      c: 'Yn cael eu cynhyrchu trwy losgi tanwyddau ffosil, er enghraifft, mewn ceir, gorsafoedd pŵer a ffatrïoedd.',
+      d: 'Nwyon'
     },
     pollutantsNames: {
-      a: 'Osôn',
-      b: 'Nitrogen deuocsid',
-      c: 'Sylffwr deuocsid',
-      d: 'PM2.5',
-      e: 'PM10'
+      a: 'PM2.5',
+      b: 'PM10',
+      c: 'Nitrogen deuocsid',
+      d: 'Osôn',
+      e: 'Sylffwr deuocsid'
     },
     pollutantTable: {
       a: 'milltir i ffwrdd',

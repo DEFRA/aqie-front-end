@@ -28,7 +28,7 @@ async function showLocationPage(
       forecastSummary,
       summaryDate
     })
-  } else if (locationString === 'locations/multiple-locations')
+  } else if (locationString === 'multiple-results/multiple-locations')
     return h.view(locationString, {
       results,
       airQuality,

@@ -21,7 +21,7 @@ const getLocationDataController = {
     const tempString = request?.headers?.referer?.split('/')[3]
     const str = tempString?.split('?')[0]
     let lang = query?.lang?.slice(0, 2)
-    if (lang !== 'cy' && lang !== 'en' && path === '/lleoliad/cy') {
+    if (lang !== 'cy' && lang !== 'en' && path === '/lleoliad') {
       lang = 'cy'
     }
     if (query?.lang && query?.lang === 'en') {
@@ -214,7 +214,7 @@ const getLocationDataController = {
           return item.indexOf(formattedDate[1]) !== -1
         })
         request.yar.set('locationData', {
-          data: matches,
+          results: matches,
           rawForecasts: getForecasts?.forecasts,
           forecastNum: matches.length !== 0 ? forecastNum : 0,
           forecastSummary: getDailySummary,
@@ -314,7 +314,7 @@ const getLocationDataController = {
           userLocation =
             userLocation.charAt(0).toUpperCase() + userLocation.slice(1)
 
-          return h.view('locations/multiple-locations', {
+          return h.view('multiple-results/multiple-locations', {
             results: matches,
             paragraphs: multipleLocations.paragraphs,
             userLocation: locationNameOrPostcode,
@@ -497,149 +497,4 @@ const getLocationDataController = {
   }
 }
 
-const getLocationDetailsController = {
-  handler: (request, h) => {
-    try {
-      let title = ''
-      let headerTitle = ''
-      const { query } = request
-      const locationId = request.params.id
-
-      if (query?.lang && query?.lang === 'en') {
-        return h.redirect(`/location/${locationId}?lang=${query?.lang}`)
-      }
-      const lang = 'cy'
-
-      const {
-        footerTxt,
-        phaseBanner,
-        backlink,
-        cookieBanner,
-        notFoundLocation,
-        searchLocation,
-        daqi,
-        home
-      } = welsh
-      const locationData = request.yar.get('locationData') || []
-      let locationIndex = 0
-      const locationDetails = locationData?.data?.find((item, index) => {
-        if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
-          locationIndex = index
-          return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
-        }
-        return null
-      })
-
-      if (locationDetails) {
-        if (locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH) {
-          if (locationDetails.GAZETTEER_ENTRY.NAME2) {
-            title =
-              locationDetails.GAZETTEER_ENTRY.NAME2 +
-              ', ' +
-              locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
-              ' - ' +
-              home.pageTitle
-            headerTitle =
-              locationDetails.GAZETTEER_ENTRY.NAME2 +
-              ', ' +
-              locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
-          } else {
-            title =
-              locationDetails.GAZETTEER_ENTRY.NAME1 +
-              ', ' +
-              locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
-              ' - ' +
-              home.pageTitle
-            headerTitle =
-              locationDetails.GAZETTEER_ENTRY.NAME1 +
-              ', ' +
-              locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
-          }
-        } else {
-          if (locationDetails.GAZETTEER_ENTRY.NAME2) {
-            title =
-              locationDetails.GAZETTEER_ENTRY.NAME2 +
-              ', ' +
-              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
-              ' - ' +
-              welsh.multipleLocations.pageTitle
-            headerTitle =
-              locationDetails.GAZETTEER_ENTRY.NAME2 +
-              ', ' +
-              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
-          } else {
-            title =
-              locationDetails.GAZETTEER_ENTRY.NAME1 +
-              ', ' +
-              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
-              ' - ' +
-              welsh.multipleLocations.pageTitle
-            headerTitle =
-              locationDetails.GAZETTEER_ENTRY.NAME1 +
-              ', ' +
-              locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
-          }
-        }
-        const { forecastNum, nearestLocationsRange } = getNearestLocation(
-          locationData.data,
-          locationData.rawForecasts,
-          locationData.measurements,
-          'uk-location',
-          locationIndex,
-          lang
-        )
-
-        const airQuality = getAirQuality(
-          forecastNum[0][0].today,
-          Object.values(forecastNum[0][1])[0],
-          Object.values(forecastNum[0][2])[0],
-          Object.values(forecastNum[0][3])[0],
-          Object.values(forecastNum[0][4])[0]
-        )
-        title = firstLetterUppercase(title)
-        headerTitle = firstLetterUppercase(headerTitle)
-
-        return h.view('locations/location', {
-          result: locationDetails,
-          airQuality,
-          airQualityData: airQualityData.commonMessages,
-          monitoringSites: nearestLocationsRange,
-          siteTypeDescriptions,
-          pollutantTypes,
-          pageTitle: title,
-          title: headerTitle,
-          daqi,
-          displayBacklink: true,
-          forecastSummary: locationData.forecastSummary.today,
-          summaryDate:
-            lang === 'cy' ? locationData.welshDate : locationData.englishDate,
-          dailySummary: locationData.forecastSummary,
-          footerTxt,
-          phaseBanner,
-          serviceName: searchLocation.serviceName,
-          backlink,
-          cookieBanner,
-          welshMonth: calendarWelsh[locationData.getMonth],
-          dailySummaryTexts: welsh.dailySummaryTexts,
-          lang
-        })
-      } else {
-        return h.view('location-not-found', {
-          paragraph: notFoundLocation.paragraphs,
-          footerTxt,
-          phaseBanner,
-          backlink,
-          cookieBanner,
-          lang
-        })
-      }
-    } catch (error) {
-      logger.error(`error on single location ${error.message}`)
-      return h.status(500).render('error', {
-        error: 'An error occurred while retrieving location details.'
-      })
-    }
-  }
-}
-
-export { getLocationDataController, getLocationDetailsController }
+export { getLocationDataController }
