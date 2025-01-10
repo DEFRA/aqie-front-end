@@ -17,7 +17,11 @@ import {
   getLanguageDates,
   getFormattedDateSummary
 } from '~/src/server/locations/helpers/middleware-helpers'
-import { LANG_EN, LOCATION_TYPE_UK } from '~/src/server/data/constants'
+import {
+  LANG_EN,
+  LOCATION_TYPE_UK,
+  LOCATION_TYPE_NI
+} from '~/src/server/data/constants'
 import {
   handleRedirect,
   getMonth
@@ -68,7 +72,7 @@ const searchMiddleware = async (request, h) => {
   )
 
   if (locationType === LOCATION_TYPE_UK) {
-    const { results } = getOSPlaces
+    let { results } = getOSPlaces
 
     if (!results || results.length === 0 || getOSPlaces === 'wrong postcode') {
       return handleLocationNotFound(h, {
@@ -82,7 +86,10 @@ const searchMiddleware = async (request, h) => {
         lang
       })
     }
-
+    // Remove duplicates from the results array
+    results = Array.from(
+      new Set(results.map((item) => JSON.stringify(item)))
+    ).map((item) => JSON.parse(item))
     const selectedMatches = processMatches(
       results,
       locationNameOrPostcode,
@@ -163,9 +170,9 @@ const searchMiddleware = async (request, h) => {
         lang
       })
     }
-  } else if (locationType === 'ni-location') {
+  } else if (locationType === LOCATION_TYPE_NI) {
     const { getNIPlaces } = await fetchData(
-      'ni-location',
+      LOCATION_TYPE_NI,
       userLocation,
       request,
       h

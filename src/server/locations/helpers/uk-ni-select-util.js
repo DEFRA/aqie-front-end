@@ -15,6 +15,7 @@ import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { fetchData } from '~/src/server/locations/helpers/fetch-data'
 import {
   LOCATION_TYPE_UK,
+  LOCATION_TYPE_NI,
   LOCATION_NOT_FOUND
 } from '~/src/server/data/constants'
 
@@ -110,7 +111,7 @@ const selectNIUKLocationType = async (
       results: matches,
       rawForecasts: getForecasts?.forecasts,
       forecastNum: matches.length !== 0 ? forecastNum : 0,
-      forecastSummary: getDailySummary,
+      forecastSummary: getDailySummary.today,
       nearestLocationsRange: matches.length !== 0 ? nearestLocationsRange : [],
       measurements: getMeasurements?.measurements,
       englishDate,
@@ -125,48 +126,17 @@ const selectNIUKLocationType = async (
       if (locationDetails) {
         if (locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH) {
           if (locationDetails.GAZETTEER_ENTRY.NAME2) {
-            title =
-              locationDetails.GAZETTEER_ENTRY.NAME2 +
-              ', ' +
-              locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
-              ' - ' +
-              home.pageTitle
-            headerTitle =
-              locationDetails.GAZETTEER_ENTRY.NAME2 +
-              ', ' +
-              locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+            title = `${locationDetails.GAZETTEER_ENTRY.NAME2}, ${locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
+            headerTitle = `${locationDetails.GAZETTEER_ENTRY.NAME2}, ${locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
           } else {
-            title =
-              locationDetails.GAZETTEER_ENTRY.NAME1 +
-              ', ' +
-              locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
-              ' - ' +
-              home.pageTitle
-            headerTitle =
-              locationDetails.GAZETTEER_ENTRY.NAME1 +
-              ', ' +
-              locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+            title = `${locationDetails.GAZETTEER_ENTRY.NAME1}, ${locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
+            headerTitle = `${locationDetails.GAZETTEER_ENTRY.NAME1}, ${locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
           }
         } else {
-          title =
-            locationNameOrPostcode +
-            ', ' +
-            locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY +
-            ' - ' +
-            home.pageTitle
-          headerTitle =
-            locationNameOrPostcode +
-            ', ' +
-            locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY
+          title = `${locationNameOrPostcode}, ${locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY} - ${home.pageTitle}`
+          headerTitle = `${locationNameOrPostcode}, ${locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY}`
         }
       }
-      const airQuality = getAirQuality(
-        forecastNum[0][0].today,
-        Object.values(forecastNum[0][1])[0],
-        Object.values(forecastNum[0][2])[0],
-        Object.values(forecastNum[0][3])[0],
-        Object.values(forecastNum[0][4])[0]
-      )
       title = firstLetterUppercase(title)
       headerTitle = firstLetterUppercase(headerTitle)
       logger.info(
@@ -241,9 +211,9 @@ const selectNIUKLocationType = async (
         lang
       })
     }
-  } else if (locationType === 'ni-location') {
+  } else if (locationType === LOCATION_TYPE_NI) {
     const { getNIPlaces } = await fetchData(
-      'ni-location',
+      LOCATION_TYPE_NI,
       userLocation,
       request,
       h
@@ -287,11 +257,11 @@ const selectNIUKLocationType = async (
     }
 
     const { results } = getNIPlaces
-    const { forecastNum, nearestLocationsRange, latlon } = getNearestLocation(
+    const { nearestLocationsRange, latlon } = getNearestLocation(
       results,
       getForecasts?.forecasts,
       getMeasurements?.measurements,
-      'ni-location',
+      LOCATION_TYPE_NI,
       0,
       lang
     )
@@ -307,43 +277,18 @@ const selectNIUKLocationType = async (
     let headerTitle = ''
     if (locationData) {
       if (locationData.GAZETTEER_ENTRY.NAME2) {
-        title =
-          locationData.GAZETTEER_ENTRY.NAME2 +
-          ', ' +
-          locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
-          ' - ' +
-          home.pageTitle
-        headerTitle =
-          locationData.GAZETTEER_ENTRY.NAME2 +
-          ', ' +
-          locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+        title = `${locationData.GAZETTEER_ENTRY.NAME2}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
+        headerTitle = `${locationData.GAZETTEER_ENTRY.NAME2}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
       } else {
-        title =
-          locationData.GAZETTEER_ENTRY.NAME1 +
-          ', ' +
-          locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH +
-          ' - ' +
-          home.pageTitle
-        headerTitle =
-          locationData.GAZETTEER_ENTRY.NAME1 +
-          ', ' +
-          locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
+        title = `${locationData.GAZETTEER_ENTRY.NAME1}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
+        headerTitle = `${locationData.GAZETTEER_ENTRY.NAME1}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
       }
     }
     title = firstLetterUppercase(title)
     headerTitle = firstLetterUppercase(headerTitle)
-    const airQuality = getAirQuality(
-      forecastNum[0][0].today,
-      Object.values(forecastNum[0][1])[0],
-      Object.values(forecastNum[0][2])[0],
-      Object.values(forecastNum[0][3])[0],
-      Object.values(forecastNum[0][4])[0]
-    )
-    if (lang === 'en') {
-      if (query?.lang === 'cy') {
-        /* eslint-disable camelcase */
-        return h.redirect(`/lleoliad?lang=cy`)
-      }
+    if (lang === 'en' && query?.lang === 'cy') {
+      /* eslint-disable camelcase */
+      return h.redirect(`/lleoliad?lang=cy`)
     }
 
     return h.view('locations/location', {
