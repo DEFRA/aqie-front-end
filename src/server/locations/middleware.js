@@ -75,16 +75,8 @@ const searchMiddleware = async (request, h) => {
     let { results } = getOSPlaces
 
     if (!results || results.length === 0 || getOSPlaces === 'wrong postcode') {
-      return handleLocationNotFound(h, {
-        locationNameOrPostcode,
-        notFoundLocation,
-        home,
-        footerTxt,
-        phaseBanner,
-        backlink,
-        cookieBanner,
-        lang
-      })
+      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+      return h.redirect('/location-not-found').takeover()
     }
     // Remove duplicates from the results array
     results = Array.from(
