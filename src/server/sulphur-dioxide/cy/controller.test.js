@@ -8,7 +8,8 @@ describe('sulphurDioxide Controller - Welsh', () => {
   const { sulphurDioxide } = welsh.pollutants
   beforeEach(() => {
     mockRequest = {
-      query: {}
+      query: {},
+      path: ''
     }
     mockH = {
       redirect: jest.fn().mockReturnValue('redirected'),
@@ -39,6 +40,24 @@ describe('sulphurDioxide Controller - Welsh', () => {
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
       lang: mockRequest.query.lang
+    })
+  })
+
+  it('should render by default to sulphurDioxide welsh page if lang is not cy or en', () => {
+    mockRequest.query.lang = 'test'
+    mockRequest.path = '/llygryddion/sylffwr-deuocsid/cy'
+    const result = sulphurDioxideController.handler(mockRequest, mockH)
+    expect(result).toBe('view rendered')
+    expect(mockH.view).toHaveBeenCalledWith('sulphur-dioxide/index', {
+      pageTitle: mockContent.pollutants.sulphurDioxide.pageTitle,
+      sulphurDioxide,
+      page: 'Sulphur dioxide (SO₂)',
+      displayBacklink: false,
+      phaseBanner: mockContent.phaseBanner,
+      footerTxt: mockContent.footerTxt,
+      cookieBanner: mockContent.cookieBanner,
+      serviceName: mockContent.multipleLocations.serviceName,
+      lang: 'cy'
     })
   })
 })

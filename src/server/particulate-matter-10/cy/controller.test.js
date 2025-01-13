@@ -8,7 +8,8 @@ describe('Particular matter10 Controller - Welsh', () => {
   const { particulateMatter10 } = welsh.pollutants
   beforeEach(() => {
     mockRequest = {
-      query: {}
+      query: {},
+      path: ''
     }
     mockH = {
       redirect: jest.fn().mockReturnValue('redirected'),
@@ -39,6 +40,24 @@ describe('Particular matter10 Controller - Welsh', () => {
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
       lang: mockRequest.query.lang
+    })
+  })
+
+  it('should render by default to particulateMatter10 cy page if lang is not cy or en', () => {
+    mockRequest.query.lang = 'test'
+    mockRequest.path = '/llygryddion/mater-gronynnol-10/cy'
+    const result = particulateMatter10Controller.handler(mockRequest, mockH)
+    expect(result).toBe('view rendered')
+    expect(mockH.view).toHaveBeenCalledWith('particulate-matter-10/index', {
+      pageTitle: mockContent.pollutants.particulateMatter10.pageTitle,
+      particulateMatter10,
+      page: 'particulate matter 10',
+      displayBacklink: false,
+      phaseBanner: mockContent.phaseBanner,
+      footerTxt: mockContent.footerTxt,
+      cookieBanner: mockContent.cookieBanner,
+      serviceName: mockContent.multipleLocations.serviceName,
+      lang: 'cy'
     })
   })
 })

@@ -1,4 +1,4 @@
-import { cookiesHandler } from '~/src/server/cookies/controller'
+import { cookiesController } from './controller'
 import { welsh } from '~/src/server/data/cy/cy.js'
 
 describe('Cookies Handler', () => {
@@ -19,14 +19,14 @@ describe('Cookies Handler', () => {
 
   it('should redirect to the Welsh version if the language is "cy"', () => {
     mockRequest.query.lang = 'cy'
-    const result = cookiesHandler(mockRequest, mockH, mockContent)
+    const result = cookiesController.handler(mockRequest, mockH, mockContent)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith('/briwsion/cy?lang=cy')
   })
 
   it('should render the cookies page with the necessary data', () => {
     mockRequest.query.lang = 'en'
-    const result = cookiesHandler(mockRequest, mockH, mockContent)
+    const result = cookiesController.handler(mockRequest, mockH, mockContent)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('cookies/index', {
       pageTitle: mockContent.footer.cookies.pageTitle,
@@ -41,14 +41,14 @@ describe('Cookies Handler', () => {
       footerTxt: mockContent.footerTxt,
       serviceName: mockContent.multipleLocations.serviceName,
       cookieBanner: mockContent.cookieBanner,
-      lang: 'en'
+      lang: mockRequest.query.lang
     })
   })
 
   it('should default to English if language is not "cy" or "en" and path is "/cookies"', () => {
     mockRequest.query.lang = 'fr'
     mockRequest.path = '/cookies'
-    const result = cookiesHandler(mockRequest, mockH, mockContent)
+    const result = cookiesController.handler(mockRequest, mockH, mockContent)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('cookies/index', {
       pageTitle: mockContent.footer.cookies.pageTitle,
