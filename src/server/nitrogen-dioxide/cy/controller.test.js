@@ -8,7 +8,8 @@ describe('Nitrogen Dioxide Controller - Welsh', () => {
   const { nitrogenDioxide } = welsh.pollutants
   beforeEach(() => {
     mockRequest = {
-      query: {}
+      query: {},
+      path: {}
     }
     mockH = {
       redirect: jest.fn().mockReturnValue('redirected'),
@@ -39,6 +40,24 @@ describe('Nitrogen Dioxide Controller - Welsh', () => {
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
       lang: mockRequest.query.lang
+    })
+  })
+
+  it('should redirect to the welsh version if the language is not equal to "en" and "cy"', () => {
+    mockRequest.query.lang = 'test'
+    mockRequest.path = '/llygryddion/oson/cy'
+    const result = nitrogenDioxideController.handler(mockRequest, mockH)
+    expect(result).toBe('view rendered')
+    expect(mockH.view).toHaveBeenCalledWith('nitrogen-dioxide/index', {
+      pageTitle: mockContent.pollutants.nitrogenDioxide.pageTitle,
+      nitrogenDioxide,
+      page: 'Nitrogen dioxide (NO₂)',
+      displayBacklink: false,
+      phaseBanner: mockContent.phaseBanner,
+      footerTxt: mockContent.footerTxt,
+      cookieBanner: mockContent.cookieBanner,
+      serviceName: mockContent.multipleLocations.serviceName,
+      lang: 'cy'
     })
   })
 })

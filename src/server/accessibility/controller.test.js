@@ -1,4 +1,4 @@
-import { accessibilityHandler } from './controller'
+import { accessibilityController } from './controller'
 
 describe('Accessibility Handler', () => {
   const mockRequest = {
@@ -26,14 +26,22 @@ describe('Accessibility Handler', () => {
 
   it('should redirect to the Welsh version if the language is "cy"', () => {
     mockRequest.query.lang = 'cy'
-    const result = accessibilityHandler(mockRequest, mockH, mockContent)
+    const result = accessibilityController.handler(
+      mockRequest,
+      mockH,
+      mockContent
+    )
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith('/hygyrchedd/cy?lang=cy')
   })
 
   it('should render the accessibility page with the necessary data', () => {
     mockRequest.query.lang = 'en'
-    const result = accessibilityHandler(mockRequest, mockH, mockContent)
+    const result = accessibilityController.handler(
+      mockRequest,
+      mockH,
+      mockContent
+    )
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('accessibility/index', {
       pageTitle: 'mock pageTitle',

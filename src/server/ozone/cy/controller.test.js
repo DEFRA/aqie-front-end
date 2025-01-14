@@ -40,4 +40,22 @@ describe('Ozone Controller - Welsh', () => {
       lang: mockRequest.query.lang
     })
   })
+
+  it('should render the ozone cy page with the necessary data if lang is not cy | en', () => {
+    mockRequest.query.lang = 'test'
+    mockRequest.path = '/chwilio-lleoliad/cy'
+    const result = ozoneController.handler(mockRequest, mockH)
+    expect(result).toBe('view rendered')
+    expect(mockH.view).toHaveBeenCalledWith('ozone/index', {
+      pageTitle: mockContent.pollutants.ozone.pageTitle,
+      ozone,
+      page: 'ozone-cy',
+      displayBacklink: false,
+      phaseBanner: mockContent.phaseBanner,
+      footerTxt: mockContent.footerTxt,
+      cookieBanner: mockContent.cookieBanner,
+      serviceName: mockContent.multipleLocations.serviceName,
+      lang: 'cy'
+    })
+  })
 })

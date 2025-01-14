@@ -1,4 +1,4 @@
-import { handleHomeRequest } from '~/src/server/home/controller'
+import { homeController } from './controller'
 import { english } from '~/src/server/data/en/en.js'
 
 describe('Home Controller', () => {
@@ -18,14 +18,14 @@ describe('Home Controller', () => {
 
   it('should redirect to the Welsh version if the language is "cy"', () => {
     mockRequest.query.lang = 'cy'
-    const result = handleHomeRequest(mockRequest, mockH, mockContent)
+    const result = homeController.handler(mockRequest, mockH, mockContent)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith('cy')
   })
 
   it('should render the home page with the necessary data', () => {
     mockRequest.query.lang = 'en'
-    const result = handleHomeRequest(mockRequest, mockH, mockContent)
+    const result = homeController.handler(mockRequest, mockH, mockContent)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('home/index', {
       pageTitle: mockContent.home.pageTitle,
