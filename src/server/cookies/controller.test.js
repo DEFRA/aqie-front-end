@@ -1,5 +1,6 @@
 import { cookiesController } from './controller'
 import { welsh } from '~/src/server/data/cy/cy.js'
+import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
 
 describe('Cookies Handler', () => {
   let mockRequest
@@ -18,8 +19,8 @@ describe('Cookies Handler', () => {
   })
 
   it('should redirect to the Welsh version if the language is "cy"', () => {
-    mockRequest.query.lang = 'cy'
-    const result = cookiesController.handler(mockRequest, mockH, mockContent)
+    mockRequest.query.lang = LANG_CY
+    const result = cookiesHandler(mockRequest, mockH, mockContent)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith('/briwsion/cy?lang=cy')
   })
@@ -41,7 +42,7 @@ describe('Cookies Handler', () => {
       footerTxt: mockContent.footerTxt,
       serviceName: mockContent.multipleLocations.serviceName,
       cookieBanner: mockContent.cookieBanner,
-      lang: mockRequest.query.lang
+      lang: LANG_EN
     })
   })
 
@@ -63,7 +64,7 @@ describe('Cookies Handler', () => {
       footerTxt: mockContent.footerTxt,
       serviceName: mockContent.multipleLocations.serviceName,
       cookieBanner: mockContent.cookieBanner,
-      lang: 'en'
+      lang: LANG_EN
     })
   })
 })

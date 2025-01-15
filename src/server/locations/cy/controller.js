@@ -12,6 +12,7 @@ import { calendarEnglish } from '~/src/server/data/en/en.js'
 import moment from 'moment-timezone'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
+import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
 
 const logger = createLogger()
 
@@ -21,10 +22,10 @@ const getLocationDataController = {
     const tempString = request?.headers?.referer?.split('/')[3]
     const str = tempString?.split('?')[0]
     let lang = query?.lang?.slice(0, 2)
-    if (lang !== 'cy' && lang !== 'en' && path === '/lleoliad') {
-      lang = 'cy'
+    if (lang !== LANG_CY && lang !== LANG_EN && path === '/lleoliad') {
+      lang = LANG_CY
     }
-    if (query?.lang && query?.lang === 'en') {
+    if (query?.lang && query?.lang === LANG_EN) {
       return h.redirect(`/location?lang=en`)
     }
 
@@ -302,12 +303,12 @@ const getLocationDataController = {
             forecastSummary: getDailySummary.today,
             dailySummary: getDailySummary,
             welshMonth: calendarWelsh[getMonth],
-            summaryDate: lang === 'cy' ? welshDate : englishDate,
+            summaryDate: lang === LANG_CY ? welshDate : englishDate,
             dailySummaryTexts: welsh.dailySummaryTexts,
             lang
           })
         } else if (matches.length > 1 && locationNameOrPostcode.length > 3) {
-          if (lang === 'en') {
+          if (lang === LANG_EN) {
             return h.redirect(`/location`)
           }
           userLocation = userLocation.toLowerCase()
@@ -327,7 +328,7 @@ const getLocationDataController = {
             title: multipleLocations.title,
             serviceName: multipleLocations.serviceName,
             forecastSummary: getDailySummary.today,
-            summaryDate: lang === 'cy' ? welshDate : englishDate,
+            summaryDate: lang === LANG_CY ? welshDate : englishDate,
             dailySummary: getDailySummary,
             footerTxt,
             phaseBanner,
@@ -444,7 +445,7 @@ const getLocationDataController = {
               locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH
           }
         }
-        if (query?.lang === 'en') {
+        if (query?.lang === LANG_EN) {
           return h.redirect(`/location`)
         }
         const airQuality = getAirQuality(
@@ -465,7 +466,7 @@ const getLocationDataController = {
           pollutantTypes,
           displayBacklink: true,
           forecastSummary: getDailySummary.today,
-          summaryDate: lang === 'cy' ? welshDate : englishDate,
+          summaryDate: lang === LANG_CY ? welshDate : englishDate,
           dailySummary: getDailySummary,
           daqi,
           nearestLocationsRange,

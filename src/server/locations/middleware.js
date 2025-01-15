@@ -28,15 +28,14 @@ import {
 } from '~/src/server/locations/helpers/location-type-util'
 import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
-//
 
 const logger = createLogger()
 
 const searchMiddleware = async (request, h) => {
-  const { payload } = request
+  const { payload, query } = request
   const lang = LANG_EN
   const month = getMonth(lang)
-  const redirectResponse = handleRedirect(h, lang)
+  const redirectResponse = handleRedirect(h, query?.lang)
   if (redirectResponse) {
     return redirectResponse
   }
@@ -54,10 +53,11 @@ const searchMiddleware = async (request, h) => {
   if (!redirectError.locationType) {
     return redirectError
   }
-
   let { locationType, userLocation, locationNameOrPostcode } = redirectError
+
   const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
     await fetchData(locationType, userLocation, request, h)
+
   const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
     getDailySummary.issue_date,
     calendarEnglish,
@@ -119,7 +119,8 @@ const searchMiddleware = async (request, h) => {
         headerTitle,
         titleRoute,
         headerTitleRoute,
-        title
+        title,
+        lang
       })
     } else if (
       selectedMatches.length > 1 &&

@@ -1,6 +1,7 @@
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { english } from '~/src/server/data/en/en.js'
 import { handleRedirect } from '~/src/server/locations/helpers/location-type-util'
+import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
 
 const logger = createLogger()
 
@@ -30,10 +31,11 @@ const getLocationDataController = {
       userLocation
     } = locationData
     const { query } = request
-
-    const redirectResponse = handleRedirect(query, h)
-    if (redirectResponse) {
-      return redirectResponse
+    if (lang === LANG_EN) {
+      const redirectResponse = handleRedirect(query, h)
+      if (redirectResponse) {
+        return redirectResponse
+      }
     }
 
     try {
@@ -57,8 +59,10 @@ const getLocationDataController = {
         cookieBanner,
         welshMonth: calendarWelsh[getMonth],
         summaryDate:
-          lang === 'cy' ? welshDate ?? summaryDate : englishDate ?? summaryDate,
-        lang: 'cy'
+          lang === LANG_CY
+            ? welshDate ?? summaryDate
+            : englishDate ?? summaryDate,
+        lang: LANG_CY
       })
     } catch (error) {
       logger.error(

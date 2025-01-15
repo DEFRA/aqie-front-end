@@ -4,7 +4,8 @@ import {
   LANG_CY,
   REDIRECT_PATH_EN,
   REDIRECT_PATH_CY,
-  SEARCH_LOCATION_PATH_EN
+  SEARCH_LOCATION_PATH_EN,
+  LANG_EN
 } from '~/src/server/data/constants'
 import { calendarEnglish } from '~/src/server/data/en/en.js'
 import moment from 'moment-timezone'
@@ -14,13 +15,17 @@ const getLocationNameOrPostcode = (locationType, payload) => {
     return payload.engScoWal.trim()
   } else if (locationType === LOCATION_TYPE_NI) {
     return payload.ni
+  } else {
+    return null
   }
-  return ''
 }
 
 const handleRedirect = (h, lang) => {
   if (lang === LANG_CY) {
     return h.redirect(REDIRECT_PATH_CY)
+  }
+  if (lang === LANG_EN) {
+    return h.redirect(REDIRECT_PATH_EN)
   }
   return null
 }
@@ -32,21 +37,24 @@ const getMonth = () => {
   )
   return { getFormattedDate }
 }
-
 const configureLocationTypeAndRedirects = (
   request,
   h,
-  locationType,
-  locationNameOrPostcode,
-  str,
-  query,
-  searchLocation,
-  airQuality
+  {
+    locationType,
+    locationNameOrPostcode,
+    str,
+    query,
+    searchLocation,
+    airQuality
+  }
 ) => {
   if (locationType === LOCATION_TYPE_UK) {
     locationNameOrPostcode = request.payload.engScoWal.trim()
   } else if (locationType === LOCATION_TYPE_NI) {
     locationNameOrPostcode = request.payload.ni
+  } else {
+    locationNameOrPostcode = ''
   }
   if (!locationType && str !== SEARCH_LOCATION_PATH_EN) {
     locationType = request.yar.get('locationType')
@@ -71,10 +79,6 @@ const configureLocationTypeAndRedirects = (
     request.yar.set('errorMessage', {
       errorMessage: { text: searchLocation.errorText.radios.list.text }
     })
-
-    // request.yar.set('locationType', '')
-    // request.yar.get('', '')
-
     if (query?.lang === LANG_CY) {
       return h.redirect(REDIRECT_PATH_CY)
     }
@@ -100,6 +104,7 @@ const filteredAndSelectedLocationType = (
     userLocation = `${userLocation.slice(0, spaceIndex)} ${userLocation.slice(
       spaceIndex
     )}`
+    return userLocation
   }
 
   if (!userLocation && locationType === LOCATION_TYPE_UK) {
@@ -142,7 +147,7 @@ const filteredAndSelectedLocationType = (
     request.yar.set('locationType', LOCATION_TYPE_NI)
     return h.redirect(SEARCH_LOCATION_PATH_EN)
   }
-  locationType = request.yar.get('locationType')
+  return null
 }
 
 export {

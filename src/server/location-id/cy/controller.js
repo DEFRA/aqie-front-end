@@ -1,15 +1,16 @@
 import {
   siteTypeDescriptions,
   pollutantTypes
-} from '~/src/server/data/en/monitoring-sites.js'
-import * as airQualityData from '~/src/server/data/en/air-quality.js'
+} from '~/src/server/data/cy/monitoring-sites.js'
+import * as airQualityData from '~/src/server/data/cy/air-quality.js'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { english, calendarEnglish } from '~/src/server/data/en/en.js'
-import { calendarWelsh } from '~/src/server/data/cy/cy.js'
+import { welsh, calendarWelsh } from '~/src/server/data/cy/cy.js'
 import moment from 'moment-timezone'
 import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
 import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-util'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
+import { LANG_CY, LANG_EN, LOCATION_TYPE_UK } from '~/src/server/data/constants'
 
 const logger = createLogger()
 
@@ -19,11 +20,11 @@ const getLocationDetailsController = {
       const { query } = request
       const locationId = request.params.id
 
-      if (query?.lang && query?.lang === 'cy') {
+      if (query?.lang && query?.lang === LANG_EN) {
         /* eslint-disable camelcase */
-        return h.redirect(`/lleoliad/cy/${locationId}/?lang=cy`)
+        return h.redirect(`/location/${locationId}/?lang=en`)
       }
-      const lang = 'en'
+      const lang = LANG_CY
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')
       const getMonth = calendarEnglish.findIndex(function (item) {
         return item.indexOf(formattedDate[1]) !== -1
@@ -36,16 +37,14 @@ const getLocationDetailsController = {
         backlink,
         cookieBanner,
         daqi
-      } = english
+      } = welsh
       const locationData = request.yar.get('locationData') || []
 
       let locationIndex = 0
       const locationDetails = locationData?.results?.find((item, index) => {
-        if (item.GAZETTEER_ENTRY.ROUTE_PATH === locationId.replace(/\s/g, '')) {
+        if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
           locationIndex = index
-          return (
-            item.GAZETTEER_ENTRY.ROUTE_PATH === locationId.replace(/\s/g, '')
-          )
+          return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
         }
         return null
       })
@@ -56,13 +55,12 @@ const getLocationDetailsController = {
           locationData.results,
           locationData.rawForecasts,
           locationData.measurements,
-          'uk-location',
+          LOCATION_TYPE_UK,
           locationIndex,
           request.query?.lang
         )
         title = firstLetterUppercase(title)
         headerTitle = firstLetterUppercase(headerTitle)
-
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
@@ -73,16 +71,18 @@ const getLocationDetailsController = {
           pageTitle: title,
           title: headerTitle,
           displayBacklink: true,
-          forecastSummary: locationData.forecastSummary.today,
-          dailySummary: locationData.forecastSummary,
+          forecastSummary: locationData.forecastSummary,
           footerTxt,
           phaseBanner,
           backlink,
           cookieBanner,
           daqi,
           welshMonth: calendarWelsh[getMonth],
+          serviceName: notFoundLocation.heading,
           summaryDate:
-            lang === 'cy' ? locationData.welshDate : locationData.englishDate,
+            lang === LANG_CY
+              ? locationData.welshDate ?? locationData.summaryDate
+              : locationData.englishDate ?? locationData.summaryDate,
           dailySummaryTexts: english.dailySummaryTexts,
           lang
         })

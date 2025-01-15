@@ -1,14 +1,18 @@
 import { getAirQuality } from '~/src/server/data/en/air-quality.js'
 import { english } from '~/src/server/data/en/en.js'
+import { welsh } from '~/src/server/data/cy/cy.js'
 import { getLocationNameOrPostcode } from '~/src/server/locations/helpers/location-type-util'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { LOCATION_TYPE_UK, LOCATION_TYPE_NI } from '~/src/server/data/constants'
+import {
+  LOCATION_TYPE_UK,
+  LOCATION_TYPE_NI,
+  LANG_EN,
+  LANG_CY
+} from '~/src/server/data/constants'
 
 const logger = createLogger()
 
 const handleErrorInputAndRedirect = (request, h, lang, payload) => {
-  const { query } = request
-  // Extract query parameters using URLSearchParams
   /* eslint-disable camelcase */
   const tempString = request?.headers?.referer?.split('/')[3]
   const str = tempString?.split('?')[0]
@@ -18,7 +22,11 @@ const handleErrorInputAndRedirect = (request, h, lang, payload) => {
   const airQuality = getAirQuality(request.payload?.aq, 2, 4, 5, 7)
   let locationNameOrPostcode = getLocationNameOrPostcode(locationType, payload)
 
-  if (!locationType && str !== 'search-location') {
+  if (
+    !locationType &&
+    str !== 'search-location' &&
+    str !== 'chwilio-lleoliad'
+  ) {
     locationType = request.yar.get('locationType')
     locationNameOrPostcode = request.yar.get('locationNameOrPostcode')
   } else {
@@ -29,30 +37,42 @@ const handleErrorInputAndRedirect = (request, h, lang, payload) => {
   if (!locationNameOrPostcode && !locationType) {
     request.yar.set('errors', {
       errors: {
-        titleText: searchLocation.errorText.radios.title, // 'There is a problem',
+        titleText:
+          lang === LANG_EN
+            ? searchLocation.errorText.radios.title
+            : welsh.searchLocation.errorText.radios.title,
         errorList: [
           {
-            text: searchLocation.errorText.radios.list.text, // 'Select where you want to check',
+            text:
+              lang === LANG_EN
+                ? searchLocation.errorText.radios.list.text
+                : welsh.searchLocation.errorText.radios.list.text,
             href: '#locationType'
           }
         ]
       }
     })
     request.yar.set('errorMessage', {
-      errorMessage: { text: searchLocation.errorText.radios.list.text } // 'Select where you want to check' }
+      errorMessage: {
+        text:
+          lang === LANG_EN
+            ? searchLocation.errorText.radios.list.text
+            : welsh.searchLocation.errorText.radios.list.text
+      }
     })
 
     request.yar.set('locationType', '')
     request.yar.get('', '')
 
-    if (query?.lang === 'cy') {
-      return h.redirect(`/lleoliad/cy?lang=cy`).takeover()
+    if (lang === LANG_CY) {
+      return h.redirect(`chwilio-lleoliad/cy?lang=cy`).takeover()
     }
     if (str === 'search-location') {
       return h.redirect(`/search-location?lang=en`).takeover()
     }
     return null
   }
+
   try {
     let userLocation = locationNameOrPostcode.toUpperCase() // Use 'let' to allow reassignment
     // Regex patterns to check for full and partial postcodes
@@ -68,10 +88,16 @@ const handleErrorInputAndRedirect = (request, h, lang, payload) => {
     if (!userLocation && locationType === LOCATION_TYPE_UK) {
       request.yar.set('errors', {
         errors: {
-          titleText: searchLocation.errorText.uk.fields.title, // 'There is a problem',
+          titleText:
+            lang === LANG_EN
+              ? searchLocation.errorText.uk.fields.title
+              : welsh.searchLocation.errorText.uk.fields.title,
           errorList: [
             {
-              text: searchLocation.errorText.uk.fields.list.text, // 'Enter a location or postcode',
+              text:
+                lang === LANG_EN
+                  ? searchLocation.errorText.uk.fields.list.text
+                  : welsh.searchLocation.errorText.uk.fields.list.text,
               href: '#engScoWal'
             }
           ]
@@ -79,13 +105,18 @@ const handleErrorInputAndRedirect = (request, h, lang, payload) => {
       })
       request.yar.set('errorMessage', {
         errorMessage: {
-          text: searchLocation.errorText.uk.fields.list.text // 'Enter a location or postcode'
+          text:
+            lang === LANG_EN
+              ? searchLocation.errorText.uk.fields.list.text
+              : welsh.searchLocation.errorText.uk.fields.list.text
         }
       })
       request.yar.set('locationType', LOCATION_TYPE_UK)
       request.yar.set('locationNameOrPostcode', 'locationNameOrPostcode')
 
-      return h.redirect(`/search-location`).takeover()
+      return lang === LANG_EN
+        ? h.redirect(`/search-location?lang=en`).takeover()
+        : h.redirect(`chwilio-lleoliad/cy?lang=cy`).takeover()
     }
     if (!userLocation && locationType === LOCATION_TYPE_NI) {
       request.yar.set('errors', {

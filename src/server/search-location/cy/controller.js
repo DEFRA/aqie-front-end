@@ -1,14 +1,23 @@
 import { welsh } from '~/src/server/data/cy/cy.js'
+import { handleRedirect } from '~/src/server/locations/helpers/location-type-util'
+import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
+
 const searchLocationController = {
   handler: (request, h) => {
     const { query, path } = request
     let lang = query?.lang?.slice(0, 2)
-    if (lang !== 'cy' && lang !== 'en' && path === '/chwilio-lleoliad/cy') {
-      lang = 'cy'
+    if (
+      lang !== LANG_CY &&
+      lang !== LANG_EN &&
+      path === '/chwilio-lleoliad/cy'
+    ) {
+      lang = LANG_CY
     }
-    if (lang === 'en') {
-      /* eslint-disable camelcase */
-      return h.redirect(`/search-location?lang=en`)
+    if (lang === LANG_EN) {
+      const redirectResponse = handleRedirect(h, query?.lang)
+      if (redirectResponse) {
+        return redirectResponse
+      }
     }
     const errors = request.yar.get('errors')
     const errorMessage = request.yar.get('errorMessage')

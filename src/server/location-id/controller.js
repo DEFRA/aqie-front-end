@@ -10,7 +10,7 @@ import moment from 'moment-timezone'
 import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
 import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-util'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { LOCATION_TYPE_UK } from '~/src/server/data/constants'
+import { LANG_CY, LANG_EN, LOCATION_TYPE_UK } from '~/src/server/data/constants'
 
 const logger = createLogger()
 
@@ -20,11 +20,11 @@ const getLocationDetailsController = {
       const { query } = request
       const locationId = request.params.id
 
-      if (query?.lang && query?.lang === 'cy') {
+      if (query?.lang && query?.lang === LANG_CY) {
         /* eslint-disable camelcase */
         return h.redirect(`/lleoliad/${locationId}/?lang=cy`)
       }
-      const lang = 'en'
+      const lang = LANG_EN
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')
       const getMonth = calendarEnglish.findIndex(function (item) {
         return item.indexOf(formattedDate[1]) !== -1
@@ -61,7 +61,6 @@ const getLocationDetailsController = {
         )
         title = firstLetterUppercase(title)
         headerTitle = firstLetterUppercase(headerTitle)
-
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
@@ -73,7 +72,6 @@ const getLocationDetailsController = {
           title: headerTitle,
           displayBacklink: true,
           forecastSummary: locationData.forecastSummary,
-          dailySummary: locationData.forecastSummary,
           footerTxt,
           phaseBanner,
           backlink,
@@ -81,7 +79,7 @@ const getLocationDetailsController = {
           daqi,
           welshMonth: calendarWelsh[getMonth],
           summaryDate:
-            lang === 'cy'
+            lang === LANG_CY
               ? locationData.welshDate ?? locationData.summaryDate
               : locationData.englishDate ?? locationData.summaryDate,
           dailySummaryTexts: english.dailySummaryTexts,

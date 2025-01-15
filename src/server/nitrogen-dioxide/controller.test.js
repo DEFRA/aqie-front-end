@@ -1,5 +1,6 @@
 import { nitrogenDioxideController } from '~/src/server/nitrogen-dioxide/controller'
 import { english } from '~/src/server/data/en/en.js'
+import { LANG_CY } from '../data/constants'
 
 describe('Nitrogen Dioxide Controller - English', () => {
   let mockRequest
@@ -17,7 +18,7 @@ describe('Nitrogen Dioxide Controller - English', () => {
   })
 
   it('should redirect to the Welsh version if the language is "cy"', () => {
-    mockRequest.query.lang = 'cy'
+    mockRequest.query.lang = LANG_CY
     const result = nitrogenDioxideController.handler(mockRequest, mockH)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith(

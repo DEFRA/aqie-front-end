@@ -101,7 +101,7 @@ export function getDetailedInfo(aqValue) {
 }
 
 // Function to get air quality labelling for today and the next 4 days
-export function getAirQuality(
+export function getAirQualityCy(
   aqValueToday,
   aqValueDay2,
   aqValueDay3,
@@ -132,7 +132,7 @@ export function getHighestAQDetails(
     aqValueDay4,
     aqValueDay5
   )
-  return getAirQuality(
+  return getAirQualityCy(
     highestAQValue,
     highestAQValue,
     highestAQValue,

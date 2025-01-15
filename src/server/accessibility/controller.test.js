@@ -1,4 +1,5 @@
-import { accessibilityController } from './controller'
+import { LANG_CY } from '~/src/server/data/constants'
+import { accessibilityHandler } from './controller'
 
 describe('Accessibility Handler', () => {
   const mockRequest = {
@@ -25,12 +26,8 @@ describe('Accessibility Handler', () => {
   }
 
   it('should redirect to the Welsh version if the language is "cy"', () => {
-    mockRequest.query.lang = 'cy'
-    const result = accessibilityController.handler(
-      mockRequest,
-      mockH,
-      mockContent
-    )
+    mockRequest.query.lang = LANG_CY
+    const result = accessibilityHandler(mockRequest, mockH, mockContent)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith('/hygyrchedd/cy?lang=cy')
   })

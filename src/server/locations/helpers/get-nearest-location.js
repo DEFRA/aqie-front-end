@@ -10,6 +10,8 @@ import {
 import { getPollutantLevel } from '~/src/server/locations/helpers/pollutant-level-calculation'
 import { getPollutantLevelCy } from '~/src/server/locations/helpers/cy/pollutant-level-calculation'
 import { getAirQuality } from '~/src/server/data/en/air-quality.js'
+import { getAirQualityCy } from '~/src/server/data/cy/air-quality.js'
+import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
 
 function getNearestLocation(
   matches,
@@ -62,7 +64,7 @@ function getNearestLocation(
         const polValue = curr.pollutants[pollutant].value
         if (polValue !== null && polValue !== -99 && polValue !== '0') {
           const { getDaqi, getBand } =
-            lang === 'cy'
+            lang === LANG_CY
               ? getPollutantLevelCy(polValue, pollutant)
               : getPollutantLevel(polValue, pollutant)
           const formatHour = moment(
@@ -136,13 +138,22 @@ function getNearestLocation(
           return [...todayDate, ...otherdays]
         })
       : 0
-  const airQuality = getAirQuality(
-    forecastNum[0][0].today,
-    Object.values(forecastNum[0][1])[0],
-    Object.values(forecastNum[0][2])[0],
-    Object.values(forecastNum[0][3])[0],
-    Object.values(forecastNum[0][4])[0]
-  )
+  const airQuality =
+    lang === LANG_EN
+      ? getAirQuality(
+          forecastNum[0][0].today,
+          Object.values(forecastNum[0][1])[0],
+          Object.values(forecastNum[0][2])[0],
+          Object.values(forecastNum[0][3])[0],
+          Object.values(forecastNum[0][4])[0]
+        )
+      : getAirQualityCy(
+          forecastNum[0][0].today,
+          Object.values(forecastNum[0][1])[0],
+          Object.values(forecastNum[0][2])[0],
+          Object.values(forecastNum[0][3])[0],
+          Object.values(forecastNum[0][4])[0]
+        )
   return { forecastNum, nearestLocationsRange, airQuality, latlon }
 }
 

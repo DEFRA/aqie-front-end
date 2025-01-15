@@ -1,6 +1,7 @@
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { english } from '~/src/server/data/en/en.js'
 import { handleRedirect } from '~/src/server/locations/helpers/location-type-util'
+import { LANG_CY } from '~/src/server/data/constants'
 
 const logger = createLogger()
 
@@ -55,7 +56,7 @@ const getLocationDataController = {
         backlink,
         cookieBanner,
         welshMonth: calendarWelsh[getMonth],
-        summaryDate: lang === 'cy' ? welshDate : englishDate,
+        summaryDate: lang === LANG_CY ? welshDate : englishDate,
         lang: 'en'
       })
     } catch (error) {

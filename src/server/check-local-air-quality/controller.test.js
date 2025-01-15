@@ -1,5 +1,6 @@
 import { homeController } from './controller'
 import { english } from '~/src/server/data/en/en.js'
+import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
 
 describe('Home Controller', () => {
   let mockRequest
@@ -17,10 +18,10 @@ describe('Home Controller', () => {
   })
 
   it('should redirect to the Welsh version if the language is "cy"', () => {
-    mockRequest.query.lang = 'cy'
-    const result = homeController.handler(mockRequest, mockH, mockContent)
+    mockRequest.query.lang = LANG_CY
+    const result = handleHomeRequest(mockRequest, mockH, mockContent)
     expect(result).toBe('redirected')
-    expect(mockH.redirect).toHaveBeenCalledWith('cy')
+    expect(mockH.redirect).toHaveBeenCalledWith(LANG_CY)
   })
 
   it('should render the home page with the necessary data', () => {
@@ -38,7 +39,7 @@ describe('Home Controller', () => {
       backlink: mockContent.backlink,
       cookieBanner: mockContent.cookieBanner,
       serviceName: '',
-      lang: 'en'
+      lang: LANG_EN
     })
   })
 })

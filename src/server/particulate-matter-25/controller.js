@@ -1,13 +1,14 @@
 /* eslint-disable prettier/prettier */
 import { english } from '~/src/server/data/en/en.js'
+import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
 
 const particulateMatter25Controller = {
   handler: (request, h) => {
     const { particulateMatter25 } = english.pollutants
     const { footerTxt, cookieBanner, phaseBanner, multipleLocations } = english
     const { query } = request
-    const lang = 'en'
-    if (query?.lang && query?.lang === 'cy') {
+    const lang = LANG_EN
+    if (query?.lang && query?.lang === LANG_CY) {
       return h.redirect(`/llygryddion/mater-gronynnol-25/cy?lang=cy`)
     }
     return h.view('particulate-matter-25/index', {

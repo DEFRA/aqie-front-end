@@ -23,16 +23,14 @@ const getLocationDataController = {
       locationType,
       payload
     )
-    return configureLocationTypeAndRedirects(
-      request,
-      h,
+    return configureLocationTypeAndRedirects(request, h, {
       locationType,
       locationNameOrPostcode,
       str,
       query,
       searchLocation,
       airQuality
-    )
+    })
   }
 }
 

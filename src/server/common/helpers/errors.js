@@ -1,13 +1,14 @@
 import { english } from '~/src/server/data/en/en.js'
 import { welsh } from '~/src/server/data/cy/cy.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
+import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
 
 const logger = createLogger()
 
 function statusCodeMessage(statusCode, lang) {
   switch (true) {
     case statusCode === 404:
-      if (lang.slice(0, 2) === 'cy') {
+      if (lang.slice(0, 2) === LANG_CY) {
         return 'Tudalen heb ei chanfod'
       }
       return 'Page not found'
@@ -27,17 +28,17 @@ function statusCodeMessage(statusCode, lang) {
 function catchAll(request, h) {
   const { query, response, path } = request
   let lang = path?.split('/').pop()?.slice(0, 2)
-  if (lang === 'cy') {
-    lang = 'cy'
+  if (lang === LANG_CY) {
+    lang = LANG_CY
   } else {
-    lang = 'en'
+    lang = LANG_EN
   }
   lang = query?.lang ?? lang
-  if (lang !== 'cy' && lang !== 'en' && path === '/search-location') {
-    lang = 'en'
+  if (lang !== LANG_CY && lang !== LANG_EN && path === '/search-location') {
+    lang = LANG_EN
   }
-  if (lang !== 'cy' && lang !== 'en' && path === '/chwilio-lleoliad/cy') {
-    lang = 'cy'
+  if (lang !== LANG_CY && lang !== LANG_EN && path === '/chwilio-lleoliad/cy') {
+    lang = LANG_CY
   }
 
   if (!response?.isBoom) {
@@ -59,7 +60,7 @@ function catchAll(request, h) {
   logger.info(
     `Error: ${errorMessage} statusCode- ${statusCode} -path ${request.path}`
   )
-  if (lang === 'cy') {
+  if (lang === LANG_CY) {
     return h
       .view('error/index', {
         pageTitle: welsh.notFoundUrl.nonService.pageTitle,

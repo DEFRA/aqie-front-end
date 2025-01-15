@@ -1,5 +1,6 @@
-import { welsh } from '../../data/cy/cy.js'
-import { sulphurDioxideController } from './controller.js'
+import { welsh } from '~/src/server/data/cy/cy.js'
+import { sulphurDioxideController } from '~/src/server/sulphur-dioxide/cy/controller'
+import { LANG_CY } from '~/src/server/data/constants'
 
 describe('sulphurDioxide Controller - Welsh', () => {
   let mockRequest
@@ -27,7 +28,7 @@ describe('sulphurDioxide Controller - Welsh', () => {
   })
 
   it('should render the sulphurDioxide page with the necessary data', () => {
-    mockRequest.query.lang = 'cy'
+    mockRequest.query.lang = LANG_CY
     const result = sulphurDioxideController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('sulphur-dioxide/index', {
