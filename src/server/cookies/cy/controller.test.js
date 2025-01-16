@@ -1,6 +1,5 @@
 import { cookiesController } from './controller'
 import { welsh } from '~/src/server/data/cy/cy.js'
-import { LANG_CY } from '~/src/server/data/constants'
 
 describe('Cookies Handler', () => {
   let mockRequest
@@ -19,8 +18,8 @@ describe('Cookies Handler', () => {
   })
 
   it('should redirect to the English version if the language is "en"', () => {
-    mockRequest.query.lang = LANG_CY
-    const result = cookiesHandler(mockRequest, mockH, mockContent)
+    mockRequest.query.lang = 'en'
+    const result = cookiesController.handler(mockRequest, mockH, mockContent)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith('/cookies?lang=en')
   })
