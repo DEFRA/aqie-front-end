@@ -1,6 +1,9 @@
 import { english } from '~/src/server/data/en/en.js'
-import { handleRedirect } from '~/src/server/locations/helpers/location-type-util'
-import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
+import {
+  LANG_CY,
+  LANG_EN,
+  SEARCH_LOCATION_ROUTE_CY
+} from '~/src/server/data/constants'
 
 const searchLocationController = {
   handler: (request, h) => {
@@ -10,10 +13,7 @@ const searchLocationController = {
       lang = LANG_EN
     }
     if (lang === LANG_CY) {
-      const redirectResponse = handleRedirect(h, query?.lang)
-      if (redirectResponse) {
-        return redirectResponse
-      }
+      return h.redirect(SEARCH_LOCATION_ROUTE_CY)
     }
     const errors = request.yar.get('errors')
     const errorMessage = request.yar.get('errorMessage')

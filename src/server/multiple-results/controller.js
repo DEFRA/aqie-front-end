@@ -1,7 +1,9 @@
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { english } from '~/src/server/data/en/en.js'
-import { handleRedirect } from '~/src/server/locations/helpers/location-type-util'
-import { LANG_CY } from '~/src/server/data/constants'
+import {
+  LANG_CY,
+  MULTIPLE_LOCATIONS_ROUTE_CY
+} from '~/src/server/data/constants'
 
 const logger = createLogger()
 
@@ -11,29 +13,28 @@ const getLocationDataController = {
     const {
       results,
       monitoringSites,
-      airQuality,
-      airQualityData,
-      backlink,
-      cookieBanner,
-      footerTxt,
-      phaseBanner,
-      multipleLocations,
-      dailySummary,
       forecastSummary,
       calendarWelsh,
       englishDate,
       welshDate,
-      siteTypeDescriptions,
-      pollutantTypes,
       getMonth,
       lang,
       userLocation
     } = locationData
+    const {
+      backlink,
+      cookieBanner,
+      phaseBanner,
+      footerTxt,
+      multipleLocations,
+      dailySummary,
+      siteTypeDescriptions,
+      pollutantTypes
+    } = english
     const { query } = request
 
-    const redirectResponse = handleRedirect(query, h)
-    if (redirectResponse) {
-      return redirectResponse
+    if (query?.lang === LANG_CY) {
+      return h.redirect(MULTIPLE_LOCATIONS_ROUTE_CY)
     }
 
     try {
@@ -42,8 +43,6 @@ const getLocationDataController = {
         title: multipleLocations.title,
         paragraphs: multipleLocations.paragraphs,
         userLocation,
-        airQuality,
-        airQualityData: airQualityData.commonMessages,
         monitoringSites,
         siteTypeDescriptions,
         pollutantTypes,

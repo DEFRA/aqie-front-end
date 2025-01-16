@@ -57,7 +57,7 @@ const getLocationDetailsController = {
           locationData.measurements,
           LOCATION_TYPE_UK,
           locationIndex,
-          request.query?.lang
+          lang
         )
         title = firstLetterUppercase(title)
         headerTitle = firstLetterUppercase(headerTitle)

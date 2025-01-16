@@ -138,7 +138,7 @@ const handleMultipleMatches = (
 
   return lang === LANG_EN
     ? h.redirect('multiple-results').takeover()
-    : h.redirect('canlyniadau-lluosog').takeover()
+    : h.redirect('canlyniadau-lluosog/cy').takeover()
 }
 
 // Helper function to process matches

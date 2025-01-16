@@ -2,10 +2,9 @@ import {
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI,
   LANG_CY,
-  REDIRECT_PATH_EN,
-  REDIRECT_PATH_CY,
-  SEARCH_LOCATION_PATH_EN,
-  LANG_EN
+  SEARCH_LOCATION_ROUTE_EN,
+  SEARCH_LOCATION_ROUTE_CY,
+  SEARCH_LOCATION_PATH_EN
 } from '~/src/server/data/constants'
 import { calendarEnglish } from '~/src/server/data/en/en.js'
 import moment from 'moment-timezone'
@@ -20,14 +19,8 @@ const getLocationNameOrPostcode = (locationType, payload) => {
   }
 }
 
-const handleRedirect = (h, lang) => {
-  if (lang === LANG_CY) {
-    return h.redirect(REDIRECT_PATH_CY)
-  }
-  if (lang === LANG_EN) {
-    return h.redirect(REDIRECT_PATH_EN)
-  }
-  return null
+const handleRedirect = (h, redirectRoute) => {
+  return h.redirect(redirectRoute)
 }
 
 const getMonth = () => {
@@ -80,10 +73,10 @@ const configureLocationTypeAndRedirects = (
       errorMessage: { text: searchLocation.errorText.radios.list.text }
     })
     if (query?.lang === LANG_CY) {
-      return h.redirect(REDIRECT_PATH_CY)
+      return h.redirect(SEARCH_LOCATION_ROUTE_CY)
     }
     if (str === SEARCH_LOCATION_PATH_EN) {
-      return h.redirect(REDIRECT_PATH_EN)
+      return h.redirect(SEARCH_LOCATION_ROUTE_EN)
     }
   }
 }

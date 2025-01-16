@@ -19,35 +19,19 @@ import {
 } from '~/src/server/locations/helpers/middleware-helpers'
 import {
   LANG_CY,
-  LANG_EN,
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI
 } from '~/src/server/data/constants'
-import {
-  handleRedirect,
-  getMonth
-} from '~/src/server/locations/helpers/location-type-util'
+import { getMonth } from '~/src/server/locations/helpers/location-type-util'
 import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 
 const logger = createLogger()
 
 const searchMiddlewareCy = async (request, h) => {
-  const { payload, headers } = request
-  const referer = headers?.referer
-  // Grab the LANG_CY string from request.headers.referer
-  let langString = referer
-    ?.split('/')
-    .find((part) => part.slice(-2) === LANG_CY)
-  langString = langString?.slice(-2)
+  const { payload } = request
   const lang = LANG_CY
   const month = getMonth(lang)
-  if (langString === LANG_EN) {
-    const redirectResponse = handleRedirect(h, langString)
-    if (redirectResponse) {
-      return redirectResponse
-    }
-  }
   const {
     notFoundLocation,
     home,
@@ -85,7 +69,7 @@ const searchMiddlewareCy = async (request, h) => {
 
     if (!results || results.length === 0 || getOSPlaces === 'wrong postcode') {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-      return h.redirect('/location-not-found').takeover()
+      return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
     // Remove duplicates from the results array
     results = Array.from(

@@ -22,23 +22,16 @@ import {
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI
 } from '~/src/server/data/constants'
-import {
-  handleRedirect,
-  getMonth
-} from '~/src/server/locations/helpers/location-type-util'
+import { getMonth } from '~/src/server/locations/helpers/location-type-util'
 import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 
 const logger = createLogger()
 
 const searchMiddleware = async (request, h) => {
-  const { payload, query } = request
+  const { payload } = request
   const lang = LANG_EN
   const month = getMonth(lang)
-  const redirectResponse = handleRedirect(h, query?.lang)
-  if (redirectResponse) {
-    return redirectResponse
-  }
   const {
     notFoundLocation,
     home,
