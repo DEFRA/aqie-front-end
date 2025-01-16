@@ -2,7 +2,11 @@ import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
 import { english } from '~/src/server/data/en/en.js'
 import moment from 'moment-timezone'
 import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
-import { LOCATION_NOT_FOUND } from '~/src/server/data/constants'
+import {
+  LOCATION_NOT_FOUND,
+  LANG_EN,
+  LANG_CY
+} from '~/src/server/data/constants'
 
 // Helper function to handle location not found
 const handleLocationNotFound = (
@@ -48,7 +52,8 @@ const handleSingleMatch = (
     headerTitle,
     titleRoute,
     headerTitleRoute,
-    title
+    title,
+    lang
   }
 ) => {
   const customId = headerTitleRoute // Use the helper function to generate the custom ID
@@ -66,9 +71,12 @@ const handleSingleMatch = (
     title,
     headerTitle,
     titleRoute,
-    headerTitleRoute
+    headerTitleRoute,
+    lang
   })
-  return h.redirect(`/location/${customId}`).takeover()
+  return lang === LANG_EN
+    ? h.redirect(`/location/${customId}`).takeover()
+    : h.redirect(`/lleoliad/${customId}`).takeover()
 }
 
 // Helper function to handle multiple matches
@@ -122,13 +130,15 @@ const handleMultipleMatches = (
     cookieBanner,
     welshMonth: calendarWelsh[month],
     calendarWelsh,
-    summaryDate: lang === 'cy' ? welshDate : englishDate,
+    summaryDate: lang === LANG_CY ? welshDate : englishDate,
     welshDate,
     englishDate,
     lang
   })
 
-  return h.redirect('multiple-results').takeover()
+  return lang === LANG_EN
+    ? h.redirect('multiple-results').takeover()
+    : h.redirect('canlyniadau-lluosog/cy').takeover()
 }
 
 // Helper function to process matches

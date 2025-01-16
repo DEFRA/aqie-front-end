@@ -1,5 +1,6 @@
-import { english } from '../../../src/server/data/en/en.js'
-import { particulateMatter25Controller } from '../particulate-matter-25/controller.js'
+import { english } from '~/src/server/data/en/en.js'
+import { particulateMatter25Controller } from '~/src/server/particulate-matter-25/controller.js'
+import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
 
 describe('Particular matter25 Controller - English', () => {
   let mockRequest
@@ -17,7 +18,7 @@ describe('Particular matter25 Controller - English', () => {
   })
 
   it('should redirect to the Welsh version if the language is "cy"', () => {
-    mockRequest.query.lang = 'cy'
+    mockRequest.query.lang = LANG_CY
     const result = particulateMatter25Controller.handler(mockRequest, mockH)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith(
@@ -26,7 +27,7 @@ describe('Particular matter25 Controller - English', () => {
   })
 
   it('should render the particulateMatter25 page with the necessary data', () => {
-    mockRequest.query.lang = 'en'
+    mockRequest.query.lang = LANG_EN
     const result = particulateMatter25Controller.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('particulate-matter-25/index', {

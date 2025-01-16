@@ -1,4 +1,5 @@
 import { english } from '~/src/server/data/en/en.js'
+import { LANG_CY } from '~/src/server/data/constants'
 
 // Define the handler function
 const accessibilityHandler = (request, h, content = english) => {
@@ -16,8 +17,8 @@ const accessibilityHandler = (request, h, content = english) => {
   // Extract the language query parameter from the request
   const { lang } = request.query
 
-  // Redirect to the Welsh version if the language is 'cy'
-  if (lang === 'cy') {
+  // Redirect to the Welsh version if the language is 'LANG_CY'
+  if (lang === LANG_CY) {
     return h.redirect(`/hygyrchedd/cy?lang=${lang}`)
   }
 

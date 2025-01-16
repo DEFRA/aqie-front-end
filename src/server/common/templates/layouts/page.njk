@@ -20,11 +20,7 @@
 {% from "footer/macro.njk" import govukFooterWelsh %}
 {% from "tabs/macro.njk" import govukTabs %}
 
-{%if lang%}
 {%set htmlLang = lang %}
-{%else%}
-{%set htmlLang = 'en' %}
-{%endif%}
 {% block bodyStart %}
 {% include "cookie-banner.njk" %}
 {% endblock %}

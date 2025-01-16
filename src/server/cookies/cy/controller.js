@@ -1,4 +1,5 @@
 import { welsh } from '~/src/server/data/cy/cy.js'
+import { LANG_CY, LANG_EN } from '../../data/constants'
 
 // Define the handler function
 const cookiesHandler = (request, h, content = welsh) => {
@@ -24,15 +25,15 @@ const cookiesHandler = (request, h, content = welsh) => {
   // Extract query parameters and path from the request
   const { query, path } = request
 
-  // Redirect to the English version if the language is 'en'
-  if (query?.lang === 'en') {
+  // Redirect to the English version if the language is LANG_EN
+  if (query?.lang === LANG_EN) {
     return h.redirect(`/cookies?lang=en`)
   }
 
   // Determine the language
   let lang = query?.lang?.slice(0, 2)
-  if (lang !== 'cy' && lang !== 'en' && path === '/preifatrwydd/cy') {
-    lang = 'cy'
+  if (lang !== LANG_CY && lang !== LANG_EN && path === '/preifatrwydd/cy') {
+    lang = LANG_CY
   }
 
   // Render the cookies page with the necessary data

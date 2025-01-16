@@ -1,11 +1,12 @@
 import { english } from '~/src/server/data/en/en.js'
+import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
 
 const handleHomeRequest = (request, h, content = english) => {
   const { query } = request
   const { home, footerTxt, phaseBanner, backlink, cookieBanner } = content
 
-  if (query.lang === 'cy') {
-    return h.redirect(`cy`)
+  if (query.lang === LANG_CY) {
+    return h.redirect(LANG_CY)
   }
 
   return h.view('home/index', {
@@ -19,7 +20,7 @@ const handleHomeRequest = (request, h, content = english) => {
     backlink,
     cookieBanner,
     serviceName: '',
-    lang: 'en'
+    lang: LANG_EN
   })
 }
 

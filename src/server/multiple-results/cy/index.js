@@ -7,7 +7,7 @@ const multipleResultsCy = {
       server.route([
         {
           method: ['GET'],
-          path: '/canlyniadau-lluosog',
+          path: '/canlyniadau-lluosog/cy',
           ...getLocationDataController
         }
       ])

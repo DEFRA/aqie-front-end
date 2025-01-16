@@ -1,4 +1,5 @@
 import { welsh } from '~/src/server/data/cy/cy.js'
+import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
 
 // Define the handler function
 const handleHomeRequest = (request, h, content = welsh) => {
@@ -6,7 +7,7 @@ const handleHomeRequest = (request, h, content = welsh) => {
   const { home, footerTxt, phaseBanner, backlink, cookieBanner } = content
 
   // Redirect to the English version if the language is 'en'
-  if (query.lang === 'en') {
+  if (query.lang === LANG_EN) {
     return h.redirect(`/?lang=en`)
   }
 
@@ -22,7 +23,7 @@ const handleHomeRequest = (request, h, content = welsh) => {
     backlink,
     cookieBanner,
     serviceName: '',
-    lang: 'cy'
+    lang: LANG_CY
   })
 }
 

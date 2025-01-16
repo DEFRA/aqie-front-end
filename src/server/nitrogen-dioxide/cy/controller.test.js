@@ -1,5 +1,6 @@
 import { nitrogenDioxideController } from '~/src/server/nitrogen-dioxide/cy/controller'
-import { welsh } from '../../data/cy/cy.js'
+import { welsh } from '~/src/server/data/cy/cy.js'
+import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
 
 describe('Nitrogen Dioxide Controller - Welsh', () => {
   let mockRequest
@@ -18,7 +19,7 @@ describe('Nitrogen Dioxide Controller - Welsh', () => {
   })
 
   it('should redirect to the English version if the language is "en"', () => {
-    mockRequest.query.lang = 'en'
+    mockRequest.query.lang = LANG_EN
     const result = nitrogenDioxideController.handler(mockRequest, mockH)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith(
@@ -27,7 +28,7 @@ describe('Nitrogen Dioxide Controller - Welsh', () => {
   })
 
   it('should render the nitrogen-dioxide page with the necessary data', () => {
-    mockRequest.query.lang = 'cy'
+    mockRequest.query.lang = LANG_CY
     const result = nitrogenDioxideController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('nitrogen-dioxide/index', {

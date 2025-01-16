@@ -1,8 +1,16 @@
-import { LOCATION_NOT_FOUND } from '~/src/server/data/constants'
+import {
+  LANG_CY,
+  LOCATION_NOT_FOUND,
+  LOCATION_NOT_FOUND_ROUTE_CY
+} from '~/src/server/data/constants' //
 import { english } from '~/src/server/data/en/en.js'
 
 const locationNotFoundController = {
   handler: (request, h) => {
+    const { query } = request
+    if (query?.lang === LANG_CY) {
+      return h.redirect(LOCATION_NOT_FOUND_ROUTE_CY)
+    }
     const locationData = request.yar.get('locationDataNotFound') || []
     const { locationNameOrPostcode, lang } = locationData
     const {
@@ -22,7 +30,7 @@ const locationNotFoundController = {
       phaseBanner,
       backlink,
       cookieBanner,
-      lang
+      lang: query?.lang || lang
     })
   }
 }

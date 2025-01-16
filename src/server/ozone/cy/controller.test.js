@@ -1,5 +1,6 @@
-import { welsh } from '../../../server/data/cy/cy.js'
-import { ozoneController } from '../../../server/ozone/cy/controller.js'
+import { welsh } from '~/src/server/data/cy/cy.js'
+import { ozoneController } from '~/src/server/ozone/cy/controller.js'
+import { LANG_CY } from '~/src/server/data/constants'
 
 describe('Ozone Controller - Welsh', () => {
   let mockRequest
@@ -25,7 +26,7 @@ describe('Ozone Controller - Welsh', () => {
   })
 
   it('should render the ozone cy page with the necessary data', () => {
-    mockRequest.query.lang = 'cy'
+    mockRequest.query.lang = LANG_CY
     const result = ozoneController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('ozone/index', {

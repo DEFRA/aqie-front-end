@@ -1,15 +1,19 @@
 import { english } from '~/src/server/data/en/en.js'
+import {
+  LANG_CY,
+  LANG_EN,
+  SEARCH_LOCATION_ROUTE_CY
+} from '~/src/server/data/constants'
 
 const searchLocationController = {
   handler: (request, h) => {
     const { query, path } = request
     let lang = query?.lang?.slice(0, 2)
-    if (lang !== 'cy' && lang !== 'en' && path === '/search-location') {
-      lang = 'en'
+    if (lang !== LANG_CY && lang !== LANG_EN && path === '/search-location') {
+      lang = LANG_EN
     }
-    if (query.lang === 'cy') {
-      /* eslint-disable camelcase */
-      return h.redirect(`/chwilio-lleoliad/cy?lang=cy`)
+    if (lang === LANG_CY) {
+      return h.redirect(SEARCH_LOCATION_ROUTE_CY)
     }
     const errors = request.yar.get('errors')
     const errorMessage = request.yar.get('errorMessage')
