@@ -12,7 +12,8 @@ const cookiesHandler = (request, h, content = english) => {
         heading,
         table1,
         table2,
-        paragraphs
+        paragraphs,
+        description
       }
     },
     cookieBanner,
@@ -38,6 +39,7 @@ const cookiesHandler = (request, h, content = english) => {
   // Render the cookies page with the necessary data
   return h.view('cookies/index', {
     pageTitle,
+    description,
     title,
     heading,
     headings,

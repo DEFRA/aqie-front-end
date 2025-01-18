@@ -8,9 +8,12 @@ export const welsh = {
     paragraphs: {
       a: 'Defnyddiwch y gwasanaeth yma:',
       b: 'i wirio ansawdd yr aer mewn ardal leol',
-      c: 'i ddod o hyd i wybodaeth am lygryddion aer'
+      c: 'i ddod o hyd i wybodaeth am lygryddion aer',
+      d: 'dod o hyd i wybodaeth ac arweiniad iechyd'
     },
-    button: 'Dechrau nawr'
+    button: 'Dechrau nawr',
+    description:
+      'Gwiriwch ansawdd aer eich ardal leol a’r rhagolygon llygredd aer am y 5 diwrnod nesaf. Hefyd, mynnwch gyngor iechyd i leihau’ch amlygiad i lygryddion.'
   },
   searchLocation: {
     pageTitle: 'Ble hoffech chi wirio? - Gwirio ansawdd aer  - GOV.UK',
@@ -54,7 +57,9 @@ export const welsh = {
           }
         }
       }
-    }
+    },
+    description:
+      'Chwiliwch am ansawdd aer unrhyw ardal leol. Hefyd, mynnwch gyngor iechyd am lygredd aer a sut i leihau’ch amlygiad iddo.'
   },
   notFoundLocation: {
     heading: 'Gwirio ansawdd aer ',
@@ -220,7 +225,9 @@ export const welsh = {
         j: 'materion y system nerfol',
         k: 'canser',
         l: 'materion y galon'
-      }
+      },
+      description:
+        'Dysgwch sut mae osôn yn cael ei ffurfio. Hefyd, dysgwch am effeithiau iechyd byrdymor a hirdymor amlygiad i osôn.'
     },
     nitrogenDioxide: {
       title: 'Nitrogen deuocsid (NO₂)',
@@ -245,7 +252,9 @@ export const welsh = {
         l: 'Gall amlygiad hirdymor i nitrogen deuocsid achosi:',
         m: 'mwy o risg o heintiau anadlol',
         n: 'gwaeth gweithrediad yr ysgyfaint mewn plant'
-      }
+      },
+      description:
+        'Dysgwch sut mae nitrogen deuocsid yn cael ei gynhyrchu. Hefyd, dysgwch am effeithiau iechyd byrdymor a hirdymor amlygiad i nitrogen deuocsid.'
     },
     sulphurDioxide: {
       title: 'Sylffwr deuocsid (SO₂)',
@@ -270,7 +279,9 @@ export const welsh = {
         l: 'llai o weithrediad yn yr ysgyfaint',
         m: 'newid synnwyr arogli',
         n: 'mwy o heintiau’r anadl'
-      }
+      },
+      description:
+        'Dysgwch sut mae sylffwr deuocsid yn cael ei gynhyrchu. Hefyd, dysgwch am effeithiau iechyd byrdymor a thymor hir sylffwr deuocsid.'
     },
     particulateMatter10: {
       title: 'Mater gronynnol (PM10)',
@@ -301,7 +312,9 @@ export const welsh = {
         r: 'methiant y galon',
         s: 'canser',
         t: 'clefyd rhwystrol cronig yr ysgyfaint (COPD)'
-      }
+      },
+      description:
+        'Mae PM10 yn fater gronynnol (PM) wedi’i wneud o ronynnau bach o solidau neu hylifau yn yr awyr. Dysgwch am ffynonellau PM10 a sut y gall amlygiad iddo effeithio ar iechyd.'
     },
     particulateMatter25: {
       title: 'Mater gronynnol (PM2.5)',
@@ -333,7 +346,9 @@ export const welsh = {
         s: 'diabetes',
         t: 'clefyd Alzheimer a chlefyd Parkinson',
         u: 'iechyd ysgyfaint gwael mewn plant'
-      }
+      },
+      description:
+        'Mae PM2.5 yn fater gronynnol (PM) wedi’i wneud o ronynnau bach o solidau neu hylifau yn yr awyr. Dysgwch am ffynonellau PM2.5 a sut y gall amlygiad iddo effeithio ar iechyd.'
     }
   },
   dailySummaryTexts: {
@@ -416,7 +431,9 @@ export const welsh = {
         a22: 'yn esbonio rhagor am eich hawliau dros eich data personol.',
         a23: 'Gallwch ',
         a24: 'optio i mewn ac allan o dderbyn cwcis.'
-      }
+      },
+      description:
+        'Mae Gwirio ansawdd aer yn cymryd eich preifatrwydd o ddifrif. Darllenwch y Polisi Preifatrwydd yma i ddysgu sut rydyn ni’n trin eich data personol.'
     },
     cookies: {
       title: 'Cwcis',
@@ -481,7 +498,9 @@ export const welsh = {
         ga3: '_gat_UA-[G-8CMZBTDQBC]',
         ga4: 'a',
         ga5: 'ond yn weithredol os byddwch yn derbyn y cwcis. Fodd bynnag, os nad ydych yn derbyn cwcis, efallai y byddant yn dal i ymddangos yn eich sesiwn cwci, ond ni fyddant yn weithredol.'
-      }
+      },
+      description:
+        'Mae Gwirio ansawdd aer yn defnyddio cwcis. Drwy ddefnyddio’r gwasanaeth yma rydych chi’n cytuno i’n defnydd o gwcis.'
     },
     accessibility: {
       title: 'Datganiad Hygyrchedd',
@@ -503,7 +522,9 @@ export const welsh = {
         g: 'Os byddwch yn sylwi ar unrhyw fethiannau cydymffurfiaeth neu os oes angen ichi ofyn am wybodaeth a chynnwys sydd heb gael eu darparu yn y ddogfen yma, anfonwch neges ebost at',
         h: 'Y Comisiwn Cydraddoldeb a Hawliau Dynol (EHRC) sy’n gyfrifol am orfodi Rheoliadau Hygyrchedd Cyrff y Sector Cyhoeddus (Gwefannau a Chymwysiadau Symudol) (Rhif 2) 2018 (y ’rheoliadau hygyrchedd’). ',
         i: 'Os nad ydych chi’n fodlon ar y ffordd rydyn ni’n ymateb i’ch cwyn, cysylltwch â’r Gwasanaeth Cynghori a Chymorth Cydraddoldeb (EASS).'
-      }
+      },
+      description:
+        'Mae Gwirio ansawdd aer wedi ymrwymo i wella hygyrchedd i bob defnyddiwr gwe, ffonau symudol ac ap, dan arweiniad y Canllawiau diweddaraf ar Hygyrchedd Cynnwys y We (WCAG).'
     }
   }
 }

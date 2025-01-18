@@ -12,6 +12,7 @@ const sulphurDioxideController = {
     }
     return h.view('sulphur-dioxide/index', {
       pageTitle: sulphurDioxide.pageTitle,
+      description: sulphurDioxide.description,
       sulphurDioxide,
       page: 'Sulphur dioxide (SO₂)',
       displayBacklink: false,

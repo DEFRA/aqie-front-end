@@ -5,7 +5,14 @@ const accessibilityHandler = (request, h, content = welsh) => {
   // Destructure necessary data from the imported 'content' object
   const {
     footer: {
-      accessibility: { pageTitle, title, heading, headings, paragraphs }
+      accessibility: {
+        pageTitle,
+        title,
+        heading,
+        headings,
+        paragraphs,
+        description
+      }
     },
     cookieBanner,
     phaseBanner,
@@ -29,6 +36,7 @@ const accessibilityHandler = (request, h, content = welsh) => {
   // Render the accessibility page with the necessary data
   return h.view('accessibility/index', {
     pageTitle,
+    description,
     title,
     heading,
     headings,

@@ -15,9 +15,12 @@ export const english = {
     paragraphs: {
       a: 'Use this service to:',
       b: 'check air quality in a local area',
-      c: 'find information on air pollutants'
+      c: 'find information on air pollutants',
+      d: 'find health information and guidance'
     },
-    button: 'Start now'
+    button: 'Start now',
+    description:
+      'Check air quality in your local area and the air pollution forecast for the next 5 days. Also, get health advice to reduce your exposure to pollutants'
   },
   searchLocation: {
     pageTitle: 'Where do you want to check? - Check air quality - GOV.UK',
@@ -61,7 +64,9 @@ export const english = {
           }
         }
       }
-    }
+    },
+    description:
+      'Search the air quality in any local area. Also, get health advice about air pollution and how to reduce your exposure.'
   },
   notFoundLocation: {
     heading: 'Check air quality',
@@ -242,7 +247,9 @@ export const english = {
         j: 'nervous system issues',
         k: 'cancer',
         l: 'heart issues'
-      }
+      },
+      description:
+        'Learn how ozone is formed. Also, learn the short term and long term health effects of ozone exposure.'
     },
     nitrogenDioxide: {
       title: 'Nitrogen dioxide (NO₂)',
@@ -267,7 +274,9 @@ export const english = {
         l: 'Long term exposure to nitrogen dioxide can cause:',
         m: 'an increase risk of respiratory infections',
         n: 'poorer lung function in children'
-      }
+      },
+      description:
+        'Learn how nitrogen dioxide is produced. Also, learn the short term and long term health effects of nitrogen dioxide exposure.'
     },
     sulphurDioxide: {
       title: 'Sulphur dioxide (SO₂)',
@@ -292,7 +301,9 @@ export const english = {
         l: 'reduced lung function',
         m: 'altered sense of smell',
         n: 'increased respiratory infections'
-      }
+      },
+      description:
+        'Learn how sulphur dioxide is produced. Also, learn the short term and long term health effects of nitrogen sulphur dioxide'
     },
     particulateMatter10: {
       title: 'Particulate matter (PM10)',
@@ -323,7 +334,9 @@ export const english = {
         r: 'heart failure',
         s: 'cancer',
         t: 'chronic obstructive pulmonary disease (COPD)'
-      }
+      },
+      description:
+        'PM10 is a particulate matter (PM) made of small particles of solids or liquids in the air. Learn the sources of PM10 and how exposure can impact health.'
     },
     particulateMatter25: {
       title: 'Particulate matter (PM2.5)',
@@ -355,7 +368,9 @@ export const english = {
         s: 'diabetes',
         t: 'Alzheimer’s and Parkinson’s disease',
         u: 'poor lung health in children'
-      }
+      },
+      description:
+        'PM2.5 is a particulate matter (PM) made of small particles of solids or liquids in the air. Learn the sources of PM2.5 and how exposure can impact health.'
     }
   },
   dailySummaryTexts: {
@@ -437,7 +452,9 @@ export const english = {
         a22: 'explains more about your rights over your personal data.',
         a23: 'You can',
         a24: 'opt in and out of cookie acceptance.'
-      }
+      },
+      description:
+        'Check air quality takes your privacy seriously. Read this Privacy Policy to learn how we treat your personal data.'
     },
     cookies: {
       title: 'Cookies',
@@ -501,7 +518,9 @@ export const english = {
         ga3: '_gat_UA-[G-8CMZBTDQBC]',
         ga4: 'and',
         ga5: 'will only be active if you accept the cookies. However, if you do not accept cookies, they may still appear in your cookie session, but they will not be active.'
-      }
+      },
+      description:
+        'Check air quality uses cookies. By using this service you agree to our use of cookies.'
     },
     accessibility: {
       title: 'Accessibility Statement',
@@ -522,7 +541,9 @@ export const english = {
         g: 'If you notice any compliance failures or need to request information and content that is not provided in this document, please email',
         h: 'The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’).',
         i: 'If you’re not happy with how we respond to your complaint, contact the Equality Advisory and Support Service (EASS).'
-      }
+      },
+      description:
+        'Check air quality is committed to improving accessibility for all web, mobile, and app users, guided by the latest Web Content Accessibility Guidelines (WCAG).'
     }
   }
 }

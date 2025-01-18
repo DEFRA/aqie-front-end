@@ -29,6 +29,7 @@ describe('Ozone Controller - English', () => {
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('ozone/index', {
       pageTitle: mockContent.pollutants.ozone.pageTitle,
+      description: mockContent.pollutants.ozone.description,
       ozone,
       page: 'ozone',
       displayBacklink: false,
