@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { english } from '~/src/server/data/en/en.js'
+import { LANG_CY } from '../data/constants'
 const privacyController = {
   handler: (request, h) => {
     const {
@@ -22,7 +23,7 @@ const privacyController = {
     const {
       query: { lang }
     } = request
-    if (lang && lang === 'cy') {
+    if (lang && lang === LANG_CY) {
       return h.redirect(`/preifatrwydd/cy?lang=cy`)
     }
     return h.view('privacy/index', {

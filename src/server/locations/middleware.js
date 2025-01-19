@@ -22,13 +22,9 @@ import {
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI
 } from '~/src/server/data/constants'
-import {
-  handleRedirect,
-  getMonth
-} from '~/src/server/locations/helpers/location-type-util'
+import { getMonth } from '~/src/server/locations/helpers/location-type-util'
 import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
-//
 
 const logger = createLogger()
 
@@ -36,10 +32,6 @@ const searchMiddleware = async (request, h) => {
   const { payload } = request
   const lang = LANG_EN
   const month = getMonth(lang)
-  const redirectResponse = handleRedirect(h, lang)
-  if (redirectResponse) {
-    return redirectResponse
-  }
   const {
     notFoundLocation,
     home,
@@ -54,10 +46,11 @@ const searchMiddleware = async (request, h) => {
   if (!redirectError.locationType) {
     return redirectError
   }
-
   let { locationType, userLocation, locationNameOrPostcode } = redirectError
+
   const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
     await fetchData(locationType, userLocation, request, h)
+
   const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
     getDailySummary.issue_date,
     calendarEnglish,
@@ -89,12 +82,11 @@ const searchMiddleware = async (request, h) => {
     )
     userLocation = userLocation.toLowerCase()
     userLocation = userLocation.charAt(0).toUpperCase() + userLocation.slice(1)
-    const { title, headerTitle } = getTitleAndHeaderTitle(
+    const { title, headerTitle, urlRoute } = getTitleAndHeaderTitle(
       selectedMatches,
       locationNameOrPostcode
     )
-    const headerTitleRoute =
-      convertStringToHyphenatedLowercaseWords(headerTitle)
+    const headerTitleRoute = convertStringToHyphenatedLowercaseWords(urlRoute)
     const titleRoute = convertStringToHyphenatedLowercaseWords(title)
     const { forecastNum, nearestLocationsRange, airQuality } =
       getNearestLocation(
@@ -119,7 +111,8 @@ const searchMiddleware = async (request, h) => {
         headerTitle,
         titleRoute,
         headerTitleRoute,
-        title
+        title,
+        lang
       })
     } else if (
       selectedMatches.length > 1 &&

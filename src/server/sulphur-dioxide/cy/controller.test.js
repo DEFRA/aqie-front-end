@@ -1,5 +1,6 @@
-import { welsh } from '../../data/cy/cy.js'
-import { sulphurDioxideController } from './controller.js'
+import { welsh } from '~/src/server/data/cy/cy.js'
+import { sulphurDioxideController } from '~/src/server/sulphur-dioxide/cy/controller'
+import { LANG_CY } from '~/src/server/data/constants'
 
 describe('sulphurDioxide Controller - Welsh', () => {
   let mockRequest
@@ -8,7 +9,8 @@ describe('sulphurDioxide Controller - Welsh', () => {
   const { sulphurDioxide } = welsh.pollutants
   beforeEach(() => {
     mockRequest = {
-      query: {}
+      query: {},
+      path: ''
     }
     mockH = {
       redirect: jest.fn().mockReturnValue('redirected'),
@@ -26,7 +28,7 @@ describe('sulphurDioxide Controller - Welsh', () => {
   })
 
   it('should render the sulphurDioxide page with the necessary data', () => {
-    mockRequest.query.lang = 'cy'
+    mockRequest.query.lang = LANG_CY
     const result = sulphurDioxideController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('sulphur-dioxide/index', {
@@ -40,6 +42,25 @@ describe('sulphurDioxide Controller - Welsh', () => {
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
       lang: mockRequest.query.lang
+    })
+  })
+
+  it('should render by default to sulphurDioxide welsh page if lang is not cy or en', () => {
+    mockRequest.query.lang = 'test'
+    mockRequest.path = '/llygryddion/sylffwr-deuocsid/cy'
+    const result = sulphurDioxideController.handler(mockRequest, mockH)
+    expect(result).toBe('view rendered')
+    expect(mockH.view).toHaveBeenCalledWith('sulphur-dioxide/index', {
+      pageTitle: mockContent.pollutants.sulphurDioxide.pageTitle,
+      description: mockContent.pollutants.sulphurDioxide.description,
+      sulphurDioxide,
+      page: 'Sulphur dioxide (SO₂)',
+      displayBacklink: false,
+      phaseBanner: mockContent.phaseBanner,
+      footerTxt: mockContent.footerTxt,
+      cookieBanner: mockContent.cookieBanner,
+      serviceName: mockContent.multipleLocations.serviceName,
+      lang: 'cy'
     })
   })
 })

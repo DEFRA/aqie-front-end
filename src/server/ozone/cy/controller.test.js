@@ -1,5 +1,6 @@
-import { welsh } from '../../../server/data/cy/cy.js'
-import { ozoneController } from '../../../server/ozone/cy/controller.js'
+import { welsh } from '~/src/server/data/cy/cy.js'
+import { ozoneController } from '~/src/server/ozone/cy/controller.js'
+import { LANG_CY } from '~/src/server/data/constants'
 
 describe('Ozone Controller - Welsh', () => {
   let mockRequest
@@ -25,7 +26,7 @@ describe('Ozone Controller - Welsh', () => {
   })
 
   it('should render the ozone cy page with the necessary data', () => {
-    mockRequest.query.lang = 'cy'
+    mockRequest.query.lang = LANG_CY
     const result = ozoneController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('ozone/index', {
@@ -39,6 +40,25 @@ describe('Ozone Controller - Welsh', () => {
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
       lang: mockRequest.query.lang
+    })
+  })
+
+  it('should render the ozone cy page with the necessary data if lang is not cy | en', () => {
+    mockRequest.query.lang = 'test'
+    mockRequest.path = '/chwilio-lleoliad/cy'
+    const result = ozoneController.handler(mockRequest, mockH)
+    expect(result).toBe('view rendered')
+    expect(mockH.view).toHaveBeenCalledWith('ozone/index', {
+      pageTitle: mockContent.pollutants.ozone.pageTitle,
+      description: mockContent.pollutants.ozone.description,
+      ozone,
+      page: 'ozone-cy',
+      displayBacklink: false,
+      phaseBanner: mockContent.phaseBanner,
+      footerTxt: mockContent.footerTxt,
+      cookieBanner: mockContent.cookieBanner,
+      serviceName: mockContent.multipleLocations.serviceName,
+      lang: 'cy'
     })
   })
 })

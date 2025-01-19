@@ -1,4 +1,4 @@
-import { accessibilityHandler } from './controller'
+import { accessibilityController } from './controller'
 
 describe('Accessibility Handler', () => {
   const mockRequest = {
@@ -27,14 +27,46 @@ describe('Accessibility Handler', () => {
 
   it('should redirect to the English version if the language is "en"', () => {
     mockRequest.query.lang = 'en'
-    const result = accessibilityHandler(mockRequest, mockH, mockContent)
+    const result = accessibilityController.handler(
+      mockRequest,
+      mockH,
+      mockContent
+    )
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith('/accessibility?lang=en')
   })
 
   it('should render the accessibility page with the necessary data', () => {
     mockRequest.query.lang = 'cy'
-    const result = accessibilityHandler(mockRequest, mockH, mockContent)
+    const result = accessibilityController.handler(
+      mockRequest,
+      mockH,
+      mockContent
+    )
+    expect(result).toBe('view rendered')
+    expect(mockH.view).toHaveBeenCalledWith('accessibility/index', {
+      pageTitle: 'mock pageTitle',
+      title: 'mock title',
+      heading: 'mock heading',
+      headings: 'mock headings',
+      paragraphs: 'mock paragraphs',
+      displayBacklink: false,
+      phaseBanner: 'mock phaseBanner',
+      footerTxt: 'mock footerTxt',
+      serviceName: 'mock serviceName',
+      cookieBanner: 'mock cookieBanner',
+      lang: mockRequest.query.lang
+    })
+  })
+
+  it('should render the accessibility page by Default to Welsh if language is not cy and en', () => {
+    mockRequest.query.lang = 'test'
+    mockRequest.path = '/preifatrwydd/cy'
+    const result = accessibilityController.handler(
+      mockRequest,
+      mockH,
+      mockContent
+    )
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('accessibility/index', {
       pageTitle: 'mock pageTitle',

@@ -1,4 +1,5 @@
 import moment from 'moment-timezone'
+import { LANG_CY } from '~/src/server/data/constants'
 
 function addMomentFilters(env) {
   try {
@@ -57,7 +58,7 @@ function addDaysToTodayAbrevWelsh(env) {
         days = 0
       }
       // Create a new moment object for today and add days
-      const futureDate = moment().locale('cy').add(days, 'days')
+      const futureDate = moment().locale(LANG_CY).add(days, 'days')
       // Return the formatted future date
       return futureDate.format('ddd')
     })

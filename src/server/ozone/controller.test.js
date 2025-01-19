@@ -1,5 +1,6 @@
-import { ozoneController } from '../../server/ozone/controller'
-import { english } from '../data/en/en.js'
+import { ozoneController } from '~/src/server/ozone/controller'
+import { english } from '~/src/server/data/en/en.js'
+import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
 
 describe('Ozone Controller - English', () => {
   let mockRequest
@@ -17,14 +18,14 @@ describe('Ozone Controller - English', () => {
   })
 
   it('should redirect to the Welsh version if the language is "cy"', () => {
-    mockRequest.query.lang = 'cy'
+    mockRequest.query.lang = LANG_CY
     const result = ozoneController.handler(mockRequest, mockH)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith('/llygryddion/oson/cy?lang=cy')
   })
 
   it('should render the ozone page with the necessary data', () => {
-    mockRequest.query.lang = 'en'
+    mockRequest.query.lang = LANG_EN
     const result = ozoneController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('ozone/index', {

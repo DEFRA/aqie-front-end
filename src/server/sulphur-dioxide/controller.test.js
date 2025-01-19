@@ -1,3 +1,4 @@
+import { LANG_CY, LANG_EN } from '~/src/server/data/constants.js'
 import { english } from '../data/en/en.js'
 import { sulphurDioxideController } from './controller.js'
 
@@ -17,7 +18,7 @@ describe('sulphurDioxide Controller - English', () => {
   })
 
   it('should redirect to the Welsh version if the language is "cy"', () => {
-    mockRequest.query.lang = 'cy'
+    mockRequest.query.lang = LANG_CY
     const result = sulphurDioxideController.handler(mockRequest, mockH)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith(
@@ -26,7 +27,7 @@ describe('sulphurDioxide Controller - English', () => {
   })
 
   it('should render the sulphurDioxide page with the necessary data', () => {
-    mockRequest.query.lang = 'en'
+    mockRequest.query.lang = LANG_EN
     const result = sulphurDioxideController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('sulphur-dioxide/index', {

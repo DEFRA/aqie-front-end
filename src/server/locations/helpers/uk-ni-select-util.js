@@ -16,7 +16,9 @@ import { fetchData } from '~/src/server/locations/helpers/fetch-data'
 import {
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI,
-  LOCATION_NOT_FOUND
+  LOCATION_NOT_FOUND,
+  LANG_CY,
+  LANG_EN
 } from '~/src/server/data/constants'
 
 const {
@@ -67,7 +69,7 @@ const selectNIUKLocationType = async (
         phaseBanner,
         backlink,
         cookieBanner,
-        lang: 'en'
+        lang: LANG_EN
       })
     }
 
@@ -162,7 +164,7 @@ const selectNIUKLocationType = async (
         cookieBanner,
         daqi,
         welshMonth: calendarWelsh[getMonth],
-        summaryDate: lang === 'cy' ? welshDate : englishDate,
+        summaryDate: lang === LANG_CY ? welshDate : englishDate,
         dailySummaryTexts: english.dailySummaryTexts,
         lang
       })
@@ -195,8 +197,8 @@ const selectNIUKLocationType = async (
         backlink,
         cookieBanner,
         welshMonth: calendarWelsh[getMonth],
-        summaryDate: lang === 'cy' ? welshDate : englishDate,
-        lang: 'en'
+        summaryDate: lang === LANG_CY ? welshDate : englishDate,
+        lang: LANG_EN
       })
     } else {
       return h.view(LOCATION_NOT_FOUND, {
@@ -286,7 +288,7 @@ const selectNIUKLocationType = async (
     }
     title = firstLetterUppercase(title)
     headerTitle = firstLetterUppercase(headerTitle)
-    if (lang === 'en' && query?.lang === 'cy') {
+    if (lang === LANG_EN && query?.lang === LANG_CY) {
       /* eslint-disable camelcase */
       return h.redirect(`/lleoliad?lang=cy`)
     }
@@ -309,7 +311,7 @@ const selectNIUKLocationType = async (
       cookieBanner,
       daqi,
       welshMonth: calendarWelsh[getMonth],
-      summaryDate: lang === 'cy' ? welshDate : englishDate,
+      summaryDate: lang === LANG_CY ? welshDate : englishDate,
       dailySummaryTexts: english.dailySummaryTexts,
       lang
     })

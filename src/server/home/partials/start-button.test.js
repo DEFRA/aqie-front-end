@@ -1,5 +1,6 @@
 const nunjucks = require('nunjucks')
 const path = require('path')
+const { LANG_CY } = require('~/src/server/data/constants')
 
 describe('Nunjucks cookie banner Template', () => {
   let env
@@ -54,7 +55,7 @@ describe('Nunjucks cookie banner Template', () => {
 
   it('should render the start button template correctly for Welsh', () => {
     const context = {
-      htmlLang: 'cy',
+      htmlLang: LANG_CY,
       label: 'Dechrau nawr'
     }
     const result = env.render('start-button.njk', context)

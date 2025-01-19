@@ -24,9 +24,6 @@
 {% set metaDescription = description | default('Check air quality in your local area and the air pollution forecast for the next 5 days. Also, get health advice to reduce your exposure to pollutants.') %}
 {%if lang%}
 {%set htmlLang = lang %}
-{%else%}
-{%set htmlLang = 'en' %}
-{%endif%}
 {% block bodyStart %}
 {% include "cookie-banner.njk" %}
 {% endblock %}
