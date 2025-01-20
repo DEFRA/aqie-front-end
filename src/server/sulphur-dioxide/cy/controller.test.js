@@ -33,6 +33,7 @@ describe('sulphurDioxide Controller - Welsh', () => {
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('sulphur-dioxide/index', {
       pageTitle: mockContent.pollutants.sulphurDioxide.pageTitle,
+      description: mockContent.pollutants.sulphurDioxide.description,
       sulphurDioxide,
       page: 'Sulphur dioxide (SO₂)',
       displayBacklink: false,
@@ -51,6 +52,7 @@ describe('sulphurDioxide Controller - Welsh', () => {
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('sulphur-dioxide/index', {
       pageTitle: mockContent.pollutants.sulphurDioxide.pageTitle,
+      description: mockContent.pollutants.sulphurDioxide.description,
       sulphurDioxide,
       page: 'Sulphur dioxide (SO₂)',
       displayBacklink: false,

@@ -5,7 +5,14 @@ const privacyController = {
   handler: (request, h) => {
     const {
       footer: {
-        privacy: { pageTitle, title, heading, headings, paragraphs }
+        privacy: {
+          pageTitle,
+          title,
+          heading,
+          headings,
+          paragraphs,
+          description
+        }
       },
       cookieBanner,
       phaseBanner,
@@ -23,6 +30,7 @@ const privacyController = {
     }
     return h.view('privacy/index', {
       pageTitle,
+      description,
       title,
       heading,
       headings,

@@ -20,6 +20,7 @@ const particulateMatter10Controller = {
     }
     return h.view('particulate-matter-10/index', {
       pageTitle: particulateMatter10.pageTitle,
+      description: particulateMatter10.description,
       particulateMatter10,
       page: 'particulate matter 10',
       displayBacklink: false,

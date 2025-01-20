@@ -13,6 +13,7 @@ const nitrogenDioxideController = {
     }
     return h.view('nitrogen-dioxide/index', {
       pageTitle: nitrogenDioxide.pageTitle,
+      description: nitrogenDioxide.description,
       nitrogenDioxide,
       page: 'Nitrogen dioxide (NO₂)',
       displayBacklink: false,

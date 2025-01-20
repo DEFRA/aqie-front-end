@@ -30,6 +30,7 @@ describe('Cookies Handler', () => {
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('cookies/index', {
       pageTitle: mockContent.footer.cookies.pageTitle,
+      description: mockContent.footer.cookies.description,
       title: mockContent.footer.cookies.title,
       heading: mockContent.footer.cookies.heading,
       headings: mockContent.footer.cookies.headings,
@@ -52,6 +53,7 @@ describe('Cookies Handler', () => {
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('cookies/index', {
       pageTitle: mockContent.footer.cookies.pageTitle,
+      description: mockContent.footer.cookies.description,
       title: mockContent.footer.cookies.title,
       heading: mockContent.footer.cookies.heading,
       headings: mockContent.footer.cookies.headings,

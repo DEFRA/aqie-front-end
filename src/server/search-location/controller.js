@@ -23,6 +23,7 @@ const searchLocationController = {
       request.yar.set('errorMessage', null)
       return h.view('search-location/index', {
         pageTitle: `Error: ${english.searchLocation.pageTitle}`,
+        description: english.searchLocation.description,
         heading: english.searchLocation.heading,
         page: english.searchLocation.page,
         serviceName: english.searchLocation.serviceName,
@@ -53,6 +54,7 @@ const searchLocationController = {
     } else {
       return h.view('search-location/index', {
         pageTitle: english.searchLocation.pageTitle,
+        description: english.searchLocation.description,
         heading: english.searchLocation.heading,
         page: english.searchLocation.page,
         serviceName: english.searchLocation.serviceName,
