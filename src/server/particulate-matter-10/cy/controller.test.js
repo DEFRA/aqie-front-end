@@ -33,6 +33,7 @@ describe('Particular matter10 Controller - Welsh', () => {
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('particulate-matter-10/index', {
       pageTitle: mockContent.pollutants.particulateMatter10.pageTitle,
+      description: mockContent.pollutants.particulateMatter10.description,
       particulateMatter10,
       page: 'particulate matter 10',
       displayBacklink: false,
@@ -51,6 +52,7 @@ describe('Particular matter10 Controller - Welsh', () => {
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('particulate-matter-10/index', {
       pageTitle: mockContent.pollutants.particulateMatter10.pageTitle,
+      description: mockContent.pollutants.particulateMatter10.description,
       particulateMatter10,
       page: 'particulate matter 10',
       displayBacklink: false,

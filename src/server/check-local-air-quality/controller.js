@@ -11,6 +11,7 @@ const handleHomeRequest = (request, h, content = english) => {
 
   return h.view('home/index', {
     pageTitle: home.pageTitle,
+    description: home.description,
     heading: home.heading,
     page: home.page,
     paragraphs: home.paragraphs,

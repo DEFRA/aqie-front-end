@@ -28,6 +28,7 @@ const searchLocationController = {
       request.yar.set('errorMessage', null)
       return h.view('search-location/index', {
         pageTitle: `Gwall: ${welsh.searchLocation.pageTitle}`,
+        metaDescription: welsh.searchLocation.description,
         heading: welsh.searchLocation.heading,
         page: welsh.searchLocation.page,
         serviceName: welsh.searchLocation.serviceName,
@@ -58,6 +59,7 @@ const searchLocationController = {
     } else {
       return h.view('search-location/index', {
         pageTitle: welsh.searchLocation.pageTitle,
+        description: welsh.searchLocation.description,
         heading: welsh.searchLocation.heading,
         page: welsh.searchLocation.page,
         serviceName: welsh.searchLocation.serviceName,

@@ -10,7 +10,7 @@ describe('Nitrogen Dioxide Controller - Welsh', () => {
   beforeEach(() => {
     mockRequest = {
       query: {},
-      path: {}
+      path: ''
     }
     mockH = {
       redirect: jest.fn().mockReturnValue('redirected'),
@@ -33,6 +33,7 @@ describe('Nitrogen Dioxide Controller - Welsh', () => {
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('nitrogen-dioxide/index', {
       pageTitle: mockContent.pollutants.nitrogenDioxide.pageTitle,
+      description: mockContent.pollutants.nitrogenDioxide.description,
       nitrogenDioxide,
       page: 'Nitrogen dioxide (NO₂)',
       displayBacklink: false,
@@ -51,6 +52,7 @@ describe('Nitrogen Dioxide Controller - Welsh', () => {
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('nitrogen-dioxide/index', {
       pageTitle: mockContent.pollutants.nitrogenDioxide.pageTitle,
+      description: mockContent.pollutants.nitrogenDioxide.description,
       nitrogenDioxide,
       page: 'Nitrogen dioxide (NO₂)',
       displayBacklink: false,

@@ -35,6 +35,7 @@ describe('searchLocationController - english', () => {
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('search-location/index', {
       pageTitle: mockContent.searchLocation.pageTitle,
+      description: mockContent.searchLocation.description,
       heading: mockContent.searchLocation.heading,
       page: mockContent.searchLocation.page,
       serviceName: mockContent.searchLocation.serviceName,
@@ -67,6 +68,7 @@ describe('searchLocationController - english', () => {
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('search-location/index', {
       pageTitle: mockContent.searchLocation.pageTitle,
+      description: mockContent.searchLocation.description,
       heading: mockContent.searchLocation.heading,
       page: mockContent.searchLocation.page,
       serviceName: mockContent.searchLocation.serviceName,
@@ -115,6 +117,7 @@ describe('searchLocationController - english', () => {
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('search-location/index', {
       pageTitle: `Error: ${mockContent.searchLocation.pageTitle}`,
+      description: mockContent.searchLocation.description,
       heading: mockContent.searchLocation.heading,
       page: mockContent.searchLocation.page,
       serviceName: mockContent.searchLocation.serviceName,

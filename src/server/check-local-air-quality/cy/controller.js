@@ -14,6 +14,7 @@ const handleHomeRequest = (request, h, content = welsh) => {
   // Render the home page with the necessary data
   return h.view('home/index', {
     pageTitle: home.pageTitle,
+    description: home.description,
     heading: home.heading,
     page: home.page,
     paragraphs: home.paragraphs,

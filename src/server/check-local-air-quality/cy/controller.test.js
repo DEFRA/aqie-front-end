@@ -30,6 +30,7 @@ describe('Home Controller', () => {
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('home/index', {
       pageTitle: mockContent.home.pageTitle,
+      description: mockContent.home.description,
       heading: mockContent.home.heading,
       page: mockContent.home.page,
       paragraphs: mockContent.home.paragraphs,

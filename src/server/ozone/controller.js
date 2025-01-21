@@ -13,6 +13,7 @@ const ozoneController = {
     }
     return h.view('ozone/index', {
       pageTitle: ozone.pageTitle,
+      description: ozone.description,
       ozone,
       page: 'ozone',
       displayBacklink: false,

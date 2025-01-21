@@ -28,6 +28,7 @@ describe('privacy controller - English', () => {
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('privacy/index', {
       pageTitle: mockContent.footer.privacy.pageTitle,
+      description: mockContent.footer.privacy.description,
       title: mockContent.footer.privacy.title,
       heading: mockContent.footer.privacy.heading,
       headings: mockContent.footer.privacy.headings,
