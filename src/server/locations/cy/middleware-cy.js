@@ -82,7 +82,7 @@ const searchMiddlewareCy = async (request, h) => {
     )
     userLocation = userLocation.toLowerCase()
     userLocation = userLocation.charAt(0).toUpperCase() + userLocation.slice(1)
-    const { title, headerTitle } = getTitleAndHeaderTitle(
+    const { title, headerTitle, urlRoute } = getTitleAndHeaderTitle(
       selectedMatches,
       locationNameOrPostcode
     )
@@ -113,6 +113,7 @@ const searchMiddlewareCy = async (request, h) => {
         titleRoute,
         headerTitleRoute,
         title,
+        urlRoute,
         lang
       })
     } else if (
