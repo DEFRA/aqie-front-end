@@ -112,6 +112,7 @@ const searchMiddleware = async (request, h) => {
         titleRoute,
         headerTitleRoute,
         title,
+        urlRoute,
         lang
       })
     } else if (
