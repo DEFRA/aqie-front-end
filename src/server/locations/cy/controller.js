@@ -12,7 +12,12 @@ import { calendarEnglish } from '~/src/server/data/en/en.js'
 import moment from 'moment-timezone'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
-import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
+import {
+  LANG_CY,
+  LANG_EN,
+  LOCATION_TYPE_UK,
+  LOCATION_TYPE_NI
+} from '~/src/server/data/constants'
 
 const logger = createLogger()
 
@@ -43,9 +48,9 @@ const getLocationDataController = {
     let locationType = request?.payload?.locationType
     const airQuality = getAirQuality(request.payload?.aq, 2, 4, 5, 7)
     let locationNameOrPostcode = ''
-    if (locationType === 'uk-location') {
+    if (locationType === LOCATION_TYPE_UK) {
       locationNameOrPostcode = request.payload.engScoWal.trim()
-    } else if (locationType === 'ni-location') {
+    } else if (locationType === LOCATION_TYPE_NI) {
       locationNameOrPostcode = request.payload.ni
     }
     if (!locationType && str !== 'chwilio-lleoliad') {
@@ -91,7 +96,7 @@ const getLocationDataController = {
           spaceIndex
         )}`
       }
-      if (!userLocation && locationType === 'uk-location') {
+      if (!userLocation && locationType === LOCATION_TYPE_UK) {
         request.yar.set('errors', {
           errors: {
             titleText: searchLocation.errorText.uk.fields.title, // 'There is a problem',
@@ -108,10 +113,10 @@ const getLocationDataController = {
             text: searchLocation.errorText.uk.fields.list.text // 'Enter a location or postcode'
           }
         })
-        request.yar.set('locationType', 'uk-location')
+        request.yar.set('locationType', LOCATION_TYPE_UK)
         return h.redirect(`/chwilio-lleoliad/cy?lang=cy`)
       }
-      if (!userLocation && locationType === 'ni-location') {
+      if (!userLocation && locationType === LOCATION_TYPE_NI) {
         request.yar.set('errors', {
           errors: {
             titleText: searchLocation.errorText.ni.fields.title, // 'There is a problem',
@@ -128,12 +133,12 @@ const getLocationDataController = {
             text: searchLocation.errorText.ni.fields.list.text // 'Enter a postcode'
           }
         })
-        request.yar.set('locationType', 'ni-location')
+        request.yar.set('locationType', LOCATION_TYPE_NI)
         return h.redirect(`/chwilio-lleoliad/cy?lang=cy`)
       }
       locationType = request.yar.get('locationType')
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
-        await fetchData('uk-location', userLocation, request)
+        await fetchData(LOCATION_TYPE_UK, userLocation, request)
 
       const formattedDateSummary = moment(getDailySummary.issue_date)
         .format('DD MMMM YYYY')
@@ -144,7 +149,7 @@ const getLocationDataController = {
       const englishDate = `${formattedDateSummary[0]} ${calendarEnglish[getMonthSummary]} ${formattedDateSummary[2]}`
       const welshDate = `${formattedDateSummary[0]} ${calendarWelsh[getMonthSummary]} ${formattedDateSummary[2]}`
 
-      if (locationType === 'uk-location') {
+      if (locationType === LOCATION_TYPE_UK) {
         const { results } = getOSPlaces
 
         if (!results || results.length === 0) {
@@ -196,7 +201,7 @@ const getLocationDataController = {
           matches,
           getForecasts?.forecasts,
           getMeasurements?.measurements,
-          'uk-location',
+          LOCATION_TYPE_UK,
           0,
           lang
         )
@@ -350,9 +355,9 @@ const getLocationDataController = {
             lang: request.query?.lang ?? lang
           })
         }
-      } else if (locationType === 'ni-location') {
+      } else if (locationType === LOCATION_TYPE_NI) {
         const { getNIPlaces } = await fetchData(
-          'ni-location',
+          LOCATION_TYPE_NI,
           userLocation,
           request
         )
@@ -402,7 +407,7 @@ const getLocationDataController = {
           results,
           getForecasts?.forecasts,
           getMeasurements?.measurements,
-          'ni-location',
+          LOCATION_TYPE_NI,
           0,
           lang
         )

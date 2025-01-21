@@ -53,10 +53,11 @@ const handleSingleMatch = (
     titleRoute,
     headerTitleRoute,
     title,
+    urlRoute,
     lang
   }
 ) => {
-  const customId = headerTitleRoute // Use the helper function to generate the custom ID
+  const customId = selectedMatches.length === 1 ? urlRoute : headerTitleRoute // Use the helper function to generate the custom ID
   request.yar.set('locationData', {
     results: selectedMatches,
     rawForecasts: getForecasts?.forecasts,
@@ -161,8 +162,13 @@ const processMatches = (matches, locationNameOrPostcode, userLocation) => {
     if (matches[0].GAZETTEER_ENTRY.NAME2) {
       matches[0].GAZETTEER_ENTRY.NAME1 = matches[0].GAZETTEER_ENTRY.NAME2
     } else {
-      matches[0].GAZETTEER_ENTRY.NAME1 = locationNameOrPostcode
+      matches[0].GAZETTEER_ENTRY.NAME1 = locationNameOrPostcode.toUpperCase() // Set the name to the partial postcode
     }
+    matches = [matches[0]]
+    const urlRoute = `${matches[0].GAZETTEER_ENTRY.NAME1}_${matches[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
+    const headerTitle = convertStringToHyphenatedLowercaseWords(urlRoute)
+    matches[0].GAZETTEER_ENTRY.ID = headerTitle
+    return matches
   }
 
   return newMatches.reduce((acc, item) => {
@@ -215,6 +221,7 @@ const getTitleAndHeaderTitle = (locationDetails, locationNameOrPostcode) => {
   }
   title = firstLetterUppercase(title)
   headerTitle = firstLetterUppercase(headerTitle)
+  urlRoute = convertStringToHyphenatedLowercaseWords(urlRoute)
   return { title, headerTitle, urlRoute }
 }
 

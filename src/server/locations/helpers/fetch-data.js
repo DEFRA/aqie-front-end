@@ -3,6 +3,7 @@ import { config } from '~/src/config'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { catchFetchError } from '~/src/server/common/helpers/catch-fetch-error'
 import { catchProxyFetchError } from '~/src/server/common/helpers/catch-proxy-fetch-error'
+import { LOCATION_TYPE_NI } from '~/src/server/data/constants'
 
 const options = {
   method: 'get',
@@ -53,7 +54,7 @@ async function fetchData(locationType, userLocation, request, h) {
   let optionsOAuth
   let savedAccessToken
   let accessToken
-  if (locationType === 'ni-location') {
+  if (locationType === LOCATION_TYPE_NI) {
     savedAccessToken = request.yar.get('savedAccessToken')
     logger.info(`::::::::: OAuth token in session 1 ::::::::::`)
     if (savedAccessToken) {
@@ -81,7 +82,7 @@ async function fetchData(locationType, userLocation, request, h) {
   const refreshIntervalId = setInterval(
     () => {
       // Assuming you have access to the request object here
-      if (locationType === 'ni-location') {
+      if (locationType === LOCATION_TYPE_NI) {
         refreshOAuthToken()
       } else {
         clearRefreshInterval()
@@ -170,7 +171,7 @@ async function fetchData(locationType, userLocation, request, h) {
       logger.info(`getOSPlaces data fetched:`)
     }
     return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
-  } else if (locationType === 'ni-location') {
+  } else if (locationType === LOCATION_TYPE_NI) {
     const osPlacesApiPostcodeNorthernIrelandUrl = config.get(
       'osPlacesApiPostcodeNorthernIrelandUrl'
     )
