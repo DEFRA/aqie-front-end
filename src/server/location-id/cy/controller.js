@@ -87,7 +87,7 @@ const getLocationDetailsController = {
           lang
         })
       } else {
-        return h.view('location-not-found/idex', {
+        return h.view('location-not-found/index', {
           paragraph: notFoundLocation.paragraphs,
           serviceName: notFoundLocation.heading,
           footerTxt,
