@@ -160,26 +160,6 @@ const searchMiddleware = async (request, h) => {
     logger.info(
       `::::::::::: getNIPlaces statusCode en  ::::::::::: ${getNIPlaces?.statusCode}`
     )
-    if (
-      getOSPlaces?.statusCode !== 200 &&
-      getOSPlaces?.statusCode !== undefined
-    ) {
-      return h.view('error/index', {
-        footerTxt,
-        url: request.path,
-        phaseBanner,
-        displayBacklink: false,
-        cookieBanner,
-        serviceName: english.multipleLocations.serviceName,
-        notFoundUrl: english.notFoundUrl,
-        statusCode:
-          getOSPlaces?.statusCode ||
-          getForecasts?.statusCode ||
-          getMeasurements?.statusCode ||
-          getDailySummary?.statusCode,
-        lang
-      })
-    }
     if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
       return h.redirect('/location-not-found').takeover()
     }
