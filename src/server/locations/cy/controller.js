@@ -153,7 +153,7 @@ const getLocationDataController = {
         const { results } = getOSPlaces
 
         if (!results || results.length === 0) {
-          return h.view('locations/location-not-found', {
+          return h.view('location-not-found/index', {
             userLocation: locationNameOrPostcode,
             pageTitle: `${notFoundLocation.paragraphs.a} ${userLocation} - ${home.pageTitle}`,
             paragraph: notFoundLocation.paragraphs,
@@ -343,7 +343,7 @@ const getLocationDataController = {
             lang: request.query?.lang ?? lang
           })
         } else {
-          return h.view('locations/location-not-found', {
+          return h.view('location-not-found/index', {
             userLocation: locationNameOrPostcode,
             pageTitle: `${notFoundLocation.paragraphs.a} ${locationNameOrPostcode} - ${home.pageTitle}`,
             paragraph: notFoundLocation.paragraphs,
@@ -382,7 +382,7 @@ const getLocationDataController = {
         }
 
         if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
-          return h.view('locations/location-not-found', {
+          return h.view('location-not-found/index', {
             userLocation: locationNameOrPostcode,
             pageTitle: `${notFoundLocation.paragraphs.a} ${userLocation} -  ${home.pageTitle}`,
             paragraph: notFoundLocation.paragraphs,
