@@ -97,7 +97,39 @@ async function fetchData(locationType, userLocation, request, h) {
     logger.info('::::::::: OAuth token refresh interval cleared ::::::::::')
   }
 
-  const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
+  const symbolsArr = [
+    '%',
+    '$',
+    '&',
+    '#',
+    '!',
+    '¬',
+    '(',
+    ')',
+    '[',
+    ']',
+    '{',
+    '}',
+    '*',
+    '^',
+    '@',
+    '?',
+    '>',
+    '<',
+    '+',
+    '=',
+    '|',
+    '~',
+    '`',
+    ';',
+    ':',
+    ',',
+    '.',
+    '/',
+    '\\',
+    '"',
+    "'"
+  ]
   const northernIrelandPostcodeRegex = /^BT\d{1,2}\s?\d?[A-Z]{0,2}$/
   const niPoscode = northernIrelandPostcodeRegex.test(userLocation)
   const forecastSummaryURL = config.get('forecastSummaryUrl')
@@ -149,8 +181,8 @@ async function fetchData(locationType, userLocation, request, h) {
       userLocation
     )}&fq=${encodeURIComponent(filters)}&key=${osNamesApiKey}`
 
-    let shouldCallApi = symbolsArr.some(
-      (symbol) => !userLocation.includes(symbol)
+    let shouldCallApi = !symbolsArr.some((symbol) =>
+      userLocation.includes(symbol)
     )
     if (niPoscode) {
       shouldCallApi = false
@@ -161,7 +193,7 @@ async function fetchData(locationType, userLocation, request, h) {
     const [statusCodeOSPlace, getOSPlaces] = await catchProxyFetchError(
       osNamesApiUrlFull,
       options,
-      !shouldCallApi
+      shouldCallApi
     )
     if (statusCodeOSPlace !== 200) {
       logger.error(
