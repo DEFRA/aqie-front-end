@@ -9,7 +9,6 @@ import {
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { handleErrorInputAndRedirect } from '~/src/server/locations/helpers/error-input-and-redirect'
 import {
-  handleLocationNotFound,
   handleSingleMatch,
   handleMultipleMatches,
   processMatches,
@@ -36,7 +35,6 @@ const searchMiddleware = async (request, h) => {
   const lang = LANG_EN
   const month = getMonth(lang)
   const {
-    notFoundLocation,
     home,
     footerTxt,
     phaseBanner,
@@ -66,12 +64,11 @@ const searchMiddleware = async (request, h) => {
     calendarEnglish,
     calendarWelsh
   )
-
+  request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
   if (locationType === LOCATION_TYPE_UK) {
     let { results } = getOSPlaces
 
     if (!results || results.length === 0 || getOSPlaces === 'wrong postcode') {
-      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       return h.redirect('/location-not-found').takeover()
     }
     // Remove duplicates from the results array
@@ -148,16 +145,7 @@ const searchMiddleware = async (request, h) => {
         lang
       })
     } else {
-      return handleLocationNotFound(h, {
-        locationNameOrPostcode,
-        notFoundLocation,
-        home,
-        footerTxt,
-        phaseBanner,
-        backlink,
-        cookieBanner,
-        lang
-      })
+      return h.redirect('/location-not-found').takeover()
     }
   } else if (locationType === LOCATION_TYPE_NI) {
     const { query } = request
@@ -266,16 +254,7 @@ const searchMiddleware = async (request, h) => {
     return h.redirect(`/location/${urlRoute}?lang=en`).takeover()
   } else {
     // handle other location types
-    return handleLocationNotFound(h, {
-      locationNameOrPostcode,
-      notFoundLocation,
-      home,
-      footerTxt,
-      phaseBanner,
-      backlink,
-      cookieBanner,
-      lang
-    })
+    return h.redirect('/location-not-found').takeover()
   }
 }
 
