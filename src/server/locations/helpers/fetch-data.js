@@ -161,7 +161,7 @@ async function fetchData(locationType, userLocation, request, h) {
     const [statusCodeOSPlace, getOSPlaces] = await catchProxyFetchError(
       osNamesApiUrlFull,
       options,
-      shouldCallApi
+      !shouldCallApi
     )
     if (statusCodeOSPlace !== 200) {
       logger.error(
