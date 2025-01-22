@@ -12,7 +12,7 @@ const getLocationDataController = {
     const tempString = headers?.referer?.split('/')[3]
     const str = tempString?.split('?')[0]
 
-    const redirectResponse = handleRedirect(query, h)
+    const redirectResponse = handleRedirect(h, h)
     if (redirectResponse) {
       return redirectResponse
     }
