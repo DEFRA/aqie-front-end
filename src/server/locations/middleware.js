@@ -193,17 +193,7 @@ const searchMiddleware = async (request, h) => {
       })
     }
     if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
-      return h.view('locations/location-not-found', {
-        userLocation: locationNameOrPostcode,
-        serviceName: notFoundLocation.heading,
-        paragraph: notFoundLocation.paragraphs,
-        pageTitle: `${notFoundLocation.paragraphs.a} ${userLocation} - ${home.pageTitle}`,
-        footerTxt,
-        phaseBanner,
-        backlink,
-        cookieBanner,
-        lang
-      })
+      return h.redirect('/location-not-found').takeover()
     }
     const { results } = getNIPlaces
     const { forecastNum, nearestLocationsRange, latlon } = getNearestLocation(
