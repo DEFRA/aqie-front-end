@@ -25,6 +25,9 @@ import {
 import { getMonth } from '~/src/server/locations/helpers/location-type-util'
 import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
+import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
+import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
+import { getAirQuality } from '~/src/server/data/en/air-quality.js'
 
 const logger = createLogger()
 
@@ -157,8 +160,10 @@ const searchMiddleware = async (request, h) => {
       })
     }
   } else if (locationType === LOCATION_TYPE_NI) {
+    const { query } = request
+    const { daqi } = english
     const { getNIPlaces } = await fetchData(
-      LOCATION_TYPE_NI,
+      'ni-location',
       userLocation,
       request,
       h
@@ -171,10 +176,28 @@ const searchMiddleware = async (request, h) => {
       getOSPlaces?.statusCode !== 200 &&
       getOSPlaces?.statusCode !== undefined
     ) {
-      return handleLocationNotFound(h, {
-        locationNameOrPostcode,
-        notFoundLocation,
-        home,
+      return h.view('error/index', {
+        footerTxt,
+        url: request.path,
+        phaseBanner,
+        displayBacklink: false,
+        cookieBanner,
+        serviceName: english.multipleLocations.serviceName,
+        notFoundUrl: english.notFoundUrl,
+        statusCode:
+          getOSPlaces?.statusCode ||
+          getForecasts?.statusCode ||
+          getMeasurements?.statusCode ||
+          getDailySummary?.statusCode,
+        lang
+      })
+    }
+    if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
+      return h.view('locations/location-not-found', {
+        userLocation: locationNameOrPostcode,
+        serviceName: notFoundLocation.heading,
+        paragraph: notFoundLocation.paragraphs,
+        pageTitle: `${notFoundLocation.paragraphs.a} ${userLocation} - ${home.pageTitle}`,
         footerTxt,
         phaseBanner,
         backlink,
@@ -182,6 +205,75 @@ const searchMiddleware = async (request, h) => {
         lang
       })
     }
+    const { results } = getNIPlaces
+    const { forecastNum, nearestLocationsRange, latlon } = getNearestLocation(
+      results,
+      getForecasts?.forecasts,
+      getMeasurements?.measurements,
+      'ni-location',
+      0,
+      lang
+    )
+    const locationData = {
+      GAZETTEER_ENTRY: {
+        NAME1: results[0].postcode,
+        DISTRICT_BOROUGH: sentenceCase(results[0].administrativeArea),
+        LONGITUDE: latlon.lon,
+        LATITUDE: latlon.lat
+      }
+    }
+    let title = ''
+    let headerTitle = ''
+    let urlRoute = ''
+    if (locationData) {
+      if (locationData.GAZETTEER_ENTRY.NAME2) {
+        title = `${locationData.GAZETTEER_ENTRY.NAME2}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
+        headerTitle = `${locationData.GAZETTEER_ENTRY.NAME2}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
+        urlRoute = `${locationData.GAZETTEER_ENTRY.NAME2}_${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
+      } else {
+        title = `${locationData.GAZETTEER_ENTRY.NAME1}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
+        headerTitle = `${locationData.GAZETTEER_ENTRY.NAME1}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
+        urlRoute = `${locationData.GAZETTEER_ENTRY.NAME1}_${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
+      }
+    }
+    title = firstLetterUppercase(title)
+    headerTitle = firstLetterUppercase(headerTitle)
+    urlRoute = convertStringToHyphenatedLowercaseWords(urlRoute)
+
+    const airQuality = getAirQuality(
+      forecastNum[0][0].today,
+      Object.values(forecastNum[0][1])[0],
+      Object.values(forecastNum[0][2])[0],
+      Object.values(forecastNum[0][3])[0],
+      Object.values(forecastNum[0][4])[0]
+    )
+    if (lang === 'en' && query?.lang === 'cy') {
+      /* eslint-disable camelcase */
+      return h.redirect(`/lleoliad/cy?lang=cy`)
+    }
+    request.yar.set('locationData', {
+      result: locationData,
+      airQuality,
+      airQualityData: airQualityData.commonMessages,
+      monitoringSites: nearestLocationsRange,
+      siteTypeDescriptions,
+      pollutantTypes,
+      pageTitle: title,
+      title: headerTitle,
+      displayBacklink: true,
+      forecastSummary: getDailySummary.today,
+      dailySummary: getDailySummary,
+      footerTxt,
+      phaseBanner,
+      backlink,
+      cookieBanner,
+      daqi,
+      welshMonth: calendarWelsh[getMonth],
+      summaryDate: lang === 'cy' ? welshDate : englishDate,
+      dailySummaryTexts: english.dailySummaryTexts,
+      lang
+    })
+    return h.redirect(`/location/${urlRoute}?lang=en`).takeover()
   } else {
     // handle other location types
     return handleLocationNotFound(h, {
@@ -195,7 +287,6 @@ const searchMiddleware = async (request, h) => {
       lang
     })
   }
-  return null
 }
 
 export { searchMiddleware }
