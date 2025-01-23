@@ -4,10 +4,13 @@ import {
   LANG_EN,
   SEARCH_LOCATION_ROUTE_CY
 } from '~/src/server/data/constants'
+import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 
 const searchLocationController = {
   handler: (request, h) => {
     const { query, path } = request
+    const metaSiteUrl = getAirQualitySiteUrl(request)
+
     let lang = query?.lang?.slice(0, 2)
     if (lang !== LANG_CY && lang !== LANG_EN && path === '/search-location') {
       lang = LANG_EN
@@ -24,6 +27,7 @@ const searchLocationController = {
       return h.view('search-location/index', {
         pageTitle: `Error: ${english.searchLocation.pageTitle}`,
         description: english.searchLocation.description,
+        metaSiteUrl,
         heading: english.searchLocation.heading,
         page: english.searchLocation.page,
         serviceName: english.searchLocation.serviceName,
@@ -55,6 +59,7 @@ const searchLocationController = {
       return h.view('search-location/index', {
         pageTitle: english.searchLocation.pageTitle,
         description: english.searchLocation.description,
+        metaSiteUrl,
         heading: english.searchLocation.heading,
         page: english.searchLocation.page,
         serviceName: english.searchLocation.serviceName,

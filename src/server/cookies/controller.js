@@ -1,5 +1,6 @@
 import { english } from '~/src/server/data/en/en.js'
 import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
+import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 
 // Define the handler function
 const cookiesHandler = (request, h, content = english) => {
@@ -25,6 +26,7 @@ const cookiesHandler = (request, h, content = english) => {
 
   // Extract the language query parameter from the request
   const { query, path } = request
+  const metaSiteUrl = getAirQualitySiteUrl(request)
 
   // Redirect to the Welsh version if the language is LANG_CY
   if (query?.lang === LANG_CY) {
@@ -41,6 +43,7 @@ const cookiesHandler = (request, h, content = english) => {
   return h.view('cookies/index', {
     pageTitle,
     description,
+    metaSiteUrl,
     title,
     heading,
     headings,

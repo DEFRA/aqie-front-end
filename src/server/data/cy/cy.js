@@ -91,6 +91,7 @@ export const welsh = {
     }
   },
   multipleLocations: {
+    pageTitle: 'Gwirio ansawdd aer - GOV.UK',
     title: 'Lleoliadau yn cyfateb',
     heading: 'Gwirio ansawdd aer ',
     serviceName: 'Gwirio ansawdd aer ',

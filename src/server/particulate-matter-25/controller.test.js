@@ -1,6 +1,7 @@
 import { english } from '~/src/server/data/en/en.js'
 import { particulateMatter25Controller } from '~/src/server/particulate-matter-25/controller.js'
 import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
+import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 
 describe('Particular matter25 Controller - English', () => {
   let mockRequest
@@ -9,8 +10,14 @@ describe('Particular matter25 Controller - English', () => {
   const { particulateMatter25 } = english.pollutants
   beforeEach(() => {
     mockRequest = {
-      query: {}
+      query: {},
+      path: '/pollutants/particulate-matter-25'
     }
+    jest.mock('~/src/server/common/helpers/get-site-url', () => ({
+      getAirQualitySiteUrl: jest.fn((request) => {
+        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+      })
+    }))
     mockH = {
       redirect: jest.fn().mockReturnValue('redirected'),
       view: jest.fn().mockReturnValue('view rendered')
@@ -28,11 +35,16 @@ describe('Particular matter25 Controller - English', () => {
 
   it('should render the particulateMatter25 page with the necessary data', () => {
     mockRequest.query.lang = LANG_EN
+    const expectedUrl =
+      'https://check-air-quality.service.gov.uk/pollutants/particulate-matter-25?lang=en'
+    const actualUrl = getAirQualitySiteUrl(mockRequest)
+    expect(actualUrl).toBe(expectedUrl)
     const result = particulateMatter25Controller.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('particulate-matter-25/index', {
       pageTitle: mockContent.pollutants.particulateMatter25.pageTitle,
       description: mockContent.pollutants.particulateMatter25.description,
+      metaSiteUrl: actualUrl,
       particulateMatter25,
       page: 'particulate matter 25',
       displayBacklink: false,

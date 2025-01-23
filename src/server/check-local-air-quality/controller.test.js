@@ -1,5 +1,6 @@
 import { homeController } from './controller'
 import { english } from '~/src/server/data/en/en.js'
+import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 
 describe('Home Controller', () => {
   let mockRequest
@@ -8,8 +9,14 @@ describe('Home Controller', () => {
 
   beforeEach(() => {
     mockRequest = {
-      query: {}
+      query: {},
+      path: ''
     }
+    jest.mock('~/src/server/common/helpers/get-site-url', () => ({
+      getAirQualitySiteUrl: jest.fn((request) => {
+        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+      })
+    }))
     mockH = {
       redirect: jest.fn().mockReturnValue('redirected'),
       view: jest.fn().mockReturnValue('view rendered')
@@ -24,12 +31,21 @@ describe('Home Controller', () => {
   })
 
   it('should render the home page with the necessary data', () => {
-    mockRequest.query.lang = 'en'
+    mockRequest = {
+      query: {
+        lang: 'en'
+      },
+      path: '/'
+    }
+    const expectedUrl = 'https://check-air-quality.service.gov.uk/?lang=en'
+    const actualUrl = getAirQualitySiteUrl(mockRequest)
+    expect(actualUrl).toBe(expectedUrl)
     const result = homeController.handler(mockRequest, mockH, mockContent)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('home/index', {
       pageTitle: mockContent.home.pageTitle,
       description: mockContent.home.description,
+      metaSiteUrl: actualUrl,
       heading: mockContent.home.heading,
       page: mockContent.home.page,
       paragraphs: mockContent.home.paragraphs,

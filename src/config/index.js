@@ -73,6 +73,11 @@ const config = convict({
     default: null,
     env: 'CDP_HTTPS_PROXY'
   },
+  airQualityDomainUrl: {
+    doc: 'Air Quality Domain Url',
+    format: '*',
+    default: 'https://check-air-quality.service.gov.uk'
+  },
   osNamesApiKey: {
     doc: 'OS Name Places key',
     format: '*',

@@ -11,6 +11,7 @@ import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
 import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-util'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { LANG_CY, LANG_EN, LOCATION_TYPE_UK } from '~/src/server/data/constants'
+import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 
 const logger = createLogger()
 
@@ -29,7 +30,7 @@ const getLocationDetailsController = {
       const getMonth = calendarEnglish.findIndex(function (item) {
         return item.indexOf(formattedDate[1]) !== -1
       })
-
+      const metaSiteUrl = getAirQualitySiteUrl(request)
       const {
         notFoundLocation,
         footerTxt,
@@ -69,6 +70,7 @@ const getLocationDetailsController = {
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: title,
+          metaSiteUrl,
           title: headerTitle,
           displayBacklink: true,
           forecastSummary: locationData.forecastSummary,
@@ -89,6 +91,7 @@ const getLocationDetailsController = {
         return h.view('location-not-found/index', {
           paragraph: notFoundLocation.paragraphs,
           serviceName: notFoundLocation.heading,
+          metaSiteUrl,
           footerTxt,
           phaseBanner,
           backlink,

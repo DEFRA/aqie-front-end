@@ -1,5 +1,6 @@
 import { welsh } from '~/src/server/data/cy/cy.js'
-import { LANG_CY, LANG_EN } from '../../data/constants'
+import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
+import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 
 // Define the handler function
 const cookiesHandler = (request, h, content = welsh) => {
@@ -25,6 +26,7 @@ const cookiesHandler = (request, h, content = welsh) => {
 
   // Extract query parameters and path from the request
   const { query, path } = request
+  const metaSiteUrl = getAirQualitySiteUrl(request)
 
   // Redirect to the English version if the language is LANG_EN
   if (query?.lang === LANG_EN) {
@@ -33,7 +35,7 @@ const cookiesHandler = (request, h, content = welsh) => {
 
   // Determine the language
   let lang = query?.lang?.slice(0, 2)
-  if (lang !== LANG_CY && lang !== LANG_EN && path === '/preifatrwydd/cy') {
+  if (lang !== LANG_CY && lang !== LANG_EN && path === '/briwsion/cy') {
     lang = LANG_CY
   }
 
@@ -41,6 +43,7 @@ const cookiesHandler = (request, h, content = welsh) => {
   return h.view('cookies/index', {
     pageTitle,
     description,
+    metaSiteUrl,
     title,
     heading,
     headings,

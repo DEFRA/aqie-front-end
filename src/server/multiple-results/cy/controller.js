@@ -6,6 +6,7 @@ import {
   LANG_EN,
   MULTIPLE_LOCATIONS_ROUTE_EN
 } from '~/src/server/data/constants'
+import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 
 const logger = createLogger()
 
@@ -39,6 +40,7 @@ const getLocationDataController = {
     if (query?.lang === LANG_EN) {
       return h.redirect(MULTIPLE_LOCATIONS_ROUTE_EN)
     }
+    const metaSiteUrl = getAirQualitySiteUrl(request)
 
     try {
       return h.view('multiple-results/multiple-locations', {
@@ -50,6 +52,7 @@ const getLocationDataController = {
         siteTypeDescriptions,
         pollutantTypes,
         pageTitle: `${multipleLocations.title} ${userLocation} -  ${multipleLocations.pageTitle}`,
+        metaSiteUrl,
         serviceName: multipleLocations.serviceName,
         forecastSummary,
         dailySummary,
@@ -77,6 +80,7 @@ const getLocationDataController = {
       }
       return h.view('error/index', {
         pageTitle: english.notFoundUrl.serviceAPI.pageTitle,
+        metaSiteUrl,
         footerTxt,
         url: request.path,
         phaseBanner,

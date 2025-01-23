@@ -1,6 +1,7 @@
 import { welsh } from '~/src/server/data/cy/cy.js'
 import { particulateMatter10Controller } from '~/src/server/particulate-matter-10/cy/controller.js'
 import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
+import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 
 describe('Particular matter10 Controller - Welsh', () => {
   let mockRequest
@@ -10,8 +11,13 @@ describe('Particular matter10 Controller - Welsh', () => {
   beforeEach(() => {
     mockRequest = {
       query: {},
-      path: ''
+      path: '/llygryddion/mater-gronynnol-10/cy'
     }
+    jest.mock('~/src/server/common/helpers/get-site-url', () => ({
+      getAirQualitySiteUrl: jest.fn((request) => {
+        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+      })
+    }))
     mockH = {
       redirect: jest.fn().mockReturnValue('redirected'),
       view: jest.fn().mockReturnValue('view rendered')
@@ -29,11 +35,16 @@ describe('Particular matter10 Controller - Welsh', () => {
 
   it('should render the particulateMatter10 cy page with the necessary data', () => {
     mockRequest.query.lang = LANG_CY
+    const expectedUrl =
+      'https://check-air-quality.service.gov.uk/llygryddion/mater-gronynnol-10/cy?lang=cy'
+    const actualUrl = getAirQualitySiteUrl(mockRequest)
+    expect(actualUrl).toBe(expectedUrl)
     const result = particulateMatter10Controller.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('particulate-matter-10/index', {
       pageTitle: mockContent.pollutants.particulateMatter10.pageTitle,
       description: mockContent.pollutants.particulateMatter10.description,
+      metaSiteUrl: actualUrl,
       particulateMatter10,
       page: 'particulate matter 10',
       displayBacklink: false,
@@ -47,12 +58,16 @@ describe('Particular matter10 Controller - Welsh', () => {
 
   it('should render by default to particulateMatter10 cy page if lang is not cy or en', () => {
     mockRequest.query.lang = 'test'
-    mockRequest.path = '/llygryddion/mater-gronynnol-10/cy'
+    const expectedUrl =
+      'https://check-air-quality.service.gov.uk/llygryddion/mater-gronynnol-10/cy?lang=test'
+    const actualUrl = getAirQualitySiteUrl(mockRequest)
+    expect(actualUrl).toBe(expectedUrl)
     const result = particulateMatter10Controller.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('particulate-matter-10/index', {
       pageTitle: mockContent.pollutants.particulateMatter10.pageTitle,
       description: mockContent.pollutants.particulateMatter10.description,
+      metaSiteUrl: actualUrl,
       particulateMatter10,
       page: 'particulate matter 10',
       displayBacklink: false,
@@ -60,7 +75,7 @@ describe('Particular matter10 Controller - Welsh', () => {
       footerTxt: mockContent.footerTxt,
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
-      lang: 'cy'
+      lang: LANG_CY
     })
   })
 })
