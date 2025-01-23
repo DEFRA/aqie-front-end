@@ -3,7 +3,7 @@ import { config } from '~/src/config'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { catchFetchError } from '~/src/server/common/helpers/catch-fetch-error'
 import { catchProxyFetchError } from '~/src/server/common/helpers/catch-proxy-fetch-error'
-import { LOCATION_TYPE_NI } from '~/src/server/data/constants'
+import { LOCATION_TYPE_NI, SYMBOLS_ARRAY } from '~/src/server/data/constants'
 
 const options = {
   method: 'get',
@@ -96,40 +96,6 @@ async function fetchData(locationType, userLocation, request, h) {
     clearInterval(refreshIntervalId)
     logger.info('::::::::: OAuth token refresh interval cleared ::::::::::')
   }
-
-  const symbolsArr = [
-    '%',
-    '$',
-    '&',
-    '#',
-    '!',
-    '¬',
-    '(',
-    ')',
-    '[',
-    ']',
-    '{',
-    '}',
-    '*',
-    '^',
-    '@',
-    '?',
-    '>',
-    '<',
-    '+',
-    '=',
-    '|',
-    '~',
-    '`',
-    ';',
-    ':',
-    ',',
-    '.',
-    '/',
-    '\\',
-    '"',
-    "'"
-  ]
   const northernIrelandPostcodeRegex = /^BT\d{1,2}\s?\d?[A-Z]{0,2}$/
   const niPoscode = northernIrelandPostcodeRegex.test(userLocation)
   const forecastSummaryURL = config.get('forecastSummaryUrl')
@@ -181,7 +147,7 @@ async function fetchData(locationType, userLocation, request, h) {
       userLocation
     )}&fq=${encodeURIComponent(filters)}&key=${osNamesApiKey}`
 
-    let shouldCallApi = !symbolsArr.some((symbol) =>
+    let shouldCallApi = !SYMBOLS_ARRAY.some((symbol) =>
       userLocation.includes(symbol)
     )
     if (niPoscode) {
@@ -204,6 +170,7 @@ async function fetchData(locationType, userLocation, request, h) {
     }
     return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
   } else if (locationType === LOCATION_TYPE_NI) {
+    logger.info(`inside LOCATION_TYPE_NI: ${LOCATION_TYPE_NI}`)
     const osPlacesApiPostcodeNorthernIrelandUrl = config.get(
       'osPlacesApiPostcodeNorthernIrelandUrl'
     )
@@ -218,6 +185,13 @@ async function fetchData(locationType, userLocation, request, h) {
     } else {
       logger.info(`getNIPlaces data fetched:`)
     }
+    if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
+      logger.info(
+        `::::::::::: getNIPlaces en into location not found  ::::::::::: ${getNIPlaces}`
+      )
+      return h.redirect('/location-not-found').takeover()
+    }
+
     return { getDailySummary, getForecasts, getMeasurements, getNIPlaces }
   }
 }
