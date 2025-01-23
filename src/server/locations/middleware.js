@@ -164,7 +164,6 @@ const searchMiddleware = async (request, h) => {
       return h.redirect('/location-not-found').takeover()
     }
   } else if (locationType === LOCATION_TYPE_NI) {
-    const { query } = request
     const { daqi } = english
     const { getNIPlaces } = await fetchData(
       'ni-location',
@@ -172,12 +171,14 @@ const searchMiddleware = async (request, h) => {
       request,
       h
     )
-    logger.info(`::::::::::: getNIPlaces en  ::::::::::: ${getNIPlaces}`)
+    logger.info(
+      `::::::::::: getNIPlaces en stringify  ::::::::::: ${JSON.stringify(getNIPlaces)}`
+    )
     logger.info(
       `::::::::::: getNIPlaces statusCode en  ::::::::::: ${getNIPlaces?.statusCode}`
     )
     logger.info(
-      `::::::::::: getNIPlaces en results  ::::::::::: ${getNIPlaces?.results}`
+      `::::::::::: getNIPlaces en results stringify  ::::::::::: ${JSON.stringify(getNIPlaces?.results)}`
     )
     const { results } = getNIPlaces
     const { forecastNum, nearestLocationsRange, latlon } = getNearestLocation(
@@ -188,6 +189,7 @@ const searchMiddleware = async (request, h) => {
       0,
       lang
     )
+    logger.info(`::::::::::: getNIPlaces 1  :::::::::::`)
     const locationData = {
       GAZETTEER_ENTRY: {
         NAME1: results[0].postcode,
@@ -199,6 +201,7 @@ const searchMiddleware = async (request, h) => {
     let title = ''
     let headerTitle = ''
     let urlRoute = ''
+    logger.info(`::::::::::: getNIPlaces 2  :::::::::::`)
     if (locationData) {
       if (locationData.GAZETTEER_ENTRY.NAME2) {
         title = `${locationData.GAZETTEER_ENTRY.NAME2}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
@@ -210,6 +213,7 @@ const searchMiddleware = async (request, h) => {
         urlRoute = `${locationData.GAZETTEER_ENTRY.NAME1}_${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
       }
     }
+    logger.info(`::::::::::: getNIPlaces 3  :::::::::::`)
     title = firstLetterUppercase(title)
     headerTitle = firstLetterUppercase(headerTitle)
     urlRoute = convertStringToHyphenatedLowercaseWords(urlRoute)
@@ -221,10 +225,7 @@ const searchMiddleware = async (request, h) => {
       Object.values(forecastNum[0][3])[0],
       Object.values(forecastNum[0][4])[0]
     )
-    if (lang === 'en' && query?.lang === 'cy') {
-      /* eslint-disable camelcase */
-      return h.redirect(`/lleoliad/cy?lang=cy`)
-    }
+    logger.info(`::::::::::: getNIPlaces 4  :::::::::::`)
     request.yar.set('locationData', {
       result: locationData,
       airQuality,
