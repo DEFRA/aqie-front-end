@@ -31,7 +31,6 @@ import { getAirQuality } from '~/src/server/data/en/air-quality.js'
 const logger = createLogger()
 
 const searchMiddleware = async (request, h) => {
-  const { payload } = request
   const lang = LANG_EN
   const month = getMonth(lang)
   const {
@@ -42,13 +41,14 @@ const searchMiddleware = async (request, h) => {
     cookieBanner,
     multipleLocations
   } = english
-  logger.info(
-    `::::::::::: before handleErrorInputAndRedirect  ::::::::::: ${payload}`
+  logger.info(`::::::::::: before handleErrorInputAndRedirect  ::::::::::: `)
+  const redirectError = handleErrorInputAndRedirect(
+    request,
+    h,
+    lang,
+    request?.payload
   )
-  const redirectError = handleErrorInputAndRedirect(request, h, lang, payload)
-  logger.info(
-    `::::::::::: after handleErrorInputAndRedirect  ::::::::::: ${payload}`
-  )
+  logger.info(`::::::::::: after handleErrorInputAndRedirect  :::::::::::`)
   if (!redirectError.locationType) {
     return redirectError
   }
