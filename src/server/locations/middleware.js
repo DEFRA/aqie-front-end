@@ -227,7 +227,54 @@ const searchMiddleware = async (request, h) => {
       Object.values(forecastNum[0][3])[0],
       Object.values(forecastNum[0][4])[0]
     )
-    logger.info(`::::::::::: getNIPlaces 4  :::::::::::`)
+    logger.info(
+      `::::::::::: getNIPlaces 4 locationData ::::::::::: ${locationData}`
+    )
+    logger.info(
+      `::::::::::: getNIPlaces 4 airQuality  ::::::::::: ${airQuality}`
+    )
+    logger.info(
+      `::::::::::: getNIPlaces 4 airQualityData.commonMessages ::::::::::: ${airQualityData.commonMessages}`
+    )
+    logger.info(
+      `::::::::::: getNIPlaces 4 nearestLocationsRange ::::::::::: ${nearestLocationsRange}`
+    )
+    logger.info(
+      `::::::::::: getNIPlaces 4 siteTypeDescriptions ::::::::::: ${siteTypeDescriptions}`
+    )
+    logger.info(
+      `::::::::::: getNIPlaces 4 pollutantTypes ::::::::::: ${pollutantTypes}`
+    )
+    logger.info(`::::::::::: getNIPlaces 4 title ::::::::::: ${title}`)
+    logger.info(
+      `::::::::::: getNIPlaces 4 getDailySummary.today ::::::::::: ${getDailySummary.today}`
+    )
+    logger.info(
+      `::::::::::: getNIPlaces 4 getDailySummary ::::::::::: ${getDailySummary}`
+    )
+    logger.info(`::::::::::: getNIPlaces 4 footerTxt ::::::::::: ${footerTxt}`)
+    logger.info(
+      `::::::::::: getNIPlaces 4 phaseBanner ::::::::::: ${phaseBanner}`
+    )
+    logger.info(`::::::::::: getNIPlaces 4 backlink ::::::::::: ${backlink}`)
+    logger.info(
+      `::::::::::: getNIPlaces 4 cookieBanner ::::::::::: ${cookieBanner}`
+    )
+    logger.info(`::::::::::: getNIPlaces 4 daqi ::::::::::: ${daqi}`)
+    logger.info(
+      `::::::::::: getNIPlaces 4 calendarWelsh[getMonth] ::::::::::: ${calendarWelsh[getMonth]}`
+    )
+    logger.info(`::::::::::: getNIPlaces 4 welshDate ::::::::::: ${welshDate}`)
+    logger.info(
+      `::::::::::: getNIPlaces 4 englishDate ::::::::::: ${englishDate}`
+    )
+    logger.info(
+      `::::::::::: getNIPlaces 4 english.dailySummaryTexts ::::::::::: ${english.dailySummaryTexts}`
+    )
+    logger.info(`::::::::::: getNIPlaces 4 lang ::::::::::: ${lang}`)
+    logger.info(
+      `::::::::::: getNIPlaces 4 headerTitle ::::::::::: ${headerTitle}`
+    )
     request.yar.set('locationData', {
       result: locationData,
       airQuality,
