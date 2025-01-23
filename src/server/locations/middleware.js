@@ -192,10 +192,18 @@ const searchMiddleware = async (request, h) => {
       lang
     )
     logger.info(`::::::::::: getNIPlaces 1  :::::::::::`)
+    const selectedMatches = processMatches(
+      results,
+      locationNameOrPostcode,
+      userLocation
+    )
+    logger.info(
+      `::::::::::: getNIPlaces 1 selectedMatches  ::::::::::: ${JSON.stringify(selectedMatches)}`
+    )
     const locationData = {
       GAZETTEER_ENTRY: {
-        NAME1: results[0].postcode,
-        DISTRICT_BOROUGH: sentenceCase(results[0].administrativeArea),
+        NAME1: selectedMatches[0].postcode,
+        DISTRICT_BOROUGH: sentenceCase(selectedMatches[0].administrativeArea),
         LONGITUDE: latlon.lon,
         LATITUDE: latlon.lat
       }
