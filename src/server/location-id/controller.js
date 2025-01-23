@@ -20,6 +20,7 @@ const getLocationDetailsController = {
     try {
       const { query } = request
       const locationId = request.params.id
+      let locationDetails = null
       logger.info(
         `::::::::::: getNIPlaces 4 locationId  ::::::::::: ${locationId}`
       )
@@ -49,16 +50,15 @@ const getLocationDetailsController = {
         `::::::::::: getNIPlaces 4 locationData?.results  ::::::::::: ${JSON.stringify(locationData?.results)}`
       )
       let locationIndex = 0
-      const locationDetails = locationData?.results?.find((item, index) => {
-        logger.info(
-          `::::::::::: item.GAZETTEER_ENTRY.ID  ::::::::::: ${item.GAZETTEER_ENTRY.ID}`
-        )
-        if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
-          locationIndex = index
-          return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
-        }
-        return null
-      })
+      if (!locationData?.locationType) {
+        locationDetails = locationData?.results?.find((item, index) => {
+          if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
+            locationIndex = index
+            return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
+          }
+          return null
+        })
+      }
 
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
