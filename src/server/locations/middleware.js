@@ -42,15 +42,24 @@ const searchMiddleware = async (request, h) => {
     cookieBanner,
     multipleLocations
   } = english
-
+  logger.info(
+    `::::::::::: before handleErrorInputAndRedirect  ::::::::::: ${payload}`
+  )
   const redirectError = handleErrorInputAndRedirect(request, h, lang, payload)
+  logger.info(
+    `::::::::::: after handleErrorInputAndRedirect  ::::::::::: ${payload}`
+  )
   if (!redirectError.locationType) {
     return redirectError
   }
   let { locationType, userLocation, locationNameOrPostcode } = redirectError
 
-  const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
-    await fetchData(locationType, userLocation, request, h)
+  const { getDailySummary, getForecasts, getMeasurements } = await fetchData(
+    locationType,
+    userLocation,
+    request,
+    h
+  )
 
   const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
     getDailySummary.issue_date,
@@ -65,7 +74,14 @@ const searchMiddleware = async (request, h) => {
     calendarWelsh
   )
   request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+
   if (locationType === LOCATION_TYPE_UK) {
+    const { getOSPlaces } = await fetchData(
+      locationType,
+      userLocation,
+      request,
+      h
+    )
     let { results } = getOSPlaces
 
     if (!results || results.length === 0 || getOSPlaces === 'wrong postcode') {
@@ -160,9 +176,9 @@ const searchMiddleware = async (request, h) => {
     logger.info(
       `::::::::::: getNIPlaces statusCode en  ::::::::::: ${getNIPlaces?.statusCode}`
     )
-    if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
-      return h.redirect('/location-not-found').takeover()
-    }
+    logger.info(
+      `::::::::::: getNIPlaces en results  ::::::::::: ${getNIPlaces?.results}`
+    )
     const { results } = getNIPlaces
     const { forecastNum, nearestLocationsRange, latlon } = getNearestLocation(
       results,
@@ -231,8 +247,14 @@ const searchMiddleware = async (request, h) => {
       dailySummaryTexts: english.dailySummaryTexts,
       lang
     })
+    logger.info(
+      `::::::::::: redirecting to specific location en  ::::::::::: ${locationType}`
+    )
     return h.redirect(`/location/${urlRoute}?lang=en`).takeover()
   } else {
+    logger.info(
+      `::::::::::: redirecting to location not found en  ::::::::::: ${locationType}`
+    )
     // handle other location types
     return h.redirect('/location-not-found').takeover()
   }
