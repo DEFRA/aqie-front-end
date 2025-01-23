@@ -251,7 +251,7 @@ const searchMiddleware = async (request, h) => {
       lang
     })
     logger.info(
-      `::::::::::: redirecting to specific location en  ::::::::::: ${locationType}`
+      `::::::::::: redirecting to specific urlRoute en  ::::::::::: ${urlRoute}`
     )
     return h.redirect(`/location/${urlRoute}?lang=en`).takeover()
   } else {

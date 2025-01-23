@@ -20,7 +20,9 @@ const getLocationDetailsController = {
     try {
       const { query } = request
       const locationId = request.params.id
-
+      logger.info(
+        `::::::::::: getNIPlaces 4 locationId  ::::::::::: ${locationId}`
+      )
       if (query?.lang && query?.lang === LANG_CY) {
         /* eslint-disable camelcase */
         return h.redirect(`/lleoliad/${locationId}/?lang=cy`)
@@ -43,6 +45,9 @@ const getLocationDetailsController = {
 
       let locationIndex = 0
       const locationDetails = locationData?.results?.find((item, index) => {
+        logger.info(
+          `::::::::::: item.GAZETTEER_ENTRY.ID  ::::::::::: ${item.GAZETTEER_ENTRY.ID}`
+        )
         if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
           locationIndex = index
           return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
