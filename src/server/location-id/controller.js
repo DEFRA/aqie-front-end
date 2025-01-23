@@ -46,7 +46,7 @@ const getLocationDetailsController = {
         `::::::::::: getNIPlaces 4 locationData 2  ::::::::::: ${JSON.stringify(locationData)}`
       )
       logger.info(
-        `::::::::::: getNIPlaces 4 locationData?.results  ::::::::::: ${locationData?.results}`
+        `::::::::::: getNIPlaces 4 locationData?.results  ::::::::::: ${JSON.stringify(locationData?.results)}`
       )
       let locationIndex = 0
       const locationDetails = locationData?.results?.find((item, index) => {
