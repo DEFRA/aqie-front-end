@@ -42,7 +42,12 @@ const getLocationDetailsController = {
         daqi
       } = english
       const locationData = request.yar.get('locationData') || []
-
+      logger.info(
+        `::::::::::: getNIPlaces 4 locationData  ::::::::::: ${locationData}`
+      )
+      logger.info(
+        `::::::::::: getNIPlaces 4 locationData?.results  ::::::::::: ${locationData?.results}`
+      )
       let locationIndex = 0
       const locationDetails = locationData?.results?.find((item, index) => {
         logger.info(
