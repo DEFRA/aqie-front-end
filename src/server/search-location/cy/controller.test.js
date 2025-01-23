@@ -1,6 +1,7 @@
 /* eslint-disable */
-import { welsh } from '../../data/cy/cy.js'
-import { searchLocationController } from './controller.js'
+import { welsh } from '~/src/server/data/cy/cy.js'
+import { searchLocationController } from '~/src/server/search-location/cy/controller.js'
+import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url.js'
 
 describe('searchLocationController - welsh', () => {
   let mockRequest
@@ -16,6 +17,11 @@ describe('searchLocationController - welsh', () => {
         get: jest.fn()
       }
     }
+    jest.mock('~/src/server/common/helpers/get-site-url', () => ({
+      getAirQualitySiteUrlFromEnv: jest.fn((request) => {
+        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+      })
+    }))
     mockH = {
       redirect: jest.fn().mockReturnValue('redirected'),
       view: jest.fn().mockReturnValue('view rendered')
@@ -30,13 +36,26 @@ describe('searchLocationController - welsh', () => {
   })
 
   it('should redirect by default to search location index page with welsh version if lang is not cy/en', () => {
-    mockRequest.query.lang = 'fr'
-    mockRequest.path = '/chwilio-lleoliad/cy'
+    mockRequest = {
+      query: {
+        lang: 'fr'
+      },
+      path: '/chwilio-lleoliad/cy',
+      yar: {
+        set: jest.fn(),
+        get: jest.fn()
+      }
+    }
+    const expectedUrl =
+      'https://check-air-quality.service.gov.uk/chwilio-lleoliad/cy?lang=fr'
+    const actualUrl = getAirQualitySiteUrl(mockRequest)
+    expect(actualUrl).toBe(expectedUrl)
     const result = searchLocationController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('search-location/index', {
       pageTitle: mockContent.searchLocation.pageTitle,
       description: mockContent.searchLocation.description,
+      metaSiteUrl: actualUrl,
       heading: mockContent.searchLocation.heading,
       page: mockContent.searchLocation.page,
       serviceName: mockContent.searchLocation.serviceName,
@@ -63,12 +82,26 @@ describe('searchLocationController - welsh', () => {
   })
 
   it('should redirect to search location index page', () => {
-    mockRequest.query.lang = 'cy'
+    mockRequest = {
+      query: {
+        lang: 'cy'
+      },
+      path: '/chwilio-lleoliad/cy',
+      yar: {
+        set: jest.fn(),
+        get: jest.fn()
+      }
+    }
+    const expectedUrl =
+      'https://check-air-quality.service.gov.uk/chwilio-lleoliad/cy?lang=cy'
+    const actualUrl = getAirQualitySiteUrl(mockRequest)
+    expect(actualUrl).toBe(expectedUrl)
     const result = searchLocationController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('search-location/index', {
       pageTitle: mockContent.searchLocation.pageTitle,
       description: mockContent.searchLocation.description,
+      metaSiteUrl: actualUrl,
       heading: mockContent.searchLocation.heading,
       page: mockContent.searchLocation.page,
       serviceName: mockContent.searchLocation.serviceName,

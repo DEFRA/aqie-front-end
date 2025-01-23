@@ -1,6 +1,7 @@
 import { welsh } from '~/src/server/data/cy/cy.js'
 import { ozoneController } from '~/src/server/ozone/cy/controller.js'
 import { LANG_CY } from '~/src/server/data/constants'
+import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 
 describe('Ozone Controller - Welsh', () => {
   let mockRequest
@@ -10,8 +11,13 @@ describe('Ozone Controller - Welsh', () => {
   beforeEach(() => {
     mockRequest = {
       query: {},
-      path: {}
+      path: '/chwilio-lleoliad/cy'
     }
+    jest.mock('~/src/server/common/helpers/get-site-url', () => ({
+      getAirQualitySiteUrl: jest.fn((request) => {
+        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+      })
+    }))
     mockH = {
       redirect: jest.fn().mockReturnValue('redirected'),
       view: jest.fn().mockReturnValue('view rendered')
@@ -27,11 +33,16 @@ describe('Ozone Controller - Welsh', () => {
 
   it('should render the ozone cy page with the necessary data', () => {
     mockRequest.query.lang = LANG_CY
+    const expectedUrl =
+      'https://check-air-quality.service.gov.uk/chwilio-lleoliad/cy?lang=cy'
+    const actualUrl = getAirQualitySiteUrl(mockRequest)
+    expect(actualUrl).toBe(expectedUrl)
     const result = ozoneController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('ozone/index', {
       pageTitle: mockContent.pollutants.ozone.pageTitle,
       description: mockContent.pollutants.ozone.description,
+      metaSiteUrl: actualUrl,
       ozone,
       page: 'ozone-cy',
       displayBacklink: false,
@@ -45,12 +56,16 @@ describe('Ozone Controller - Welsh', () => {
 
   it('should render the ozone cy page with the necessary data if lang is not cy | en', () => {
     mockRequest.query.lang = 'test'
-    mockRequest.path = '/chwilio-lleoliad/cy'
+    const expectedUrl =
+      'https://check-air-quality.service.gov.uk/chwilio-lleoliad/cy?lang=test'
+    const actualUrl = getAirQualitySiteUrl(mockRequest)
+    expect(actualUrl).toBe(expectedUrl)
     const result = ozoneController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('ozone/index', {
       pageTitle: mockContent.pollutants.ozone.pageTitle,
       description: mockContent.pollutants.ozone.description,
+      metaSiteUrl: actualUrl,
       ozone,
       page: 'ozone-cy',
       displayBacklink: false,

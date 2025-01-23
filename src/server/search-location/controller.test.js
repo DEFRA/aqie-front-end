@@ -1,7 +1,7 @@
 /* eslint-disable */
-import { english } from '../data/en/en.js'
-import { searchLocationController } from './controller.js'
-
+import { english } from '~/src/server/data/en/en.js'
+import { searchLocationController } from '~/src/server/search-location/controller'
+import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url.js'
 describe('searchLocationController - english', () => {
   let mockRequest
   let mockH
@@ -16,6 +16,11 @@ describe('searchLocationController - english', () => {
         get: jest.fn()
       }
     }
+    jest.mock('~/src/server/common/helpers/get-site-url', () => ({
+      getAirQualitySiteUrl: jest.fn((request) => {
+        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+      })
+    }))
     mockH = {
       redirect: jest.fn().mockReturnValue('redirected'),
       view: jest.fn().mockReturnValue('view rendered')
@@ -23,19 +28,46 @@ describe('searchLocationController - english', () => {
   })
 
   it('should redirect to the Welsh version if the language is "cy"', () => {
-    mockRequest.query.lang = 'cy'
+    mockRequest = {
+      query: {
+        lang: 'cy'
+      },
+      path: '/chwilio-lleoliad/cy',
+      yar: {
+        set: jest.fn(),
+        get: jest.fn()
+      }
+    }
+    const expectedUrl =
+      'https://check-air-quality.service.gov.uk/chwilio-lleoliad/cy?lang=cy'
+    const actualUrl = getAirQualitySiteUrl(mockRequest)
+    expect(actualUrl).toBe(expectedUrl)
     const result = searchLocationController.handler(mockRequest, mockH)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith('/chwilio-lleoliad/cy?lang=cy')
   })
 
   it('should redirect to search location index page', () => {
-    mockRequest.query.lang = 'en'
+    mockRequest = {
+      query: {
+        lang: 'en'
+      },
+      path: '/search-location',
+      yar: {
+        set: jest.fn(),
+        get: jest.fn()
+      }
+    }
+    const expectedUrl =
+      'https://check-air-quality.service.gov.uk/search-location?lang=en'
+    const actualUrl = getAirQualitySiteUrl(mockRequest)
+    expect(actualUrl).toBe(expectedUrl)
     const result = searchLocationController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('search-location/index', {
       pageTitle: mockContent.searchLocation.pageTitle,
       description: mockContent.searchLocation.description,
+      metaSiteUrl: actualUrl,
       heading: mockContent.searchLocation.heading,
       page: mockContent.searchLocation.page,
       serviceName: mockContent.searchLocation.serviceName,
@@ -61,14 +93,27 @@ describe('searchLocationController - english', () => {
     })
   })
 
-  it('should redirect by default to search location index page with english version if lang is not cy/en', () => {
-    mockRequest.query.lang = 'fr'
-    mockRequest.path = '/search-location'
+  it('should redirect by default to search location index page with english version if lang is not cy/en but path is present', () => {
+    mockRequest = {
+      query: {
+        lang: 'fr'
+      },
+      path: '/search-location',
+      yar: {
+        set: jest.fn(),
+        get: jest.fn()
+      }
+    }
+    const expectedUrl =
+      'https://check-air-quality.service.gov.uk/search-location?lang=fr'
+    const actualUrl = getAirQualitySiteUrl(mockRequest)
+    expect(actualUrl).toBe(expectedUrl)
     const result = searchLocationController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('search-location/index', {
       pageTitle: mockContent.searchLocation.pageTitle,
       description: mockContent.searchLocation.description,
+      metaSiteUrl: actualUrl,
       heading: mockContent.searchLocation.heading,
       page: mockContent.searchLocation.page,
       serviceName: mockContent.searchLocation.serviceName,
@@ -99,6 +144,8 @@ describe('searchLocationController - english', () => {
     const errors = { titleText: 'There is a problem' }
     const errorMessage = { text: 'Select where you want to check' }
     const mrequest = {
+      query: { lang: 'en' },
+      path: '/search-location',
       yar: {
         get: jest.fn((key) => {
           if (key === 'errors') {
@@ -110,14 +157,18 @@ describe('searchLocationController - english', () => {
           }
         }),
         set: jest.fn()
-      },
-      query: { lang: 'en' }
+      }
     }
+    const expectedUrl =
+      'https://check-air-quality.service.gov.uk/search-location?lang=en'
+    const actualUrl = getAirQualitySiteUrl(mrequest)
+    expect(actualUrl).toBe(expectedUrl)
     const result = searchLocationController.handler(mrequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('search-location/index', {
       pageTitle: `Error: ${mockContent.searchLocation.pageTitle}`,
       description: mockContent.searchLocation.description,
+      metaSiteUrl: actualUrl,
       heading: mockContent.searchLocation.heading,
       page: mockContent.searchLocation.page,
       serviceName: mockContent.searchLocation.serviceName,

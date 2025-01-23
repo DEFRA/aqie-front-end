@@ -1,6 +1,8 @@
 /* eslint-disable prettier/prettier */
 import { welsh } from '~/src/server/data/cy/cy.js'
 import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
+import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
+
 const privacyController = {
   handler: (request, h) => {
     const {
@@ -21,6 +23,8 @@ const privacyController = {
     } = welsh
     /* eslint-disable camelcase */
     const { query, path } = request
+    const metaSiteUrl = getAirQualitySiteUrl(request)
+
     if (query?.lang && query?.lang === LANG_EN) {
       return h.redirect(`/privacy?lang=en`)
     }
@@ -31,6 +35,7 @@ const privacyController = {
     return h.view('privacy/index', {
       pageTitle,
       description,
+      metaSiteUrl,
       title,
       heading,
       headings,

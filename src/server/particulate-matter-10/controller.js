@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { english } from '~/src/server/data/en/en.js'
 import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
+import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 
 const particulateMatter10Controller = {
   handler: (request, h) => {
@@ -8,12 +9,15 @@ const particulateMatter10Controller = {
     const { footerTxt, cookieBanner, phaseBanner, multipleLocations } = english
     const { query } = request
     const lang = LANG_EN
+    const metaSiteUrl = getAirQualitySiteUrl(request)
+
     if (query?.lang && query?.lang === LANG_CY) {
       return h.redirect(`/llygryddion/mater-gronynnol-10/cy?lang=cy`)
     }
     return h.view('particulate-matter-10/index', {
       pageTitle: particulateMatter10.pageTitle,
       description: particulateMatter10.description,
+      metaSiteUrl,
       particulateMatter10,
       page: 'particulate matter 10',
       displayBacklink: false,

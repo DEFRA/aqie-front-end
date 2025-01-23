@@ -1,5 +1,6 @@
 import { welsh } from '~/src/server/data/cy/cy.js'
 import { LANG_EN, LANG_CY } from '~/src/server/data/constants'
+import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 
 // Define the handler function
 const accessibilityHandler = (request, h, content = welsh) => {
@@ -24,15 +25,16 @@ const accessibilityHandler = (request, h, content = welsh) => {
   // Extract query parameters and path from the request
   const { query, path } = request
   const lang = query?.lang?.slice(0, 2)
+  const metaSiteUrl = getAirQualitySiteUrl(request)
 
   // Redirect to English version if language is 'en'
   if (lang === LANG_EN) {
     return h.redirect('/accessibility?lang=en')
   }
 
-  // Default to Welsh if language is not LANG_CY or 'en' and path is '/preifatrwydd/cy'
+  // Default to Welsh if language is not LANG_CY or 'en' and path is '/hygyrchedd/cy'
   const effectiveLang =
-    lang !== LANG_CY && lang !== LANG_EN && path === '/preifatrwydd/cy'
+    lang !== LANG_CY && lang !== LANG_EN && path === '/hygyrchedd/cy'
       ? LANG_CY
       : lang
 
@@ -40,6 +42,7 @@ const accessibilityHandler = (request, h, content = welsh) => {
   return h.view('accessibility/index', {
     pageTitle,
     description,
+    metaSiteUrl,
     title,
     heading,
     headings,

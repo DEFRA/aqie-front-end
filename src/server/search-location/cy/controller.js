@@ -4,10 +4,13 @@ import {
   LANG_EN,
   SEARCH_LOCATION_ROUTE_EN
 } from '~/src/server/data/constants'
+import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 
 const searchLocationController = {
   handler: (request, h) => {
     const { query, path } = request
+    const metaSiteUrl = getAirQualitySiteUrl(request)
+
     let lang = query?.lang?.slice(0, 2)
     if (
       lang !== LANG_CY &&
@@ -28,7 +31,8 @@ const searchLocationController = {
       request.yar.set('errorMessage', null)
       return h.view('search-location/index', {
         pageTitle: `Gwall: ${welsh.searchLocation.pageTitle}`,
-        metaDescription: welsh.searchLocation.description,
+        description: welsh.searchLocation.description,
+        metaSiteUrl,
         heading: welsh.searchLocation.heading,
         page: welsh.searchLocation.page,
         serviceName: welsh.searchLocation.serviceName,
@@ -60,6 +64,7 @@ const searchLocationController = {
       return h.view('search-location/index', {
         pageTitle: welsh.searchLocation.pageTitle,
         description: welsh.searchLocation.description,
+        metaSiteUrl,
         heading: welsh.searchLocation.heading,
         page: welsh.searchLocation.page,
         serviceName: welsh.searchLocation.serviceName,

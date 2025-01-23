@@ -1,6 +1,7 @@
 import { locationNotFoundController } from '~/src/server/location-not-found/controller.js'
 import { english } from '~/src/server/data/en/en.js'
 import { LOCATION_NOT_FOUND } from '~/src/server/data/constants.js'
+import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 
 describe('locationNotFoundController - english', () => {
   let mockRequest
@@ -10,7 +11,7 @@ describe('locationNotFoundController - english', () => {
   beforeEach(() => {
     mockRequest = {
       query: {},
-      path: '',
+      path: '/location-not-found',
       yar: {
         get: jest.fn().mockReturnValue({
           locationNameOrPostcode: '',
@@ -18,6 +19,11 @@ describe('locationNotFoundController - english', () => {
         })
       }
     }
+    jest.mock('~/src/server/common/helpers/get-site-url', () => ({
+      getAirQualitySiteUrl: jest.fn((request) => {
+        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+      })
+    }))
     mockH = {
       redirect: jest.fn().mockReturnValue('redirected'),
       view: jest.fn().mockReturnValue('view rendered')
@@ -34,6 +40,10 @@ describe('locationNotFoundController - english', () => {
     //   }
     // }
     // const locationData = { locationNameOrPostcode: '', lang: 'en' }
+    const expectedUrl =
+      'https://check-air-quality.service.gov.uk/location-not-found'
+    const actualUrl = getAirQualitySiteUrl(mockRequest)
+    expect(actualUrl).toBe(expectedUrl)
     const result = locationNotFoundController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith(LOCATION_NOT_FOUND, {
@@ -41,6 +51,7 @@ describe('locationNotFoundController - english', () => {
       serviceName: mockContent.notFoundLocation.heading,
       paragraph: mockContent.notFoundLocation.paragraphs,
       pageTitle: `${mockContent.notFoundLocation.paragraphs.a}  - ${mockContent.home.pageTitle}`,
+      metaSiteUrl: actualUrl,
       footerTxt: mockContent.footerTxt,
       phaseBanner: mockContent.phaseBanner,
       backlink: mockContent.backlink,

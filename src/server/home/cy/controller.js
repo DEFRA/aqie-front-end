@@ -1,10 +1,12 @@
 import { welsh } from '~/src/server/data/cy/cy.js'
 import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
+import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 
 // Define the handler function
 const handleHomeRequest = (request, h, content = welsh) => {
   const { query } = request
   const { home, footerTxt, phaseBanner, backlink, cookieBanner } = content
+  const metaSiteUrl = getAirQualitySiteUrl(request)
 
   // Redirect to the English version if the language is 'en'
   if (query.lang === LANG_EN) {
@@ -15,6 +17,7 @@ const handleHomeRequest = (request, h, content = welsh) => {
   return h.view('home/index', {
     pageTitle: home.pageTitle,
     description: home.description,
+    metaSiteUrl,
     heading: home.heading,
     page: home.page,
     paragraphs: home.paragraphs,
