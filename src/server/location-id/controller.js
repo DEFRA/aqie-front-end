@@ -43,7 +43,7 @@ const getLocationDetailsController = {
       } = english
       const locationData = request.yar.get('locationData') || []
       logger.info(
-        `::::::::::: getNIPlaces 4 locationData  ::::::::::: ${locationData}`
+        `::::::::::: getNIPlaces 4 locationData 2  ::::::::::: ${JSON.stringify(locationData)}`
       )
       logger.info(
         `::::::::::: getNIPlaces 4 locationData?.results  ::::::::::: ${locationData?.results}`
