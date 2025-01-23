@@ -102,8 +102,10 @@ const searchMiddleware = async (request, h) => {
       selectedMatches,
       locationNameOrPostcode
     )
-    const headerTitleRoute = convertStringToHyphenatedLowercaseWords(urlRoute)
-    const titleRoute = convertStringToHyphenatedLowercaseWords(title)
+    const headerTitleRoute = convertStringToHyphenatedLowercaseWords(
+      String(urlRoute)
+    )
+    const titleRoute = convertStringToHyphenatedLowercaseWords(String(title))
     const { forecastNum, nearestLocationsRange, airQuality } =
       getNearestLocation(
         selectedMatches,
