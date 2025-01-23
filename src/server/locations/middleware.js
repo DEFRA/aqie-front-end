@@ -276,7 +276,7 @@ const searchMiddleware = async (request, h) => {
       `::::::::::: getNIPlaces 4 headerTitle ::::::::::: ${headerTitle}`
     )
     request.yar.set('locationData', {
-      result: locationData,
+      results: locationData,
       airQuality,
       airQualityData: airQualityData.commonMessages,
       monitoringSites: nearestLocationsRange,
