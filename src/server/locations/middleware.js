@@ -202,7 +202,7 @@ const searchMiddleware = async (request, h) => {
       if (locationData.GAZETTEER_ENTRY?.NAME2) {
         title = `${locationData.GAZETTEER_ENTRY?.NAME2}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
         headerTitle = `${locationData.GAZETTEER_ENTRY?.NAME2}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
-        urlRoute = `${locationData.GAZETTEER_ENTRY.NAME2}_${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
+        urlRoute = `${locationData.GAZETTEER_ENTRY?.NAME2}_${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
       } else {
         title = `${locationData.GAZETTEER_ENTRY?.NAME1}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
         headerTitle = `${locationData.GAZETTEER_ENTRY?.NAME1}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
