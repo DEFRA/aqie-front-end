@@ -182,9 +182,7 @@ const searchMiddleware = async (request, h) => {
       0,
       lang
     )
-    logger.info(
-      `::::::::::: getNIPlaces 1  esults[0].administrativeArea ::::::::::: ${results[0].administrativeArea}`
-    )
+    logger.info(`::::::::::: getNIPlaces 1  result ::::::::::: ${results}`)
 
     let locationData = [
       {
@@ -208,7 +206,7 @@ const searchMiddleware = async (request, h) => {
       } else {
         title = `${locationData.GAZETTEER_ENTRY?.NAME1}, ${locationData.GAZETTEER_ENTRY?.DISTRICT_BOROUGH} - ${home.pageTitle}`
         headerTitle = `${locationData.GAZETTEER_ENTRY?.NAME1}, ${locationData.GAZETTEER_ENTRY?.DISTRICT_BOROUGH}`
-        urlRoute = `${locationData.GAZETTEER_ENTRY.NAME1}_${locationData.GAZETTEER_ENTRY?.DISTRICT_BOROUGH}`
+        urlRoute = `${locationData.GAZETTEER_ENTRY?.NAME1}_${locationData.GAZETTEER_ENTRY?.DISTRICT_BOROUGH}`
       }
     }
     logger.info(`::::::::::: getNIPlaces 3  :::::::::::`)
