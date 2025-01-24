@@ -184,14 +184,16 @@ const searchMiddleware = async (request, h) => {
     )
     logger.info(`::::::::::: getNIPlaces 1  :::::::::::`)
 
-    const locationData = {
-      GAZETTEER_ENTRY: {
-        NAME1: results[0].postcode,
-        DISTRICT_BOROUGH: sentenceCase(results[0].administrativeArea),
-        LONGITUDE: latlon.lon,
-        LATITUDE: latlon.lat
+    let locationData = [
+      {
+        GAZETTEER_ENTRY: {
+          NAME1: results[0].postcode,
+          DISTRICT_BOROUGH: sentenceCase(results[0].administrativeArea),
+          LONGITUDE: latlon.lon,
+          LATITUDE: latlon.lat
+        }
       }
-    }
+    ]
     let title = ''
     let headerTitle = ''
     let urlRoute = ''
@@ -211,7 +213,17 @@ const searchMiddleware = async (request, h) => {
     title = firstLetterUppercase(title)
     headerTitle = firstLetterUppercase(headerTitle)
     urlRoute = convertStringToHyphenatedLowercaseWords(urlRoute)
-
+    locationData = [
+      {
+        GAZETTEER_ENTRY: {
+          ID: urlRoute,
+          NAME1: results[0].postcode,
+          DISTRICT_BOROUGH: sentenceCase(results[0].administrativeArea),
+          LONGITUDE: latlon.lon,
+          LATITUDE: latlon.lat
+        }
+      }
+    ]
     const airQuality = getAirQuality(
       forecastNum[0][0].today,
       Object.values(forecastNum[0][1])[0],

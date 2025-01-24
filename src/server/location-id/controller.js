@@ -43,22 +43,15 @@ const getLocationDetailsController = {
         daqi
       } = english
       const locationData = request.yar.get('locationData') || []
-      logger.info(
-        `::::::::::: getNIPlaces 4 locationData 2  ::::::::::: ${JSON.stringify(locationData)}`
-      )
-      logger.info(
-        `::::::::::: getNIPlaces 4 locationData?.results  ::::::::::: ${JSON.stringify(locationData?.results)}`
-      )
+
       let locationIndex = 0
-      if (!locationData?.locationType) {
-        locationDetails = locationData?.results?.find((item, index) => {
-          if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
-            locationIndex = index
-            return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
-          }
-          return null
-        })
-      }
+      locationDetails = locationData?.results?.find((item, index) => {
+        if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
+          locationIndex = index
+          return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
+        }
+        return null
+      })
 
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
@@ -72,6 +65,9 @@ const getLocationDetailsController = {
         )
         title = firstLetterUppercase(title)
         headerTitle = firstLetterUppercase(headerTitle)
+        logger.info(
+          `::::::::::: getNIPlaces 4 headerTitle  ::::::::::: ${headerTitle}`
+        )
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
