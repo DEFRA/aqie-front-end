@@ -9,8 +9,9 @@ import moment from 'moment-timezone'
 import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
 import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-util'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
+import { LANG_CY, LANG_EN, LOCATION_TYPE_UK } from '~/src/server/data/constants'
 import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
+import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 
 const logger = createLogger()
 
@@ -42,9 +43,10 @@ const getLocationDetailsController = {
         daqi
       } = english
       const locationData = request.yar.get('locationData') || []
-
-      locationDetails = locationData?.results?.find((item) => {
+      let locationIndex = 0
+      locationDetails = locationData?.results?.find((item, index) => {
         if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
+          locationIndex = index
           return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
         }
         return null
@@ -61,11 +63,19 @@ const getLocationDetailsController = {
           `::::::::::: getNIPlaces 4 headerTitle  ::::::::::: ${headerTitle}`
         )
         logger.info(`::::::::::: getNIPlaces 4 title  ::::::::::: ${title}`)
+        const { nearestLocationsRange, airQuality } = getNearestLocation(
+          locationData.results,
+          locationData.rawForecasts,
+          locationData.measurements,
+          LOCATION_TYPE_UK,
+          locationIndex,
+          request.query?.lang
+        )
         return h.view('locations/location', {
           result: locationDetails,
-          airQuality: locationData.airQuality,
+          airQuality,
           airQualityData: airQualityData.commonMessages,
-          monitoringSites: locationData.nearestLocationsRange,
+          monitoringSites: nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: title,
