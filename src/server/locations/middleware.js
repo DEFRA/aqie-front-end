@@ -199,13 +199,13 @@ const searchMiddleware = async (request, h) => {
     let urlRoute = ''
     logger.info(`::::::::::: getNIPlaces 2  :::::::::::`)
     if (locationData) {
-      if (locationData.GAZETTEER_ENTRY.NAME2) {
-        title = `${locationData.GAZETTEER_ENTRY.NAME2}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
-        headerTitle = `${locationData.GAZETTEER_ENTRY.NAME2}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
+      if (locationData.GAZETTEER_ENTRY?.NAME2) {
+        title = `${locationData.GAZETTEER_ENTRY?.NAME2}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
+        headerTitle = `${locationData.GAZETTEER_ENTRY?.NAME2}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
         urlRoute = `${locationData.GAZETTEER_ENTRY.NAME2}_${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
       } else {
-        title = `${locationData.GAZETTEER_ENTRY.NAME1}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
-        headerTitle = `${locationData.GAZETTEER_ENTRY.NAME1}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
+        title = `${locationData.GAZETTEER_ENTRY?.NAME1}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
+        headerTitle = `${locationData.GAZETTEER_ENTRY?.NAME1}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
         urlRoute = `${locationData.GAZETTEER_ENTRY.NAME1}_${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
       }
     }
