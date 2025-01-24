@@ -182,7 +182,9 @@ const searchMiddleware = async (request, h) => {
       0,
       lang
     )
-    logger.info(`::::::::::: getNIPlaces 1  result ::::::::::: ${results}`)
+    logger.info(
+      `::::::::::: getNIPlaces 1  result stringify ::::::::::: ${JSON.stringify(results)}`
+    )
 
     let title = ''
     let headerTitle = ''

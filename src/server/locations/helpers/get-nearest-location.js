@@ -12,6 +12,9 @@ import { getPollutantLevelCy } from '~/src/server/locations/helpers/cy/pollutant
 import { getAirQuality } from '~/src/server/data/en/air-quality.js'
 import { getAirQualityCy } from '~/src/server/data/cy/air-quality.js'
 import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
+import { createLogger } from '~/src/server/common/helpers/logging/logger'
+
+const logger = createLogger()
 
 function getNearestLocation(
   matches,
@@ -46,6 +49,9 @@ function getNearestLocation(
         item.location.coordinates[1] === dis.longitude
       )
     })
+    logger.info(
+      `::::::::::: getNIPlaces 1  opt stringify ::::::::::: ${JSON.stringify(opt)}`
+    )
     return opt
   })
   // TODO select and filter locations and pollutants which are not null or don't have exceptions
