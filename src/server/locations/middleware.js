@@ -26,7 +26,6 @@ import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
-import { getAirQuality } from '~/src/server/data/en/air-quality.js'
 
 const logger = createLogger()
 
@@ -174,7 +173,7 @@ const searchMiddleware = async (request, h) => {
       h
     )
     const { results } = getNIPlaces
-    const { forecastNum, nearestLocationsRange, latlon } = getNearestLocation(
+    const { nearestLocationsRange, latlon, airQuality } = getNearestLocation(
       results,
       getForecasts?.forecasts,
       getMeasurements?.measurements,
@@ -199,7 +198,7 @@ const searchMiddleware = async (request, h) => {
     title = firstLetterUppercase(title)
     headerTitle = firstLetterUppercase(headerTitle)
     urlRoute = convertStringToHyphenatedLowercaseWords(urlRoute)
-    const locationData = [
+    const resultNI = [
       {
         GAZETTEER_ENTRY: {
           ID: urlRoute,
@@ -207,26 +206,17 @@ const searchMiddleware = async (request, h) => {
           DISTRICT_BOROUGH: sentenceCase(results[0].administrativeArea),
           LONGITUDE: latlon.lon,
           LATITUDE: latlon.lat,
-          LOCATION_TYPE: LOCATION_TYPE_NI,
-          title,
-          headerTitle,
-          urlRoute
+          LOCATION_TYPE: LOCATION_TYPE_NI
         }
       }
     ]
-    const airQuality = getAirQuality(
-      forecastNum[0][0].today,
-      Object.values(forecastNum[0][1])[0],
-      Object.values(forecastNum[0][2])[0],
-      Object.values(forecastNum[0][3])[0],
-      Object.values(forecastNum[0][4])[0]
-    )
 
     request.yar.set('locationData', {
-      results: locationData,
+      results: resultNI,
       airQuality,
       airQualityData: airQualityData.commonMessages,
       monitoringSites: nearestLocationsRange,
+      nearestLocationsRange,
       siteTypeDescriptions,
       pollutantTypes,
       pageTitle: title,
@@ -242,7 +232,6 @@ const searchMiddleware = async (request, h) => {
       welshMonth: calendarWelsh[getMonth],
       summaryDate: lang === 'cy' ? welshDate : englishDate,
       dailySummaryTexts: english.dailySummaryTexts,
-      locationType: LOCATION_TYPE_NI,
       lang
     })
     logger.info(
