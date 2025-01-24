@@ -184,43 +184,31 @@ const searchMiddleware = async (request, h) => {
     )
     logger.info(`::::::::::: getNIPlaces 1  result ::::::::::: ${results}`)
 
-    let locationData = [
-      {
-        GAZETTEER_ENTRY: {
-          NAME1: results[0].postcode,
-          DISTRICT_BOROUGH: sentenceCase(results[0].administrativeArea),
-          LONGITUDE: latlon.lon,
-          LATITUDE: latlon.lat
-        }
-      }
-    ]
     let title = ''
     let headerTitle = ''
     let urlRoute = ''
     logger.info(`::::::::::: getNIPlaces 2  :::::::::::`)
-    if (locationData) {
-      if (locationData.GAZETTEER_ENTRY?.NAME2) {
-        title = `${locationData.GAZETTEER_ENTRY?.NAME2}, ${locationData.GAZETTEER_ENTRY?.DISTRICT_BOROUGH} - ${home.pageTitle}`
-        headerTitle = `${locationData.GAZETTEER_ENTRY?.NAME2}, ${locationData.GAZETTEER_ENTRY?.DISTRICT_BOROUGH}`
-        urlRoute = `${locationData.GAZETTEER_ENTRY?.NAME2}_${locationData.GAZETTEER_ENTRY?.DISTRICT_BOROUGH}`
-      } else {
-        title = `${locationData.GAZETTEER_ENTRY?.NAME1}, ${locationData.GAZETTEER_ENTRY?.DISTRICT_BOROUGH} - ${home.pageTitle}`
-        headerTitle = `${locationData.GAZETTEER_ENTRY?.NAME1}, ${locationData.GAZETTEER_ENTRY?.DISTRICT_BOROUGH}`
-        urlRoute = `${locationData.GAZETTEER_ENTRY?.NAME1}_${locationData.GAZETTEER_ENTRY?.DISTRICT_BOROUGH}`
-      }
-    }
+
+    title = `${results[0].postcode}, ${sentenceCase(results[0].administrativeArea)} - ${home.pageTitle}`
+    headerTitle = `${results[0].postcode}, ${sentenceCase(results[0].administrativeArea)}`
+    urlRoute = `${results[0].postcode}_${sentenceCase(results[0].administrativeArea)}`
+
     logger.info(`::::::::::: getNIPlaces 3  :::::::::::`)
     title = firstLetterUppercase(title)
     headerTitle = firstLetterUppercase(headerTitle)
     urlRoute = convertStringToHyphenatedLowercaseWords(urlRoute)
-    locationData = [
+    const locationData = [
       {
         GAZETTEER_ENTRY: {
           ID: urlRoute,
           NAME1: results[0].postcode,
           DISTRICT_BOROUGH: sentenceCase(results[0].administrativeArea),
           LONGITUDE: latlon.lon,
-          LATITUDE: latlon.lat
+          LATITUDE: latlon.lat,
+          LOCATION_TYPE: LOCATION_TYPE_NI,
+          title,
+          headerTitle,
+          urlRoute
         }
       }
     ]
