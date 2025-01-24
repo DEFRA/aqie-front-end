@@ -9,7 +9,7 @@ export const welsh = {
       a: 'Defnyddiwch y gwasanaeth yma:',
       b: 'i wirio ansawdd yr aer mewn ardal leol',
       c: 'i ddod o hyd i wybodaeth am lygryddion aer',
-      d: 'dod o hyd i wybodaeth ac arweiniad iechyd'
+      d: 'i ddod o hyd i wybodaeth a chyfarwyddyd ar iechyd'
     },
     button: 'Dechrau nawr',
     description:
