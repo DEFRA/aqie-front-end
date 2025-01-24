@@ -54,7 +54,11 @@ const getLocationDetailsController = {
       })
 
       if (locationDetails) {
+        const titleNI = locationDetails?.GAZETTEER_ENTRY?.title
+        const headerTitleNI = locationDetails?.GAZETTEER_ENTRY?.headerTitle
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
+        title = firstLetterUppercase(title)
+        headerTitle = firstLetterUppercase(headerTitle)
         const { nearestLocationsRange, airQuality } = getNearestLocation(
           locationData.results,
           locationData.rawForecasts,
@@ -63,8 +67,7 @@ const getLocationDetailsController = {
           locationIndex,
           lang
         )
-        title = firstLetterUppercase(title)
-        headerTitle = firstLetterUppercase(headerTitle)
+
         logger.info(
           `::::::::::: getNIPlaces 4 headerTitle  ::::::::::: ${headerTitle}`
         )
@@ -75,9 +78,13 @@ const getLocationDetailsController = {
           monitoringSites: nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
-          pageTitle: title,
+          pageTitle: locationDetails?.GAZETTEER_ENTRY?.LOCATION_TYPE
+            ? titleNI
+            : title,
           metaSiteUrl,
-          title: headerTitle,
+          title: locationDetails?.GAZETTEER_ENTRY?.LOCATION_TYPE
+            ? headerTitleNI
+            : headerTitle,
           displayBacklink: true,
           forecastSummary: locationData.forecastSummary,
           footerTxt,
