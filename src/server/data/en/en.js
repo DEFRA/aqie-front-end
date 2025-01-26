@@ -170,6 +170,10 @@ export const english = {
       b: 'on a scale of low to very high',
       c: 'out of 10'
     },
+    description: {
+      a: 'Check air quality for',
+      b: '. Get health advice, pollutant information and guidance on how to reduce your exposure to air pollution.'
+    },
     caption:
       'The daily air quality index (DAQI) tells you about levels of air pollution. It provides health advice for current levels.',
     summaryText: 'How different levels of air pollution can affect health',

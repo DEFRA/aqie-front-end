@@ -148,6 +148,10 @@ export const welsh = {
       b: 'ar raddfa o isel i uchel iawn',
       c: 'allan o 10'
     },
+    description: {
+      a: 'Gwiriwch ansawdd aer',
+      b: '. Mynnwch gyngor ar iechyd, gwybodaeth am lygryddion a chanllawiau ar sut i leihau’ch amlygiad i lygrydd aer.'
+    },
     caption:
       'Mae’r mynegai ansawdd aer dyddiol(DAQI) yn dweud wrthoch chi am lefelau llygredd aer.Mae’n darparu cyngor iechyd ar gyfer y lefelau presennol.',
     summaryText:
