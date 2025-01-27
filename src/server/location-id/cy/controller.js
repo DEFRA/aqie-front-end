@@ -71,6 +71,7 @@ const getLocationDetailsController = {
           pollutantTypes,
           pageTitle: title,
           metaSiteUrl,
+          description: `${daqi.description.a} ${headerTitle}${daqi.description.b}`,
           title: headerTitle,
           displayBacklink: true,
           forecastSummary: locationData.forecastSummary,
