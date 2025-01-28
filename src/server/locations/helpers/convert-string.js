@@ -4,7 +4,12 @@
 const convertStringToHyphenatedLowercaseWords = (input) => {
   const removedHyphens = input.replace(/ - /g, ' ')
   // Remove commas, convert to lowercase, and split the string into words
-  const words = removedHyphens.replace(/,/g, '').toLowerCase().split(' ')
+  const words = removedHyphens
+    .replace(/,/g, '')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim()
+    .split(' ')
 
   // Join the words with hyphens
   return words.join('-')

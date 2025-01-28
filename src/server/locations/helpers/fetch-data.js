@@ -36,6 +36,7 @@ const fetchOAuthToken = async () => {
       state: '1245'
     })
   }
+  // Invoking token API
   const [statusCodeToken, dataToken] = await catchProxyFetchError(
     url,
     options,
@@ -101,6 +102,7 @@ async function fetchData(locationType, userLocation, request, h) {
   const forecastSummaryURL = config.get('forecastSummaryUrl')
   const forecastsAPIurl = config.get('forecastsApiUrl')
   const measurementsAPIurl = config.get('measurementsApiUrl')
+  // Invoking Forecast API
   const [forecastError, getForecasts] = await catchFetchError(
     forecastsAPIurl,
     options
@@ -110,6 +112,7 @@ async function fetchData(locationType, userLocation, request, h) {
   } else {
     logger.info(`forecasts data fetched:`)
   }
+  // Invoking MeasureMent API
   const [errorMeasurements, getMeasurements] = await catchFetchError(
     measurementsAPIurl,
     options
@@ -121,6 +124,7 @@ async function fetchData(locationType, userLocation, request, h) {
   } else {
     logger.info(`getMeasurements data fetched:`)
   }
+  // Invoking Forecast Summary API
   const [statusCodeSummary, getDailySummary] = await catchProxyFetchError(
     forecastSummaryURL,
     options,
@@ -156,6 +160,7 @@ async function fetchData(locationType, userLocation, request, h) {
     logger.info(
       `osPlace data requested osNamesApiUrlFull: ${osNamesApiUrlFull}`
     )
+    // Invoking OS Names API
     const [statusCodeOSPlace, getOSPlaces] = await catchProxyFetchError(
       osNamesApiUrlFull,
       options,
