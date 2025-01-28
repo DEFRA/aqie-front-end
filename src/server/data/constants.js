@@ -44,3 +44,11 @@ export const SYMBOLS_ARRAY = [
   '"',
   "'"
 ]
+export const EUROPE_LONDON = 'Europe/London'
+export const CALENDAR_STRING = {
+  NOW: 'now',
+  DDD: 'ddd',
+  DD_MMMM_YYYY: 'DD MMMM YYYY',
+  DAYS: 'days'
+}
+export const HOURS_TO_SUBTRACT = 1.56
