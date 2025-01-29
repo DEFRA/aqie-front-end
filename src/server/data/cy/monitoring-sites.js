@@ -2,10 +2,10 @@
 // Pollutant reference data
 
 export const pollutantTypes = {
-  NO2: {
-    title: 'Nitrogen deuocsid',
-    href: '/llygryddion/nitrogen-deuocsid/cy',
-    low_range: '0 i 200'
+  PM25: {
+    title: 'PM2.5',
+    href: '/llygryddion/mater-gronynnol-25/cy',
+    low_range: '0 i 35'
   },
   MP10: {
     title: 'PM10',
@@ -17,10 +17,10 @@ export const pollutantTypes = {
     href: '/llygryddion/mater-gronynnol-10/cy',
     low_range: '0 i 50'
   },
-  PM25: {
-    title: 'PM2.5',
-    href: '/llygryddion/mater-gronynnol-25/cy',
-    low_range: '0 i 35'
+  NO2: {
+    title: 'Nitrogen deuocsid',
+    href: '/llygryddion/nitrogen-deuocsid/cy',
+    low_range: '0 i 200'
   },
   O3: {
     title: 'Osôn',
