@@ -17,22 +17,38 @@ import {
 } from '~/src/server/data/constants'
 import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
+import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
 
 const logger = createLogger()
 
 const getLocationDetailsController = {
   handler: (request, h) => {
     try {
-      const { query } = request
+      const { query, headers } = request
       const locationId = request.params.id
       let locationDetails = null
+      const searchTermsSaved = request.yar.get('searchTermsSaved')
       logger.info(
         `::::::::::: getNIPlaces 4 locationId  ::::::::::: ${locationId}`
       )
-      if (query?.lang && query?.lang === LANG_CY) {
+      if (query?.lang && query?.lang === LANG_CY && !query?.searchTerms) {
         /* eslint-disable camelcase */
         return h.redirect(`/lleoliad/${locationId}/?lang=cy`)
       }
+      // Get the previous URL hit by the user from the referer header
+      const previousUrl = headers.referer || headers.referrer
+      const currentUrl = request.url.href
+
+      const { searchTerms, secondSearchTerm } =
+        getSearchTermsFromUrl(currentUrl)
+      if (previousUrl === undefined && !searchTermsSaved) {
+        return h
+          .redirect(
+            `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}`
+          )
+          .takeover()
+      }
+      request.yar.clear('searchTermsSaved')
       const lang = LANG_EN
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')
       const getMonth = calendarEnglish.findIndex(function (item) {
@@ -77,7 +93,7 @@ const getLocationDetailsController = {
             locationData.measurements,
             LOCATION_TYPE_UK,
             locationIndex,
-            request.query?.lang
+            lang
           )
           return h.view('locations/location', {
             result: locationDetails,
