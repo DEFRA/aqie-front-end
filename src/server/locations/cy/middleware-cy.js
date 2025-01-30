@@ -59,9 +59,11 @@ const searchMiddlewareCy = async (request, h) => {
   }
   const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
     await fetchData(locationType, userLocation, request, h)
-
+  logger.info(
+    `::::::::::: getDailySummary 3  ::::::::::: ${JSON.stringify(getDailySummary)}`
+  )
   const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
-    getDailySummary.issue_date,
+    getDailySummary?.issue_date,
     calendarEnglish,
     calendarWelsh,
     lang

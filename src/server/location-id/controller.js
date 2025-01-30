@@ -41,6 +41,12 @@ const getLocationDetailsController = {
 
       const { searchTerms, secondSearchTerm, searchTermsLocationType } =
         getSearchTermsFromUrl(currentUrl)
+      logger.info(
+        `::::::::::: getNIPlaces previousUrl  ::::::::::: ${previousUrl}`
+      )
+      logger.info(
+        `::::::::::: getNIPlaces !searchTermsSaved  ::::::::::: ${!searchTermsSaved}`
+      )
       if (previousUrl === undefined && !searchTermsSaved) {
         return h
           .redirect(
