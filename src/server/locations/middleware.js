@@ -43,6 +43,7 @@ const searchMiddleware = async (request, h) => {
   } = english
   const searchTerms = query?.searchTerms?.toUpperCase()
   const secondSearchTerm = query?.secondSearchTerm?.toUpperCase()
+  const searchTermsLocationType = query?.searchTermsLocationType
   logger.info(`::::::::::: before handleErrorInputAndRedirect  ::::::::::: `)
   const redirectError = handleErrorInputAndRedirect(
     request,
@@ -58,6 +59,7 @@ const searchMiddleware = async (request, h) => {
   let { locationType, userLocation, locationNameOrPostcode } = redirectError
   if (searchTerms) {
     userLocation = searchTerms
+    locationType = searchTermsLocationType
   }
   const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
     await fetchData(locationType, userLocation, request, h)

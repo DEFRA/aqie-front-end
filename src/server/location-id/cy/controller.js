@@ -9,12 +9,7 @@ import moment from 'moment-timezone'
 import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
 import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-util'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import {
-  LANG_CY,
-  LANG_EN,
-  LOCATION_TYPE_UK,
-  LOCATION_TYPE_NI
-} from '~/src/server/data/constants'
+import { LANG_CY, LANG_EN, LOCATION_TYPE_UK } from '~/src/server/data/constants'
 import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
@@ -36,12 +31,12 @@ const getLocationDetailsController = {
       const previousUrl = headers.referer || headers.referrer
       const currentUrl = request.url.href
 
-      const { searchTerms, secondSearchTerm } =
+      const { searchTerms, secondSearchTerm, searchTermsLocationType } =
         getSearchTermsFromUrl(currentUrl)
       if (previousUrl === undefined && !searchTermsSaved) {
         return h
           .redirect(
-            `/lleoliad?lang=cy&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}`
+            `/lleoliad?lang=cy&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}`
           )
           .takeover()
       }
@@ -77,7 +72,7 @@ const getLocationDetailsController = {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
         title = firstLetterUppercase(title)
         headerTitle = firstLetterUppercase(headerTitle)
-        if (locationType !== LOCATION_TYPE_NI) {
+        if (locationType === LOCATION_TYPE_UK) {
           const { nearestLocationsRange, airQuality } = getNearestLocation(
             locationData.results,
             locationData.rawForecasts,
