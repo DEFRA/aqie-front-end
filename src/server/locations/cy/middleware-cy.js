@@ -29,11 +29,10 @@ import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-l
 const logger = createLogger()
 
 const searchMiddlewareCy = async (request, h) => {
-  const { payload } = request
+  const { query, payload } = request
   const lang = LANG_CY
   const month = getMonth(lang)
   const {
-    notFoundLocation,
     home,
     footerTxt,
     phaseBanner,
@@ -41,8 +40,14 @@ const searchMiddlewareCy = async (request, h) => {
     cookieBanner,
     multipleLocations
   } = welsh
-
-  const redirectError = handleErrorInputAndRedirect(request, h, lang, payload)
+  const searchTerms = query?.searchTerms?.toUpperCase()
+  const redirectError = handleErrorInputAndRedirect(
+    request,
+    h,
+    lang,
+    payload,
+    searchTerms
+  )
   if (!redirectError.locationType) {
     return redirectError
   }
@@ -148,7 +153,6 @@ const searchMiddlewareCy = async (request, h) => {
     } else {
       return handleLocationNotFound(h, {
         locationNameOrPostcode,
-        notFoundLocation,
         home,
         footerTxt,
         phaseBanner,
@@ -174,7 +178,6 @@ const searchMiddlewareCy = async (request, h) => {
     ) {
       return handleLocationNotFound(h, {
         locationNameOrPostcode,
-        notFoundLocation,
         home,
         footerTxt,
         phaseBanner,
@@ -187,7 +190,6 @@ const searchMiddlewareCy = async (request, h) => {
     // handle other location types
     return handleLocationNotFound(h, {
       locationNameOrPostcode,
-      notFoundLocation,
       home,
       footerTxt,
       phaseBanner,

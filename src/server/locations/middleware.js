@@ -30,6 +30,7 @@ import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
 const logger = createLogger()
 
 const searchMiddleware = async (request, h) => {
+  const { query, payload } = request
   const lang = LANG_EN
   const month = getMonth(lang)
   const {
@@ -40,19 +41,24 @@ const searchMiddleware = async (request, h) => {
     cookieBanner,
     multipleLocations
   } = english
+  const searchTerms = query?.searchTerms?.toUpperCase()
+  const secondSearchTerm = query?.secondSearchTerm?.toUpperCase()
   logger.info(`::::::::::: before handleErrorInputAndRedirect  ::::::::::: `)
   const redirectError = handleErrorInputAndRedirect(
     request,
     h,
     lang,
-    request?.payload
+    payload,
+    searchTerms
   )
   logger.info(`::::::::::: after handleErrorInputAndRedirect  :::::::::::`)
   if (!redirectError.locationType) {
     return redirectError
   }
   let { locationType, userLocation, locationNameOrPostcode } = redirectError
-
+  if (searchTerms) {
+    userLocation = searchTerms
+  }
   const { getDailySummary, getForecasts, getMeasurements } = await fetchData(
     locationType,
     userLocation,
@@ -93,8 +99,13 @@ const searchMiddleware = async (request, h) => {
     const selectedMatches = processMatches(
       results,
       locationNameOrPostcode,
-      userLocation
+      userLocation,
+      searchTerms,
+      secondSearchTerm
     )
+    if (selectedMatches.length === 0) {
+      return h.redirect('/location-not-found').takeover()
+    }
     userLocation = userLocation.toLowerCase()
     userLocation = userLocation.charAt(0).toUpperCase() + userLocation.slice(1)
     const { title, headerTitle, urlRoute } = getTitleAndHeaderTitle(
@@ -116,6 +127,7 @@ const searchMiddleware = async (request, h) => {
       )
     if (selectedMatches.length === 1) {
       return handleSingleMatch(h, request, {
+        searchTerms,
         selectedMatches,
         forecastNum,
         getForecasts,
