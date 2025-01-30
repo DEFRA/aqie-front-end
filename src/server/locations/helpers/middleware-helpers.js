@@ -3,6 +3,9 @@ import { english } from '~/src/server/data/en/en'
 import moment from 'moment-timezone'
 import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
 import { LANG_EN, LANG_CY } from '~/src/server/data/constants'
+import { createLogger } from '~/src/server/common/helpers/logging/logger'
+
+const logger = createLogger()
 
 // Helper function to handle single match
 const handleSingleMatch = (
@@ -46,6 +49,9 @@ const handleSingleMatch = (
     lang
   })
   request.yar.set('searchTermsSaved', searchTerms)
+  logger.info(
+    `::::::::::: handleSingleMatch searchTerms  ::::::::::: ${searchTerms}`
+  )
   return lang === LANG_EN
     ? h.redirect(`/location/${customId}`).takeover()
     : h.redirect(`/lleoliad/${customId}`).takeover()
