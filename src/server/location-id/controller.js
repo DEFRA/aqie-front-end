@@ -31,7 +31,7 @@ const getLocationDetailsController = {
       logger.info(
         `::::::::::: getNIPlaces 4 locationId  ::::::::::: ${locationId}`
       )
-      if (query?.lang && query?.lang === LANG_CY) {
+      if (query?.lang && query?.lang === LANG_CY && !query?.searchTerms) {
         /* eslint-disable camelcase */
         return h.redirect(`/lleoliad/${locationId}/?lang=cy`)
       }
@@ -39,19 +39,12 @@ const getLocationDetailsController = {
       const previousUrl = headers.referer || headers.referrer
       const currentUrl = request.url.href
 
-      const { searchTerms, secondSearchTerm, searchTermsLocationType } =
+      const { searchTerms, secondSearchTerm } =
         getSearchTermsFromUrl(currentUrl)
       if (previousUrl === undefined && !searchTermsSaved) {
-        if (searchTermsLocationType === LOCATION_TYPE_UK) {
-          return h
-            .redirect(
-              `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}`
-            )
-            .takeover()
-        }
         return h
           .redirect(
-            `lleoliad/?lang=cy&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}`
+            `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}`
           )
           .takeover()
       }

@@ -3,7 +3,7 @@ import { LOCATION_TYPE_NI, LOCATION_TYPE_UK } from '~/src/server/data/constants'
 const getSearchTermsFromUrl = (url) => {
   let searchTermsLang = ''
   let searchTermsLocationType = ''
-  const splits = url.split('/') // Split the URL by forward slashes
+  const splits = url?.split('/') // Split the URL by forward slashes
   const locLang = splits[3] // Get the string after the second forward slash and before the third one
   if (locLang === 'lleoliad') {
     searchTermsLang = 'cy'
@@ -20,7 +20,7 @@ const getSearchTermsFromUrl = (url) => {
     lastSlashIndex + 1,
     interrogationSignIndex
   ) // Extract the string between the last forward slash and the interrogation sign
-  const parts = extractedString.split(/[_-]/) // Split by hyphen and underscore
+  const parts = extractedString?.split(/[_-]/) // Split by hyphen and underscore
   let searchTerms = parts.join(' ') // Join the parts with spaces
   // Extract the postcode from the searchTerms variable
   const postcodeRegex = /\b[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}\b/i // Regular expression to match postcode format
@@ -34,14 +34,14 @@ const getSearchTermsFromUrl = (url) => {
     searchTermsLocationType = LOCATION_TYPE_UK // Set the location type to UK
   }
   // Separate the string after the underscore
-  const underscoreParts = extractedString.split('_') // Split the string by underscore
+  const underscoreParts = extractedString?.split('_') // Split the string by underscore
   let secondSearchTerm = '' // Initialize the second search term
   if (postcodeMatch) {
-    searchTerms = postcodeMatch[0].split('-').join(' ') // Extract the postcode from the searchTerms
+    searchTerms = postcodeMatch[0]?.split('-').join(' ') // Extract the postcode from the searchTerms
     secondSearchTerm = underscoreParts[1].split('-').join(' ') // Extract the term after the postcode
   } else {
-    searchTerms = underscoreParts[0].split('-').join(' ') // Get the part before the underscore // ''
-    secondSearchTerm = underscoreParts[1].split('-').join(' ') // Get the part after the underscore // ''
+    searchTerms = underscoreParts[0]?.split('-').join(' ') // Get the part before the underscore // ''
+    secondSearchTerm = underscoreParts[1]?.split('-').join(' ') // Get the part after the underscore // ''
   }
   return {
     searchTerms,

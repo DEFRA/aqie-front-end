@@ -59,12 +59,8 @@ const searchMiddleware = async (request, h) => {
   if (searchTerms) {
     userLocation = searchTerms
   }
-  const { getDailySummary, getForecasts, getMeasurements } = await fetchData(
-    locationType,
-    userLocation,
-    request,
-    h
-  )
+  const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
+    await fetchData(locationType, userLocation, request, h)
 
   const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
     getDailySummary.issue_date,
@@ -81,15 +77,10 @@ const searchMiddleware = async (request, h) => {
   request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
 
   if (locationType === LOCATION_TYPE_UK) {
-    const { getOSPlaces } = await fetchData(
-      locationType,
-      userLocation,
-      request,
-      h
-    )
     let { results } = getOSPlaces
 
     if (!results || results.length === 0 || getOSPlaces === 'wrong postcode') {
+      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       return h.redirect('/location-not-found').takeover()
     }
     // Remove duplicates from the results array
@@ -179,7 +170,7 @@ const searchMiddleware = async (request, h) => {
   } else if (locationType === LOCATION_TYPE_NI) {
     const { daqi } = english
     const { getNIPlaces } = await fetchData(
-      'ni-location',
+      LOCATION_TYPE_NI,
       userLocation,
       request,
       h
@@ -189,13 +180,19 @@ const searchMiddleware = async (request, h) => {
       results,
       getForecasts?.forecasts,
       getMeasurements?.measurements,
-      'ni-location',
+      LOCATION_TYPE_NI,
       0,
       lang
     )
     logger.info(
       `::::::::::: getNIPlaces 1  result stringify ::::::::::: ${JSON.stringify(results)}`
     )
+    if (
+      getNIPlaces?.statusCode !== 200 &&
+      getNIPlaces?.statusCode !== undefined
+    ) {
+      return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
+    }
 
     let title = ''
     let headerTitle = ''
