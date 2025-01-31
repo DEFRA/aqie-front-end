@@ -42,6 +42,7 @@ const searchMiddleware = async (request, h) => {
     cookieBanner,
     multipleLocations
   } = english
+  let locationType = request?.payload?.locationType
   const searchTerms = query?.searchTerms?.toUpperCase()
   const secondSearchTerm = query?.secondSearchTerm?.toUpperCase()
   const searchTermsLocationType = query?.searchTermsLocationType
@@ -57,7 +58,7 @@ const searchMiddleware = async (request, h) => {
   if (!redirectError.locationType) {
     return redirectError
   }
-  let { locationType, userLocation, locationNameOrPostcode } = redirectError
+  let { userLocation, locationNameOrPostcode } = redirectError
   if (searchTerms) {
     userLocation = searchTerms
     locationType = searchTermsLocationType
@@ -142,6 +143,7 @@ const searchMiddleware = async (request, h) => {
         headerTitleRoute,
         title,
         urlRoute,
+        locationType,
         lang
       })
     } else if (
@@ -172,6 +174,7 @@ const searchMiddleware = async (request, h) => {
         month,
         welshDate,
         englishDate,
+        locationType,
         lang
       })
     } else {
@@ -256,6 +259,7 @@ const searchMiddleware = async (request, h) => {
     logger.info(
       `::::::::::: redirecting to specific urlRoute en  ::::::::::: ${urlRoute}`
     )
+    request.yar.set('searchTermsSaved', searchTerms)
     return h.redirect(`/location/${urlRoute}?lang=en`).takeover()
   } else {
     logger.info(

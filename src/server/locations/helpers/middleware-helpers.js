@@ -28,6 +28,7 @@ const handleSingleMatch = (
     headerTitleRoute,
     title,
     urlRoute,
+    locationType,
     lang
   }
 ) => {
@@ -47,6 +48,7 @@ const handleSingleMatch = (
     headerTitle,
     titleRoute,
     headerTitleRoute,
+    locationType,
     lang
   })
   request.yar.set('searchTermsSaved', searchTerms)
@@ -84,6 +86,7 @@ const handleMultipleMatches = (
     month,
     welshDate,
     englishDate,
+    locationType,
     lang
   }
 ) => {
@@ -113,6 +116,7 @@ const handleMultipleMatches = (
     summaryDate: lang === LANG_CY ? welshDate : englishDate,
     welshDate,
     englishDate,
+    locationType,
     lang
   })
 

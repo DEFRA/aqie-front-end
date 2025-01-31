@@ -6,7 +6,7 @@ import * as airQualityData from '~/src/server/data/cy/air-quality.js'
 import { english, calendarEnglish } from '~/src/server/data/en/en.js'
 import { welsh, calendarWelsh } from '~/src/server/data/cy/cy.js'
 import moment from 'moment-timezone'
-import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
+import { firstLetterUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
 import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-util'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { LANG_CY, LANG_EN, LOCATION_TYPE_UK } from '~/src/server/data/constants'
@@ -58,11 +58,9 @@ const getLocationDetailsController = {
       const locationData = request.yar.get('locationData') || []
 
       let locationIndex = 0
-      let locationType = ''
       locationDetails = locationData?.results?.find((item, index) => {
         if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
           locationIndex = index
-          locationType = item.GAZETTEER_ENTRY?.LOCATION_TYPE
           return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
         }
         return null
@@ -70,9 +68,9 @@ const getLocationDetailsController = {
 
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
-        title = convertFirstLetterIntoUppercase(title)
-        headerTitle = convertFirstLetterIntoUppercase(headerTitle)
-        if (locationType === LOCATION_TYPE_UK) {
+        title = firstLetterUppercase(title)
+        headerTitle = firstLetterUppercase(headerTitle)
+        if (locationData?.locationType === LOCATION_TYPE_UK) {
           const { nearestLocationsRange, airQuality } = getNearestLocation(
             locationData.results,
             locationData.rawForecasts,

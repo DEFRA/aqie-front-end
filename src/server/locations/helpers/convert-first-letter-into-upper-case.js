@@ -1,5 +1,5 @@
-// Define and export the convertFirstLetterIntoUppercase function
-export const convertFirstLetterIntoUppercase = (str) => {
+// Define and export the firstLetterUppercase function
+export const firstLetterUppercase = (str) => {
   const isNumeric = (str) => /[0-9]/.test(str)
   const hasNumber = isNumeric(str)
   if (hasNumber) {
