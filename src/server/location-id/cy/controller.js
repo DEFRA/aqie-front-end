@@ -6,7 +6,7 @@ import * as airQualityData from '~/src/server/data/cy/air-quality.js'
 import { english, calendarEnglish } from '~/src/server/data/en/en.js'
 import { welsh, calendarWelsh } from '~/src/server/data/cy/cy.js'
 import moment from 'moment-timezone'
-import { firstLetterUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
+import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
 import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-util'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { LANG_CY, LANG_EN, LOCATION_TYPE_UK } from '~/src/server/data/constants'
@@ -68,8 +68,8 @@ const getLocationDetailsController = {
 
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
-        title = firstLetterUppercase(title)
-        headerTitle = firstLetterUppercase(headerTitle)
+        title = convertFirstLetterIntoUppercase(title)
+        headerTitle = convertFirstLetterIntoUppercase(headerTitle)
         if (locationData?.locationType === LOCATION_TYPE_UK) {
           const { nearestLocationsRange, airQuality } = getNearestLocation(
             locationData.results,
