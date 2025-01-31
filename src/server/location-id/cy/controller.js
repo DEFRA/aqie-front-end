@@ -58,11 +58,9 @@ const getLocationDetailsController = {
       const locationData = request.yar.get('locationData') || []
 
       let locationIndex = 0
-      let locationType = ''
       locationDetails = locationData?.results?.find((item, index) => {
         if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
           locationIndex = index
-          locationType = item.GAZETTEER_ENTRY?.LOCATION_TYPE
           return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
         }
         return null
@@ -72,7 +70,7 @@ const getLocationDetailsController = {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
         title = convertFirstLetterIntoUppercase(title)
         headerTitle = convertFirstLetterIntoUppercase(headerTitle)
-        if (locationType === LOCATION_TYPE_UK) {
+        if (locationData?.locationType === LOCATION_TYPE_UK) {
           const { nearestLocationsRange, airQuality } = getNearestLocation(
             locationData.results,
             locationData.rawForecasts,

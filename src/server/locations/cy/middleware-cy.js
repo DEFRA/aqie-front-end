@@ -1,11 +1,11 @@
-import * as airQualityData from '~/src/server/data/en/air-quality.js'
+import * as airQualityData from '~/src/server/data/cy/air-quality.js'
 import { fetchData } from '~/src/server/locations/helpers/fetch-data'
 import { welsh, calendarWelsh } from '~/src/server/data/cy/cy.js'
 import { calendarEnglish } from '~/src/server/data/en/en.js'
 import {
   siteTypeDescriptions,
   pollutantTypes
-} from '~/src/server/data/en/monitoring-sites.js'
+} from '~/src/server/data/cy/monitoring-sites.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { handleErrorInputAndRedirect } from '~/src/server/locations/helpers/error-input-and-redirect'
 import {
@@ -39,11 +39,14 @@ const searchMiddlewareCy = async (request, h) => {
     footerTxt,
     phaseBanner,
     backlink,
+    daqi,
     cookieBanner,
     multipleLocations
   } = welsh
+  let locationType = request?.payload?.locationType
   const searchTerms = query?.searchTerms?.toUpperCase()
   const secondSearchTerm = query?.secondSearchTerm?.toUpperCase()
+  const searchTermsLocationType = query?.searchTermsLocationType
   const redirectError = handleErrorInputAndRedirect(
     request,
     h,
@@ -54,9 +57,10 @@ const searchMiddlewareCy = async (request, h) => {
   if (!redirectError.locationType) {
     return redirectError
   }
-  let { locationType, userLocation, locationNameOrPostcode } = redirectError
+  let { userLocation, locationNameOrPostcode } = redirectError
   if (searchTerms) {
     userLocation = searchTerms
+    locationType = searchTermsLocationType
   }
   const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
     await fetchData(locationType, userLocation, request, h)
@@ -129,12 +133,14 @@ const searchMiddlewareCy = async (request, h) => {
         nearestLocationsRange,
         englishDate,
         welshDate,
+        daqi,
         month,
         headerTitle,
         titleRoute,
         headerTitleRoute,
         title,
         urlRoute,
+        locationType,
         lang
       })
     } else if (
@@ -158,6 +164,7 @@ const searchMiddlewareCy = async (request, h) => {
         getDailySummary,
         transformedDailySummary,
         footerTxt,
+        daqi,
         phaseBanner,
         backlink,
         cookieBanner,
@@ -165,13 +172,13 @@ const searchMiddlewareCy = async (request, h) => {
         month,
         welshDate,
         englishDate,
+        locationType,
         lang
       })
     } else {
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
   } else if (locationType === LOCATION_TYPE_NI) {
-    const { daqi } = welsh
     const { getNIPlaces } = await fetchData(
       LOCATION_TYPE_NI,
       userLocation,
