@@ -140,8 +140,10 @@ const getLocationDataController = {
       locationType = request.yar.get('locationType')
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
         await fetchData(LOCATION_TYPE_UK, userLocation, request)
-
-      const formattedDateSummary = moment(getDailySummary.issue_date)
+      logger.info(
+        `::::::::::: getDailySummary 2  ::::::::::: ${JSON.stringify(getDailySummary)}`
+      )
+      const formattedDateSummary = moment(getDailySummary?.issue_date)
         .format('DD MMMM YYYY')
         .split(' ')
       const getMonthSummary = calendarEnglish.findIndex(function (item) {

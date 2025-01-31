@@ -3,7 +3,6 @@ import {
   pollutantTypes
 } from '~/src/server/data/cy/monitoring-sites.js'
 import * as airQualityData from '~/src/server/data/cy/air-quality.js'
-import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { english, calendarEnglish } from '~/src/server/data/en/en.js'
 import { welsh, calendarWelsh } from '~/src/server/data/cy/cy.js'
 import moment from 'moment-timezone'
@@ -12,19 +11,36 @@ import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-u
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { LANG_CY, LANG_EN, LOCATION_TYPE_UK } from '~/src/server/data/constants'
 import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
+import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
+import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
 
 const logger = createLogger()
 
 const getLocationDetailsController = {
   handler: (request, h) => {
     try {
-      const { query } = request
+      const { query, headers } = request
       const locationId = request.params.id
-
-      if (query?.lang && query?.lang === LANG_EN) {
+      let locationDetails = null
+      const searchTermsSaved = request.yar.get('searchTermsSaved')
+      if (query?.lang && query?.lang === LANG_EN && !query?.searchTerms) {
         /* eslint-disable camelcase */
         return h.redirect(`/location/${locationId}/?lang=en`)
       }
+      // Get the previous URL hit by the user from the referer header
+      const previousUrl = headers.referer || headers.referrer
+      const currentUrl = request.url.href
+
+      const { searchTerms, secondSearchTerm, searchTermsLocationType } =
+        getSearchTermsFromUrl(currentUrl)
+      if (previousUrl === undefined && !searchTermsSaved) {
+        return h
+          .redirect(
+            `/lleoliad?lang=cy&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}`
+          )
+          .takeover()
+      }
+      request.yar.clear('searchTermsSaved')
       const lang = LANG_CY
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')
       const getMonth = calendarEnglish.findIndex(function (item) {
@@ -42,9 +58,11 @@ const getLocationDetailsController = {
       const locationData = request.yar.get('locationData') || []
 
       let locationIndex = 0
-      const locationDetails = locationData?.results?.find((item, index) => {
+      let locationType = ''
+      locationDetails = locationData?.results?.find((item, index) => {
         if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
           locationIndex = index
+          locationType = item.GAZETTEER_ENTRY?.LOCATION_TYPE
           return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
         }
         return null
@@ -52,43 +70,72 @@ const getLocationDetailsController = {
 
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
-        const { nearestLocationsRange, airQuality } = getNearestLocation(
-          locationData.results,
-          locationData.rawForecasts,
-          locationData.measurements,
-          LOCATION_TYPE_UK,
-          locationIndex,
-          request.query?.lang
-        )
         title = convertFirstLetterIntoUppercase(title)
         headerTitle = convertFirstLetterIntoUppercase(headerTitle)
-        return h.view('locations/location', {
-          result: locationDetails,
-          airQuality,
-          airQualityData: airQualityData.commonMessages,
-          monitoringSites: nearestLocationsRange,
-          siteTypeDescriptions,
-          pollutantTypes,
-          pageTitle: `${welsh.multipleLocations.titlePrefix} ${title}`,
-          metaSiteUrl,
-          description: `${daqi.description.a} ${headerTitle}${daqi.description.b}`,
-          title: `${welsh.multipleLocations.titlePrefix} ${headerTitle}`,
-          displayBacklink: true,
-          transformedDailySummary: locationData.transformedDailySummary,
-          footerTxt,
-          phaseBanner,
-          backlink,
-          cookieBanner,
-          daqi,
-          welshMonth: calendarWelsh[getMonth],
-          serviceName: notFoundLocation.heading,
-          summaryDate:
-            lang === LANG_CY
-              ? locationData.welshDate ?? locationData.summaryDate
-              : locationData.englishDate ?? locationData.summaryDate,
-          dailySummaryTexts: english.dailySummaryTexts,
-          lang
-        })
+        if (locationType === LOCATION_TYPE_UK) {
+          const { nearestLocationsRange, airQuality } = getNearestLocation(
+            locationData.results,
+            locationData.rawForecasts,
+            locationData.measurements,
+            LOCATION_TYPE_UK,
+            locationIndex,
+            lang
+          )
+          return h.view('locations/location', {
+            result: locationDetails,
+            airQuality,
+            airQualityData: airQualityData.commonMessages,
+            monitoringSites: nearestLocationsRange,
+            siteTypeDescriptions,
+            pollutantTypes,
+            pageTitle: `${welsh.multipleLocations.titlePrefix} ${title}`,
+            metaSiteUrl,
+            description: `${daqi.description.a} ${headerTitle}${daqi.description.b}`,
+            title: `${welsh.multipleLocations.titlePrefix} ${headerTitle}`,
+            displayBacklink: true,
+            transformedDailySummary: locationData.transformedDailySummary,
+            footerTxt,
+            phaseBanner,
+            backlink,
+            cookieBanner,
+            daqi,
+            welshMonth: calendarWelsh[getMonth],
+            serviceName: notFoundLocation.heading,
+            summaryDate:
+              lang === LANG_CY
+                ? locationData.welshDate ?? locationData.summaryDate
+                : locationData.englishDate ?? locationData.summaryDate,
+            dailySummaryTexts: english.dailySummaryTexts,
+            lang
+          })
+        } else {
+          return h.view('locations/location', {
+            result: locationDetails,
+            airQuality: locationData.airQuality,
+            airQualityData: airQualityData.commonMessages,
+            monitoringSites: locationData.nearestLocationsRange,
+            siteTypeDescriptions,
+            pollutantTypes,
+            pageTitle: `${welsh.multipleLocations.titlePrefix} ${title}`,
+            metaSiteUrl,
+            description: `${daqi.description.a} ${headerTitle}${daqi.description.b}`,
+            title: `${welsh.multipleLocations.titlePrefix} ${headerTitle}`,
+            displayBacklink: true,
+            transformedDailySummary: locationData.transformedDailySummary,
+            footerTxt,
+            phaseBanner,
+            backlink,
+            cookieBanner,
+            daqi,
+            welshMonth: calendarWelsh[getMonth],
+            summaryDate:
+              lang === LANG_CY
+                ? locationData.welshDate ?? locationData.summaryDate
+                : locationData.englishDate ?? locationData.summaryDate,
+            dailySummaryTexts: english.dailySummaryTexts,
+            lang
+          })
+        }
       } else {
         return h.view('location-not-found/index', {
           paragraph: notFoundLocation.paragraphs,

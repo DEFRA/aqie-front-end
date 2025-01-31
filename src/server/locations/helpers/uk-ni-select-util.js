@@ -50,7 +50,10 @@ const selectNIUKLocationType = async (
 ) => {
   const { query, payload } = request
   const airQuality = getAirQuality(payload?.aq, 2, 4, 5, 7)
-  const formattedDateSummary = moment(getDailySummary.issue_date)
+  logger.info(
+    `::::::::::: getDailySummary 4  ::::::::::: ${JSON.stringify(getDailySummary)}`
+  )
+  const formattedDateSummary = moment(getDailySummary?.issue_date)
     .format('DD MMMM YYYY')
     .split(' ')
   const getMonthSummary = calendarEnglish.findIndex(function (item) {

@@ -3,12 +3,16 @@ import { english } from '~/src/server/data/en/en.js'
 import moment from 'moment-timezone'
 import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
 import { LANG_EN, LANG_CY } from '~/src/server/data/constants'
+import { createLogger } from '~/src/server/common/helpers/logging/logger'
+
+const logger = createLogger()
 
 // Helper function to handle single match
 const handleSingleMatch = (
   h,
   request,
   {
+    searchTerms,
     selectedMatches,
     forecastNum,
     getForecasts,
@@ -45,6 +49,10 @@ const handleSingleMatch = (
     headerTitleRoute,
     lang
   })
+  request.yar.set('searchTermsSaved', searchTerms)
+  logger.info(
+    `::::::::::: handleSingleMatch searchTerms  ::::::::::: ${searchTerms}`
+  )
   return lang === LANG_EN
     ? h.redirect(`/location/${customId}`).takeover()
     : h.redirect(`/lleoliad/${customId}`).takeover()
@@ -114,17 +122,54 @@ const handleMultipleMatches = (
 }
 
 // Helper function to process matches
-const processMatches = (matches, locationNameOrPostcode, userLocation) => {
+const processMatches = (
+  matches,
+  locationNameOrPostcode,
+  userLocation,
+  searchTerms,
+  secondSearchTerm
+) => {
   const partialPostcodePattern = /^([A-Z]{1,2}\d[A-Z\d]?)$/
+
   const newMatches = matches.filter((item) => {
-    const name = item?.GAZETTEER_ENTRY.NAME1.toUpperCase().replace(/\s+/g, '')
-    const name2 = item?.GAZETTEER_ENTRY.NAME2?.toUpperCase().replace(/\s+/g, '')
+    const name1 = item?.GAZETTEER_ENTRY.NAME1.toUpperCase()
+    const name2 = item?.GAZETTEER_ENTRY.NAME2?.toUpperCase()
+    let borough = item?.GAZETTEER_ENTRY?.DISTRICT_BOROUGH?.toUpperCase()
+    let unitary = item?.GAZETTEER_ENTRY?.COUNTY_UNITARY?.toUpperCase()
+    borough = borough?.split(' - ').join(' ') // Replace hyphens with spaces
+    borough = borough?.replace(/-/g, ' ') // Replace hyphens with spaces
+    unitary = unitary?.split(' - ').join(' ') // Replace hyphens with spaces
+    unitary = unitary?.replace(/-/g, ' ') // Replace hyphens with spaces
+    if (searchTerms && borough) {
+      return (
+        name1?.includes(userLocation) &&
+        userLocation.includes(name1) &&
+        secondSearchTerm.includes(borough) &&
+        borough?.includes(secondSearchTerm)
+      )
+    } else if (searchTerms && unitary) {
+      if (name2) {
+        return (
+          name2?.includes(userLocation) &&
+          userLocation.includes(name2) &&
+          secondSearchTerm.includes(unitary) &&
+          unitary?.includes(secondSearchTerm)
+        )
+      }
+      return (
+        name1?.includes(userLocation) &&
+        userLocation.includes(name1) &&
+        secondSearchTerm.includes(unitary) &&
+        unitary?.includes(secondSearchTerm)
+      )
+    }
     return (
-      name.includes(userLocation.replace(/\s+/g, '')) ||
-      userLocation.includes(name) ||
+      name1.includes(userLocation.replace(/\s+/g, '')) ||
+      userLocation.includes(name1) ||
       userLocation.includes(name2)
     )
   })
+
   if (
     partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
     matches.length > 0 &&

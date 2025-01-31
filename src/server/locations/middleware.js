@@ -31,6 +31,7 @@ import { transformKeys } from '~/src/server/locations/helpers/generate-daily-sum
 const logger = createLogger()
 
 const searchMiddleware = async (request, h) => {
+  const { query, payload } = request
   const lang = LANG_EN
   const month = getMonth(lang)
   const {
@@ -41,28 +42,33 @@ const searchMiddleware = async (request, h) => {
     cookieBanner,
     multipleLocations
   } = english
+  const searchTerms = query?.searchTerms?.toUpperCase()
+  const secondSearchTerm = query?.secondSearchTerm?.toUpperCase()
+  const searchTermsLocationType = query?.searchTermsLocationType
   logger.info(`::::::::::: before handleErrorInputAndRedirect  ::::::::::: `)
   const redirectError = handleErrorInputAndRedirect(
     request,
     h,
     lang,
-    request?.payload
+    payload,
+    searchTerms
   )
   logger.info(`::::::::::: after handleErrorInputAndRedirect  :::::::::::`)
   if (!redirectError.locationType) {
     return redirectError
   }
   let { locationType, userLocation, locationNameOrPostcode } = redirectError
-
-  const { getDailySummary, getForecasts, getMeasurements } = await fetchData(
-    locationType,
-    userLocation,
-    request,
-    h
+  if (searchTerms) {
+    userLocation = searchTerms
+    locationType = searchTermsLocationType
+  }
+  const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
+    await fetchData(locationType, userLocation, request, h)
+  logger.info(
+    `::::::::::: getDailySummary 1  ::::::::::: ${JSON.stringify(getDailySummary)}`
   )
-
   const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
-    getDailySummary.issue_date,
+    getDailySummary?.issue_date,
     calendarEnglish,
     calendarWelsh,
     lang
@@ -79,15 +85,10 @@ const searchMiddleware = async (request, h) => {
   request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
 
   if (locationType === LOCATION_TYPE_UK) {
-    const { getOSPlaces } = await fetchData(
-      locationType,
-      userLocation,
-      request,
-      h
-    )
     let { results } = getOSPlaces
 
     if (!results || results.length === 0 || getOSPlaces === 'wrong postcode') {
+      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       return h.redirect('/location-not-found').takeover()
     }
     // Remove duplicates from the results array
@@ -97,8 +98,13 @@ const searchMiddleware = async (request, h) => {
     const selectedMatches = processMatches(
       results,
       locationNameOrPostcode,
-      userLocation
+      userLocation,
+      searchTerms,
+      secondSearchTerm
     )
+    if (selectedMatches.length === 0) {
+      return h.redirect('/location-not-found').takeover()
+    }
     userLocation = userLocation.toLowerCase()
     userLocation = userLocation.charAt(0).toUpperCase() + userLocation.slice(1)
     const { title, headerTitle, urlRoute } = getTitleAndHeaderTitle(
@@ -120,6 +126,7 @@ const searchMiddleware = async (request, h) => {
       )
     if (selectedMatches.length === 1) {
       return handleSingleMatch(h, request, {
+        searchTerms,
         selectedMatches,
         forecastNum,
         getForecasts,
@@ -173,7 +180,7 @@ const searchMiddleware = async (request, h) => {
   } else if (locationType === LOCATION_TYPE_NI) {
     const { daqi } = english
     const { getNIPlaces } = await fetchData(
-      'ni-location',
+      LOCATION_TYPE_NI,
       userLocation,
       request,
       h
@@ -183,13 +190,19 @@ const searchMiddleware = async (request, h) => {
       results,
       getForecasts?.forecasts,
       getMeasurements?.measurements,
-      'ni-location',
+      LOCATION_TYPE_NI,
       0,
       lang
     )
     logger.info(
       `::::::::::: getNIPlaces 1  result stringify ::::::::::: ${JSON.stringify(results)}`
     )
+    if (
+      getNIPlaces?.statusCode !== 200 &&
+      getNIPlaces?.statusCode !== undefined
+    ) {
+      return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
+    }
 
     let title = ''
     let headerTitle = ''
