@@ -53,7 +53,8 @@ const getLocationDetailsController = {
         phaseBanner,
         backlink,
         cookieBanner,
-        daqi
+        daqi,
+        multipleLocations
       } = welsh
       const locationData = request.yar.get('locationData') || []
 
@@ -86,10 +87,10 @@ const getLocationDetailsController = {
             monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
-            pageTitle: `${welsh.multipleLocations.titlePrefix} ${title}`,
+            pageTitle: `${multipleLocations.titlePrefix} ${title}`,
             metaSiteUrl,
             description: `${daqi.description.a} ${headerTitle}${daqi.description.b}`,
-            title: `${welsh.multipleLocations.titlePrefix} ${headerTitle}`,
+            title: `${multipleLocations.titlePrefix} ${headerTitle}`,
             displayBacklink: true,
             transformedDailySummary: locationData.transformedDailySummary,
             footerTxt,
@@ -114,10 +115,10 @@ const getLocationDetailsController = {
             monitoringSites: locationData.nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
-            pageTitle: `${welsh.multipleLocations.titlePrefix} ${title}`,
+            pageTitle: `${multipleLocations.titlePrefix} ${title}`,
             metaSiteUrl,
             description: `${daqi.description.a} ${headerTitle}${daqi.description.b}`,
-            title: `${welsh.multipleLocations.titlePrefix} ${headerTitle}`,
+            title: `${multipleLocations.titlePrefix} ${headerTitle}`,
             displayBacklink: true,
             transformedDailySummary: locationData.transformedDailySummary,
             footerTxt,
@@ -138,7 +139,6 @@ const getLocationDetailsController = {
         return h.view('location-not-found/index', {
           paragraph: notFoundLocation.paragraphs,
           serviceName: notFoundLocation.heading,
-          metaSiteUrl,
           footerTxt,
           phaseBanner,
           backlink,

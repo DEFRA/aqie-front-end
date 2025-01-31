@@ -53,6 +53,7 @@ const getLocationDataController = {
         pollutantTypes,
         pageTitle: `${multipleLocations.title} ${userLocation} -  ${multipleLocations.pageTitle}`,
         metaSiteUrl,
+        description: multipleLocations.description,
         serviceName: multipleLocations.serviceName,
         transformedDailySummary,
         dailySummary,
@@ -80,7 +81,6 @@ const getLocationDataController = {
       }
       return h.view('error/index', {
         pageTitle: english.notFoundUrl.serviceAPI.pageTitle,
-        metaSiteUrl,
         footerTxt,
         url: request.path,
         phaseBanner,

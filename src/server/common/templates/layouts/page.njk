@@ -22,7 +22,7 @@
 
 {% set metaTitle = (pageTitle or 'Check air quality - GOV.UK') %}
 {% set metaDescription = description | default('Check air quality in your local area and the air pollution forecast for the next 5 days. Also, get health advice to reduce your exposure to pollutants.') %}
-{% set metaSiteUrl = (metaSiteUrl or '') %}
+{% set metaSiteUrl = (metaSiteUrl or 'https://check-air-quality.service.gov.uk') %}
 {%set htmlLang = lang %}
 {% block bodyStart %}
 {% include "cookie-banner.njk" %}

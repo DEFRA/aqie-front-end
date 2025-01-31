@@ -62,7 +62,8 @@ const getLocationDetailsController = {
         phaseBanner,
         backlink,
         cookieBanner,
-        daqi
+        daqi,
+        multipleLocations
       } = english
       const locationData = request.yar.get('locationData') || []
       let locationIndex = 0
@@ -101,10 +102,10 @@ const getLocationDetailsController = {
             monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
-            pageTitle: `${english.multipleLocations.titlePrefix} ${title}`,
+            pageTitle: `${multipleLocations.titlePrefix} ${title}`,
             metaSiteUrl,
             description: `${daqi.description.a} ${headerTitle}${daqi.description.b}`,
-            title: `${english.multipleLocations.titlePrefix} ${headerTitle}`,
+            title: `${multipleLocations.titlePrefix} ${headerTitle}`,
             displayBacklink: true,
             transformedDailySummary: locationData.transformedDailySummary,
             footerTxt,
@@ -128,10 +129,10 @@ const getLocationDetailsController = {
             monitoringSites: locationData.nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
-            pageTitle: title,
+            pageTitle: `${multipleLocations.titlePrefix} ${title}`,
             metaSiteUrl,
             description: `${daqi.description.a} ${headerTitle}${daqi.description.b}`,
-            title: headerTitle,
+            title: `${multipleLocations.titlePrefix} ${headerTitle}`,
             displayBacklink: true,
             transformedDailySummary: locationData.transformedDailySummary,
             footerTxt,
@@ -152,7 +153,6 @@ const getLocationDetailsController = {
         return h.view('location-not-found/index', {
           paragraph: notFoundLocation.paragraphs,
           serviceName: notFoundLocation.heading,
-          metaSiteUrl,
           footerTxt,
           phaseBanner,
           backlink,

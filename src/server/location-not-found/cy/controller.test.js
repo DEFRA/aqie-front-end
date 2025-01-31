@@ -1,7 +1,6 @@
 import { locationNotFoundController } from '~/src/server/location-not-found/cy/controller'
 import { welsh } from '~/src/server/data/cy/cy.js'
 import { LOCATION_NOT_FOUND } from '~/src/server/data/constants'
-import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 
 describe('locationNotFoundController - welsh', () => {
   let mockRequest
@@ -19,11 +18,6 @@ describe('locationNotFoundController - welsh', () => {
         })
       }
     }
-    jest.mock('~/src/server/common/helpers/get-site-url', () => ({
-      getAirQualitySiteUrl: jest.fn((request) => {
-        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
-      })
-    }))
     mockH = {
       redirect: jest.fn().mockReturnValue('redirected'),
       view: jest.fn().mockReturnValue('view rendered')
@@ -32,11 +26,6 @@ describe('locationNotFoundController - welsh', () => {
 
   test('should render the location not found view with empty location data', () => {
     mockRequest.query.lang = 'cy'
-    const expectedUrl =
-      'https://check-air-quality.service.gov.uk/lleoliad-heb-ei-ganfod/cy?lang=cy'
-    const actualUrl = getAirQualitySiteUrl(mockRequest)
-    expect(actualUrl).toBe(expectedUrl)
-
     const result = locationNotFoundController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith(LOCATION_NOT_FOUND, {
@@ -44,7 +33,7 @@ describe('locationNotFoundController - welsh', () => {
       serviceName: mockContent.notFoundLocation.heading,
       paragraph: mockContent.notFoundLocation.paragraphs,
       pageTitle: `${mockContent.notFoundLocation.paragraphs.a}  - ${mockContent.home.pageTitle}`,
-      metaSiteUrl: actualUrl,
+      description: mockContent.multipleLocations.description,
       footerTxt: mockContent.footerTxt,
       phaseBanner: mockContent.phaseBanner,
       backlink: mockContent.backlink,
