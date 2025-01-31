@@ -153,7 +153,6 @@ const getLocationDetailsController = {
         return h.view('location-not-found/index', {
           paragraph: notFoundLocation.paragraphs,
           serviceName: notFoundLocation.heading,
-          metaSiteUrl,
           footerTxt,
           phaseBanner,
           backlink,

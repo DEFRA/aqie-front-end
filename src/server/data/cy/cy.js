@@ -100,7 +100,9 @@ export const welsh = {
       a: 'Canfuwyd mwy nag un cyfatebiaeth ar gyfer eich lleoliad. Dewiswch y lleoliad cywir o’r opsiynau canlynol:',
       b: 'Fel arall,',
       c: 'ceisiwch chwilio eto'
-    }
+    },
+    description:
+      'Gwiriwchansawdd aer eich ardal leol a’r rhagolygonllygredd aer am y 5 diwrnod nesaf. Hefyd,mynnwch gyngor iechyd i leihau’ch amlygiad ilygryddion.'
   },
   phaseBanner: {
     paragraphs: {

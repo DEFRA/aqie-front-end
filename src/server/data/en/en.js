@@ -122,7 +122,9 @@ export const english = {
       a: 'More than one match was found for your location. Choose the correct location from the following options:',
       b: 'Alternatively,',
       c: 'try searching again'
-    }
+    },
+    description:
+      'Check air quality in your local area and the air pollution forecast for the next 5 days. Also, get health advice to reduce your exposure to pollutants.'
   },
   phaseBanner: {
     paragraphs: {

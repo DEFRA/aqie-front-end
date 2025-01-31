@@ -4,7 +4,6 @@ import {
   LOCATION_NOT_FOUND_ROUTE_EN
 } from '~/src/server/data/constants'
 import { welsh } from '~/src/server/data/cy/cy.js'
-import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 
 const locationNotFoundController = {
   handler: (request, h) => {
@@ -22,13 +21,11 @@ const locationNotFoundController = {
       backlink,
       cookieBanner
     } = welsh
-    const metaSiteUrl = getAirQualitySiteUrl(request)
     return h.view(LOCATION_NOT_FOUND, {
       userLocation: locationNameOrPostcode,
       serviceName: notFoundLocation.heading,
       paragraph: notFoundLocation.paragraphs,
       pageTitle: `${notFoundLocation.paragraphs.a} ${locationNameOrPostcode} - ${home.pageTitle}`,
-      metaSiteUrl,
       footerTxt,
       phaseBanner,
       backlink,
