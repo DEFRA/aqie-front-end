@@ -51,7 +51,14 @@ const fetchOAuthToken = async () => {
   return dataToken.access_token
 }
 
-async function fetchData(locationType, userLocation, request, h) {
+async function fetchData(
+  locationType,
+  userLocation,
+  request,
+  h,
+  locationNameOrPostcode,
+  lang
+) {
   let optionsOAuth
   let savedAccessToken
   let accessToken
@@ -191,6 +198,7 @@ async function fetchData(locationType, userLocation, request, h) {
       logger.info(`getNIPlaces data fetched:`)
     }
     if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
+      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       logger.info(
         `::::::::::: getNIPlaces en into location not found  ::::::::::: ${getNIPlaces}`
       )
