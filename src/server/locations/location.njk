@@ -30,10 +30,15 @@
       {% else %}
       {% include "forecast.njk" %}
       {%endif%}
-      <h2 class="govuk-heading-m">{{daqi.pageTexts.a}}</h2>
-      <p class="govuk-!-margin-bottom-6">
-        {{ forecastSummary }}
-      </p>
+      <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{daqi.pageTexts.e}}</h2>
+      {% if transformedDailySummary %}
+        {% for key, value in transformedDailySummary %}
+        {% if key != 'issue_date' %}
+            <h2 class="govuk-heading-s govuk-!-margin-bottom-1">{{ key }}</h2>
+            <p>{{ value }}</p>
+        {% endif %}    
+        {% endfor %}
+      {% endif %}  
       <p class="govuk-caption-s govuk-!-margin-bottom-4">{{daqi.pageTexts.b}} {{summaryDate }}</p>
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6 govuk-!-margin-top-6">
       {% if airQuality.today.value >= 1 and airQuality.today.value <= 3 %}

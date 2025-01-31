@@ -9,7 +9,7 @@ async function showLocationPage(
   pageTitle,
   displayBacklink,
   serviceName,
-  forecastSummary,
+  transformedDailySummary,
   summaryDate,
   userLocation,
   locationString,
@@ -25,7 +25,7 @@ async function showLocationPage(
       pollutantTypes,
       pageTitle,
       displayBacklink,
-      forecastSummary,
+      transformedDailySummary,
       summaryDate
     })
   } else if (locationString === 'multiple-results/multiple-locations')

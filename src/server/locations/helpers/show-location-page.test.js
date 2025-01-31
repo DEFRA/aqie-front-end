@@ -20,7 +20,7 @@ describe('showLocationPage', () => {
       pollutantTypes: [],
       pageTitle: 'Page Title',
       displayBacklink: true,
-      forecastSummary: 'Forecast Summary',
+      transformedDailySummary: {},
       summaryDate: '2025-01-28'
     }
 
@@ -34,7 +34,7 @@ describe('showLocationPage', () => {
       data.pageTitle,
       data.displayBacklink,
       null,
-      data.forecastSummary,
+      data.transformedDailySummary,
       data.summaryDate,
       null,
       locationString,
@@ -50,7 +50,7 @@ describe('showLocationPage', () => {
       pollutantTypes: data.pollutantTypes,
       pageTitle: data.pageTitle,
       displayBacklink: data.displayBacklink,
-      forecastSummary: data.forecastSummary,
+      transformedDailySummary: data.transformedDailySummary,
       summaryDate: data.summaryDate
     })
   })

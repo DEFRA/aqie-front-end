@@ -7,7 +7,7 @@ import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-l
 import { english, calendarEnglish } from '~/src/server/data/en/en.js'
 import { welsh, calendarWelsh } from '~/src/server/data/cy/cy.js'
 import moment from 'moment-timezone'
-import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
+import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
 import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-util'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { LANG_CY, LANG_EN, LOCATION_TYPE_UK } from '~/src/server/data/constants'
@@ -60,8 +60,8 @@ const getLocationDetailsController = {
           locationIndex,
           request.query?.lang
         )
-        title = firstLetterUppercase(title)
-        headerTitle = firstLetterUppercase(headerTitle)
+        title = convertFirstLetterIntoUppercase(title)
+        headerTitle = convertFirstLetterIntoUppercase(headerTitle)
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
@@ -69,12 +69,12 @@ const getLocationDetailsController = {
           monitoringSites: nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
-          pageTitle: title,
+          pageTitle: `${welsh.multipleLocations.titlePrefix} ${title}`,
           metaSiteUrl,
           description: `${daqi.description.a} ${headerTitle}${daqi.description.b}`,
-          title: headerTitle,
+          title: `${welsh.multipleLocations.titlePrefix} ${headerTitle}`,
           displayBacklink: true,
-          forecastSummary: locationData.forecastSummary,
+          transformedDailySummary: locationData.transformedDailySummary,
           footerTxt,
           phaseBanner,
           backlink,

@@ -91,6 +91,7 @@ export const welsh = {
     }
   },
   multipleLocations: {
+    titlePrefix: 'Ansawdd aer –',
     pageTitle: 'Gwirio ansawdd aer - GOV.UK',
     title: 'Lleoliadau yn cyfateb',
     heading: 'Gwirio ansawdd aer ',
@@ -171,7 +172,8 @@ export const welsh = {
       a: 'Crynodeb o lygredd aer y UK',
       b: 'Y diweddaraf am 5am ymlaen',
       c: 'Sut y gall llygryddion aer effeithio ar eich iechyd',
-      d: 'Llygryddion aer sy’n cael eu monitro gerllaw'
+      d: 'Llygryddion aer sy’n cael eu monitro gerllaw',
+      e: 'Rhagolwg y DU'
     },
     pollutantText: {
       a: 'Mater gronynnol (PM)',

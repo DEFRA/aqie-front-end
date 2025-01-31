@@ -25,6 +25,7 @@ import {
 import { getMonth } from '~/src/server/locations/helpers/location-type-util'
 import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
+import { transformKeys } from '~/src/server/locations/helpers/generate-daily-summary-with-calendar-day.js'
 
 const logger = createLogger()
 
@@ -57,6 +58,7 @@ const searchMiddlewareCy = async (request, h) => {
     calendarWelsh,
     lang
   )
+  const { transformedDailySummary } = transformKeys(getDailySummary)
   const { englishDate, welshDate } = getLanguageDates(
     formattedDateSummary,
     getMonthSummary,
@@ -105,6 +107,7 @@ const searchMiddlewareCy = async (request, h) => {
         getForecasts,
         getMeasurements,
         getDailySummary,
+        transformedDailySummary,
         nearestLocationsRange,
         englishDate,
         welshDate,
@@ -135,6 +138,7 @@ const searchMiddlewareCy = async (request, h) => {
         siteTypeDescriptions,
         pollutantTypes,
         getDailySummary,
+        transformedDailySummary,
         footerTxt,
         phaseBanner,
         backlink,

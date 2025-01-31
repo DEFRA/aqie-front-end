@@ -6,7 +6,7 @@ import * as airQualityData from '~/src/server/data/en/air-quality.js'
 import { english, calendarEnglish } from '~/src/server/data/en/en.js'
 import { calendarWelsh } from '~/src/server/data/cy/cy.js'
 import moment from 'moment-timezone'
-import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
+import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
 import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-util'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import {
@@ -63,8 +63,8 @@ const getLocationDetailsController = {
       )
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
-        title = firstLetterUppercase(title)
-        headerTitle = firstLetterUppercase(headerTitle)
+        title = convertFirstLetterIntoUppercase(title)
+        headerTitle = convertFirstLetterIntoUppercase(headerTitle)
 
         logger.info(
           `::::::::::: getNIPlaces 4 headerTitle  ::::::::::: ${headerTitle}`
@@ -86,12 +86,12 @@ const getLocationDetailsController = {
             monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
-            pageTitle: title,
+            pageTitle: `${english.multipleLocations.titlePrefix} ${title}`,
             metaSiteUrl,
             description: `${daqi.description.a} ${headerTitle}${daqi.description.b}`,
-            title: headerTitle,
+            title: `${english.multipleLocations.titlePrefix} ${headerTitle}`,
             displayBacklink: true,
-            forecastSummary: locationData.forecastSummary,
+            transformedDailySummary: locationData.transformedDailySummary,
             footerTxt,
             phaseBanner,
             backlink,
@@ -118,7 +118,7 @@ const getLocationDetailsController = {
             description: `${daqi.description.a} ${headerTitle}${daqi.description.b}`,
             title: headerTitle,
             displayBacklink: true,
-            forecastSummary: locationData.forecastSummary,
+            transformedDailySummary: locationData.transformedDailySummary,
             footerTxt,
             phaseBanner,
             backlink,
