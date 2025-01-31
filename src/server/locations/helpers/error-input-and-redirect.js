@@ -148,9 +148,11 @@ const handleErrorInputAndRedirect = (
             text: searchLocation.errorText.ni.fields.list.text // 'Enter a postcode'
           }
         })
-        request.yar.set('locationType', LOCATION_TYPE_UK)
+        request.yar.set('locationType', LOCATION_TYPE_NI)
         request.yar.set('locationNameOrPostcode', 'locationNameOrPostcode')
-        return h.redirect(`/search-location`).takeover()
+        return lang === LANG_EN
+          ? h.redirect(`/search-location?lang=en`).takeover()
+          : h.redirect(`chwilio-lleoliad/cy?lang=cy`).takeover()
       }
       locationType = request.yar.get('locationType')
       return { locationType, userLocation, locationNameOrPostcode }

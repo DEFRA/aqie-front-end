@@ -63,20 +63,20 @@ const getLocationDataController = {
       request.yar.set('airQuality', airQuality)
     }
     if (!locationNameOrPostcode && !locationType) {
-      request.yar.set('errors', {
-        errors: {
-          titleText: searchLocation.errorText.radios.title, // 'There is a problem',
-          errorList: [
-            {
-              text: searchLocation.errorText.radios.list.text, // 'Select where you want to check',
-              href: '#locationType'
-            }
-          ]
-        }
-      })
-      request.yar.set('errorMessage', {
-        errorMessage: { text: searchLocation.errorText.radios.list.text } // 'Select where you want to check' }
-      })
+      // request.yar.set('errors', {
+      //   errors: {
+      //     titleText: searchLocation.errorText.radios.title, // 'There is a problem',
+      //     errorList: [
+      //       {
+      //         text: searchLocation.errorText.radios.list.text, // 'Select where you want to check',
+      //         href: '#locationType'
+      //       }
+      //     ]
+      //   }
+      // })
+      // request.yar.set('errorMessage', {
+      //   errorMessage: { text: searchLocation.errorText.radios.list.text } // 'Select where you want to check' }
+      // })
       request.yar.set('locationType', '')
       if (str === 'chwilio-lleoliad') {
         return h.redirect(`/chwilio-lleoliad/cy?lang=cy`)
@@ -97,46 +97,46 @@ const getLocationDataController = {
           spaceIndex
         )}`
       }
-      if (!userLocation && locationType === LOCATION_TYPE_UK) {
-        request.yar.set('errors', {
-          errors: {
-            titleText: searchLocation.errorText.uk.fields.title, // 'There is a problem',
-            errorList: [
-              {
-                text: searchLocation.errorText.uk.fields.list.text, // 'Enter a location or postcode',
-                href: '#engScoWal'
-              }
-            ]
-          }
-        })
-        request.yar.set('errorMessage', {
-          errorMessage: {
-            text: searchLocation.errorText.uk.fields.list.text // 'Enter a location or postcode'
-          }
-        })
-        request.yar.set('locationType', LOCATION_TYPE_UK)
-        return h.redirect(`/chwilio-lleoliad/cy?lang=cy`)
-      }
-      if (!userLocation && locationType === LOCATION_TYPE_NI) {
-        request.yar.set('errors', {
-          errors: {
-            titleText: searchLocation.errorText.ni.fields.title, // 'There is a problem',
-            errorList: [
-              {
-                text: searchLocation.errorText.ni.fields.list.text, // 'Enter a postcode',
-                href: '#ni'
-              }
-            ]
-          }
-        })
-        request.yar.set('errorMessage', {
-          errorMessage: {
-            text: searchLocation.errorText.ni.fields.list.text // 'Enter a postcode'
-          }
-        })
-        request.yar.set('locationType', LOCATION_TYPE_NI)
-        return h.redirect(`/chwilio-lleoliad/cy?lang=cy`)
-      }
+      // if (!userLocation && locationType === LOCATION_TYPE_UK) {
+      //   request.yar.set('errors', {
+      //     errors: {
+      //       titleText: searchLocation.errorText.uk.fields.title, // 'There is a problem',
+      //       errorList: [
+      //         {
+      //           text: searchLocation.errorText.uk.fields.list.text, // 'Enter a location or postcode',
+      //           href: '#engScoWal'
+      //         }
+      //       ]
+      //     }
+      //   })
+      //   request.yar.set('errorMessage', {
+      //     errorMessage: {
+      //       text: searchLocation.errorText.uk.fields.list.text // 'Enter a location or postcode'
+      //     }
+      //   })
+      //   request.yar.set('locationType', LOCATION_TYPE_UK)
+      //   return h.redirect(`/chwilio-lleoliad/cy?lang=cy`)
+      // }
+      // if (!userLocation && locationType === LOCATION_TYPE_NI) {
+      //   request.yar.set('errors', {
+      //     errors: {
+      //       titleText: searchLocation.errorText.ni.fields.title, // 'There is a problem',
+      //       errorList: [
+      //         {
+      //           text: searchLocation.errorText.ni.fields.list.text, // 'Enter a postcode',
+      //           href: '#ni'
+      //         }
+      //       ]
+      //     }
+      //   })
+      //   request.yar.set('errorMessage', {
+      //     errorMessage: {
+      //       text: searchLocation.errorText.ni.fields.list.text // 'Enter a postcode'
+      //     }
+      //   })
+      //   request.yar.set('locationType', LOCATION_TYPE_NI)
+      //   return h.redirect(`/chwilio-lleoliad/cy?lang=cy`)
+      // }
       locationType = request.yar.get('locationType')
       const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
         await fetchData(LOCATION_TYPE_UK, userLocation, request)
@@ -363,7 +363,9 @@ const getLocationDataController = {
         const { getNIPlaces } = await fetchData(
           LOCATION_TYPE_NI,
           userLocation,
-          request
+          request,
+          locationNameOrPostcode,
+          lang
         )
         logger.info(
           `::::::::::: getNIPlaces statusCode cy ::::::::: ${getNIPlaces?.statusCode}`

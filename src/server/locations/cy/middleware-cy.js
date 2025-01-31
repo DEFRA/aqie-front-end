@@ -183,7 +183,9 @@ const searchMiddlewareCy = async (request, h) => {
       LOCATION_TYPE_NI,
       userLocation,
       request,
-      h
+      h,
+      locationNameOrPostcode,
+      lang
     )
     const { results } = getNIPlaces
     const { nearestLocationsRange, latlon, airQuality } = getNearestLocation(
