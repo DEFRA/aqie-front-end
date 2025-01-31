@@ -222,7 +222,9 @@ const selectNIUKLocationType = async (
       LOCATION_TYPE_NI,
       userLocation,
       request,
-      h
+      h,
+      locationNameOrPostcode,
+      lang
     )
     logger.info(`::::::::::: getNIPlaces en  ::::::::::: ${getNIPlaces}`)
     logger.info(

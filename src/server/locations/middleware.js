@@ -64,7 +64,14 @@ const searchMiddleware = async (request, h) => {
     locationType = searchTermsLocationType
   }
   const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
-    await fetchData(locationType, userLocation, request, h)
+    await fetchData(
+      locationType,
+      userLocation,
+      request,
+      h,
+      locationNameOrPostcode,
+      lang
+    )
   logger.info(
     `::::::::::: getDailySummary 1  ::::::::::: ${JSON.stringify(getDailySummary)}`
   )
@@ -186,7 +193,9 @@ const searchMiddleware = async (request, h) => {
       LOCATION_TYPE_NI,
       userLocation,
       request,
-      h
+      h,
+      locationNameOrPostcode,
+      lang
     )
     const { results } = getNIPlaces
     const { nearestLocationsRange, latlon, airQuality } = getNearestLocation(
