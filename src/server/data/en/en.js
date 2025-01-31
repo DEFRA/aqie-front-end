@@ -114,6 +114,7 @@ export const english = {
     }
   },
   multipleLocations: {
+    titlePrefix: 'Air quality in',
     pageTitle: 'Check air quality - GOV.UK',
     title: 'Locations matching',
     serviceName: 'Check air quality',
@@ -192,7 +193,8 @@ export const english = {
       a: 'UK air pollution summary',
       b: 'Latest at 5am on',
       c: 'How air pollutants can affect your health',
-      d: 'Air pollutants monitored near by'
+      d: 'Air pollutants monitored near by',
+      e: 'UK forecast'
     },
     pollutantText: {
       a: 'Particulate matter (PM)',

@@ -25,7 +25,8 @@ import { getMonth } from '~/src/server/locations/helpers/location-type-util'
 import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
-import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
+import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
+import { transformKeys } from '~/src/server/locations/helpers/generate-daily-summary-with-calendar-day'
 
 const logger = createLogger()
 
@@ -72,6 +73,9 @@ const searchMiddleware = async (request, h) => {
     calendarWelsh,
     lang
   )
+
+  const { transformedDailySummary } = transformKeys(getDailySummary)
+
   const { englishDate, welshDate } = getLanguageDates(
     formattedDateSummary,
     getMonthSummary,
@@ -128,6 +132,7 @@ const searchMiddleware = async (request, h) => {
         getForecasts,
         getMeasurements,
         getDailySummary,
+        transformedDailySummary,
         nearestLocationsRange,
         englishDate,
         welshDate,
@@ -158,6 +163,7 @@ const searchMiddleware = async (request, h) => {
         siteTypeDescriptions,
         pollutantTypes,
         getDailySummary,
+        transformedDailySummary,
         footerTxt,
         phaseBanner,
         backlink,
@@ -208,8 +214,8 @@ const searchMiddleware = async (request, h) => {
     urlRoute = `${results[0].postcode}_${sentenceCase(results[0].administrativeArea)}`
 
     logger.info(`::::::::::: getNIPlaces 3  :::::::::::`)
-    title = firstLetterUppercase(title)
-    headerTitle = firstLetterUppercase(headerTitle)
+    title = convertFirstLetterIntoUppercase(title)
+    headerTitle = convertFirstLetterIntoUppercase(headerTitle)
     urlRoute = convertStringToHyphenatedLowercaseWords(urlRoute)
     const resultNI = [
       {
@@ -235,8 +241,8 @@ const searchMiddleware = async (request, h) => {
       pageTitle: title,
       title: headerTitle,
       displayBacklink: true,
-      forecastSummary: getDailySummary.today,
       dailySummary: getDailySummary,
+      transformedDailySummary,
       footerTxt,
       phaseBanner,
       backlink,

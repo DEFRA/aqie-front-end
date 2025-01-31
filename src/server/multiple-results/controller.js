@@ -14,7 +14,7 @@ const getLocationDataController = {
     const {
       results,
       monitoringSites,
-      forecastSummary,
+      transformedDailySummary,
       calendarWelsh,
       englishDate,
       welshDate,
@@ -51,7 +51,7 @@ const getLocationDataController = {
         pageTitle: `${multipleLocations.title} ${userLocation} -  ${multipleLocations.pageTitle}`,
         metaSiteUrl,
         serviceName: multipleLocations.serviceName,
-        forecastSummary,
+        transformedDailySummary,
         dailySummary,
         footerTxt,
         phaseBanner,

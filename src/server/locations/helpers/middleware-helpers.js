@@ -1,5 +1,5 @@
-import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
-import { english } from '~/src/server/data/en/en'
+import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
+import { english } from '~/src/server/data/en/en.js'
 import moment from 'moment-timezone'
 import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
 import { LANG_EN, LANG_CY } from '~/src/server/data/constants'
@@ -18,6 +18,7 @@ const handleSingleMatch = (
     getForecasts,
     getMeasurements,
     getDailySummary,
+    transformedDailySummary,
     nearestLocationsRange,
     englishDate,
     welshDate,
@@ -35,7 +36,7 @@ const handleSingleMatch = (
     results: selectedMatches,
     rawForecasts: getForecasts?.forecasts,
     forecastNum: selectedMatches.length !== 0 ? forecastNum : 0,
-    forecastSummary: getDailySummary.today,
+    transformedDailySummary,
     nearestLocationsRange:
       selectedMatches.length !== 0 ? nearestLocationsRange : [],
     measurements: getMeasurements?.measurements,
@@ -74,6 +75,7 @@ const handleMultipleMatches = (
     siteTypeDescriptions,
     pollutantTypes,
     getDailySummary,
+    transformedDailySummary,
     footerTxt,
     phaseBanner,
     backlink,
@@ -100,8 +102,8 @@ const handleMultipleMatches = (
     pollutantTypes,
     pageTitle: `${multipleLocations.title} ${userLocation} -  ${multipleLocations.pageTitle}`,
     serviceName: multipleLocations.serviceName,
-    forecastSummary: getDailySummary.today,
     dailySummary: getDailySummary,
+    transformedDailySummary,
     footerTxt,
     phaseBanner,
     backlink,
@@ -233,8 +235,8 @@ const getTitleAndHeaderTitle = (locationDetails, locationNameOrPostcode) => {
       urlRoute = `${locationNameOrPostcode}_${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
     }
   }
-  title = firstLetterUppercase(title)
-  headerTitle = firstLetterUppercase(headerTitle)
+  title = convertFirstLetterIntoUppercase(title)
+  headerTitle = convertFirstLetterIntoUppercase(headerTitle)
   urlRoute = convertStringToHyphenatedLowercaseWords(urlRoute)
   return { title, headerTitle, urlRoute }
 }

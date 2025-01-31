@@ -11,7 +11,8 @@ import { welsh, calendarWelsh } from '~/src/server/data/cy/cy.js'
 import { calendarEnglish } from '~/src/server/data/en/en.js'
 import moment from 'moment-timezone'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
-import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
+import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case.js'
+import { transformKeys } from '~/src/server/locations/helpers/generate-daily-summary-with-calendar-day.js'
 import {
   LANG_CY,
   LANG_EN,
@@ -148,6 +149,7 @@ const getLocationDataController = {
       const getMonthSummary = calendarEnglish.findIndex(function (item) {
         return item.indexOf(formattedDateSummary[1]) !== -1
       })
+      const { transformedDailySummary } = transformKeys(getDailySummary)
       const englishDate = `${formattedDateSummary[0]} ${calendarEnglish[getMonthSummary]} ${formattedDateSummary[2]}`
       const welshDate = `${formattedDateSummary[0]} ${calendarWelsh[getMonthSummary]} ${formattedDateSummary[2]}`
 
@@ -225,7 +227,7 @@ const getLocationDataController = {
           results: matches,
           rawForecasts: getForecasts?.forecasts,
           forecastNum: matches.length !== 0 ? forecastNum : 0,
-          forecastSummary: getDailySummary,
+          transformedDailySummary,
           nearestLocationsRange:
             matches.length !== 0 ? nearestLocationsRange : [],
           measurements: getMeasurements?.measurements,
@@ -288,8 +290,8 @@ const getLocationDataController = {
             Object.values(forecastNum[0][3])[0],
             Object.values(forecastNum[0][4])[0]
           )
-          title = firstLetterUppercase(title)
-          headerTitle = firstLetterUppercase(headerTitle)
+          title = convertFirstLetterIntoUppercase(title)
+          headerTitle = convertFirstLetterIntoUppercase(headerTitle)
 
           return h.view('locations/location', {
             result: matches[0],
@@ -307,7 +309,7 @@ const getLocationDataController = {
             footerTxt,
             cookieBanner,
             serviceName: multipleLocations.serviceName,
-            forecastSummary: getDailySummary.today,
+            transformedDailySummary,
             dailySummary: getDailySummary,
             welshMonth: calendarWelsh[getMonth],
             summaryDate: lang === LANG_CY ? welshDate : englishDate,
@@ -334,7 +336,7 @@ const getLocationDataController = {
             pageTitle: `${multipleLocations.title} ${userLocation} -  ${home.pageTitle}`,
             title: multipleLocations.title,
             serviceName: multipleLocations.serviceName,
-            forecastSummary: getDailySummary.today,
+            transformedDailySummary,
             summaryDate: lang === LANG_CY ? welshDate : englishDate,
             dailySummary: getDailySummary,
             footerTxt,
@@ -462,8 +464,8 @@ const getLocationDataController = {
           Object.values(forecastNum[0][3])[0],
           Object.values(forecastNum[0][4])[0]
         )
-        title = firstLetterUppercase(title)
-        headerTitle = firstLetterUppercase(headerTitle)
+        title = convertFirstLetterIntoUppercase(title)
+        headerTitle = convertFirstLetterIntoUppercase(headerTitle)
         return h.view('locations/location', {
           result: locationData,
           airQuality,
@@ -472,7 +474,7 @@ const getLocationDataController = {
           siteTypeDescriptions,
           pollutantTypes,
           displayBacklink: true,
-          forecastSummary: getDailySummary.today,
+          transformedDailySummary,
           summaryDate: lang === LANG_CY ? welshDate : englishDate,
           dailySummary: getDailySummary,
           daqi,

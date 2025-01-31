@@ -4,7 +4,7 @@ import { getMonth } from '~/src/server/locations/helpers/location-type-util'
 import { getAirQuality } from '~/src/server/data/en/air-quality.js'
 import { english, calendarEnglish } from '~/src/server/data/en/en.js'
 import { calendarWelsh } from '~/src/server/data/cy/cy.js'
-import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
+import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import * as airQualityData from '~/src/server/data/en/air-quality.js'
 import {
@@ -39,6 +39,7 @@ const selectNIUKLocationType = async (
   getForecasts,
   getMeasurements,
   getDailySummary,
+  transformedDailySummary,
   locationType,
   userLocation,
   locationNameOrPostcode,
@@ -116,7 +117,7 @@ const selectNIUKLocationType = async (
       results: matches,
       rawForecasts: getForecasts?.forecasts,
       forecastNum: matches.length !== 0 ? forecastNum : 0,
-      forecastSummary: getDailySummary.today,
+      transformedDailySummary,
       nearestLocationsRange: matches.length !== 0 ? nearestLocationsRange : [],
       measurements: getMeasurements?.measurements,
       englishDate,
@@ -142,8 +143,8 @@ const selectNIUKLocationType = async (
           headerTitle = `${locationNameOrPostcode}, ${locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY}`
         }
       }
-      title = firstLetterUppercase(title)
-      headerTitle = firstLetterUppercase(headerTitle)
+      title = convertFirstLetterIntoUppercase(title)
+      headerTitle = convertFirstLetterIntoUppercase(headerTitle)
       logger.info(
         `::::::::::: multipleLocations.title  1 ::::::::::: ${headerTitle}`
       )
@@ -159,7 +160,7 @@ const selectNIUKLocationType = async (
         pageTitle: title,
         title: headerTitle,
         serviceName: 'Check air quality',
-        forecastSummary: getDailySummary.today,
+        transformedDailySummary,
         dailySummary: getDailySummary,
         footerTxt,
         phaseBanner,
@@ -193,7 +194,7 @@ const selectNIUKLocationType = async (
         pollutantTypes,
         pageTitle: `${multipleLocations.title} ${userLocation} -  ${multipleLocations.pageTitle}`,
         serviceName: multipleLocations.serviceName,
-        forecastSummary: getDailySummary.today,
+        transformedDailySummary,
         dailySummary: getDailySummary,
         footerTxt,
         phaseBanner,
@@ -289,8 +290,8 @@ const selectNIUKLocationType = async (
         headerTitle = `${locationData.GAZETTEER_ENTRY.NAME1}, ${locationData.GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
       }
     }
-    title = firstLetterUppercase(title)
-    headerTitle = firstLetterUppercase(headerTitle)
+    title = convertFirstLetterIntoUppercase(title)
+    headerTitle = convertFirstLetterIntoUppercase(headerTitle)
     if (lang === LANG_EN && query?.lang === LANG_CY) {
       /* eslint-disable camelcase */
       return h.redirect(`/lleoliad?lang=cy`)
@@ -306,7 +307,7 @@ const selectNIUKLocationType = async (
       pageTitle: title,
       title: headerTitle,
       displayBacklink: true,
-      forecastSummary: getDailySummary.today,
+      transformedDailySummary,
       dailySummary: getDailySummary,
       footerTxt,
       phaseBanner,
