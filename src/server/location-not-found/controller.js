@@ -19,13 +19,15 @@ const locationNotFoundController = {
       footerTxt,
       phaseBanner,
       backlink,
-      cookieBanner
+      cookieBanner,
+      multipleLocations
     } = english
     return h.view(LOCATION_NOT_FOUND, {
       userLocation: locationNameOrPostcode,
       serviceName: notFoundLocation.heading,
       paragraph: notFoundLocation.paragraphs,
       pageTitle: `${notFoundLocation.paragraphs.a} ${locationNameOrPostcode} - ${home.pageTitle}`,
+      description: multipleLocations.description,
       footerTxt,
       phaseBanner,
       backlink,

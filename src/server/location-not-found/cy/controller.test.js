@@ -33,6 +33,7 @@ describe('locationNotFoundController - welsh', () => {
       serviceName: mockContent.notFoundLocation.heading,
       paragraph: mockContent.notFoundLocation.paragraphs,
       pageTitle: `${mockContent.notFoundLocation.paragraphs.a}  - ${mockContent.home.pageTitle}`,
+      description: mockContent.multipleLocations.description,
       footerTxt: mockContent.footerTxt,
       phaseBanner: mockContent.phaseBanner,
       backlink: mockContent.backlink,
