@@ -31,6 +31,7 @@ import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/
 const logger = createLogger()
 
 const searchMiddlewareCy = async (request, h) => {
+  logger.info(`::::::::::: searchMiddlewareCy 1  :::::::::::`)
   const { query, payload } = request
   const lang = LANG_CY
   const month = getMonth(lang)

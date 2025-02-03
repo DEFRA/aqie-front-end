@@ -9,7 +9,7 @@
 
       {% set queryhrefEn = "/location" %}
       {% set queryhrefCy = "/lleoliad" %}
-
+{{}}
       <form id="itembox" action="{% if htmlLang == 'en' %}{{ queryhrefEn }}{% else %}{{ queryhrefCy }}{% endif %}" method="POST" name="search-form" value="search">
         {% if locationType | length %}
           {% set errorMessage = "" %}
