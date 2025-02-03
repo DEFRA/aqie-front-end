@@ -75,11 +75,9 @@ const handleErrorInputAndRedirect = (
       request.yar.get('', '')
 
       if (lang === LANG_CY) {
-        logger.info('Redirecting to search-location in Welsh')
         return h.redirect(`chwilio-lleoliad/cy?lang=cy`).takeover()
       }
       if (str === 'search-location') {
-        logger.info('Redirecting to search-location in English')
         return h.redirect(`/search-location?lang=en`).takeover()
       }
       return null
