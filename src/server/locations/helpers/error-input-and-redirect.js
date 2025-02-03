@@ -134,10 +134,16 @@ const handleErrorInputAndRedirect = (
       if (!userLocation && locationType === LOCATION_TYPE_NI) {
         request.yar.set('errors', {
           errors: {
-            titleText: searchLocation.errorText.ni.fields.title, // 'There is a problem',
+            titleText:
+              lang === LANG_EN
+                ? searchLocation.errorText.ni.fields.title
+                : welsh.searchLocation.errorText.ni.fields.title, // 'There is a problem',
             errorList: [
               {
-                text: searchLocation.errorText.ni.fields.list.text, // 'Enter a postcode',
+                text:
+                  lang === LANG_EN
+                    ? searchLocation.errorText.ni.fields.list.text
+                    : welsh.searchLocation.errorText.ni.fields.list.text, // 'Enter a postcode',
                 href: '#ni'
               }
             ]
@@ -145,7 +151,10 @@ const handleErrorInputAndRedirect = (
         })
         request.yar.set('errorMessage', {
           errorMessage: {
-            text: searchLocation.errorText.ni.fields.list.text // 'Enter a postcode'
+            text:
+              lang === LANG_EN
+                ? searchLocation.errorText.ni.fields.list.text
+                : welsh.searchLocation.errorText.ni.fields.list.text // 'Enter a postcode'
           }
         })
         request.yar.set('locationType', LOCATION_TYPE_NI)

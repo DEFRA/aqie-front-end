@@ -180,6 +180,7 @@ async function fetchData(
     } else {
       logger.info(`getOSPlaces data fetched:`)
     }
+
     return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
   } else if (locationType === LOCATION_TYPE_NI) {
     logger.info(`inside LOCATION_TYPE_NI: ${LOCATION_TYPE_NI}`)
