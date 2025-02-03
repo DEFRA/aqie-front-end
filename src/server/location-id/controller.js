@@ -27,6 +27,9 @@ const getLocationDetailsController = {
         `::::::::::: getNIPlaces 4 locationId  ::::::::::: ${locationId}`
       )
       if (query?.lang && query?.lang === LANG_CY && !query?.searchTerms) {
+        logger.info(
+          'Redirecting to Welsh location page in location-id controller'
+        )
         /* eslint-disable camelcase */
         return h.redirect(`/lleoliad/${locationId}/?lang=cy`)
       }
