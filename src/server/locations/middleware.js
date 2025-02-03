@@ -270,6 +270,9 @@ const searchMiddleware = async (request, h) => {
       `::::::::::: redirecting to specific urlRoute en  ::::::::::: ${urlRoute}`
     )
     request.yar.set('searchTermsSaved', searchTerms)
+    logger.info(
+      `::::::::::: redirecting to specific urlRoute en  ::::::::::: ${urlRoute}`
+    )
     return h.redirect(`/location/${urlRoute}?lang=en`).takeover()
   } else {
     logger.info(
