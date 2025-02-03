@@ -23,6 +23,7 @@ const getLocationDetailsController = {
       const locationId = request.params.id
       let locationDetails = null
       const searchTermsSaved = request.yar.get('searchTermsSaved')
+
       if (query?.lang && query?.lang === LANG_EN && !query?.searchTerms) {
         /* eslint-disable camelcase */
         return h.redirect(`/location/${locationId}/?lang=en`)

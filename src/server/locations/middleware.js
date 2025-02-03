@@ -31,6 +31,7 @@ import { transformKeys } from '~/src/server/locations/helpers/generate-daily-sum
 const logger = createLogger()
 
 const searchMiddleware = async (request, h) => {
+  logger.info(`::::::::::: searchMiddleware 1  :::::::::::`)
   const { query, payload } = request
   const lang = LANG_EN
   const month = getMonth(lang)
