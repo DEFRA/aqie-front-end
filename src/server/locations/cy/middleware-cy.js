@@ -266,6 +266,7 @@ const searchMiddlewareCy = async (request, h) => {
       dailySummaryTexts: welsh.dailySummaryTexts,
       lang
     })
+    request.yar.set('searchTermsSaved', searchTerms)
     logger.info(
       `::::::::::: redirecting to specific urlRoute cy  ::::::::::: ${urlRoute}`
     )

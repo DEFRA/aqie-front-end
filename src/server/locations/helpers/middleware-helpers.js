@@ -51,7 +51,6 @@ const handleSingleMatch = (
     locationType,
     lang
   })
-  request.yar.set('searchTermsSaved', searchTerms)
   logger.info(
     `::::::::::: handleSingleMatch searchTerms  ::::::::::: ${searchTerms}`
   )
