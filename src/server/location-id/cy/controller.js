@@ -70,7 +70,9 @@ const getLocationDetailsController = {
         }
         return null
       })
-
+      logger.info(
+        `::::::::::: getNIPlaces 4 locationDetails cy  ::::::::::: ${JSON.stringify(locationDetails)}`
+      )
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
         title = convertFirstLetterIntoUppercase(title)

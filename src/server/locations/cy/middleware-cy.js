@@ -64,7 +64,14 @@ const searchMiddlewareCy = async (request, h) => {
     locationType = searchTermsLocationType
   }
   const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
-    await fetchData(locationType, userLocation, request, h)
+    await fetchData(
+      locationType,
+      userLocation,
+      request,
+      h,
+      locationNameOrPostcode,
+      lang
+    )
   logger.info(
     `::::::::::: getDailySummary 3  ::::::::::: ${JSON.stringify(getDailySummary)}`
   )

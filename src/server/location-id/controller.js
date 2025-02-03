@@ -78,7 +78,7 @@ const getLocationDetailsController = {
         return null
       })
       logger.info(
-        `::::::::::: getNIPlaces 4 locationDetails  ::::::::::: ${JSON.stringify(locationDetails)}`
+        `::::::::::: getNIPlaces 4 locationDetails en  ::::::::::: ${JSON.stringify(locationDetails)}`
       )
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)

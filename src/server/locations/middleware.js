@@ -84,7 +84,6 @@ const searchMiddleware = async (request, h) => {
   )
 
   const { transformedDailySummary } = transformKeys(getDailySummary)
-
   const { englishDate, welshDate } = getLanguageDates(
     formattedDateSummary,
     getMonthSummary,
