@@ -197,9 +197,11 @@ const searchMiddlewareCy = async (request, h) => {
       0,
       lang
     )
-    logger.info(`::::::::::: getNIPlaces en  ::::::::::: ${getNIPlaces}`)
     logger.info(
-      `::::::::::: getNIPlaces statusCode en  ::::::::::: ${getNIPlaces?.statusCode}`
+      `::::::::::: getNIPlaces cy  ::::::::::: ${JSON.stringify(getNIPlaces)}`
+    )
+    logger.info(
+      `::::::::::: getNIPlaces statusCode cy  ::::::::::: ${JSON.stringify(getNIPlaces?.statusCode)}`
     )
     if (
       getNIPlaces?.statusCode !== 200 &&
@@ -211,13 +213,13 @@ const searchMiddlewareCy = async (request, h) => {
     let title = ''
     let headerTitle = ''
     let urlRoute = ''
-    logger.info(`::::::::::: getNIPlaces 2  :::::::::::`)
+    logger.info(`::::::::::: getNIPlaces 2 cy  :::::::::::`)
 
     title = `${results[0].postcode}, ${sentenceCase(results[0].administrativeArea)} - ${home.pageTitle}`
     headerTitle = `${results[0].postcode}, ${sentenceCase(results[0].administrativeArea)}`
     urlRoute = `${results[0].postcode}_${sentenceCase(results[0].administrativeArea)}`
 
-    logger.info(`::::::::::: getNIPlaces 3  :::::::::::`)
+    logger.info(`::::::::::: getNIPlaces 3 cy  :::::::::::`)
     title = convertFirstLetterIntoUppercase(title)
     headerTitle = convertFirstLetterIntoUppercase(headerTitle)
     urlRoute = convertStringToHyphenatedLowercaseWords(urlRoute)
@@ -258,9 +260,9 @@ const searchMiddlewareCy = async (request, h) => {
       lang
     })
     logger.info(
-      `::::::::::: redirecting to specific urlRoute en  ::::::::::: ${urlRoute}`
+      `::::::::::: redirecting to specific urlRoute cy  ::::::::::: ${urlRoute}`
     )
-    return h.redirect(`/lleoliad/${urlRoute}?lang=en`).takeover()
+    return h.redirect(`/lleoliad/${urlRoute}?lang=cy`).takeover()
   } else {
     // handle other location types
     return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
