@@ -311,7 +311,7 @@ export const english = {
         n: 'increased respiratory infections'
       },
       description:
-        'Learn how sulphur dioxide is produced. Also, learn the short term and long term health effects of nitrogen sulphur dioxide'
+        'Learn how sulphur dioxide is produced. Also, learn the short term and long term health effects of sulphur dioxide'
     },
     particulateMatter10: {
       title: 'Particulate matter (PM10)',
