@@ -46,6 +46,9 @@ const getLocationDetailsController = {
         `::::::::::: getNIPlaces !searchTermsSaved  ::::::::::: ${!searchTermsSaved}`
       )
       if (previousUrl === undefined && !searchTermsSaved) {
+        logger.info(
+          'Redirecting to English location middleware from location-id controller'
+        )
         return h
           .redirect(
             `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}`
