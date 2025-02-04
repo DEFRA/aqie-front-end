@@ -37,3 +37,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Cache Node.js modules
+        uses: actions/cache@v3 # Update to v3 of actions/cache ''
+        with:
+          path: ~/.npm # ''
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }} # ''
+          restore-keys: |
+            ${{ runner.os }}-node- # ''
