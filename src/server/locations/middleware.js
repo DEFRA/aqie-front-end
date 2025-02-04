@@ -210,10 +210,30 @@ const searchMiddleware = async (request, h) => {
       `::::::::::: getNIPlaces 1  result stringify ::::::::::: ${JSON.stringify(results)}`
     )
     if (
+      getOSPlaces?.statusCode !== 200 &&
+      getOSPlaces?.statusCode !== undefined
+    ) {
+      return h.view('error/index', {
+        footerTxt,
+        url: request.path,
+        phaseBanner,
+        displayBacklink: false,
+        cookieBanner,
+        serviceName: english.multipleLocations.serviceName,
+        notFoundUrl: english.notFoundUrl,
+        statusCode:
+          getOSPlaces?.statusCode ||
+          getForecasts?.statusCode ||
+          getMeasurements?.statusCode ||
+          getDailySummary?.statusCode,
+        lang
+      })
+    }
+    if (
       getNIPlaces?.statusCode !== 200 &&
       getNIPlaces?.statusCode !== undefined
     ) {
-      return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
+      return h.redirect('/location-not-found').takeover()
     }
 
     let title = ''

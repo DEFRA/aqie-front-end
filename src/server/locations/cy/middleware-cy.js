@@ -211,6 +211,26 @@ const searchMiddlewareCy = async (request, h) => {
       `::::::::::: getNIPlaces statusCode cy  ::::::::::: ${JSON.stringify(getNIPlaces?.statusCode)}`
     )
     if (
+      getOSPlaces?.statusCode !== 200 &&
+      getOSPlaces?.statusCode !== undefined
+    ) {
+      return h.view('error/index', {
+        footerTxt,
+        url: request.path,
+        phaseBanner,
+        displayBacklink: false,
+        cookieBanner,
+        serviceName: welsh.multipleLocations.serviceName,
+        notFoundUrl: welsh.notFoundUrl,
+        statusCode:
+          getOSPlaces?.statusCode ||
+          getForecasts?.statusCode ||
+          getMeasurements?.statusCode ||
+          getDailySummary?.statusCode,
+        lang
+      })
+    }
+    if (
       getNIPlaces?.statusCode !== 200 &&
       getNIPlaces?.statusCode !== undefined
     ) {
