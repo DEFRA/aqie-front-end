@@ -94,7 +94,7 @@ const getLocationDetailsController = {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
         title = convertFirstLetterIntoUppercase(title)
         headerTitle = convertFirstLetterIntoUppercase(headerTitle)
-        if (locationDetails?.LOCATION_TYPE === LOCATION_TYPE_UK) {
+        if (locationDetails?.LOCATION_TYPE !== LOCATION_TYPE_NI) {
           const { nearestLocationsRange, airQuality } = getNearestLocation(
             locationData.results,
             locationData.rawForecasts,
