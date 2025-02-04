@@ -136,13 +136,13 @@ const getLocationDetailsController = {
             `:::::::::::NIPlaces locationData cy NI  ::::::::::: ${JSON.stringify(locationData)}`
           )
           logger.info(
-            `:::::::::::NIPlaces locationData.results  cy NI ::::::::::: ${JSON.stringify(locationData.results)}`
+            `:::::::::::NIPlaces locationData.results  cy NI ::::::::::: ${JSON.stringify(locationData?.results)}`
           )
           logger.info(
             `:::::::::::NIPlaces locationDetails  cy NI ::::::::::: ${JSON.stringify(locationDetails)}`
           )
           const { nearestLocationsRange, airQuality } = getNearestLocation(
-            locationData.results,
+            locationData?.results,
             locationData.rawForecasts,
             locationData.measurements,
             LOCATION_TYPE_NI,
