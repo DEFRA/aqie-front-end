@@ -133,7 +133,9 @@ const getLocationDetailsController = {
             dailySummaryTexts: english.dailySummaryTexts,
             lang
           })
-        } else if (locationDetails?.LOCATION_TYPE === LOCATION_TYPE_NI) {
+        } else if (
+          locationDetails?.GAZETTEER_ENTRY?.LOCATION_TYPE === LOCATION_TYPE_NI
+        ) {
           return h.view('locations/location', {
             result: locationDetails,
             airQuality: locationData.airQuality,
