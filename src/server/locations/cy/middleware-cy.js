@@ -210,26 +210,6 @@ const searchMiddlewareCy = async (request, h) => {
     logger.info(
       `::::::::::: getNIPlaces statusCode cy  ::::::::::: ${JSON.stringify(getNIPlaces?.statusCode)}`
     )
-    if (
-      getOSPlaces?.statusCode !== 200 &&
-      getOSPlaces?.statusCode !== undefined
-    ) {
-      return h.view('error/index', {
-        footerTxt,
-        url: request.path,
-        phaseBanner,
-        displayBacklink: false,
-        cookieBanner,
-        serviceName: welsh.multipleLocations.serviceName,
-        notFoundUrl: welsh.notFoundUrl,
-        statusCode:
-          getOSPlaces?.statusCode ||
-          getForecasts?.statusCode ||
-          getMeasurements?.statusCode ||
-          getDailySummary?.statusCode,
-        lang
-      })
-    }
     if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
@@ -239,9 +219,9 @@ const searchMiddlewareCy = async (request, h) => {
     let urlRoute = ''
     logger.info(`::::::::::: getNIPlaces 2 cy  :::::::::::`)
 
-    title = `${results[0].postcode}, ${sentenceCase(results[0].administrativeArea)} - ${home.pageTitle}`
-    headerTitle = `${results[0].postcode}, ${sentenceCase(results[0].administrativeArea)}`
-    urlRoute = `${results[0].postcode}_${sentenceCase(results[0].administrativeArea)}`
+    title = `${getNIPlaces?.results[0].postcode}, ${sentenceCase(getNIPlaces?.results[0].administrativeArea)} - ${home.pageTitle}`
+    headerTitle = `${getNIPlaces?.results[0].postcode}, ${sentenceCase(getNIPlaces?.results[0].administrativeArea)}`
+    urlRoute = `${getNIPlaces?.results[0].postcode}_${sentenceCase(getNIPlaces?.results[0].administrativeArea)}`
 
     logger.info(`::::::::::: getNIPlaces 3 cy  :::::::::::`)
     title = convertFirstLetterIntoUppercase(title)
@@ -251,8 +231,10 @@ const searchMiddlewareCy = async (request, h) => {
       {
         GAZETTEER_ENTRY: {
           ID: urlRoute,
-          NAME1: results[0].postcode,
-          DISTRICT_BOROUGH: sentenceCase(results[0].administrativeArea),
+          NAME1: getNIPlaces?.results[0].postcode,
+          DISTRICT_BOROUGH: sentenceCase(
+            getNIPlaces?.results[0].administrativeArea
+          ),
           LONGITUDE: latlon.lon,
           LATITUDE: latlon.lat,
           LOCATION_TYPE: LOCATION_TYPE_NI

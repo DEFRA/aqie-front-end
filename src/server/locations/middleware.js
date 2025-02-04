@@ -222,26 +222,6 @@ const searchMiddleware = async (request, h) => {
     logger.info(
       `::::::::::: getNIPlaces 1  result stringify ::::::::::: ${JSON.stringify(getNIPlaces?.results)}`
     )
-    if (
-      getOSPlaces?.statusCode !== 200 &&
-      getOSPlaces?.statusCode !== undefined
-    ) {
-      return h.view('error/index', {
-        footerTxt,
-        url: request.path,
-        phaseBanner,
-        displayBacklink: false,
-        cookieBanner,
-        serviceName: english.multipleLocations.serviceName,
-        notFoundUrl: english.notFoundUrl,
-        statusCode:
-          getOSPlaces?.statusCode ||
-          getForecasts?.statusCode ||
-          getMeasurements?.statusCode ||
-          getDailySummary?.statusCode,
-        lang
-      })
-    }
 
     let title = ''
     let headerTitle = ''
