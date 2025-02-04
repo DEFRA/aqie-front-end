@@ -52,6 +52,9 @@ const getLocationDetailsController = {
           )
           .takeover()
       }
+      logger.info(
+        `::::::::::: getNIPlaces 4 locationId cy  ::::::::::: ${locationId}`
+      )
       request.yar.clear('searchTermsSaved')
       const lang = LANG_CY
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')

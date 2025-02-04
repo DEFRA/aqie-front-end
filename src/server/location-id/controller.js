@@ -23,9 +23,7 @@ const getLocationDetailsController = {
       const locationId = request.params.id
       let locationDetails = null
       const searchTermsSaved = request.yar.get('searchTermsSaved')
-      logger.info(
-        `::::::::::: getNIPlaces 4 locationId  ::::::::::: ${locationId}`
-      )
+
       if (query?.lang && query?.lang === LANG_CY && !query?.searchTerms) {
         logger.info(
           'Redirecting to Welsh location page in location-id controller'
@@ -55,6 +53,9 @@ const getLocationDetailsController = {
           )
           .takeover()
       }
+      logger.info(
+        `::::::::::: getNIPlaces 4 locationId en  ::::::::::: ${locationId}`
+      )
       request.yar.clear('searchTermsSaved')
       const lang = LANG_EN
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')
