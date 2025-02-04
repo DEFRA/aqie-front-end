@@ -23,7 +23,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
       - name: Cache Node.js modules # Add cache step # ''
-        uses: actions/cache@v3 # Update to v3 of actions/cache # ''
+        uses: actions/cache@v4 # Update to v4 of actions/cache # ''
         with: # ''
           path: ~/.npm # ''
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }} # ''
