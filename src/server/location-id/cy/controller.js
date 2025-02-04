@@ -3,7 +3,7 @@ import {
   pollutantTypes
 } from '~/src/server/data/cy/monitoring-sites.js'
 import * as airQualityData from '~/src/server/data/cy/air-quality.js'
-import { english, calendarEnglish } from '~/src/server/data/en/en.js'
+import { calendarEnglish } from '~/src/server/data/en/en.js'
 import { welsh, calendarWelsh } from '~/src/server/data/cy/cy.js'
 import moment from 'moment-timezone'
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
@@ -113,15 +113,24 @@ const getLocationDetailsController = {
               lang === LANG_CY
                 ? locationData.welshDate ?? locationData.summaryDate
                 : locationData.englishDate ?? locationData.summaryDate,
-            dailySummaryTexts: english.dailySummaryTexts,
+            dailySummaryTexts: welsh.dailySummaryTexts,
             lang
           })
         } else {
+          logger.info(`::::::::::: getNIPlaces lang  ::::::::::: ${lang}`)
+          const { nearestLocationsRange, airQuality } = getNearestLocation(
+            locationData.results,
+            locationData.rawForecasts,
+            locationData.measurements,
+            LOCATION_TYPE_UK,
+            locationIndex,
+            lang
+          )
           return h.view('locations/location', {
             result: locationDetails,
-            airQuality: locationData.airQuality,
+            airQuality,
             airQualityData: airQualityData.commonMessages,
-            monitoringSites: locationData.nearestLocationsRange,
+            monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
             pageTitle: `${multipleLocations.titlePrefix} ${title}`,
@@ -140,7 +149,7 @@ const getLocationDetailsController = {
               lang === LANG_CY
                 ? locationData.welshDate ?? locationData.summaryDate
                 : locationData.englishDate ?? locationData.summaryDate,
-            dailySummaryTexts: english.dailySummaryTexts,
+            dailySummaryTexts: welsh.dailySummaryTexts,
             lang
           })
         }
