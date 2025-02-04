@@ -197,19 +197,22 @@ const searchMiddleware = async (request, h) => {
       locationNameOrPostcode,
       lang
     )
-    const { results } = getNIPlaces
-    if (!results || results.length === 0 || getNIPlaces === 'wrong postcode') {
+    if (
+      !getNIPlaces?.results ||
+      getNIPlaces?.results.length === 0 ||
+      getNIPlaces === 'wrong postcode'
+    ) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       logger.info(
-        `::::::::::: redirecting to location-not-found results en  ::::::::::: ${results}`
+        `::::::::::: redirecting to location-not-found results en  ::::::::::: ${JSON.stringify(getNIPlaces?.results)}`
       )
       logger.info(
-        `::::::::::: redirecting to location-not-found getNIPlaces en  ::::::::::: ${getNIPlaces}`
+        `::::::::::: redirecting to location-not-found getNIPlaces en  ::::::::::: ${JSON.stringify(getNIPlaces)}`
       )
       return h.redirect('/location-not-found').takeover()
     }
     const { nearestLocationsRange, latlon, airQuality } = getNearestLocation(
-      results,
+      getNIPlaces?.results,
       getForecasts?.forecasts,
       getMeasurements?.measurements,
       LOCATION_TYPE_NI,
@@ -217,7 +220,7 @@ const searchMiddleware = async (request, h) => {
       lang
     )
     logger.info(
-      `::::::::::: getNIPlaces 1  result stringify ::::::::::: ${JSON.stringify(results)}`
+      `::::::::::: getNIPlaces 1  result stringify ::::::::::: ${JSON.stringify(getNIPlaces?.results)}`
     )
     if (
       getOSPlaces?.statusCode !== 200 &&
@@ -245,9 +248,9 @@ const searchMiddleware = async (request, h) => {
     let urlRoute = ''
     logger.info(`::::::::::: getNIPlaces 2  :::::::::::`)
 
-    title = `${results[0].postcode}, ${sentenceCase(results[0].administrativeArea)} - ${home.pageTitle}`
-    headerTitle = `${results[0].postcode}, ${sentenceCase(results[0].administrativeArea)}`
-    urlRoute = `${results[0].postcode}_${sentenceCase(results[0].administrativeArea)}`
+    title = `${getNIPlaces?.results[0].postcode}, ${sentenceCase(getNIPlaces?.results[0].administrativeArea)} - ${home.pageTitle}`
+    headerTitle = `${getNIPlaces?.results[0].postcode}, ${sentenceCase(getNIPlaces?.results[0].administrativeArea)}`
+    urlRoute = `${getNIPlaces?.results[0].postcode}_${sentenceCase(getNIPlaces?.results[0].administrativeArea)}`
 
     logger.info(`::::::::::: getNIPlaces 3  :::::::::::`)
     title = convertFirstLetterIntoUppercase(title)
@@ -257,8 +260,10 @@ const searchMiddleware = async (request, h) => {
       {
         GAZETTEER_ENTRY: {
           ID: urlRoute,
-          NAME1: results[0].postcode,
-          DISTRICT_BOROUGH: sentenceCase(results[0].administrativeArea),
+          NAME1: getNIPlaces?.results[0].postcode,
+          DISTRICT_BOROUGH: sentenceCase(
+            getNIPlaces?.results[0].administrativeArea
+          ),
           LONGITUDE: latlon.lon,
           LATITUDE: latlon.lat,
           LOCATION_TYPE: LOCATION_TYPE_NI
