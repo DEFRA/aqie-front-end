@@ -98,7 +98,7 @@ const getLocationDetailsController = {
           `::::::::::: getNIPlaces 4 headerTitle  ::::::::::: ${headerTitle}`
         )
         logger.info(`::::::::::: getNIPlaces 4 title  ::::::::::: ${title}`)
-        if (locationDetails?.locationType === LOCATION_TYPE_UK) {
+        if (locationDetails?.LOCATION_TYPE !== LOCATION_TYPE_NI) {
           const { nearestLocationsRange, airQuality } = getNearestLocation(
             locationData.results,
             locationData.rawForecasts,
