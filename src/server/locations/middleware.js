@@ -229,10 +229,7 @@ const searchMiddleware = async (request, h) => {
         lang
       })
     }
-    if (
-      getNIPlaces?.statusCode !== 200 &&
-      getNIPlaces?.statusCode !== undefined
-    ) {
+    if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
       return h.redirect('/location-not-found').takeover()
     }
 
