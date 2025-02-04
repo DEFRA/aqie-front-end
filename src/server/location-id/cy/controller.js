@@ -94,7 +94,7 @@ const getLocationDetailsController = {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
         title = convertFirstLetterIntoUppercase(title)
         headerTitle = convertFirstLetterIntoUppercase(headerTitle)
-        if (locationDetails?.LOCATION_TYPE !== LOCATION_TYPE_NI) {
+        if (locationData.locationType === LOCATION_TYPE_UK) {
           const { nearestLocationsRange, airQuality } = getNearestLocation(
             locationData.results,
             locationData.rawForecasts,
@@ -130,9 +130,7 @@ const getLocationDetailsController = {
             dailySummaryTexts: welsh.dailySummaryTexts,
             lang
           })
-        } else if (
-          locationDetails?.GAZETTEER_ENTRY?.LOCATION_TYPE === LOCATION_TYPE_NI
-        ) {
+        } else if (locationData.locationType === LOCATION_TYPE_NI) {
           logger.info(`:::::::::::NIPlaces lang cy NI  ::::::::::: ${lang}`)
           logger.info(
             `:::::::::::NIPlaces locationData cy NI  ::::::::::: ${JSON.stringify(locationData)}`

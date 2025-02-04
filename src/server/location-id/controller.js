@@ -104,7 +104,7 @@ const getLocationDetailsController = {
         logger.info(
           `:: locationDetails?.GAZETTEER_ENTRY?.LOCATION_TYPE  :::: ${locationDetails?.GAZETTEER_ENTRY?.LOCATION_TYPE}`
         )
-        if (locationDetails?.LOCATION_TYPE !== LOCATION_TYPE_NI) {
+        if (locationData.locationType === LOCATION_TYPE_UK) {
           logger.info(`::::::::::: getNIPlaces 4 LOCATION_TYPE_UK  :::::::::::`)
           logger.info(`:::::::::::NIPlaces lang en UK  ::::::::::: ${lang}`)
           logger.info(
@@ -150,9 +150,7 @@ const getLocationDetailsController = {
             dailySummaryTexts: english.dailySummaryTexts,
             lang
           })
-        } else if (
-          locationDetails?.GAZETTEER_ENTRY?.LOCATION_TYPE === LOCATION_TYPE_NI
-        ) {
+        } else if (locationData.locationType === LOCATION_TYPE_NI) {
           logger.info(`::::::::::: getNIPlaces 4 LOCATION_TYPE_NI  :::::::::::`)
           logger.info(`:::::::::::NIPlaces lang en NI  ::::::::::: ${lang}`)
           logger.info(

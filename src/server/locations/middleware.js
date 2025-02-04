@@ -272,6 +272,7 @@ const searchMiddleware = async (request, h) => {
       welshMonth: calendarWelsh[getMonth],
       summaryDate: lang === 'cy' ? welshDate : englishDate,
       dailySummaryTexts: english.dailySummaryTexts,
+      locationType,
       lang
     })
     logger.info(

@@ -263,6 +263,7 @@ const searchMiddlewareCy = async (request, h) => {
       welshMonth: calendarWelsh[getMonth],
       summaryDate: lang === 'cy' ? welshDate : englishDate,
       dailySummaryTexts: welsh.dailySummaryTexts,
+      locationType,
       lang
     })
     request.yar.set('searchTermsSaved', searchTerms)

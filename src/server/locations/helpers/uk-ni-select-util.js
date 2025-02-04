@@ -122,6 +122,7 @@ const selectNIUKLocationType = async (
       measurements: getMeasurements?.measurements,
       englishDate,
       welshDate,
+      locationType,
       getMonth
     })
     //
