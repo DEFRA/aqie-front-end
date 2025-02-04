@@ -9,7 +9,12 @@ import moment from 'moment-timezone'
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
 import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-util'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { LANG_CY, LANG_EN, LOCATION_TYPE_UK } from '~/src/server/data/constants'
+import {
+  LANG_CY,
+  LANG_EN,
+  LOCATION_TYPE_UK,
+  LOCATION_TYPE_NI
+} from '~/src/server/data/constants'
 import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
@@ -93,7 +98,7 @@ const getLocationDetailsController = {
           `::::::::::: getNIPlaces 4 headerTitle  ::::::::::: ${headerTitle}`
         )
         logger.info(`::::::::::: getNIPlaces 4 title  ::::::::::: ${title}`)
-        if (locationData?.locationType === LOCATION_TYPE_UK) {
+        if (locationDetails?.locationType === LOCATION_TYPE_UK) {
           const { nearestLocationsRange, airQuality } = getNearestLocation(
             locationData.results,
             locationData.rawForecasts,
@@ -128,7 +133,7 @@ const getLocationDetailsController = {
             dailySummaryTexts: english.dailySummaryTexts,
             lang
           })
-        } else {
+        } else if (locationDetails?.LOCATION_TYPE === LOCATION_TYPE_NI) {
           return h.view('locations/location', {
             result: locationDetails,
             airQuality: locationData.airQuality,
