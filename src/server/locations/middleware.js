@@ -198,6 +198,16 @@ const searchMiddleware = async (request, h) => {
       lang
     )
     const { results } = getNIPlaces
+    if (!results || results.length === 0 || getNIPlaces === 'wrong postcode') {
+      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+      logger.info(
+        `::::::::::: redirecting to location-not-found results en  ::::::::::: ${results}`
+      )
+      logger.info(
+        `::::::::::: redirecting to location-not-found getNIPlaces en  ::::::::::: ${getNIPlaces}`
+      )
+      return h.redirect('/location-not-found').takeover()
+    }
     const { nearestLocationsRange, latlon, airQuality } = getNearestLocation(
       results,
       getForecasts?.forecasts,
@@ -228,9 +238,6 @@ const searchMiddleware = async (request, h) => {
           getDailySummary?.statusCode,
         lang
       })
-    }
-    if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
-      return h.redirect('/location-not-found').takeover()
     }
 
     let title = ''
