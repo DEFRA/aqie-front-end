@@ -201,6 +201,12 @@ async function fetchData(
     if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       logger.info(
+        `::::::::::: getNIPlaces en into location not found locationNameOrPostcode  ::::::::::: ${locationNameOrPostcode}`
+      )
+      logger.info(
+        `::::::::::: getNIPlaces en into location not found lang  ::::::::::: ${lang}`
+      )
+      logger.info(
         `::::::::::: getNIPlaces en into location not found  ::::::::::: ${getNIPlaces}`
       )
       return h.redirect('/location-not-found').takeover()
