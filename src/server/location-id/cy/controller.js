@@ -133,29 +133,21 @@ const getLocationDetailsController = {
         } else if (
           locationDetails?.GAZETTEER_ENTRY?.LOCATION_TYPE === LOCATION_TYPE_NI
         ) {
-          logger.info(`:::::::::::NIPlaces lang  ::::::::::: ${lang}`)
+          logger.info(`:::::::::::NIPlaces lang cy NI  ::::::::::: ${lang}`)
           logger.info(
-            `:::::::::::NIPlaces locationData  ::::::::::: ${JSON.stringify(locationData)}`
+            `:::::::::::NIPlaces locationData cy NI  ::::::::::: ${JSON.stringify(locationData)}`
           )
           logger.info(
-            `:::::::::::NIPlaces locationData.results  ::::::::::: ${JSON.stringify(locationData.results)}`
+            `:::::::::::NIPlaces locationData.results  cy NI ::::::::::: ${JSON.stringify(locationData.results)}`
           )
           logger.info(
-            `:::::::::::NIPlaces locationDetails  ::::::::::: ${JSON.stringify(locationDetails)}`
-          )
-          const { nearestLocationsRange, airQuality } = getNearestLocation(
-            locationData.results,
-            locationData.rawForecasts,
-            locationData.measurements,
-            LOCATION_TYPE_NI,
-            locationIndex,
-            lang
+            `:::::::::::NIPlaces locationDetails  cy NI ::::::::::: ${JSON.stringify(locationDetails)}`
           )
           return h.view('locations/location', {
             result: locationDetails,
-            airQuality,
+            airQuality: locationData.airQuality,
             airQualityData: airQualityData.commonMessages,
-            monitoringSites: nearestLocationsRange,
+            monitoringSites: locationData.nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
             pageTitle: `${multipleLocations.titlePrefix} ${title}`,

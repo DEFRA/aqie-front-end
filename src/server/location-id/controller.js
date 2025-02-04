@@ -98,7 +98,24 @@ const getLocationDetailsController = {
           `::::::::::: getNIPlaces 4 headerTitle  ::::::::::: ${headerTitle}`
         )
         logger.info(`::::::::::: getNIPlaces 4 title  ::::::::::: ${title}`)
+        logger.info(
+          `:: locationDetails?.GAZETTEER_ENTRY  :::: ${locationDetails?.GAZETTEER_ENTRY}`
+        )
+        logger.info(
+          `:: locationDetails?.GAZETTEER_ENTRY?.LOCATION_TYPE  :::: ${locationDetails?.GAZETTEER_ENTRY?.LOCATION_TYPE}`
+        )
         if (locationDetails?.LOCATION_TYPE !== LOCATION_TYPE_NI) {
+          logger.info(`::::::::::: getNIPlaces 4 LOCATION_TYPE_UK  :::::::::::`)
+          logger.info(`:::::::::::NIPlaces lang en UK  ::::::::::: ${lang}`)
+          logger.info(
+            `:::::::::::NIPlaces locationData en UK  ::::::::::: ${JSON.stringify(locationData)}`
+          )
+          logger.info(
+            `:::::::::::NIPlaces locationData.results  en UK ::::::::::: ${JSON.stringify(locationData.results)}`
+          )
+          logger.info(
+            `:::::::::::NIPlaces locationDetails  en UK ::::::::::: ${JSON.stringify(locationDetails)}`
+          )
           const { nearestLocationsRange, airQuality } = getNearestLocation(
             locationData.results,
             locationData.rawForecasts,
@@ -136,6 +153,17 @@ const getLocationDetailsController = {
         } else if (
           locationDetails?.GAZETTEER_ENTRY?.LOCATION_TYPE === LOCATION_TYPE_NI
         ) {
+          logger.info(`::::::::::: getNIPlaces 4 LOCATION_TYPE_NI  :::::::::::`)
+          logger.info(`:::::::::::NIPlaces lang en NI  ::::::::::: ${lang}`)
+          logger.info(
+            `:::::::::::NIPlaces locationData en NI  ::::::::::: ${JSON.stringify(locationData)}`
+          )
+          logger.info(
+            `:::::::::::NIPlaces locationData.results  en NI ::::::::::: ${JSON.stringify(locationData.results)}`
+          )
+          logger.info(
+            `:::::::::::NIPlaces locationDetails  en NI ::::::::::: ${JSON.stringify(locationDetails)}`
+          )
           return h.view('locations/location', {
             result: locationDetails,
             airQuality: locationData.airQuality,
