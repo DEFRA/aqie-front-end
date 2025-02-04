@@ -236,8 +236,7 @@ const searchMiddlewareCy = async (request, h) => {
             getNIPlaces?.results[0].administrativeArea
           ),
           LONGITUDE: latlon.lon,
-          LATITUDE: latlon.lat,
-          LOCATION_TYPE: LOCATION_TYPE_NI
+          LATITUDE: latlon.lat
         }
       }
     ]
