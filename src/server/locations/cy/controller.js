@@ -233,6 +233,7 @@ const getLocationDataController = {
           measurements: getMeasurements?.measurements,
           englishDate,
           welshDate,
+          locationType,
           getMonth
         })
         //
