@@ -209,7 +209,6 @@ async function fetchData(
       logger.info(
         `::::::::::: getNIPlaces en into location not found  ::::::::::: ${getNIPlaces}`
       )
-      return h.redirect('/location-not-found').takeover()
     }
 
     return { getDailySummary, getForecasts, getMeasurements, getNIPlaces }
