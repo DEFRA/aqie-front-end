@@ -4,6 +4,9 @@ import {
   LOCATION_NOT_FOUND_ROUTE_CY
 } from '~/src/server/data/constants' //
 import { english } from '~/src/server/data/en/en.js'
+import { createLogger } from '~/src/server/common/helpers/logging/logger'
+
+const logger = createLogger()
 
 const locationNotFoundController = {
   handler: (request, h) => {
@@ -13,6 +16,12 @@ const locationNotFoundController = {
     }
     const locationData = request.yar.get('locationDataNotFound') || []
     const { locationNameOrPostcode, lang } = locationData
+    logger.info(
+      `::::::::::: getNIPlaces en inside location not found locationNameOrPostcode  ::::::::::: ${locationNameOrPostcode}`
+    )
+    logger.info(
+      `::::::::::: getNIPlaces en inside location not found lang  ::::::::::: ${lang}`
+    )
     const {
       notFoundLocation,
       home,
