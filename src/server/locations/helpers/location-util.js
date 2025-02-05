@@ -67,8 +67,8 @@ function convertPointToLonLat(matches, location, index) {
     )
     try {
       pointNI = new OsGridRef(
-        matches[index].xCoordinate || matches[index].GAZETTEER_ENTRY.LONGITUDE,
-        matches[index].yCoordinate || matches[index].GAZETTEER_ENTRY.LATITUDE
+        matches[index].xCoordinate,
+        matches[index].yCoordinate
       )
     } catch (error) {
       logger.error(
@@ -87,18 +87,9 @@ function coordinatesTotal(matches, location) {
   let coordinates = []
   try {
     coordinates = matches.reduce((acc, current, index) => {
-      if (location === 'ni-location') {
-        logger.info(
-          `::::::::::: getNIPlaces 1  current stringify NI ::::::::::: ${JSON.stringify(current)}`
-        )
-        return [
-          ...acc,
-          {
-            latitude: current.GAZETTEER_ENTRY.LONGITUDE,
-            longitude: current.GAZETTEER_ENTRY.LATITUDE
-          }
-        ]
-      }
+      logger.info(
+        `::::::::::: getNIPlaces 1  current stringify NI ::::::::::: ${JSON.stringify(current)}`
+      )
       return [
         ...acc,
         {

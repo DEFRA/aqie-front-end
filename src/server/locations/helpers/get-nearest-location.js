@@ -31,19 +31,37 @@ function getNearestLocation(
   )
   const forecastCoordinates =
     matches.length !== 0 ? coordinatesTotal(forecasts, location) : []
+  logger.info(
+    `::::::::::: getNIPlaces 2  forecastCoordinates stringify ::::::::::: ${JSON.stringify(forecastCoordinates)}`
+  )
   const measurementsCoordinates =
     matches.length !== 0 ? coordinatesTotal(measurements, location) : []
+  logger.info(
+    `::::::::::: getNIPlaces 3  measurementsCoordinates stringify ::::::::::: ${JSON.stringify(measurementsCoordinates)}`
+  )
   const nearestLocation =
     matches.length !== 0
       ? getNearLocation(latlon.lat, latlon.lon, forecastCoordinates, forecasts)
       : {}
+  logger.info(
+    `::::::::::: getNIPlaces 5  nearestLocation stringify ::::::::::: ${JSON.stringify(nearestLocation)}`
+  )
   const orderByDistanceMeasurements = geolib.orderByDistance(
     { latitude: latlon.lat, longitude: latlon.lon },
     measurementsCoordinates
   )
+  logger.info(
+    `::::::::::: getNIPlaces 6  orderByDistanceMeasurements stringify ::::::::::: ${JSON.stringify(orderByDistanceMeasurements)}`
+  )
   const nearestMeasurementsPoints = orderByDistanceMeasurements.slice(0, 3)
+  logger.info(
+    `::::::::::: getNIPlaces 7  nearestMeasurementsPoints stringify ::::::::::: ${JSON.stringify(nearestMeasurementsPoints)}`
+  )
   const pointsToDisplay = nearestMeasurementsPoints.filter((p) =>
     pointsInRange(latlon, p)
+  )
+  logger.info(
+    `::::::::::: getNIPlaces 8  pointsToDisplay stringify ::::::::::: ${JSON.stringify(pointsToDisplay)}`
   )
   const nearestLocationsRangeCal = measurements?.filter((item, i) => {
     const opt = pointsToDisplay.some((dis, index) => {
@@ -54,6 +72,9 @@ function getNearestLocation(
     })
     return opt
   })
+  logger.info(
+    `::::::::::: getNIPlaces 9  nearestLocationsRangeCal stringify ::::::::::: ${JSON.stringify(nearestLocationsRangeCal)}`
+  )
   // TODO select and filter locations and pollutants which are not null or don't have exceptions
   const nearestLocationsRange = nearestLocationsRangeCal.reduce(
     (acc, curr, index) => {
