@@ -146,7 +146,7 @@ const getLocationDetailsController = {
             locationData.rawForecasts,
             locationData.measurements,
             LOCATION_TYPE_NI,
-            locationIndex,
+            0,
             lang
           )
           return h.view('locations/location', {
