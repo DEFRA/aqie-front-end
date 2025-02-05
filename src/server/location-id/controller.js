@@ -124,6 +124,7 @@ const getLocationDetailsController = {
             locationIndex,
             lang
           )
+
           return h.view('locations/location', {
             result: locationDetails,
             airQuality,
@@ -169,6 +170,12 @@ const getLocationDetailsController = {
             LOCATION_TYPE_NI,
             0,
             lang
+          )
+          logger.info(
+            `::::::::::: getNIPlaces 4 nearestLocationsRange NI  ::::::::::: ${JSON.stringify(nearestLocationsRange)}`
+          )
+          logger.info(
+            `::::::::::: getNIPlaces 4 airQuality NI  ::::::::::: ${JSON.stringify(airQuality)}`
           )
           return h.view('locations/location', {
             result: locationDetails,
