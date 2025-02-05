@@ -88,11 +88,11 @@ function convertPointToLonLat(matches, location, index) {
 
 function coordinatesTotal(matches, location) {
   let coordinates = []
+  logger.info(
+    `::::::::::: getNIPlaces 1  matches stringify NI ::::::::::: ${JSON.stringify(matches)}`
+  )
   try {
     coordinates = matches.reduce((acc, current, index) => {
-      logger.info(
-        `::::::::::: getNIPlaces 1  current stringify NI ::::::::::: ${JSON.stringify(current)}`
-      )
       return [
         ...acc,
         {
