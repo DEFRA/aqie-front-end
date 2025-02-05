@@ -67,8 +67,8 @@ function convertPointToLonLat(matches, location, index) {
     )
     try {
       pointNI = new OsGridRef(
-        matches[index].xCoordinate || matches[index].GAZETTEER_ENTRY.LONGITUDE,
-        matches[index].yCoordinate || matches[index].GAZETTEER_ENTRY.LATITUDE
+        matches[index].xCoordinate,
+        matches[index].yCoordinate
       )
     } catch (error) {
       logger.error(
