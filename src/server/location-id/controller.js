@@ -157,24 +157,16 @@ const getLocationDetailsController = {
             `:::::::::::NIPlaces locationData en NI  ::::::::::: ${JSON.stringify(locationData)}`
           )
           logger.info(
-            `:::::::::::NIPlaces locationData.results  en NI ::::::::::: ${JSON.stringify(locationData.results)}`
+            `:::::::::::NIPlaces locationData.results  en NI ::::::::::: ${JSON.stringify(locationData?.results)}`
           )
           logger.info(
             `:::::::::::NIPlaces locationDetails  en NI ::::::::::: ${JSON.stringify(locationDetails)}`
           )
-          const { nearestLocationsRange, airQuality } = getNearestLocation(
-            locationData.results,
-            locationData.rawForecasts,
-            locationData.measurements,
-            LOCATION_TYPE_NI,
-            locationIndex,
-            lang
-          )
           return h.view('locations/location', {
-            result: locationDetails,
-            airQuality,
+            result: locationData.results,
+            airQuality: locationData.airQuality,
             airQualityData: airQualityData.commonMessages,
-            monitoringSites: nearestLocationsRange,
+            monitoringSites: locationData.nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
             pageTitle: `${multipleLocations.titlePrefix} ${title}`,
