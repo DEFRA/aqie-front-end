@@ -42,6 +42,7 @@ const handleSingleMatch = (
       selectedMatches.length !== 0 ? nearestLocationsRange : [],
     measurements: getMeasurements?.measurements,
     englishDate,
+    dailySummary: getDailySummary,
     welshDate,
     getMonth: month,
     title,
