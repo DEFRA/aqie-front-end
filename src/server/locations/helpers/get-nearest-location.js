@@ -33,10 +33,16 @@ function getNearestLocation(
     matches.length !== 0 ? coordinatesTotal(forecasts, location) : []
   const measurementsCoordinates =
     matches.length !== 0 ? coordinatesTotal(measurements, location) : []
+  logger.info(
+    `::::::::::: getNIPlaces 2  forecastCoordinates stringify ::::::::::: ${JSON.stringify(forecastCoordinates)}`
+  )
   const nearestLocation =
     matches.length !== 0
       ? getNearLocation(latlon.lat, latlon.lon, forecastCoordinates, forecasts)
       : {}
+  logger.info(
+    `::::::::::: getNIPlaces 3  nearestLocation stringify ::::::::::: ${JSON.stringify(nearestLocation)}`
+  )
   const orderByDistanceMeasurements = geolib.orderByDistance(
     { latitude: latlon.lat, longitude: latlon.lon },
     measurementsCoordinates
