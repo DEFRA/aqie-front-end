@@ -65,11 +65,14 @@ function convertPointToLonLat(matches, location, index) {
     logger.info(
       `::::::::::: getNIPlaces 1  matches stringify NI ::::::::::: ${JSON.stringify(matches)}`
     )
+    const long =
+      matches[index].xCoordinate || matches[index].GAZETTEER_ENTRY.LONGITUDE
+    const lati =
+      matches[index].yCoordinate || matches[index].GAZETTEER_ENTRY.LATITUDE
+    logger.info(`::::::::::: getNIPlaces 1  long NI ::::::::::: ${long}`)
+    logger.info(`::::::::::: getNIPlaces 1  lati NI ::::::::::: ${lati}`)
     try {
-      pointNI = new OsGridRef(
-        matches[index].xCoordinate,
-        matches[index].yCoordinate
-      )
+      pointNI = new OsGridRef(long, lati)
     } catch (error) {
       logger.error(
         `Failed to fetch convertPointToLonLat matches
