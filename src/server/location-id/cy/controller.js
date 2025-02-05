@@ -141,11 +141,19 @@ const getLocationDetailsController = {
           logger.info(
             `:::::::::::NIPlaces locationDetails  cy NI ::::::::::: ${JSON.stringify(locationDetails)}`
           )
+          const { nearestLocationsRange, airQuality } = getNearestLocation(
+            locationData?.results,
+            locationData.rawForecasts,
+            locationData.measurements,
+            LOCATION_TYPE_NI,
+            locationIndex,
+            lang
+          )
           return h.view('locations/location', {
             result: locationData.results,
-            airQuality: locationData.airQuality,
+            airQuality,
             airQualityData: airQualityData.commonMessages,
-            monitoringSites: locationData.nearestLocationsRange,
+            monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
             pageTitle: `${multipleLocations.titlePrefix} ${title}`,
