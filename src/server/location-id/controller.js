@@ -164,7 +164,7 @@ const getLocationDetailsController = {
             `:::::::::::NIPlaces locationDetails  en NI ::::::::::: ${JSON.stringify(locationDetails)}`
           )
           const { nearestLocationsRange, airQuality } = getNearestLocation(
-            locationData.results,
+            locationData?.results,
             locationData.rawForecasts,
             locationData.measurements,
             LOCATION_TYPE_NI,

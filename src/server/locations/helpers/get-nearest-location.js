@@ -16,7 +16,7 @@ import { createLogger } from '~/src/server/common/helpers/logging/logger'
 
 const logger = createLogger()
 
-function getNearestLocation(
+async function getNearestLocation(
   matches,
   forecasts,
   measurements,
@@ -25,17 +25,19 @@ function getNearestLocation(
   lang
 ) {
   const latlon =
-    matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
+    matches.length !== 0
+      ? await convertPointToLonLat(matches, location, index)
+      : {}
   logger.info(
     `::::::::::: getNIPlaces 1  latlon stringify ::::::::::: ${JSON.stringify(latlon)}`
   )
   const forecastCoordinates =
-    matches.length !== 0 ? coordinatesTotal(forecasts, location) : []
+    matches.length !== 0 ? await coordinatesTotal(forecasts, location) : []
   logger.info(
     `::::::::::: getNIPlaces 2  forecastCoordinates stringify ::::::::::: ${JSON.stringify(forecastCoordinates)}`
   )
   const measurementsCoordinates =
-    matches.length !== 0 ? coordinatesTotal(measurements, location) : []
+    matches.length !== 0 ? await coordinatesTotal(measurements, location) : []
   logger.info(
     `::::::::::: getNIPlaces 3  measurementsCoordinates stringify ::::::::::: ${JSON.stringify(measurementsCoordinates)}`
   )
