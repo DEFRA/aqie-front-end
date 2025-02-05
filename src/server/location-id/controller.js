@@ -89,6 +89,9 @@ const getLocationDetailsController = {
       logger.info(
         `::::::::::: getNIPlaces 4 locationDetails en  ::::::::::: ${JSON.stringify(locationDetails)}`
       )
+      logger.info(
+        `::::::::::: getNIPlaces 4 locationData en  ::::::::::: ${JSON.stringify(locationData)}`
+      )
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
         title = convertFirstLetterIntoUppercase(title)
@@ -100,9 +103,6 @@ const getLocationDetailsController = {
         logger.info(`::::::::::: getNIPlaces 4 title  ::::::::::: ${title}`)
         logger.info(
           `:: locationDetails?.GAZETTEER_ENTRY  :::: ${locationDetails?.GAZETTEER_ENTRY}`
-        )
-        logger.info(
-          `:: locationDetails?.GAZETTEER_ENTRY?.LOCATION_TYPE  :::: ${locationDetails?.GAZETTEER_ENTRY?.LOCATION_TYPE}`
         )
         if (locationData.locationType === LOCATION_TYPE_UK) {
           logger.info(`::::::::::: getNIPlaces 4 LOCATION_TYPE_UK  :::::::::::`)
@@ -171,7 +171,7 @@ const getLocationDetailsController = {
             lang
           )
           return h.view('locations/location', {
-            result: locationData.results,
+            result: locationDetails,
             airQuality,
             airQualityData: airQualityData.commonMessages,
             monitoringSites: nearestLocationsRange,
