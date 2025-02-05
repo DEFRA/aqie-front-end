@@ -150,7 +150,7 @@ const getLocationDetailsController = {
             lang
           )
           return h.view('locations/location', {
-            result: locationData.results,
+            result: locationDetails,
             airQuality,
             airQualityData: airQualityData.commonMessages,
             monitoringSites: nearestLocationsRange,
