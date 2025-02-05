@@ -63,12 +63,12 @@ function convertPointToLonLat(matches, location, index) {
     lon = latlon._lon
   } else {
     logger.info(
-      `::::::::::: getNIPlaces 1  matches stringify ::::::::::: ${JSON.stringify(matches)}`
+      `::::::::::: getNIPlaces 1  matches stringify NI ::::::::::: ${JSON.stringify(matches)}`
     )
     try {
       pointNI = new OsGridRef(
-        matches[index].xCoordinate,
-        matches[index].yCoordinate
+        matches[index].xCoordinate || matches[index].GAZETTEER_ENTRY.LONGITUDE,
+        matches[index].yCoordinate || matches[index].GAZETTEER_ENTRY.LATITUDE
       )
     } catch (error) {
       logger.error(
