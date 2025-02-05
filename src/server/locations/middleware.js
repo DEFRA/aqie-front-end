@@ -211,6 +211,9 @@ const searchMiddleware = async (request, h) => {
       )
       return h.redirect('/location-not-found').takeover()
     }
+    logger.info(
+      `::::::::::: getNIPlaces results  passed to getNearestLocation en  ::::::::::: ${JSON.stringify(getNIPlaces?.results)}`
+    )
     const { nearestLocationsRange, latlon, airQuality } = getNearestLocation(
       getNIPlaces?.results,
       getForecasts?.forecasts,
