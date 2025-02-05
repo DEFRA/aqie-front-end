@@ -88,7 +88,7 @@ const searchMiddlewareCy = async (request, h) => {
     calendarEnglish,
     calendarWelsh
   )
-
+  request.yar.set('searchTermsSaved', searchTerms)
   if (locationType === LOCATION_TYPE_UK) {
     let { results } = getOSPlaces
 
@@ -265,7 +265,7 @@ const searchMiddlewareCy = async (request, h) => {
       locationType,
       lang
     })
-    request.yar.set('searchTermsSaved', searchTerms)
+
     logger.info(
       `::::::::::: redirecting to specific urlRoute cy  ::::::::::: ${urlRoute}`
     )

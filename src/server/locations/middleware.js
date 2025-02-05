@@ -91,7 +91,7 @@ const searchMiddleware = async (request, h) => {
     calendarWelsh
   )
   request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-
+  request.yar.set('searchTermsSaved', searchTerms)
   if (locationType === LOCATION_TYPE_UK) {
     let { results } = getOSPlaces
 
@@ -276,7 +276,7 @@ const searchMiddleware = async (request, h) => {
     logger.info(
       `::::::::::: redirecting to specific urlRoute en  ::::::::::: ${urlRoute}`
     )
-    request.yar.set('searchTermsSaved', searchTerms)
+
     logger.info(
       `::::::::::: redirecting to specific urlRoute en  ::::::::::: ${urlRoute}`
     )
