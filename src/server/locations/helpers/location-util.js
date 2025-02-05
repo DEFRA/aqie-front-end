@@ -53,35 +53,37 @@ function convertPointToLonLat(matches, location, index) {
   let lon = ''
   let point
   let pointNI
-  if (location === 'uk-location') {
-    point = new OsGridRef(
-      matches[index].GAZETTEER_ENTRY.GEOMETRY_X,
-      matches[index].GAZETTEER_ENTRY.GEOMETRY_Y
-    )
-    const latlon = OsGridRef.osGridToLatLong(point)
-    lat = latlon._lat
-    lon = latlon._lon
-  } else {
-    logger.info(
-      `::::::::::: getNIPlaces 1  matches stringify NI ::::::::::: ${JSON.stringify(matches)}`
-    )
-    const long =
-      matches[index].xCoordinate || matches[index].GAZETTEER_ENTRY.LONGITUDE
-    const lati =
-      matches[index].yCoordinate || matches[index].GAZETTEER_ENTRY.LATITUDE
-    logger.info(`::::::::::: getNIPlaces 1  long NI ::::::::::: ${long}`)
-    logger.info(`::::::::::: getNIPlaces 1  lati NI ::::::::::: ${lati}`)
-    try {
-      pointNI = new OsGridRef(long, lati)
-    } catch (error) {
-      logger.error(
-        `Failed to fetch convertPointToLonLat matches
-      .reduce: ${JSON.stringify(error)}`
+  if (matches || matches[index]) {
+    if (location === 'uk-location') {
+      point = new OsGridRef(
+        matches[index].GAZETTEER_ENTRY.GEOMETRY_X,
+        matches[index].GAZETTEER_ENTRY.GEOMETRY_Y
       )
+      const latlon = OsGridRef.osGridToLatLong(point)
+      lat = latlon._lat
+      lon = latlon._lon
+    } else {
+      logger.info(
+        `::::::::::: getNIPlaces 1  matches stringify NI ::::::::::: ${JSON.stringify(matches)}`
+      )
+      const long =
+        matches[index].xCoordinate || matches[index].GAZETTEER_ENTRY.LONGITUDE
+      const lati =
+        matches[index].yCoordinate || matches[index].GAZETTEER_ENTRY.LATITUDE
+      logger.info(`::::::::::: getNIPlaces 1  long NI ::::::::::: ${long}`)
+      logger.info(`::::::::::: getNIPlaces 1  lati NI ::::::::::: ${lati}`)
+      try {
+        pointNI = new OsGridRef(long, lati)
+      } catch (error) {
+        logger.error(
+          `Failed to fetch convertPointToLonLat matches
+        .reduce: ${JSON.stringify(error)}`
+        )
+      }
+      const latlon = OsGridRef.osGridToLatLong(pointNI)
+      lat = latlon._lat
+      lon = latlon._lon
     }
-    const latlon = OsGridRef.osGridToLatLong(pointNI)
-    lat = latlon._lat
-    lon = latlon._lon
   }
   return { lat, lon }
 }
