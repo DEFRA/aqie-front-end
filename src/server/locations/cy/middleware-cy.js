@@ -196,14 +196,15 @@ const searchMiddlewareCy = async (request, h) => {
       lang
     )
     const { results } = getNIPlaces
-    const { nearestLocationsRange, latlon, airQuality } = getNearestLocation(
-      results,
-      getForecasts?.forecasts,
-      getMeasurements?.measurements,
-      LOCATION_TYPE_NI,
-      0,
-      lang
-    )
+    const { forecastNum, nearestLocationsRange, latlon, airQuality } =
+      getNearestLocation(
+        results,
+        getForecasts?.forecasts,
+        getMeasurements?.measurements,
+        LOCATION_TYPE_NI,
+        0,
+        lang
+      )
     logger.info(
       `::::::::::: getNIPlaces cy  ::::::::::: ${JSON.stringify(getNIPlaces)}`
     )
@@ -263,6 +264,7 @@ const searchMiddlewareCy = async (request, h) => {
       summaryDate: lang === 'cy' ? welshDate : englishDate,
       dailySummaryTexts: welsh.dailySummaryTexts,
       locationType,
+      forecastNum,
       lang
     })
 

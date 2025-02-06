@@ -18,6 +18,7 @@ import {
 import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
+import { airQUalityValues } from '~/src/server/locations/helpers/air-quality-values'
 
 const logger = createLogger()
 
@@ -141,19 +142,13 @@ const getLocationDetailsController = {
           logger.info(
             `:::::::::::NIPlaces locationDetails  cy NI ::::::::::: ${JSON.stringify(locationDetails)}`
           )
-          const { nearestLocationsRange, airQuality } = getNearestLocation(
-            locationData.results,
-            locationData.rawForecasts,
-            locationData.measurements,
-            LOCATION_TYPE_NI,
-            0,
-            lang
-          )
+          const airQuality = airQUalityValues(locationData.forecastNum, lang)
+
           return h.view('locations/location', {
             result: locationDetails,
             airQuality,
             airQualityData: airQualityData.commonMessages,
-            monitoringSites: nearestLocationsRange,
+            monitoringSites: locationData.nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
             pageTitle: `${multipleLocations.titlePrefix} ${title}`,
