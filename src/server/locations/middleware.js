@@ -232,6 +232,12 @@ const searchMiddleware = async (request, h) => {
     logger.info(
       `::::::::::: getNIPlaces 1  result stringify ::::::::::: ${JSON.stringify(getNIPlaces?.results)}`
     )
+    logger.info(
+      `::::::::::: getNIPlaces 1  airQuality stringify ::::::::::: ${JSON.stringify(airQuality)}`
+    )
+    logger.info(
+      `::::::::::: getNIPlaces 1  nearestLocationsRange stringify ::::::::::: ${JSON.stringify(nearestLocationsRange)}`
+    )
 
     let title = ''
     let headerTitle = ''
