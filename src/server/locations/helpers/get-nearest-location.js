@@ -43,13 +43,18 @@ async function getNearestLocation(
   )
   const nearestLocation =
     matches.length !== 0
-      ? getNearLocation(latlon.lat, latlon.lon, forecastCoordinates, forecasts)
+      ? getNearLocation(
+          latlon?.lat,
+          latlon?.lon,
+          forecastCoordinates,
+          forecasts
+        )
       : {}
   logger.info(
     `::::::::::: getNIPlaces 5  nearestLocation stringify ::::::::::: ${JSON.stringify(nearestLocation)}`
   )
   const orderByDistanceMeasurements = geolib.orderByDistance(
-    { latitude: latlon.lat, longitude: latlon.lon },
+    { latitude: latlon?.lat, longitude: latlon?.lon },
     measurementsCoordinates
   )
   logger.info(
@@ -83,7 +88,7 @@ async function getNearestLocation(
       const newpollutants = []
       const getDistance =
         geolib.getDistance(
-          { latitude: latlon.lat, longitude: latlon.lon },
+          { latitude: latlon?.lat, longitude: latlon?.lon },
           {
             latitude: curr.location.coordinates[0],
             longitude: curr.location.coordinates[1]
@@ -183,6 +188,18 @@ async function getNearestLocation(
           Object.values(forecastNum[0][3])[0],
           Object.values(forecastNum[0][4])[0]
         )
+  logger.info(
+    `::::::::::: getNIPlaces 1  latlon stringify 2 ::::::::::: ${JSON.stringify(latlon)}`
+  )
+  logger.info(
+    `::::::::::: getNIPlaces 1  latlon airQuality 2 ::::::::::: ${JSON.stringify(airQuality)}`
+  )
+  logger.info(
+    `::::::::::: getNIPlaces 1  latlon forecastNum 2 ::::::::::: ${JSON.stringify(forecastNum)}`
+  )
+  logger.info(
+    `::::::::::: getNIPlaces 1  latlon nearestLocationsRange 2 ::::::::::: ${JSON.stringify(nearestLocationsRange)}`
+  )
   return { forecastNum, nearestLocationsRange, airQuality, latlon }
 }
 
