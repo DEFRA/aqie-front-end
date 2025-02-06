@@ -16,9 +16,8 @@ import {
   LOCATION_TYPE_UK
 } from '~/src/server/data/constants'
 import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
-import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
-import { airQUalityValues } from '~/src/server/locations/helpers/air-quality-values'
+import { airQualityValues } from '~/src/server/locations/helpers/air-quality-values.js'
 
 const logger = createLogger()
 
@@ -74,10 +73,8 @@ const getLocationDetailsController = {
       } = welsh
       const locationData = request.yar.get('locationData') || []
 
-      let locationIndex = 0
-      locationDetails = locationData?.results?.find((item, index) => {
+      locationDetails = locationData?.results?.find((item) => {
         if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
-          locationIndex = index
           return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
         }
         return null
@@ -96,19 +93,15 @@ const getLocationDetailsController = {
         title = convertFirstLetterIntoUppercase(title)
         headerTitle = convertFirstLetterIntoUppercase(headerTitle)
         if (locationData.locationType === LOCATION_TYPE_UK) {
-          const { nearestLocationsRange, airQuality } = getNearestLocation(
-            locationData.results,
-            locationData.rawForecasts,
-            locationData.measurements,
-            LOCATION_TYPE_UK,
-            locationIndex,
+          const { airQuality } = airQualityValues(
+            locationData.forecastNum,
             lang
           )
           return h.view('locations/location', {
             result: locationDetails,
             airQuality,
             airQualityData: airQualityData.commonMessages,
-            monitoringSites: nearestLocationsRange,
+            monitoringSites: locationData.monitoringSites,
             siteTypeDescriptions,
             pollutantTypes,
             pageTitle: `${multipleLocations.titlePrefix} ${title}`,
@@ -142,7 +135,10 @@ const getLocationDetailsController = {
           logger.info(
             `:::::::::::NIPlaces locationDetails  cy NI ::::::::::: ${JSON.stringify(locationDetails)}`
           )
-          const airQuality = airQUalityValues(locationData.forecastNum, lang)
+          const { airQuality } = airQualityValues(
+            locationData.forecastNum,
+            lang
+          )
 
           return h.view('locations/location', {
             result: locationDetails,

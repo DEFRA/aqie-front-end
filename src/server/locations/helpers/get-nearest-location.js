@@ -9,14 +9,12 @@ import {
 } from '~/src/server/locations/helpers/location-util.js'
 import { getPollutantLevel } from '~/src/server/locations/helpers/pollutant-level-calculation'
 import { getPollutantLevelCy } from '~/src/server/locations/helpers/cy/pollutant-level-calculation'
-import { getAirQuality } from '~/src/server/data/en/air-quality.js'
-import { getAirQualityCy } from '~/src/server/data/cy/air-quality.js'
-import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
+import { LANG_CY } from '~/src/server/data/constants'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 
 const logger = createLogger()
 
-async function getNearestLocation(
+function getNearestLocation(
   matches,
   forecasts,
   measurements,
@@ -25,19 +23,17 @@ async function getNearestLocation(
   lang
 ) {
   const latlon =
-    matches.length !== 0
-      ? await convertPointToLonLat(matches, location, index)
-      : {}
+    matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
   logger.info(
     `::::::::::: getNIPlaces 1  latlon stringify ::::::::::: ${JSON.stringify(latlon)}`
   )
   const forecastCoordinates =
-    matches.length !== 0 ? await coordinatesTotal(forecasts, location) : []
+    matches.length !== 0 ? coordinatesTotal(forecasts, location) : []
   logger.info(
     `::::::::::: getNIPlaces 2  forecastCoordinates stringify ::::::::::: ${JSON.stringify(forecastCoordinates)}`
   )
   const measurementsCoordinates =
-    matches.length !== 0 ? await coordinatesTotal(measurements, location) : []
+    matches.length !== 0 ? coordinatesTotal(measurements, location) : []
   logger.info(
     `::::::::::: getNIPlaces 2  forecastCoordinates stringify ::::::::::: ${JSON.stringify(measurementsCoordinates)}`
   )
@@ -83,7 +79,7 @@ async function getNearestLocation(
     `::::::::::: getNIPlaces 9  nearestLocationsRangeCal stringify ::::::::::: ${JSON.stringify(nearestLocationsRangeCal)}`
   )
   // TODO select and filter locations and pollutants which are not null or don't have exceptions
-  const nearestLocationsRange = nearestLocationsRangeCal.reduce(
+  const nearestLocationsRange = nearestLocationsRangeCal?.reduce(
     (acc, curr, index) => {
       const newpollutants = []
       const getDistance =
@@ -172,27 +168,8 @@ async function getNearestLocation(
           return [...todayDate, ...otherdays]
         })
       : 0
-  const airQuality =
-    lang === LANG_EN
-      ? getAirQuality(
-          forecastNum[0][0].today,
-          Object.values(forecastNum[0][1])[0],
-          Object.values(forecastNum[0][2])[0],
-          Object.values(forecastNum[0][3])[0],
-          Object.values(forecastNum[0][4])[0]
-        )
-      : getAirQualityCy(
-          forecastNum[0][0].today,
-          Object.values(forecastNum[0][1])[0],
-          Object.values(forecastNum[0][2])[0],
-          Object.values(forecastNum[0][3])[0],
-          Object.values(forecastNum[0][4])[0]
-        )
   logger.info(
     `::::::::::: getNIPlaces 1  latlon stringify 2 ::::::::::: ${JSON.stringify(latlon)}`
-  )
-  logger.info(
-    `::::::::::: getNIPlaces 1  latlon airQuality 2 ::::::::::: ${JSON.stringify(airQuality)}`
   )
   logger.info(
     `::::::::::: getNIPlaces 1  latlon forecastNum 2 ::::::::::: ${JSON.stringify(forecastNum)}`
@@ -200,7 +177,7 @@ async function getNearestLocation(
   logger.info(
     `::::::::::: getNIPlaces 1  latlon nearestLocationsRange 2 ::::::::::: ${JSON.stringify(nearestLocationsRange)}`
   )
-  return { forecastNum, nearestLocationsRange, airQuality, latlon }
+  return { forecastNum, nearestLocationsRange, latlon }
 }
 
 export { getNearestLocation }
