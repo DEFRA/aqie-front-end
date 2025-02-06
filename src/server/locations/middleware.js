@@ -214,14 +214,15 @@ const searchMiddleware = async (request, h) => {
     logger.info(
       `::::::::::: getNIPlaces results  passed to getNearestLocation en  ::::::::::: ${JSON.stringify(getNIPlaces?.results)}`
     )
-    const { nearestLocationsRange, latlon, airQuality } = getNearestLocation(
-      getNIPlaces?.results,
-      getForecasts?.forecasts,
-      getMeasurements?.measurements,
-      LOCATION_TYPE_NI,
-      0,
-      lang
-    )
+    const { forecastNum, nearestLocationsRange, latlon, airQuality } =
+      getNearestLocation(
+        getNIPlaces?.results,
+        getForecasts?.forecasts,
+        getMeasurements?.measurements,
+        LOCATION_TYPE_NI,
+        0,
+        lang
+      )
     logger.info(
       `::::::::::: getNIPlaces 1  result stringify ::::::::::: ${JSON.stringify(getNIPlaces?.results)}`
     )
@@ -274,6 +275,7 @@ const searchMiddleware = async (request, h) => {
       summaryDate: lang === 'cy' ? welshDate : englishDate,
       dailySummaryTexts: english.dailySummaryTexts,
       locationType,
+      forecastNum,
       lang
     })
     logger.info(

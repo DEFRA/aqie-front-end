@@ -39,7 +39,7 @@ async function getNearestLocation(
   const measurementsCoordinates =
     matches.length !== 0 ? await coordinatesTotal(measurements, location) : []
   logger.info(
-    `::::::::::: getNIPlaces 3  measurementsCoordinates stringify ::::::::::: ${JSON.stringify(measurementsCoordinates)}`
+    `::::::::::: getNIPlaces 2  forecastCoordinates stringify ::::::::::: ${JSON.stringify(measurementsCoordinates)}`
   )
   const nearestLocation =
     matches.length !== 0
