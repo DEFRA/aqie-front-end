@@ -264,7 +264,6 @@ const searchMiddleware = async (request, h) => {
       airQuality,
       airQualityData: airQualityData.commonMessages,
       monitoringSites: nearestLocationsRange,
-      nearestLocationsRange,
       siteTypeDescriptions,
       pollutantTypes,
       pageTitle: `${multipleLocations.titlePrefix} ${title}`,
