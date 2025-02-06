@@ -236,8 +236,8 @@ const searchMiddlewareCy = async (request, h) => {
           DISTRICT_BOROUGH: sentenceCase(
             getNIPlaces?.results[0].administrativeArea
           ),
-          LONGITUDE: latlon.lon,
-          LATITUDE: latlon.lat
+          LONGITUDE: latlon?.lon,
+          LATITUDE: latlon?.lat
         }
       }
     ]

@@ -224,6 +224,12 @@ const searchMiddleware = async (request, h) => {
         lang
       )
     logger.info(
+      `::::::::::: getNIPlaces 1  forecastNum stringify ::::::::::: ${JSON.stringify(forecastNum)}`
+    )
+    logger.info(
+      `::::::::::: getNIPlaces 1  latlon ::::::::::: ${JSON.stringify(latlon)}`
+    )
+    logger.info(
       `::::::::::: getNIPlaces 1  result stringify ::::::::::: ${JSON.stringify(getNIPlaces?.results)}`
     )
 
@@ -248,8 +254,8 @@ const searchMiddleware = async (request, h) => {
           DISTRICT_BOROUGH: sentenceCase(
             getNIPlaces?.results[0].administrativeArea
           ),
-          LONGITUDE: latlon.lon,
-          LATITUDE: latlon.lat
+          LONGITUDE: latlon?.lon,
+          LATITUDE: latlon?.lat
         }
       }
     ]
