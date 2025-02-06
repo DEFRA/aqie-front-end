@@ -27,6 +27,7 @@ import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-l
 import { transformKeys } from '~/src/server/locations/helpers/generate-daily-summary-with-calendar-day.js'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case.js'
+import airQualityValues from '../helpers/air-quality-values'
 
 const logger = createLogger()
 
@@ -120,15 +121,14 @@ const searchMiddlewareCy = async (request, h) => {
       String(urlRoute)
     )
     const titleRoute = convertStringToHyphenatedLowercaseWords(String(title))
-    const { forecastNum, nearestLocationsRange, airQuality } =
-      getNearestLocation(
-        selectedMatches,
-        getForecasts?.forecasts,
-        getMeasurements?.measurements,
-        LOCATION_TYPE_UK,
-        0,
-        lang
-      )
+    const { forecastNum, nearestLocationsRange } = getNearestLocation(
+      selectedMatches,
+      getForecasts?.forecasts,
+      getMeasurements?.measurements,
+      LOCATION_TYPE_UK,
+      0,
+      lang
+    )
     if (selectedMatches.length === 1) {
       return handleSingleMatch(h, request, {
         searchTerms,
@@ -155,7 +155,9 @@ const searchMiddlewareCy = async (request, h) => {
       selectedMatches.length > 1 &&
       locationNameOrPostcode.length > 3
     ) {
+      const airQuality = airQualityValues(forecastNum, lang)
       return handleMultipleMatches(h, request, {
+        forecastNum,
         selectedMatches,
         headerTitleRoute,
         titleRoute,
@@ -196,15 +198,14 @@ const searchMiddlewareCy = async (request, h) => {
       lang
     )
     const { results } = getNIPlaces
-    const { forecastNum, nearestLocationsRange, latlon, airQuality } =
-      getNearestLocation(
-        results,
-        getForecasts?.forecasts,
-        getMeasurements?.measurements,
-        LOCATION_TYPE_NI,
-        0,
-        lang
-      )
+    const { forecastNum, nearestLocationsRange, latlon } = getNearestLocation(
+      results,
+      getForecasts?.forecasts,
+      getMeasurements?.measurements,
+      LOCATION_TYPE_NI,
+      0,
+      lang
+    )
     logger.info(
       `::::::::::: getNIPlaces cy  ::::::::::: ${JSON.stringify(getNIPlaces)}`
     )
@@ -244,7 +245,7 @@ const searchMiddlewareCy = async (request, h) => {
 
     request.yar.set('locationData', {
       results: resultNI,
-      airQuality,
+      airQuality: airQualityValues(forecastNum, lang),
       airQualityData: airQualityData.commonMessages,
       monitoringSites: nearestLocationsRange,
       nearestLocationsRange,
