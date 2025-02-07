@@ -19,6 +19,7 @@ import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
 import { transformKeys } from '~/src/server/locations/helpers/generate-daily-summary-with-calendar-day.js'
 import { airQualityValues } from '~/src/server/locations/helpers/air-quality-values.js'
+import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 
 const logger = createLogger()
 
@@ -31,9 +32,6 @@ const getLocationDetailsController = {
       const searchTermsSaved = request.yar.get('searchTermsSaved')
 
       if (query?.lang && query?.lang === LANG_EN && !query?.searchTerms) {
-        logger.info(
-          'Redirecting to English location page in location-id controller'
-        )
         /* eslint-disable camelcase */
         return h.redirect(`/location/${locationId}/?lang=en`)
       }
@@ -44,18 +42,12 @@ const getLocationDetailsController = {
       const { searchTerms, secondSearchTerm, searchTermsLocationType } =
         getSearchTermsFromUrl(currentUrl)
       if (previousUrl === undefined && !searchTermsSaved) {
-        logger.info(
-          'Redirecting to Welsh location middleware from location-id controller'
-        )
         return h
           .redirect(
             `/lleoliad?lang=cy&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}`
           )
           .takeover()
       }
-      logger.info(
-        `::::::::::: getNIPlaces 4 locationId cy  ::::::::::: ${locationId}`
-      )
       request.yar.clear('searchTermsSaved')
       const lang = LANG_CY
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')
@@ -80,15 +72,6 @@ const getLocationDetailsController = {
         }
         return null
       })
-      logger.info(
-        `::::::::::: getNIPlaces 4 locationDetails cy  ::::::::::: ${JSON.stringify(locationDetails)}`
-      )
-      logger.info(
-        `::::::::::: getNIPlaces 4 locationData cy  ::::::::::: ${JSON.stringify(locationData)}`
-      )
-      logger.info(
-        `::::::::::: getNIPlaces 4 locationDetails cy  ::::::::::: ${JSON.stringify(locationDetails)}`
-      )
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
         title = convertFirstLetterIntoUppercase(title)
@@ -110,11 +93,19 @@ const getLocationDetailsController = {
             locationData.forecastNum,
             lang
           )
+          const { nearestLocationsRange } = getNearestLocation(
+            locationData?.results,
+            locationData?.rawForecasts,
+            locationData?.measurements,
+            LOCATION_TYPE_UK,
+            0,
+            lang
+          )
           return h.view('locations/location', {
             result: locationDetails,
             airQuality,
             airQualityData: airQualityData.commonMessages,
-            monitoringSites: locationData.monitoringSites,
+            monitoringSites: nearestLocationsRange,
             siteTypeDescriptions,
             pollutantTypes,
             pageTitle: `${multipleLocations.titlePrefix} ${title}`,
@@ -138,24 +129,10 @@ const getLocationDetailsController = {
             lang
           })
         } else if (locationData.locationType === LOCATION_TYPE_NI) {
-          logger.info(`:::::::::::NIPlaces lang cy NI  ::::::::::: ${lang}`)
-          logger.info(
-            `:::::::::::NIPlaces locationData cy NI  ::::::::::: ${JSON.stringify(locationData)}`
-          )
-          logger.info(
-            `:::::::::::NIPlaces locationData.results  cy NI ::::::::::: ${JSON.stringify(locationData?.results)}`
-          )
-          logger.info(
-            `:::::::::::NIPlaces locationDetails  cy NI ::::::::::: ${JSON.stringify(locationDetails)}`
-          )
-          logger.info(
-            `::::::::::: getNIPlaces 4 monitoringSites NI cy  ::::::::::: ${JSON.stringify(locationData?.monitoringSites)}`
-          )
           const { airQuality } = airQualityValues(
             locationData.forecastNum,
             lang
           )
-
           return h.view('locations/location', {
             result: locationDetails,
             airQuality,
