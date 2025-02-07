@@ -106,6 +106,18 @@ const getLocationDetailsController = {
         logger.info(
           `:: locationDetails?.GAZETTEER_ENTRY  :::: ${locationDetails?.GAZETTEER_ENTRY}`
         )
+        logger.info(
+          `::::::::LANG-FROM-LOCATION-ID-CONTROLLER:::::::::::: ,
+          ${lang}`
+        )
+        const { transformedDailySummary } = transformKeys(
+          locationData.dailySummary,
+          lang
+        )
+        logger.info(
+          `::::::::transformedDailySummary-FROM-LOCATION-ID-CONTROLLER:::::::::::',
+          ${JSON.stringify(transformedDailySummary)}`
+        )
         if (locationData.locationType === LOCATION_TYPE_UK) {
           logger.info(`::::::::::: getNIPlaces 4 LOCATION_TYPE_UK  :::::::::::`)
           logger.info(`:::::::::::NIPlaces lang en UK  ::::::::::: ${lang}`)
@@ -125,18 +137,6 @@ const getLocationDetailsController = {
             LOCATION_TYPE_UK,
             locationIndex,
             lang
-          )
-          logger.info(
-            `::::::::LANG-FROM-LOCATION-ID-CONTROLLER:::::::::::: ,
-            ${lang}`
-          )
-          const { transformedDailySummary } = transformKeys(
-            locationData.dailySummary,
-            lang
-          )
-          logger.info(
-            `::::::::transformedDailySummary-FROM-LOCATION-ID-CONTROLLER:::::::::::',
-            ${JSON.stringify(transformedDailySummary)}`
           )
 
           return h.view('locations/location', {

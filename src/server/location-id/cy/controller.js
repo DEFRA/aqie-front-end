@@ -96,6 +96,18 @@ const getLocationDetailsController = {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
         title = convertFirstLetterIntoUppercase(title)
         headerTitle = convertFirstLetterIntoUppercase(headerTitle)
+        logger.info(
+          `::::::::LANG-FROM-LOCATION-ID-CY_CONTROLLER:::::::::::: ,
+          ${lang}`
+        )
+        const { transformedDailySummary } = transformKeys(
+          locationData.dailySummary,
+          lang
+        )
+        logger.info(
+          `::::::::transformedDailySummary-FROM-LOCATION-ID-CY-CONTROLLER::::::::::: ,
+           ${JSON.stringify(transformedDailySummary)}`
+        )
         if (locationData.locationType === LOCATION_TYPE_UK) {
           const { nearestLocationsRange, airQuality } = getNearestLocation(
             locationData.results,
@@ -104,18 +116,6 @@ const getLocationDetailsController = {
             LOCATION_TYPE_UK,
             locationIndex,
             lang
-          )
-          logger.info(
-            `::::::::LANG-FROM-LOCATION-ID-CY_CONTROLLER:::::::::::: ,
-            ${lang}`
-          )
-          const { transformedDailySummary } = transformKeys(
-            locationData.dailySummary,
-            lang
-          )
-          logger.info(
-            `::::::::transformedDailySummary-FROM-LOCATION-ID-CY-CONTROLLER::::::::::: ,
-             ${JSON.stringify(transformedDailySummary)}`
           )
           return h.view('locations/location', {
             result: locationDetails,
