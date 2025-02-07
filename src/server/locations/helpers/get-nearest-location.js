@@ -147,15 +147,6 @@ function getNearestLocation(
           return [...todayDate, ...otherdays]
         })
       : 0
-  logger.info(
-    `::::::::::: getNIPlaces 1  latlon stringify 2 ::::::::::: ${JSON.stringify(latlon)}`
-  )
-  logger.info(
-    `::::::::::: getNIPlaces 1  latlon forecastNum 2 ::::::::::: ${JSON.stringify(forecastNum)}`
-  )
-  logger.info(
-    `::::::::::: getNIPlaces 1  latlon nearestLocationsRange 2 ::::::::::: ${JSON.stringify(nearestLocationsRange)}`
-  )
   return { forecastNum, nearestLocationsRange, latlon }
 }
 
