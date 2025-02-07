@@ -256,18 +256,8 @@ const searchMiddleware = async (request, h) => {
       forecastNum,
       lang
     })
-    logger.info(
-      `::::::::::: redirecting to specific urlRoute en  ::::::::::: ${urlRoute}`
-    )
-
-    logger.info(
-      `::::::::::: redirecting to specific urlRoute en  ::::::::::: ${urlRoute}`
-    )
     return h.redirect(`/location/${urlRoute}?lang=en`).takeover()
   } else {
-    logger.info(
-      `::::::::::: redirecting to location not found en  ::::::::::: ${locationType}`
-    )
     // handle other location types
     return h.redirect('/location-not-found').takeover()
   }
