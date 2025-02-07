@@ -19,6 +19,7 @@ import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
 import { airQUalityValues } from '~/src/server/locations/helpers/air-quality-values'
+import { transformKeys } from '~/src/server/locations/helpers/generate-daily-summary-with-calendar-day.js'
 
 const logger = createLogger()
 
@@ -104,6 +105,18 @@ const getLocationDetailsController = {
             locationIndex,
             lang
           )
+          logger.info(
+            `::::::::LANG-FROM-LOCATION-ID-CY_CONTROLLER:::::::::::: ,
+            ${lang}`
+          )
+          const { transformedDailySummary } = transformKeys(
+            locationData.dailySummary,
+            lang
+          )
+          logger.info(
+            `::::::::transformedDailySummary-FROM-LOCATION-ID-CY-CONTROLLER::::::::::: ,
+             ${JSON.stringify(transformedDailySummary)}`
+          )
           return h.view('locations/location', {
             result: locationDetails,
             airQuality,
@@ -116,7 +129,7 @@ const getLocationDetailsController = {
             description: `${daqi.description.a} ${headerTitle}${daqi.description.b}`,
             title: `${multipleLocations.titlePrefix} ${headerTitle}`,
             displayBacklink: true,
-            transformedDailySummary: locationData.transformedDailySummary,
+            transformedDailySummary,
             footerTxt,
             phaseBanner,
             backlink,
@@ -156,7 +169,7 @@ const getLocationDetailsController = {
             description: `${daqi.description.a} ${headerTitle}${daqi.description.b}`,
             title: `${multipleLocations.titlePrefix} ${headerTitle}`,
             displayBacklink: true,
-            transformedDailySummary: locationData.transformedDailySummary,
+            transformedDailySummary,
             footerTxt,
             phaseBanner,
             backlink,
