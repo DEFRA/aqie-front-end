@@ -27,7 +27,6 @@ import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-l
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
 import { transformKeys } from '~/src/server/locations/helpers/generate-daily-summary-with-calendar-day'
-import { airQualityValues } from '~/src/server/locations/helpers/air-quality-values.js'
 
 const logger = createLogger()
 
@@ -124,14 +123,15 @@ const searchMiddleware = async (request, h) => {
       String(urlRoute)
     )
     const titleRoute = convertStringToHyphenatedLowercaseWords(String(title))
-    const { forecastNum, nearestLocationsRange } = getNearestLocation(
-      selectedMatches,
-      getForecasts?.forecasts,
-      getMeasurements?.measurements,
-      LOCATION_TYPE_UK,
-      0,
-      lang
-    )
+    const { forecastNum, nearestLocationsRange, airQuality } =
+      getNearestLocation(
+        selectedMatches,
+        getForecasts?.forecasts,
+        getMeasurements?.measurements,
+        LOCATION_TYPE_UK,
+        0,
+        lang
+      )
     if (selectedMatches.length === 1) {
       return handleSingleMatch(h, request, {
         searchTerms,
@@ -157,9 +157,7 @@ const searchMiddleware = async (request, h) => {
       selectedMatches.length > 1 &&
       locationNameOrPostcode.length > 3
     ) {
-      const { airQuality } = airQualityValues(forecastNum, lang)
       return handleMultipleMatches(h, request, {
-        forecastNum,
         selectedMatches,
         headerTitleRoute,
         titleRoute,
@@ -183,6 +181,7 @@ const searchMiddleware = async (request, h) => {
         month,
         welshDate,
         englishDate,
+        forecastNum,
         locationType,
         lang
       })
@@ -213,19 +212,30 @@ const searchMiddleware = async (request, h) => {
       )
       return h.redirect('/location-not-found').takeover()
     }
-    const { forecastNum, nearestLocationsRange, latlon } = getNearestLocation(
-      getNIPlaces?.results,
-      getForecasts?.forecasts,
-      getMeasurements?.measurements,
-      LOCATION_TYPE_UK,
-      0,
-      lang
-    )
+
     logger.info(
       `::::::::::: getNIPlaces results  passed to getNearestLocation en  ::::::::::: ${JSON.stringify(getNIPlaces?.results)}`
     )
+    const { forecastNum, nearestLocationsRange, latlon, airQuality } =
+      getNearestLocation(
+        getNIPlaces?.results,
+        getForecasts?.forecasts,
+        getMeasurements?.measurements,
+        LOCATION_TYPE_NI,
+        0,
+        lang
+      )
+    logger.info(
+      `::::::::::: getNIPlaces 1  forecastNum stringify ::::::::::: ${JSON.stringify(forecastNum)}`
+    )
+    logger.info(
+      `::::::::::: getNIPlaces 1  latlon ::::::::::: ${JSON.stringify(latlon)}`
+    )
     logger.info(
       `::::::::::: getNIPlaces 1  result stringify ::::::::::: ${JSON.stringify(getNIPlaces?.results)}`
+    )
+    logger.info(
+      `::::::::::: getNIPlaces 1  airQuality stringify ::::::::::: ${JSON.stringify(airQuality)}`
     )
     logger.info(
       `::::::::::: getNIPlaces 1  nearestLocationsRange stringify ::::::::::: ${JSON.stringify(nearestLocationsRange)}`
@@ -257,7 +267,6 @@ const searchMiddleware = async (request, h) => {
         }
       }
     ]
-    const { airQuality } = airQualityValues(forecastNum, lang)
     request.yar.set('locationData', {
       results: resultNI,
       airQuality,
