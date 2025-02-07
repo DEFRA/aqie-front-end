@@ -56,8 +56,8 @@ function convertPointToLonLat(matches, location, index) {
   if (matches || matches[index]) {
     if (location === 'uk-location') {
       point = new OsGridRef(
-        matches[index].GAZETTEER_ENTRY.GEOMETRY_X,
-        matches[index].GAZETTEER_ENTRY.GEOMETRY_Y
+        matches[index].GAZETTEER_ENTRY?.GEOMETRY_X,
+        matches[index].GAZETTEER_ENTRY?.GEOMETRY_Y
       )
       const latlon = OsGridRef.osGridToLatLong(point)
       lat = latlon._lat
