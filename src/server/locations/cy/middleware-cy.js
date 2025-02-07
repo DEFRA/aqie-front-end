@@ -27,7 +27,7 @@ import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-l
 import { transformKeys } from '~/src/server/locations/helpers/generate-daily-summary-with-calendar-day.js'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case.js'
-import airQualityValues from '../helpers/air-quality-values'
+import { airQualityValues } from '~/src/server/locations/helpers/air-quality-values'
 
 const logger = createLogger()
 

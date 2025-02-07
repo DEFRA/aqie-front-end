@@ -135,6 +135,9 @@ const getLocationDetailsController = {
           logger.info(
             `:::::::::::NIPlaces locationDetails  cy NI ::::::::::: ${JSON.stringify(locationDetails)}`
           )
+          logger.info(
+            `::::::::::: getNIPlaces 4 monitoringSites NI cy  ::::::::::: ${JSON.stringify(locationData?.monitoringSites)}`
+          )
           const { airQuality } = airQualityValues(
             locationData.forecastNum,
             lang
@@ -144,7 +147,7 @@ const getLocationDetailsController = {
             result: locationDetails,
             airQuality,
             airQualityData: airQualityData.commonMessages,
-            monitoringSites: locationData.nearestLocationsRange,
+            monitoringSites: locationData?.monitoringSites,
             siteTypeDescriptions,
             pollutantTypes,
             pageTitle: `${multipleLocations.titlePrefix} ${title}`,

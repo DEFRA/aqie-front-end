@@ -181,6 +181,7 @@ const searchMiddleware = async (request, h) => {
         month,
         welshDate,
         englishDate,
+        forecastNum,
         locationType,
         lang
       })
