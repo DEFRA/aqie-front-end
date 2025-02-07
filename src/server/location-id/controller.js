@@ -16,10 +16,9 @@ import {
   LOCATION_TYPE_NI
 } from '~/src/server/data/constants'
 import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
-import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
-import { airQUalityValues } from '~/src/server/locations/helpers/air-quality-values'
 import { transformKeys } from '~/src/server/locations/helpers/generate-daily-summary-with-calendar-day.js'
+import { airQualityValues } from '~/src/server/locations/helpers/air-quality-values.js'
 
 const logger = createLogger()
 
@@ -80,10 +79,8 @@ const getLocationDetailsController = {
         multipleLocations
       } = english
       const locationData = request.yar.get('locationData') || []
-      let locationIndex = 0
-      locationDetails = locationData?.results?.find((item, index) => {
+      locationDetails = locationData?.results?.find((item) => {
         if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
-          locationIndex = index
           return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
         }
         return null
@@ -130,20 +127,15 @@ const getLocationDetailsController = {
           logger.info(
             `:::::::::::NIPlaces locationDetails  en UK ::::::::::: ${JSON.stringify(locationDetails)}`
           )
-          const { nearestLocationsRange, airQuality } = getNearestLocation(
-            locationData.results,
-            locationData.rawForecasts,
-            locationData.measurements,
-            LOCATION_TYPE_UK,
-            locationIndex,
+          const { airQuality } = airQualityValues(
+            locationData.forecastNum,
             lang
           )
-
           return h.view('locations/location', {
             result: locationDetails,
             airQuality,
             airQualityData: airQualityData.commonMessages,
-            monitoringSites: nearestLocationsRange,
+            monitoringSites: locationData.monitoringSites,
             siteTypeDescriptions,
             pollutantTypes,
             pageTitle: `${multipleLocations.titlePrefix} ${title}`,
@@ -181,7 +173,10 @@ const getLocationDetailsController = {
           logger.info(
             `::::::::::: getNIPlaces 4 monitoringSites NI  ::::::::::: ${JSON.stringify(locationData.monitoringSites)}`
           )
-          const airQuality = airQUalityValues(locationData.forecastNum, lang)
+          const { airQuality } = airQualityValues(
+            locationData.forecastNum,
+            lang
+          )
           logger.info(
             `::::::::::: getNIPlaces 4 airQuality NI  ::::::::::: ${JSON.stringify(airQuality)}`
           )

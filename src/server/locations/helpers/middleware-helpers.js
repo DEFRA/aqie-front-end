@@ -38,8 +38,7 @@ const handleSingleMatch = (
     rawForecasts: getForecasts?.forecasts,
     forecastNum: selectedMatches.length !== 0 ? forecastNum : 0,
     transformedDailySummary,
-    nearestLocationsRange:
-      selectedMatches.length !== 0 ? nearestLocationsRange : [],
+    monitoringSites: selectedMatches.length !== 0 ? nearestLocationsRange : [],
     measurements: getMeasurements?.measurements,
     englishDate,
     dailySummary: getDailySummary,
@@ -66,6 +65,7 @@ const handleMultipleMatches = (
   h,
   request,
   {
+    forecastNum,
     selectedMatches,
     locationNameOrPostcode,
     userLocation,
@@ -118,6 +118,7 @@ const handleMultipleMatches = (
     welshDate,
     englishDate,
     locationType,
+    forecastNum,
     lang
   })
 
