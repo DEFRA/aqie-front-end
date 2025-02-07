@@ -47,7 +47,6 @@ const searchMiddleware = async (request, h) => {
   const searchTerms = query?.searchTerms?.toUpperCase()
   const secondSearchTerm = query?.secondSearchTerm?.toUpperCase()
   const searchTermsLocationType = query?.searchTermsLocationType
-  logger.info(`::::::::::: before handleErrorInputAndRedirect  ::::::::::: `)
   const redirectError = handleErrorInputAndRedirect(
     request,
     h,
@@ -55,7 +54,6 @@ const searchMiddleware = async (request, h) => {
     payload,
     searchTerms
   )
-  logger.info(`::::::::::: after handleErrorInputAndRedirect  :::::::::::`)
   if (!redirectError.locationType) {
     return redirectError
   }
@@ -73,9 +71,6 @@ const searchMiddleware = async (request, h) => {
       locationNameOrPostcode,
       lang
     )
-  logger.info(
-    `::::::::::: getDailySummary 1  ::::::::::: ${JSON.stringify(getDailySummary)}`
-  )
   const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
     getDailySummary?.issue_date,
     calendarEnglish,
@@ -204,18 +199,8 @@ const searchMiddleware = async (request, h) => {
       getNIPlaces === 'wrong postcode'
     ) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-      logger.info(
-        `::::::::::: redirecting to location-not-found results en  ::::::::::: ${JSON.stringify(getNIPlaces?.results)}`
-      )
-      logger.info(
-        `::::::::::: redirecting to location-not-found getNIPlaces en  ::::::::::: ${JSON.stringify(getNIPlaces)}`
-      )
       return h.redirect('/location-not-found').takeover()
     }
-
-    logger.info(
-      `::::::::::: getNIPlaces results  passed to getNearestLocation en  ::::::::::: ${JSON.stringify(getNIPlaces?.results)}`
-    )
     const { forecastNum, nearestLocationsRange, latlon, airQuality } =
       getNearestLocation(
         getNIPlaces?.results,
@@ -225,32 +210,12 @@ const searchMiddleware = async (request, h) => {
         0,
         lang
       )
-    logger.info(
-      `::::::::::: getNIPlaces 1  forecastNum stringify ::::::::::: ${JSON.stringify(forecastNum)}`
-    )
-    logger.info(
-      `::::::::::: getNIPlaces 1  latlon ::::::::::: ${JSON.stringify(latlon)}`
-    )
-    logger.info(
-      `::::::::::: getNIPlaces 1  result stringify ::::::::::: ${JSON.stringify(getNIPlaces?.results)}`
-    )
-    logger.info(
-      `::::::::::: getNIPlaces 1  airQuality stringify ::::::::::: ${JSON.stringify(airQuality)}`
-    )
-    logger.info(
-      `::::::::::: getNIPlaces 1  nearestLocationsRange stringify ::::::::::: ${JSON.stringify(nearestLocationsRange)}`
-    )
-
     let title = ''
     let headerTitle = ''
     let urlRoute = ''
-    logger.info(`::::::::::: getNIPlaces 2  :::::::::::`)
-
     title = `${getNIPlaces?.results[0].postcode}, ${sentenceCase(getNIPlaces?.results[0].administrativeArea)} - ${home.pageTitle}`
     headerTitle = `${getNIPlaces?.results[0].postcode}, ${sentenceCase(getNIPlaces?.results[0].administrativeArea)}`
     urlRoute = `${getNIPlaces?.results[0].postcode}_${sentenceCase(getNIPlaces?.results[0].administrativeArea)}`
-
-    logger.info(`::::::::::: getNIPlaces 3  :::::::::::`)
     title = convertFirstLetterIntoUppercase(title)
     headerTitle = convertFirstLetterIntoUppercase(headerTitle)
     urlRoute = convertStringToHyphenatedLowercaseWords(urlRoute)

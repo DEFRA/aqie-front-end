@@ -54,7 +54,6 @@ const handleSingleMatch = (
   logger.info(
     `::::::::::: handleSingleMatch searchTerms  ::::::::::: ${searchTerms}`
   )
-  logger.info(`::::::::::: handleSingleMatch lang  ::::::::::: ${lang}`)
   return lang === LANG_EN
     ? h.redirect(`/location/${customId}`).takeover()
     : h.redirect(`/lleoliad/${customId}`).takeover()
