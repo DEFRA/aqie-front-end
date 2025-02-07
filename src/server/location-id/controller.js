@@ -17,6 +17,7 @@ import {
 } from '~/src/server/data/constants'
 import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
+import { transformKeys } from '~/src/server/locations/helpers/generate-daily-summary-with-calendar-day.js'
 import { airQualityValues } from '~/src/server/locations/helpers/air-quality-values.js'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 
@@ -74,6 +75,18 @@ const getLocationDetailsController = {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
         title = convertFirstLetterIntoUppercase(title)
         headerTitle = convertFirstLetterIntoUppercase(headerTitle)
+        logger.info(
+          `::::::::LANG-FROM-LOCATION-ID-CONTROLLER:::::::::::: ,
+          ${lang}`
+        )
+        const { transformedDailySummary } = transformKeys(
+          locationData.dailySummary,
+          lang
+        )
+        logger.info(
+          `::::::::transformedDailySummary-FROM-LOCATION-ID-CONTROLLER:::::::::::',
+          ${JSON.stringify(transformedDailySummary)}`
+        )
         if (locationData.locationType === LOCATION_TYPE_UK) {
           const { airQuality } = airQualityValues(
             locationData.forecastNum,
@@ -99,7 +112,7 @@ const getLocationDetailsController = {
             description: `${daqi.description.a} ${headerTitle}${daqi.description.b}`,
             title: `${multipleLocations.titlePrefix} ${headerTitle}`,
             displayBacklink: true,
-            transformedDailySummary: locationData.transformedDailySummary,
+            transformedDailySummary,
             footerTxt,
             phaseBanner,
             backlink,
@@ -130,7 +143,7 @@ const getLocationDetailsController = {
             description: `${daqi.description.a} ${headerTitle}${daqi.description.b}`,
             title: `${multipleLocations.titlePrefix} ${headerTitle}`,
             displayBacklink: true,
-            transformedDailySummary: locationData.transformedDailySummary,
+            transformedDailySummary,
             footerTxt,
             phaseBanner,
             backlink,

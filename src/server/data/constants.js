@@ -52,3 +52,13 @@ export const CALENDAR_STRING = {
   DAYS: 'days'
 }
 export const HOURS_TO_SUBTRACT = 1.56
+export const SUMMARY_TRANSLATIONS = {
+  Monday: 'Dydd Llun',
+  Tuesday: 'Dydd Mawrth',
+  Wednesday: 'Dydd Mercher',
+  Thursday: 'Dydd Iau',
+  Friday: 'Dydd Gwener',
+  Saturday: 'Dydd Sadwrn',
+  Sunday: 'Dydd Sul',
+  Today: 'Heddiw'
+}

@@ -79,7 +79,7 @@ const searchMiddlewareCy = async (request, h) => {
     calendarWelsh,
     lang
   )
-  const { transformedDailySummary } = transformKeys(getDailySummary)
+  const { transformedDailySummary } = transformKeys(getDailySummary, lang)
   const { englishDate, welshDate } = getLanguageDates(
     formattedDateSummary,
     getMonthSummary,
