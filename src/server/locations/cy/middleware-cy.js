@@ -73,9 +73,6 @@ const searchMiddlewareCy = async (request, h) => {
       locationNameOrPostcode,
       lang
     )
-  logger.info(
-    `::::::::::: getDailySummary 3  ::::::::::: ${JSON.stringify(getDailySummary)}`
-  )
   const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
     getDailySummary?.issue_date,
     calendarEnglish,
@@ -218,13 +215,9 @@ const searchMiddlewareCy = async (request, h) => {
     let title = ''
     let headerTitle = ''
     let urlRoute = ''
-    logger.info(`::::::::::: getNIPlaces 2 cy  :::::::::::`)
-
     title = `${getNIPlaces?.results[0].postcode}, ${sentenceCase(getNIPlaces?.results[0].administrativeArea)} - ${home.pageTitle}`
     headerTitle = `${getNIPlaces?.results[0].postcode}, ${sentenceCase(getNIPlaces?.results[0].administrativeArea)}`
     urlRoute = `${getNIPlaces?.results[0].postcode}_${sentenceCase(getNIPlaces?.results[0].administrativeArea)}`
-
-    logger.info(`::::::::::: getNIPlaces 3 cy  :::::::::::`)
     title = convertFirstLetterIntoUppercase(title)
     headerTitle = convertFirstLetterIntoUppercase(headerTitle)
     urlRoute = convertStringToHyphenatedLowercaseWords(urlRoute)
@@ -267,10 +260,6 @@ const searchMiddlewareCy = async (request, h) => {
       forecastNum,
       lang
     })
-
-    logger.info(
-      `::::::::::: redirecting to specific urlRoute cy  ::::::::::: ${urlRoute}`
-    )
     return h.redirect(`/lleoliad/${urlRoute}?lang=cy`).takeover()
   } else {
     // handle other location types
