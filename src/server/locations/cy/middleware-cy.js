@@ -198,21 +198,20 @@ const searchMiddlewareCy = async (request, h) => {
       lang
     )
     const { results } = getNIPlaces
-    const { forecastNum, nearestLocationsRange, latlon } = getNearestLocation(
-      results,
-      getForecasts?.forecasts,
-      getMeasurements?.measurements,
-      LOCATION_TYPE_NI,
-      0,
-      lang
-    )
-    logger.info(
-      `::::::::::: getNIPlaces cy  ::::::::::: ${JSON.stringify(getNIPlaces)}`
-    )
-    logger.info(
-      `::::::::::: getNIPlaces statusCode cy  ::::::::::: ${JSON.stringify(getNIPlaces?.statusCode)}`
-    )
-    if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
+    const { forecastNum, nearestLocationsRange, latlon, airQuality } =
+      getNearestLocation(
+        results,
+        getForecasts?.forecasts,
+        getMeasurements?.measurements,
+        LOCATION_TYPE_NI,
+        0,
+        lang
+      )
+    if (
+      !getNIPlaces?.results ||
+      getNIPlaces?.results.length === 0 ||
+      getNIPlaces === 'wrong postcode'
+    ) {
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
 
@@ -245,7 +244,7 @@ const searchMiddlewareCy = async (request, h) => {
 
     request.yar.set('locationData', {
       results: resultNI,
-      airQuality: airQualityValues(forecastNum, lang),
+      airQuality,
       airQualityData: airQualityData.commonMessages,
       monitoringSites: nearestLocationsRange,
       nearestLocationsRange,
