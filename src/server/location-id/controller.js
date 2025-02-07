@@ -84,7 +84,7 @@ const getLocationDetailsController = {
           lang
         )
         logger.info(
-          `::::::::transformedDailySummary-FROM-LOCATION-ID-CONTROLLER:::::::::::',
+          `::::::::transformedDailySummary-FROM-LOCATION-ID-CONTRL:::::::::::',
           ${JSON.stringify(transformedDailySummary)}`
         )
         if (locationData.locationType === LOCATION_TYPE_UK) {
