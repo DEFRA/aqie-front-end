@@ -29,14 +29,14 @@ const transformKeys = (dailySummary, lang) => {
       return `${translateDayToWelsh(startDay)} i ${translateDayToWelsh(endDay)}`
     }
     transformedDailySummary = {
-      issue_date: dailySummary?.issue_date,
+      issue_date: dailySummary?.issue_date ?? 'N/A',
       Heddiw: dailySummary.today,
       [`${translateDayToWelsh(tomorrow)}`]: dailySummary.tomorrow,
       [`${translateRangeToWelsh(remainingDaysRange)}`]: dailySummary.outlook
     }
   } else if (lang === LANG_EN) {
     transformedDailySummary = {
-      issue_date: dailySummary?.issue_date,
+      issue_date: dailySummary?.issue_date ?? 'N/A',
       Today: dailySummary.today,
       [`${tomorrow}`]: dailySummary.tomorrow,
       [`${remainingDaysRange}`]: dailySummary.outlook
