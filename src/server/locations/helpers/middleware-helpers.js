@@ -136,9 +136,9 @@ const processMatches = (
 ) => {
   const partialPostcodePattern = /^([A-Z]{1,2}\d[A-Z\d]?)$/
 
-  const newMatches = matches.filter((item) => {
-    const name1 = item?.GAZETTEER_ENTRY.NAME1.toUpperCase()
-    const name2 = item?.GAZETTEER_ENTRY.NAME2?.toUpperCase()
+  let newMatches = matches.filter((item) => {
+    const name1 = item?.GAZETTEER_ENTRY.NAME1.toUpperCase().replace(/\s+/g, '')
+    const name2 = item?.GAZETTEER_ENTRY.NAME2?.toUpperCase().replace(/\s+/g, '')
     let borough = item?.GAZETTEER_ENTRY?.DISTRICT_BOROUGH?.toUpperCase()
     let unitary = item?.GAZETTEER_ENTRY?.COUNTY_UNITARY?.toUpperCase()
     borough = borough?.split(' - ').join(' ') // Replace hyphens with spaces
@@ -177,19 +177,19 @@ const processMatches = (
 
   if (
     partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
-    matches.length > 0 &&
+    newMatches.length > 0 &&
     locationNameOrPostcode.length <= 3
   ) {
-    if (matches[0].GAZETTEER_ENTRY.NAME2) {
-      matches[0].GAZETTEER_ENTRY.NAME1 = matches[0].GAZETTEER_ENTRY.NAME2
+    if (newMatches[0].GAZETTEER_ENTRY.NAME2) {
+      newMatches[0].GAZETTEER_ENTRY.NAME1 = newMatches[0].GAZETTEER_ENTRY.NAME2
     } else {
-      matches[0].GAZETTEER_ENTRY.NAME1 = locationNameOrPostcode.toUpperCase() // Set the name to the partial postcode
+      newMatches[0].GAZETTEER_ENTRY.NAME1 = locationNameOrPostcode.toUpperCase() // Set the name to the partial postcode
     }
-    matches = [matches[0]]
-    const urlRoute = `${matches[0].GAZETTEER_ENTRY.NAME1}_${matches[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
+    newMatches = [newMatches[0]]
+    const urlRoute = `${newMatches[0].GAZETTEER_ENTRY.NAME1}_${newMatches[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
     const headerTitle = convertStringToHyphenatedLowercaseWords(urlRoute)
-    matches[0].GAZETTEER_ENTRY.ID = headerTitle
-    return matches
+    newMatches[0].GAZETTEER_ENTRY.ID = headerTitle
+    return newMatches
   }
 
   return newMatches.reduce((acc, item) => {
