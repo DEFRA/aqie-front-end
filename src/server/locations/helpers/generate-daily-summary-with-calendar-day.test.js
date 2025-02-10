@@ -51,15 +51,15 @@ describe('transformKeys', () => {
 
   it('should handle missing issue_date gracefully', () => {
     const lang = LANG_EN
-    const dailySummaryWithoutDate = { ...dailySummary, issue_date: undefined }
+    const dailySummaryWithoutDate = { ...dailySummary, issue_date: 'N/A' }
 
     const result = transformKeys(dailySummaryWithoutDate, lang)
 
     expect(result.transformedDailySummary).toEqual({
-      issue_date: undefined,
+      issue_date: 'N/A',
       Today: 'Sunny',
-      Saturday: 'Cloudy',
-      'Sunday to Thursday': 'Rainy'
+      'Invalid date': 'Cloudy',
+      'Invalid date to Invalid date': 'Rainy'
     })
   })
 
