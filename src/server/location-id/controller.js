@@ -75,6 +75,9 @@ const getLocationDetailsController = {
           lang
         )
         const { airQuality } = airQualityValues(locationData.forecastNum, lang)
+        logger.info(
+          `locationData results ${JSON.stringify(locationData?.results)})`
+        )
         const { nearestLocationsRange } = getNearestLocation(
           locationData?.results,
           locationData?.rawForecasts,
@@ -82,6 +85,9 @@ const getLocationDetailsController = {
           LOCATION_TYPE_UK,
           0,
           lang
+        )
+        logger.info(
+          `nearestLocationsRange in location-id ${JSON.stringify(nearestLocationsRange)})`
         )
         return h.view('locations/location', {
           result: locationDetails,
