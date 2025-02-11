@@ -118,6 +118,9 @@ const searchMiddleware = async (request, h) => {
       String(urlRoute)
     )
     const titleRoute = convertStringToHyphenatedLowercaseWords(String(title))
+    logger.info(
+      `selectedMatches in middleware ${JSON.stringify(selectedMatches)})`
+    )
     const { forecastNum, nearestLocationsRange, airQuality } =
       getNearestLocation(
         selectedMatches,
@@ -127,6 +130,9 @@ const searchMiddleware = async (request, h) => {
         0,
         lang
       )
+    logger.info(
+      `nearestLocationsRange in middleware ${JSON.stringify(nearestLocationsRange)})`
+    )
     if (selectedMatches.length === 1) {
       return handleSingleMatch(h, request, {
         searchTerms,
