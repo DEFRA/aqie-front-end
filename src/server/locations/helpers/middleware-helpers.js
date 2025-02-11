@@ -135,7 +135,6 @@ const processMatches = (
   secondSearchTerm
 ) => {
   const partialPostcodePattern = /^([A-Z]{1,2}\d[A-Z\d]?)$/
-  // do we need to add populated place as well here ?
   let newMatches = matches.filter((item) => {
     const name1 = item?.GAZETTEER_ENTRY.NAME1.toUpperCase().replace(/\s+/g, '')
     const name2 = item?.GAZETTEER_ENTRY.NAME2?.toUpperCase().replace(/\s+/g, '')
@@ -174,9 +173,6 @@ const processMatches = (
       userLocation.includes(name2)
     )
   })
-  // what this condition actually checks? this condition check would occur
-  // for both location name and postcode ?
-  // why appending only district borough and not unitary
   if (
     partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
     newMatches.length > 0 &&
