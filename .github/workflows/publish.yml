@@ -22,13 +22,6 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-      - name: Cache Node.js modules # Add cache step # ''
-        uses: actions/cache@v4 # Update to v4 of actions/cache # ''
-        with: # ''
-          path: ~/.npm # ''
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }} # ''
-          restore-keys: | # ''
-            ${{ runner.os }}-node- # ''
             
       - name: Build and Publish
         uses: DEFRA/cdp-build-action/build@main
