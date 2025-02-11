@@ -129,7 +129,9 @@ function getNearestLocation(
     },
     []
   )
-
+  logger.info(
+    `::::::::::: getNIPlaces 1  nearestLocationsRange inside get-nearest-location.js ::::::::::: ${JSON.stringify(nearestLocationsRange)}`
+  )
   const forecastDay = moment.tz('Europe/London').format('dddd').substring(0, 3)
   const forecastNum =
     matches.length !== 0
@@ -147,6 +149,9 @@ function getNearestLocation(
           return [...todayDate, ...otherdays]
         })
       : 0
+  logger.info(
+    `::::::::::: getNIPlaces 2  nearestLocationsRange inside get-nearest-location.js ::::::::::: ${JSON.stringify(nearestLocationsRange)}`
+  )
   return { forecastNum, nearestLocationsRange, latlon }
 }
 

@@ -9,7 +9,12 @@ import moment from 'moment-timezone'
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
 import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-util'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { LANG_CY, LANG_EN, LOCATION_TYPE_UK } from '~/src/server/data/constants'
+import {
+  LANG_CY,
+  LANG_EN,
+  LOCATION_TYPE_NI,
+  LOCATION_TYPE_UK
+} from '~/src/server/data/constants'
 import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
 import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
@@ -75,13 +80,24 @@ const getLocationDetailsController = {
           lang
         )
         const { airQuality } = airQualityValues(locationData.forecastNum, lang)
+        logger.info(
+          `locationData results ${JSON.stringify(locationData?.results)})`
+        )
+        const locationType =
+          locationData.locationType === LOCATION_TYPE_UK
+            ? LOCATION_TYPE_UK
+            : LOCATION_TYPE_NI
+        logger.info(`locationType in location-id ${locationType})`)
         const { nearestLocationsRange } = getNearestLocation(
           locationData?.results,
           locationData?.rawForecasts,
           locationData?.measurements,
-          LOCATION_TYPE_UK,
+          locationType,
           0,
           lang
+        )
+        logger.info(
+          `nearestLocationsRange in location-id ${JSON.stringify(nearestLocationsRange)})`
         )
         return h.view('locations/location', {
           result: locationDetails,
