@@ -119,7 +119,7 @@ const searchMiddleware = async (request, h) => {
     )
     const titleRoute = convertStringToHyphenatedLowercaseWords(String(title))
     logger.info(
-      `selectedMatches in middleware ${JSON.stringify(selectedMatches)})`
+      `selectedMatches in middleware UK ${JSON.stringify(selectedMatches)})`
     )
     const { forecastNum, nearestLocationsRange, airQuality } =
       getNearestLocation(
@@ -131,7 +131,7 @@ const searchMiddleware = async (request, h) => {
         lang
       )
     logger.info(
-      `nearestLocationsRange in middleware ${JSON.stringify(nearestLocationsRange)})`
+      `nearestLocationsRange in middleware UK ${JSON.stringify(nearestLocationsRange)})`
     )
     if (selectedMatches.length === 1) {
       return handleSingleMatch(h, request, {
@@ -216,6 +216,12 @@ const searchMiddleware = async (request, h) => {
         0,
         lang
       )
+    logger.info(
+      `getNIPlaces?.results in middleware NI ${JSON.stringify(getNIPlaces?.results)})`
+    )
+    logger.info(
+      `nearestLocationsRange in middleware NI ${JSON.stringify(nearestLocationsRange)})`
+    )
     let title = ''
     let headerTitle = ''
     let urlRoute = ''
