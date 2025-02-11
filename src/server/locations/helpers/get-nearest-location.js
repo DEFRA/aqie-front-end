@@ -45,7 +45,7 @@ async function getNearestLocation(
   const pointsToDisplay = nearestMeasurementsPoints.filter((p) =>
     pointsInRange(latlon, p)
   )
-  const nearestLocationsRangeCal = measurements?.filter((item, i) => {
+  const nearestLocationsRangeCal = await measurements?.filter((item, i) => {
     const opt = pointsToDisplay.some((dis, index) => {
       return (
         item.location.coordinates[0] === dis.latitude &&
@@ -56,10 +56,10 @@ async function getNearestLocation(
   })
 
   logger.info(
-    `::::::::::: getNIPlaces 9  nearestLocationsRangeCal with away-async ::::::::::: ${JSON.stringify(nearestLocationsRangeCal)}`
+    `::::::::::: nearestLocationsRangeCal with away-async ::::::::::: ${JSON.stringify(nearestLocationsRangeCal)}`
   )
   // TODO select and filter locations and pollutants which are not null or don't have exceptions
-  const nearestLocationsRange = nearestLocationsRangeCal?.reduce(
+  const nearestLocationsRange = await nearestLocationsRangeCal?.reduce(
     (acc, curr, index) => {
       const newpollutants = []
       const getDistance =
