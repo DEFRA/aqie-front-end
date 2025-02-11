@@ -122,7 +122,7 @@ const searchMiddleware = async (request, h) => {
       `selectedMatches in middleware UK ${JSON.stringify(selectedMatches)})`
     )
     const { forecastNum, nearestLocationsRange, airQuality } =
-      getNearestLocation(
+      await getNearestLocation(
         selectedMatches,
         getForecasts?.forecasts,
         getMeasurements?.measurements,
