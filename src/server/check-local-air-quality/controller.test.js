@@ -1,4 +1,4 @@
-import { homeController } from './controller'
+import { homeController, handleHomeRequest } from './controller'
 import { english } from '~/src/server/data/en/en.js'
 import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 
@@ -40,7 +40,7 @@ describe('Home Controller', () => {
     const expectedUrl = 'https://check-air-quality.service.gov.uk/?lang=en'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
-    const result = homeController.handler(mockRequest, mockH, mockContent)
+    const result = handleHomeRequest(mockRequest, mockH, mockContent)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('home/index', {
       pageTitle: mockContent.home.pageTitle,

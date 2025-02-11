@@ -69,4 +69,39 @@ describe('Accessibility Handler', () => {
       lang: mockRequest.query.lang
     })
   })
+
+  it('should render the accessibility page when the lang is not en nor cy and path is /accessibility', () => {
+    mockRequest = {
+      query: {
+        lang: 'fr'
+      },
+      path: '/accessibility'
+    }
+    const expectedUrl =
+      'https://check-air-quality.service.gov.uk/accessibility?lang=fr'
+    const actualUrl = getAirQualitySiteUrl(mockRequest)
+    expect(actualUrl).toBe(expectedUrl)
+
+    const result = accessibilityController.handler(
+      mockRequest,
+      mockH,
+      mockContent
+    )
+    expect(result).toBe('view rendered')
+    expect(mockH.view).toHaveBeenCalledWith('accessibility/index', {
+      pageTitle: mockContent.footer.accessibility.pageTitle,
+      title: mockContent.footer.accessibility.title,
+      description: mockContent.footer.accessibility.description,
+      metaSiteUrl: actualUrl,
+      heading: mockContent.footer.accessibility.heading,
+      headings: mockContent.footer.accessibility.headings,
+      paragraphs: mockContent.footer.accessibility.paragraphs,
+      displayBacklink: false,
+      phaseBanner: mockContent.phaseBanner,
+      footerTxt: mockContent.footerTxt,
+      serviceName: mockContent.multipleLocations.serviceName,
+      cookieBanner: mockContent.cookieBanner,
+      lang: LANG_EN
+    })
+  })
 })

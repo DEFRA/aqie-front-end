@@ -135,7 +135,6 @@ const processMatches = (
   secondSearchTerm
 ) => {
   const partialPostcodePattern = /^([A-Z]{1,2}\d[A-Z\d]?)$/
-
   let newMatches = matches.filter((item) => {
     const name1 = item?.GAZETTEER_ENTRY.NAME1.toUpperCase().replace(/\s+/g, '')
     const name2 = item?.GAZETTEER_ENTRY.NAME2?.toUpperCase().replace(/\s+/g, '')
@@ -174,7 +173,6 @@ const processMatches = (
       userLocation.includes(name2)
     )
   })
-
   if (
     partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
     newMatches.length > 0 &&

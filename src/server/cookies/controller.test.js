@@ -1,4 +1,4 @@
-import { cookiesController } from './controller'
+import { cookiesController, cookiesHandler } from './controller'
 import { english } from '~/src/server/data/en/en.js'
 import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
 import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
@@ -69,7 +69,7 @@ describe('Cookies Handler', () => {
       'https://check-air-quality.service.gov.uk/cookies?lang=fr'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
-    const result = cookiesController.handler(mockRequest, mockH, mockContent)
+    const result = cookiesHandler(mockRequest, mockH, mockContent)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('cookies/index', {
       pageTitle: mockContent.footer.cookies.pageTitle,

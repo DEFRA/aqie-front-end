@@ -12,7 +12,7 @@ import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { LANG_CY, LANG_EN, LOCATION_TYPE_UK } from '~/src/server/data/constants'
 import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
-import { transformKeys } from '~/src/server/locations/helpers/generate-daily-summary-with-calendar-day.js'
+import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
 import { airQualityValues } from '~/src/server/locations/helpers/air-quality-values.js'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 

@@ -1,4 +1,4 @@
-import { cookiesController } from './controller'
+import { cookiesController, cookiesHandler } from './controller'
 import { welsh } from '~/src/server/data/cy/cy.js'
 import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 
@@ -50,7 +50,7 @@ describe('Cookies Handler', () => {
       'https://check-air-quality.service.gov.uk/briwsion/cy?lang=cy'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
-    const result = cookiesController.handler(mockRequest, mockH, mockContent)
+    const result = cookiesHandler(mockRequest, mockH, mockContent)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith('cookies/index', {
       pageTitle: mockContent.footer.cookies.pageTitle,
