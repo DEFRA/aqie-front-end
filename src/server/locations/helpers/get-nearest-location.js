@@ -14,19 +14,21 @@ import { createLogger } from '~/src/server/common/helpers/logging/logger'
 
 const logger = createLogger()
 
-let nearestLocationsRangeCal; // Declare the variable nearestLocationsRangeCal ''
+let nearestLocationsRangeCal // Declare the variable nearestLocationsRangeCal ''
 
-async function waitForNearestLocationsRangeCal() { // Define an async function to wait for nearestLocationsRangeCal ''
+async function waitForNearestLocationsRangeCal() {
+  // Define an async function to wait for nearestLocationsRangeCal ''
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms)) // Define a delay function ''
   /* eslint-disable no-unmodified-loop-condition */
-  while (typeof nearestLocationsRangeCal === 'undefined') { // Check if nearestLocationsRangeCal is undefined ''
-    await delay(100); // Wait for 100 milliseconds ''
+  while (typeof nearestLocationsRangeCal === 'undefined') {
+    // Check if nearestLocationsRangeCal is undefined ''
+    await delay(100) // Wait for 100 milliseconds ''
   }
   /* eslint-enable no-unmodified-loop-condition */
   return nearestLocationsRangeCal // Return the value of nearestLocationsRangeCal ''
 }
 
- async function getNearestLocation(
+async function getNearestLocation(
   matches,
   forecasts,
   measurements,
@@ -68,7 +70,7 @@ async function waitForNearestLocationsRangeCal() { // Define an async function t
   })
 
   await waitForNearestLocationsRangeCal() // Wait for nearestLocationsRangeCal to be defined ''
-   
+
   logger.info(
     `::::::::::: getNIPlaces 9  nearestLocationsRangeCal with away-async ::::::::::: ${JSON.stringify(nearestLocationsRangeCal)}`
   )
