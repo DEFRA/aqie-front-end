@@ -210,7 +210,7 @@ const searchMiddleware = async (request, h) => {
       return h.redirect('/location-not-found').takeover()
     }
     const { forecastNum, nearestLocationsRange, latlon, airQuality } =
-      getNearestLocation(
+      await getNearestLocation(
         getNIPlaces?.results,
         getForecasts?.forecasts,
         getMeasurements?.measurements,
