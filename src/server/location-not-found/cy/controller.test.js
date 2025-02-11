@@ -1,6 +1,9 @@
 import { locationNotFoundController } from '~/src/server/location-not-found/cy/controller'
 import { welsh } from '~/src/server/data/cy/cy.js'
-import { LOCATION_NOT_FOUND } from '~/src/server/data/constants'
+import {
+  LOCATION_NOT_FOUND,
+  LOCATION_NOT_FOUND_ROUTE_EN
+} from '~/src/server/data/constants'
 
 describe('locationNotFoundController - welsh', () => {
   let mockRequest
@@ -40,5 +43,12 @@ describe('locationNotFoundController - welsh', () => {
       cookieBanner: mockContent.cookieBanner,
       lang: 'cy'
     })
+  })
+
+  it('should redirect to the English version if the language is "en"', () => {
+    mockRequest.query.lang = 'en'
+    const result = locationNotFoundController.handler(mockRequest, mockH)
+    expect(result).toBe('redirected')
+    expect(mockH.redirect).toHaveBeenCalledWith(LOCATION_NOT_FOUND_ROUTE_EN)
   })
 })

@@ -26,7 +26,7 @@ import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
-import { transformKeys } from '~/src/server/locations/helpers/generate-daily-summary-with-calendar-day'
+import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
 
 const logger = createLogger()
 
@@ -193,6 +193,8 @@ const searchMiddleware = async (request, h) => {
       locationNameOrPostcode,
       lang
     )
+
+    logger.info(`::::::LOCATION_TYPE_NI-EN::::::: , ${getNIPlaces?.results[0]}`)
     if (
       !getNIPlaces?.results ||
       getNIPlaces?.results.length === 0 ||
@@ -210,6 +212,9 @@ const searchMiddleware = async (request, h) => {
         0,
         lang
       )
+    logger.info(
+      `::::::LOCATION_TYPE_NI-EN::::::: , ${JSON.stringify(getNIPlaces?.results[0])}`
+    )
     let title = ''
     let headerTitle = ''
     let urlRoute = ''

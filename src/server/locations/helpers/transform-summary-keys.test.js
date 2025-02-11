@@ -1,4 +1,4 @@
-import { transformKeys } from '~/src/server/locations/helpers/generate-daily-summary-with-calendar-day.js'
+import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
 import {
   LANG_CY,
   LANG_EN,

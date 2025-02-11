@@ -24,7 +24,7 @@ import {
 import { getMonth } from '~/src/server/locations/helpers/location-type-util'
 import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
-import { transformKeys } from '~/src/server/locations/helpers/generate-daily-summary-with-calendar-day.js'
+import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case.js'
 import { airQualityValues } from '~/src/server/locations/helpers/air-quality-values'
@@ -195,6 +195,7 @@ const searchMiddlewareCy = async (request, h) => {
       lang
     )
     const { results } = getNIPlaces
+    logger.info(`::::::LOCATION_TYPE_NI-CY::::::: , ${getNIPlaces?.results[0]}`)
     const { forecastNum, nearestLocationsRange, latlon, airQuality } =
       getNearestLocation(
         results,
@@ -212,6 +213,9 @@ const searchMiddlewareCy = async (request, h) => {
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
 
+    logger.info(
+      `::::::LOCATION_TYPE_NI-CY::::::: , ${JSON.stringify(getNIPlaces?.results[0])}`
+    )
     let title = ''
     let headerTitle = ''
     let urlRoute = ''

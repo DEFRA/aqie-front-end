@@ -1,6 +1,9 @@
 import { locationNotFoundController } from '~/src/server/location-not-found/controller.js'
 import { english } from '~/src/server/data/en/en.js'
-import { LOCATION_NOT_FOUND } from '~/src/server/data/constants.js'
+import {
+  LOCATION_NOT_FOUND,
+  LOCATION_NOT_FOUND_ROUTE_CY
+} from '~/src/server/data/constants.js'
 
 describe('locationNotFoundController - english', () => {
   let mockRequest
@@ -73,5 +76,12 @@ describe('locationNotFoundController - english', () => {
       cookieBanner: mockContent.cookieBanner,
       lang: 'en'
     })
+  })
+
+  it('should redirect to the English version if the language is "cy"', () => {
+    mockRequest.query.lang = 'cy'
+    const result = locationNotFoundController.handler(mockRequest, mockH)
+    expect(result).toBe('redirected')
+    expect(mockH.redirect).toHaveBeenCalledWith(LOCATION_NOT_FOUND_ROUTE_CY)
   })
 })
