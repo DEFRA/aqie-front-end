@@ -19,7 +19,6 @@ const handleSingleMatch = (
     getMeasurements,
     getDailySummary,
     transformedDailySummary,
-    nearestLocationsRange,
     englishDate,
     welshDate,
     month,
@@ -29,6 +28,8 @@ const handleSingleMatch = (
     title,
     urlRoute,
     locationType,
+    nearestLocationsRangeEnglish,
+    nearestLocationsRangeWelsh,
     lang
   }
 ) => {
@@ -38,7 +39,6 @@ const handleSingleMatch = (
     rawForecasts: getForecasts?.forecasts,
     forecastNum: selectedMatches.length !== 0 ? forecastNum : 0,
     transformedDailySummary,
-    monitoringSites: selectedMatches.length !== 0 ? nearestLocationsRange : [],
     measurements: getMeasurements?.measurements,
     englishDate,
     dailySummary: getDailySummary,
@@ -49,6 +49,8 @@ const handleSingleMatch = (
     titleRoute,
     headerTitleRoute,
     locationType,
+    nearestLocationsRangeEnglish,
+    nearestLocationsRangeWelsh,
     lang
   })
   logger.info(
@@ -73,7 +75,6 @@ const handleMultipleMatches = (
     multipleLocations,
     airQuality,
     airQualityData,
-    nearestLocationsRange,
     siteTypeDescriptions,
     pollutantTypes,
     getDailySummary,
@@ -100,7 +101,6 @@ const handleMultipleMatches = (
     userLocation: locationNameOrPostcode,
     airQuality,
     airQualityData: airQualityData.commonMessages,
-    monitoringSites: nearestLocationsRange,
     siteTypeDescriptions,
     pollutantTypes,
     pageTitle: `${multipleLocations.title} ${userLocation} -  ${multipleLocations.pageTitle}`,

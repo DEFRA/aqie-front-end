@@ -19,7 +19,8 @@ import {
 import {
   LANG_EN,
   LOCATION_TYPE_UK,
-  LOCATION_TYPE_NI
+  LOCATION_TYPE_NI,
+  LANG_CY
 } from '~/src/server/data/constants'
 import { getMonth } from '~/src/server/locations/helpers/location-type-util'
 import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
@@ -32,6 +33,8 @@ const logger = createLogger()
 
 const searchMiddleware = async (request, h) => {
   logger.info(`::::::::::: searchMiddleware 1  :::::::::::`)
+  let nearestLocationsRangeEnglish
+  let nearestLocationsRangeWelsh
   const { query, payload } = request
   const lang = LANG_EN
   const month = getMonth(lang)
@@ -71,13 +74,19 @@ const searchMiddleware = async (request, h) => {
       locationNameOrPostcode,
       lang
     )
+
   const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
     getDailySummary?.issue_date,
     calendarEnglish,
     calendarWelsh,
     lang
   )
-
+  logger.info(
+    `getForecasts?.forecasts in middleware UK ${JSON.stringify(getForecasts?.forecasts)})`
+  )
+  logger.info(
+    `getMeasurements?.measurements in middleware UK ${JSON.stringify(getMeasurements?.measurements)})`
+  )
   const { transformedDailySummary } = transformKeys(getDailySummary, lang)
   const { englishDate, welshDate } = getLanguageDates(
     formattedDateSummary,
@@ -121,18 +130,35 @@ const searchMiddleware = async (request, h) => {
     logger.info(
       `selectedMatches in middleware UK ${JSON.stringify(selectedMatches)})`
     )
-    const { forecastNum, nearestLocationsRange, airQuality } =
-      await getNearestLocation(
+    if (lang === LANG_EN) {
+      nearestLocationsRangeEnglish = await getNearestLocation(
         selectedMatches,
         getForecasts?.forecasts,
         getMeasurements?.measurements,
         LOCATION_TYPE_UK,
         0,
-        lang
+        LANG_EN
       )
-    logger.info(
-      `nearestLocationsRange in middleware UK ${JSON.stringify(nearestLocationsRange)})`
+    }
+    if (lang === LANG_CY) {
+      nearestLocationsRangeWelsh = await getNearestLocation(
+        selectedMatches,
+        getForecasts?.forecasts,
+        getMeasurements?.measurements,
+        LOCATION_TYPE_UK,
+        0,
+        LANG_CY
+      )
+    }
+    const { forecastNum } = await getNearestLocation(
+      selectedMatches,
+      getForecasts?.forecasts,
+      getMeasurements?.measurements,
+      LOCATION_TYPE_UK,
+      0,
+      lang
     )
+
     if (selectedMatches.length === 1) {
       return handleSingleMatch(h, request, {
         searchTerms,
@@ -142,7 +168,6 @@ const searchMiddleware = async (request, h) => {
         getMeasurements,
         getDailySummary,
         transformedDailySummary,
-        nearestLocationsRange,
         englishDate,
         welshDate,
         month,
@@ -152,6 +177,8 @@ const searchMiddleware = async (request, h) => {
         title,
         urlRoute,
         locationType,
+        nearestLocationsRangeEnglish,
+        nearestLocationsRangeWelsh,
         lang
       })
     } else if (
@@ -167,9 +194,7 @@ const searchMiddleware = async (request, h) => {
         getForecasts,
         getMeasurements,
         multipleLocations,
-        airQuality,
         airQualityData,
-        nearestLocationsRange,
         siteTypeDescriptions,
         pollutantTypes,
         getDailySummary,
@@ -254,17 +279,17 @@ const searchMiddleware = async (request, h) => {
     request.yar.clear('locationData')
     request.yar.set('locationData', {
       results: resultNI,
-      rawForecasts: getForecasts?.forecasts,
       forecastNum,
       transformedDailySummary,
       monitoringSites: nearestLocationsRange,
-      measurements: getMeasurements?.measurements,
       englishDate,
       dailySummary: getDailySummary,
       welshDate,
       getMonth: month,
       title: `${multipleLocations.titlePrefix} ${headerTitle}`,
       pageTitle: `${multipleLocations.titlePrefix} ${title}`,
+      nearestLocationsRangeEnglish,
+      nearestLocationsRangeWelsh,
       lang
     })
     return h.redirect(`/location/${urlRoute}?lang=en`).takeover()
