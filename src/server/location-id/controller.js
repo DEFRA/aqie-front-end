@@ -64,7 +64,17 @@ const getLocationDetailsController = {
         daqi,
         multipleLocations
       } = english
-      const locationData = request.yar.get('locationData') || []
+      let locationData = request.yar.get('locationData') || []
+      const locationType =
+        locationData.locationType === LOCATION_TYPE_UK
+          ? LOCATION_TYPE_UK
+          : LOCATION_TYPE_NI
+
+      locationData =
+        locationType === LOCATION_TYPE_UK
+          ? request.yar.get('locationData')
+          : request.yar.get('locationDataNI')
+
       locationDetails = locationData?.results?.find((item) => {
         if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
           return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
@@ -86,10 +96,6 @@ const getLocationDetailsController = {
           lang
         )
 
-        const locationType =
-          locationData.locationType === LOCATION_TYPE_UK
-            ? LOCATION_TYPE_UK
-            : LOCATION_TYPE_NI
         logger.info(`locationType in location-id ${locationType}`)
         logger.info(
           `locationData in location id ${JSON.stringify(locationData)}`
