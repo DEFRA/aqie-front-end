@@ -88,7 +88,9 @@ const getLocationDetailsController = {
             ? LOCATION_TYPE_UK
             : LOCATION_TYPE_NI
         logger.info(`locationType in location-id ${locationType}`)
-        logger.info(`locationData in location-id ${locationData}`)
+        logger.info(
+          `locationData in location-id ${JSON.stringify(locationData)}`
+        )
 
         const { nearestLocationsRange } = await getNearestLocation(
           locationData?.results,
@@ -99,7 +101,7 @@ const getLocationDetailsController = {
           lang
         )
         logger.info(
-          `nearestLocationsRange in location-id ${JSON.stringify(nearestLocationsRange)})`
+          `nearestLocationsRange in location-id ${JSON.stringify(nearestLocationsRange)}`
         )
         return h.view('locations/location', {
           result: locationDetails,
