@@ -130,26 +130,23 @@ const searchMiddleware = async (request, h) => {
     logger.info(
       `selectedMatches in middleware UK ${JSON.stringify(selectedMatches)})`
     )
-    if (lang === LANG_EN) {
-      nearestLocationsRangeEnglish = await getNearestLocation(
-        selectedMatches,
-        getForecasts?.forecasts,
-        getMeasurements?.measurements,
-        LOCATION_TYPE_UK,
-        0,
-        LANG_EN
-      )
-    }
-    if (lang === LANG_CY) {
-      nearestLocationsRangeWelsh = await getNearestLocation(
-        selectedMatches,
-        getForecasts?.forecasts,
-        getMeasurements?.measurements,
-        LOCATION_TYPE_UK,
-        0,
-        LANG_CY
-      )
-    }
+    nearestLocationsRangeEnglish = await getNearestLocation(
+      selectedMatches,
+      getForecasts?.forecasts,
+      getMeasurements?.measurements,
+      LOCATION_TYPE_UK,
+      0,
+      LANG_EN
+    )
+    nearestLocationsRangeWelsh = await getNearestLocation(
+      selectedMatches,
+      getForecasts?.forecasts,
+      getMeasurements?.measurements,
+      LOCATION_TYPE_UK,
+      0,
+      LANG_CY
+    )
+
     const { forecastNum } = await getNearestLocation(
       selectedMatches,
       getForecasts?.forecasts,
@@ -158,7 +155,9 @@ const searchMiddleware = async (request, h) => {
       0,
       lang
     )
-
+    logger.info(
+      `nearestLocationsRangeEnglish middleware ${JSON.stringify(nearestLocationsRangeEnglish)})`
+    )
     if (selectedMatches.length === 1) {
       return handleSingleMatch(h, request, {
         searchTerms,
