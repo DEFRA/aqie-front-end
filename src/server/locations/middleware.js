@@ -190,7 +190,6 @@ const searchMiddleware = async (request, h) => {
       return h.redirect('/location-not-found').takeover()
     }
   } else if (locationType === LOCATION_TYPE_NI) {
-    const { daqi } = english
     const { getNIPlaces } = await fetchData(
       LOCATION_TYPE_NI,
       userLocation,
@@ -209,7 +208,7 @@ const searchMiddleware = async (request, h) => {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       return h.redirect('/location-not-found').takeover()
     }
-    const { forecastNum, nearestLocationsRange, latlon, airQuality } =
+    const { forecastNum, nearestLocationsRange, latlon } =
       await getNearestLocation(
         getNIPlaces?.results,
         getForecasts?.forecasts,
@@ -246,31 +245,26 @@ const searchMiddleware = async (request, h) => {
         }
       }
     ]
-    request.yar.clear('locationDataNI')
-    request.yar.set('locationDataNI', {
+    logger.info(
+      `getForecasts?.forecasts in middleware NI ${JSON.stringify(getForecasts?.forecasts)})`
+    )
+    logger.info(
+      `getMeasurements?.measurements in middleware NI ${JSON.stringify(getMeasurements?.measurements)})`
+    )
+    request.yar.clear('locationData')
+    request.yar.set('locationData', {
       results: resultNI,
-      airQuality,
-      airQualityData: airQualityData.commonMessages,
-      monitoringSites: nearestLocationsRange,
-      siteTypeDescriptions,
-      pollutantTypes,
-      pageTitle: `${multipleLocations.titlePrefix} ${title}`,
-      title: `${multipleLocations.titlePrefix} ${headerTitle}`,
-      displayBacklink: true,
-      dailySummary: getDailySummary,
-      transformedDailySummary,
-      footerTxt,
-      phaseBanner,
-      backlink,
-      cookieBanner,
-      daqi,
-      welshMonth: calendarWelsh[getMonth],
-      summaryDate: lang === 'cy' ? welshDate : englishDate,
-      dailySummaryTexts: english.dailySummaryTexts,
-      locationType,
-      forecastNum,
-      measurements: getMeasurements?.measurements,
       rawForecasts: getForecasts?.forecasts,
+      forecastNum,
+      transformedDailySummary,
+      monitoringSites: nearestLocationsRange,
+      measurements: getMeasurements?.measurements,
+      englishDate,
+      dailySummary: getDailySummary,
+      welshDate,
+      getMonth: month,
+      title: `${multipleLocations.titlePrefix} ${headerTitle}`,
+      pageTitle: `${multipleLocations.titlePrefix} ${title}`,
       lang
     })
     return h.redirect(`/location/${urlRoute}?lang=en`).takeover()
