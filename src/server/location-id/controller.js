@@ -64,16 +64,11 @@ const getLocationDetailsController = {
         daqi,
         multipleLocations
       } = english
-      let locationData = request.yar.get('locationData') || []
+      const locationData = request.yar.get('locationData') || []
       const locationType =
         locationData.locationType === LOCATION_TYPE_UK
           ? LOCATION_TYPE_UK
           : LOCATION_TYPE_NI
-
-      locationData =
-        locationType === LOCATION_TYPE_UK
-          ? request.yar.get('locationData')
-          : request.yar.get('locationDataNI')
 
       locationDetails = locationData?.results?.find((item) => {
         if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
@@ -109,6 +104,7 @@ const getLocationDetailsController = {
           0,
           lang
         )
+
         logger.info(
           `nearestLocationsRange in location id ${JSON.stringify(nearestLocationsRange)}`
         )
