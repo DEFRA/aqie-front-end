@@ -130,7 +130,7 @@ const searchMiddleware = async (request, h) => {
     logger.info(
       `selectedMatches in middleware UK ${JSON.stringify(selectedMatches)})`
     )
-    nearestLocationsRangeEnglish = await getNearestLocation(
+    nearestLocationsRangeEnglish = getNearestLocation(
       selectedMatches,
       getForecasts?.forecasts,
       getMeasurements?.measurements,
@@ -138,7 +138,7 @@ const searchMiddleware = async (request, h) => {
       0,
       LANG_EN
     )
-    nearestLocationsRangeWelsh = await getNearestLocation(
+    nearestLocationsRangeWelsh = getNearestLocation(
       selectedMatches,
       getForecasts?.forecasts,
       getMeasurements?.measurements,
@@ -147,7 +147,7 @@ const searchMiddleware = async (request, h) => {
       LANG_CY
     )
 
-    const { forecastNum } = await getNearestLocation(
+    const { forecastNum } = getNearestLocation(
       selectedMatches,
       getForecasts?.forecasts,
       getMeasurements?.measurements,
