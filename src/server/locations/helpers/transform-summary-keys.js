@@ -1,9 +1,5 @@
 import moment from 'moment'
-import {
-  LANG_CY,
-  LANG_EN,
-  SUMMARY_TRANSLATIONS
-} from '~/src/server/data/constants'
+import { LANG_CY, SUMMARY_TRANSLATIONS } from '~/src/server/data/constants'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 
 const logger = createLogger()
@@ -34,7 +30,7 @@ const transformKeys = (dailySummary, lang) => {
       [`${translateDayToWelsh(tomorrow)}`]: dailySummary.tomorrow,
       [`${translateRangeToWelsh(remainingDaysRange)}`]: dailySummary.outlook
     }
-  } else if (lang === LANG_EN) {
+  } else {
     transformedDailySummary = {
       issue_date: dailySummary?.issue_date ?? 'N/A',
       Today: dailySummary.today,

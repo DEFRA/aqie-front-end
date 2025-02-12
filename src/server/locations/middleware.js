@@ -262,8 +262,8 @@ const searchMiddleware = async (request, h) => {
     let title = ''
     let headerTitle = ''
     let urlRoute = ''
-    title = `${getNIPlaces?.results[0].postcode}, ${sentenceCase(getNIPlaces?.results[0].administrativeArea)} - ${home.pageTitle}`
-    headerTitle = `${getNIPlaces?.results[0].postcode}, ${sentenceCase(getNIPlaces?.results[0].administrativeArea)}`
+    title = `${getNIPlaces?.results[0].postcode}, ${sentenceCase(getNIPlaces?.results[0].town)} - ${home.pageTitle}`
+    headerTitle = `${getNIPlaces?.results[0].postcode}, ${sentenceCase(getNIPlaces?.results[0].town)}`
     urlRoute = `${getNIPlaces?.results[0].postcode}_${sentenceCase(getNIPlaces?.results[0].administrativeArea)}`
     title = convertFirstLetterIntoUppercase(title)
     headerTitle = convertFirstLetterIntoUppercase(headerTitle)
@@ -273,9 +273,7 @@ const searchMiddleware = async (request, h) => {
         GAZETTEER_ENTRY: {
           ID: urlRoute,
           NAME1: getNIPlaces?.results[0].postcode,
-          DISTRICT_BOROUGH: sentenceCase(
-            getNIPlaces?.results[0].administrativeArea
-          ),
+          DISTRICT_BOROUGH: sentenceCase(getNIPlaces?.results[0].town),
           LONGITUDE: latlon?.lon,
           LATITUDE: latlon?.lat
         }
