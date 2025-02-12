@@ -71,6 +71,12 @@ const getLocationDetailsController = {
         }
         return null
       })
+      logger.info(
+        `locationData in location id 0 ${JSON.stringify(locationData)}`
+      )
+      logger.info(
+        `locationDetails in location id ${JSON.stringify(locationDetails)}`
+      )
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
         title = convertFirstLetterIntoUppercase(title)
@@ -79,17 +85,14 @@ const getLocationDetailsController = {
           locationData.dailySummary,
           lang
         )
-        const { airQuality } = airQualityValues(locationData.forecastNum, lang)
-        logger.info(
-          `locationData results ${JSON.stringify(locationData?.results)})`
-        )
+
         const locationType =
           locationData.locationType === LOCATION_TYPE_UK
             ? LOCATION_TYPE_UK
             : LOCATION_TYPE_NI
         logger.info(`locationType in location-id ${locationType}`)
         logger.info(
-          `locationData in location-id ${JSON.stringify(locationData)}`
+          `locationData in location id ${JSON.stringify(locationData)}`
         )
 
         const { nearestLocationsRange } = await getNearestLocation(
@@ -101,8 +104,10 @@ const getLocationDetailsController = {
           lang
         )
         logger.info(
-          `nearestLocationsRange in location-id ${JSON.stringify(nearestLocationsRange)}`
+          `nearestLocationsRange in location id ${JSON.stringify(nearestLocationsRange)}`
         )
+        const { airQuality } = airQualityValues(locationData.forecastNum, lang)
+        logger.info(`locationData results ${JSON.stringify(locationData)})`)
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
