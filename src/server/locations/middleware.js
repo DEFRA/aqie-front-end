@@ -246,6 +246,7 @@ const searchMiddleware = async (request, h) => {
         }
       }
     ]
+    request.yar.clear('locationData')
     request.yar.set('locationData', {
       results: resultNI,
       airQuality,
