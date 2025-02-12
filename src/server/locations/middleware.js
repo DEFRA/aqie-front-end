@@ -81,12 +81,7 @@ const searchMiddleware = async (request, h) => {
     calendarWelsh,
     lang
   )
-  logger.info(
-    `getForecasts?.forecasts in middleware UK ${JSON.stringify(getForecasts?.forecasts)})`
-  )
-  logger.info(
-    `getMeasurements?.measurements in middleware UK ${JSON.stringify(getMeasurements?.measurements)})`
-  )
+
   const { transformedDailySummary } = transformKeys(getDailySummary, lang)
   const { englishDate, welshDate } = getLanguageDates(
     formattedDateSummary,
@@ -232,6 +227,23 @@ const searchMiddleware = async (request, h) => {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       return h.redirect('/location-not-found').takeover()
     }
+    nearestLocationsRangeEnglish = getNearestLocation(
+      getNIPlaces?.results,
+      getForecasts?.forecasts,
+      getMeasurements?.measurements,
+      LOCATION_TYPE_NI,
+      0,
+      LANG_EN
+    )
+    nearestLocationsRangeWelsh = getNearestLocation(
+      getNIPlaces?.results,
+      getForecasts?.forecasts,
+      getMeasurements?.measurements,
+      LOCATION_TYPE_NI,
+      0,
+      LANG_CY
+    )
+
     const { forecastNum, nearestLocationsRange, latlon } =
       await getNearestLocation(
         getNIPlaces?.results,
@@ -242,10 +254,10 @@ const searchMiddleware = async (request, h) => {
         lang
       )
     logger.info(
-      `getNIPlaces?.results in middleware NI ${JSON.stringify(getNIPlaces?.results)})`
+      `nearestLocationsRangeWelsh in middleware NI ${JSON.stringify(nearestLocationsRangeWelsh)}`
     )
     logger.info(
-      `nearestLocationsRange in middleware NI ${JSON.stringify(nearestLocationsRange)})`
+      `nearestLocationsRangeEnglish in middleware NI ${JSON.stringify(nearestLocationsRangeEnglish)}`
     )
     let title = ''
     let headerTitle = ''
