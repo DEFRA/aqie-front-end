@@ -118,7 +118,7 @@ const searchMiddlewareCy = async (request, h) => {
       String(urlRoute)
     )
     const titleRoute = convertStringToHyphenatedLowercaseWords(String(title))
-    const { forecastNum, nearestLocationsRange } = getNearestLocation(
+    const { forecastNum, nearestLocationsRange } = await getNearestLocation(
       selectedMatches,
       getForecasts?.forecasts,
       getMeasurements?.measurements,

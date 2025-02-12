@@ -19,7 +19,7 @@ import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-l
 const logger = createLogger()
 
 const getLocationDetailsController = {
-  handler: (request, h) => {
+  handler: async (request, h) => {
     try {
       const { query, headers } = request
       const locationId = request.params.id
@@ -76,7 +76,7 @@ const getLocationDetailsController = {
           lang
         )
         const { airQuality } = airQualityValues(locationData.forecastNum, lang)
-        const { nearestLocationsRange } = getNearestLocation(
+        const { nearestLocationsRange } = await getNearestLocation(
           locationData?.results,
           locationData?.rawForecasts,
           locationData?.measurements,
