@@ -19,7 +19,6 @@ import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
 import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
 import { airQualityValues } from '~/src/server/locations/helpers/air-quality-values.js'
-import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 
 const logger = createLogger()
 
@@ -95,26 +94,18 @@ const getLocationDetailsController = {
         logger.info(
           `locationData in location id ${JSON.stringify(locationData)}`
         )
-
-        const { nearestLocationsRange } = await getNearestLocation(
-          locationData?.results,
-          locationData?.rawForecasts,
-          locationData?.measurements,
-          locationType,
-          0,
-          lang
-        )
-
-        logger.info(
-          `nearestLocationsRange in location id ${JSON.stringify(nearestLocationsRange)}`
-        )
         const { airQuality } = airQualityValues(locationData.forecastNum, lang)
         logger.info(`locationData results ${JSON.stringify(locationData)})`)
+        const { nearestLocationsRangeEnglish, nearestLocationsRangeWelsh } =
+          locationData
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
           airQualityData: airQualityData.commonMessages,
-          monitoringSites: nearestLocationsRange,
+          monitoringSites:
+            lang === LANG_EN
+              ? nearestLocationsRangeEnglish.nearestLocationsRange
+              : nearestLocationsRangeWelsh.nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: `${multipleLocations.titlePrefix} ${title}`,
