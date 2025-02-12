@@ -14,7 +14,7 @@ import { createLogger } from '~/src/server/common/helpers/logging/logger'
 
 const logger = createLogger()
 
-async function getNearestLocation(
+function getNearestLocation(
   matches,
   forecasts,
   measurements,
@@ -23,20 +23,18 @@ async function getNearestLocation(
   lang
 ) {
   const latlon =
-    matches.length !== 0
-      ? await convertPointToLonLat(matches, location, index)
-      : {}
+    matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
   const forecastCoordinates =
-    matches.length !== 0 ? await coordinatesTotal(forecasts, location) : []
+    matches.length !== 0 ? coordinatesTotal(forecasts, location) : []
 
   const measurementsCoordinates =
-    matches.length !== 0 ? await coordinatesTotal(measurements, location) : []
+    matches.length !== 0 ? coordinatesTotal(measurements, location) : []
   logger.info(
     `::::::::::: measurementsCoordinates ::::::::::: ${JSON.stringify(measurementsCoordinates)}`
   )
   const nearestLocation =
     matches.length !== 0
-      ? await getNearLocation(
+      ? getNearLocation(
           latlon?.lat,
           latlon?.lon,
           forecastCoordinates,
@@ -46,7 +44,7 @@ async function getNearestLocation(
   logger.info(
     `::::::::::: nearestLocation ::::::::::: ${JSON.stringify(nearestLocation)}`
   )
-  const orderByDistanceMeasurements = await geolib.orderByDistance(
+  const orderByDistanceMeasurements = geolib.orderByDistance(
     { latitude: latlon?.lat, longitude: latlon?.lon },
     measurementsCoordinates
   )
@@ -57,13 +55,13 @@ async function getNearestLocation(
   logger.info(
     `::::::::::: nearestMeasurementsPoints ::::::::::: ${JSON.stringify(nearestMeasurementsPoints)}`
   )
-  const pointsToDisplay = await nearestMeasurementsPoints.filter((p) =>
+  const pointsToDisplay = nearestMeasurementsPoints.filter((p) =>
     pointsInRange(latlon, p)
   )
   logger.info(
     `::::::::::: pointsToDisplay ::::::::::: ${JSON.stringify(pointsToDisplay)}`
   )
-  const nearestLocationsRangeCal = await measurements?.filter((item, i) => {
+  const nearestLocationsRangeCal = measurements?.filter((item, i) => {
     const opt = pointsToDisplay.some((dis, index) => {
       return (
         item.location.coordinates[0] === dis.latitude &&
@@ -81,7 +79,7 @@ async function getNearestLocation(
     `::::::::::: nearestLocationsRangeCal with away-async ::::::::::: ${JSON.stringify(nearestLocationsRangeCal)}`
   )
   // TODO select and filter locations and pollutants which are not null or don't have exceptions
-  const nearestLocationsRange = await nearestLocationsRangeCal?.reduce(
+  const nearestLocationsRange = nearestLocationsRangeCal?.reduce(
     (acc, curr, index) => {
       const newpollutants = []
       const getDistance =
