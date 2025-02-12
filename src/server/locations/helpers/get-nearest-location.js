@@ -23,27 +23,45 @@ async function getNearestLocation(
   lang
 ) {
   const latlon =
-    matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
+    matches.length !== 0
+      ? await convertPointToLonLat(matches, location, index)
+      : {}
   const forecastCoordinates =
-    matches.length !== 0 ? coordinatesTotal(forecasts, location) : []
+    matches.length !== 0 ? await coordinatesTotal(forecasts, location) : []
+
   const measurementsCoordinates =
-    matches.length !== 0 ? coordinatesTotal(measurements, location) : []
+    matches.length !== 0 ? await coordinatesTotal(measurements, location) : []
+  logger.info(
+    `::::::::::: measurementsCoordinates ::::::::::: ${JSON.stringify(measurementsCoordinates)}`
+  )
   const nearestLocation =
     matches.length !== 0
-      ? getNearLocation(
+      ? await getNearLocation(
           latlon?.lat,
           latlon?.lon,
           forecastCoordinates,
           forecasts
         )
       : {}
-  const orderByDistanceMeasurements = geolib.orderByDistance(
+  logger.info(
+    `::::::::::: nearestLocation ::::::::::: ${JSON.stringify(nearestLocation)}`
+  )
+  const orderByDistanceMeasurements = await geolib.orderByDistance(
     { latitude: latlon?.lat, longitude: latlon?.lon },
     measurementsCoordinates
   )
+  logger.info(
+    `::::::::::: orderByDistanceMeasurements ::::::::::: ${JSON.stringify(orderByDistanceMeasurements)}`
+  )
   const nearestMeasurementsPoints = orderByDistanceMeasurements.slice(0, 3)
-  const pointsToDisplay = nearestMeasurementsPoints.filter((p) =>
+  logger.info(
+    `::::::::::: nearestMeasurementsPoints ::::::::::: ${JSON.stringify(nearestMeasurementsPoints)}`
+  )
+  const pointsToDisplay = await nearestMeasurementsPoints.filter((p) =>
     pointsInRange(latlon, p)
+  )
+  logger.info(
+    `::::::::::: pointsToDisplay ::::::::::: ${JSON.stringify(pointsToDisplay)}`
   )
   const nearestLocationsRangeCal = await measurements?.filter((item, i) => {
     const opt = pointsToDisplay.some((dis, index) => {
@@ -52,6 +70,10 @@ async function getNearestLocation(
         item.location.coordinates[1] === dis.longitude
       )
     })
+    logger.info(
+      `::::::::::: pointsToDisplay 2 ::::::::::: ${JSON.stringify(pointsToDisplay)}`
+    )
+    logger.info(`::::::::::: opt ::::::::::: ${JSON.stringify(opt)}`)
     return opt
   })
 
