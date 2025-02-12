@@ -99,8 +99,12 @@ const getLocationDetailsController = {
         const { nearestLocationsRangeEnglish, nearestLocationsRangeWelsh } =
           locationData
         logger.info(
-          `nearestLocationsRangeEnglish location-id ${JSON.stringify(nearestLocationsRangeEnglish)})`
+          `nearestLocationsRangeEnglish location-id ${JSON.stringify(nearestLocationsRangeEnglish?.nearestLocationsRange)})`
         )
+        logger.info(
+          `nearestLocationsRangeWelsh location-id ${JSON.stringify(nearestLocationsRangeWelsh?.nearestLocationsRange)})`
+        )
+        logger.info(`lang in location-id ${lang}`)
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
