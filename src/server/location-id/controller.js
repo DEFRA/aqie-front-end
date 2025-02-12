@@ -98,14 +98,17 @@ const getLocationDetailsController = {
         logger.info(`locationData results ${JSON.stringify(locationData)})`)
         const { nearestLocationsRangeEnglish, nearestLocationsRangeWelsh } =
           locationData
+        logger.info(
+          `nearestLocationsRangeEnglish location-id ${JSON.stringify(nearestLocationsRangeEnglish)})`
+        )
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
           airQualityData: airQualityData.commonMessages,
           monitoringSites:
             lang === LANG_EN
-              ? nearestLocationsRangeEnglish.nearestLocationsRange
-              : nearestLocationsRangeWelsh.nearestLocationsRange,
+              ? nearestLocationsRangeEnglish?.nearestLocationsRange
+              : nearestLocationsRangeWelsh?.nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: `${multipleLocations.titlePrefix} ${title}`,
