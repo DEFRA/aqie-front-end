@@ -87,7 +87,9 @@ const getLocationDetailsController = {
           locationData.locationType === LOCATION_TYPE_UK
             ? LOCATION_TYPE_UK
             : LOCATION_TYPE_NI
-        logger.info(`locationType in location-id ${locationType})`)
+        logger.info(`locationType in location-id ${locationType}`)
+        logger.info(`locationData in location-id ${locationData}`)
+
         const { nearestLocationsRange } = await getNearestLocation(
           locationData?.results,
           locationData?.rawForecasts,

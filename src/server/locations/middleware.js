@@ -268,6 +268,8 @@ const searchMiddleware = async (request, h) => {
       dailySummaryTexts: english.dailySummaryTexts,
       locationType,
       forecastNum,
+      measurements: getMeasurements?.measurements,
+      rawForecasts: getForecasts?.forecasts,
       lang
     })
     return h.redirect(`/location/${urlRoute}?lang=en`).takeover()
