@@ -36,6 +36,8 @@ const fetchOAuthToken = async () => {
       state: '1245'
     })
   }
+  logger.info(`:::::::OAuth-Token-URL:::::::: ${url}`)
+  logger.info(`:::::::OAuth-Token-OPTION:::::::: ${JSON.stringify(options)}`)
   // Invoking token API
   const [statusCodeToken, dataToken] = await catchProxyFetchError(
     url,
@@ -188,11 +190,15 @@ async function fetchData(
       'osPlacesApiPostcodeNorthernIrelandUrl'
     )
     const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
+    logger.info(
+      `::::::postcodeNortherIrelandURL:::::: ${postcodeNortherIrelandURL}`
+    )
     const [statusCodeNI, getNIPlaces] = await catchProxyFetchError(
       postcodeNortherIrelandURL,
       optionsOAuth,
       true
     )
+    logger.info(`::::::optionsOAuth-NI:::::: ${JSON.stringify(optionsOAuth)}`)
     if (statusCodeNI !== 200) {
       logger.error(`Error fetching statusCodeNI data: ${statusCodeNI}`)
     } else {
