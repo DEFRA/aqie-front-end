@@ -36,6 +36,8 @@ const fetchOAuthToken = async () => {
       state: '1245'
     })
   }
+  logger.info(`:::::::OAuth-Token-URL:::::::: ${url}`)
+  logger.info(`:::::::OAuth-Token-OPTION:::::::: ${JSON.stringify(options)}`)
   // Invoking token API
   const [statusCodeToken, dataToken] = await catchProxyFetchError(
     url,
