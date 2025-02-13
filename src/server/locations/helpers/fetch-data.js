@@ -188,11 +188,15 @@ async function fetchData(
       'osPlacesApiPostcodeNorthernIrelandUrl'
     )
     const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
+    logger.info(
+      `::::::postcodeNortherIrelandURL:::::: ${postcodeNortherIrelandURL}`
+    )
     const [statusCodeNI, getNIPlaces] = await catchProxyFetchError(
       postcodeNortherIrelandURL,
       optionsOAuth,
       true
     )
+    logger.info(`::::::optionsOAuth-NI:::::: ${JSON.stringify(optionsOAuth)}`)
     if (statusCodeNI !== 200) {
       logger.error(`Error fetching statusCodeNI data: ${statusCodeNI}`)
     } else {
