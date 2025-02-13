@@ -1,7 +1,13 @@
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
 import { english } from '~/src/server/data/en/en.js'
 import moment from 'moment-timezone'
-import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
+import {
+  removeLastWord,
+  convertStringToHyphenatedLowercaseWords,
+  extractAndFormatUKPostcode,
+  removeLastWordAndAddHyphens,
+  removeLastWordAndHyphens
+} from '~/src/server/locations/helpers/convert-string'
 import { LANG_EN, LANG_CY } from '~/src/server/data/constants'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 
@@ -88,6 +94,8 @@ const handleMultipleMatches = (
     welshDate,
     englishDate,
     locationType,
+    nearestLocationsRangeEnglish,
+    nearestLocationsRangeWelsh,
     lang
   }
 ) => {
@@ -118,6 +126,8 @@ const handleMultipleMatches = (
     englishDate,
     locationType,
     forecastNum,
+    nearestLocationsRangeEnglish,
+    nearestLocationsRangeWelsh,
     lang
   })
 
@@ -185,8 +195,14 @@ const processMatches = (
     }
     newMatches = [newMatches[0]]
     const urlRoute = `${newMatches[0].GAZETTEER_ENTRY.NAME1}_${newMatches[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
-    const headerTitle = convertStringToHyphenatedLowercaseWords(urlRoute)
-    newMatches[0].GAZETTEER_ENTRY.ID = headerTitle
+    let headerTitle = convertStringToHyphenatedLowercaseWords(urlRoute)
+    headerTitle = headerTitle.replace(/[-_]/g, ' ')
+    const postcodCheck = removeLastWord(headerTitle)
+    const postcode = extractAndFormatUKPostcode(postcodCheck) // Use the helper function to extract and format UK postcode from headerTitle
+    const finalHeaderTitle = postcode
+      ? removeLastWordAndHyphens(headerTitle)
+      : removeLastWordAndAddHyphens(headerTitle)
+    newMatches[0].GAZETTEER_ENTRY.ID = finalHeaderTitle
     return newMatches
   }
 
@@ -210,7 +226,13 @@ const processMatches = (
         : `${item.GAZETTEER_ENTRY.NAME1}_${item.GAZETTEER_ENTRY.COUNTY_UNITARY}`
     }
     headerTitle = convertStringToHyphenatedLowercaseWords(urlRoute) // Use the helper function to generate the custom ID
-    item.GAZETTEER_ENTRY.ID = headerTitle // Update the nested object property
+    headerTitle = headerTitle.replace(/[-_]/g, ' ')
+    const postcodCheck = removeLastWord(headerTitle)
+    const postcode = extractAndFormatUKPostcode(postcodCheck) // Use the helper function to extract and format UK postcode from headerTitle
+    const finalHeaderTitle = postcode
+      ? removeLastWordAndHyphens(headerTitle)
+      : convertStringToHyphenatedLowercaseWords(headerTitle)
+    item.GAZETTEER_ENTRY.ID = finalHeaderTitle // Update the nested object property
     acc.push(item)
     return acc
   }, [])
@@ -241,6 +263,14 @@ const getTitleAndHeaderTitle = (locationDetails, locationNameOrPostcode) => {
   title = convertFirstLetterIntoUppercase(title)
   headerTitle = convertFirstLetterIntoUppercase(headerTitle)
   urlRoute = convertStringToHyphenatedLowercaseWords(urlRoute)
+
+  urlRoute = urlRoute.replace(/[-_]/g, ' ')
+  const postcodCheck = removeLastWord(urlRoute)
+  const postcode = extractAndFormatUKPostcode(postcodCheck) // Use the helper function to extract and format UK postcode from urlRoute
+  urlRoute = postcode
+    ? removeLastWordAndHyphens(urlRoute)
+    : convertStringToHyphenatedLowercaseWords(urlRoute)
+
   return { title, headerTitle, urlRoute }
 }
 

@@ -48,7 +48,7 @@ const getLocationDetailsController = {
           .takeover()
       }
       request.yar.clear('searchTermsSaved')
-      const lang = LANG_EN
+      const lang = query?.lang ?? LANG_EN
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')
       const getMonth = calendarEnglish.findIndex(function (item) {
         return item.indexOf(formattedDate[1]) !== -1
@@ -104,7 +104,7 @@ const getLocationDetailsController = {
         logger.info(
           `nearestLocationsRangeWelsh location-id ${JSON.stringify(nearestLocationsRangeWelsh?.nearestLocationsRange)})`
         )
-        logger.info(`lang in location-id ${lang}`)
+
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
@@ -129,8 +129,8 @@ const getLocationDetailsController = {
           welshMonth: calendarWelsh[getMonth],
           summaryDate:
             lang === LANG_CY
-              ? locationData.welshDate ?? locationData.summaryDate
-              : locationData.englishDate ?? locationData.summaryDate,
+              ? locationData.welshDate
+              : locationData.englishDate,
           dailySummaryTexts: english.dailySummaryTexts,
           lang
         })

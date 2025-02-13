@@ -38,7 +38,6 @@ const getSearchTermsFromUrl = (url) => {
   let secondSearchTerm = '' // Initialize the second search term
   if (postcodeMatch) {
     searchTerms = postcodeMatch[0]?.split('-').join(' ') // Extract the postcode from the searchTerms
-    secondSearchTerm = underscoreParts[1].split('-').join(' ') // Extract the term after the postcode
   } else {
     searchTerms = underscoreParts[0]?.split('-').join(' ') // Get the part before the underscore // ''
     secondSearchTerm = underscoreParts[1]?.split('-').join(' ') // Get the part after the underscore // ''

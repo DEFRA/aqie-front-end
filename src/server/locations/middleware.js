@@ -203,6 +203,8 @@ const searchMiddleware = async (request, h) => {
         englishDate,
         forecastNum,
         locationType,
+        nearestLocationsRangeEnglish,
+        nearestLocationsRangeWelsh,
         lang
       })
     } else {
