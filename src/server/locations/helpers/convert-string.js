@@ -51,10 +51,17 @@ function extractAndFormatUKPostcode(headerTitle) {
 }
 
 function removeLastWord(str) {
-  // Define a function to remove the last word from a string ''
-  const words = str.split(' ') // Split the string into an array of words ''
+  // Define a function to remove the last word from a string
+  const words = str.split(' ') // Split the string into an array of words
   words.pop() // Remove the last word ''
-  return words.join(' ') // Join the remaining words back into a single string ''
+  return words.join(' ') // Join the remaining words back into a single string
+}
+
+function isValidPartialPostcode(postcode) {
+  // Define a function to validate if a string is a partial postcode
+  const partialPostcodeRegex =
+    /\b(?!BT)(?:EN[1-9]|[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2})\b/i // Define a regular expression to match UK partial postcodes'  return partialPostcodeRegex.test(postcode); // Test the string against the regular expression ''
+  return partialPostcodeRegex.test(postcode) // Test the string against the regular expression
 }
 
 export {
@@ -63,5 +70,6 @@ export {
   removeLastWordAndAddHyphens,
   extractAndFormatUKPostcode,
   removeHyphensAndUnderscores,
-  removeLastWordAndHyphens
+  removeLastWordAndHyphens,
+  isValidPartialPostcode
 }

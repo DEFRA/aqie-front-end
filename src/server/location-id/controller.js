@@ -64,6 +64,7 @@ const getLocationDetailsController = {
         multipleLocations
       } = english
       const locationData = request.yar.get('locationData') || []
+
       const locationType =
         locationData.locationType === LOCATION_TYPE_UK
           ? LOCATION_TYPE_UK

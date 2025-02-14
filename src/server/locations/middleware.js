@@ -23,7 +23,10 @@ import {
   LANG_CY
 } from '~/src/server/data/constants'
 import { getMonth } from '~/src/server/locations/helpers/location-type-util'
-import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
+import {
+  convertStringToHyphenatedLowercaseWords,
+  isValidPartialPostcode
+} from '~/src/server/locations/helpers/convert-string'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
@@ -104,7 +107,6 @@ const searchMiddleware = async (request, h) => {
     ).map((item) => JSON.parse(item))
     const selectedMatches = processMatches(
       results,
-      locationNameOrPostcode,
       userLocation,
       searchTerms,
       secondSearchTerm
@@ -153,6 +155,7 @@ const searchMiddleware = async (request, h) => {
     logger.info(
       `nearestLocationsRangeEnglish middleware ${JSON.stringify(nearestLocationsRangeEnglish)})`
     )
+    const isPartialPostcode = isValidPartialPostcode(locationNameOrPostcode)
     if (selectedMatches.length === 1) {
       return handleSingleMatch(h, request, {
         searchTerms,
@@ -176,8 +179,12 @@ const searchMiddleware = async (request, h) => {
         lang
       })
     } else if (
-      selectedMatches.length > 1 &&
-      locationNameOrPostcode.length > 3
+      (selectedMatches.length > 1 &&
+        locationNameOrPostcode.length >= 2 &&
+        isPartialPostcode) ||
+      (selectedMatches.length > 1 &&
+        locationNameOrPostcode.length >= 3 &&
+        !isPartialPostcode)
     ) {
       return handleMultipleMatches(h, request, {
         selectedMatches,
