@@ -6,7 +6,6 @@ import {
   convertStringToHyphenatedLowercaseWords,
   extractAndFormatUKPostcode,
   splitAndKeepFirstWord,
-  removeLastWordAndHyphens,
   removeLastWordAndAddHyphens,
   isValidFullPostcode,
   formatUKPostcode
@@ -158,7 +157,9 @@ const processMatches = (
     unitary = unitary?.split(' - ').join(' ') // Replace hyphens with spaces
     unitary = unitary?.replace(/-/g, ' ') // Replace hyphens with spaces
     let name1Postcode = ''
-    if (secondSearchTerm === '') secondSearchTerm = 'UNDEFINED'
+    if (secondSearchTerm === '') {
+      secondSearchTerm = 'UNDEFINED'
+    }
     if (searchTerms && borough) {
       if (secondSearchTerm === 'UNDEFINED') {
         return (
@@ -233,7 +234,7 @@ const processMatches = (
     const postcodCheck = removeAllWordsAfterUnderscore(headerTitle)
     const postcode = extractAndFormatUKPostcode(postcodCheck) // Use the helper function to extract and format UK postcode from headerTitle
     const finalHeaderTitle = postcode
-      ? removeLastWordAndHyphens(headerTitle)
+      ? splitAndKeepFirstWord(headerTitle)
       : removeLastWordAndAddHyphens(headerTitle)
     newMatches[0].GAZETTEER_ENTRY.ID = finalHeaderTitle
     return newMatches
