@@ -42,10 +42,11 @@ function removeHyphensAndUnderscores(str) {
 
 function extractAndFormatUKPostcode(headerTitle) {
   // Define a function to extract and format UK postcode from headerTitle
-  const postcodeRegex =
-    /\b(?!BT)(?:EN[1-9]|[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2})\b/i // Simplified regex to reduce complexity
+  const postcodeRegex = /\b(?!BT)([A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2})\b/i // Simplified regex to reduce complexity
+  const partialPostcodeRegex = /\b(?!BT)(?:[A-Z]{1,2}\d{1,2}|EN1|EN8|N8)\b/i // Define a regular expression to match UK partial postcodes
   const finalMatch = removeHyphensAndUnderscores(headerTitle) // Match the postcode in the headerTitle
-  const match = finalMatch.match(postcodeRegex) // Match the postcode in the headerTitle
+  const match =
+    finalMatch.match(postcodeRegex) ?? finalMatch.match(partialPostcodeRegex) // Match the postcode in the headerTitle
   if (match) {
     // Check if a postcode is found
     const postcode = match[0] // Extract the matched postcode
@@ -63,8 +64,25 @@ function removeAllWordsAfterUnderscore(str) {
 
 function isValidPartialPostcode(postcode) {
   // Define a function to validate if a string is a partial postcode
-  const partialPostcodeRegex = /\b(?!BT)(?:[A-Z]{1,2}\d{1,2}|EN1|EN8)\b/i // Define a regular expression to match UK partial postcodes'  return partialPostcodeRegex.test(postcode); // Test the string against the regular expression ''
+  const partialPostcodeRegex = /\b(?!BT)(?:[A-Z]{1,2}\d{1,2}|EN1|EN8|N8)\b/i // Define a regular expression to match UK partial postcodes'  return partialPostcodeRegex.test(postcode); // Test the string against the regular expression ''
   return partialPostcodeRegex.test(postcode) // Test the string against the regular expression
+}
+
+function isValidFullPostcode(postcode) {
+  // Define a function to validate if a string is a partial postcode
+  const fullPostcodeRegex = /^([A-Z]{1,2}\d[A-Z\d]?)\s?(\d[A-Z]{2})$/i // Define a regular expression to match UK full postcodes
+  return fullPostcodeRegex.test(postcode) // Test the string against the regular expression
+}
+
+function formatUKPostcode(postcode) {
+  // Define a function to format a UK postcode
+  const postcodeRegex = /^([A-Z]{1,2}\d[A-Z\d]?)\s?(\d[A-Z]{2})$/i // Define a regular expression to match UK postcode parts
+  const match = postcode.match(postcodeRegex) // Match the postcode parts
+  if (match) {
+    // Check if the postcode matches the regex
+    return `${match[1]} ${match[2]}`.toUpperCase() // Format the postcode with a space and convert to uppercase
+  }
+  return postcode.toUpperCase() // Return the original postcode in uppercase if it doesn't match the regex
 }
 
 export {
@@ -75,5 +93,7 @@ export {
   removeHyphensAndUnderscores,
   removeLastWordAndHyphens,
   isValidPartialPostcode,
-  splitAndKeepFirstWord
+  splitAndKeepFirstWord,
+  formatUKPostcode,
+  isValidFullPostcode
 }

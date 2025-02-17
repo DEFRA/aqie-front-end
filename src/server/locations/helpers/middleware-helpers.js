@@ -7,7 +7,9 @@ import {
   extractAndFormatUKPostcode,
   splitAndKeepFirstWord,
   removeLastWordAndHyphens,
-  removeLastWordAndAddHyphens
+  removeLastWordAndAddHyphens,
+  isValidFullPostcode,
+  formatUKPostcode
 } from '~/src/server/locations/helpers/convert-string'
 import { LANG_EN, LANG_CY } from '~/src/server/data/constants'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
@@ -145,8 +147,7 @@ const processMatches = (
   searchTerms,
   secondSearchTerm
 ) => {
-  const partialPostcodePattern =
-    /\b(?!BT)(?:EN[1-9]|[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2})\b/i
+  const partialPostcodePattern = /\b(?!BT)(?:[A-Z]{1,2}\d{1,2}|EN1|EN8|N8)\b/i
   let newMatches = matches.filter((item) => {
     const name1 = item?.GAZETTEER_ENTRY.NAME1.toUpperCase().replace(/\s+/g, '')
     const name2 = item?.GAZETTEER_ENTRY.NAME2?.toUpperCase().replace(/\s+/g, '')
@@ -156,27 +157,57 @@ const processMatches = (
     borough = borough?.replace(/-/g, ' ') // Replace hyphens with spaces
     unitary = unitary?.split(' - ').join(' ') // Replace hyphens with spaces
     unitary = unitary?.replace(/-/g, ' ') // Replace hyphens with spaces
+    let name1Postcode = ''
+    if (secondSearchTerm === '') secondSearchTerm = 'UNDEFINED'
     if (searchTerms && borough) {
+      if (secondSearchTerm === 'UNDEFINED') {
+        return (
+          name1?.includes(userLocation.replace(/\s+/g, '')) ||
+          userLocation.replace(/\s+/g, '').includes(name1)
+        )
+      }
       return (
-        name1?.includes(userLocation) &&
-        userLocation.includes(name1) &&
+        name1?.includes(userLocation.replace(/\s+/g, '')) &&
+        userLocation.replace(/\s+/g, '').includes(name1) &&
         secondSearchTerm.includes(borough) &&
         borough?.includes(secondSearchTerm)
       )
     } else if (searchTerms && unitary) {
       if (name2) {
+        if (secondSearchTerm === 'UNDEFINED') {
+          return (
+            name2?.includes(userLocation.replace(/\s+/g, '')) ||
+            userLocation.replace(/\s+/g, '').includes(name2)
+          )
+        }
         return (
-          name2?.includes(userLocation) &&
-          userLocation.includes(name2) &&
+          name2?.includes(userLocation.replace(/\s+/g, '')) &&
+          userLocation.replace(/\s+/g, '').includes(name2) &&
           secondSearchTerm.includes(unitary) &&
           unitary?.includes(secondSearchTerm)
         )
       }
+      if (secondSearchTerm === 'UNDEFINED') {
+        return (
+          name1?.includes(userLocation.replace(/\s+/g, '')) ||
+          userLocation.replace(/\s+/g, '').includes(name1)
+        )
+      }
       return (
-        name1?.includes(userLocation) &&
-        userLocation.includes(name1) &&
+        name1?.includes(userLocation.replace(/\s+/g, '')) &&
+        userLocation.replace(/\s+/g, '').includes(name1) &&
         secondSearchTerm.includes(unitary) &&
         unitary?.includes(secondSearchTerm)
+      )
+    }
+    const isFullPostcode = isValidFullPostcode(name1)
+    if (isFullPostcode) {
+      name1Postcode = formatUKPostcode(name1)
+      return (
+        name1.includes(userLocation.replace(/\s+/g, '')) ||
+        name1Postcode.includes(userLocation.replace(/\s+/g, '')) ||
+        userLocation.includes(name1Postcode) ||
+        userLocation.includes(name2)
       )
     }
     return (
@@ -256,7 +287,7 @@ const getTitleAndHeaderTitle = (locationDetails, locationNameOrPostcode) => {
     } else {
       title = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY} - ${home.pageTitle}`
       headerTitle = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
-      urlRoute = `${locationDetails[0].GAZETTEER_ENTRY.NAME1}_${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
+      urlRoute = `${locationNameOrPostcode}_${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
       term1 = locationNameOrPostcode
     }
   }

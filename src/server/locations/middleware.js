@@ -36,6 +36,7 @@ const logger = createLogger()
 
 const searchMiddleware = async (request, h) => {
   logger.info(`::::::::::: searchMiddleware 1  :::::::::::`)
+  let isPartialPostcode
   let nearestLocationsRangeEnglish
   let nearestLocationsRangeWelsh
   const { query, payload } = request
@@ -113,6 +114,20 @@ const searchMiddleware = async (request, h) => {
       searchTerms,
       secondSearchTerm
     )
+    isPartialPostcode = isValidPartialPostcode(locationNameOrPostcode)
+    if (isPartialPostcode && searchTerms) {
+      return h.view('error/index', {
+        footerTxt,
+        url: request.path,
+        phaseBanner,
+        displayBacklink: false,
+        cookieBanner,
+        serviceName: english.multipleLocations.serviceName,
+        notFoundUrl: english.notFoundUrl,
+        lang
+      })
+    }
+
     if (selectedMatches.length === 0) {
       return h.redirect('/location-not-found').takeover()
     }
@@ -157,7 +172,7 @@ const searchMiddleware = async (request, h) => {
     logger.info(
       `nearestLocationsRangeEnglish middleware ${JSON.stringify(nearestLocationsRangeEnglish)})`
     )
-    const isPartialPostcode = isValidPartialPostcode(locationNameOrPostcode)
+    isPartialPostcode = isValidPartialPostcode(locationNameOrPostcode)
     if (selectedMatches.length === 1) {
       return handleSingleMatch(h, request, {
         searchTerms,

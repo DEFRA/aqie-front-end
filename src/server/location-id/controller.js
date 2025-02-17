@@ -41,6 +41,7 @@ const getLocationDetailsController = {
       if (previousUrl === undefined && !searchTermsSaved) {
         const { searchTerms, secondSearchTerm, searchTermsLocationType } =
           getSearchTermsFromUrl(currentUrl)
+        request.yar.clear('locationData')
         return h
           .redirect(
             `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}`

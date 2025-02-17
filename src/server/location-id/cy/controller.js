@@ -38,9 +38,10 @@ const getLocationDetailsController = {
       const previousUrl = headers.referer || headers.referrer
       const currentUrl = request.url.href
 
-      const { searchTerms, secondSearchTerm, searchTermsLocationType } =
-        getSearchTermsFromUrl(currentUrl)
       if (previousUrl === undefined && !searchTermsSaved) {
+        const { searchTerms, secondSearchTerm, searchTermsLocationType } =
+          getSearchTermsFromUrl(currentUrl)
+        request.yar.clear('locationData')
         return h
           .redirect(
             `/lleoliad?lang=cy&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}`
