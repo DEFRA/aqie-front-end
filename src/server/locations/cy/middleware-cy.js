@@ -23,12 +23,14 @@ import {
   LOCATION_TYPE_NI
 } from '~/src/server/data/constants'
 import { getMonth } from '~/src/server/locations/helpers/location-type-util'
-import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
+import {
+  convertStringToHyphenatedLowercaseWords,
+  isValidPartialPostcode
+} from '~/src/server/locations/helpers/convert-string'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case.js'
-import { airQualityValues } from '~/src/server/locations/helpers/air-quality-values'
 
 const logger = createLogger()
 
@@ -44,7 +46,6 @@ const searchMiddlewareCy = async (request, h) => {
     footerTxt,
     phaseBanner,
     backlink,
-    daqi,
     cookieBanner,
     multipleLocations
   } = welsh
@@ -104,8 +105,8 @@ const searchMiddlewareCy = async (request, h) => {
     ).map((item) => JSON.parse(item))
     const selectedMatches = processMatches(
       results,
-      locationNameOrPostcode,
       userLocation,
+      locationNameOrPostcode,
       searchTerms,
       secondSearchTerm
     )
@@ -147,6 +148,7 @@ const searchMiddlewareCy = async (request, h) => {
       0,
       lang
     )
+    const isPartialPostcode = isValidPartialPostcode(locationNameOrPostcode)
     if (selectedMatches.length === 1) {
       return handleSingleMatch(h, request, {
         searchTerms,
@@ -158,7 +160,6 @@ const searchMiddlewareCy = async (request, h) => {
         transformedDailySummary,
         englishDate,
         welshDate,
-        daqi,
         month,
         headerTitle,
         titleRoute,
@@ -171,12 +172,14 @@ const searchMiddlewareCy = async (request, h) => {
         lang
       })
     } else if (
-      selectedMatches.length > 1 &&
-      locationNameOrPostcode.length > 3
+      (selectedMatches.length > 1 &&
+        locationNameOrPostcode.length >= 2 &&
+        isPartialPostcode) ||
+      (selectedMatches.length > 1 &&
+        locationNameOrPostcode.length >= 3 &&
+        !isPartialPostcode)
     ) {
-      const airQuality = airQualityValues(forecastNum, lang)
       return handleMultipleMatches(h, request, {
-        forecastNum,
         selectedMatches,
         headerTitleRoute,
         titleRoute,
@@ -185,14 +188,12 @@ const searchMiddlewareCy = async (request, h) => {
         getForecasts,
         getMeasurements,
         multipleLocations,
-        airQuality,
         airQualityData,
         siteTypeDescriptions,
         pollutantTypes,
         getDailySummary,
         transformedDailySummary,
         footerTxt,
-        daqi,
         phaseBanner,
         backlink,
         cookieBanner,
@@ -200,6 +201,7 @@ const searchMiddlewareCy = async (request, h) => {
         month,
         welshDate,
         englishDate,
+        forecastNum,
         locationType,
         nearestLocationsRangeEnglish,
         nearestLocationsRangeWelsh,

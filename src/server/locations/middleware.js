@@ -105,9 +105,11 @@ const searchMiddleware = async (request, h) => {
     results = Array.from(
       new Set(results.map((item) => JSON.stringify(item)))
     ).map((item) => JSON.parse(item))
+
     const selectedMatches = processMatches(
       results,
       userLocation,
+      locationNameOrPostcode,
       searchTerms,
       secondSearchTerm
     )

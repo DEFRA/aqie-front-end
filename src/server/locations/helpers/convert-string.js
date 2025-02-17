@@ -30,6 +30,11 @@ function removeLastWordAndHyphens(str) {
   return words.includes('-') ? words.replace(/-/g, '') : words
 }
 
+function splitAndKeepFirstWord(str) {
+  const words = str.split('_') // Split the string by the underscore character ''
+  return words[0].includes('-') ? words[0].replace(/-/g, '') : words[0] // Return the first word ''
+}
+
 function removeHyphensAndUnderscores(str) {
   // Define a function to remove hyphens and underscores from a string
   return str.includes('-') ? str.replace(/-/g, '') : str // Replace hyphens with an empty string if found, otherwise return the original string ''
@@ -50,26 +55,25 @@ function extractAndFormatUKPostcode(headerTitle) {
   return null // Return null if no postcode is found
 }
 
-function removeLastWord(str) {
-  // Define a function to remove the last word from a string
-  const words = str.split(' ') // Split the string into an array of words
-  words.pop() // Remove the last word ''
-  return words.join(' ') // Join the remaining words back into a single string
+function removeAllWordsAfterUnderscore(str) {
+  //  Define a function to remove all words after an underscore
+  const words = str.split('_') // Split the string by the underscore character
+  return words[0] // Return the first part of the string
 }
 
 function isValidPartialPostcode(postcode) {
   // Define a function to validate if a string is a partial postcode
-  const partialPostcodeRegex =
-    /\b(?!BT)(?:EN[1-9]|[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2})\b/i // Define a regular expression to match UK partial postcodes'  return partialPostcodeRegex.test(postcode); // Test the string against the regular expression ''
+  const partialPostcodeRegex = /\b(?!BT)(?:[A-Z]{1,2}\d{1,2}|EN1|EN8)\b/i // Define a regular expression to match UK partial postcodes'  return partialPostcodeRegex.test(postcode); // Test the string against the regular expression ''
   return partialPostcodeRegex.test(postcode) // Test the string against the regular expression
 }
 
 export {
-  removeLastWord,
+  removeAllWordsAfterUnderscore,
   convertStringToHyphenatedLowercaseWords,
   removeLastWordAndAddHyphens,
   extractAndFormatUKPostcode,
   removeHyphensAndUnderscores,
   removeLastWordAndHyphens,
-  isValidPartialPostcode
+  isValidPartialPostcode,
+  splitAndKeepFirstWord
 }
