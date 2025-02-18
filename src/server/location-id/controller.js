@@ -72,6 +72,12 @@ const getLocationDetailsController = {
           : LOCATION_TYPE_NI
 
       locationDetails = locationData?.results?.find((item) => {
+        logger.info(
+          `locationData item.GAZETTEER_ENTRY.ID ${JSON.stringify(item.GAZETTEER_ENTRY.ID)}`
+        )
+        logger.info(
+          `locationData locationId ${JSON.stringify(locationId.replace(/\s/g, ''))}`
+        )
         if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
           return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
         }
