@@ -78,8 +78,14 @@ const getLocationDetailsController = {
         logger.info(
           `locationData locationId ${JSON.stringify(locationId.replace(/\s/g, ''))}`
         )
-        if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
-          return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
+        if (
+          item.GAZETTEER_ENTRY.ID.replace(/\s/g, '') ===
+          locationId.replace(/\s/g, '')
+        ) {
+          return (
+            item.GAZETTEER_ENTRY.ID.replace(/\s/g, '') ===
+            locationId.replace(/\s/g, '')
+          )
         }
         return null
       })

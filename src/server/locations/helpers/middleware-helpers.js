@@ -226,9 +226,10 @@ const processMatches = (
     )
   })
   if (
-    partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
-    newMatches.length > 0 &&
-    locationNameOrPostcode.length <= 3
+    (partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
+      newMatches.length > 0) ||
+    (!partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
+      newMatches.length === 2)
   ) {
     if (newMatches[0].GAZETTEER_ENTRY.NAME2) {
       newMatches[0].GAZETTEER_ENTRY.NAME1 = newMatches[0].GAZETTEER_ENTRY.NAME2

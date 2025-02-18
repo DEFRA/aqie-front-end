@@ -290,7 +290,7 @@ const searchMiddleware = async (request, h) => {
     let urlRoute = ''
     title = `${getNIPlaces?.results[0].postcode}, ${sentenceCase(getNIPlaces?.results[0].town)} - ${home.pageTitle}`
     headerTitle = `${getNIPlaces?.results[0].postcode}, ${sentenceCase(getNIPlaces?.results[0].town)}`
-    urlRoute = `${getNIPlaces?.results[0].postcode}`
+    urlRoute = `${getNIPlaces?.results[0].postcode.toLowerCase()}`
     title = convertFirstLetterIntoUppercase(title)
     headerTitle = convertFirstLetterIntoUppercase(headerTitle)
     urlRoute = urlRoute.replace(/\s+/g, '')
