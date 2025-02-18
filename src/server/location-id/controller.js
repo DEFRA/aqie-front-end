@@ -38,9 +38,10 @@ const getLocationDetailsController = {
       const previousUrl = headers.referer || headers.referrer
       const currentUrl = request.url.href
 
-      const { searchTerms, secondSearchTerm, searchTermsLocationType } =
-        getSearchTermsFromUrl(currentUrl)
       if (previousUrl === undefined && !searchTermsSaved) {
+        const { searchTerms, secondSearchTerm, searchTermsLocationType } =
+          getSearchTermsFromUrl(currentUrl)
+        request.yar.clear('locationData')
         return h
           .redirect(
             `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}`
@@ -48,7 +49,7 @@ const getLocationDetailsController = {
           .takeover()
       }
       request.yar.clear('searchTermsSaved')
-      const lang = LANG_EN
+      const lang = query?.lang ?? LANG_EN
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')
       const getMonth = calendarEnglish.findIndex(function (item) {
         return item.indexOf(formattedDate[1]) !== -1
@@ -64,6 +65,7 @@ const getLocationDetailsController = {
         multipleLocations
       } = english
       const locationData = request.yar.get('locationData') || []
+
       const locationType =
         locationData.locationType === LOCATION_TYPE_UK
           ? LOCATION_TYPE_UK
@@ -104,7 +106,7 @@ const getLocationDetailsController = {
         logger.info(
           `nearestLocationsRangeWelsh location-id ${JSON.stringify(nearestLocationsRangeWelsh?.nearestLocationsRange)})`
         )
-        logger.info(`lang in location-id ${lang}`)
+
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
@@ -129,8 +131,8 @@ const getLocationDetailsController = {
           welshMonth: calendarWelsh[getMonth],
           summaryDate:
             lang === LANG_CY
-              ? locationData.welshDate ?? locationData.summaryDate
-              : locationData.englishDate ?? locationData.summaryDate,
+              ? locationData.welshDate
+              : locationData.englishDate,
           dailySummaryTexts: english.dailySummaryTexts,
           lang
         })

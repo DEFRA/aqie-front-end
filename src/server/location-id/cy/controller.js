@@ -19,7 +19,6 @@ import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
 import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
 import { airQualityValues } from '~/src/server/locations/helpers/air-quality-values.js'
-import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 
 const logger = createLogger()
 
@@ -39,9 +38,10 @@ const getLocationDetailsController = {
       const previousUrl = headers.referer || headers.referrer
       const currentUrl = request.url.href
 
-      const { searchTerms, secondSearchTerm, searchTermsLocationType } =
-        getSearchTermsFromUrl(currentUrl)
       if (previousUrl === undefined && !searchTermsSaved) {
+        const { searchTerms, secondSearchTerm, searchTermsLocationType } =
+          getSearchTermsFromUrl(currentUrl)
+        request.yar.clear('locationData')
         return h
           .redirect(
             `/lleoliad?lang=cy&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}`
@@ -66,6 +66,11 @@ const getLocationDetailsController = {
       } = welsh
       const locationData = request.yar.get('locationData') || []
 
+      const locationType =
+        locationData.locationType === LOCATION_TYPE_UK
+          ? LOCATION_TYPE_UK
+          : LOCATION_TYPE_NI
+
       locationDetails = locationData?.results?.find((item) => {
         if (item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')) {
           return item.GAZETTEER_ENTRY.ID === locationId.replace(/\s/g, '')
@@ -81,25 +86,19 @@ const getLocationDetailsController = {
           lang
         )
         const { airQuality } = airQualityValues(locationData.forecastNum, lang)
-        const locationType =
-          locationData.locationType === LOCATION_TYPE_UK
-            ? LOCATION_TYPE_UK
-            : LOCATION_TYPE_NI
+        const { nearestLocationsRangeEnglish, nearestLocationsRangeWelsh } =
+          locationData
         logger.info(`locationType in location-id ${locationType}`)
         logger.info(`locationData in location-id ${locationData}`)
-        const { nearestLocationsRange } = await getNearestLocation(
-          locationData?.results,
-          locationData?.rawForecasts,
-          locationData?.measurements,
-          LOCATION_TYPE_UK,
-          0,
-          lang
-        )
+
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
           airQualityData: airQualityData.commonMessages,
-          monitoringSites: nearestLocationsRange,
+          monitoringSites:
+            lang === LANG_EN
+              ? nearestLocationsRangeEnglish?.nearestLocationsRange
+              : nearestLocationsRangeWelsh?.nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: `${multipleLocations.titlePrefix} ${title}`,

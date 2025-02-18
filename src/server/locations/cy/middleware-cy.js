@@ -18,21 +18,26 @@ import {
 } from '~/src/server/locations/helpers/middleware-helpers'
 import {
   LANG_CY,
+  LANG_EN,
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI
 } from '~/src/server/data/constants'
 import { getMonth } from '~/src/server/locations/helpers/location-type-util'
-import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
+import {
+  convertStringToHyphenatedLowercaseWords,
+  isValidPartialPostcode
+} from '~/src/server/locations/helpers/convert-string'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case.js'
-import { airQualityValues } from '~/src/server/locations/helpers/air-quality-values'
 
 const logger = createLogger()
 
 const searchMiddlewareCy = async (request, h) => {
   logger.info(`::::::::::: searchMiddlewareCy 1  :::::::::::`)
+  let nearestLocationsRangeEnglish
+  let nearestLocationsRangeWelsh
   const { query, payload } = request
   const lang = LANG_CY
   const month = getMonth(lang)
@@ -41,7 +46,6 @@ const searchMiddlewareCy = async (request, h) => {
     footerTxt,
     phaseBanner,
     backlink,
-    daqi,
     cookieBanner,
     multipleLocations
   } = welsh
@@ -86,6 +90,7 @@ const searchMiddlewareCy = async (request, h) => {
     calendarEnglish,
     calendarWelsh
   )
+  request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
   request.yar.set('searchTermsSaved', searchTerms)
   if (locationType === LOCATION_TYPE_UK) {
     let { results } = getOSPlaces
@@ -100,8 +105,8 @@ const searchMiddlewareCy = async (request, h) => {
     ).map((item) => JSON.parse(item))
     const selectedMatches = processMatches(
       results,
-      locationNameOrPostcode,
       userLocation,
+      locationNameOrPostcode,
       searchTerms,
       secondSearchTerm
     )
@@ -118,7 +123,24 @@ const searchMiddlewareCy = async (request, h) => {
       String(urlRoute)
     )
     const titleRoute = convertStringToHyphenatedLowercaseWords(String(title))
-    const { forecastNum, nearestLocationsRange } = await getNearestLocation(
+    nearestLocationsRangeEnglish = getNearestLocation(
+      selectedMatches,
+      getForecasts?.forecasts,
+      getMeasurements?.measurements,
+      LOCATION_TYPE_UK,
+      0,
+      LANG_EN
+    )
+    nearestLocationsRangeWelsh = getNearestLocation(
+      selectedMatches,
+      getForecasts?.forecasts,
+      getMeasurements?.measurements,
+      LOCATION_TYPE_UK,
+      0,
+      LANG_CY
+    )
+
+    const { forecastNum } = getNearestLocation(
       selectedMatches,
       getForecasts?.forecasts,
       getMeasurements?.measurements,
@@ -126,6 +148,7 @@ const searchMiddlewareCy = async (request, h) => {
       0,
       lang
     )
+    const isPartialPostcode = isValidPartialPostcode(locationNameOrPostcode)
     if (selectedMatches.length === 1) {
       return handleSingleMatch(h, request, {
         searchTerms,
@@ -135,10 +158,8 @@ const searchMiddlewareCy = async (request, h) => {
         getMeasurements,
         getDailySummary,
         transformedDailySummary,
-        nearestLocationsRange,
         englishDate,
         welshDate,
-        daqi,
         month,
         headerTitle,
         titleRoute,
@@ -146,15 +167,19 @@ const searchMiddlewareCy = async (request, h) => {
         title,
         urlRoute,
         locationType,
+        nearestLocationsRangeEnglish,
+        nearestLocationsRangeWelsh,
         lang
       })
     } else if (
-      selectedMatches.length > 1 &&
-      locationNameOrPostcode.length > 3
+      (selectedMatches.length > 1 &&
+        locationNameOrPostcode.length >= 2 &&
+        isPartialPostcode) ||
+      (selectedMatches.length > 1 &&
+        locationNameOrPostcode.length >= 3 &&
+        !isPartialPostcode)
     ) {
-      const airQuality = airQualityValues(forecastNum, lang)
       return handleMultipleMatches(h, request, {
-        forecastNum,
         selectedMatches,
         headerTitleRoute,
         titleRoute,
@@ -163,15 +188,12 @@ const searchMiddlewareCy = async (request, h) => {
         getForecasts,
         getMeasurements,
         multipleLocations,
-        airQuality,
         airQualityData,
-        nearestLocationsRange,
         siteTypeDescriptions,
         pollutantTypes,
         getDailySummary,
         transformedDailySummary,
         footerTxt,
-        daqi,
         phaseBanner,
         backlink,
         cookieBanner,
@@ -179,7 +201,10 @@ const searchMiddlewareCy = async (request, h) => {
         month,
         welshDate,
         englishDate,
+        forecastNum,
         locationType,
+        nearestLocationsRangeEnglish,
+        nearestLocationsRangeWelsh,
         lang
       })
     } else {
@@ -194,11 +219,28 @@ const searchMiddlewareCy = async (request, h) => {
       locationNameOrPostcode,
       lang
     )
-    const { results } = getNIPlaces
+
     logger.info(`::::::LOCATION_TYPE_NI-CY::::::: , ${getNIPlaces?.results[0]}`)
-    const { forecastNum, nearestLocationsRange, latlon, airQuality } =
-      getNearestLocation(
-        results,
+    nearestLocationsRangeEnglish = getNearestLocation(
+      getNIPlaces?.results,
+      getForecasts?.forecasts,
+      getMeasurements?.measurements,
+      LOCATION_TYPE_NI,
+      0,
+      LANG_EN
+    )
+    nearestLocationsRangeWelsh = getNearestLocation(
+      getNIPlaces?.results,
+      getForecasts?.forecasts,
+      getMeasurements?.measurements,
+      LOCATION_TYPE_NI,
+      0,
+      LANG_CY
+    )
+
+    const { forecastNum, nearestLocationsRange, latlon } =
+      await getNearestLocation(
+        getNIPlaces?.results,
         getForecasts?.forecasts,
         getMeasurements?.measurements,
         LOCATION_TYPE_NI,
@@ -236,30 +278,20 @@ const searchMiddlewareCy = async (request, h) => {
         }
       }
     ]
-
+    request.yar.clear('locationData')
     request.yar.set('locationData', {
       results: resultNI,
-      airQuality,
-      airQualityData: airQualityData.commonMessages,
-      monitoringSites: nearestLocationsRange,
-      nearestLocationsRange,
-      siteTypeDescriptions,
-      pollutantTypes,
-      pageTitle: `${multipleLocations.titlePrefix} ${title}`,
-      title: `${multipleLocations.titlePrefix} ${headerTitle}`,
-      displayBacklink: true,
-      transformedDailySummary,
-      dailySummary: getDailySummary,
-      footerTxt,
-      phaseBanner,
-      backlink,
-      cookieBanner,
-      daqi,
-      welshMonth: calendarWelsh[getMonth],
-      summaryDate: lang === 'cy' ? welshDate : englishDate,
-      dailySummaryTexts: welsh.dailySummaryTexts,
-      locationType,
       forecastNum,
+      transformedDailySummary,
+      monitoringSites: nearestLocationsRange,
+      englishDate,
+      dailySummary: getDailySummary,
+      welshDate,
+      getMonth: month,
+      title: `${multipleLocations.titlePrefix} ${headerTitle}`,
+      pageTitle: `${multipleLocations.titlePrefix} ${title}`,
+      nearestLocationsRangeEnglish,
+      nearestLocationsRangeWelsh,
       lang
     })
     return h.redirect(`/lleoliad/${urlRoute}?lang=cy`).takeover()

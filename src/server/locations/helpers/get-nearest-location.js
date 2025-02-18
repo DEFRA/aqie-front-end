@@ -24,9 +24,13 @@ function getNearestLocation(
 ) {
   const latlon =
     matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
+  logger.info(`::::::::::: latlon ::::::::::: ${JSON.stringify(latlon)}`)
+
   const forecastCoordinates =
     matches.length !== 0 ? coordinatesTotal(forecasts, location) : []
-
+  logger.info(
+    `::::::::::: forecastCoordinates ::::::::::: ${JSON.stringify(forecastCoordinates)}`
+  )
   const measurementsCoordinates =
     matches.length !== 0 ? coordinatesTotal(measurements, location) : []
   logger.info(
