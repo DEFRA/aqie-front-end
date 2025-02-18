@@ -53,6 +53,11 @@ const config = convict({
     format: Boolean,
     default: process.env.NODE_ENV === 'test'
   },
+  enabledMock: {
+    doc: 'Enabled Mock Data for Northern Ireland Names API',
+    format: Boolean,
+    default: false
+  },
   logLevel: {
     doc: 'Logging level',
     format: ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'],
@@ -154,6 +159,11 @@ const config = convict({
     format: String,
     default: '',
     env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_URL'
+  },
+  mockOsPlacesApiPostcodeNorthernIrelandUrl: {
+    doc: 'Search postcode Northern Ireland with Mock osPlaces url',
+    format: String,
+    default: 'http://localhost:5000/results?postcode='
   },
   redirectUriNIreland: {
     doc: 'Redirect URI for Northern Ireland',

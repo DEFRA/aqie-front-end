@@ -15,6 +15,7 @@ const clientSecret = config.get('clientSecretNIreland')
 const redirectUri = config.get('redirectUriNIreland')
 const scope = config.get('scopeNIreland')
 const tokenUrl = config.get('oauthTokenUrlNIreland')
+const isMockEnabled = config.get('enabledMock')
 const oauthTokenNorthernIrelandTenantId = config.get(
   'oauthTokenNorthernIrelandTenantId'
 )
@@ -36,8 +37,6 @@ const fetchOAuthToken = async () => {
       state: '1245'
     })
   }
-  logger.info(`:::::::OAuth-Token-URL:::::::: ${url}`)
-  logger.info(`:::::::OAuth-Token-OPTION:::::::: ${JSON.stringify(options)}`)
   // Invoking token API
   const [statusCodeToken, dataToken] = await catchProxyFetchError(
     url,
@@ -64,7 +63,7 @@ async function fetchData(
   let optionsOAuth
   let savedAccessToken
   let accessToken
-  if (locationType === LOCATION_TYPE_NI) {
+  if (locationType === LOCATION_TYPE_NI && !isMockEnabled) {
     savedAccessToken = request.yar.get('savedAccessToken')
     logger.info(`::::::::: OAuth token in session 1 ::::::::::`)
     if (savedAccessToken) {
@@ -92,7 +91,7 @@ async function fetchData(
   const refreshIntervalId = setInterval(
     () => {
       // Assuming you have access to the request object here
-      if (locationType === LOCATION_TYPE_NI) {
+      if (locationType === LOCATION_TYPE_NI && !isMockEnabled) {
         refreshOAuthToken()
       } else {
         clearRefreshInterval()
@@ -189,16 +188,31 @@ async function fetchData(
     const osPlacesApiPostcodeNorthernIrelandUrl = config.get(
       'osPlacesApiPostcodeNorthernIrelandUrl'
     )
-    const postcodeNortherIrelandURL = `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
+    const mockOsPlacesApiPostcodeNorthernIrelandUrl = config.get(
+      'mockOsPlacesApiPostcodeNorthernIrelandUrl'
+    )
+
+    const postcodeNortherIrelandURL = isMockEnabled
+      ? `${mockOsPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&_limit=1`
+      : `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
+
     logger.info(
       `::::::postcodeNortherIrelandURL:::::: ${postcodeNortherIrelandURL}`
     )
-    const [statusCodeNI, getNIPlaces] = await catchProxyFetchError(
+
+    let [statusCodeNI, getNIPlaces] = await catchProxyFetchError(
       postcodeNortherIrelandURL,
       optionsOAuth,
       true
     )
-    logger.info(`::::::optionsOAuth-NI:::::: ${JSON.stringify(optionsOAuth)}`)
+    if (isMockEnabled) {
+      getNIPlaces = {
+        results: Array.isArray(getNIPlaces) ? getNIPlaces : [getNIPlaces]
+      }
+    }
+    logger.info(
+      `::::::::::: getNIPlaces en into location not found  ::::::::::: ${JSON.stringify(getNIPlaces)}`
+    )
     if (statusCodeNI !== 200) {
       logger.error(`Error fetching statusCodeNI data: ${statusCodeNI}`)
     } else {
@@ -213,7 +227,7 @@ async function fetchData(
         `::::::::::: getNIPlaces en into location not found lang  ::::::::::: ${lang}`
       )
       logger.info(
-        `::::::::::: getNIPlaces en into location not found  ::::::::::: ${getNIPlaces}`
+        `::::::::::: getNIPlaces en into location not found  ::::::::::: ${JSON.stringify(getNIPlaces)}`
       )
     }
 
