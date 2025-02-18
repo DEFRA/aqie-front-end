@@ -293,6 +293,7 @@ const searchMiddleware = async (request, h) => {
     urlRoute = `${getNIPlaces?.results[0].postcode}`
     title = convertFirstLetterIntoUppercase(title)
     headerTitle = convertFirstLetterIntoUppercase(headerTitle)
+    urlRoute = urlRoute.replace(/\s+/g, '')
     logger.info(`urlRoute in middleware english NI ${urlRoute}`)
     const resultNI = [
       {
