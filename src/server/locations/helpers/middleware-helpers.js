@@ -203,7 +203,11 @@ const processMatches = (
     }
     const isFullPostcode = isValidFullPostcode(name1)
     if (isFullPostcode) {
+      logger.info(`name1 in middleware NI ${name1}`)
       name1Postcode = formatUKPostcode(name1)
+      logger.info(`name1Postcode in middleware NI ${name1Postcode}`)
+      logger.info(`userLocation in middleware NI ${userLocation}`)
+      logger.info(`name2 in middleware NI ${name2}`)
       return (
         name1.includes(userLocation.replace(/\s+/g, '')) ||
         name1Postcode.includes(userLocation.replace(/\s+/g, '')) ||

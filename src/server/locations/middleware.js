@@ -290,10 +290,10 @@ const searchMiddleware = async (request, h) => {
     let urlRoute = ''
     title = `${getNIPlaces?.results[0].postcode}, ${sentenceCase(getNIPlaces?.results[0].town)} - ${home.pageTitle}`
     headerTitle = `${getNIPlaces?.results[0].postcode}, ${sentenceCase(getNIPlaces?.results[0].town)}`
-    urlRoute = `${getNIPlaces?.results[0].postcode}_${sentenceCase(getNIPlaces?.results[0].administrativeArea)}`
+    urlRoute = `${getNIPlaces?.results[0].postcode}`
     title = convertFirstLetterIntoUppercase(title)
     headerTitle = convertFirstLetterIntoUppercase(headerTitle)
-    urlRoute = convertStringToHyphenatedLowercaseWords(urlRoute)
+    logger.info(`urlRoute in middleware english NI ${urlRoute}`)
     const resultNI = [
       {
         GAZETTEER_ENTRY: {
