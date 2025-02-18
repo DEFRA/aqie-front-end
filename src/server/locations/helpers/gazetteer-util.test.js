@@ -1,5 +1,4 @@
 import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-util'
-import { english } from '~/src/server/data/en/en'
 
 describe('gazetteerEntryFilter', () => {
   it('should generate title and headerTitle with district and name2', () => {
@@ -12,7 +11,7 @@ describe('gazetteerEntryFilter', () => {
     const result = gazetteerEntryFilter(locationDetails)
 
     expect(result).toEqual({
-      title: 'TW18 3HT, Runnymede - ' + english.multipleLocations.pageTitle,
+      title: 'TW18 3HT, Runnymede',
       headerTitle: 'TW18 3HT, Runnymede'
     })
   })
@@ -27,7 +26,7 @@ describe('gazetteerEntryFilter', () => {
     const result = gazetteerEntryFilter(locationDetails)
 
     expect(result).toEqual({
-      title: 'Wales, Rotherham - ' + english.multipleLocations.pageTitle,
+      title: 'Wales, Rotherham',
       headerTitle: 'Wales, Rotherham'
     })
   })
@@ -42,7 +41,7 @@ describe('gazetteerEntryFilter', () => {
     const result = gazetteerEntryFilter(locationDetails)
 
     expect(result).toEqual({
-      title: 'PL10 1BW, Cornwall - ' + english.multipleLocations.pageTitle,
+      title: 'PL10 1BW, Cornwall',
       headerTitle: 'PL10 1BW, Cornwall'
     })
   })
@@ -57,8 +56,7 @@ describe('gazetteerEntryFilter', () => {
     const result = gazetteerEntryFilter(locationDetails)
 
     expect(result).toEqual({
-      title:
-        'DL10 4BW, North Yorkshire - ' + english.multipleLocations.pageTitle,
+      title: 'DL10 4BW, North Yorkshire',
       headerTitle: 'DL10 4BW, North Yorkshire'
     })
   })

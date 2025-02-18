@@ -101,7 +101,7 @@ const getLocationDetailsController = {
               : nearestLocationsRangeWelsh?.nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
-          pageTitle: `${multipleLocations.titlePrefix} ${title}`,
+          pageTitle: `${multipleLocations.titlePrefix} ${title} - ${multipleLocations.pageTitle}`,
           metaSiteUrl,
           description: `${daqi.description.a} ${headerTitle}${daqi.description.b}`,
           title: `${multipleLocations.titlePrefix} ${headerTitle}`,
