@@ -30,16 +30,16 @@
       {% else %}
       {% include "forecast.njk" %}
       {%endif%}
+      {% if transformedDailySummary and transformedDailySummary.isCurrentDate %}
       <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{daqi.pageTexts.e}}</h2>
-      {% if transformedDailySummary %}
         {% for key, value in transformedDailySummary %}
-        {% if key != 'issue_date' %}
+        {% if key != 'issue_date' and key != 'isCurrentDate' %}
             <h2 class="govuk-heading-s govuk-!-margin-bottom-1">{{ key }}</h2>
             <p>{{ value }}</p>
-        {% endif %}    
-        {% endfor %}
-      {% endif %}  
+        {% endif %}
+        {% endfor %} 
       <p class="govuk-caption-s govuk-!-margin-bottom-4">{{daqi.pageTexts.b}} {{summaryDate }}</p>
+      {% endif %}
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6 govuk-!-margin-top-6">
       {% if airQuality.today.value >= 1 and airQuality.today.value <= 3 %}
           <h2 class="govuk-heading-m">{{daqi.healthAdvice.paragraphs.a}} {{ airQuality.today.readableBand }} {{daqi.healthAdvice.paragraphs.b}}</h2>
