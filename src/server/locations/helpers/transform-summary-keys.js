@@ -6,6 +6,8 @@ const logger = createLogger()
 const transformKeys = (dailySummary, lang) => {
   logger.info(`:::::::::LANG-FROM-transformKeys::::::::::::: , ${lang}`)
   const dailySummaryIssueDate = moment(dailySummary?.issue_date)
+  const currentDate = moment().startOf('day')
+  const isCurrentDate = currentDate.isSame(dailySummaryIssueDate, 'day')
   const tomorrow = dailySummaryIssueDate.clone().add(1, 'days').format('dddd')
   const remainingDays = []
   let transformedDailySummary
@@ -28,14 +30,16 @@ const transformKeys = (dailySummary, lang) => {
       issue_date: dailySummary?.issue_date ?? 'N/A',
       Heddiw: dailySummary.today,
       [`${translateDayToWelsh(tomorrow)}`]: dailySummary.tomorrow,
-      [`${translateRangeToWelsh(remainingDaysRange)}`]: dailySummary.outlook
+      [`${translateRangeToWelsh(remainingDaysRange)}`]: dailySummary.outlook,
+      isCurrentDate
     }
   } else {
     transformedDailySummary = {
       issue_date: dailySummary?.issue_date ?? 'N/A',
       Today: dailySummary.today,
       [`${tomorrow}`]: dailySummary.tomorrow,
-      [`${remainingDaysRange}`]: dailySummary.outlook
+      [`${remainingDaysRange}`]: dailySummary.outlook,
+      isCurrentDate
     }
   }
   return { transformedDailySummary }

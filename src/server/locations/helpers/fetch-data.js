@@ -211,7 +211,7 @@ async function fetchData(
       }
     }
     logger.info(
-      `::::::::::: getNIPlaces en into location not found  ::::::::::: ${JSON.stringify(getNIPlaces)}`
+      `::::::::::: getNIPlaces - Successfully Returned Response  ::::::::::: ${JSON.stringify(getNIPlaces)}`
     )
     if (statusCodeNI !== 200) {
       logger.error(`Error fetching statusCodeNI data: ${statusCodeNI}`)

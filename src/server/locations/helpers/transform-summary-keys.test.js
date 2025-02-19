@@ -32,7 +32,8 @@ describe('transformKeys', () => {
       issue_date: '2025-02-07',
       Heddiw: 'Sunny',
       'Dydd Sadwrn': 'Cloudy',
-      'Dydd Sul i Dydd Iau': 'Rainy'
+      'Dydd Sul i Dydd Iau': 'Rainy',
+      isCurrentDate: false
     })
   })
 
@@ -45,7 +46,8 @@ describe('transformKeys', () => {
       issue_date: '2025-02-07',
       Today: 'Sunny',
       Saturday: 'Cloudy',
-      'Sunday to Thursday': 'Rainy'
+      'Sunday to Thursday': 'Rainy',
+      isCurrentDate: false
     })
   })
 
@@ -59,7 +61,8 @@ describe('transformKeys', () => {
       issue_date: 'N/A',
       Today: 'Sunny',
       'Invalid date': 'Cloudy',
-      'Invalid date to Invalid date': 'Rainy'
+      'Invalid date to Invalid date': 'Rainy',
+      isCurrentDate: false
     })
   })
 
@@ -86,7 +89,7 @@ describe('transformKeys', () => {
     SUMMARY_TRANSLATIONS.Wednesday = 'Dydd Mercher'
 
     const dailySummaryWithDays = {
-      issue_date: '2025-02-06',
+      issue_date: '2025-02-19',
       today: 'Sunny',
       tomorrow: 'Cloudy',
       outlook: 'Rainy',
@@ -101,10 +104,11 @@ describe('transformKeys', () => {
     const result = transformKeys(dailySummaryWithDays, lang)
 
     expect(result.transformedDailySummary).toEqual({
-      issue_date: '2025-02-06',
+      issue_date: '2025-02-19',
       Heddiw: 'Sunny',
-      'Dydd Gwener': 'Cloudy',
-      'Dydd Sadwrn i Dydd Mercher': 'Rainy'
+      'Dydd Iau': 'Cloudy',
+      'Dydd Gwener i Dydd Mawrth': 'Rainy',
+      isCurrentDate: true
     })
   })
 })
