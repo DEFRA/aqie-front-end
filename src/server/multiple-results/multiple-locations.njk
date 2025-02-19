@@ -16,14 +16,10 @@
           {% else %}
           <span class="govuk-!-font-weight-bold">{{ item.GAZETTEER_ENTRY.NAME1 }}</span>, 
           {% endif %}
-          {% if item.GAZETTEER_ENTRY.LOCAL_TYPE === 'Postcode' %}
-            {{ item.GAZETTEER_ENTRY.POPULATED_PLACE }}
-          {% else %}
           {% if item.GAZETTEER_ENTRY.DISTRICT_BOROUGH %}
             {{ item.GAZETTEER_ENTRY.DISTRICT_BOROUGH }}
           {% else %}
             {{ item.GAZETTEER_ENTRY.COUNTY_UNITARY }}
-          {% endif %}
           {% endif %}
           </a>
         </li>
