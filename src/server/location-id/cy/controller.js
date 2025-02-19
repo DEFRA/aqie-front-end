@@ -124,6 +124,7 @@ const getLocationDetailsController = {
               ? locationData.welshDate ?? locationData.summaryDate
               : locationData.englishDate ?? locationData.summaryDate,
           dailySummaryTexts: welsh.dailySummaryTexts,
+          serviceName: multipleLocations.serviceName,
           lang
         })
       } else {

@@ -17,7 +17,7 @@ const ozoneController = {
     if (
       lang !== LANG_CY &&
       lang !== LANG_EN &&
-      path === '/chwilio-lleoliad/cy'
+      path === '/llygryddion/oson/cy'
     ) {
       lang = LANG_CY
     }
