@@ -11,7 +11,7 @@ describe('Ozone Controller - Welsh', () => {
   beforeEach(() => {
     mockRequest = {
       query: {},
-      path: '/chwilio-lleoliad/cy'
+      path: '/llygryddion/oson/cy'
     }
     jest.mock('~/src/server/common/helpers/get-site-url', () => ({
       getAirQualitySiteUrl: jest.fn((request) => {
@@ -34,7 +34,7 @@ describe('Ozone Controller - Welsh', () => {
   it('should render the ozone cy page with the necessary data', () => {
     mockRequest.query.lang = LANG_CY
     const expectedUrl =
-      'https://check-air-quality.service.gov.uk/chwilio-lleoliad/cy?lang=cy'
+      'https://check-air-quality.service.gov.uk/llygryddion/oson/cy?lang=cy'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = ozoneController.handler(mockRequest, mockH)
@@ -57,7 +57,7 @@ describe('Ozone Controller - Welsh', () => {
   it('should render the ozone cy page with the necessary data if lang is not cy | en', () => {
     mockRequest.query.lang = 'test'
     const expectedUrl =
-      'https://check-air-quality.service.gov.uk/chwilio-lleoliad/cy?lang=test'
+      'https://check-air-quality.service.gov.uk/llygryddion/oson/cy?lang=test'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = ozoneController.handler(mockRequest, mockH)

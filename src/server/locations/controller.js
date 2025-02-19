@@ -17,11 +17,11 @@ const getLocationDataController = {
     const str = tempString?.split('?')[0]
     let lang = query?.lang?.slice(0, 2)
     if (lang !== LANG_CY && lang !== LANG_EN && path === '/location') {
-      lang = LANG_CY
+      lang = LANG_EN
     }
 
     if (query?.lang && query?.lang === LANG_CY) {
-      return h.redirect(`/lleoliad?lang=en`)
+      return h.redirect(`/lleoliad?lang=cy`)
     }
     const {
       searchLocation,
@@ -51,7 +51,7 @@ const getLocationDataController = {
     if (!locationNameOrPostcode && !locationType) {
       request.yar.set('locationType', '')
       if (str === 'search-location') {
-        return h.redirect(`/search-location/cy?lang=cy`)
+        return h.redirect(`/search-location/?lang=en`)
       }
     }
     try {
