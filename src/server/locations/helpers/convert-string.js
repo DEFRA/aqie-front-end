@@ -50,7 +50,7 @@ function extractAndFormatUKPostcode(headerTitle) {
   if (match) {
     // Check if a postcode is found
     const postcode = match[0] // Extract the matched postcode
-    // postcode = postcode.replace(/[-_]/g, ' '); // Replace hyphens and underscores with spaces in the postc
+    // postcode = postcode.replace(/[-_]/g, ' ') // Replace hyphens and underscores with spaces in the postc
     return postcode // Return the formatted postcode
   }
   return null // Return null if no postcode is found
@@ -64,7 +64,7 @@ function removeAllWordsAfterUnderscore(str) {
 
 function isValidPartialPostcode(postcode) {
   // Define a function to validate if a string is a partial postcode
-  const partialPostcodeRegex = /\b(?!BT)(?:[A-Z]{1,2}\d{1,2}|EN1|EN8|N8)\b/i // Define a regular expression to match UK partial postcodes'  return partialPostcodeRegex.test(postcode); // Test the string against the regular expression ''
+  const partialPostcodeRegex = /\b(?!BT)(?:[A-Z]{1,2}\d{1,2}|EN1|EN8|N8)\b/i // Define a regular expression to match UK partial postcodes'  return partialPostcodeRegex.test(postcode) // Test the string against the regular expression ''
   return partialPostcodeRegex.test(postcode) // Test the string against the regular expression
 }
 
@@ -85,6 +85,47 @@ function formatUKPostcode(postcode) {
   return postcode.toUpperCase() // Return the original postcode in uppercase if it doesn't match the regex
 }
 
+function splitAndCheckSpecificWords(sourceString, targetString) {
+  // Define a function to split a string and check if another string contains the exact first two words together or the exact last word
+  const words = sourceString.split(' ') // Split the source string into an array of words
+  if (words.length === 2) {
+    // Check if the source string contains exactly two words
+    const [firstWord, secondWord] = words // Destructure the array to get the first two words
+    const firstTwoWords = `${firstWord} ${secondWord}` // Combine the first two words
+    const exactLastWord = new RegExp(`\\b${secondWord}\\b`) // Create a regex to match the exact last word
+    const joinedWords = words.join(' ') // Join the words with a space
+    return (
+      targetString.includes(firstTwoWords) ||
+      exactLastWord.test(targetString) ||
+      joinedWords
+    ) // Check if the target string contains the exact first two words together or the exact last word
+  } else if (words.length === 3) {
+    // Check if the source string contains exactly three words
+    const [firstWord, secondWord, lastWord] = words // Destructure the array to get the first two and the last word
+    const firstTwoWords = `${firstWord} ${secondWord}` // Combine the first two words
+    const exactLastWord = new RegExp(`\\b${lastWord}\\b`) // Create a regex to match the exact last word
+    const firstArray = [firstWord, secondWord]
+    const joinedWords = firstArray.join('')
+    const exactJoinedWord = new RegExp(`\\b${joinedWords}\\b`)
+    return (
+      targetString.includes(firstTwoWords) ||
+      exactLastWord.test(targetString) ||
+      exactJoinedWord.test(joinedWords)
+    ) // Check if the target string contains the exact first two words together or the exact last word
+  }
+  return false // Return false if the source string does not contain exactly two or three words
+}
+
+function splitAndCheckExactWords(sourceString, targetString) {
+  // Define a function to split a string and check if another string contains exactly any of the three words
+  const words = sourceString.split(' ') // Split the source string into an array of words
+  if (words.length >= 3) {
+    // Check if the source string contains exactly three words
+    return words.some((word) => new RegExp(`\\b${word}\\b`).test(targetString)) // Check if the target string contains exactly any of the three words
+  }
+  return false // Return false if the source string does not contain exactly three words
+}
+
 export {
   removeAllWordsAfterUnderscore,
   convertStringToHyphenatedLowercaseWords,
@@ -95,5 +136,7 @@ export {
   isValidPartialPostcode,
   splitAndKeepFirstWord,
   formatUKPostcode,
-  isValidFullPostcode
+  isValidFullPostcode,
+  splitAndCheckSpecificWords,
+  splitAndCheckExactWords
 }

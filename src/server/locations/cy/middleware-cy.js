@@ -219,6 +219,14 @@ const searchMiddlewareCy = async (request, h) => {
       locationNameOrPostcode,
       lang
     )
+    if (
+      !getNIPlaces?.results ||
+      getNIPlaces?.results.length === 0 ||
+      getNIPlaces === 'wrong postcode'
+    ) {
+      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+      return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
+    }
 
     logger.info(`::::::LOCATION_TYPE_NI-CY::::::: , ${getNIPlaces?.results[0]}`)
     nearestLocationsRangeEnglish = getNearestLocation(
