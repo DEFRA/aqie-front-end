@@ -100,7 +100,7 @@ const getLocationDetailsController = {
         locationData?.results,
         getForecasts,
         getMeasurements,
-        LOCATION_TYPE_UK,
+        locationType,
         0,
         lang
       )
@@ -118,7 +118,13 @@ const getLocationDetailsController = {
         logger.info(
           `locationData in location id ${JSON.stringify(locationData)}`
         )
-        const { airQuality } = airQualityValues(forecastNum, lang)
+
+        const { airQuality } = airQualityValues(
+          locationType === LOCATION_TYPE_NI
+            ? locationData?.forecastNum
+            : forecastNum,
+          lang
+        )
         logger.info(`locationData results ${JSON.stringify(locationData)})`)
 
         return h.view('locations/location', {
