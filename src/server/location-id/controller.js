@@ -19,6 +19,7 @@ import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
 import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
 import { airQualityValues } from '~/src/server/locations/helpers/air-quality-values.js'
+import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 
 const logger = createLogger()
 
@@ -65,7 +66,7 @@ const getLocationDetailsController = {
         multipleLocations
       } = english
       const locationData = request.yar.get('locationData') || []
-
+      const { getForecasts, getMeasurements } = locationData
       const locationType =
         locationData.locationType === LOCATION_TYPE_UK
           ? LOCATION_TYPE_UK
@@ -95,6 +96,15 @@ const getLocationDetailsController = {
       logger.info(
         `locationDetails in location id ${JSON.stringify(locationDetails)}`
       )
+      const { forecastNum, nearestLocationsRange } = getNearestLocation(
+        locationData?.results,
+        getForecasts,
+        getMeasurements,
+        LOCATION_TYPE_UK,
+        0,
+        lang
+      )
+
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
         title = convertFirstLetterIntoUppercase(title)
@@ -108,25 +118,14 @@ const getLocationDetailsController = {
         logger.info(
           `locationData in location id ${JSON.stringify(locationData)}`
         )
-        const { airQuality } = airQualityValues(locationData.forecastNum, lang)
+        const { airQuality } = airQualityValues(forecastNum, lang)
         logger.info(`locationData results ${JSON.stringify(locationData)})`)
-        const { nearestLocationsRangeEnglish, nearestLocationsRangeWelsh } =
-          locationData
-        logger.info(
-          `nearestLocationsRangeEnglish location-id ${JSON.stringify(nearestLocationsRangeEnglish?.nearestLocationsRange)})`
-        )
-        logger.info(
-          `nearestLocationsRangeWelsh location-id ${JSON.stringify(nearestLocationsRangeWelsh?.nearestLocationsRange)})`
-        )
 
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
           airQualityData: airQualityData.commonMessages,
-          monitoringSites:
-            lang === LANG_EN
-              ? nearestLocationsRangeEnglish?.nearestLocationsRange
-              : nearestLocationsRangeWelsh?.nearestLocationsRange,
+          monitoringSites: nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: `${multipleLocations.titlePrefix} ${title} - ${multipleLocations.pageTitle}`,

@@ -19,12 +19,14 @@ import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
 import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
 import { airQualityValues } from '~/src/server/locations/helpers/air-quality-values.js'
+import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 
 const logger = createLogger()
 
 const getLocationDetailsController = {
   handler: async (request, h) => {
     try {
+      let nearestLocationsRangeWelsh = []
       const { query, headers } = request
       const locationId = request.params.id
       let locationDetails = null
@@ -65,7 +67,7 @@ const getLocationDetailsController = {
         multipleLocations
       } = welsh
       const locationData = request.yar.get('locationData') || []
-
+      const { getForecasts, getMeasurements } = locationData
       const locationType =
         locationData.locationType === LOCATION_TYPE_UK
           ? LOCATION_TYPE_UK
@@ -83,6 +85,23 @@ const getLocationDetailsController = {
         }
         return null
       })
+      nearestLocationsRangeWelsh = getNearestLocation(
+        locationDetails,
+        getForecasts?.forecasts,
+        getMeasurements?.measurements,
+        LOCATION_TYPE_UK,
+        0,
+        LANG_CY
+      )
+
+      const { forecastNum } = getNearestLocation(
+        locationDetails,
+        getForecasts?.forecasts,
+        getMeasurements?.measurements,
+        LOCATION_TYPE_UK,
+        0,
+        lang
+      )
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
         title = convertFirstLetterIntoUppercase(title)
@@ -91,9 +110,7 @@ const getLocationDetailsController = {
           locationData.dailySummary,
           lang
         )
-        const { airQuality } = airQualityValues(locationData.forecastNum, lang)
-        const { nearestLocationsRangeEnglish, nearestLocationsRangeWelsh } =
-          locationData
+        const { airQuality } = airQualityValues(forecastNum, lang)
         logger.info(`locationType in location-id ${locationType}`)
         logger.info(`locationData in location-id ${locationData}`)
 
@@ -101,10 +118,7 @@ const getLocationDetailsController = {
           result: locationDetails,
           airQuality,
           airQualityData: airQualityData.commonMessages,
-          monitoringSites:
-            lang === LANG_EN
-              ? nearestLocationsRangeEnglish?.nearestLocationsRange
-              : nearestLocationsRangeWelsh?.nearestLocationsRange,
+          monitoringSites: nearestLocationsRangeWelsh?.nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: `${multipleLocations.titlePrefix} ${title} - ${multipleLocations.pageTitle}`,
