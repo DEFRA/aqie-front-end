@@ -126,6 +126,12 @@ function splitAndCheckExactWords(sourceString, targetString) {
   return false // Return false if the source string does not contain exactly three words
 }
 
+function countWords(str) {
+  // Define a function to count the number of words in a string
+  const words = str.trim().split(/\s+/) // Split the string by spaces and remove any leading or trailing whitespace
+  return words.length // Return the number of words
+}
+
 export {
   removeAllWordsAfterUnderscore,
   convertStringToHyphenatedLowercaseWords,
@@ -138,5 +144,6 @@ export {
   formatUKPostcode,
   isValidFullPostcode,
   splitAndCheckSpecificWords,
-  splitAndCheckExactWords
+  splitAndCheckExactWords,
+  countWords
 }

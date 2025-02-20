@@ -9,7 +9,8 @@ import {
   removeLastWordAndAddHyphens,
   isValidFullPostcode,
   formatUKPostcode,
-  splitAndCheckSpecificWords
+  splitAndCheckSpecificWords,
+  countWords
 } from '~/src/server/locations/helpers/convert-string'
 import { LANG_EN, LANG_CY } from '~/src/server/data/constants'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
@@ -229,20 +230,24 @@ const processMatches = (
       userLocation.includes(name2)
     )
   })
+  const countWordsCases = countWords(locationNameOrPostcode)
   if (
     newMatches.length > 3 &&
     !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
-    !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase())
+    !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
+    countWordsCases > 1
   ) {
     newMatches = newMatches.slice(0, 2)
   }
-  if (
-    (fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
-      newMatches.length > 0) ||
-    (fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
-      newMatches.length === 2) ||
-    newMatches.length > 3
-  ) {
+  const conditionTwo =
+    fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
+    newMatches.length === 2
+  const conditonThree =
+    partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
+    matches.length > 0 &&
+    locationNameOrPostcode.length <= 3
+
+  if (conditionTwo || conditonThree) {
     if (newMatches[0].GAZETTEER_ENTRY.NAME2) {
       newMatches[0].GAZETTEER_ENTRY.NAME1 = newMatches[0].GAZETTEER_ENTRY.NAME2
     } else {
@@ -259,8 +264,21 @@ const processMatches = (
       : removeLastWordAndAddHyphens(headerTitle)
     newMatches[0].GAZETTEER_ENTRY.ID = finalHeaderTitle
     newMatches = [newMatches[0]]
-
     return newMatches
+  }
+  const alphanumericPattern = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]+$/
+  const isAlphanumeric =
+    alphanumericPattern.test(locationNameOrPostcode) &&
+    !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
+    !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase())
+  if (
+    isAlphanumeric ||
+    (typeof Number(locationNameOrPostcode) === 'number' &&
+      !isNaN(Number(locationNameOrPostcode)) &&
+      !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
+      !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()))
+  ) {
+    newMatches = []
   }
 
   return newMatches.reduce((acc, item) => {
