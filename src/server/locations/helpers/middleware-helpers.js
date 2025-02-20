@@ -9,7 +9,8 @@ import {
   isValidFullPostcode,
   formatUKPostcode,
   splitAndCheckSpecificWords,
-  countWords
+  countWords,
+  isOnlyLettersAndMoreThanFour
 } from '~/src/server/locations/helpers/convert-string'
 import { LANG_EN, LANG_CY } from '~/src/server/data/constants'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
@@ -104,8 +105,8 @@ const handleMultipleMatches = (
 ) => {
   request.yar.set('locationData', {
     results: selectedMatches,
-    rawForecasts: getForecasts?.forecasts,
-    measurements: getMeasurements?.measurements,
+    getForecasts: getForecasts?.forecasts,
+    getMeasurements: getMeasurements?.measurements,
     multipleLocations,
     title: multipleLocations.title,
     paragraphs: multipleLocations.paragraphs,
@@ -244,9 +245,9 @@ const processMatches = (
   const conditonThree =
     partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
     matches.length > 0 &&
-    locationNameOrPostcode.length <= 4
-
-  if (conditionTwo || conditonThree || matches.length > 2) {
+    locationNameOrPostcode.length <= 6
+  const onlyLetters = isOnlyLettersAndMoreThanFour(locationNameOrPostcode)
+  if (conditionTwo || conditonThree || (matches.length > 3 && !onlyLetters)) {
     if (newMatches[0].GAZETTEER_ENTRY.NAME2) {
       newMatches[0].GAZETTEER_ENTRY.NAME1 = newMatches[0].GAZETTEER_ENTRY.NAME2
     } else {

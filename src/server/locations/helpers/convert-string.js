@@ -132,6 +132,12 @@ function countWords(str) {
   return words.length // Return the number of words
 }
 
+function isOnlyLettersAndMoreThanFour(input) {
+  // Define a function to check if the string is only letters and contains more than 4 letters
+  const lettersPattern = /^[A-Za-z]+$/ // Define a regular expression to match only letters
+  return lettersPattern.test(input) && input.length > 4 // Check if the input matches the pattern and contains more than 4 letters
+}
+
 export {
   removeAllWordsAfterUnderscore,
   convertStringToHyphenatedLowercaseWords,
@@ -145,5 +151,6 @@ export {
   isValidFullPostcode,
   splitAndCheckSpecificWords,
   splitAndCheckExactWords,
-  countWords
+  countWords,
+  isOnlyLettersAndMoreThanFour
 }
