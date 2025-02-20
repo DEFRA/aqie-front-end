@@ -26,7 +26,6 @@ const logger = createLogger()
 const getLocationDetailsController = {
   handler: async (request, h) => {
     try {
-      let nearestLocationsRangeWelsh = []
       const { query, headers } = request
       const locationId = request.params.id
       let locationDetails = null
@@ -85,23 +84,15 @@ const getLocationDetailsController = {
         }
         return null
       })
-      nearestLocationsRangeWelsh = getNearestLocation(
-        locationDetails,
-        getForecasts?.forecasts,
-        getMeasurements?.measurements,
-        LOCATION_TYPE_UK,
-        0,
-        LANG_CY
-      )
-
-      const { forecastNum } = getNearestLocation(
-        locationDetails,
-        getForecasts?.forecasts,
-        getMeasurements?.measurements,
+      const { forecastNum, nearestLocationsRange } = getNearestLocation(
+        locationData?.results,
+        getForecasts,
+        getMeasurements,
         LOCATION_TYPE_UK,
         0,
         lang
       )
+
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
         title = convertFirstLetterIntoUppercase(title)
@@ -118,7 +109,10 @@ const getLocationDetailsController = {
           result: locationDetails,
           airQuality,
           airQualityData: airQualityData.commonMessages,
-          monitoringSites: nearestLocationsRangeWelsh?.nearestLocationsRange,
+          monitoringSites:
+            locationType === LOCATION_TYPE_UK
+              ? nearestLocationsRange
+              : locationData?.nearestLocationsRangeWelsh?.nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: `${multipleLocations.titlePrefix} ${title} - ${multipleLocations.pageTitle}`,

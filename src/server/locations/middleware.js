@@ -114,20 +114,6 @@ const searchMiddleware = async (request, h) => {
       searchTerms,
       secondSearchTerm
     )
-    isPartialPostcode = isValidPartialPostcode(locationNameOrPostcode)
-    if (isPartialPostcode && searchTerms) {
-      return h.view('error/index', {
-        footerTxt,
-        url: request.path,
-        phaseBanner,
-        displayBacklink: false,
-        cookieBanner,
-        serviceName: english.multipleLocations.serviceName,
-        notFoundUrl: english.notFoundUrl,
-        lang
-      })
-    }
-
     if (selectedMatches.length === 0) {
       return h.redirect('/location-not-found').takeover()
     }
@@ -144,31 +130,7 @@ const searchMiddleware = async (request, h) => {
     logger.info(
       `selectedMatches in middleware UK ${JSON.stringify(selectedMatches)})`
     )
-    nearestLocationsRangeEnglish = getNearestLocation(
-      selectedMatches,
-      getForecasts?.forecasts,
-      getMeasurements?.measurements,
-      LOCATION_TYPE_UK,
-      0,
-      LANG_EN
-    )
-    nearestLocationsRangeWelsh = getNearestLocation(
-      selectedMatches,
-      getForecasts?.forecasts,
-      getMeasurements?.measurements,
-      LOCATION_TYPE_UK,
-      0,
-      LANG_CY
-    )
 
-    const { forecastNum } = getNearestLocation(
-      selectedMatches,
-      getForecasts?.forecasts,
-      getMeasurements?.measurements,
-      LOCATION_TYPE_UK,
-      0,
-      lang
-    )
     logger.info(
       `nearestLocationsRangeEnglish middleware ${JSON.stringify(nearestLocationsRangeEnglish)})`
     )
@@ -177,7 +139,6 @@ const searchMiddleware = async (request, h) => {
       return handleSingleMatch(h, request, {
         searchTerms,
         selectedMatches,
-        forecastNum,
         getForecasts,
         getMeasurements,
         getDailySummary,
@@ -191,8 +152,6 @@ const searchMiddleware = async (request, h) => {
         title,
         urlRoute,
         locationType,
-        nearestLocationsRangeEnglish,
-        nearestLocationsRangeWelsh,
         lang
       })
     } else if (
@@ -227,10 +186,7 @@ const searchMiddleware = async (request, h) => {
         month,
         welshDate,
         englishDate,
-        forecastNum,
         locationType,
-        nearestLocationsRangeEnglish,
-        nearestLocationsRangeWelsh,
         lang
       })
     } else {

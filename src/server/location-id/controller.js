@@ -125,7 +125,11 @@ const getLocationDetailsController = {
           result: locationDetails,
           airQuality,
           airQualityData: airQualityData.commonMessages,
-          monitoringSites: nearestLocationsRange,
+          monitoringSites:
+            locationType === LOCATION_TYPE_UK
+              ? nearestLocationsRange
+              : locationData?.nearestLocationsRangeEnglish
+                  ?.nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: `${multipleLocations.titlePrefix} ${title} - ${multipleLocations.pageTitle}`,
