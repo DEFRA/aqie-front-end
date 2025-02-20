@@ -123,37 +123,11 @@ const searchMiddlewareCy = async (request, h) => {
       String(urlRoute)
     )
     const titleRoute = convertStringToHyphenatedLowercaseWords(String(title))
-    nearestLocationsRangeEnglish = getNearestLocation(
-      selectedMatches,
-      getForecasts?.forecasts,
-      getMeasurements?.measurements,
-      LOCATION_TYPE_UK,
-      0,
-      LANG_EN
-    )
-    nearestLocationsRangeWelsh = getNearestLocation(
-      selectedMatches,
-      getForecasts?.forecasts,
-      getMeasurements?.measurements,
-      LOCATION_TYPE_UK,
-      0,
-      LANG_CY
-    )
-
-    const { forecastNum } = getNearestLocation(
-      selectedMatches,
-      getForecasts?.forecasts,
-      getMeasurements?.measurements,
-      LOCATION_TYPE_UK,
-      0,
-      lang
-    )
     const isPartialPostcode = isValidPartialPostcode(locationNameOrPostcode)
     if (selectedMatches.length === 1) {
       return handleSingleMatch(h, request, {
         searchTerms,
         selectedMatches,
-        forecastNum,
         getForecasts,
         getMeasurements,
         getDailySummary,
@@ -167,8 +141,6 @@ const searchMiddlewareCy = async (request, h) => {
         title,
         urlRoute,
         locationType,
-        nearestLocationsRangeEnglish,
-        nearestLocationsRangeWelsh,
         lang
       })
     } else if (
@@ -201,10 +173,7 @@ const searchMiddlewareCy = async (request, h) => {
         month,
         welshDate,
         englishDate,
-        forecastNum,
         locationType,
-        nearestLocationsRangeEnglish,
-        nearestLocationsRangeWelsh,
         lang
       })
     } else {

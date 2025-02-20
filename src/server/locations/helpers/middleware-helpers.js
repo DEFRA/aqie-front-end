@@ -24,7 +24,6 @@ const handleSingleMatch = (
   {
     searchTerms,
     selectedMatches,
-    forecastNum,
     getForecasts,
     getMeasurements,
     getDailySummary,
@@ -38,18 +37,15 @@ const handleSingleMatch = (
     title,
     urlRoute,
     locationType,
-    nearestLocationsRangeEnglish,
-    nearestLocationsRangeWelsh,
     lang
   }
 ) => {
   const customId = selectedMatches.length === 1 ? urlRoute : headerTitleRoute // Use the helper function to generate the custom ID
   request.yar.set('locationData', {
     results: selectedMatches,
-    rawForecasts: getForecasts?.forecasts,
-    forecastNum: selectedMatches.length !== 0 ? forecastNum : 0,
+    getForecasts: getForecasts?.forecasts,
     transformedDailySummary,
-    measurements: getMeasurements?.measurements,
+    getMeasurements: getMeasurements?.measurements,
     englishDate,
     dailySummary: getDailySummary,
     welshDate,
@@ -59,8 +55,6 @@ const handleSingleMatch = (
     titleRoute,
     headerTitleRoute,
     locationType,
-    nearestLocationsRangeEnglish,
-    nearestLocationsRangeWelsh,
     lang
   })
   logger.info(
@@ -76,7 +70,6 @@ const handleMultipleMatches = (
   h,
   request,
   {
-    forecastNum,
     selectedMatches,
     locationNameOrPostcode,
     userLocation,
@@ -98,8 +91,6 @@ const handleMultipleMatches = (
     welshDate,
     englishDate,
     locationType,
-    nearestLocationsRangeEnglish,
-    nearestLocationsRangeWelsh,
     lang
   }
 ) => {
@@ -129,9 +120,6 @@ const handleMultipleMatches = (
     welshDate,
     englishDate,
     locationType,
-    forecastNum,
-    nearestLocationsRangeEnglish,
-    nearestLocationsRangeWelsh,
     lang
   })
 
