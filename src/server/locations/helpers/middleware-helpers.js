@@ -8,7 +8,8 @@ import {
   splitAndKeepFirstWord,
   removeLastWordAndAddHyphens,
   isValidFullPostcode,
-  formatUKPostcode
+  formatUKPostcode,
+  splitAndCheckSpecificWords
 } from '~/src/server/locations/helpers/convert-string'
 import { LANG_EN, LANG_CY } from '~/src/server/data/constants'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
@@ -146,6 +147,7 @@ const processMatches = (
   searchTerms,
   secondSearchTerm
 ) => {
+  const fullPostcodePattern = /\b([A-Z]{1,2}\d[A-Z\d]?)\s?(\d[A-Z]{2})\b/i
   const partialPostcodePattern = /\b(?!BT)(?:[A-Z]{1,2}\d{1,2}|EN1|EN8|N8)\b/i
   let newMatches = matches.filter((item) => {
     const name1 = item?.GAZETTEER_ENTRY.NAME1.toUpperCase().replace(/\s+/g, '')
@@ -219,24 +221,34 @@ const processMatches = (
     logger.info(`name1 default in middleware NI ${name1}`)
     logger.info(`userLocation default in middleware NI ${userLocation}`)
     logger.info(`name2 default in middleware NI ${name2}`)
+    const checkWords = splitAndCheckSpecificWords(userLocation, name1)
     return (
+      checkWords ||
       name1.includes(userLocation.replace(/\s+/g, '')) ||
       userLocation.includes(name1) ||
       userLocation.includes(name2)
     )
   })
   if (
-    (partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
+    newMatches.length > 3 &&
+    !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
+    !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase())
+  ) {
+    newMatches = newMatches.slice(0, 2)
+  }
+  if (
+    (fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
       newMatches.length > 0) ||
-    (!partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
-      newMatches.length === 2)
+    (fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
+      newMatches.length === 2) ||
+    newMatches.length > 3
   ) {
     if (newMatches[0].GAZETTEER_ENTRY.NAME2) {
       newMatches[0].GAZETTEER_ENTRY.NAME1 = newMatches[0].GAZETTEER_ENTRY.NAME2
     } else {
       newMatches[0].GAZETTEER_ENTRY.NAME1 = locationNameOrPostcode.toUpperCase() // Set the name to the partial postcode
     }
-    newMatches = [newMatches[0]]
+
     const urlRoute = `${newMatches[0].GAZETTEER_ENTRY.NAME1}_${newMatches[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
     let headerTitle = convertStringToHyphenatedLowercaseWords(urlRoute)
     headerTitle = headerTitle.replace(/-/g, ' ')
@@ -246,6 +258,8 @@ const processMatches = (
       ? splitAndKeepFirstWord(headerTitle)
       : removeLastWordAndAddHyphens(headerTitle)
     newMatches[0].GAZETTEER_ENTRY.ID = finalHeaderTitle
+    newMatches = [newMatches[0]]
+
     return newMatches
   }
 
@@ -297,7 +311,7 @@ const getTitleAndHeaderTitle = (locationDetails, locationNameOrPostcode) => {
     } else {
       title = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY} - ${home.pageTitle}`
       headerTitle = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
-      urlRoute = `${locationNameOrPostcode}_${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
+      urlRoute = `${locationDetails[0].GAZETTEER_ENTRY.NAME1}_${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
       term1 = locationNameOrPostcode
     }
   }

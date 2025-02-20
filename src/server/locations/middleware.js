@@ -222,6 +222,8 @@ const searchMiddleware = async (request, h) => {
         backlink,
         cookieBanner,
         calendarWelsh,
+        headerTitle,
+        title,
         month,
         welshDate,
         englishDate,
