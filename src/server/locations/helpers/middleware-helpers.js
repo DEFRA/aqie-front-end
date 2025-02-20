@@ -6,7 +6,6 @@ import {
   convertStringToHyphenatedLowercaseWords,
   extractAndFormatUKPostcode,
   splitAndKeepFirstWord,
-  removeLastWordAndAddHyphens,
   isValidFullPostcode,
   formatUKPostcode,
   splitAndCheckSpecificWords,
@@ -245,25 +244,35 @@ const processMatches = (
   const conditonThree =
     partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
     matches.length > 0 &&
-    locationNameOrPostcode.length <= 3
+    locationNameOrPostcode.length <= 4
 
-  if (conditionTwo || conditonThree) {
+  if (conditionTwo || conditonThree || matches.length > 2) {
     if (newMatches[0].GAZETTEER_ENTRY.NAME2) {
       newMatches[0].GAZETTEER_ENTRY.NAME1 = newMatches[0].GAZETTEER_ENTRY.NAME2
     } else {
       newMatches[0].GAZETTEER_ENTRY.NAME1 = locationNameOrPostcode.toUpperCase() // Set the name to the partial postcode
     }
-
-    const urlRoute = `${newMatches[0].GAZETTEER_ENTRY.NAME1}_${newMatches[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
-    let headerTitle = convertStringToHyphenatedLowercaseWords(urlRoute)
-    headerTitle = headerTitle.replace(/-/g, ' ')
+    newMatches = [newMatches[0]]
+    let urlRoute = ''
+    if (newMatches[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH) {
+      if (newMatches[0].GAZETTEER_ENTRY.NAME2) {
+        urlRoute = `${newMatches[0].GAZETTEER_ENTRY.NAME2}_${newMatches[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
+      } else {
+        urlRoute = `${newMatches[0].GAZETTEER_ENTRY.NAME1}_${newMatches[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
+      }
+    } else {
+      urlRoute = newMatches[0].GAZETTEER_ENTRY.NAME2
+        ? `${newMatches[0].GAZETTEER_ENTRY.NAME2}_${newMatches[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
+        : `${newMatches[0].GAZETTEER_ENTRY.NAME1}_${newMatches[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
+    }
+    const headerTitle = convertStringToHyphenatedLowercaseWords(urlRoute)
     const postcodCheck = removeAllWordsAfterUnderscore(headerTitle)
     const postcode = extractAndFormatUKPostcode(postcodCheck) // Use the helper function to extract and format UK postcode from headerTitle
     const finalHeaderTitle = postcode
       ? splitAndKeepFirstWord(headerTitle)
-      : removeLastWordAndAddHyphens(headerTitle)
+      : convertStringToHyphenatedLowercaseWords(headerTitle)
     newMatches[0].GAZETTEER_ENTRY.ID = finalHeaderTitle
-    newMatches = [newMatches[0]]
+
     return newMatches
   }
   const alphanumericPattern = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]+$/
@@ -299,7 +308,7 @@ const processMatches = (
     const postcodCheck = removeAllWordsAfterUnderscore(urlRoute)
     const postcode = extractAndFormatUKPostcode(postcodCheck) // Use the helper function to extract and format UK postcode from headerTitle
     const finalUrlRoute = postcode
-      ? postcode.replace(/\s+/g, '')
+      ? splitAndKeepFirstWord(postcode)
       : convertStringToHyphenatedLowercaseWords(urlRoute)
     item.GAZETTEER_ENTRY.ID = finalUrlRoute // Update the nested object property
     acc.push(item)
