@@ -71,12 +71,13 @@ const getLocationDetailsController = {
         locationData.locationType === LOCATION_TYPE_UK
           ? LOCATION_TYPE_UK
           : LOCATION_TYPE_NI
-
-      locationDetails = locationData?.results?.find((item) => {
+      let locationIndex = 0
+      locationDetails = locationData?.results?.find((item, index) => {
         if (
           item.GAZETTEER_ENTRY.ID.replace(/\s/g, '') ===
           locationId.replace(/\s/g, '')
         ) {
+          locationIndex = index
           return (
             item.GAZETTEER_ENTRY.ID.replace(/\s/g, '') ===
             locationId.replace(/\s/g, '')
@@ -89,7 +90,7 @@ const getLocationDetailsController = {
         getForecasts,
         getMeasurements,
         LOCATION_TYPE_UK,
-        0,
+        locationIndex,
         lang
       )
 
