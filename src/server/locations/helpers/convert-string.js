@@ -42,15 +42,14 @@ function removeHyphensAndUnderscores(str) {
 
 function extractAndFormatUKPostcode(headerTitle) {
   // Define a function to extract and format UK postcode from headerTitle
-  const postcodeRegex = /\b(?!BT)([A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2})\b/i // Simplified regex to reduce complexity
-  const partialPostcodeRegex = /\b(?!BT)(?:[A-Z]{1,2}\d{1,2}|EN1|EN8|N8)\b/i // Define a regular expression to match UK partial postcodes
+  const postcodeRegex = /^[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}$/i // Simplified regex to reduce complexity
+  const partialPostcodeRegex = /^[a-z]{1,2}\d[a-z\d]?$/i // Define a regular expression to match UK partial postcodes
   const finalMatch = removeHyphensAndUnderscores(headerTitle) // Match the postcode in the headerTitle
   const match =
     finalMatch.match(postcodeRegex) ?? finalMatch.match(partialPostcodeRegex) // Match the postcode in the headerTitle
   if (match) {
     // Check if a postcode is found
     const postcode = match[0] // Extract the matched postcode
-    // postcode = postcode.replace(/[-_]/g, ' ') // Replace hyphens and underscores with spaces in the postc
     return postcode // Return the formatted postcode
   }
   return null // Return null if no postcode is found
@@ -62,21 +61,33 @@ function removeAllWordsAfterUnderscore(str) {
   return words[0] // Return the first part of the string
 }
 
-function isValidPartialPostcode(postcode) {
+function isValidPartialPostcodeUK(postcode) {
   // Define a function to validate if a string is a partial postcode
-  const partialPostcodeRegex = /\b(?!BT)(?:[A-Z]{1,2}\d{1,2}|EN1|EN8|N8)\b/i // Define a regular expression to match UK partial postcodes'  return partialPostcodeRegex.test(postcode) // Test the string against the regular expression ''
+  const partialPostcodeRegex = /^[a-z]{1,2}\d[a-z\d]?$/i // Define a regular expression to match UK partial postcodes'  return partialPostcodeRegex.test(postcode) // Test the string against the regular expression ''
   return partialPostcodeRegex.test(postcode) // Test the string against the regular expression
 }
 
-function isValidFullPostcode(postcode) {
+function isValidFullPostcodeUK(postcode) {
   // Define a function to validate if a string is a partial postcode
-  const fullPostcodeRegex = /^([A-Z]{1,2}\d[A-Z\d]?)\s?(\d[A-Z]{2})$/i // Define a regular expression to match UK full postcodes
+  const fullPostcodeRegex = /^[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}$/i // Define a regular expression to match UK full postcodes
+  return fullPostcodeRegex.test(postcode) // Test the string against the regular expression
+}
+
+function isValidPartialPostcodeNI(postcode) {
+  // Define a function to validate if a string is a partial postcode
+  const partialPostcodeRegex = /^BT\d{1,2}$/i // Define a regular expression to match UK partial postcodes'  return partialPostcodeRegex.test(postcode) // Test the string against the regular expression ''
+  return partialPostcodeRegex.test(postcode) // Test the string against the regular expression
+}
+
+function isValidFullPostcodeNI(postcode) {
+  // Define a function to validate if a string is a partial postcode
+  const fullPostcodeRegex = /^BT\d{1,2}\s?\d[A-Z]{2}$/i // Define a regular expression to match UK full postcodes
   return fullPostcodeRegex.test(postcode) // Test the string against the regular expression
 }
 
 function formatUKPostcode(postcode) {
   // Define a function to format a UK postcode
-  const postcodeRegex = /^([A-Z]{1,2}\d[A-Z\d]?)\s?(\d[A-Z]{2})$/i // Define a regular expression to match UK postcode parts
+  const postcodeRegex = /^[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}$/i // Define a regular expression to match UK postcode parts
   const match = postcode.match(postcodeRegex) // Match the postcode parts
   if (match) {
     // Check if the postcode matches the regex
@@ -134,8 +145,14 @@ function countWords(str) {
 
 function isOnlyLettersAndMoreThanFour(input) {
   // Define a function to check if the string is only letters and contains more than 4 letters
-  const lettersPattern = /^[A-Za-z]+$/ // Define a regular expression to match only letters
+  const lettersPattern = /^[a-zA-Z ]+$/ // Define a regular expression to match only letters
   return lettersPattern.test(input) && input.length > 4 // Check if the input matches the pattern and contains more than 4 letters
+}
+
+function isWordsOnly(input) {
+  // Define a function to check if a string is made of words only
+  const wordsOnlyPattern = /^[a-zA-Z ]+$/ // Define a regular expression to match only letters and spaces
+  return wordsOnlyPattern.test(input) // Use the test method to check if the input matches the pattern
 }
 
 export {
@@ -145,12 +162,15 @@ export {
   extractAndFormatUKPostcode,
   removeHyphensAndUnderscores,
   removeLastWordAndHyphens,
-  isValidPartialPostcode,
+  isValidPartialPostcodeUK,
   splitAndKeepFirstWord,
   formatUKPostcode,
-  isValidFullPostcode,
+  isValidFullPostcodeUK,
   splitAndCheckSpecificWords,
   splitAndCheckExactWords,
   countWords,
-  isOnlyLettersAndMoreThanFour
+  isOnlyLettersAndMoreThanFour,
+  isValidFullPostcodeNI,
+  isValidPartialPostcodeNI,
+  isWordsOnly
 }

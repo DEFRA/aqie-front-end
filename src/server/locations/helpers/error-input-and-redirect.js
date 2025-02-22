@@ -9,6 +9,13 @@ import {
   LANG_EN,
   LANG_CY
 } from '~/src/server/data/constants'
+import {
+  isValidFullPostcodeUK,
+  isValidPartialPostcodeUK,
+  isWordsOnly,
+  isValidFullPostcodeNI,
+  isValidPartialPostcodeNI
+} from '~/src/server/locations/helpers/convert-string'
 
 const logger = createLogger()
 
@@ -188,6 +195,28 @@ const handleErrorInputAndRedirect = (
         statusCode,
         lang
       })
+    }
+  }
+  if (
+    (searchTerms && isWordsOnly(searchTerms)) ||
+    isValidFullPostcodeUK(searchTerms) ||
+    isValidPartialPostcodeUK(searchTerms)
+  ) {
+    return {
+      locationType: 'uk-location',
+      userLocation: searchTerms,
+      locationNameOrPostcode: searchTerms
+    }
+  }
+  if (
+    (searchTerms && !isWordsOnly(searchTerms)) ||
+    isValidFullPostcodeNI(searchTerms) ||
+    !isValidPartialPostcodeNI(searchTerms)
+  ) {
+    return {
+      locationType: 'ni-location',
+      userLocation: searchTerms,
+      locationNameOrPostcode: searchTerms
     }
   }
   return {

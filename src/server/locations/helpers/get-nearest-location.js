@@ -66,7 +66,7 @@ function getNearestLocation(
     `::::::::::: pointsToDisplay ::::::::::: ${JSON.stringify(pointsToDisplay)}`
   )
   const nearestLocationsRangeCal = measurements?.filter((item, i) => {
-    const opt = pointsToDisplay.some((dis, index) => {
+    const opt = pointsToDisplay.some((dis) => {
       return (
         item.location.coordinates[0] === dis.latitude &&
         item.location.coordinates[1] === dis.longitude
@@ -84,7 +84,7 @@ function getNearestLocation(
   )
   // TODO select and filter locations and pollutants which are not null or don't have exceptions
   const nearestLocationsRange = nearestLocationsRangeCal?.reduce(
-    (acc, curr, index) => {
+    (acc, curr) => {
       const newpollutants = []
       const getDistance =
         geolib.getDistance(

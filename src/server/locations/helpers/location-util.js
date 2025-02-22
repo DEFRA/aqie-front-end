@@ -48,7 +48,7 @@ function orderByDistance(lat, lon, forecastCoordinates) {
   return getLocation
 }
 
-function convertPointToLonLat(matches, location, index) {
+function convertPointToLonLat(matches, location, index = 0) {
   let lat = ''
   let lon = ''
   let point
@@ -86,7 +86,7 @@ function convertPointToLonLat(matches, location, index) {
 function coordinatesTotal(matches, location) {
   let coordinates = []
   try {
-    coordinates = matches.reduce((acc, current, index) => {
+    coordinates = matches.reduce((acc, current) => {
       return [
         ...acc,
         {

@@ -13,13 +13,16 @@ import {
   LANG_CY,
   LANG_EN,
   LOCATION_TYPE_UK,
-  LOCATION_TYPE_NI
+  LOCATION_TYPE_NI,
+  LOCATION_NOT_FOUND
 } from '~/src/server/data/constants'
 import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
 import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
 import { airQualityValues } from '~/src/server/locations/helpers/air-quality-values.js'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
+import { getIdMatch } from '~/src/server/locations/helpers/get-id-match'
+import { getNIData } from '~/src/server/locations/helpers/get-ni-single-data'
 
 const logger = createLogger()
 
@@ -28,7 +31,6 @@ const getLocationDetailsController = {
     try {
       const { query, headers } = request
       const locationId = request.params.id
-      let locationDetails = null
       const searchTermsSaved = request.yar.get('searchTermsSaved')
 
       if (query?.lang && query?.lang === LANG_EN && !query?.searchTerms) {
@@ -71,25 +73,31 @@ const getLocationDetailsController = {
         locationData.locationType === LOCATION_TYPE_UK
           ? LOCATION_TYPE_UK
           : LOCATION_TYPE_NI
-      let locationIndex = 0
-      locationDetails = locationData?.results?.find((item, index) => {
-        if (
-          item.GAZETTEER_ENTRY.ID.replace(/\s/g, '') ===
-          locationId.replace(/\s/g, '')
-        ) {
-          locationIndex = index
-          return (
-            item.GAZETTEER_ENTRY.ID.replace(/\s/g, '') ===
-            locationId.replace(/\s/g, '')
-          )
-        }
-        return null
-      })
+      let distance
+      if (locationData.locationType === LOCATION_TYPE_NI) {
+        distance = getNearestLocation(
+          locationData?.results,
+          getForecasts,
+          getMeasurements,
+          locationType,
+          0,
+          lang
+        )
+      }
+      const indexNI = 0
+      const { resultNI } = getNIData(locationData, distance, locationType)
+      const { locationIndex, locationDetails } = getIdMatch(
+        locationId,
+        locationData,
+        resultNI,
+        locationType,
+        indexNI
+      )
       const { forecastNum, nearestLocationsRange } = getNearestLocation(
         locationData?.results,
         getForecasts,
         getMeasurements,
-        LOCATION_TYPE_UK,
+        locationType,
         locationIndex,
         lang
       )
@@ -110,10 +118,7 @@ const getLocationDetailsController = {
           result: locationDetails,
           airQuality,
           airQualityData: airQualityData.commonMessages,
-          monitoringSites:
-            locationType === LOCATION_TYPE_UK
-              ? nearestLocationsRange
-              : locationData?.nearestLocationsRangeWelsh?.nearestLocationsRange,
+          monitoringSites: nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: `${multipleLocations.titlePrefix} ${title} - ${multipleLocations.pageTitle}`,
@@ -137,7 +142,7 @@ const getLocationDetailsController = {
           lang
         })
       } else {
-        return h.view('location-not-found/index', {
+        return h.view(LOCATION_NOT_FOUND, {
           paragraph: notFoundLocation.paragraphs,
           serviceName: notFoundLocation.heading,
           footerTxt,

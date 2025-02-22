@@ -5,7 +5,8 @@ import {
   LANG_CY,
   LANG_EN,
   LOCATION_TYPE_UK,
-  LOCATION_TYPE_NI
+  LOCATION_TYPE_NI,
+  LOCATION_NOT_FOUND
 } from '~/src/server/data/constants'
 
 const logger = createLogger()
@@ -54,7 +55,7 @@ const getLocationDataController = {
       }
     }
     try {
-      return h.view('location-not-found/index', {
+      return h.view(LOCATION_NOT_FOUND, {
         userLocation: locationNameOrPostcode,
         pageTitle: `${notFoundLocation.paragraphs.a} ${locationNameOrPostcode} - ${home.pageTitle}`,
         paragraph: notFoundLocation.paragraphs,
