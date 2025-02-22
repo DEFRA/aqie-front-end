@@ -12,6 +12,7 @@ import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import {
   LANG_CY,
   LANG_EN,
+  LOCATION_NOT_FOUND,
   LOCATION_TYPE_NI,
   LOCATION_TYPE_UK
 } from '~/src/server/data/constants'
@@ -20,6 +21,8 @@ import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search
 import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
 import { airQualityValues } from '~/src/server/locations/helpers/air-quality-values.js'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
+import { getIdMatch } from '~/src/server/locations/helpers/get-id-match'
+import { getNIData } from '~/src/server/locations/helpers/get-ni-single-data'
 
 const logger = createLogger()
 
@@ -28,7 +31,6 @@ const getLocationDetailsController = {
     try {
       const { query, headers } = request
       const locationId = request.params.id
-      let locationDetails = null
       const searchTermsSaved = request.yar.get('searchTermsSaved')
 
       if (query?.lang && query?.lang === LANG_CY && !query?.searchTerms) {
@@ -71,25 +73,25 @@ const getLocationDetailsController = {
         locationData.locationType === LOCATION_TYPE_UK
           ? LOCATION_TYPE_UK
           : LOCATION_TYPE_NI
-      let locationIndex = 0
-      locationDetails = locationData?.results?.find((item, index) => {
-        if (
-          item.GAZETTEER_ENTRY.ID.replace(/\s/g, '') ===
-          locationId.replace(/\s/g, '')
-        ) {
-          locationIndex = index
-          return (
-            item.GAZETTEER_ENTRY.ID.replace(/\s/g, '') ===
-            locationId.replace(/\s/g, '')
-          )
-        }
-        return null
-      })
-      logger.info(
-        `locationData in location id 0 ${JSON.stringify(locationData)}`
-      )
-      logger.info(
-        `locationDetails in location id ${JSON.stringify(locationDetails)}`
+      let distance
+      if (locationData.locationType === LOCATION_TYPE_NI) {
+        distance = getNearestLocation(
+          locationData?.results,
+          getForecasts,
+          getMeasurements,
+          locationType,
+          0,
+          lang
+        )
+      }
+      const indexNI = 0
+      const { resultNI } = getNIData(locationData, distance, locationType)
+      const { locationIndex, locationDetails } = getIdMatch(
+        locationId,
+        locationData,
+        resultNI,
+        locationType,
+        indexNI
       )
       const { forecastNum, nearestLocationsRange } = getNearestLocation(
         locationData?.results,
@@ -99,7 +101,6 @@ const getLocationDetailsController = {
         locationIndex,
         lang
       )
-
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
         title = convertFirstLetterIntoUppercase(title)
@@ -108,29 +109,13 @@ const getLocationDetailsController = {
           locationData.dailySummary,
           lang
         )
-
-        logger.info(`locationType in location-id ${locationType}`)
-        logger.info(
-          `locationData in location id ${JSON.stringify(locationData)}`
-        )
-
-        const { airQuality } = airQualityValues(
-          locationType === LOCATION_TYPE_NI
-            ? locationData?.forecastNum
-            : forecastNum,
-          lang
-        )
+        const { airQuality } = airQualityValues(forecastNum, lang)
         logger.info(`locationData results ${JSON.stringify(locationData)})`)
-
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
           airQualityData: airQualityData.commonMessages,
-          monitoringSites:
-            locationType === LOCATION_TYPE_UK
-              ? nearestLocationsRange
-              : locationData?.nearestLocationsRangeEnglish
-                  ?.nearestLocationsRange,
+          monitoringSites: nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: `${multipleLocations.titlePrefix} ${title} - ${multipleLocations.pageTitle}`,
@@ -154,7 +139,7 @@ const getLocationDetailsController = {
           lang
         })
       } else {
-        return h.view('location-not-found/index', {
+        return h.view(LOCATION_NOT_FOUND, {
           paragraph: notFoundLocation.paragraphs,
           serviceName: notFoundLocation.heading,
           footerTxt,
@@ -166,9 +151,6 @@ const getLocationDetailsController = {
       }
     } catch (error) {
       logger.error(`error on single location ${error.message}`)
-      return h.status(500).render('error', {
-        error: 'An error occurred while retrieving location details.'
-      })
     }
   }
 }

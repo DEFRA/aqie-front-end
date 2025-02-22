@@ -18,16 +18,14 @@ import {
 } from '~/src/server/locations/helpers/middleware-helpers'
 import {
   LANG_CY,
-  LANG_EN,
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI
 } from '~/src/server/data/constants'
 import { getMonth } from '~/src/server/locations/helpers/location-type-util'
 import {
   convertStringToHyphenatedLowercaseWords,
-  isValidPartialPostcode
+  isValidPartialPostcodeUK
 } from '~/src/server/locations/helpers/convert-string'
-import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case.js'
@@ -36,8 +34,6 @@ const logger = createLogger()
 
 const searchMiddlewareCy = async (request, h) => {
   logger.info(`::::::::::: searchMiddlewareCy 1  :::::::::::`)
-  let nearestLocationsRangeEnglish
-  let nearestLocationsRangeWelsh
   const { query, payload } = request
   const lang = LANG_CY
   const month = getMonth(lang)
@@ -123,7 +119,7 @@ const searchMiddlewareCy = async (request, h) => {
       String(urlRoute)
     )
     const titleRoute = convertStringToHyphenatedLowercaseWords(String(title))
-    const isPartialPostcode = isValidPartialPostcode(locationNameOrPostcode)
+    const isPartialPostcode = isValidPartialPostcodeUK(locationNameOrPostcode)
     if (selectedMatches.length === 1) {
       return handleSingleMatch(h, request, {
         searchTerms,
@@ -198,32 +194,6 @@ const searchMiddlewareCy = async (request, h) => {
     }
 
     logger.info(`::::::LOCATION_TYPE_NI-CY::::::: , ${getNIPlaces?.results[0]}`)
-    nearestLocationsRangeEnglish = getNearestLocation(
-      getNIPlaces?.results,
-      getForecasts?.forecasts,
-      getMeasurements?.measurements,
-      LOCATION_TYPE_NI,
-      0,
-      LANG_EN
-    )
-    nearestLocationsRangeWelsh = getNearestLocation(
-      getNIPlaces?.results,
-      getForecasts?.forecasts,
-      getMeasurements?.measurements,
-      LOCATION_TYPE_NI,
-      0,
-      LANG_CY
-    )
-
-    const { forecastNum, nearestLocationsRange, latlon } =
-      await getNearestLocation(
-        getNIPlaces?.results,
-        getForecasts?.forecasts,
-        getMeasurements?.measurements,
-        LOCATION_TYPE_NI,
-        0,
-        lang
-      )
     if (
       !getNIPlaces?.results ||
       getNIPlaces?.results.length === 0 ||
@@ -245,31 +215,20 @@ const searchMiddlewareCy = async (request, h) => {
     headerTitle = convertFirstLetterIntoUppercase(headerTitle)
     urlRoute = urlRoute.replace(/\s+/g, '')
     logger.info(`urlRoute in middleware welsh NI ${urlRoute}`)
-    const resultNI = [
-      {
-        GAZETTEER_ENTRY: {
-          ID: urlRoute,
-          NAME1: getNIPlaces?.results[0].postcode,
-          DISTRICT_BOROUGH: sentenceCase(getNIPlaces?.results[0].town),
-          LONGITUDE: latlon?.lon,
-          LATITUDE: latlon?.lat
-        }
-      }
-    ]
     request.yar.clear('locationData')
     request.yar.set('locationData', {
-      results: resultNI,
-      forecastNum,
+      results: getNIPlaces?.results,
+      urlRoute,
+      locationType,
       transformedDailySummary,
-      monitoringSites: nearestLocationsRange,
       englishDate,
       dailySummary: getDailySummary,
       welshDate,
       getMonth: month,
       title: `${multipleLocations.titlePrefix} ${headerTitle}`,
       pageTitle: `${multipleLocations.titlePrefix} ${title}`,
-      nearestLocationsRangeEnglish,
-      nearestLocationsRangeWelsh,
+      getForecasts: getForecasts?.forecasts,
+      getMeasurements: getMeasurements?.measurements,
       lang
     })
     return h.redirect(`/lleoliad/${urlRoute}?lang=cy`).takeover()

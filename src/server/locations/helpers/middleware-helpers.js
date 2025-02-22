@@ -6,7 +6,7 @@ import {
   convertStringToHyphenatedLowercaseWords,
   extractAndFormatUKPostcode,
   splitAndKeepFirstWord,
-  isValidFullPostcode,
+  isValidFullPostcodeUK,
   formatUKPostcode,
   splitAndCheckSpecificWords,
   countWords,
@@ -136,8 +136,8 @@ const processMatches = (
   searchTerms,
   secondSearchTerm
 ) => {
-  const fullPostcodePattern = /\b([A-Z]{1,2}\d[A-Z\d]?)\s?(\d[A-Z]{2})\b/i
-  const partialPostcodePattern = /\b(?!BT)(?:[A-Z]{1,2}\d{1,2}|EN1|EN8|N8)\b/i
+  const fullPostcodePattern = /^[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}$/i
+  const partialPostcodePattern = /^[a-z]{1,2}\d[a-z\d]?$/i
   let newMatches = matches.filter((item) => {
     const name1 = item?.GAZETTEER_ENTRY.NAME1.toUpperCase().replace(/\s+/g, '')
     const name2 = item?.GAZETTEER_ENTRY.NAME2?.toUpperCase().replace(/\s+/g, '')
@@ -186,13 +186,13 @@ const processMatches = (
         )
       }
       return (
-        name1?.includes(userLocation.replace(/\s+/g, '')) &&
-        userLocation.replace(/\s+/g, '').includes(name1) &&
-        secondSearchTerm.includes(unitary) &&
+        name1?.includes(userLocation.replace(/\s+/g, '')) ||
+        userLocation.replace(/\s+/g, '').includes(name1) ||
+        secondSearchTerm.includes(unitary) ||
         unitary?.includes(secondSearchTerm)
       )
     }
-    const isFullPostcode = isValidFullPostcode(name1)
+    const isFullPostcode = isValidFullPostcodeUK(name1)
     logger.info(`isFullPostcode in middleware NI ${isFullPostcode}`)
     if (isFullPostcode) {
       logger.info(`name1 in middleware NI ${name1}`)
@@ -219,20 +219,32 @@ const processMatches = (
     )
   })
   const countWordsCases = countWords(locationNameOrPostcode)
+  const alphanumericPattern = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]+$/
+  const isAlphanumeric =
+    alphanumericPattern.test(locationNameOrPostcode) &&
+    !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase())
+  if (
+    isAlphanumeric &&
+    typeof Number(locationNameOrPostcode) === 'number' &&
+    !isNaN(Number(locationNameOrPostcode)) &&
+    !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase())
+  ) {
+    newMatches = []
+  }
   if (
     newMatches.length > 3 &&
     !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
     !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
     countWordsCases > 1
   ) {
-    newMatches = newMatches.slice(0, 2)
+    newMatches = newMatches.slice(0, 1)
   }
   const conditionTwo =
     fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
     newMatches.length === 2
   const conditonThree =
     partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
-    matches.length > 0 &&
+    newMatches.length > 0 &&
     locationNameOrPostcode.length <= 6
   const conditionFour =
     newMatches.length === 1 &&
@@ -242,7 +254,7 @@ const processMatches = (
     conditionTwo ||
     conditonThree ||
     conditionFour ||
-    (matches.length > 3 && !onlyLetters)
+    (newMatches.length >= 2 && onlyLetters && searchTerms)
   ) {
     if (newMatches[0].GAZETTEER_ENTRY.NAME2) {
       newMatches[0].GAZETTEER_ENTRY.NAME1 = newMatches[0].GAZETTEER_ENTRY.NAME2
@@ -271,20 +283,6 @@ const processMatches = (
     newMatches[0].GAZETTEER_ENTRY.ID = finalHeaderTitle
 
     return newMatches
-  }
-  const alphanumericPattern = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]+$/
-  const isAlphanumeric =
-    alphanumericPattern.test(locationNameOrPostcode) &&
-    !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
-    !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase())
-  if (
-    isAlphanumeric ||
-    (typeof Number(locationNameOrPostcode) === 'number' &&
-      !isNaN(Number(locationNameOrPostcode)) &&
-      !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
-      !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()))
-  ) {
-    newMatches = []
   }
 
   return newMatches.reduce((acc, item) => {

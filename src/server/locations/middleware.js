@@ -19,15 +19,15 @@ import {
 import {
   LANG_EN,
   LOCATION_TYPE_UK,
-  LOCATION_TYPE_NI,
-  LANG_CY
+  LOCATION_TYPE_NI
 } from '~/src/server/data/constants'
 import { getMonth } from '~/src/server/locations/helpers/location-type-util'
 import {
   convertStringToHyphenatedLowercaseWords,
-  isValidPartialPostcode
+  isValidFullPostcodeUK,
+  isValidPartialPostcodeUK,
+  isWordsOnly
 } from '~/src/server/locations/helpers/convert-string'
-import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
 import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
@@ -36,9 +36,6 @@ const logger = createLogger()
 
 const searchMiddleware = async (request, h) => {
   logger.info(`::::::::::: searchMiddleware 1  :::::::::::`)
-  let isPartialPostcode
-  let nearestLocationsRangeEnglish
-  let nearestLocationsRangeWelsh
   const { query, payload } = request
   const lang = LANG_EN
   const month = getMonth(lang)
@@ -95,10 +92,20 @@ const searchMiddleware = async (request, h) => {
   )
   request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
   request.yar.set('searchTermsSaved', searchTerms)
+
   if (locationType === LOCATION_TYPE_UK) {
     let { results } = getOSPlaces
-
-    if (!results || results.length === 0 || getOSPlaces === 'wrong postcode') {
+    let isPartialPostcode = isValidPartialPostcodeUK(searchTerms)
+    const isFullPostcode = isValidFullPostcodeUK(searchTerms)
+    const wordsOnly = isWordsOnly(searchTerms)
+    if (searchTerms && !wordsOnly && !isPartialPostcode && !isFullPostcode) {
+      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+      return h.redirect('error/index').takeover()
+    }
+    if (
+      (!results || results.length === 0 || getOSPlaces === 'wrong postcode') &&
+      !searchTerms
+    ) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       return h.redirect('/location-not-found').takeover()
     }
@@ -127,14 +134,7 @@ const searchMiddleware = async (request, h) => {
       String(urlRoute)
     )
     const titleRoute = convertStringToHyphenatedLowercaseWords(String(title))
-    logger.info(
-      `selectedMatches in middleware UK ${JSON.stringify(selectedMatches)})`
-    )
-
-    logger.info(
-      `nearestLocationsRangeEnglish middleware ${JSON.stringify(nearestLocationsRangeEnglish)})`
-    )
-    isPartialPostcode = isValidPartialPostcode(locationNameOrPostcode)
+    isPartialPostcode = isValidPartialPostcodeUK(locationNameOrPostcode)
     if (selectedMatches.length === 1) {
       return handleSingleMatch(h, request, {
         searchTerms,
@@ -211,38 +211,6 @@ const searchMiddleware = async (request, h) => {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       return h.redirect('/location-not-found').takeover()
     }
-    nearestLocationsRangeEnglish = getNearestLocation(
-      getNIPlaces?.results,
-      getForecasts?.forecasts,
-      getMeasurements?.measurements,
-      LOCATION_TYPE_NI,
-      0,
-      LANG_EN
-    )
-    nearestLocationsRangeWelsh = getNearestLocation(
-      getNIPlaces?.results,
-      getForecasts?.forecasts,
-      getMeasurements?.measurements,
-      LOCATION_TYPE_NI,
-      0,
-      LANG_CY
-    )
-
-    const { forecastNum, nearestLocationsRange, latlon } =
-      await getNearestLocation(
-        getNIPlaces?.results,
-        getForecasts?.forecasts,
-        getMeasurements?.measurements,
-        LOCATION_TYPE_NI,
-        0,
-        lang
-      )
-    logger.info(
-      `nearestLocationsRangeWelsh in middleware NI ${JSON.stringify(nearestLocationsRangeWelsh)}`
-    )
-    logger.info(
-      `nearestLocationsRangeEnglish in middleware NI ${JSON.stringify(nearestLocationsRangeEnglish)}`
-    )
     let title = ''
     let headerTitle = ''
     let urlRoute = ''
@@ -253,17 +221,7 @@ const searchMiddleware = async (request, h) => {
     headerTitle = convertFirstLetterIntoUppercase(headerTitle)
     urlRoute = urlRoute.replace(/\s+/g, '')
     logger.info(`urlRoute in middleware english NI ${urlRoute}`)
-    const resultNI = [
-      {
-        GAZETTEER_ENTRY: {
-          ID: urlRoute,
-          NAME1: getNIPlaces?.results[0].postcode,
-          DISTRICT_BOROUGH: sentenceCase(getNIPlaces?.results[0].town),
-          LONGITUDE: latlon?.lon,
-          LATITUDE: latlon?.lat
-        }
-      }
-    ]
+
     logger.info(
       `getForecasts?.forecasts in middleware NI ${JSON.stringify(getForecasts?.forecasts)})`
     )
@@ -272,18 +230,18 @@ const searchMiddleware = async (request, h) => {
     )
     request.yar.clear('locationData')
     request.yar.set('locationData', {
-      results: resultNI,
-      forecastNum,
+      results: getNIPlaces?.results,
+      urlRoute,
+      locationType,
       transformedDailySummary,
-      monitoringSites: nearestLocationsRange,
       englishDate,
       dailySummary: getDailySummary,
       welshDate,
       getMonth: month,
       title: `${multipleLocations.titlePrefix} ${headerTitle}`,
       pageTitle: `${multipleLocations.titlePrefix} ${title}`,
-      nearestLocationsRangeEnglish,
-      nearestLocationsRangeWelsh,
+      getForecasts: getForecasts?.forecasts,
+      getMeasurements: getMeasurements?.measurements,
       lang
     })
     return h.redirect(`/location/${urlRoute}?lang=en`).takeover()
