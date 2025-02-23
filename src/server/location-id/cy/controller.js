@@ -111,8 +111,6 @@ const getLocationDetailsController = {
           lang
         )
         const { airQuality } = airQualityValues(forecastNum, lang)
-        logger.info(`locationType in location-id ${locationType}`)
-        logger.info(`locationData in location-id ${locationData}`)
 
         return h.view('locations/location', {
           result: locationDetails,
