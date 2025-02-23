@@ -155,6 +155,18 @@ function isWordsOnly(input) {
   return wordsOnlyPattern.test(input) // Use the test method to check if the input matches the pattern
 }
 
+// Function to format a Northern Ireland postcode into outcode and incode
+function formatNorthernIrelandPostcode(postcode) {
+  const postcodeRegex = /^(BT\d{1,2})(\d[A-Z]{2})$/i // Regular expression to match Northern Ireland postcode format
+  const match = postcode.match(postcodeRegex) // Match the postcode with the regular expression
+  if (match) {
+    const outcode = match[1] // Extract the outcode
+    const incode = match[2] // Extract the incode
+    return `${outcode} ${incode}` // Return the formatted postcode
+  }
+  return postcode // Return the original postcode if it does not match the format
+}
+
 export {
   removeAllWordsAfterUnderscore,
   convertStringToHyphenatedLowercaseWords,
@@ -172,5 +184,6 @@ export {
   isOnlyLettersAndMoreThanFour,
   isValidFullPostcodeNI,
   isValidPartialPostcodeNI,
-  isWordsOnly
+  isWordsOnly,
+  formatNorthernIrelandPostcode
 }

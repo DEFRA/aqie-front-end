@@ -4,6 +4,7 @@ import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { catchFetchError } from '~/src/server/common/helpers/catch-fetch-error'
 import { catchProxyFetchError } from '~/src/server/common/helpers/catch-proxy-fetch-error'
 import { LOCATION_TYPE_NI, SYMBOLS_ARRAY } from '~/src/server/data/constants'
+import { formatNorthernIrelandPostcode } from '~/src/server/locations/helpers/convert-string'
 
 const options = {
   method: 'get',
@@ -191,9 +192,11 @@ async function fetchData(
     const mockOsPlacesApiPostcodeNorthernIrelandUrl = config.get(
       'mockOsPlacesApiPostcodeNorthernIrelandUrl'
     )
-
+    const userLocationLocal = formatNorthernIrelandPostcode(
+      userLocation.toUpperCase()
+    )
     const postcodeNortherIrelandURL = isMockEnabled
-      ? `${mockOsPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&_limit=1`
+      ? `${mockOsPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocationLocal)}&_limit=1`
       : `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
 
     logger.info(

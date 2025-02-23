@@ -26,12 +26,14 @@ const getSearchTermsFromUrl = (url) => {
   const postcodeRegex = /\b[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}\b/i // Regular expression to match postcode format
   const postcodeMatch = searchTerms.match(postcodeRegex) // Match the postcode in the searchTerms
 
-  const isNorthernIrelandPostcode =
-    postcodeMatch && /^BT\d{1,2}\s?\d?[A-Z]{0,2}$/i.test(postcodeMatch[0]) // Regular expression to match Northern Ireland postcode format
-  if (isNorthernIrelandPostcode) {
-    searchTermsLocationType = LOCATION_TYPE_NI // Set the location type to Northern Ireland
+  const isFullNorthernIrelandPostcode =
+    postcodeMatch && /^BT\d{1,2}\s?\d[A-Z]{2}$/i.test(postcodeMatch[0]) // Regular expression to match full Northern Ireland postcode format ''
+  const isPartialNorthernIrelandPostcode =
+    postcodeMatch && /^BT\d{1,2}$/i.test(postcodeMatch[0]) // Regular expression to match partial Northern Ireland postcode format ''
+  if (isFullNorthernIrelandPostcode || isPartialNorthernIrelandPostcode) {
+    searchTermsLocationType = LOCATION_TYPE_NI // Set the location type to Northern Ireland ''
   } else {
-    searchTermsLocationType = LOCATION_TYPE_UK // Set the location type to UK
+    searchTermsLocationType = LOCATION_TYPE_UK // Set the location type to UK ''
   }
   // Separate the string after the underscore
   const underscoreParts = extractedString?.split('_') // Split the string by underscore
