@@ -224,10 +224,9 @@ const processMatches = (
     alphanumericPattern.test(locationNameOrPostcode) &&
     !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase())
   if (
-    isAlphanumeric &&
-    typeof Number(locationNameOrPostcode) === 'number' &&
-    !isNaN(Number(locationNameOrPostcode)) &&
-    !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase())
+    (isAlphanumeric || !isNaN(Number(locationNameOrPostcode))) &&
+    !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
+    !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase())
   ) {
     newMatches = []
   }
@@ -250,6 +249,7 @@ const processMatches = (
     newMatches.length === 1 &&
     !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase())
   const onlyLetters = isOnlyLettersAndMoreThanFour(locationNameOrPostcode)
+
   if (
     conditionTwo ||
     conditonThree ||
