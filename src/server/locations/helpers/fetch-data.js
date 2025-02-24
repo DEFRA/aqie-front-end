@@ -4,7 +4,11 @@ import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { catchFetchError } from '~/src/server/common/helpers/catch-fetch-error'
 import { catchProxyFetchError } from '~/src/server/common/helpers/catch-proxy-fetch-error'
 import { LOCATION_TYPE_NI, SYMBOLS_ARRAY } from '~/src/server/data/constants'
-import { formatNorthernIrelandPostcode } from '~/src/server/locations/helpers/convert-string'
+import {
+  isValidFullPostcodeUK,
+  isValidPartialPostcodeUK,
+  formatNorthernIrelandPostcode
+} from '~/src/server/locations/helpers/convert-string'
 
 const options = {
   method: 'get',
@@ -57,9 +61,10 @@ async function fetchData(
   locationType,
   userLocation,
   request,
-  h,
   locationNameOrPostcode,
-  lang
+  lang,
+  searchTerms,
+  secondSearchTerm
 ) {
   let optionsOAuth
   let savedAccessToken
@@ -156,6 +161,15 @@ async function fetchData(
     ].join('+')
     const osNamesApiUrl = config.get('osNamesApiUrl')
     const osNamesApiKey = config.get('osNamesApiKey')
+
+    if (
+      !isValidFullPostcodeUK(userLocation.toUpperCase()) &&
+      !isValidPartialPostcodeUK(userLocation.toUpperCase()) &&
+      searchTerms &&
+      secondSearchTerm !== 'UNDEFINED'
+    ) {
+      userLocation = `${searchTerms} ${secondSearchTerm}`
+    }
     const osNamesApiUrlFull = `${osNamesApiUrl}${encodeURIComponent(
       userLocation
     )}&fq=${encodeURIComponent(filters)}&key=${osNamesApiKey}`

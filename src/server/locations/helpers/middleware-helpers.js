@@ -224,9 +224,20 @@ const processMatches = (
     alphanumericPattern.test(locationNameOrPostcode) &&
     !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase())
   if (
-    (isAlphanumeric || !isNaN(Number(locationNameOrPostcode))) &&
+    (isAlphanumeric || isNaN(Number(locationNameOrPostcode))) &&
     !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
-    !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase())
+    !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
+    searchTerms &&
+    newMatches.length !== 1
+  ) {
+    newMatches = []
+  }
+  if (
+    (isAlphanumeric || isNaN(Number(locationNameOrPostcode))) &&
+    !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
+    !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
+    searchTerms &&
+    !secondSearchTerm
   ) {
     newMatches = []
   }

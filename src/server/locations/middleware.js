@@ -71,9 +71,10 @@ const searchMiddleware = async (request, h) => {
       locationType,
       userLocation,
       request,
-      h,
       locationNameOrPostcode,
-      lang
+      lang,
+      searchTerms,
+      secondSearchTerm
     )
 
   const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
@@ -197,9 +198,10 @@ const searchMiddleware = async (request, h) => {
       LOCATION_TYPE_NI,
       userLocation,
       request,
-      h,
       locationNameOrPostcode,
-      lang
+      lang,
+      searchTerms,
+      secondSearchTerm
     )
 
     logger.info(`::::::LOCATION_TYPE_NI-EN::::::: , ${getNIPlaces?.results[0]}`)

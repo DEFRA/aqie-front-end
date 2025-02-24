@@ -52,6 +52,7 @@ const getLocationDetailsController = {
           .takeover()
       }
       request.yar.clear('searchTermsSaved')
+
       const lang = query?.lang ?? LANG_EN
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')
       const getMonth = calendarEnglish.findIndex(function (item) {
