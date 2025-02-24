@@ -9,7 +9,8 @@ import * as globals from './globals'
 import {
   addMomentFilters,
   addDaysToTodayAbrev,
-  addDaysToTodayAbrevWelsh
+  addDaysToTodayAbrevWelsh,
+  addToSentenceCase
 } from './filters/index'
 
 const nunjucksEnvironment = nunjucks.configure(
@@ -92,5 +93,6 @@ Object.keys(filters).forEach((filter) => {
 addMomentFilters(nunjucksEnvironment)
 addDaysToTodayAbrev(nunjucksEnvironment)
 addDaysToTodayAbrevWelsh(nunjucksEnvironment)
+addToSentenceCase(nunjucksEnvironment)
 
 export { nunjucksConfig }

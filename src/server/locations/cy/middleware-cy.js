@@ -69,9 +69,10 @@ const searchMiddlewareCy = async (request, h) => {
       locationType,
       userLocation,
       request,
-      h,
       locationNameOrPostcode,
-      lang
+      lang,
+      searchTerms,
+      secondSearchTerm
     )
   const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
     getDailySummary?.issue_date,
@@ -180,9 +181,10 @@ const searchMiddlewareCy = async (request, h) => {
       LOCATION_TYPE_NI,
       userLocation,
       request,
-      h,
       locationNameOrPostcode,
-      lang
+      lang,
+      searchTerms,
+      secondSearchTerm
     )
     if (
       !getNIPlaces?.results ||
