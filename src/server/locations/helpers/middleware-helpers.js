@@ -9,7 +9,6 @@ import {
   isValidFullPostcodeUK,
   formatUKPostcode,
   splitAndCheckSpecificWords,
-  countWords,
   isOnlyLettersAndMoreThanFour
 } from '~/src/server/locations/helpers/convert-string'
 import { LANG_EN, LANG_CY } from '~/src/server/data/constants'
@@ -218,36 +217,41 @@ const processMatches = (
       userLocation.includes(name2)
     )
   })
-  const countWordsCases = countWords(locationNameOrPostcode)
   const alphanumericPattern = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]+$/
-  const isAlphanumeric =
-    alphanumericPattern.test(locationNameOrPostcode) &&
-    !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase())
+  const isAlphanumeric = alphanumericPattern.test(locationNameOrPostcode)
   if (
     (isAlphanumeric || isNaN(Number(locationNameOrPostcode))) &&
     !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
     !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
     searchTerms &&
-    newMatches.length !== 1
-  ) {
-    newMatches = []
-  }
-  if (
-    (isAlphanumeric || isNaN(Number(locationNameOrPostcode))) &&
-    !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
-    !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
-    searchTerms &&
-    !secondSearchTerm
-  ) {
-    newMatches = []
-  }
-  if (
-    newMatches.length > 3 &&
-    !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
-    !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
-    countWordsCases > 1
+    secondSearchTerm !== 'UNDEFINED'
   ) {
     newMatches = newMatches.slice(0, 1)
+  }
+  if (
+    (isAlphanumeric || isNaN(Number(locationNameOrPostcode))) &&
+    !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
+    !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
+    searchTerms
+  ) {
+    if (newMatches.length === 1) {
+      newMatches = newMatches.slice(0, 1)
+    }
+    if (newMatches.length > 1) {
+      if (secondSearchTerm !== 'UNDEFINED') {
+        newMatches = newMatches.slice(0, 1)
+      } else {
+        newMatches = []
+      }
+    }
+  }
+  if (
+    (isAlphanumeric || !isNaN(Number(locationNameOrPostcode))) &&
+    !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
+    !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
+    newMatches.length > 1
+  ) {
+    newMatches = []
   }
   const conditionTwo =
     fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
