@@ -102,6 +102,7 @@ const searchMiddleware = async (request, h) => {
     const wordsOnly = isWordsOnly(searchTerms)
     if (searchTerms && !wordsOnly && !isPartialPostcode && !isFullPostcode) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+      request.yar.clear('searchTermsSaved')
       return h.redirect('error/index').takeover()
     }
     if (
@@ -109,6 +110,7 @@ const searchMiddleware = async (request, h) => {
       !searchTerms
     ) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+      request.yar.clear('searchTermsSaved')
       return h.redirect('/location-not-found').takeover()
     }
     // Remove duplicates from the results array
@@ -124,6 +126,7 @@ const searchMiddleware = async (request, h) => {
       secondSearchTerm
     )
     if (selectedMatches.length === 0) {
+      request.yar.clear('searchTermsSaved')
       return h.redirect('/location-not-found').takeover()
     }
     userLocation = userLocation.toLowerCase()
@@ -192,6 +195,7 @@ const searchMiddleware = async (request, h) => {
         lang
       })
     } else {
+      request.yar.clear('searchTermsSaved')
       return h.redirect('/location-not-found').takeover()
     }
   } else if (locationType === LOCATION_TYPE_NI) {
@@ -212,6 +216,7 @@ const searchMiddleware = async (request, h) => {
       getNIPlaces === 'wrong postcode'
     ) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+      request.yar.clear('searchTermsSaved')
       return h.redirect('/location-not-found').takeover()
     }
     let title = ''
@@ -240,9 +245,11 @@ const searchMiddleware = async (request, h) => {
       getMeasurements: getMeasurements?.measurements,
       lang
     })
+    request.yar.clear('searchTermsSaved')
     return h.redirect(`/location/${urlRoute}?lang=en`).takeover()
   } else {
     // handle other location types
+    request.yar.clear('searchTermsSaved')
     return h.redirect('/location-not-found').takeover()
   }
 }
