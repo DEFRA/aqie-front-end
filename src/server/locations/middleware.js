@@ -96,6 +96,7 @@ const searchMiddleware = async (request, h) => {
 
   if (locationType === LOCATION_TYPE_UK) {
     let { results } = getOSPlaces
+
     let isPartialPostcode = isValidPartialPostcodeUK(searchTerms)
     const isFullPostcode = isValidFullPostcodeUK(searchTerms)
     const wordsOnly = isWordsOnly(searchTerms)
@@ -223,13 +224,6 @@ const searchMiddleware = async (request, h) => {
     headerTitle = convertFirstLetterIntoUppercase(headerTitle)
     urlRoute = urlRoute.replace(/\s+/g, '')
     logger.info(`urlRoute in middleware english NI ${urlRoute}`)
-
-    logger.info(
-      `getForecasts?.forecasts in middleware NI ${JSON.stringify(getForecasts?.forecasts)})`
-    )
-    logger.info(
-      `getMeasurements?.measurements in middleware NI ${JSON.stringify(getMeasurements?.measurements)})`
-    )
     request.yar.clear('locationData')
     request.yar.set('locationData', {
       results: getNIPlaces?.results,

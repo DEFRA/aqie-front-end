@@ -24,7 +24,9 @@ import {
 import { getMonth } from '~/src/server/locations/helpers/location-type-util'
 import {
   convertStringToHyphenatedLowercaseWords,
-  isValidPartialPostcodeUK
+  isValidFullPostcodeUK,
+  isValidPartialPostcodeUK,
+  isWordsOnly
 } from '~/src/server/locations/helpers/convert-string'
 import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
@@ -89,10 +91,21 @@ const searchMiddlewareCy = async (request, h) => {
   )
   request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
   request.yar.set('searchTermsSaved', searchTerms)
+
   if (locationType === LOCATION_TYPE_UK) {
     let { results } = getOSPlaces
 
-    if (!results || results.length === 0 || getOSPlaces === 'wrong postcode') {
+    const isPartialPostcode = isValidPartialPostcodeUK(searchTerms)
+    const isFullPostcode = isValidFullPostcodeUK(searchTerms)
+    const wordsOnly = isWordsOnly(searchTerms)
+    if (searchTerms && !wordsOnly && !isPartialPostcode && !isFullPostcode) {
+      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+      return h.redirect('error/index').takeover()
+    }
+    if (
+      (!results || results.length === 0 || getOSPlaces === 'wrong postcode') &&
+      !searchTerms
+    ) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
@@ -120,7 +133,7 @@ const searchMiddlewareCy = async (request, h) => {
       String(urlRoute)
     )
     const titleRoute = convertStringToHyphenatedLowercaseWords(String(title))
-    const isPartialPostcode = isValidPartialPostcodeUK(locationNameOrPostcode)
+
     if (selectedMatches.length === 1) {
       return handleSingleMatch(h, request, {
         searchTerms,
@@ -167,6 +180,8 @@ const searchMiddlewareCy = async (request, h) => {
         backlink,
         cookieBanner,
         calendarWelsh,
+        headerTitle,
+        title,
         month,
         welshDate,
         englishDate,
