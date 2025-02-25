@@ -245,7 +245,6 @@ const searchMiddleware = async (request, h) => {
       getMeasurements: getMeasurements?.measurements,
       lang
     })
-    request.yar.clear('searchTermsSaved')
     return h.redirect(`/location/${urlRoute}?lang=en`).takeover()
   } else {
     // handle other location types
