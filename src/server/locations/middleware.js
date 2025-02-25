@@ -47,6 +47,10 @@ const searchMiddleware = async (request, h) => {
   const searchTerms = query?.searchTerms?.toUpperCase()
   const secondSearchTerm = query?.secondSearchTerm?.toUpperCase()
   const searchTermsLocationType = query?.searchTermsLocationType
+  if (searchTerms !== undefined && searchTermsLocationType === '') {
+    request.yar.clear('searchTermsSaved')
+    return h.redirect('error/index').takeover()
+  }
   const redirectError = handleErrorInputAndRedirect(
     request,
     h,
