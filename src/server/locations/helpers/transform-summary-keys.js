@@ -1,10 +1,7 @@
 import moment from 'moment'
 import { LANG_CY, SUMMARY_TRANSLATIONS } from '~/src/server/data/constants'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
 
-const logger = createLogger()
 const transformKeys = (dailySummary, lang) => {
-  logger.info(`:::::::::LANG-FROM-transformKeys::::::::::::: , ${lang}`)
   const dailySummaryIssueDate = moment(dailySummary?.issue_date)
   const currentDate = moment().startOf('day')
   const isCurrentDate = currentDate.isSame(dailySummaryIssueDate, 'day')

@@ -71,13 +71,11 @@ async function fetchData(
   let accessToken
   if (locationType === LOCATION_TYPE_NI && !isMockEnabled) {
     savedAccessToken = request.yar.get('savedAccessToken')
-    logger.info(`::::::::: OAuth token in session 1 ::::::::::`)
     if (savedAccessToken) {
       accessToken = savedAccessToken
     } else {
       accessToken = await fetchOAuthToken()
     }
-    logger.info(`::::::::: accessTokennnn ::::::::::`)
     optionsOAuth = {
       method: 'GET',
       headers: {
@@ -91,7 +89,6 @@ async function fetchData(
     accessToken = await fetchOAuthToken()
     request.yar.clear('savedAccessToken')
     request.yar.set('savedAccessToken', accessToken)
-    logger.info(`::::::::: OAuth token in session 2 ::::::::::`)
   }
   // Set an interval to refresh the OAuth token every 19 minutes (1140 seconds)
   const refreshIntervalId = setInterval(
@@ -109,7 +106,6 @@ async function fetchData(
   // Function to clear the interval
   const clearRefreshInterval = () => {
     clearInterval(refreshIntervalId)
-    logger.info('::::::::: OAuth token refresh interval cleared ::::::::::')
   }
   const northernIrelandPostcodeRegex = /^BT\d{1,2}\s?\d?[A-Z]{0,2}$/
   const niPoscode = northernIrelandPostcodeRegex.test(userLocation)
@@ -199,7 +195,6 @@ async function fetchData(
 
     return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
   } else if (locationType === LOCATION_TYPE_NI) {
-    logger.info(`inside LOCATION_TYPE_NI: ${LOCATION_TYPE_NI}`)
     const osPlacesApiPostcodeNorthernIrelandUrl = config.get(
       'osPlacesApiPostcodeNorthernIrelandUrl'
     )
@@ -212,11 +207,6 @@ async function fetchData(
     const postcodeNortherIrelandURL = isMockEnabled
       ? `${mockOsPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocationLocal)}&_limit=1`
       : `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
-
-    logger.info(
-      `::::::postcodeNortherIrelandURL:::::: ${postcodeNortherIrelandURL}`
-    )
-
     let [statusCodeNI, getNIPlaces] = await catchProxyFetchError(
       postcodeNortherIrelandURL,
       optionsOAuth,
@@ -227,9 +217,6 @@ async function fetchData(
         results: Array.isArray(getNIPlaces) ? getNIPlaces : [getNIPlaces]
       }
     }
-    logger.info(
-      `::::::::::: getNIPlaces - Successfully Returned Response  ::::::::::: ${JSON.stringify(getNIPlaces)}`
-    )
     if (statusCodeNI !== 200) {
       logger.error(`Error fetching statusCodeNI data: ${statusCodeNI}`)
     } else {
@@ -237,15 +224,6 @@ async function fetchData(
     }
     if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-      logger.info(
-        `::::::::::: getNIPlaces en into location not found locationNameOrPostcode  ::::::::::: ${locationNameOrPostcode}`
-      )
-      logger.info(
-        `::::::::::: getNIPlaces en into location not found lang  ::::::::::: ${lang}`
-      )
-      logger.info(
-        `::::::::::: getNIPlaces en into location not found  ::::::::::: ${JSON.stringify(getNIPlaces)}`
-      )
     }
 
     return { getDailySummary, getForecasts, getMeasurements, getNIPlaces }

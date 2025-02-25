@@ -12,9 +12,6 @@ import {
   isOnlyLettersAndMoreThanFour
 } from '~/src/server/locations/helpers/convert-string'
 import { LANG_EN, LANG_CY } from '~/src/server/data/constants'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
-
-const logger = createLogger()
 
 // Helper function to handle single match
 const handleSingleMatch = (
@@ -56,9 +53,6 @@ const handleSingleMatch = (
     locationType,
     lang
   })
-  logger.info(
-    `::::::::::: handleSingleMatch searchTerms  ::::::::::: ${searchTerms}`
-  )
   return lang === LANG_EN
     ? h.redirect(`/location/${customId}`).takeover()
     : h.redirect(`/lleoliad/${customId}`).takeover()
@@ -192,13 +186,8 @@ const processMatches = (
       )
     }
     const isFullPostcode = isValidFullPostcodeUK(name1)
-    logger.info(`isFullPostcode in middleware NI ${isFullPostcode}`)
     if (isFullPostcode) {
-      logger.info(`name1 in middleware NI ${name1}`)
       name1Postcode = formatUKPostcode(name1)
-      logger.info(`name1Postcode in middleware NI ${name1Postcode}`)
-      logger.info(`userLocation in middleware NI ${userLocation}`)
-      logger.info(`name2 in middleware NI ${name2}`)
       return (
         name1.includes(userLocation.replace(/\s+/g, '')) ||
         name1Postcode.includes(userLocation.replace(/\s+/g, '')) ||
@@ -206,9 +195,6 @@ const processMatches = (
         userLocation.includes(name2)
       )
     }
-    logger.info(`name1 default in middleware NI ${name1}`)
-    logger.info(`userLocation default in middleware NI ${userLocation}`)
-    logger.info(`name2 default in middleware NI ${name2}`)
     const checkWords = splitAndCheckSpecificWords(userLocation, name1)
     return (
       checkWords ||
