@@ -6,7 +6,6 @@ import {
   siteTypeDescriptions,
   pollutantTypes
 } from '~/src/server/data/en/monitoring-sites.js'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { handleErrorInputAndRedirect } from '~/src/server/locations/helpers/error-input-and-redirect'
 import {
   handleSingleMatch,
@@ -32,10 +31,7 @@ import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
 import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
 
-const logger = createLogger()
-
 const searchMiddleware = async (request, h) => {
-  logger.info(`::::::::::: searchMiddleware 1  :::::::::::`)
   const { query, payload } = request
   const lang = LANG_EN
   const month = getMonth(lang)
@@ -208,8 +204,6 @@ const searchMiddleware = async (request, h) => {
       searchTerms,
       secondSearchTerm
     )
-
-    logger.info(`::::::LOCATION_TYPE_NI-EN::::::: , ${getNIPlaces?.results[0]}`)
     if (
       !getNIPlaces?.results ||
       getNIPlaces?.results.length === 0 ||
@@ -228,7 +222,6 @@ const searchMiddleware = async (request, h) => {
     title = convertFirstLetterIntoUppercase(title)
     headerTitle = convertFirstLetterIntoUppercase(headerTitle)
     urlRoute = urlRoute.replace(/\s+/g, '')
-    logger.info(`urlRoute in middleware english NI ${urlRoute}`)
     request.yar.clear('locationData')
     request.yar.set('locationData', {
       results: getNIPlaces?.results,

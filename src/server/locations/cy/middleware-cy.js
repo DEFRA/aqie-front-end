@@ -6,7 +6,6 @@ import {
   siteTypeDescriptions,
   pollutantTypes
 } from '~/src/server/data/cy/monitoring-sites.js'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { handleErrorInputAndRedirect } from '~/src/server/locations/helpers/error-input-and-redirect'
 import {
   handleSingleMatch,
@@ -32,10 +31,7 @@ import { transformKeys } from '~/src/server/locations/helpers/transform-summary-
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case.js'
 
-const logger = createLogger()
-
 const searchMiddlewareCy = async (request, h) => {
-  logger.info(`::::::::::: searchMiddlewareCy 1  :::::::::::`)
   const { query, payload } = request
   const lang = LANG_CY
   const month = getMonth(lang)
@@ -209,8 +205,6 @@ const searchMiddlewareCy = async (request, h) => {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
-
-    logger.info(`::::::LOCATION_TYPE_NI-CY::::::: , ${getNIPlaces?.results[0]}`)
     if (
       !getNIPlaces?.results ||
       getNIPlaces?.results.length === 0 ||
@@ -218,10 +212,6 @@ const searchMiddlewareCy = async (request, h) => {
     ) {
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
-
-    logger.info(
-      `::::::LOCATION_TYPE_NI-CY::::::: , ${JSON.stringify(getNIPlaces?.results[0])}`
-    )
     let title = ''
     let headerTitle = ''
     let urlRoute = ''
@@ -231,7 +221,6 @@ const searchMiddlewareCy = async (request, h) => {
     title = convertFirstLetterIntoUppercase(title)
     headerTitle = convertFirstLetterIntoUppercase(headerTitle)
     urlRoute = urlRoute.replace(/\s+/g, '')
-    logger.info(`urlRoute in middleware welsh NI ${urlRoute}`)
     request.yar.clear('locationData')
     request.yar.set('locationData', {
       results: getNIPlaces?.results,

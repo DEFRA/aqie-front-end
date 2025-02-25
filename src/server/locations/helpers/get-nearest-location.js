@@ -10,9 +10,6 @@ import {
 import { getPollutantLevel } from '~/src/server/locations/helpers/pollutant-level-calculation'
 import { getPollutantLevelCy } from '~/src/server/locations/helpers/cy/pollutant-level-calculation'
 import { LANG_CY } from '~/src/server/data/constants'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
-
-const logger = createLogger()
 
 function getNearestLocation(
   matches,
@@ -24,18 +21,10 @@ function getNearestLocation(
 ) {
   const latlon =
     matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
-  logger.info(`::::::::::: latlon ::::::::::: ${JSON.stringify(latlon)}`)
-
   const forecastCoordinates =
     matches.length !== 0 ? coordinatesTotal(forecasts, location) : []
-  logger.info(
-    `::::::::::: forecastCoordinates ::::::::::: ${JSON.stringify(forecastCoordinates)}`
-  )
   const measurementsCoordinates =
     matches.length !== 0 ? coordinatesTotal(measurements, location) : []
-  logger.info(
-    `::::::::::: measurementsCoordinates ::::::::::: ${JSON.stringify(measurementsCoordinates)}`
-  )
   const nearestLocation =
     matches.length !== 0
       ? getNearLocation(
@@ -45,25 +34,13 @@ function getNearestLocation(
           forecasts
         )
       : {}
-  logger.info(
-    `::::::::::: nearestLocation ::::::::::: ${JSON.stringify(nearestLocation)}`
-  )
   const orderByDistanceMeasurements = geolib.orderByDistance(
     { latitude: latlon?.lat, longitude: latlon?.lon },
     measurementsCoordinates
   )
-  logger.info(
-    `::::::::::: orderByDistanceMeasurements ::::::::::: ${JSON.stringify(orderByDistanceMeasurements)}`
-  )
   const nearestMeasurementsPoints = orderByDistanceMeasurements.slice(0, 3)
-  logger.info(
-    `::::::::::: nearestMeasurementsPoints ::::::::::: ${JSON.stringify(nearestMeasurementsPoints)}`
-  )
   const pointsToDisplay = nearestMeasurementsPoints.filter((p) =>
     pointsInRange(latlon, p)
-  )
-  logger.info(
-    `::::::::::: pointsToDisplay ::::::::::: ${JSON.stringify(pointsToDisplay)}`
   )
   const nearestLocationsRangeCal = measurements?.filter((item, i) => {
     const opt = pointsToDisplay.some((dis) => {
@@ -72,16 +49,8 @@ function getNearestLocation(
         item.location.coordinates[1] === dis.longitude
       )
     })
-    logger.info(
-      `::::::::::: pointsToDisplay 2 ::::::::::: ${JSON.stringify(pointsToDisplay)}`
-    )
-    logger.info(`::::::::::: opt ::::::::::: ${JSON.stringify(opt)}`)
     return opt
   })
-
-  logger.info(
-    `::::::::::: nearestLocationsRangeCal with away-async ::::::::::: ${JSON.stringify(nearestLocationsRangeCal)}`
-  )
   // TODO select and filter locations and pollutants which are not null or don't have exceptions
   const nearestLocationsRange = nearestLocationsRangeCal?.reduce(
     (acc, curr) => {
@@ -154,9 +123,6 @@ function getNearestLocation(
     },
     []
   )
-  logger.info(
-    `::::::::::: getNIPlaces 1  nearestLocationsRange inside get-nearest-location.js ::::::::::: ${JSON.stringify(nearestLocationsRange)}`
-  )
   const forecastDay = moment.tz('Europe/London').format('dddd').substring(0, 3)
   const forecastNum =
     matches.length !== 0
@@ -174,9 +140,6 @@ function getNearestLocation(
           return [...todayDate, ...otherdays]
         })
       : 0
-  logger.info(
-    `::::::::::: getNIPlaces 2  nearestLocationsRange inside get-nearest-location.js ::::::::::: ${JSON.stringify(nearestLocationsRange)}`
-  )
   return { forecastNum, nearestLocationsRange, latlon }
 }
 
