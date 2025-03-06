@@ -1,6 +1,24 @@
 {
   "results": [
     {
+      "addressLine": "ROYAL MAIL, 20, DONEGALL QUAY, BELFAST, BT1",
+      "subBuildingName": "ROYAL MAIL",
+      "buildingNumber": "20",
+      "street": "DONEGALL QUAY",
+      "town": "BELFAST",
+      "administrativeArea": "BELFAST",
+      "historicCounty": "COUNTY ANTRIM",
+      "ceremonialCounty": "COUNTY ANTRIM",
+      "postcode": "BT1",
+      "country": "NORTHERN IRELAND",
+      "xCoordinate": 146778,
+      "yCoordinate": 530104,
+      "uprn": "185870402",
+      "match": "1",
+      "matchDescription": "EXACT",
+      "language": "EN"
+    },
+    {
       "addressLine": "ROYAL MAIL, 20, DONEGALL QUAY, BELFAST, BT1 1FB",
       "subBuildingName": "ROYAL MAIL",
       "buildingNumber": "20",

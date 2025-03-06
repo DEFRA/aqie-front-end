@@ -62,16 +62,20 @@ const searchMiddlewareCy = async (request, h) => {
     userLocation = searchTerms
     locationType = searchTermsLocationType
   }
+  if (locationType === 'Invalid Postcode') {
+    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+    request.yar.clear('searchTermsSaved')
+    return h.redirect('error/index').takeover()
+  }
   const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
-    await fetchData(
+    await fetchData(request, h, {
       locationType,
       userLocation,
-      request,
       locationNameOrPostcode,
       lang,
       searchTerms,
       secondSearchTerm
-    )
+    })
   const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
     getDailySummary?.issue_date,
     calendarEnglish,
@@ -91,11 +95,12 @@ const searchMiddlewareCy = async (request, h) => {
   if (locationType === LOCATION_TYPE_UK) {
     let { results } = getOSPlaces
 
-    const isPartialPostcode = isValidPartialPostcodeUK(searchTerms)
+    let isPartialPostcode = isValidPartialPostcodeUK(searchTerms)
     const isFullPostcode = isValidFullPostcodeUK(searchTerms)
     const wordsOnly = isWordsOnly(searchTerms)
     if (searchTerms && !wordsOnly && !isPartialPostcode && !isFullPostcode) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+      request.yar.clear('searchTermsSaved')
       return h.redirect('error/index').takeover()
     }
     if (
@@ -103,20 +108,37 @@ const searchMiddlewareCy = async (request, h) => {
       !searchTerms
     ) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+      request.yar.clear('searchTermsSaved')
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
+    }
+    if (!results && searchTerms) {
+      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+      request.yar.clear('searchTermsSaved')
+      return h.redirect('error/index').takeover()
     }
     // Remove duplicates from the results array
     results = Array.from(
       new Set(results.map((item) => JSON.stringify(item)))
     ).map((item) => JSON.parse(item))
-    const selectedMatches = processMatches(
-      results,
-      userLocation,
-      locationNameOrPostcode,
-      searchTerms,
-      secondSearchTerm
-    )
+
+    const { selectedMatches, exactWordFirstTerm, exactWordSecondTerm } =
+      processMatches(
+        results,
+        userLocation,
+        locationNameOrPostcode,
+        searchTerms,
+        secondSearchTerm
+      )
+    if (
+      searchTerms !== undefined &&
+      selectedMatches.length === 0 &&
+      (!exactWordFirstTerm || !exactWordSecondTerm)
+    ) {
+      request.yar.clear('searchTermsSaved')
+      return h.redirect('error/index').takeover()
+    }
     if (selectedMatches.length === 0) {
+      request.yar.clear('searchTermsSaved')
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
     userLocation = userLocation.toLowerCase()
@@ -129,7 +151,7 @@ const searchMiddlewareCy = async (request, h) => {
       String(urlRoute)
     )
     const titleRoute = convertStringToHyphenatedLowercaseWords(String(title))
-
+    isPartialPostcode = isValidPartialPostcodeUK(locationNameOrPostcode)
     if (selectedMatches.length === 1) {
       return handleSingleMatch(h, request, {
         searchTerms,
@@ -185,24 +207,25 @@ const searchMiddlewareCy = async (request, h) => {
         lang
       })
     } else {
+      request.yar.clear('searchTermsSaved')
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
   } else if (locationType === LOCATION_TYPE_NI) {
-    const { getNIPlaces } = await fetchData(
-      LOCATION_TYPE_NI,
+    const { getNIPlaces } = await fetchData(request, h, {
+      locationType,
       userLocation,
-      request,
       locationNameOrPostcode,
       lang,
       searchTerms,
       secondSearchTerm
-    )
+    })
     if (
       !getNIPlaces?.results ||
       getNIPlaces?.results.length === 0 ||
       getNIPlaces === 'wrong postcode'
     ) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+      request.yar.clear('searchTermsSaved')
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
     if (
@@ -210,6 +233,8 @@ const searchMiddlewareCy = async (request, h) => {
       getNIPlaces?.results.length === 0 ||
       getNIPlaces === 'wrong postcode'
     ) {
+      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+      request.yar.clear('searchTermsSaved')
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
     let title = ''
@@ -240,6 +265,7 @@ const searchMiddlewareCy = async (request, h) => {
     return h.redirect(`/lleoliad/${urlRoute}?lang=cy`).takeover()
   } else {
     // handle other location types
+    request.yar.clear('searchTermsSaved')
     return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
   }
 }

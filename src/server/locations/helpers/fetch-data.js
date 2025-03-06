@@ -58,13 +58,16 @@ const fetchOAuthToken = async () => {
 }
 
 async function fetchData(
-  locationType,
-  userLocation,
   request,
-  locationNameOrPostcode,
-  lang,
-  searchTerms,
-  secondSearchTerm
+  h,
+  {
+    locationType,
+    userLocation,
+    locationNameOrPostcode,
+    lang,
+    searchTerms,
+    secondSearchTerm
+  }
 ) {
   let optionsOAuth
   let savedAccessToken
