@@ -47,10 +47,6 @@ const searchMiddleware = async (request, h) => {
   const searchTerms = query?.searchTerms?.toUpperCase()
   const secondSearchTerm = query?.secondSearchTerm?.toUpperCase()
   const searchTermsLocationType = query?.searchTermsLocationType
-  if (searchTerms !== undefined && searchTermsLocationType === '') {
-    request.yar.clear('searchTermsSaved')
-    return h.redirect('error/index').takeover()
-  }
   const redirectError = handleErrorInputAndRedirect(
     request,
     h,
@@ -66,16 +62,21 @@ const searchMiddleware = async (request, h) => {
     userLocation = searchTerms
     locationType = searchTermsLocationType
   }
+  if (locationType === 'Invalid Postcode') {
+    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+    request.yar.clear('searchTermsSaved')
+    return h.redirect('error/index').takeover()
+  }
+
   const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
-    await fetchData(
+    await fetchData(request, h, {
       locationType,
       userLocation,
-      request,
       locationNameOrPostcode,
       lang,
       searchTerms,
       secondSearchTerm
-    )
+    })
 
   const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
     getDailySummary?.issue_date,
@@ -113,22 +114,37 @@ const searchMiddleware = async (request, h) => {
       request.yar.clear('searchTermsSaved')
       return h.redirect('/location-not-found').takeover()
     }
+    if (!results && searchTerms) {
+      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+      request.yar.clear('searchTermsSaved')
+      return h.redirect('error/index').takeover()
+    }
     // Remove duplicates from the results array
     results = Array.from(
       new Set(results.map((item) => JSON.stringify(item)))
     ).map((item) => JSON.parse(item))
 
-    const selectedMatches = processMatches(
-      results,
-      userLocation,
-      locationNameOrPostcode,
-      searchTerms,
-      secondSearchTerm
-    )
+    const { selectedMatches, exactWordFirstTerm, exactWordSecondTerm } =
+      processMatches(
+        results,
+        userLocation,
+        locationNameOrPostcode,
+        searchTerms,
+        secondSearchTerm
+      )
+    if (
+      searchTerms !== undefined &&
+      selectedMatches.length === 0 &&
+      (!exactWordFirstTerm || !exactWordSecondTerm)
+    ) {
+      request.yar.clear('searchTermsSaved')
+      return h.redirect('error/index').takeover()
+    }
     if (selectedMatches.length === 0) {
       request.yar.clear('searchTermsSaved')
       return h.redirect('/location-not-found').takeover()
     }
+
     userLocation = userLocation.toLowerCase()
     userLocation = userLocation.charAt(0).toUpperCase() + userLocation.slice(1)
     const { title, headerTitle, urlRoute } = getTitleAndHeaderTitle(
@@ -199,15 +215,14 @@ const searchMiddleware = async (request, h) => {
       return h.redirect('/location-not-found').takeover()
     }
   } else if (locationType === LOCATION_TYPE_NI) {
-    const { getNIPlaces } = await fetchData(
-      LOCATION_TYPE_NI,
+    const { getNIPlaces } = await fetchData(request, h, {
+      locationType,
       userLocation,
-      request,
       locationNameOrPostcode,
       lang,
       searchTerms,
       secondSearchTerm
-    )
+    })
     if (
       !getNIPlaces?.results ||
       getNIPlaces?.results.length === 0 ||

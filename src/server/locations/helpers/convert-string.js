@@ -170,9 +170,23 @@ function formatNorthernIrelandPostcode(postcode) {
 // Function to check if a word separated by spaces in one string has an exact match in another string
 function hasExactMatch(wordString, targetString) {
   const words = wordString.split(' ') // Split the word string into an array of words
-  return words.some((word) => {
-    return targetString.includes(word.toUpperCase())
-  }) // Check if any word exists in the target string
+  if (words.length === 1) {
+    return words.some((word) => {
+      return targetString.includes(word.toUpperCase())
+    }) // Check if any word exists in the target string
+  }
+  if (words.length > 1) {
+    const word = words.join('') // Split the word string into an array of words
+    return targetString.replace(/\s+/g, '').includes(word.toUpperCase())
+  }
+  return false // Return false if no word exists in the target string
+}
+
+// Function to check if two strings contain the exact same word
+function hasCommonWord(string1, string2) {
+  const words1 = string1.split(/\s+/) // Split the first string into an array of words ''
+  const words2 = string2.split(/\s+/) // Split the second string into an array of words ''
+  return words1.some((word) => words2.includes(word)) // Check if any word in the first array exists in the second array ''
 }
 
 export {
@@ -194,5 +208,6 @@ export {
   isValidPartialPostcodeNI,
   isWordsOnly,
   formatNorthernIrelandPostcode,
-  hasExactMatch
+  hasExactMatch,
+  hasCommonWord
 }

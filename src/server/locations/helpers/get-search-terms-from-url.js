@@ -1,5 +1,6 @@
 import { LOCATION_TYPE_NI, LOCATION_TYPE_UK } from '~/src/server/data/constants'
 import { getPostcode } from '~/src/server/locations/helpers/get-postcode-type'
+import { isWordsOnly } from './convert-string'
 
 const getSearchTermsFromUrl = (url) => {
   let searchTermsLang = ''
@@ -24,6 +25,7 @@ const getSearchTermsFromUrl = (url) => {
   const parts = extractedString?.split(/[_-]/) // Split by hyphen and underscore
   let searchTerms = parts.join(' ') // Join the parts with spaces
   const { postcodeType } = getPostcode(searchTerms) // Get the postcode type
+  searchTermsLocationType = postcodeType // Set the location type to 'invalid postcode or not a postcode'
   if (
     postcodeType === 'Full Northern Ireland Postcode' ||
     postcodeType === 'Partial Northern Ireland Postcode'
@@ -40,6 +42,9 @@ const getSearchTermsFromUrl = (url) => {
   const underscoreParts = extractedString?.split('_') // Split the string by underscore
   let secondSearchTerm = '' // Initialize the second search term
   if (postcodeType === 'Invalid Postcode') {
+    if (isWordsOnly(searchTerms)) {
+      searchTermsLocationType = LOCATION_TYPE_UK
+    }
     searchTerms = underscoreParts[0]?.split('-').join(' ') // Get the part before the underscore // ''
     secondSearchTerm = underscoreParts[1]?.split('-').join(' ') // Get the part after the underscore // ''
   }
