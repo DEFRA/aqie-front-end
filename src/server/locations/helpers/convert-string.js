@@ -85,17 +85,6 @@ function isValidFullPostcodeNI(postcode) {
   return fullPostcodeRegex.test(postcode) // Test the string against the regular expression
 }
 
-function formatUKPostcode(postcode) {
-  // Define a function to format a UK postcode
-  const postcodeRegex = /^[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}$/i // Define a regular expression to match UK postcode parts
-  const match = postcode.match(postcodeRegex) // Match the postcode parts
-  if (match) {
-    // Check if the postcode matches the regex
-    return `${match[1]} ${match[2]}`.toUpperCase() // Format the postcode with a space and convert to uppercase
-  }
-  return postcode.toUpperCase() // Return the original postcode in uppercase if it doesn't match the regex
-}
-
 function splitAndCheckSpecificWords(sourceString, targetString) {
   // Define a function to split a string and check if another string contains the exact first two words together or the exact last word
   const words = sourceString.split(' ') // Split the source string into an array of words
@@ -184,9 +173,21 @@ function hasExactMatch(wordString, targetString) {
 
 // Function to check if two strings contain the exact same word
 function hasCommonWord(string1, string2) {
-  const words1 = string1.split(/\s+/) // Split the first string into an array of words ''
-  const words2 = string2.split(/\s+/) // Split the second string into an array of words ''
-  return words1.some((word) => words2.includes(word)) // Check if any word in the first array exists in the second array ''
+  const words1 = string1.split(/\s+/) // Split the first string into an array of words
+  const words2 = string2.split(/\s+/) // Split the second string into an array of words
+  return words1.some((word) => words2.includes(word)) // Check if any word in the first array exists in the second array
+}
+
+// Function to format any UK postcode
+function formatUKPostcode(postcode) {
+  const postcodeRegex = /^([A-Z]{1,2}\d[A-Z\d]?)\s?(\d[A-Z]{2})$/i // Regular expression to match UK postcode format
+  const match = postcode.match(postcodeRegex) // Match the postcode with the regular expression
+  if (match) {
+    const outcode = match[1] // Extract the outcode
+    const incode = match[2] // Extract the incode
+    return `${outcode} ${incode}`.toUpperCase() // Return the formatted postcode
+  }
+  return postcode // Return the original postcode if it does not match the format
 }
 
 export {

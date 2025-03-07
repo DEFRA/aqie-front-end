@@ -19,7 +19,6 @@ const handleSingleMatch = (
   h,
   request,
   {
-    searchTerms,
     selectedMatches,
     getForecasts,
     getMeasurements,
@@ -345,6 +344,7 @@ const getTitleAndHeaderTitle = (locationDetails, locationNameOrPostcode) => {
   let headerTitle = ''
   let urlRoute = ''
   let term1 = ''
+  let formattedPostcode = ''
   const { home } = english
   if (locationDetails[0]) {
     if (locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH) {
@@ -354,10 +354,12 @@ const getTitleAndHeaderTitle = (locationDetails, locationNameOrPostcode) => {
         urlRoute = `${locationDetails[0].GAZETTEER_ENTRY.NAME2}_${locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
         term1 = locationDetails[0].GAZETTEER_ENTRY.NAME2
       } else {
-        title = `${locationDetails[0].GAZETTEER_ENTRY.NAME1}, ${locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
-        headerTitle = `${locationDetails[0].GAZETTEER_ENTRY.NAME1}, ${locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
-        urlRoute = `${locationDetails[0].GAZETTEER_ENTRY.NAME1}_${locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
         term1 = locationDetails[0].GAZETTEER_ENTRY.NAME1
+        const isFullPostcode = isValidFullPostcodeUK(term1)
+        formattedPostcode = isFullPostcode ? formatUKPostcode(term1) : term1
+        title = `${formattedPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
+        headerTitle = `${formattedPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
+        urlRoute = `${locationDetails[0].GAZETTEER_ENTRY.NAME1}_${locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
       }
     } else {
       title = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY} - ${home.pageTitle}`
