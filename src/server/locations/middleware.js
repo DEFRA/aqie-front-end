@@ -158,7 +158,6 @@ const searchMiddleware = async (request, h) => {
     isPartialPostcode = isValidPartialPostcodeUK(locationNameOrPostcode)
     if (selectedMatches.length === 1) {
       return handleSingleMatch(h, request, {
-        searchTerms,
         selectedMatches,
         getForecasts,
         getMeasurements,
