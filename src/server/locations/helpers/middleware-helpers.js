@@ -165,7 +165,6 @@ const processMatches = (
       }
       return (
         name1?.includes(userLocation.replace(/\s+/g, '')) &&
-        userLocation.replace(/\s+/g, '').includes(name1) &&
         secondSearchTerm
           .replace(/\s+/g, '')
           .includes(borough.replace(/\s+/g, '')) &&
@@ -184,10 +183,10 @@ const processMatches = (
           )
         }
         return (
-          name2?.includes(userLocation.replace(/\s+/g, '')) &&
-          userLocation.replace(/\s+/g, '').includes(name2) &&
-          secondSearchTerm.includes(unitary) &&
-          unitary?.includes(secondSearchTerm)
+          (name2?.includes(userLocation.replace(/\s+/g, '')) &&
+            userLocation.replace(/\s+/g, '').includes(name2)) ||
+          (secondSearchTerm.includes(unitary) &&
+            unitary?.includes(secondSearchTerm))
         )
       }
       if (secondSearchTerm === 'UNDEFINED') {
@@ -225,7 +224,6 @@ const processMatches = (
     return (
       checkWords ||
       name1.includes(userLocation.replace(/\s+/g, '')) ||
-      userLocation.includes(name1) ||
       userLocation.includes(name2)
     )
   })
