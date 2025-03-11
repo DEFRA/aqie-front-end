@@ -182,12 +182,14 @@ const processMatches = (
             userLocation.replace(/\s+/g, '').includes(name2)
           )
         }
-        return (
-          (name2?.includes(userLocation.replace(/\s+/g, '')) &&
-            userLocation.replace(/\s+/g, '').includes(name2)) ||
-          (secondSearchTerm.includes(unitary) &&
-            unitary?.includes(secondSearchTerm))
-        )
+        if (secondSearchTerm !== 'UNDEFINED') {
+          return (
+            name2?.includes(userLocation.replace(/\s+/g, '')) &&
+            userLocation.replace(/\s+/g, '').includes(name2) &&
+            secondSearchTerm.includes(unitary) &&
+            unitary?.includes(secondSearchTerm)
+          )
+        }
       }
       if (secondSearchTerm === 'UNDEFINED') {
         return (
@@ -204,10 +206,12 @@ const processMatches = (
         return false
       }
       return (
-        name1?.includes(userLocation.replace(/\s+/g, '')) &&
+        (name1?.includes(userLocation.replace(/\s+/g, '')) ||
+          userLocation.replace(/\s+/g, '').includes(name1)) &&
+        (secondSearchTerm.includes(unitary) ||
+          unitary?.includes(secondSearchTerm)) &&
         exactWordFirstTerm &&
-        exactWordSecondTerm &&
-        unitary?.includes(secondSearchTerm)
+        exactWordSecondTerm
       )
     }
     const isFullPostcode = isValidFullPostcodeUK(name1)
@@ -285,8 +289,8 @@ const processMatches = (
       selectedMatches[0].GAZETTEER_ENTRY.NAME1 =
         selectedMatches[0].GAZETTEER_ENTRY.NAME2
     } else {
-      selectedMatches[0].GAZETTEER_ENTRY.NAME1 =
-        locationNameOrPostcode.toUpperCase() // Set the name to the partial postcode
+      // selectedMatches[0].GAZETTEER_ENTRY.NAME1 =
+      //   locationNameOrPostcode.toUpperCase() // Set the name to the partial postcode
     }
     selectedMatches = [selectedMatches[0]]
     let urlRoute = ''
