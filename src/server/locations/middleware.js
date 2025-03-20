@@ -24,8 +24,9 @@ import { getMonth } from '~/src/server/locations/helpers/location-type-util'
 import {
   convertStringToHyphenatedLowercaseWords,
   isValidFullPostcodeUK,
+  isValidPartialPostcodeNI,
   isValidPartialPostcodeUK,
-  isWordsOnly
+  isOnlyWords
 } from '~/src/server/locations/helpers/convert-string'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
@@ -67,7 +68,13 @@ const searchMiddleware = async (request, h) => {
     request.yar.clear('searchTermsSaved')
     return h.redirect('error/index').takeover()
   }
-
+  const isLocationValidPostcode = isValidFullPostcodeUK(userLocation)
+  const wordsOnly = isOnlyWords(userLocation)
+  if (!isLocationValidPostcode && !wordsOnly) {
+    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+    request.yar.clear('searchTermsSaved')
+    return h.redirect('/location-not-found').takeover()
+  }
   const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
     await fetchData(request, h, {
       locationType,
@@ -77,7 +84,11 @@ const searchMiddleware = async (request, h) => {
       searchTerms,
       secondSearchTerm
     })
-
+  if (!getDailySummary) {
+    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+    request.yar.clear('searchTermsSaved')
+    return h.redirect('/location-not-found').takeover()
+  }
   const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
     getDailySummary?.issue_date,
     calendarEnglish,
@@ -100,7 +111,7 @@ const searchMiddleware = async (request, h) => {
 
     let isPartialPostcode = isValidPartialPostcodeUK(searchTerms)
     const isFullPostcode = isValidFullPostcodeUK(searchTerms)
-    const wordsOnly = isWordsOnly(searchTerms)
+    const wordsOnly = isOnlyWords(searchTerms)
     if (searchTerms && !wordsOnly && !isPartialPostcode && !isFullPostcode) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
@@ -214,6 +225,12 @@ const searchMiddleware = async (request, h) => {
       return h.redirect('/location-not-found').takeover()
     }
   } else if (locationType === LOCATION_TYPE_NI) {
+    const isPartialPostcode = isValidPartialPostcodeNI(locationNameOrPostcode)
+    if (isPartialPostcode) {
+      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+      request.yar.clear('searchTermsSaved')
+      return h.redirect('/location-not-found').takeover()
+    }
     const { getNIPlaces } = await fetchData(request, h, {
       locationType,
       userLocation,

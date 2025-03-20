@@ -23,6 +23,7 @@ import { airQualityValues } from '~/src/server/locations/helpers/air-quality-val
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 import { getIdMatch } from '~/src/server/locations/helpers/get-id-match'
 import { getNIData } from '~/src/server/locations/helpers/get-ni-single-data'
+import { compareLastElements } from '~/src/server/locations/helpers/convert-string'
 
 const logger = createLogger()
 
@@ -40,8 +41,14 @@ const getLocationDetailsController = {
       // Get the previous URL hit by the user from the referer header
       const previousUrl = headers.referer || headers.referrer
       const currentUrl = request.url.href
-
-      if (previousUrl === undefined && !searchTermsSaved) {
+      const isPreviousAndCurrentUrlEqual = compareLastElements(
+        previousUrl,
+        currentUrl
+      )
+      if (
+        (previousUrl === undefined && !searchTermsSaved) ||
+        (isPreviousAndCurrentUrlEqual && !searchTermsSaved)
+      ) {
         const { searchTerms, secondSearchTerm, searchTermsLocationType } =
           getSearchTermsFromUrl(currentUrl)
         request.yar.clear('locationData')

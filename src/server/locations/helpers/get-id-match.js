@@ -7,18 +7,13 @@ function getIdMatch(
   locationType,
   locationIndex
 ) {
+  const normalizeString = (str) => str?.toUpperCase().replace(/\s+/g, '')
   let locationDetails
   if (locationType === LOCATION_TYPE_UK) {
     locationDetails = locationData?.results?.find((item, index) => {
-      if (
-        item.GAZETTEER_ENTRY.ID.replace(/\s/g, '') ===
-        locationId.replace(/\s/g, '')
-      ) {
+      if (item.GAZETTEER_ENTRY.ID === locationId) {
         locationIndex = index
-        return (
-          item.GAZETTEER_ENTRY.ID.replace(/\s/g, '') ===
-          locationId.replace(/\s/g, '')
-        )
+        return item.GAZETTEER_ENTRY.ID === locationId
       }
       return null
     })
@@ -26,13 +21,12 @@ function getIdMatch(
   if (locationType === LOCATION_TYPE_NI) {
     locationDetails = resultNI?.find((item, index) => {
       if (
-        item.GAZETTEER_ENTRY.ID.replace(/\s/g, '') ===
-        locationId.replace(/\s/g, '')
+        normalizeString(item.GAZETTEER_ENTRY.ID) === normalizeString(locationId)
       ) {
         locationIndex = index
         return (
-          item.GAZETTEER_ENTRY.ID.replace(/\s/g, '') ===
-          locationId.replace(/\s/g, '')
+          normalizeString(item.GAZETTEER_ENTRY.ID) ===
+          normalizeString(locationId)
         )
       }
       return null

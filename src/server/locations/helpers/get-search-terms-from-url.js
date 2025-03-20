@@ -1,6 +1,6 @@
 import { LOCATION_TYPE_NI, LOCATION_TYPE_UK } from '~/src/server/data/constants'
 import { getPostcode } from '~/src/server/locations/helpers/get-postcode-type'
-import { isWordsOnly } from './convert-string'
+import { isOnlyWords } from '~/src/server/locations/helpers/convert-string'
 
 const getSearchTermsFromUrl = (url) => {
   let searchTermsLang = ''
@@ -42,7 +42,7 @@ const getSearchTermsFromUrl = (url) => {
   const underscoreParts = extractedString?.split('_') // Split the string by underscore
   let secondSearchTerm = '' // Initialize the second search term
   if (postcodeType === 'Invalid Postcode') {
-    if (isWordsOnly(searchTerms)) {
+    if (isOnlyWords(searchTerms)) {
       searchTermsLocationType = LOCATION_TYPE_UK
     }
     searchTerms = underscoreParts[0]?.split('-').join(' ') // Get the part before the underscore // ''
