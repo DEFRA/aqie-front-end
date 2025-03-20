@@ -25,7 +25,8 @@ import {
   convertStringToHyphenatedLowercaseWords,
   isValidFullPostcodeUK,
   isValidPartialPostcodeUK,
-  isWordsOnly
+  isValidPartialPostcodeNI,
+  isOnlyWords
 } from '~/src/server/locations/helpers/convert-string'
 import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
@@ -97,7 +98,7 @@ const searchMiddlewareCy = async (request, h) => {
 
     let isPartialPostcode = isValidPartialPostcodeUK(searchTerms)
     const isFullPostcode = isValidFullPostcodeUK(searchTerms)
-    const wordsOnly = isWordsOnly(searchTerms)
+    const wordsOnly = isOnlyWords(searchTerms)
     if (searchTerms && !wordsOnly && !isPartialPostcode && !isFullPostcode) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
@@ -211,6 +212,12 @@ const searchMiddlewareCy = async (request, h) => {
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
   } else if (locationType === LOCATION_TYPE_NI) {
+    const isPartialPostcode = isValidPartialPostcodeNI(locationNameOrPostcode)
+    if (isPartialPostcode) {
+      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+      request.yar.clear('searchTermsSaved')
+      return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
+    }
     const { getNIPlaces } = await fetchData(request, h, {
       locationType,
       userLocation,

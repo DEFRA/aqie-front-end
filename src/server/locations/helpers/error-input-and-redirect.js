@@ -12,7 +12,7 @@ import {
 import {
   isValidFullPostcodeUK,
   isValidPartialPostcodeUK,
-  isWordsOnly,
+  isOnlyWords,
   isValidFullPostcodeNI,
   isValidPartialPostcodeNI
 } from '~/src/server/locations/helpers/convert-string'
@@ -198,7 +198,7 @@ const handleErrorInputAndRedirect = (
     }
   }
   if (
-    (searchTerms && isWordsOnly(searchTerms)) ||
+    (searchTerms && isOnlyWords(searchTerms)) ||
     isValidFullPostcodeUK(searchTerms) ||
     isValidPartialPostcodeUK(searchTerms)
   ) {
@@ -209,7 +209,7 @@ const handleErrorInputAndRedirect = (
     }
   }
   if (
-    (searchTerms && !isWordsOnly(searchTerms)) ||
+    (searchTerms && !isOnlyWords(searchTerms)) ||
     isValidFullPostcodeNI(searchTerms) ||
     !isValidPartialPostcodeNI(searchTerms)
   ) {

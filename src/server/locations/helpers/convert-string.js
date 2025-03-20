@@ -31,8 +31,8 @@ function removeLastWordAndHyphens(str) {
 }
 
 function splitAndKeepFirstWord(str) {
-  const words = str.split('_') // Split the string by the underscore character ''
-  return words[0].includes('-') ? words[0].replace(/-/g, '') : words[0] // Return the first word ''
+  const words = str.split('_') // Split the string by the underscore character
+  return words[0].includes('-') ? words[0].replace(/-/g, '') : words[0] // Return the first word
 }
 
 function removeHyphensAndUnderscores(str) {
@@ -63,13 +63,13 @@ function removeAllWordsAfterUnderscore(str) {
 
 function isValidPartialPostcodeUK(postcode) {
   // Define a function to validate if a string is a partial postcode
-  const partialPostcodeRegex = /^[a-z]{1,2}\d[a-z\d]?$/i // Define a regular expression to match UK partial postcodes'  return partialPostcodeRegex.test(postcode) // Test the string against the regular expression ''
+  const partialPostcodeRegex = /^(?:[A-Z]{1,2}\d{1,2}|[A-Z]\d[A-Z])$/i // Define a regular expression to match UK partial postcodes'  return partialPostcodeRegex.test(postcode) // Test the string against the regular expression ''
   return partialPostcodeRegex.test(postcode) // Test the string against the regular expression
 }
 
 function isValidFullPostcodeUK(postcode) {
   // Define a function to validate if a string is a partial postcode
-  const fullPostcodeRegex = /^[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}$/i // Define a regular expression to match UK full postcodes
+  const fullPostcodeRegex = /^[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}$/i // Regular expression to match UK postcodes // Define a regular expression to match UK full postcodes
   return fullPostcodeRegex.test(postcode) // Test the string against the regular expression
 }
 
@@ -138,12 +138,6 @@ function isOnlyLettersAndMoreThanFour(input) {
   return lettersPattern.test(input) && input.length > 4 // Check if the input matches the pattern and contains more than 4 letters
 }
 
-function isWordsOnly(input) {
-  // Define a function to check if a string is made of words only
-  const wordsOnlyPattern = /^[a-zA-Z ]+$/ // Define a regular expression to match only letters and spaces
-  return wordsOnlyPattern.test(input) // Use the test method to check if the input matches the pattern
-}
-
 // Function to format a Northern Ireland postcode into outcode and incode
 function formatNorthernIrelandPostcode(postcode) {
   const postcodeRegex = /^(BT\d{1,2})(\d[A-Z]{2})$/i // Regular expression to match Northern Ireland postcode format
@@ -190,6 +184,27 @@ function formatUKPostcode(postcode) {
   return postcode // Return the original postcode if it does not match the format
 }
 
+function isOnlyWords(str) {
+  // Define a function to check if a string contains only words (letters)
+  const wordsOnlyRegex = /^[A-Za-z\s]+$/ // Regular expression to match only letters and spaces
+  return wordsOnlyRegex.test(str) // Test the string against the regular expression
+}
+
+function compareLastElements(previousUrl, currentUrl) {
+  // Define a function to compare the last elements of two URLs
+  const getLastElement = (url) => {
+    if (!url) return false // Return false if the URL is not provided
+    const cleanUrl = url.split('?')[0] // Remove any text after '?'
+    const parts = cleanUrl?.split('/') // Split the URL by '/'
+    return parts[parts.length - 1] // Return the last element of the URL
+  }
+
+  const lastElementPrevious = getLastElement(previousUrl) // Get the last element of the previous URL
+  const lastElementCurrent = getLastElement(currentUrl) // Get the last element of the current URL
+
+  return lastElementPrevious === lastElementCurrent // Compare the last elements and return true if they are the same, otherwise false
+}
+
 export {
   removeAllWordsAfterUnderscore,
   convertStringToHyphenatedLowercaseWords,
@@ -207,8 +222,9 @@ export {
   isOnlyLettersAndMoreThanFour,
   isValidFullPostcodeNI,
   isValidPartialPostcodeNI,
-  isWordsOnly,
   formatNorthernIrelandPostcode,
   hasExactMatch,
-  hasCommonWord
+  hasCommonWord,
+  isOnlyWords,
+  compareLastElements
 }
