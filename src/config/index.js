@@ -56,7 +56,7 @@ const config = convict({
   enabledMock: {
     doc: 'Enabled Mock Data for Northern Ireland Names API',
     format: Boolean,
-    default: true
+    default: false
   },
   logLevel: {
     doc: 'Logging level',
