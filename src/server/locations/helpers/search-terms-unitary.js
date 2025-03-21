@@ -39,8 +39,8 @@ function searchTermsAndUnitary(
   return (
     (name1?.includes(normalizeString(userLocation)) ||
       normalizeString(userLocation).includes(name1)) &&
-    (normalizeString(secondSearchTerm).includes(unitary) ||
-      unitary?.includes(normalizeString(secondSearchTerm))) &&
+    (normalizeString(secondSearchTerm).includes(normalizeString(unitary)) ||
+      normalizeString(unitary)?.includes(normalizeString(secondSearchTerm))) &&
     exactWordFirstTerm &&
     exactWordSecondTerm
   )

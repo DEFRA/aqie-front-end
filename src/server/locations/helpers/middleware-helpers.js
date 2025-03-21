@@ -208,9 +208,6 @@ const processMatches = (
     !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
     searchTerms
   ) {
-    if (selectedMatches.length === 1) {
-      selectedMatches = selectedMatches.slice(0, 1)
-    }
     if (selectedMatches.length > 1) {
       if (secondSearchTerm !== 'UNDEFINED') {
         selectedMatches = selectedMatches.slice(0, 1)
@@ -275,10 +272,17 @@ const getTitleAndHeaderTitle = (locationDetails, locationNameOrPostcode) => {
         urlRoute = `${locationDetails[0].GAZETTEER_ENTRY.NAME1}_${locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
       }
     } else {
-      title = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY} - ${home.pageTitle}`
-      headerTitle = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
-      urlRoute = `${locationDetails[0].GAZETTEER_ENTRY.NAME1}_${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
-      term1 = locationNameOrPostcode
+      if (locationDetails[0].GAZETTEER_ENTRY.NAME2) {
+        title = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY} - ${home.pageTitle}`
+        headerTitle = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
+        urlRoute = `${locationDetails[0].GAZETTEER_ENTRY.NAME2}_${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
+        term1 = locationNameOrPostcode
+      } else {
+        title = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY} - ${home.pageTitle}`
+        headerTitle = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
+        urlRoute = `${locationDetails[0].GAZETTEER_ENTRY.NAME1}_${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
+        term1 = locationNameOrPostcode
+      }
     }
   }
   title = convertFirstLetterIntoUppercase(title)
