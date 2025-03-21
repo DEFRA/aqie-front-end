@@ -13,6 +13,8 @@ import {
 } from '~/src/server/locations/helpers/convert-string'
 import { LANG_EN, LANG_CY } from '~/src/server/data/constants'
 import { createURLRouteBookmarks } from '~/src/server/locations/helpers/create-bookmark-ids'
+import { searchTermsAndBorough } from '~/src/server/locations/helpers/search-terms-borough'
+import { searchTermsAndUnitary } from '~/src/server/locations/helpers/search-terms-unitary'
 
 // Helper function to handle single match
 const handleSingleMatch = (
@@ -132,9 +134,9 @@ const processMatches = (
   const normalizeString = (str) => str?.toUpperCase().replace(/\s+/g, '')
   const fullPostcodePattern = /^[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}$/i
   const partialPostcodePattern = /^[a-z]{1,2}\d[a-z\d]?$/i
+  const isFullPostcode = isValidFullPostcodeUK(userLocation)
   let exactWordFirstTerm = null
   let exactWordSecondTerm = null
-  const isFullPostcode = isValidFullPostcodeUK(userLocation)
   let selectedMatches = matches.filter((item) => {
     const name1 = normalizeString(item?.GAZETTEER_ENTRY.NAME1)
     const name2 = normalizeString(item?.GAZETTEER_ENTRY.NAME2)
@@ -144,70 +146,31 @@ const processMatches = (
     borough = borough?.replace(/-/g, ' ') // Replace hyphens with spaces
     unitary = unitary?.split(' - ').join(' ') // Replace hyphens with spaces
     unitary = unitary?.replace(/-/g, ' ') // Replace hyphens with spaces
+
     if (secondSearchTerm === '') {
       secondSearchTerm = 'UNDEFINED'
     }
     if (searchTerms && borough) {
       exactWordFirstTerm = hasExactMatch(userLocation, name1)
-      if (!exactWordFirstTerm) {
-        return false
-      }
-      if (secondSearchTerm === 'UNDEFINED') {
-        return (
-          (name1?.includes(normalizeString(userLocation)) ||
-            normalizeString(userLocation).includes(name1)) &&
-          exactWordFirstTerm
-        )
-      }
-      // Check if the search term is an exact match
       exactWordSecondTerm = hasExactMatch(secondSearchTerm, borough)
-      if (!exactWordSecondTerm) {
-        return false
-      }
-      return (
-        name1?.includes(normalizeString(userLocation)) &&
-        normalizeString(secondSearchTerm).includes(normalizeString(borough)) &&
-        normalizeString(borough).includes(normalizeString(secondSearchTerm)) &&
-        exactWordFirstTerm &&
+      return searchTermsAndBorough(
+        userLocation,
+        name1,
+        secondSearchTerm,
+        borough,
+        exactWordFirstTerm,
         exactWordSecondTerm
       )
     } else if (searchTerms && unitary) {
-      if (name2) {
-        if (secondSearchTerm === 'UNDEFINED') {
-          return (
-            name2?.includes(normalizeString(userLocation)) ||
-            normalizeString(userLocation).includes(name2)
-          )
-        }
-        if (secondSearchTerm !== 'UNDEFINED') {
-          return (
-            name2?.includes(normalizeString(userLocation)) &&
-            normalizeString(userLocation).includes(name2) &&
-            secondSearchTerm.includes(unitary) &&
-            unitary?.includes(secondSearchTerm)
-          )
-        }
-      }
-      if (secondSearchTerm === 'UNDEFINED') {
-        return (
-          name1?.includes(normalizeString(userLocation)) ||
-          normalizeString(userLocation).includes(name1)
-        )
-      }
-      exactWordFirstTerm = hasExactMatch(userLocation, name1)
-      if (!exactWordFirstTerm) {
-        return false
-      }
-      exactWordSecondTerm = hasExactMatch(secondSearchTerm, unitary)
-      if (!exactWordSecondTerm) {
-        return false
-      }
-      return (
-        (name1?.includes(normalizeString(userLocation)) ||
-          normalizeString(userLocation).includes(name1)) &&
-        (normalizeString(secondSearchTerm).includes(unitary) ||
-          unitary?.includes(normalizeString(secondSearchTerm))) &&
-        exactWordFirstTerm &&
+      const exactWordFirstTerm = hasExactMatch(userLocation, name1)
+      const exactWordSecondTerm = hasExactMatch(secondSearchTerm, unitary)
+      return searchTermsAndUnitary(
+        userLocation,
+        name1,
+        name2,
+        secondSearchTerm,
+        unitary,
+        exactWordFirstTerm,
         exactWordSecondTerm
       )
     }
@@ -234,7 +197,8 @@ const processMatches = (
     !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
     !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
     searchTerms &&
-    secondSearchTerm !== 'UNDEFINED'
+    secondSearchTerm !== 'UNDEFINED' &&
+    selectedMatches.length > 1
   ) {
     selectedMatches = selectedMatches.slice(0, 1)
   }
@@ -244,9 +208,6 @@ const processMatches = (
     !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
     searchTerms
   ) {
-    if (selectedMatches.length === 1) {
-      selectedMatches = selectedMatches.slice(0, 1)
-    }
     if (selectedMatches.length > 1) {
       if (secondSearchTerm !== 'UNDEFINED') {
         selectedMatches = selectedMatches.slice(0, 1)
@@ -311,10 +272,17 @@ const getTitleAndHeaderTitle = (locationDetails, locationNameOrPostcode) => {
         urlRoute = `${locationDetails[0].GAZETTEER_ENTRY.NAME1}_${locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
       }
     } else {
-      title = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY} - ${home.pageTitle}`
-      headerTitle = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
-      urlRoute = `${locationDetails[0].GAZETTEER_ENTRY.NAME1}_${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
-      term1 = locationNameOrPostcode
+      if (locationDetails[0].GAZETTEER_ENTRY.NAME2) {
+        title = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY} - ${home.pageTitle}`
+        headerTitle = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
+        urlRoute = `${locationDetails[0].GAZETTEER_ENTRY.NAME2}_${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
+        term1 = locationNameOrPostcode
+      } else {
+        title = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY} - ${home.pageTitle}`
+        headerTitle = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
+        urlRoute = `${locationDetails[0].GAZETTEER_ENTRY.NAME1}_${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
+        term1 = locationNameOrPostcode
+      }
     }
   }
   title = convertFirstLetterIntoUppercase(title)

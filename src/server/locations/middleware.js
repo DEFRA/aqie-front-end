@@ -73,6 +73,9 @@ const searchMiddleware = async (request, h) => {
   if (!isLocationValidPostcode && !wordsOnly) {
     request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
     request.yar.clear('searchTermsSaved')
+    if (searchTerms) {
+      return h.redirect('error/index').takeover()
+    }
     return h.redirect('/location-not-found').takeover()
   }
   const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =

@@ -68,6 +68,16 @@ const searchMiddlewareCy = async (request, h) => {
     request.yar.clear('searchTermsSaved')
     return h.redirect('error/index').takeover()
   }
+  const isLocationValidPostcode = isValidFullPostcodeUK(userLocation)
+  const wordsOnly = isOnlyWords(userLocation)
+  if (!isLocationValidPostcode && !wordsOnly) {
+    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+    request.yar.clear('searchTermsSaved')
+    if (searchTerms) {
+      return h.redirect('error/index').takeover()
+    }
+    return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
+  }
   const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
     await fetchData(request, h, {
       locationType,
