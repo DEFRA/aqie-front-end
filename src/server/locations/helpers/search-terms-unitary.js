@@ -17,10 +17,10 @@ function searchTermsAndUnitary(
     }
     if (secondSearchTerm !== 'UNDEFINED') {
       return (
-        name2?.includes(normalizeString(userLocation)) &&
-        normalizeString(userLocation).includes(name2) &&
-        secondSearchTerm.includes(unitary) &&
-        unitary?.includes(secondSearchTerm)
+        normalizeString(name2)?.includes(normalizeString(userLocation)) &&
+        normalizeString(userLocation).includes(normalizeString(name2)) &&
+        normalizeString(secondSearchTerm).includes(normalizeString(unitary)) &&
+        normalizeString(unitary)?.includes(normalizeString(secondSearchTerm))
       )
     }
   }
