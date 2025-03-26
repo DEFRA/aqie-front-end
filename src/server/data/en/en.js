@@ -107,9 +107,9 @@ export const english = {
       paragraphs: {
         a: 'If you typed the web address, check it is correct.',
         b: 'If you pasted the web address, check you copied the entire address.',
-        c: 'If you can contact the ',
-        d: 'air quality team ',
-        e: 'if this error continues'
+        c: 'Contact the ',
+        d: 'air quality team',
+        e: ' if you continue to get this error message.'
       }
     }
   },
