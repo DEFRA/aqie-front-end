@@ -163,8 +163,8 @@ const processMatches = (
         exactWordSecondTerm
       )
     } else if (searchTerms && unitary) {
-      const exactWordFirstTerm = hasExactMatch(userLocation, name1, name2)
-      const exactWordSecondTerm = hasExactMatch(secondSearchTerm, unitary)
+      exactWordFirstTerm = hasExactMatch(userLocation, name1, name2)
+      exactWordSecondTerm = hasExactMatch(secondSearchTerm, unitary)
       return searchTermsAndUnitary(
         userLocation,
         name1,
