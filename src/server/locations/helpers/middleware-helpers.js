@@ -150,6 +150,7 @@ const processMatches = (
     if (secondSearchTerm === '') {
       secondSearchTerm = 'UNDEFINED'
     }
+
     if (searchTerms && borough) {
       exactWordFirstTerm = hasExactMatch(userLocation, name1)
       exactWordSecondTerm = hasExactMatch(secondSearchTerm, borough)
@@ -180,7 +181,10 @@ const processMatches = (
         normalizeString(userLocation).includes(normalizeString(name1))
       )
     }
-    const checkWords = splitAndCheckSpecificWords(userLocation, name1)
+    const checkWords = splitAndCheckSpecificWords(
+      userLocation,
+      item?.GAZETTEER_ENTRY.NAME1
+    )
     return (
       checkWords ||
       name1.includes(normalizeString(userLocation)) ||

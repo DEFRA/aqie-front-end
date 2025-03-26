@@ -85,35 +85,26 @@ function isValidFullPostcodeNI(postcode) {
   return fullPostcodeRegex.test(postcode) // Test the string against the regular expression
 }
 
-function splitAndCheckSpecificWords(sourceString, targetString) {
+function splitAndCheckSpecificWords(sourceString, name1) {
   // Define a function to split a string and check if another string contains the exact first two words together or the exact last word
-  const words = sourceString.split(' ') // Split the source string into an array of words
+  const words = name1.split(' ') // Split the source string into an array of words
   if (words.length === 2) {
     // Check if the source string contains exactly two words
-    const [firstWord, secondWord] = words // Destructure the array to get the first two words
-    const firstTwoWords = `${firstWord} ${secondWord}` // Combine the first two words
-    const exactLastWord = new RegExp(`\\b${secondWord}\\b`) // Create a regex to match the exact last word
     const joinedWords = words.join(' ') // Join the words with a space
     return (
-      targetString.includes(firstTwoWords) ||
-      exactLastWord.test(targetString) ||
-      joinedWords
+      sourceString.includes(joinedWords.toUpperCase()) ||
+      joinedWords.toUpperCase().includes(sourceString)
     ) // Check if the target string contains the exact first two words together or the exact last word
   } else if (words.length === 3) {
     // Check if the source string contains exactly three words
-    const [firstWord, secondWord, lastWord] = words // Destructure the array to get the first two and the last word
+    const [firstWord, secondWord] = words // Destructure the array to get the first two and the last word
     const firstTwoWords = `${firstWord} ${secondWord}` // Combine the first two words
-    const exactLastWord = new RegExp(`\\b${lastWord}\\b`) // Create a regex to match the exact last word
-    const firstArray = [firstWord, secondWord]
-    const joinedWords = firstArray.join('')
-    const exactJoinedWord = new RegExp(`\\b${joinedWords}\\b`)
-    return (
-      targetString.includes(firstTwoWords) ||
-      exactLastWord.test(targetString) ||
-      exactJoinedWord.test(joinedWords)
-    ) // Check if the target string contains the exact first two words together or the exact last word
+    return sourceString.includes(firstTwoWords) // Check if the target string contains the exact first two words together or the exact last word
   }
-  return false // Return false if the source string does not contain exactly two or three words
+  return (
+    sourceString.includes(name1.toUpperCase()) ||
+    name1.toUpperCase().includes(sourceString)
+  ) // Return false if the source string does not contain exactly two or three words
 }
 
 function splitAndCheckExactWords(sourceString, targetString) {
