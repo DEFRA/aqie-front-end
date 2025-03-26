@@ -147,22 +147,32 @@ function hasExactMatch(wordString, name1, name2 = null) {
   if (name2) {
     if (words.length === 1) {
       return words.some((word) => {
-        return name2.includes(word.toUpperCase())
+        return (
+          name2.includes(word.toUpperCase()) &&
+          word.toUpperCase().includes(name2)
+        )
       }) // Check if any word exists in the target string
     }
     if (words.length > 1) {
       const word = words.join('') // Split the word string into an array of words
-      return name2.replace(/\s+/g, '').includes(word.toUpperCase())
+      return (
+        name2.includes(word.toUpperCase()) && word.toUpperCase().includes(name2)
+      )
     }
   } else if (name1) {
     if (words.length === 1) {
       return words.some((word) => {
-        return name1.includes(word.toUpperCase())
+        return (
+          name1.includes(word.toUpperCase()) &&
+          word.toUpperCase().includes(name1)
+        )
       }) // Check if any word exists in the target string
     }
     if (words.length > 1) {
       const word = words.join('') // Split the word string into an array of words
-      return name1.replace(/\s+/g, '').includes(word.toUpperCase())
+      return (
+        name1.includes(word.toUpperCase()) && word.toUpperCase().includes(name1)
+      )
     }
   }
   return false // Return false if no word exists in the target string
