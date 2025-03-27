@@ -152,10 +152,10 @@ const processMatches = (
     }
 
     if (searchTerms && borough) {
-      exactWordFirstTerm = hasExactMatch(userLocation, name1)
+      exactWordFirstTerm = hasExactMatch(searchTerms, name1)
       exactWordSecondTerm = hasExactMatch(secondSearchTerm, borough)
       return searchTermsAndBorough(
-        userLocation,
+        searchTerms,
         name1,
         secondSearchTerm,
         borough,
@@ -163,10 +163,10 @@ const processMatches = (
         exactWordSecondTerm
       )
     } else if (searchTerms && unitary) {
-      exactWordFirstTerm = hasExactMatch(userLocation, name1, name2)
+      exactWordFirstTerm = hasExactMatch(searchTerms, name1, name2)
       exactWordSecondTerm = hasExactMatch(secondSearchTerm, unitary)
       return searchTermsAndUnitary(
-        userLocation,
+        searchTerms,
         name1,
         name2,
         secondSearchTerm,

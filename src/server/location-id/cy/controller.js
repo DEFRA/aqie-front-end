@@ -59,7 +59,8 @@ const getLocationDetailsController = {
           .takeover()
       }
       request.yar.clear('searchTermsSaved')
-      const lang = LANG_CY
+
+      const lang = query?.lang ?? LANG_CY
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')
       const getMonth = calendarEnglish.findIndex(function (item) {
         return item.indexOf(formattedDate[1]) !== -1
@@ -118,7 +119,6 @@ const getLocationDetailsController = {
           lang
         )
         const { airQuality } = airQualityValues(forecastNum, lang)
-
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,

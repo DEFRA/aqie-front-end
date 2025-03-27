@@ -28,9 +28,9 @@ import {
   isValidPartialPostcodeNI,
   isOnlyWords
 } from '~/src/server/locations/helpers/convert-string'
-import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case.js'
+import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
 
 const searchMiddlewareCy = async (request, h) => {
   const { query, payload } = request
@@ -87,6 +87,11 @@ const searchMiddlewareCy = async (request, h) => {
       searchTerms,
       secondSearchTerm
     })
+  if (!getDailySummary) {
+    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+    request.yar.clear('searchTermsSaved')
+    return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
+  }
   const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
     getDailySummary?.issue_date,
     calendarEnglish,
