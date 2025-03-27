@@ -1,5 +1,5 @@
 function searchTermsAndUnitary(
-  userLocation,
+  searchTerms,
   name1,
   name2,
   secondSearchTerm,
@@ -11,23 +11,23 @@ function searchTermsAndUnitary(
   if (name2) {
     if (secondSearchTerm === 'UNDEFINED') {
       return (
-        name2?.includes(normalizeString(userLocation)) &&
-        normalizeString(userLocation).includes(name2)
+        name2?.includes(normalizeString(searchTerms)) &&
+        normalizeString(searchTerms).includes(name2)
       )
     }
     if (secondSearchTerm !== 'UNDEFINED') {
       return (
-        name2?.includes(normalizeString(userLocation)) &&
-        normalizeString(userLocation).includes(name2) &&
-        normalizeString(secondSearchTerm).includes(unitary) &&
-        unitary?.includes(normalizeString(secondSearchTerm))
+        name2?.includes(normalizeString(searchTerms)) &&
+        normalizeString(searchTerms).includes(name2) &&
+        normalizeString(secondSearchTerm).includes(normalizeString(unitary)) &&
+        normalizeString(unitary)?.includes(normalizeString(secondSearchTerm))
       )
     }
   }
   if (secondSearchTerm === 'UNDEFINED') {
     return (
-      name1?.includes(normalizeString(userLocation)) &&
-      normalizeString(userLocation).includes(name1)
+      name1?.includes(normalizeString(searchTerms)) &&
+      normalizeString(searchTerms).includes(name1)
     )
   }
   if (!exactWordFirstTerm) {
@@ -37,10 +37,10 @@ function searchTermsAndUnitary(
     return false
   }
   return (
-    (name1?.includes(normalizeString(userLocation)) ||
-      normalizeString(userLocation).includes(name1)) &&
-    (normalizeString(secondSearchTerm).includes(unitary) ||
-      unitary?.includes(normalizeString(secondSearchTerm))) &&
+    (name1?.includes(normalizeString(searchTerms)) ||
+      normalizeString(searchTerms).includes(name1)) &&
+    (normalizeString(secondSearchTerm).includes(normalizeString(unitary)) ||
+      normalizeString(unitary)?.includes(normalizeString(secondSearchTerm))) &&
     exactWordFirstTerm &&
     exactWordSecondTerm
   )

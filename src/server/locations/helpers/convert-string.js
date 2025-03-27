@@ -143,35 +143,38 @@ function formatNorthernIrelandPostcode(postcode) {
 
 // Function to check if a word separated by spaces in one string has an exact match in another string
 function hasExactMatch(wordString, name1, name2 = null) {
+  const normalizeString = (str) => str?.toUpperCase().replace(/\s+/g, '')
   const words = wordString.split(' ') // Split the word string into an array of words
   if (name2) {
     if (words.length === 1) {
       return words.some((word) => {
         return (
-          name2.includes(word.toUpperCase()) &&
-          word.toUpperCase().includes(name2)
+          normalizeString(name2).includes(word.toUpperCase()) &&
+          word.toUpperCase().includes(normalizeString(name2))
         )
       }) // Check if any word exists in the target string
     }
     if (words.length > 1) {
       const word = words.join('') // Split the word string into an array of words
       return (
-        name2.includes(word.toUpperCase()) && word.toUpperCase().includes(name2)
+        normalizeString(name2).includes(word.toUpperCase()) &&
+        word.toUpperCase().includes(normalizeString(name2))
       )
     }
   } else if (name1) {
     if (words.length === 1) {
       return words.some((word) => {
         return (
-          name1.includes(word.toUpperCase()) &&
-          word.toUpperCase().includes(name1)
+          normalizeString(name1).includes(word.toUpperCase()) &&
+          word.toUpperCase().includes(normalizeString(name1))
         )
       }) // Check if any word exists in the target string
     }
     if (words.length > 1) {
       const word = words.join('') // Split the word string into an array of words
       return (
-        name1.includes(word.toUpperCase()) && word.toUpperCase().includes(name1)
+        normalizeString(name1).includes(word.toUpperCase()) &&
+        word.toUpperCase().includes(normalizeString(name1))
       )
     }
   }
