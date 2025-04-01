@@ -118,6 +118,7 @@ const getLocationDetailsController = {
           locationData.dailySummary,
           lang
         )
+        // Get the date from the locationData
         const { airQuality } = airQualityValues(forecastNum, lang)
         return h.view('locations/location', {
           result: locationDetails,
