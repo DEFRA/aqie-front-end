@@ -14,8 +14,10 @@
         <li class="govuk-tabs__list-item {%- if loop.index == 1 %} govuk-tabs__list-item--selected{% endif %}">
           <a class="govuk-tabs__tab" href="#{{ id }}"
             {%- for attribute, value in item.attributes %} {{ attribute }}="{{ value }}"{% endfor %}>
-            {{ item.label }}
+            {{ item.label | safe }}
           </a>
+            {{ item.daqi  | safe }}
+            {{ item.status  | safe }}
         </li>
       {% endif %}
     {% endfor %}

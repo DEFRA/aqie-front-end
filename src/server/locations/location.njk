@@ -78,7 +78,9 @@
 <h2 class="govuk-heading-m">{{daqi.pageTexts.d}}</h2>
 <p>{{daqi.tooltipText.latest1 | safe}}<span class='govuk-!-font-size-16 govuk-!-font-weight-regular'><sup>3</sup></span>{{daqi.tooltipText.latest2 | safe}}</p>
 {% endif %}
+{% set tabs = [] %} {# Initialize an array to store tab items dynamically #}
 {% for site in monitoringSites %}
+ {% set rows = [] %} {# Initialize rows for the current site #}
 {% set time %}
     {{ "now" | date | minusOneHour }}
 {% endset %}
@@ -110,9 +112,8 @@
     site.id
   )}}#}
 {% endset %}
-  <h3 class="govuk-heading-s govuk-!-margin-bottom-1 pollutant-table">{{site.name}}{{ siteNameToggletip | safe }}</h3>
-  <p class="govuk-caption-m govuk-!-margin-bottom-3">{{ site.distance }} {{daqi.pollutantTable.a}}</p>
- <p>{{siteTypeDescriptions[site.areaType]}}</p>
+
+
   {% set rows = [] %}
 
   {% for key, pollutantDetail in pollutantTypes %}
@@ -139,24 +140,47 @@
       {% set _ = rows.push(row) %}
     {% endif %}
   {% endfor %}
-  {{ aqLevelsTable({
-      id:loop.index,
-      classes: "govuk-!-margin-bottom-2",
-      firstCellIsHeader: false,
-      head: [
-        { text: daqi.pollutantTable.b, classes: "defra-aq-levels-table__cell--pollutant"},
-        { html: daqi.pollutantTable.c, classes: "defra-aq-levels-table__cell--reading" },
-        { html: daqi.pollutantTable.d, classes: "defra-aq-levels-table__cell--level" }
-      ],
-      rows: rows
-  }) }}
-  {% if lang == 'cy'%}
-   <p class='govuk-caption-s govuk-!-margin-bottom-6'>{{daqi.pollutantTable.f}} {{pollutantTime}} {{daqi.pollutantTable.g}} {{ pollutantDay }} {{welshMonth}} {{pollutantYear}}</p>
-  {% else %}
-  <p class='govuk-caption-s govuk-!-margin-bottom-6'>{{daqi.pollutantTable.f}} {{pollutantTime}} {{daqi.pollutantTable.g}} {{ pollutantDay }} {{pollutantMonth}} {{pollutantYear}}</p>
-  {% endif %}
 
+
+  {# Generate the aqLevelsTable for the current site #}
+  {% set tableHtml %}
+    <h3 class="govuk-heading-s govuk-!-margin-bottom-1 pollutant-table">{{site.name}}</h3>
+    <p class="govuk-caption-m govuk-!-margin-bottom-3">{{ site.distance }} {{daqi.pollutantTable.a}}</p>
+    <p>{{siteTypeDescriptions[site.areaType]}}</p>
+    {{ aqLevelsTable({
+        id: loop.index,
+        classes: "govuk-!-margin-bottom-2",
+        firstCellIsHeader: false,
+        head: [
+          { text: daqi.pollutantTable.b, classes: "defra-aq-levels-table__cell--pollutant" },
+          { html: daqi.pollutantTable.c, classes: "defra-aq-levels-table__cell--reading" },
+          { html: daqi.pollutantTable.d, classes: "defra-aq-levels-table__cell--level" }
+        ],
+        rows: rows
+    }) }}
+    {% if lang == 'cy'%}
+    <p class='govuk-caption-s govuk-!-margin-bottom-6'>{{daqi.pollutantTable.f}} {{pollutantTime}} {{daqi.pollutantTable.g}} {{ pollutantDay }} {{welshMonth}} {{pollutantYear}}</p>
+    {% else %}
+    <p class='govuk-caption-s govuk-!-margin-bottom-6'>{{daqi.pollutantTable.f}} {{pollutantTime}} {{daqi.pollutantTable.g}} {{ pollutantDay }} {{pollutantMonth}} {{pollutantYear}}</p>
+    {% endif %}
+  {% endset %}
+
+  {# Add the generated table to the tabs array #}
+  {% set _ = tabs.push({
+    classes: "govuk-tabs__list-item--sites",
+    label: site.name | truncate(15),
+    status: "<span class='defra-aq-tabs__label-distance'>" ~ site.distance ~ " miles away</span>",
+    id: "tab-" + loop.index,
+    panel: {
+      html: tableHtml
+    }
+  }) %}
 {% endfor %}
+{# Render govukTabs with the dynamically generated tabs #}
+{{ govukTabs({
+  classes: "defra-aq-tabs",
+  items: tabs
+}) }}
     </div>
   </div>
 {% endblock %}
