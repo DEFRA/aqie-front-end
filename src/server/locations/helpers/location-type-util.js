@@ -13,7 +13,7 @@ const getLocationNameOrPostcode = (locationType, payload) => {
   if (locationType === LOCATION_TYPE_UK) {
     return payload.engScoWal.trim()
   } else if (locationType === LOCATION_TYPE_NI) {
-    return payload.ni
+    return payload.ni.trim()
   } else {
     return null
   }
