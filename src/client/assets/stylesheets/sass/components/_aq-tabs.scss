@@ -31,6 +31,7 @@
 .govuk-tabs__panel h3 {
     position: relative;
     margin-top: govuk-spacing(0);
+    margin-bottom: 20px;
     @include mq ($from: tablet) {
         padding: 0;
         @include govuk-responsive-margin(4, 'bottom');
@@ -116,13 +117,6 @@
             }
         }
     }
-    
-    // button {
-    //     display: none;
-    //     @include mq ($from: tablet) {
-    //         display: block;
-    //     }
-    // }
 
 .defra-aq-tabs-status {
     display: block;
@@ -182,4 +176,17 @@
             border: 0;
         }
     } 
+}
+
+.defra-aq-levels-table__row {
+    border-top: 0 solid #b1b4b6;
+}
+
+@media (min-width: 40.0625em) {
+    .govuk-frontend-supported .govuk-tabs__panel {
+        margin-bottom: 20px!important; /* stylelint-disable-line declaration-no-important */
+        padding: 30px 0 0;
+        border: 0 solid #b1b4b6;
+        border-top: 0;
+    }
 }

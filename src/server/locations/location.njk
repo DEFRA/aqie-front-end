@@ -145,7 +145,6 @@
   {# Generate the aqLevelsTable for the current site #}
   {% set tableHtml %}
     <h3 class="govuk-heading-s govuk-!-margin-bottom-1 pollutant-table">{{site.name}}</h3>
-    <p class="govuk-caption-m govuk-!-margin-bottom-3">{{ site.distance }} {{daqi.pollutantTable.a}}</p>
     <p>{{siteTypeDescriptions[site.areaType]}}</p>
     {{ aqLevelsTable({
         id: loop.index,
@@ -168,7 +167,7 @@
   {# Add the generated table to the tabs array #}
   {% set _ = tabs.push({
     classes: "govuk-tabs__list-item--sites",
-    label: site.name | truncate(15),
+    label: site.name | truncate(1500),
     status: "<span class='defra-aq-tabs__label-distance'>" ~ site.distance ~ " miles away</span>",
     id: "tab-" + loop.index,
     panel: {
