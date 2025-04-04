@@ -197,3 +197,30 @@ svg|foreignObject {
     border-bottom: 1px solid transparent;
   }
 }
+
+.govuk-tabs__tab {
+  display: inline-block;
+  max-width: 12ch;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.defra-aq-tabs__label-distance {
+  padding-top: 5px;
+  display: block;
+  font-family: "GDS Transport", arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1.1429;
+  text-decoration: none;
+}
+
+@media (min-width: 40.0625em) {
+  .defra-aq-tabs__label-distance {
+    font-size: 1.1rem;
+    line-height: 0.5;
+  }
+}

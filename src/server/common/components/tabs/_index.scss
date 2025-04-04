@@ -36,7 +36,6 @@
     @include govuk-link-common;
     @include govuk-link-style-default;
 
-    display: inline-block;
     margin-bottom: govuk-spacing(2);
   }
 
@@ -102,7 +101,7 @@
         @include govuk-link-style-text;
 
         margin-bottom: 0;
-
+        
         &::after {
           content: "";
           position: absolute;
