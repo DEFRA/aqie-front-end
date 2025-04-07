@@ -7,17 +7,17 @@
 {% set pageHeadingSize = pageHeadingSize or "xl govuk-!-margin-top-4" %}
 {% if onlyShowTwoPages == "Yes" %}
 {% block content %}
-{%if lang == "en"%}
-{% set htmlLang = "en"%}
-{%else%}
-{% set htmlLang = "cy"%}
-{%endif%}
+{% if lang == "en" %}
+{% set htmlLang = "en" %}
+{% else %}
+{% set htmlLang = "cy" %}
+{% endif %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop govuk-grid-column-full">
       <h1 class="govuk-heading-{{ pageHeadingSize }}">
 {% if caption %}
         <span class="govuk-caption-{{ pageHeadingSize }}">{{ caption }}</span>
-        {% endif %}
+{% endif %}
         {{ title }}
       </h1>
     </div>
@@ -25,27 +25,27 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full-until-desktop govuk-grid-column-two-thirds-from-desktop">
       {% include "daqi.njk" %}
-      {%if lang == "cy"%}
+      {% if lang == "cy" %}
       {% include "forecast-welsh.njk" %}
       {% else %}
       {% include "forecast.njk" %}
-      {%endif%}
+      {% endif %}
       {% if transformedDailySummary and transformedDailySummary.isCurrentDate %}
-      <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{daqi.pageTexts.e}}</h2>
+      <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ daqi.pageTexts.e }}</h2>
         {% for key, value in transformedDailySummary %}
         {% if key != 'issue_date' and key != 'isCurrentDate' %}
             <h2 class="govuk-heading-s govuk-!-margin-bottom-1">{{ key }}</h2>
             <p>{{ value }}</p>
         {% endif %}
-        {% endfor %} 
-      <p class="govuk-caption-s govuk-!-margin-bottom-4">{{daqi.pageTexts.b}} {{summaryDate }}</p>
+        {% endfor %}
+      <p class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.pageTexts.b }} {{ summaryDate }}</p>
       {% endif %}
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6 govuk-!-margin-top-6">
       {% if airQuality.today.value >= 1 and airQuality.today.value <= 3 %}
-          <h2 class="govuk-heading-m">{{daqi.healthAdvice.paragraphs.a}} {{ airQuality.today.readableBand }} {{daqi.healthAdvice.paragraphs.b}}</h2>
+          <h2 class="govuk-heading-m">{{ daqi.healthAdvice.paragraphs.a }} {{ airQuality.today.readableBand }} {{ daqi.healthAdvice.paragraphs.b }}</h2>
           <p>{{ airQuality.today.advice }}</p>
       {% elseif airQuality.today.value >= 4 %}
-          <h2 class="govuk-heading-m">{{daqi.healthAdvice.paragraphs.a}} {{ airQuality.today.readableBand }} {{daqi.healthAdvice.paragraphs.b}}</h2>
+          <h2 class="govuk-heading-m">{{ daqi.healthAdvice.paragraphs.a }} {{ airQuality.today.readableBand }} {{ daqi.healthAdvice.paragraphs.b }}</h2>
           <p>{{ airQuality.today.advice }}</p>
           {% set adultsText %}
             {{ (airQuality.today.atrisk.adults) }}
@@ -62,21 +62,21 @@
               "<p>" + asthmaText + "</p>" +
               "<p>" + oldPeopleText + "</p>" 
           }) }}
-      {% endif %} 
-      {%if lang == "en"%}
+      {% endif %}
+      {% if lang == "en" %}
       {% include "daqi-index.njk" %}
-      {% endif %} 
-      {%if lang == "cy"%}
+      {% endif %}
+      {% if lang == "cy" %}
       {% include "daqi-index-welsh.njk" %}
-      {% endif %} 
+      {% endif %}
 
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6">
-      <h2 class="govuk-heading-m">{{daqi.pageTexts.c}}</h2>
-      {% include "pollutants.njk" %}   
+      <h2 class="govuk-heading-m">{{ daqi.pageTexts.c }}</h2>
+      {% include "pollutants.njk" %}
 {% if monitoringSites|length %}
 <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6 govuk-!-margin-top-6">
-<h2 class="govuk-heading-m">{{daqi.pageTexts.d}}</h2>
-<p>{{daqi.tooltipText.latest1 | safe}}<span class='govuk-!-font-size-16 govuk-!-font-weight-regular'><sup>3</sup></span>{{daqi.tooltipText.latest2 | safe}}</p>
+<h2 class="govuk-heading-m">{{ daqi.pageTexts.d }}</h2>
+<p>{{ daqi.tooltipText.latest1 | safe }}<span class='govuk-!-font-size-16 govuk-!-font-weight-regular'><sup>3</sup></span>{{ daqi.tooltipText.latest2 | safe }}</p>
 {% endif %}
 {% set tabs = [] %} {# Initialize an array to store tab items dynamically #}
 {% for site in monitoringSites %}
@@ -86,33 +86,14 @@
 {% endset %}
 
 {% set measurementToggletip %}
-{% set microgramcubic = daqi.tooltipText.latest%}
-  {#{{ toggletip(
-    daqi.pollutantTable.c,
-    'More information about measurement',
-    microgramcubic | safe,
-    daqi.pollutantTable.c
-  )}}#}
+{% set microgramcubic = daqi.tooltipText.latest %}
 {% endset %}
 
 {% set levelToggletip %}
-  {#{{ toggletip(
-    daqi.pollutantTable.d,
-    'More information about the level',
-    daqi.tooltipText.level,
-    daqi.pollutantTable.d
-  )}}#}
 {% endset %}
 
 {% set siteNameToggletip %}
-  {#{{ toggletip(
-    site.name,
-    'More information about ' + site.name,
-    siteTypeDescriptions[site.areaType],
-    site.id
-  )}}#}
 {% endset %}
-
 
   {% set rows = [] %}
 
@@ -141,11 +122,9 @@
     {% endif %}
   {% endfor %}
 
-
-  {# Generate the aqLevelsTable for the current site #}
   {% set tableHtml %}
-    <h3 class="govuk-heading-s govuk-!-margin-bottom-1 pollutant-table">{{site.name}}</h3>
-    <p>{{siteTypeDescriptions[site.areaType]}}</p>
+    <h3 class="govuk-heading-s govuk-!-margin-bottom-1 pollutant-table">{{ site.name }}</h3>
+    <p>{{ siteTypeDescriptions[site.areaType] }}</p>
     {{ aqLevelsTable({
         id: loop.index,
         classes: "govuk-!-margin-bottom-2",
@@ -157,14 +136,13 @@
         ],
         rows: rows
     }) }}
-    {% if lang == 'cy'%}
-    <p class='govuk-caption-s govuk-!-margin-bottom-6'>{{daqi.pollutantTable.f}} {{pollutantTime}} {{daqi.pollutantTable.g}} {{ pollutantDay }} {{welshMonth}} {{pollutantYear}}</p>
+    {% if lang == 'cy' %}
+    <p class='govuk-caption-s govuk-!-margin-bottom-6'>{{ daqi.pollutantTable.f }} {{ pollutantTime }} {{ daqi.pollutantTable.g }} {{ pollutantDay }} {{ welshMonth }} {{ pollutantYear }}</p>
     {% else %}
-    <p class='govuk-caption-s govuk-!-margin-bottom-6'>{{daqi.pollutantTable.f}} {{pollutantTime}} {{daqi.pollutantTable.g}} {{ pollutantDay }} {{pollutantMonth}} {{pollutantYear}}</p>
+    <p class='govuk-caption-s govuk-!-margin-bottom-6'>{{ daqi.pollutantTable.f }} {{ pollutantTime }} {{ daqi.pollutantTable.g }} {{ pollutantDay }} {{ pollutantMonth }} {{ pollutantYear }}</p>
     {% endif %}
   {% endset %}
 
-  {# Add the generated table to the tabs array #}
   {% set _ = tabs.push({
     classes: "govuk-tabs__list-item--sites",
     label: site.name | truncate(1500),
@@ -175,11 +153,61 @@
     }
   }) %}
 {% endfor %}
-{# Render govukTabs with the dynamically generated tabs #}
-{{ govukTabs({
-  classes: "defra-aq-tabs",
-  items: tabs
-}) }}
+
+{% if monitoringSites|length > 1 %}
+  {# Render govukTabs with the dynamically generated tabs #}
+  {{ govukTabs({
+    classes: "defra-aq-tabs",
+    items: tabs
+  }) }}
+{% elif monitoringSites|length == 1 %}
+  {# Render only the aqLevelsTable for the single site #}
+  {% set site = monitoringSites[0] %}
+  {% set rows = [] %}
+
+  {# Populate rows with pollutant data #}
+  {% for key, pollutantDetail in pollutantTypes %}
+    {% set pollutant = site.pollutants[key] %}
+    {% if pollutant %}
+      {% set row = [
+        { 
+          html: "<a class='govuk-!-margin-bottom-1' href='" + pollutantDetail.href + "'>" + pollutantDetail.title + "</a><span class='govuk-caption-s govuk-!-margin-bottom-1'>" + daqi.pollutantTable.e + ' ' + pollutantDetail.low_range + "</span>",
+          classes: "defra-aq-levels-table__cell--pollutant" 
+        },
+        { 
+          html: (pollutant.value) + " <span class='govuk-!-font-size-16 govuk-!-font-weight-regular'>μg/m<sup>3</sup></span>",
+          classes: "defra-aq-levels-table__cell--reading" 
+        },
+        { 
+          html: "<strong class='daqi-tag daqi-tag--" + (pollutant.daqi if pollutant.daqi else "default-aqi-value") + "'>" + pollutant.band + "</strong>",
+          classes: "defra-aq-levels-table__cell--level" 
+        }
+      ] %}
+      {% set _ = rows.push(row) %}
+    {% endif %}
+  {% endfor %}
+
+  {# Generate the aqLevelsTable for the single site #}
+  <h3 class="govuk-heading-s govuk-!-margin-bottom-1 pollutant-table">{{ site.name }}</h3>
+  <p class="govuk-caption-m govuk-!-margin-bottom-3">{{ site.distance }} {{daqi.pollutantTable.a}}</p>
+  <p>{{ siteTypeDescriptions[site.areaType] }}</p>
+  {{ aqLevelsTable({
+      id: 1,
+      classes: "govuk-!-margin-bottom-2",
+      firstCellIsHeader: false,
+      head: [
+        { text: daqi.pollutantTable.b, classes: "defra-aq-levels-table__cell--pollutant" },
+        { html: daqi.pollutantTable.c, classes: "defra-aq-levels-table__cell--reading" },
+        { html: daqi.pollutantTable.d, classes: "defra-aq-levels-table__cell--level" }
+      ],
+      rows: rows
+  }) }}
+  {% if lang == 'cy' %}
+    <p class='govuk-caption-s govuk-!-margin-bottom-6'>{{ daqi.pollutantTable.f }} {{ pollutantTime }} {{ daqi.pollutantTable.g }} {{ pollutantDay }} {{ welshMonth }} {{ pollutantYear }}</p>
+  {% else %}
+    <p class='govuk-caption-s govuk-!-margin-bottom-6'>{{ daqi.pollutantTable.f }} {{ pollutantTime }} {{ daqi.pollutantTable.g }} {{ pollutantDay }} {{ pollutantMonth }} {{ pollutantYear }}</p>
+  {% endif %}
+{% endif %}
     </div>
   </div>
 {% endblock %}
