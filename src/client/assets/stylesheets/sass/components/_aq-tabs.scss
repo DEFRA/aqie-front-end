@@ -31,7 +31,7 @@
 .govuk-tabs__panel h3 {
     position: relative;
     margin-top: govuk-spacing(0);
-    margin-bottom: 20px;
+    margin-bottom: 20px!important; /* stylelint-disable-line declaration-no-important */
     @include mq ($from: tablet) {
         padding: 0;
         @include govuk-responsive-margin(4, 'bottom');

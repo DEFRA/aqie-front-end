@@ -143,42 +143,27 @@ function formatNorthernIrelandPostcode(postcode) {
 
 // Function to check if a word separated by spaces in one string has an exact match in another string
 function hasExactMatch(wordString, name1, name2 = null) {
-  const normalizeString = (str) => str?.toUpperCase().replace(/\s+/g, '')
-  const words = wordString.split(' ') // Split the word string into an array of words
-  if (name2) {
-    if (words.length === 1) {
-      return words.some((word) => {
-        return (
-          normalizeString(name2).includes(word.toUpperCase()) &&
-          word.toUpperCase().includes(normalizeString(name2))
-        )
-      }) // Check if any word exists in the target string
-    }
-    if (words.length > 1) {
-      const word = words.join('') // Split the word string into an array of words
-      return (
-        normalizeString(name2).includes(word.toUpperCase()) &&
-        word.toUpperCase().includes(normalizeString(name2))
-      )
-    }
-  } else if (name1) {
-    if (words.length === 1) {
-      return words.some((word) => {
-        return (
-          normalizeString(name1).includes(word.toUpperCase()) &&
-          word.toUpperCase().includes(normalizeString(name1))
-        )
-      }) // Check if any word exists in the target string
-    }
-    if (words.length > 1) {
-      const word = words.join('') // Split the word string into an array of words
-      return (
-        normalizeString(name1).includes(word.toUpperCase()) &&
-        word.toUpperCase().includes(normalizeString(name1))
-      )
-    }
+  const normalizeString = (str) => str?.toUpperCase().replace(/\s+/g, '') // Normalize string by converting to uppercase and removing spaces
+  const words = wordString.split(' ').map((word) => word.toUpperCase()) // Split and normalize words in the input string
+
+  const checkMatch = (target, words) => {
+    if (!target) return false // Return false if the target string is null or undefined
+    const normalizedTarget = normalizeString(target) // Normalize the target string
+    return words.some(
+      (word) =>
+        normalizedTarget.includes(word) && word.includes(normalizedTarget)
+    ) // Check for exact match
   }
-  return false // Return false if no word exists in the target string
+
+  if (name2) {
+    return checkMatch(name2, words) // Check against the second target string if provided
+  }
+
+  if (name1) {
+    return checkMatch(name1, words) // Check against the first target string
+  }
+
+  return false // Return false if neither name1 nor name2 is provided
 }
 
 // Function to check if two strings contain the exact same word
