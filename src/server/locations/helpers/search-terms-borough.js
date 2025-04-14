@@ -10,7 +10,7 @@ function searchTermsAndBorough(
   if (!exactWordFirstTerm) {
     return false
   }
-  if (secondSearchTerm === 'UNDEFINED') {
+  if (secondSearchTerm === 'UNDEFINED' || secondSearchTerm === '') {
     return (
       name1?.includes(normalizeString(searchTerms)) &&
       normalizeString(searchTerms).includes(name1) &&
