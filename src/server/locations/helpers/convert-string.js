@@ -149,10 +149,15 @@ function hasExactMatch(wordString, name1, name2 = null) {
   const checkMatch = (target, words) => {
     if (!target) return false // Return false if the target string is null or undefined
     const normalizedTarget = normalizeString(target) // Normalize the target string
-    return words.some(
-      (word) =>
-        normalizedTarget.includes(word) && word.includes(normalizedTarget)
-    ) // Check for exact match
+    const joinedWords = words.join('') // Join the array elements into a single string without spaces
+    return (
+      normalizedTarget.includes(joinedWords) &&
+      joinedWords.includes(normalizedTarget)
+    ) // Check if the normalized target string contains the joined words
+    // return words.some(
+    //   (word) =>
+    //     normalizedTarget.includes(word) && word.includes(normalizedTarget)
+    // ) // Check for exact match
   }
 
   if (name2) {
