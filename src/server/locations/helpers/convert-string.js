@@ -154,10 +154,6 @@ function hasExactMatch(wordString, name1, name2 = null) {
       normalizedTarget.includes(joinedWords) &&
       joinedWords.includes(normalizedTarget)
     ) // Check if the normalized target string contains the joined words
-    // return words.some(
-    //   (word) =>
-    //     normalizedTarget.includes(word) && word.includes(normalizedTarget)
-    // ) // Check for exact match
   }
 
   if (name2) {

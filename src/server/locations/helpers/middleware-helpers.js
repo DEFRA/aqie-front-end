@@ -6,15 +6,12 @@ import {
   extractAndFormatUKPostcode,
   splitAndKeepFirstWord,
   isValidFullPostcodeUK,
-  formatUKPostcode,
-  splitAndCheckSpecificWords,
-  hasExactMatch
+  formatUKPostcode
 } from '~/src/server/locations/helpers/convert-string'
 import { LANG_EN, LANG_CY } from '~/src/server/data/constants'
 import { createURLRouteBookmarks } from '~/src/server/locations/helpers/create-bookmark-ids'
-import { searchTermsAndBorough } from '~/src/server/locations/helpers/search-terms-borough'
-import { searchTermsAndUnitary } from '~/src/server/locations/helpers/search-terms-unitary'
 import reduceMatches from '~/src/server/locations/helpers/reduce-matches'
+import { filterMatches } from '~/src/server/locations/helpers/filter-matches'
 
 // Helper function to handle single match
 const handleSingleMatch = (
@@ -131,94 +128,37 @@ const processMatches = (
   searchTerms,
   secondSearchTerm = 'UNDEFINED'
 ) => {
-  const normalizeString = (str) => str?.toUpperCase().replace(/\s+/g, '') // Normalize string by converting to uppercase and removing spaces
   const fullPostcodePattern = /^[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}$/i // Regex for full UK postcode
   const partialPostcodePattern = /^[a-z]{1,2}\d[a-z\d]?$/i // Regex for partial UK postcode
-  const alphanumericPattern = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]+$/ // Regex for alphanumeric strings
 
   const isFullPostcode = isValidFullPostcodeUK(userLocation) // Check if user location is a full postcode
-  let exactWordFirstTerm = null
-  let exactWordSecondTerm = null
-
-  // Helper function to filter matches
-  const filterMatches = (item) => {
-    const name1 = normalizeString(item?.GAZETTEER_ENTRY.NAME1)
-    const name2 = normalizeString(item?.GAZETTEER_ENTRY.NAME2)
-    const borough = normalizeString(
-      item?.GAZETTEER_ENTRY?.DISTRICT_BOROUGH
-    )?.replace(/-/g, ' ')
-    const unitary = normalizeString(
-      item?.GAZETTEER_ENTRY?.COUNTY_UNITARY
-    )?.replace(/-/g, ' ')
-
-    if (searchTerms && borough) {
-      exactWordFirstTerm = hasExactMatch(searchTerms, name1)
-      exactWordSecondTerm = hasExactMatch(secondSearchTerm, borough)
-      return searchTermsAndBorough(
-        searchTerms,
-        name1,
-        secondSearchTerm,
-        borough,
-        exactWordFirstTerm,
-        exactWordSecondTerm
-      )
-    }
-
-    if (searchTerms && unitary) {
-      exactWordFirstTerm = hasExactMatch(searchTerms, name1, name2)
-      exactWordSecondTerm = hasExactMatch(secondSearchTerm, unitary)
-      return searchTermsAndUnitary(
-        searchTerms,
-        name1,
-        name2,
-        secondSearchTerm,
-        unitary,
-        exactWordFirstTerm,
-        exactWordSecondTerm
-      )
-    }
-
-    if (isFullPostcode) {
-      return (
-        name1.includes(normalizeString(userLocation)) &&
-        normalizeString(userLocation).includes(name1)
-      )
-    }
-
-    const checkWords = splitAndCheckSpecificWords(
-      userLocation,
-      item?.GAZETTEER_ENTRY.NAME1
-    )
-    return (
-      checkWords ||
-      name1.includes(normalizeString(userLocation)) ||
-      userLocation.includes(name2)
-    )
-  }
-
   // Filter matches based on criteria
-  let selectedMatches = matches.filter(filterMatches)
-
-  // Use the external reduceMatches function
-  const search = { searchTerms, secondSearchTerm }
-  const isAlphanumeric = alphanumericPattern.test(locationNameOrPostcode)
-  const isNotPostcode =
-    !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
-    !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase())
-  const postcodes = { isFullPostcode, isNotPostcode }
+  let selectedMatches = matches.filter((item) =>
+    filterMatches(item, {
+      searchTerms,
+      secondSearchTerm,
+      isFullPostcode,
+      userLocation
+    })
+  )
+  const options = {
+    searchTerms,
+    secondSearchTerm,
+    fullPostcodePattern,
+    partialPostcodePattern,
+    isFullPostcode
+  }
   selectedMatches = reduceMatches(
     selectedMatches,
     locationNameOrPostcode,
-    postcodes,
-    isAlphanumeric,
-    search
+    options
   )
 
   // Add IDs to selected matches
   const { selectedMatchesAddedIDs } = createURLRouteBookmarks(selectedMatches)
   selectedMatches = selectedMatchesAddedIDs
 
-  return { selectedMatches, exactWordFirstTerm, exactWordSecondTerm }
+  return { selectedMatches }
 }
 
 const getTitleAndHeaderTitle = (locationDetails, locationNameOrPostcode) => {
