@@ -138,19 +138,14 @@ const searchMiddleware = async (request, h) => {
       new Set(results.map((item) => JSON.stringify(item)))
     ).map((item) => JSON.parse(item))
 
-    const { selectedMatches, exactWordFirstTerm, exactWordSecondTerm } =
-      processMatches(
-        results,
-        userLocation,
-        locationNameOrPostcode,
-        searchTerms,
-        secondSearchTerm
-      )
-    if (
-      searchTerms !== undefined &&
-      selectedMatches.length === 0 &&
-      (!exactWordFirstTerm || !exactWordSecondTerm)
-    ) {
+    const { selectedMatches } = processMatches(
+      results,
+      userLocation,
+      locationNameOrPostcode,
+      searchTerms,
+      secondSearchTerm
+    )
+    if (searchTerms !== undefined && selectedMatches.length === 0) {
       request.yar.clear('searchTermsSaved')
       return h.redirect('error/index').takeover()
     }

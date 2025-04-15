@@ -9,8 +9,13 @@ module.exports = {
   reporters: ['default', ['github-actions', { silent: false }], 'summary'],
   setupFilesAfterEnv: ['<rootDir>/jest-setup.js'],
   collectCoverageFrom: ['src/**/*.js'],
-  coveragePathIgnorePatterns: [
+  testPathIgnorePatterns: [
     '<rootDir>/node_modules/',
+    '<rootDir>/dist/',
+    '<rootDir>/src/server/common/',
+    '<rootDir>/src/__fixtures__/'
+  ],
+  coveragePathIgnorePatterns: [
     '<rootDir>/.server',
     '<rootDir>/.public',
     '<rootDir>/src/__fixtures__',
