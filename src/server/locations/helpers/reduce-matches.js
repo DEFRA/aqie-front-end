@@ -1,61 +1,39 @@
-import { isOnlyLettersAndMoreThanFour } from '~/src/server/locations/helpers/convert-string'
+import { filterByPostcode } from '~/src/server/locations/helpers/filter-by-postcode'
+import { filterBySearchTerms } from '~/src/server/locations/helpers/filter-by-search-terms'
 
-const reduceMatches = (
-  selectedMatches,
-  locationNameOrPostcode,
-  postcodes,
-  isAlphanumeric,
-  search
-) => {
-  const { isFullPostcode, isNotPostcode } = postcodes
-  const { searchTerms, secondSearchTerm } = search
-  const fullPostcodePattern = /^[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}$/i // Regex for full UK postcode
-  const partialPostcodePattern = /^[a-z]{1,2}\d[a-z\d]?$/i // Regex for partial UK postcode
-  const onlyLetters = isOnlyLettersAndMoreThanFour(locationNameOrPostcode)
+const MAX_POSTCODE_LENGTH = 6 // Maximum length for partial postcodes
+const SINGLE_MATCH = 1 // Limit to a single match
+const reduceMatches = (selectedMatches, locationNameOrPostcode, options) => {
+  const {
+    searchTerms,
+    secondSearchTerm,
+    fullPostcodePattern,
+    partialPostcodePattern,
+    isFullPostcode
+  } = options
+  const isAlphanumeric = /^[a-zA-Z\d]+$/.test(locationNameOrPostcode) // Check if input is alphanumeric
+  const isNotPostcode =
+    !fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
+    !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase())
+  const postcodes = { isFullPostcode, isNotPostcode }
+  const search = { searchTerms, secondSearchTerm }
 
-  if (isFullPostcode && selectedMatches.length > 1) {
-    selectedMatches = selectedMatches.slice(0, 1)
-  }
+  // Apply filters
+  selectedMatches = filterByPostcode(
+    selectedMatches,
+    locationNameOrPostcode,
+    postcodes
+  )
+  selectedMatches = filterBySearchTerms(selectedMatches, search, isAlphanumeric)
 
+  // Additional logic for partial postcodes or single matches
   if (
-    (isAlphanumeric || isNaN(Number(locationNameOrPostcode))) &&
-    isNotPostcode &&
-    searchTerms &&
-    secondSearchTerm !== 'UNDEFINED' &&
-    selectedMatches.length > 1
-  ) {
-    selectedMatches = selectedMatches.slice(0, 1)
-  }
-
-  if (
-    (isAlphanumeric || isNaN(Number(locationNameOrPostcode))) &&
-    isNotPostcode &&
-    searchTerms &&
-    selectedMatches.length > 1
-  ) {
-    selectedMatches =
-      secondSearchTerm !== 'UNDEFINED' ? selectedMatches.slice(0, 1) : []
-  }
-
-  if (
-    (isAlphanumeric || !isNaN(Number(locationNameOrPostcode))) &&
-    isNotPostcode &&
-    selectedMatches.length > 1
-  ) {
-    selectedMatches = []
-  }
-
-  if (
-    (fullPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
-      selectedMatches.length === 2) ||
     (partialPostcodePattern.test(locationNameOrPostcode.toUpperCase()) &&
       selectedMatches.length > 0 &&
-      locationNameOrPostcode.length <= 6) ||
-    (selectedMatches.length === 1 &&
-      !partialPostcodePattern.test(locationNameOrPostcode.toUpperCase())) ||
-    (selectedMatches.length >= 2 && onlyLetters && searchTerms)
+      locationNameOrPostcode.length <= MAX_POSTCODE_LENGTH) ||
+    selectedMatches.length === SINGLE_MATCH
   ) {
-    selectedMatches = [selectedMatches[0]]
+    return selectedMatches.slice(0, SINGLE_MATCH)
   }
 
   return selectedMatches
