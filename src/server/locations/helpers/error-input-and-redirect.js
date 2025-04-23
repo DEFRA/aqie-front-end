@@ -26,6 +26,7 @@ const handleErrorInputAndRedirect = (
   payload,
   searchTerms
 ) => {
+  // TODO: Fix function complexity issue
   if (!searchTerms) {
     /* eslint-disable camelcase */
     const tempString = request?.headers?.referer?.split('/')[3]
