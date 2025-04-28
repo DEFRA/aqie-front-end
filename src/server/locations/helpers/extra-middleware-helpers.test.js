@@ -6,19 +6,32 @@ jest.mock('~/src/server/locations/helpers/fetch-data', () => ({
 }))
 
 jest.mock('~/src/server/locations/helpers/extra-middleware-helpers', () => ({
-  handleInvalidDailySummary: jest.fn(),
-  validateLocationInput: jest.fn(),
   handleErrorInputAndRedirect: jest.fn(), // Mock the handleErrorInputAndRedirect function
-  handleUKLocationType: jest.fn()
+  handleUKLocationType: jest.fn(() =>
+    Promise.resolve('Mocked handleUKLocationType')
+  )
+}))
+
+jest.mock('~/src/server/locations/helpers/convert-string', () => ({
+  isValidFullPostcodeUK: jest.fn(),
+  isOnlyWords: jest.fn()
+}))
+
+jest.mock('~/src/server/locations/helpers/middleware-helpers', () => ({
+  handleSingleMatch: jest.fn(), // Mock handleSingleMatch
+  handleMultipleMatches: jest.fn(() => 'Multiple matches handled'), // Mock handleMultipleMatches
+  processMatches: jest.fn(() => ({
+    selectedMatches: [] // Default return value
+  }))
 }))
 
 describe('fetchData Export', () => {
   it('should export fetchData as a function', () => {
-    expect(typeof fetchData).toBe('function') // ''
+    expect(typeof fetchData).toBe('function')
   })
 })
 
-describe('searchMiddleware', () => {
+describe('handleErrorInputAndRedirect', () => {
   describe('handleErrorInputAndRedirect Mock', () => {
     it('should return the mocked value', () => {
       handleErrorInputAndRedirect.mockReturnValue({

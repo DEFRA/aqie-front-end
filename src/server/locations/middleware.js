@@ -8,8 +8,6 @@ import {
 } from '~/src/server/locations/helpers/middleware-helpers'
 import { LANG_EN, LOCATION_TYPE_UK } from '~/src/server/data/constants'
 import {
-  handleInvalidDailySummary,
-  validateLocationInput,
   handleErrorInputAndRedirect,
   handleUKLocationType
 } from '~/src/server/locations/helpers/extra-middleware-helpers'
@@ -33,10 +31,6 @@ const searchMiddleware = async (request, h) => {
   }
 
   const { userLocation, locationNameOrPostcode } = redirectError
-  const validationError = validateLocationInput(userLocation, lang, request, h)
-  if (validationError) {
-    return validationError
-  }
 
   const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
     await fetchData(request, h, {
@@ -47,10 +41,6 @@ const searchMiddleware = async (request, h) => {
       searchTerms,
       secondSearchTerm
     })
-
-  if (!getDailySummary) {
-    return handleInvalidDailySummary(request, h, locationNameOrPostcode, lang)
-  }
 
   const { transformedDailySummary } = transformKeys(getDailySummary, lang)
   const { formattedDateSummary, getMonthSummary } = getFormattedDateSummary(

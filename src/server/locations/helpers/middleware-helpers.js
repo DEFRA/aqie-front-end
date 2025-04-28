@@ -85,6 +85,8 @@ const handleMultipleMatches = (
     lang
   }
 ) => {
+  const resolvedLocationNameOrPostcode =
+    locationNameOrPostcode ?? 'Unknown Location'
   request.yar.set('locationData', {
     results: selectedMatches,
     getForecasts: getForecasts?.forecasts,
@@ -92,7 +94,7 @@ const handleMultipleMatches = (
     multipleLocations,
     title: multipleLocations.title,
     paragraphs: multipleLocations.paragraphs,
-    userLocation: locationNameOrPostcode,
+    userLocation: resolvedLocationNameOrPostcode,
     airQualityData: airQualityData.commonMessages,
     siteTypeDescriptions,
     pollutantTypes,
@@ -159,7 +161,10 @@ const processMatches = (
   return { selectedMatches }
 }
 
-const getTitleAndHeaderTitle = (locationDetails, locationNameOrPostcode) => {
+const getTitleAndHeaderTitle = (
+  locationDetails,
+  locationNameOrPostcode = 'Unknown Location'
+) => {
   let title = ''
   let headerTitle = ''
   let urlRoute = ''

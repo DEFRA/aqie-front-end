@@ -1,9 +1,4 @@
-import {
-  isValidFullPostcodeUK,
-  isOnlyWords,
-  convertStringToHyphenatedLowercaseWords
-} from '~/src/server/locations/helpers/convert-string'
-import { LANG_EN } from '~/src/server/data/constants'
+import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
 import {
   handleSingleMatch,
   handleMultipleMatches,
@@ -16,33 +11,6 @@ import {
   pollutantTypes
 } from '~/src/server/data/en/monitoring-sites.js'
 import { calendarWelsh } from '~/src/server/data/cy/cy.js'
-
-// Helper function to handle invalid postcodes
-const handleInvalidDailySummary = (
-  request,
-  h,
-  locationNameOrPostcode,
-  lang = LANG_EN
-) => {
-  request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-  request.yar.clear('searchTermsSaved')
-  return h.redirect('/location-not-found').takeover()
-}
-
-// Helper function to validate location input
-const validateLocationInput = (userLocation, lang = LANG_EN, request, h) => {
-  const isLocationValidPostcode = isValidFullPostcodeUK(userLocation)
-  const wordsOnly = isOnlyWords(userLocation)
-  if (!isLocationValidPostcode && !wordsOnly) {
-    request.yar.set('locationDataNotFound', {
-      locationNameOrPostcode: userLocation,
-      lang
-    })
-    request.yar.clear('searchTermsSaved')
-    return h.redirect('/location-not-found').takeover()
-  }
-  return null
-}
 
 // Helper function to handle redirection for invalid input
 const handleErrorInputAndRedirect = (
@@ -129,7 +97,8 @@ const handleUKLocationType = async (request, h, params) => {
       locationType,
       lang
     })
-  } else if (selectedMatches.length > 1) {
+  }
+  if (selectedMatches.length > 1) {
     return handleMultipleMatches(h, request, {
       selectedMatches,
       locationNameOrPostcode,
@@ -153,15 +122,9 @@ const handleUKLocationType = async (request, h, params) => {
       locationType,
       lang
     })
-  } else {
-    request.yar.clear('searchTermsSaved')
-    return h.redirect('/location-not-found').takeover()
   }
+  request.yar.clear('searchTermsSaved')
+  return h.redirect('/location-not-found').takeover()
 }
 
-export {
-  handleInvalidDailySummary,
-  validateLocationInput,
-  handleErrorInputAndRedirect,
-  handleUKLocationType
-}
+export { handleErrorInputAndRedirect, handleUKLocationType }
