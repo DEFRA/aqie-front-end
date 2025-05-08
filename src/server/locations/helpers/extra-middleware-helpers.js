@@ -1,16 +1,10 @@
-import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
 import {
-  handleSingleMatch,
-  handleMultipleMatches,
   processMatches,
-  getTitleAndHeaderTitle
+  deduplicateResults
 } from '~/src/server/locations/helpers/middleware-helpers'
-import * as airQualityData from '~/src/server/data/en/air-quality.js'
-import {
-  siteTypeDescriptions,
-  pollutantTypes
-} from '~/src/server/data/en/monitoring-sites.js'
-import { calendarWelsh } from '~/src/server/data/cy/cy.js'
+import { generateTitleData } from '~/src/server/locations/helpers/generate-title-data'
+import { handleSingleMatchHelper } from '~/src/server/locations/helpers/handle-single-match-helper'
+import { handleMultipleMatchesHelper } from '~/src/server/locations/helpers/handle-multiple-match-helper'
 
 // Helper function to handle redirection for invalid input
 const handleErrorInputAndRedirect = (
@@ -35,35 +29,21 @@ const handleErrorInputAndRedirect = (
   }
 }
 
-// Helper function to handle UK location type
+// Refactored handleUKLocationType function
 const handleUKLocationType = async (request, h, params) => {
   const {
-    locationType,
+    getOSPlaces,
     userLocation,
     locationNameOrPostcode,
-    lang,
     searchTerms,
-    secondSearchTerm,
-    getOSPlaces,
-    getDailySummary,
-    getForecasts,
-    getMeasurements,
-    transformedDailySummary,
-    englishDate,
-    welshDate,
-    month,
-    multipleLocations,
-    footerTxt,
-    phaseBanner,
-    backlink,
-    cookieBanner
+    secondSearchTerm
   } = params
 
+  // Deduplicate results
   let { results } = getOSPlaces
-  results = Array.from(
-    new Set(results.map((item) => JSON.stringify(item)))
-  ).map((item) => JSON.parse(item)) // Remove duplicates
+  results = deduplicateResults(results)
 
+  // Process matches
   const { selectedMatches } = processMatches(
     results,
     userLocation,
@@ -71,58 +51,24 @@ const handleUKLocationType = async (request, h, params) => {
     searchTerms,
     secondSearchTerm
   )
-  const { title, headerTitle, urlRoute } = getTitleAndHeaderTitle(
-    selectedMatches,
-    locationNameOrPostcode
-  )
-  const headerTitleRoute = convertStringToHyphenatedLowercaseWords(
-    String(urlRoute)
-  )
-  const titleRoute = convertStringToHyphenatedLowercaseWords(String(title))
+
+  // Handle matches
   if (selectedMatches.length === 1) {
-    return handleSingleMatch(h, request, {
+    const titleData = generateTitleData(selectedMatches, locationNameOrPostcode)
+    return handleSingleMatchHelper(
+      h,
+      request,
+      params,
       selectedMatches,
-      getForecasts,
-      getMeasurements,
-      getDailySummary,
-      transformedDailySummary,
-      englishDate,
-      welshDate,
-      month,
-      headerTitle,
-      titleRoute,
-      headerTitleRoute,
-      title,
-      urlRoute,
-      locationType,
-      lang
-    })
+      titleData
+    )
   }
+
   if (selectedMatches.length > 1) {
-    return handleMultipleMatches(h, request, {
-      selectedMatches,
-      locationNameOrPostcode,
-      userLocation,
-      getForecasts,
-      getMeasurements,
-      multipleLocations,
-      airQualityData,
-      siteTypeDescriptions,
-      pollutantTypes,
-      getDailySummary,
-      transformedDailySummary,
-      footerTxt,
-      phaseBanner,
-      backlink,
-      cookieBanner,
-      calendarWelsh,
-      month,
-      welshDate,
-      englishDate,
-      locationType,
-      lang
-    })
+    return handleMultipleMatchesHelper(h, request, params, selectedMatches)
   }
+
+  // Handle no matches
   request.yar.clear('searchTermsSaved')
   return h.redirect('/location-not-found').takeover()
 }

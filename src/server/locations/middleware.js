@@ -12,6 +12,7 @@ import {
   handleUKLocationType
 } from '~/src/server/locations/helpers/extra-middleware-helpers'
 import { getMonth } from '~/src/server/locations/helpers/location-type-util'
+import * as airQualityData from '~/src/server/data/en/air-quality.js'
 
 const searchMiddleware = async (request, h) => {
   const { query, payload } = request
@@ -57,22 +58,25 @@ const searchMiddleware = async (request, h) => {
   )
 
   if (redirectError.locationType === LOCATION_TYPE_UK) {
+    const locationType = redirectError.locationType
     return handleUKLocationType(request, h, {
-      locationType: redirectError.locationType,
+      locationType,
       userLocation,
       locationNameOrPostcode,
       lang,
       searchTerms,
       secondSearchTerm,
       getOSPlaces,
+      airQualityData,
       getDailySummary,
       getForecasts,
       getMeasurements,
       transformedDailySummary,
+      calendarWelsh,
       englishDate,
       welshDate,
       month: getMonth(lang),
-      ...english
+      english
     })
   }
 

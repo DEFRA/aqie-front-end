@@ -234,11 +234,19 @@ const getFormattedDateSummary = (issueDate, calendarEnglish) => {
   return { getMonthSummary, formattedDateSummary }
 }
 
+// Helper function to deduplicate results
+const deduplicateResults = (results) => {
+  return Array.from(new Set(results.map((item) => JSON.stringify(item)))).map(
+    (item) => JSON.parse(item)
+  )
+}
+
 export {
   handleSingleMatch,
   handleMultipleMatches,
   processMatches,
   getTitleAndHeaderTitle,
   getLanguageDates,
-  getFormattedDateSummary
+  getFormattedDateSummary,
+  deduplicateResults
 }
