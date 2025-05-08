@@ -84,13 +84,18 @@ describe('handleErrorInputAndRedirect', () => {
       path: '/',
       headers: { referer: 'http://localhost:3000/search-location?lang=en' },
       payload: {
-        locationType: 'uk-location',
+        locationType: LOCATION_TYPE_UK,
         engScoWal: 'slough',
         ni: '',
         aq: ''
       },
       yar: {
-        get: jest.fn(),
+        get: jest.fn((key) => {
+          if (key === 'locationType') {
+            return LOCATION_TYPE_UK // Mock the expected return value
+          }
+          return undefined
+        }),
         set: jest.fn()
       }
     }
@@ -104,7 +109,10 @@ describe('handleErrorInputAndRedirect', () => {
 
   it('should handle successful redirection with valid search location input', () => {
     const result = handleErrorInputAndRedirect(request, h, LANG_EN, 'slough')
-    expect(request.yar.set).toHaveBeenCalledWith('locationType', 'uk-location')
+    expect(request.yar.set).toHaveBeenCalledWith(
+      'locationType',
+      LOCATION_TYPE_UK
+    )
     expect(request.yar.set).toHaveBeenCalledWith(
       'locationNameOrPostcode',
       'slough'
