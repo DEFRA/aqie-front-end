@@ -103,7 +103,6 @@ describe('handleErrorInputAndRedirect', () => {
   })
 
   it('should handle successful redirection with valid search location input', () => {
-    expect(request.yar.get.mockReturnValue(LOCATION_TYPE_UK))
     const result = handleErrorInputAndRedirect(request, h, LANG_EN, 'slough')
     expect(request.yar.set).toHaveBeenCalledWith('locationType', 'uk-location')
     expect(request.yar.set).toHaveBeenCalledWith(
@@ -151,7 +150,6 @@ describe('handleErrorInputAndRedirect', () => {
   })
 
   it.skip('should handle invalid postcode', () => {
-    expect(request.yar.get.mockReturnValue(LOCATION_TYPE_UK))
     request.payload.locationNameOrPostcode = 'INVALID'
     request.payload.engScoWal = 'INVALID'
     getLocationNameOrPostcode.mockReturnValue('INVALID')
