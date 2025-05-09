@@ -16,6 +16,7 @@ module.exports = {
     '<rootDir>/node_modules/',
     '<rootDir>/dist/',
     '<rootDir>/src/server/common/',
+    '<rootDir>/src/client',
     '<rootDir>/src/__fixtures__/'
   ],
   coveragePathIgnorePatterns: [
@@ -24,9 +25,8 @@ module.exports = {
     '<rootDir>/src/__fixtures__',
     '<rootDir>/test-helpers',
     '<rootDir>/mock-api',
-    '<rootDir>/src/server/common/components',
-    '<rootDir>/src/server/common/helpers',
-    '<rootDir>/src/client/assets/javascripts',
+    '<rootDir>/src/server/common/',
+    '<rootDir>/src/client/',
     '<rootDir>/src/common/helpers/redis-client.js',
     '<rootDir>/src/config',
     '<rootDir>/src/helpers',
