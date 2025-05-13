@@ -1,201 +1,105 @@
-import { handleErrorInputAndRedirect } from '~/src/server/locations/helpers/error-input-and-redirect'
-import { getAirQuality } from '~/src/server/data/en/air-quality'
-import { english } from '~/src/server/data/en/en'
+import { handleErrorInputAndRedirect } from './error-input-and-redirect'
+import {
+  handleNoSearchTerms,
+  handleSearchTerms
+} from '~/src/server/locations/helpers/handle-error-helpers'
 
-import { getLocationNameOrPostcode } from '~/src/server/locations/helpers/location-type-util'
-import { LOCATION_TYPE_UK, LANG_EN } from '~/src/server/data/constants'
+// Mock dependencies
+jest.mock('~/src/server/locations/helpers/handle-error-helpers.js', () => ({
+  handleNoSearchTerms: jest.fn(),
+  handleSearchTerms: jest.fn()
+}))
 
-jest.mock('~/src/server/data/en/air-quality')
-jest.mock('~/src/server/locations/helpers/location-type-util')
-jest.mock('~/src/server/common/helpers/logging/logger')
+jest.mock('~/src/server/common/helpers/logging/logger', () => ({
+  createLogger: jest.fn(() => ({
+    error: jest.fn()
+  }))
+}))
 
 describe('handleErrorInputAndRedirect', () => {
-  let request, h
-  const mockContent = english
-  const mockAirQuality = {
-    today: {
-      advice: 'Enjoy your usual outdoor activities.',
-      atrisk: {
-        adults: 'Enjoy your usual outdoor activities.',
-        asthma: 'Enjoy your usual outdoor activities.',
-        oldPeople: 'Enjoy your usual outdoor activities.'
-      },
-      band: 'low',
-      outlook:
-        'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.',
-      readableBand: 'low',
-      value: 2
-    },
-    day2: {
-      advice: 'Enjoy your usual outdoor activities.',
-      atrisk: {
-        adults: 'Enjoy your usual outdoor activities.',
-        asthma: 'Enjoy your usual outdoor activities.',
-        oldPeople: 'Enjoy your usual outdoor activities.'
-      },
-      band: 'low',
-      outlook:
-        'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.',
-      readableBand: 'low',
-      value: 2
-    },
-    day3: {
-      advice: 'Enjoy your usual outdoor activities.',
-      atrisk: {
-        adults: 'Enjoy your usual outdoor activities.',
-        asthma: 'Enjoy your usual outdoor activities.',
-        oldPeople: 'Enjoy your usual outdoor activities.'
-      },
-      band: 'low',
-      outlook:
-        'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.',
-      readableBand: 'low',
-      value: 2
-    },
-    day4: {
-      advice: 'Enjoy your usual outdoor activities.',
-      atrisk: {
-        adults: 'Enjoy your usual outdoor activities.',
-        asthma: 'Enjoy your usual outdoor activities.',
-        oldPeople: 'Enjoy your usual outdoor activities.'
-      },
-      band: 'low',
-      outlook:
-        'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.',
-      readableBand: 'low',
-      value: 2
-    },
-    day5: {
-      advice: 'Enjoy your usual outdoor activities.',
-      atrisk: {
-        adults: 'Enjoy your usual outdoor activities.',
-        asthma: 'Enjoy your usual outdoor activities.',
-        oldPeople: 'Enjoy your usual outdoor activities.'
-      },
-      band: 'low',
-      outlook:
-        'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.',
-      readableBand: 'low',
-      value: 2
-    }
-  }
+  let mockRequest, mockH, mockPayload // Declare mockRequest and other variables
+
   beforeEach(() => {
-    request = {
-      path: '/',
-      headers: { referer: 'http://localhost:3000/search-location?lang=en' },
-      payload: {
-        locationType: LOCATION_TYPE_UK,
-        engScoWal: 'slough',
-        ni: '',
-        aq: ''
-      },
+    // Initialize mockRequest and other variables
+    mockRequest = {
+      path: '/test-path',
       yar: {
-        get: jest.fn((key) => {
-          if (key === 'locationType') {
-            return LOCATION_TYPE_UK // Mock the expected return value
-          }
-          return undefined
-        }),
+        get: jest.fn(),
         set: jest.fn()
       }
     }
-    h = {
-      redirect: jest.fn().mockReturnValue({ takeover: jest.fn() }),
-      view: jest.fn()
+
+    mockH = {
+      view: jest.fn(),
+      redirect: jest.fn(() => ({ takeover: jest.fn() }))
     }
-    getAirQuality.mockReturnValue(mockAirQuality)
-    getLocationNameOrPostcode.mockReturnValue('slough')
+
+    mockPayload = {
+      locationType: 'uk-location',
+      engScoWal: 'London',
+      ni: '',
+      aq: 'good'
+    }
+
+    // Reset all mocks
+    jest.clearAllMocks()
   })
 
-  it('should handle successful redirection with valid search location input', () => {
-    const result = handleErrorInputAndRedirect(request, h, LANG_EN, 'slough')
-    expect(request.yar.set).toHaveBeenCalledWith(
-      'locationType',
-      LOCATION_TYPE_UK
+  it('should call handleNoSearchTerms when searchTerms is not provided', () => {
+    // Arrange
+    const lang = 'en'
+    handleNoSearchTerms.mockReturnValue({
+      locationType: 'uk-location',
+      userLocation: 'London'
+    })
+
+    // Act
+    const result = handleErrorInputAndRedirect(
+      mockRequest,
+      mockH,
+      lang,
+      mockPayload,
+      null
     )
-    expect(request.yar.set).toHaveBeenCalledWith(
-      'locationNameOrPostcode',
-      'slough'
+
+    // Assert
+    expect(handleNoSearchTerms).toHaveBeenCalledWith(
+      mockRequest,
+      mockH,
+      lang,
+      mockPayload
     )
-    expect(request.yar.set).toHaveBeenCalledWith('airQuality', mockAirQuality)
-    expect(request.yar.get).toHaveBeenCalledWith('locationType')
-    expect(request.yar.get).toHaveReturnedWith(LOCATION_TYPE_UK)
+    expect(handleSearchTerms).not.toHaveBeenCalled()
     expect(result).toEqual({
       locationType: 'uk-location',
-      userLocation: 'SLOUGH',
-      locationNameOrPostcode: 'slough'
+      userLocation: 'London'
     })
   })
 
-  it('should handle missing location type', () => {
-    request.payload.locationType = ''
-    getLocationNameOrPostcode.mockReturnValue('')
+  it('should call handleSearchTerms when searchTerms is provided', () => {
+    // Arrange
+    const lang = 'en'
+    const searchTerms = 'London'
+    handleSearchTerms.mockReturnValue({
+      locationType: 'uk-location',
+      userLocation: 'London'
+    })
 
-    const result = handleErrorInputAndRedirect(request, h, LANG_EN, '')
-    expect(request.yar.set).toHaveBeenCalledWith('errors', expect.any(Object))
-    expect(request.yar.set).toHaveBeenCalledWith(
-      'errorMessage',
-      expect.any(Object)
+    // Act
+    const result = handleErrorInputAndRedirect(
+      mockRequest,
+      mockH,
+      lang,
+      mockPayload,
+      searchTerms
     )
-    expect(h.redirect).toHaveBeenCalledWith('/search-location?lang=en')
-    expect(result).toBeUndefined()
-  })
 
-  it('should handle missing location type and name/postcode', () => {
-    request.payload.locationType = ''
-    request.payload.locationNameOrPostcode = ''
-    request.payload.engScoWal = ''
-    getLocationNameOrPostcode.mockReturnValue('')
-
-    const result = handleErrorInputAndRedirect(request, h, LANG_EN, '')
-    expect(request.yar.set).toHaveBeenCalledWith('errors', expect.any(Object))
-    expect(request.yar.set).toHaveBeenCalledWith(
-      'errorMessage',
-      expect.any(Object)
-    )
-    expect(h.redirect).toHaveBeenCalledWith('/search-location?lang=en')
-    expect(result).toBeUndefined()
-  })
-
-  it.skip('should handle invalid postcode', () => {
-    request.payload.locationNameOrPostcode = 'INVALID'
-    request.payload.engScoWal = 'INVALID'
-    getLocationNameOrPostcode.mockReturnValue('INVALID')
-
-    const result = handleErrorInputAndRedirect(request, h, LANG_EN, 'INVALID')
-    expect(request.yar.set).toHaveBeenCalledWith(
-      'errors',
-      expect.objectContaining({
-        errors: expect.objectContaining({
-          titleText: expect.any(String),
-          errorList: expect.arrayContaining([
-            expect.objectContaining({
-              text: expect.any(String),
-              href: expect.any(String)
-            })
-          ])
-        })
-      })
-    )
-    expect(request.yar.set).toHaveBeenCalledWith(
-      'errorMessage',
-      expect.objectContaining({
-        errorMessage: expect.objectContaining({
-          text: expect.any(String)
-        })
-      })
-    )
-    expect(result).toBe('view rendered')
-    expect(h.view).toHaveBeenCalledWith('error/index', {
-      pageTitle: mockContent.notFoundUrl.serviceAPI.pageTitle,
-      url: request.path,
-      notFoundUrl: mockContent.notFoundUrl,
-      displayBacklink: false,
-      phaseBanner: mockContent.phaseBanner,
-      footerTxt: mockContent.footerTxt,
-      cookieBanner: mockContent.cookieBanner,
-      serviceName: mockContent.multipleLocations.serviceName,
-      lang: 'en'
+    // Assert
+    expect(handleSearchTerms).toHaveBeenCalledWith(searchTerms)
+    expect(handleNoSearchTerms).not.toHaveBeenCalled()
+    expect(result).toEqual({
+      locationType: 'uk-location',
+      userLocation: 'London'
     })
   })
 })

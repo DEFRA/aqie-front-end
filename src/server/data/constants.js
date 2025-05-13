@@ -11,6 +11,8 @@ export const SEARCH_LOCATION_ROUTE_EN = '/search-location?lang=en'
 export const SEARCH_LOCATION_ROUTE_CY = '/chwilio-lleoliad/cy?lang=cy'
 export const MULTIPLE_LOCATIONS_ROUTE_EN = '/multiple-results?lang=en'
 export const MULTIPLE_LOCATIONS_ROUTE_CY = '/canlyniadau-lluosog/cy?lang=cy'
+export const STATUS_UNAUTHORIZED = 401
+export const STATUS_INTERNAL_SERVER_ERROR = 500
 export const SYMBOLS_ARRAY = [
   '%',
   '$',
