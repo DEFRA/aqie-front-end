@@ -13,7 +13,14 @@ import {
   isValidFullPostcodeNI,
   isValidPartialPostcodeNI
 } from '~/src/server/locations/helpers/convert-string'
-import { LOCATION_TYPE_UK, LOCATION_TYPE_NI } from '~/src/server/data/constants'
+import {
+  LOCATION_TYPE_UK,
+  LOCATION_TYPE_NI,
+  AIR_QUALITY_THRESHOLD_1,
+  AIR_QUALITY_THRESHOLD_2,
+  AIR_QUALITY_THRESHOLD_3,
+  AIR_QUALITY_THRESHOLD_4
+} from '~/src/server/data/constants'
 /**
  * Handles the case where search terms are not provided.
  */
@@ -28,7 +35,13 @@ const handleNoSearchTerms = (request, h, lang, payload) => {
     return handleMissingLocation(request, h, lang)
   }
 
-  const airQuality = getAirQuality(payload?.aq, 2, 4, 5, 7)
+  const airQuality = getAirQuality(
+    payload?.aq,
+    AIR_QUALITY_THRESHOLD_1,
+    AIR_QUALITY_THRESHOLD_2,
+    AIR_QUALITY_THRESHOLD_3,
+    AIR_QUALITY_THRESHOLD_4
+  )
   request.yar.set('locationType', locationType)
   request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
   request.yar.set('airQuality', airQuality)
