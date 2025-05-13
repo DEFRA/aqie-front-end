@@ -3,7 +3,7 @@ import { LOCATION_TYPE_NI } from '~/src/server/data/constants'
 
 function getNIData(locationData, distance, locationType) {
   let resultNI = []
-  if (locationType === LOCATION_TYPE_NI) {
+  if (locationType === LOCATION_TYPE_NI && locationData) {
     resultNI = [
       {
         GAZETTEER_ENTRY: {
