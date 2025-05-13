@@ -14,7 +14,6 @@ import {
   SEARCH_LOCATION_PATH_EN
 } from '~/src/server/data/constants'
 import { calendarEnglish } from '~/src/server/data/en/en.js'
-import moment from 'moment-timezone'
 
 jest.mock('moment-timezone', () => {
   const originalMoment = jest.requireActual('moment-timezone')
