@@ -10,7 +10,8 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/jest-setup.js'],
   collectCoverageFrom: [
     'src/**/*.js',
-    '!src/server/common/**' // Exclude test in server/common
+    '!src/server/common/**', // Exclude test in server/common
+    '!src/client/**' // Exclude files in client
   ],
   testPathIgnorePatterns: [
     '<rootDir>/node_modules/',
@@ -37,14 +38,14 @@ module.exports = {
     '<rootDir>/src/indextest.js'
   ],
   coverageDirectory: '<rootDir>/coverage',
-  collectCoverage: false,
-  coverageReporters: ['clover', 'json', 'text', 'lcov', 'text-summary']
-  // coverageThreshold: {
-  //   global: {
-  //     branches: 90,
-  //     functions: 90,
-  //     lines: 90,
-  //     statements: 90
-  //   }
-  // }
+  collectCoverage: true,
+  coverageReporters: ['clover', 'json', 'text', 'lcov', 'text-summary'],
+  coverageThreshold: {
+    global: {
+      branches: 45,
+      functions: 45,
+      lines: 45,
+      statements: 45
+    }
+  }
 }
