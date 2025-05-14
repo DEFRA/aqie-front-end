@@ -6,6 +6,7 @@ const cookieBannerHideButtonSelector = '.js-cookie-banner-hide'
 const cookieMessageSelector = '.js-cookie-banner-message'
 const cookieConfirmationAcceptSelector = '.js-cookie-banner-confirmation-accept'
 const cookieConfirmationRejectSelector = '.js-cookie-banner-confirmation-reject'
+
 /**
  * Website cookie banner
  */
@@ -14,66 +15,90 @@ class CookieBanner {
    * @param {Element} $module - HTML element
    */
   constructor($module) {
-    if (
-      !($module instanceof HTMLElement) ||
-      !document.body.classList.contains('govuk-frontend-supported') ||
-      // Exit if we're on the cookies page to avoid circular journeys
-      this.onCookiesPage()
-    ) {
+    if (!this.isValidModule($module)) {
       return this
     }
 
+    this.initializeElements($module)
+    this.setupEventListeners()
+
+    // Show the cookie banner if no valid consent cookie exists
+    this.showBannerIfNoConsent()
+  }
+
+  /**
+   * Validate the module element
+   *
+   * @param {Element} $module - HTML element
+   * @returns {boolean} Returns true if the module is valid
+   */
+  isValidModule($module) {
+    return (
+      $module instanceof HTMLElement &&
+      document.body.classList.contains('govuk-frontend-supported') &&
+      !this.onCookiesPage()
+    )
+  }
+
+  /**
+   * Initialize DOM elements
+   *
+   * @param {Element} $module - HTML element
+   */
+  initializeElements($module) {
     this.$cookieBanner = $module
 
-    const $acceptButton = $module.querySelector(cookieBannerAcceptSelector)
-    const $rejectButton = $module.querySelector(cookieBannerRejectSelector)
-    const $cookieMessage = $module.querySelector(cookieMessageSelector)
-    const $cookieConfirmationAccept = $module.querySelector(
+    this.$acceptButton = $module.querySelector(cookieBannerAcceptSelector)
+    this.$rejectButton = $module.querySelector(cookieBannerRejectSelector)
+    this.$cookieMessage = $module.querySelector(cookieMessageSelector)
+    this.$cookieConfirmationAccept = $module.querySelector(
       cookieConfirmationAcceptSelector
     )
-    const $cookieConfirmationReject = $module.querySelector(
+    this.$cookieConfirmationReject = $module.querySelector(
       cookieConfirmationRejectSelector
     )
-    const $cookieBannerHideButtons = $module.querySelectorAll(
+    this.$cookieBannerHideButtons = $module.querySelectorAll(
       cookieBannerHideButtonSelector
     )
 
     if (
-      !($acceptButton instanceof HTMLButtonElement) ||
-      !($rejectButton instanceof HTMLButtonElement) ||
-      !($cookieMessage instanceof HTMLElement) ||
-      !($cookieConfirmationAccept instanceof HTMLElement) ||
-      !($cookieConfirmationReject instanceof HTMLElement) ||
-      !$cookieBannerHideButtons.length
+      !(
+        this.$acceptButton instanceof HTMLButtonElement &&
+        this.$rejectButton instanceof HTMLButtonElement &&
+        this.$cookieMessage instanceof HTMLElement &&
+        this.$cookieConfirmationAccept instanceof HTMLElement &&
+        this.$cookieConfirmationReject instanceof HTMLElement &&
+        this.$cookieBannerHideButtons.length
+      )
     ) {
       return this
     }
+  }
 
-    this.$acceptButton = $acceptButton
-    this.$rejectButton = $rejectButton
-    this.$cookieMessage = $cookieMessage
-    this.$cookieConfirmationAccept = $cookieConfirmationAccept
-    this.$cookieConfirmationReject = $cookieConfirmationReject
-    this.$cookieBannerHideButtons = $cookieBannerHideButtons
-
-    // Show the cookie banner to users who have not consented or have an
-    // outdated consent cookie
-    const currentConsentCookie = CookieFunctions.getConsentCookie()
-
-    if (!currentConsentCookie) {
-      // If the consent cookie version is not valid, we need to remove any cookies which have been
-      // set previously
-      CookieFunctions.resetCookies()
-
-      this.$cookieBanner.removeAttribute('hidden')
-    }
-
+  /**
+   * Set up event listeners for the cookie banner
+   */
+  setupEventListeners() {
     this.$acceptButton.addEventListener('click', () => this.acceptCookies())
     this.$rejectButton.addEventListener('click', () => this.rejectCookies())
 
     this.$cookieBannerHideButtons.forEach(($cookieBannerHideButton) => {
-      $cookieBannerHideButton.addEventListener('click', () => this.hideBanner())
+      $cookieBannerHideButton.addEventListener('click', () =>
+        this.hideBanner()
+      )
     })
+  }
+
+  /**
+   * Show the cookie banner if no valid consent cookie exists
+   */
+  showBannerIfNoConsent() {
+    const currentConsentCookie = CookieFunctions.getConsentCookie()
+
+    if (!currentConsentCookie) {
+      CookieFunctions.resetCookies()
+      this.$cookieBanner.removeAttribute('hidden')
+    }
   }
 
   /**
@@ -87,10 +112,7 @@ class CookieBanner {
    * Accept cookies
    */
   acceptCookies() {
-    // Do actual cookie consent bit
     CookieFunctions.setConsentCookie({ analytics: true })
-
-    // Hide banner and show confirmation message
     this.$cookieMessage.setAttribute('hidden', 'true')
     this.revealConfirmationMessage(this.$cookieConfirmationAccept)
   }
@@ -99,10 +121,7 @@ class CookieBanner {
    * Reject cookies
    */
   rejectCookies() {
-    // Do actual cookie consent bit
     CookieFunctions.setConsentCookie({ analytics: false })
-
-    // Hide banner and show confirmation message
     this.$cookieMessage.setAttribute('hidden', 'true')
     this.revealConfirmationMessage(this.$cookieConfirmationReject)
   }
@@ -115,7 +134,6 @@ class CookieBanner {
   revealConfirmationMessage(confirmationMessage) {
     confirmationMessage.removeAttribute('hidden')
 
-    // Set tabindex to -1 to make the confirmation banner focusable with JavaScript
     if (!confirmationMessage.getAttribute('tabindex')) {
       confirmationMessage.setAttribute('tabindex', '-1')
 
