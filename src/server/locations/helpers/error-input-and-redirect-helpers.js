@@ -2,7 +2,10 @@ import {
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI,
   LANG_EN,
-  LANG_CY
+  LANG_CY,
+  REDIRECT_PATH_CY,
+  REDIRECT_PATH_EN,
+  POSTCODE_SPACE_INDEX
 } from '~/src/server/data/constants'
 import { english } from '~/src/server/data/en/en.js'
 import { welsh } from '~/src/server/data/cy/cy.js'
@@ -68,10 +71,7 @@ const handleUKError = (request, h, lang, locationNameOrPostcode) => {
   request.yar.set('locationType', LOCATION_TYPE_UK)
   request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
 
-  const redirectPath =
-    lang === LANG_EN
-      ? '/search-location?lang=en'
-      : 'chwilio-lleoliad/cy?lang=cy'
+  const redirectPath = lang === LANG_EN ? REDIRECT_PATH_EN : REDIRECT_PATH_CY
   return h.redirect(redirectPath).takeover()
 }
 
@@ -102,20 +102,18 @@ const handleNIError = (request, h, lang, locationNameOrPostcode) => {
   request.yar.set('locationType', LOCATION_TYPE_NI)
   request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
 
-  const redirectPath =
-    lang === LANG_EN
-      ? '/search-location?lang=en'
-      : 'chwilio-lleoliad/cy?lang=cy'
+  const redirectPath = lang === LANG_EN ? REDIRECT_PATH_EN : REDIRECT_PATH_CY
   return h.redirect(redirectPath).takeover()
 }
 
 /**
  * Formats postcodes by inserting a space if necessary.
  */
+
 const formatPostcode = (userLocation) => {
   const fullPostcodePattern = /^([A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2})$/i // Case-insensitive regex
   if (fullPostcodePattern.test(userLocation) && !userLocation.includes(' ')) {
-    const spaceIndex = userLocation.length - 3
+    const spaceIndex = userLocation.length - POSTCODE_SPACE_INDEX
     return `${userLocation.slice(0, spaceIndex)} ${userLocation.slice(spaceIndex)}`
   }
   return userLocation

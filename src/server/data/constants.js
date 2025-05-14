@@ -17,6 +17,9 @@ export const AIR_QUALITY_THRESHOLD_1 = 2
 export const AIR_QUALITY_THRESHOLD_2 = 4
 export const AIR_QUALITY_THRESHOLD_3 = 5
 export const AIR_QUALITY_THRESHOLD_4 = 7
+export const REDIRECT_PATH_EN = '/search-location?lang=en'
+export const REDIRECT_PATH_CY = 'chwilio-lleoliad/cy?lang=cy'
+export const POSTCODE_SPACE_INDEX = 3
 export const SYMBOLS_ARRAY = [
   '%',
   '$',
