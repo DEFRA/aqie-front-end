@@ -165,51 +165,90 @@ const getTitleAndHeaderTitle = (
   locationDetails,
   locationNameOrPostcode = 'Unknown Location'
 ) => {
+  const { home } = english
   let title = ''
   let headerTitle = ''
   let urlRoute = ''
   let term1 = ''
-  let formattedPostcode = ''
-  const { home } = english
+
   if (locationDetails[0]) {
-    if (locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH) {
-      if (locationDetails[0].GAZETTEER_ENTRY.NAME2) {
-        title = `${locationDetails[0].GAZETTEER_ENTRY.NAME2}, ${locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
-        headerTitle = `${locationDetails[0].GAZETTEER_ENTRY.NAME2}, ${locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
-        urlRoute = `${locationDetails[0].GAZETTEER_ENTRY.NAME2}_${locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
-        term1 = locationDetails[0].GAZETTEER_ENTRY.NAME2
-      } else {
-        term1 = locationDetails[0].GAZETTEER_ENTRY.NAME1
-        const isFullPostcode = isValidFullPostcodeUK(term1)
-        formattedPostcode = isFullPostcode ? formatUKPostcode(term1) : term1
-        title = `${formattedPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH} - ${home.pageTitle}`
-        headerTitle = `${formattedPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
-        urlRoute = `${locationDetails[0].GAZETTEER_ENTRY.NAME1}_${locationDetails[0].GAZETTEER_ENTRY.DISTRICT_BOROUGH}`
-      }
+    const gazetteerEntry = locationDetails[0].GAZETTEER_ENTRY
+
+    if (gazetteerEntry.DISTRICT_BOROUGH) {
+      ;({ title, headerTitle, urlRoute, term1 } = handleDistrictBorough(
+        gazetteerEntry,
+        home
+      ))
     } else {
-      if (locationDetails[0].GAZETTEER_ENTRY.NAME2) {
-        title = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY} - ${home.pageTitle}`
-        headerTitle = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
-        urlRoute = `${locationDetails[0].GAZETTEER_ENTRY.NAME2}_${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
-        term1 = locationNameOrPostcode
-      } else {
-        title = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY} - ${home.pageTitle}`
-        headerTitle = `${locationNameOrPostcode}, ${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
-        urlRoute = `${locationDetails[0].GAZETTEER_ENTRY.NAME1}_${locationDetails[0].GAZETTEER_ENTRY.COUNTY_UNITARY}`
-        term1 = locationNameOrPostcode
-      }
+      ;({ title, headerTitle, urlRoute, term1 } = handleCountyUnitary(
+        gazetteerEntry,
+        locationNameOrPostcode,
+        home
+      ))
     }
   }
+
   title = convertFirstLetterIntoUppercase(title)
   headerTitle = convertFirstLetterIntoUppercase(headerTitle)
   urlRoute = convertStringToHyphenatedLowercaseWords(urlRoute)
-  const postcodCheck = term1
-  const postcode = extractAndFormatUKPostcode(postcodCheck) // Use the helper function to extract and format UK postcode from urlRoute
+
+  const postcodeCheck = term1
+  const postcode = extractAndFormatUKPostcode(postcodeCheck)
   urlRoute = postcode
     ? splitAndKeepFirstWord(urlRoute)
     : convertStringToHyphenatedLowercaseWords(urlRoute)
 
   return { title, headerTitle, urlRoute }
+}
+
+/**
+ * Handles the case where DISTRICT_BOROUGH is present in the gazetteer entry.
+ */
+const handleDistrictBorough = (gazetteerEntry, home) => {
+  let title = ''
+  let headerTitle = ''
+  let urlRoute = ''
+  let term1 = ''
+
+  if (gazetteerEntry.NAME2) {
+    title = `${gazetteerEntry.NAME2}, ${gazetteerEntry.DISTRICT_BOROUGH} - ${home.pageTitle}`
+    headerTitle = `${gazetteerEntry.NAME2}, ${gazetteerEntry.DISTRICT_BOROUGH}`
+    urlRoute = `${gazetteerEntry.NAME2}_${gazetteerEntry.DISTRICT_BOROUGH}`
+    term1 = gazetteerEntry.NAME2
+  } else {
+    term1 = gazetteerEntry.NAME1
+    const isFullPostcode = isValidFullPostcodeUK(term1)
+    const formattedPostcode = isFullPostcode ? formatUKPostcode(term1) : term1
+    title = `${formattedPostcode}, ${gazetteerEntry.DISTRICT_BOROUGH} - ${home.pageTitle}`
+    headerTitle = `${formattedPostcode}, ${gazetteerEntry.DISTRICT_BOROUGH}`
+    urlRoute = `${gazetteerEntry.NAME1}_${gazetteerEntry.DISTRICT_BOROUGH}`
+  }
+
+  return { title, headerTitle, urlRoute, term1 }
+}
+
+/**
+ * Handles the case where COUNTY_UNITARY is present in the gazetteer entry.
+ */
+const handleCountyUnitary = (gazetteerEntry, locationNameOrPostcode, home) => {
+  let title = ''
+  let headerTitle = ''
+  let urlRoute = ''
+  let term1 = ''
+
+  if (gazetteerEntry.NAME2) {
+    title = `${locationNameOrPostcode}, ${gazetteerEntry.COUNTY_UNITARY} - ${home.pageTitle}`
+    headerTitle = `${locationNameOrPostcode}, ${gazetteerEntry.COUNTY_UNITARY}`
+    urlRoute = `${gazetteerEntry.NAME2}_${gazetteerEntry.COUNTY_UNITARY}`
+    term1 = locationNameOrPostcode
+  } else {
+    title = `${locationNameOrPostcode}, ${gazetteerEntry.COUNTY_UNITARY} - ${home.pageTitle}`
+    headerTitle = `${locationNameOrPostcode}, ${gazetteerEntry.COUNTY_UNITARY}`
+    urlRoute = `${gazetteerEntry.NAME1}_${gazetteerEntry.COUNTY_UNITARY}`
+    term1 = locationNameOrPostcode
+  }
+
+  return { title, headerTitle, urlRoute, term1 }
 }
 
 const getLanguageDates = (
