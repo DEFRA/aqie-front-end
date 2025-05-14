@@ -17,9 +17,11 @@ global.ReadableStream = class {
     return {
       read: () => {
         if (index < this.data.length) {
-          return Promise.resolve({ value: this.data[index++], done: false })
+          const value = this.data[index] // Extract the current value
+          index++ // Increment the index in a dedicated statement
+          return Promise.resolve({ value, done: false })
         }
-        return Promise.resolve({ value: undefined, done: true })
+        return Promise.resolve({ value: null, done: true })
       },
       releaseLock: () => {
         // Mock releaseLock method

@@ -11,20 +11,20 @@ const cookieConfirmationRejectSelector = '.js-cookie-banner-confirmation-reject'
  * Website cookie banner
  */
 class CookieBanner {
-  /**
-   * @param {Element} $module - HTML element
-   */
-  constructor($module) {
-    if (!this.isValidModule($module)) {
-      return this
-    }
-
-    this.initializeElements($module)
-    this.setupEventListeners()
-
-    // Show the cookie banner if no valid consent cookie exists
-    this.showBannerIfNoConsent()
+/**
+ * @param {Element} $module - HTML element
+ */
+constructor($module) {
+  if (!this.isValidModule($module)) {
+    return // Exit early if the module is invalid
   }
+
+  this.initializeElements($module)
+  this.setupEventListeners()
+
+  // Show the cookie banner if no valid consent cookie exists
+  return this.showBannerIfNoConsent()
+}
 
   /**
    * Validate the module element
