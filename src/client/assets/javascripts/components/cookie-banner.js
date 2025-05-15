@@ -17,14 +17,15 @@ class CookieBanner {
   constructor($module) {
     try {
       if (
-        !($module instanceof HTMLElement) ||
-        !document.body.classList.contains('govuk-frontend-supported') ||
-        // Exit if we're on the cookies page to avoid circular journeys
-        this.onCookiesPage()
+        !($module instanceof HTMLElement) || // Validate $module
+        !document.body.classList.contains('govuk-frontend-supported') || // Check GOV.UK frontend support
+        this.onCookiesPage() // Avoid initializing on the cookies page
       ) {
-        return undefined // Explicitly return undefined for invalid cases
+        this.isValid = false // Set a flag to indicate invalid initialization
+        return // Exit early without returning a value
       }
 
+      this.isValid = true // Set a flag to indicate valid initialization
       this.$cookieBanner = $module
 
       const $acceptButton = $module.querySelector(cookieBannerAcceptSelector)
@@ -48,7 +49,8 @@ class CookieBanner {
         !($cookieConfirmationReject instanceof HTMLElement) ||
         !$cookieBannerHideButtons.length
       ) {
-        return undefined // Explicitly return undefined for invalid cases
+        this.isValid = false // Set the flag to invalid
+        return // Exit early without returning a value
       }
 
       this.$acceptButton = $acceptButton
@@ -61,6 +63,7 @@ class CookieBanner {
       this.initializeBanner()
     } catch (error) {
       console.error('Failed to initialize CookieBanner:', error) // eslint-disable-line no-console
+      this.isValid = false // Set the flag to invalid in case of an error
     }
   }
 
@@ -68,6 +71,8 @@ class CookieBanner {
    * Initialize the cookie banner
    */
   initializeBanner() {
+    if (!this.isValid) return // Ensure the banner is valid before initializing
+
     const currentConsentCookie = CookieFunctions.getConsentCookie()
 
     if (

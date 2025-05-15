@@ -33,19 +33,11 @@ constructor($module) {
    * @returns {boolean} Returns true if the module is valid
    */
   isValidModule($module) {
-    if (!($module instanceof HTMLElement)) {
-      return false // ''
-    }
-  
-    if (!document.body.classList.contains('govuk-frontend-supported')) {
-      return false // ''
-    }
-  
-    if (this.onCookiesPage()) {
-      return false // ''
-    }
-  
-    return true // ''
+    return (
+      $module instanceof HTMLElement && // Validate $module
+      document.body.classList.contains('govuk-frontend-supported') && // Check GOV.UK frontend support
+      !this.onCookiesPage() // Ensure not on the Cookies page
+    )
   }
 
   /**

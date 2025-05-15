@@ -28,13 +28,14 @@ import { COOKIE_BANNER_SELECTOR, COOKIES_PAGE_SELECTOR } from './constants.mjs'
  */
 async function initializeComponent(Component, element) {
   try {
-    const instance = new Component(element) // ''
+    const instance = new Component(element)
     if (typeof instance.init === 'function') {
       await instance.init() // Call an async `init` method if it exists
     }
-    return instance // ''
+    return instance
   } catch (error) {
     console.error(`Failed to initialize component: ${Component.name}`, error) // eslint-disable-line no-console
+    return undefined // Explicitly return undefined in case of an error
   }
 }
 
