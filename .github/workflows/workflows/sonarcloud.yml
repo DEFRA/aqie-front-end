@@ -26,7 +26,7 @@ jobs:
 
       # Step 5: Run SonarCloud analysis
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v1.0.0 # Use the new action
+        uses: SonarSource/sonarqube-scan-action # Use the new action
         with:
           projectBaseDir: .
           args: >

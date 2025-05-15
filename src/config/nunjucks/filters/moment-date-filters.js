@@ -7,6 +7,16 @@ import {
   HOURS_TO_SUBTRACT
 } from '~/src/server/data/constants'
 
+/**
+ * Formats a moment date with lowercase 'am/pm'.
+ * @param {Object} momentDate - The moment date object.
+ * @returns {string} The formatted calendar string.
+ */
+function formatCalendarWithLowercase(momentDate) {
+  const calendarString = momentDate.calendar()
+  return calendarString.replace('AM', 'am').replace('PM', 'pm')
+}
+
 function addMomentFilters(env) {
   try {
     env.addFilter('govukDate', function (dateString) {
@@ -33,10 +43,6 @@ function addMomentFilters(env) {
       // Format using the custom formatter for lowercase 'am/pm'
       return formatCalendarWithLowercase(momentDate)
     })
-    function formatCalendarWithLowercase(momentDate) {
-      const calendarString = momentDate.calendar()
-      return calendarString.replace('AM', 'am').replace('PM', 'pm')
-    }
   } catch (error) {
     return error
   }
@@ -59,6 +65,7 @@ const addDaysToTodayAbrev = function (env) {
     return error
   }
 }
+
 const addDaysToTodayAbrevWelsh = function (env) {
   try {
     env.addFilter('addDaysToTodayAbrevWelsh', function (days) {
@@ -76,4 +83,5 @@ const addDaysToTodayAbrevWelsh = function (env) {
     return error
   }
 }
+
 export { addMomentFilters, addDaysToTodayAbrev, addDaysToTodayAbrevWelsh }
