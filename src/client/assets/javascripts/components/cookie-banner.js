@@ -15,60 +15,67 @@ class CookieBanner {
    * @param {Element} $module - HTML element
    */
   constructor($module) {
-    if (
-      !($module instanceof HTMLElement) ||
-      !document.body.classList.contains('govuk-frontend-supported') ||
-      // Exit if we're on the cookies page to avoid circular journeys
-      this.onCookiesPage()
-    ) {
-      return this
+    try {
+      if (
+        !($module instanceof HTMLElement) ||
+        !document.body.classList.contains('govuk-frontend-supported') ||
+        // Exit if we're on the cookies page to avoid circular journeys
+        this.onCookiesPage()
+      ) {
+        return undefined // Explicitly return undefined for invalid cases
+      }
+
+      this.$cookieBanner = $module
+
+      const $acceptButton = $module.querySelector(cookieBannerAcceptSelector)
+      const $rejectButton = $module.querySelector(cookieBannerRejectSelector)
+      const $cookieMessage = $module.querySelector(cookieMessageSelector)
+      const $cookieConfirmationAccept = $module.querySelector(
+        cookieConfirmationAcceptSelector
+      )
+      const $cookieConfirmationReject = $module.querySelector(
+        cookieConfirmationRejectSelector
+      )
+      const $cookieBannerHideButtons = $module.querySelectorAll(
+        cookieBannerHideButtonSelector
+      )
+
+      if (
+        !($acceptButton instanceof HTMLButtonElement) ||
+        !($rejectButton instanceof HTMLButtonElement) ||
+        !($cookieMessage instanceof HTMLElement) ||
+        !($cookieConfirmationAccept instanceof HTMLElement) ||
+        !($cookieConfirmationReject instanceof HTMLElement) ||
+        !$cookieBannerHideButtons.length
+      ) {
+        return undefined // Explicitly return undefined for invalid cases
+      }
+
+      this.$acceptButton = $acceptButton
+      this.$rejectButton = $rejectButton
+      this.$cookieMessage = $cookieMessage
+      this.$cookieConfirmationAccept = $cookieConfirmationAccept
+      this.$cookieConfirmationReject = $cookieConfirmationReject
+      this.$cookieBannerHideButtons = $cookieBannerHideButtons
+
+      this.initializeBanner()
+    } catch (error) {
+      console.error('Failed to initialize CookieBanner:', error) // eslint-disable-line no-console
     }
+  }
 
-    this.$cookieBanner = $module
-
-    const $acceptButton = $module.querySelector(cookieBannerAcceptSelector)
-    const $rejectButton = $module.querySelector(cookieBannerRejectSelector)
-    const $cookieMessage = $module.querySelector(cookieMessageSelector)
-    const $cookieConfirmationAccept = $module.querySelector(
-      cookieConfirmationAcceptSelector
-    )
-    const $cookieConfirmationReject = $module.querySelector(
-      cookieConfirmationRejectSelector
-    )
-    const $cookieBannerHideButtons = $module.querySelectorAll(
-      cookieBannerHideButtonSelector
-    )
-
-    if (
-      !($acceptButton instanceof HTMLButtonElement) ||
-      !($rejectButton instanceof HTMLButtonElement) ||
-      !($cookieMessage instanceof HTMLElement) ||
-      !($cookieConfirmationAccept instanceof HTMLElement) ||
-      !($cookieConfirmationReject instanceof HTMLElement) ||
-      !$cookieBannerHideButtons.length
-    ) {
-      return this
-    }
-
-    this.$acceptButton = $acceptButton
-    this.$rejectButton = $rejectButton
-    this.$cookieMessage = $cookieMessage
-    this.$cookieConfirmationAccept = $cookieConfirmationAccept
-    this.$cookieConfirmationReject = $cookieConfirmationReject
-    this.$cookieBannerHideButtons = $cookieBannerHideButtons
-
-    // Show the cookie banner to users who have not consented or have an
-    // outdated consent cookie
+  /**
+   * Initialize the cookie banner
+   */
+  initializeBanner() {
     const currentConsentCookie = CookieFunctions.getConsentCookie()
 
     if (
       !currentConsentCookie ||
       !CookieFunctions.isValidConsentCookie(currentConsentCookie)
     ) {
-      // If the consent cookie version is not valid, we need to remove any cookies which have been
-      // set previously
+      // Reset cookies if the consent cookie is invalid
       CookieFunctions.resetCookies()
-
       this.$cookieBanner.removeAttribute('hidden')
     }
 

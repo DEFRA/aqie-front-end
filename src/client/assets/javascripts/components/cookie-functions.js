@@ -12,7 +12,7 @@
  * The consent cookie version is defined in cookie-banner.njk
  */
 
-import Analytics from './analytics.js'
+import Analytics from './load-analytics.js'
 
 /* Name of the cookie to save users cookie preferences to. */
 const CONSENT_COOKIE_NAME = 'airaqie_cookies_policy'
