@@ -29,37 +29,16 @@ const COOKIE_CATEGORIES = {
     `_gat_UA-${TRACKING_PREVIEW_ID}`,
     `_gat_UA-${TRACKING_LIVE_ID}`
   ],
-  /* Essential cookies
-   *
-   * Essential cookies cannot be deselected, but we want our cookie code to
-   * only allow adding cookies that are documented in this object, so they need
-   * to be added here.
-   */
-  essential: ['airaqie_cookies_policy']
+  essential: ['airaqie_cookies_policy'] // Essential cookies
 }
 
-/*
- * Default cookie preferences if user has no cookie preferences.
- *
- * Note that this doesn't include a key for essential cookies, essential
- * cookies cannot be disallowed. If the object contains { essential: false }
- * this will be ignored.
- */
+/* Default cookie preferences if user has no cookie preferences. */
 const DEFAULT_COOKIE_CONSENT = {
   analytics: false
 }
 
 /**
  * Set, get, and delete cookies.
- *
- *   Setting a cookie:
- *   Cookie('hobnob', 'tasty', { days: 30 })
- *
- *   Reading a cookie:
- *   Cookie('hobnob')
- *
- *   Deleting a cookie:
- *   Cookie('hobnob', null)
  *
  * @param {string} name - Cookie name
  * @param {string | false | null} [value] - Cookie value
@@ -69,191 +48,149 @@ const DEFAULT_COOKIE_CONSENT = {
 export function Cookie(name, value, options) {
   if (typeof value !== 'undefined') {
     if (value === false || value === null) {
-      deleteCookie(name)
+      return deleteCookie(name) // Return result of deleteCookie
     } else {
-      // Default expiry date of 30 days
       if (typeof options === 'undefined') {
-        options = { days: 30 }
+        options = { days: 30 } // Default expiry date of 30 days
       }
-      setCookie(name, value, options)
+      return setCookie(name, value, options) // Return result of setCookie
     }
-  } else {
-    return getCookie(name)
   }
+  return getCookie(name) // Return result of getCookie
 }
 
 /**
  * Return the user's cookie preferences.
  *
- * If the consent cookie is malformed, or not present,
- * returns null.
- *
  * @returns {ConsentPreferences | null} Consent preferences
  */
 export function getConsentCookie() {
   const consentCookie = getCookie(CONSENT_COOKIE_NAME)
-  let consentCookieObj
-
-  if (consentCookie) {
-    try {
-      consentCookieObj = JSON.parse(consentCookie)
-    } catch (error) {
-      return null
-    }
-  } else {
-    return null
+  if (!consentCookie) {
+    return null // Return null if no consent cookie exists
   }
 
-  return consentCookieObj
+  try {
+    return JSON.parse(consentCookie) // Return parsed consent cookie
+  } catch (error) {
+    return null // Return null if parsing fails
+  }
 }
 
 /**
  * Check the cookie preferences object.
- *
- * If the consent object is not present, malformed, or incorrect version,
- * returns false, otherwise returns true.
- *
- * This is also duplicated in cookie-banner.njk - the two need to be kept in sync
  *
  * @param {ConsentPreferences | null} options - Consent preferences
  * @returns {boolean} True if consent cookie is valid
  */
 export function isValidConsentCookie(options) {
   // @ts-expect-error Property does not exist on window
-  return options && options.version >= window.AQ_CONSENT_COOKIE_VERSION
+  return !!(options && options.version >= window.AQ_CONSENT_COOKIE_VERSION) // Return true if valid
 }
 
 /**
  * Update the user's cookie preferences.
  *
  * @param {ConsentPreferences} options - Consent options to parse
+ * @returns {void}
  */
 export function setConsentCookie(options) {
   const cookieConsent =
-    getConsentCookie() ||
-    // If no preferences or old version use the default
-    JSON.parse(JSON.stringify(DEFAULT_COOKIE_CONSENT))
+    getConsentCookie() || JSON.parse(JSON.stringify(DEFAULT_COOKIE_CONSENT)) // Use default if no preferences
 
-  // Merge current cookie preferences and new preferences
   for (const option in options) {
-    cookieConsent[option] = options[option]
+    cookieConsent[option] = options[option] // Merge preferences
   }
 
-  // Essential cookies cannot be deselected, ignore this cookie type
-  delete cookieConsent.essential
+  delete cookieConsent.essential // Essential cookies cannot be deselected
 
   // @ts-expect-error Property does not exist on window
   cookieConsent.version = window.AQ_CONSENT_COOKIE_VERSION
 
-  // Set the consent cookie
-  setCookie(CONSENT_COOKIE_NAME, JSON.stringify(cookieConsent), { days: 365 })
-
-  // Update the other cookies
-  resetCookies()
+  setCookie(CONSENT_COOKIE_NAME, JSON.stringify(cookieConsent), { days: 365 }) // Set consent cookie
+  resetCookies() // Update other cookies
 }
 
 /**
- * Apply the user's cookie preferences
+ * Apply the user's cookie preferences.
  *
- * Deletes any cookies the user has not consented to.
+ * @returns {void}
  */
 export function resetCookies() {
   const options =
-    getConsentCookie() ||
-    // If no preferences or old version use the default
-    JSON.parse(JSON.stringify(DEFAULT_COOKIE_CONSENT))
+    getConsentCookie() || JSON.parse(JSON.stringify(DEFAULT_COOKIE_CONSENT)) // Use default if no preferences
 
   for (const cookieType in options) {
-    if (cookieType === 'version') {
-      continue
+    if (cookieType === 'version' || cookieType === 'essential') {
+      continue // Skip version and essential cookies
     }
 
-    // Essential cookies cannot be deselected, ignore this cookie type
-    if (cookieType === 'essential') {
-      continue
-    }
-
-    // Initialise analytics if allowed
     if (cookieType === 'analytics' && options[cookieType]) {
-      // Enable GA if allowed
       window[`ga-disable-UA-${TRACKING_PREVIEW_ID}`] = false
       window[`ga-disable-UA-${TRACKING_LIVE_ID}`] = false
-      Analytics()
+      Analytics() // Enable GA if allowed
     } else {
-      // Disable GA if not allowed
       window[`ga-disable-UA-${TRACKING_PREVIEW_ID}`] = true
       window[`ga-disable-UA-${TRACKING_LIVE_ID}`] = true
     }
 
     if (!options[cookieType]) {
-      // Fetch the cookies in that category
       const cookiesInCategory = COOKIE_CATEGORIES[cookieType]
-
       cookiesInCategory.forEach((cookie) => {
-        // Delete cookie
-        Cookie(cookie, null)
+        Cookie(cookie, null) // Delete cookie
       })
     }
   }
 }
 
 /**
- * Check if user allows cookie category
+ * Check if user allows cookie category.
  *
  * @param {string} cookieCategory - Cookie type
  * @param {ConsentPreferences} cookiePreferences - Consent preferences
- * @returns {string | boolean} Cookie type value
+ * @returns {boolean} True if user allows the cookie category
  */
 function userAllowsCookieCategory(cookieCategory, cookiePreferences) {
-  // Essential cookies are always allowed
   if (cookieCategory === 'essential') {
-    return true
+    return true // Essential cookies are always allowed
   }
 
-  // Sometimes cookiePreferences is malformed in some of the tests, so we need to handle these
   try {
-    return cookiePreferences[cookieCategory]
+    return !!cookiePreferences[cookieCategory] // Return true if allowed
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error)
-    return false
+    console.error(error) // eslint-disable-line no-console
+    return false // Return false if malformed
   }
 }
 
 /**
- * Check if user allows cookie
+ * Check if user allows cookie.
  *
  * @param {string} cookieName - Cookie name
- * @returns {string | boolean} Cookie type value
+ * @returns {boolean} True if user allows the cookie
  */
 function userAllowsCookie(cookieName) {
-  // Always allow setting the consent cookie
   if (cookieName === CONSENT_COOKIE_NAME) {
-    return true
+    return true // Always allow setting the consent cookie
   }
 
-  // Get the current cookie preferences
   let cookiePreferences = getConsentCookie()
-
-  // If no preferences or old version use the default
   if (!isValidConsentCookie(cookiePreferences)) {
-    cookiePreferences = DEFAULT_COOKIE_CONSENT
+    cookiePreferences = DEFAULT_COOKIE_CONSENT // Use default if invalid
   }
 
   for (const category in COOKIE_CATEGORIES) {
     const cookiesInCategory = COOKIE_CATEGORIES[category]
-
-    if (cookiesInCategory.indexOf(cookieName) !== '-1') {
-      return userAllowsCookieCategory(category, cookiePreferences)
+    if (cookiesInCategory.includes(cookieName)) {
+      return userAllowsCookieCategory(category, cookiePreferences) // Return result
     }
   }
 
-  // Deny the cookie if it is not known to us
-  return false
+  return false // Deny the cookie if it is not known
 }
 
 /**
- * Get cookie by name
+ * Get cookie by name.
  *
  * @param {string} name - Cookie name
  * @returns {string | null} Cookie value
@@ -262,62 +199,49 @@ function getCookie(name) {
   const nameEQ = `${name}=`
   const cookies = document.cookie.split(';')
   for (let i = 0, len = cookies.length; i < len; i++) {
-    let cookie = cookies[i]
-    while (cookie.charAt(0) === ' ') {
-      cookie = cookie.substring(1, cookie.length)
-    }
-    if (cookie.indexOf(nameEQ) === 0) {
-      return decodeURIComponent(cookie.substring(nameEQ.length))
+    const cookie = cookies[i].trim()
+    if (cookie.startsWith(nameEQ)) {
+      return decodeURIComponent(cookie.substring(nameEQ.length)) // Return cookie value
     }
   }
-  return null
+  return null // Return null if not found
 }
 
 /**
- * Set cookie by name, value and options
+ * Set cookie by name, value, and options.
  *
  * @param {string} name - Cookie name
  * @param {string} value - Cookie value
  * @param {{ days?: number }} [options] - Cookie options
+ * @returns {void}
  */
 function setCookie(name, value, options) {
   if (userAllowsCookie(name)) {
-    if (typeof options === 'undefined') {
-      options = {}
-    }
+    options = options || {}
     let cookieString = `${name}=${value}; path=/`
     if (options.days) {
       const date = new Date()
       date.setTime(date.getTime() + options.days * 24 * 60 * 60 * 1000)
-      cookieString = `${cookieString}; expires=${date.toUTCString()}`
+      cookieString += `; expires=${date.toUTCString()}`
     }
     if (document.location.protocol === 'https:') {
-      cookieString = `${cookieString}; Secure`
+      cookieString += '; Secure'
     }
-    document.cookie = cookieString
+    document.cookie = cookieString // Set the cookie
   }
 }
 
 /**
- * Delete cookie by name
+ * Delete cookie by name.
  *
  * @param {string} name - Cookie name
+ * @returns {void}
  */
 function deleteCookie(name) {
   if (Cookie(name)) {
-    // Cookies need to be deleted in the same level of specificity in which they were set
-    // If a cookie was set with a specified domain, it needs to be specified when deleted
-    // If a cookie wasn't set with the domain attribute, it shouldn't be there when deleted
-    // You can't tell if a cookie was set with a domain attribute or not, so try both options
+    const domain = window.location.hostname
     document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`
-    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;domain=${window.location.hostname};path=/`
-    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;domain=.${window.location.hostname};path=/`
+    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;domain=${domain};path=/`
+    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;domain=.${domain};path=/`
   }
 }
-
-/**
- * @typedef {object} ConsentPreferences
- * @property {boolean} [analytics] - Accept analytics cookies
- * @property {boolean} [essential] - Accept essential cookies
- * @property {string} [version] - Content cookie version
- */
