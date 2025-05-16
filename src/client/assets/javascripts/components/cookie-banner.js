@@ -71,8 +71,9 @@ class CookieBanner {
    * Initialize the cookie banner
    */
   initializeBanner() {
-    if (!this.isValid) return // Ensure the banner is valid before initializing
-
+    if (!this.isValid) {
+      return // Ensure the banner is valid before initializing
+    }
     const currentConsentCookie = CookieFunctions.getConsentCookie()
 
     if (
