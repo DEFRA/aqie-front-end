@@ -60,28 +60,29 @@ constructor($module) {
     this.$cookieBannerHideButtons = $module.querySelectorAll(
       cookieBannerHideButtonSelector
     )
-
-    if (
-      !(
-        this.$acceptButton instanceof HTMLButtonElement &&
-        this.$rejectButton instanceof HTMLButtonElement &&
-        this.$cookieMessage instanceof HTMLElement &&
-        this.$cookieConfirmationAccept instanceof HTMLElement &&
-        this.$cookieConfirmationReject instanceof HTMLElement &&
-        this.$cookieBannerHideButtons.length
-      )
-    ) {
-      return this
-    }
+  
+    const isValid =
+      this.$acceptButton instanceof HTMLButtonElement &&
+      this.$rejectButton instanceof HTMLButtonElement &&
+      this.$cookieMessage instanceof HTMLElement &&
+      this.$cookieConfirmationAccept instanceof HTMLElement &&
+      this.$cookieConfirmationReject instanceof HTMLElement &&
+      this.$cookieBannerHideButtons.length
+  
+    return isValid // Return true if all elements are valid, otherwise false
   }
 
   /**
    * Set up event listeners for the cookie banner
    */
   setupEventListeners() {
+    if (!this.$acceptButton || !this.$rejectButton || !this.$cookieBannerHideButtons) {
+      return // Exit early if required elements are missing
+    }
+  
     this.$acceptButton.addEventListener('click', () => this.acceptCookies())
     this.$rejectButton.addEventListener('click', () => this.rejectCookies())
-
+  
     this.$cookieBannerHideButtons.forEach(($cookieBannerHideButton) => {
       $cookieBannerHideButton.addEventListener('click', () =>
         this.hideBanner()
@@ -98,14 +99,19 @@ constructor($module) {
     if (!currentConsentCookie) {
       CookieFunctions.resetCookies()
       this.$cookieBanner.removeAttribute('hidden')
+      return true // Return true if the banner is shown
     }
+  
+    return false // Return false if the banner is not shown
   }
 
   /**
    * Hide banner
    */
   hideBanner() {
-    this.$cookieBanner.setAttribute('hidden', 'true')
+    if (this.$cookieBanner) {
+      this.$cookieBanner.setAttribute('hidden', 'true') // Hide the cookie banner
+    }
   }
 
   /**
