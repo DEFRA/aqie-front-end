@@ -19,9 +19,13 @@ constructor($module) {
     return undefined // Explicitly return undefined for invalid cases
   }
 
-  this.initializeElements($module)
+  const elementsInitialized = this.initializeElements($module)
+  if (!elementsInitialized) {
+    return undefined // Explicitly return undefined if elements cannot be initialized
+  }
 
-  if (!this.setupEventListeners()) {
+  const listenersSetUp = this.setupEventListeners()
+  if (!listenersSetUp) {
     return undefined // Explicitly return undefined if event listeners cannot be set up
   }
 
