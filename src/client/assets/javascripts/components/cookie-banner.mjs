@@ -16,17 +16,17 @@ class CookieBanner {
    */
   constructor($module) {
     if (!this.isValidModule($module)) {
-      return undefined // Explicitly return undefined for invalid cases
+      return
     }
 
     const elementsInitialized = this.initializeElements($module)
     if (!elementsInitialized) {
-      return undefined // Explicitly return undefined if elements cannot be initialized
+      return
     }
 
     const listenersSetUp = this.setupEventListeners()
     if (!listenersSetUp) {
-      return undefined // Explicitly return undefined if event listeners cannot be set up
+      return
     }
 
     // Show the cookie banner if no valid consent cookie exists
