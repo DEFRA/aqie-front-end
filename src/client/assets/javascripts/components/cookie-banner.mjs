@@ -1,37 +1,37 @@
 import * as CookieFunctions from './cookie-functions.mjs'
 
-const cookieBannerAcceptSelector = '.js-cookie-banner-accept'
-const cookieBannerRejectSelector = '.js-cookie-banner-reject'
-const cookieBannerHideButtonSelector = '.js-cookie-banner-hide'
-const cookieMessageSelector = '.js-cookie-banner-message'
-const cookieConfirmationAcceptSelector = '.js-cookie-banner-confirmation-accept'
-const cookieConfirmationRejectSelector = '.js-cookie-banner-confirmation-reject'
+const cookieBannerAcceptSelector = '.js-cookie-banner-accept' // ''
+const cookieBannerRejectSelector = '.js-cookie-banner-reject' // ''
+const cookieBannerHideButtonSelector = '.js-cookie-banner-hide' // ''
+const cookieMessageSelector = '.js-cookie-banner-message' // ''
+const cookieConfirmationAcceptSelector = '.js-cookie-banner-confirmation-accept' // ''
+const cookieConfirmationRejectSelector = '.js-cookie-banner-confirmation-reject' // ''
 
 /**
  * Website cookie banner
  */
 class CookieBanner {
-/**
- * @param {Element} $module - HTML element
- */
-constructor($module) {
-  if (!this.isValidModule($module)) {
-    return undefined // Explicitly return undefined for invalid cases
-  }
+  /**
+   * @param {Element} $module - HTML element
+   */
+  constructor($module) {
+    if (!this.isValidModule($module)) {
+      return undefined // Explicitly return undefined for invalid cases
+    }
 
-  const elementsInitialized = this.initializeElements($module)
-  if (!elementsInitialized) {
-    return undefined // Explicitly return undefined if elements cannot be initialized
-  }
+    const elementsInitialized = this.initializeElements($module)
+    if (!elementsInitialized) {
+      return undefined // Explicitly return undefined if elements cannot be initialized
+    }
 
-  const listenersSetUp = this.setupEventListeners()
-  if (!listenersSetUp) {
-    return undefined // Explicitly return undefined if event listeners cannot be set up
-  }
+    const listenersSetUp = this.setupEventListeners()
+    if (!listenersSetUp) {
+      return undefined // Explicitly return undefined if event listeners cannot be set up
+    }
 
-  // Show the cookie banner if no valid consent cookie exists
-  this.showBannerIfNoConsent()
-}
+    // Show the cookie banner if no valid consent cookie exists
+    this.showBannerIfNoConsent()
+  }
 
   /**
    * Validate the module element
@@ -51,6 +51,7 @@ constructor($module) {
    * Initialize DOM elements
    *
    * @param {Element} $module - HTML element
+   * @returns {boolean} Returns true if all elements are initialized successfully
    */
   initializeElements($module) {
     this.$cookieBanner = $module
@@ -67,7 +68,7 @@ constructor($module) {
     this.$cookieBannerHideButtons = $module.querySelectorAll(
       cookieBannerHideButtonSelector
     )
-  
+
     const isValid =
       this.$acceptButton instanceof HTMLButtonElement &&
       this.$rejectButton instanceof HTMLButtonElement &&
@@ -75,30 +76,34 @@ constructor($module) {
       this.$cookieConfirmationAccept instanceof HTMLElement &&
       this.$cookieConfirmationReject instanceof HTMLElement &&
       this.$cookieBannerHideButtons.length
-  
+
     return isValid // Return true if all elements are valid, otherwise false
   }
 
   /**
    * Set up event listeners for the cookie banner
+   * @returns {boolean} Returns true if listeners are set up successfully
    */
   setupEventListeners() {
     if (!this.$acceptButton || !this.$rejectButton || !this.$cookieBannerHideButtons) {
-      return // Exit early if required elements are missing
+      return false // Return false if required elements are missing
     }
-  
+
     this.$acceptButton.addEventListener('click', () => this.acceptCookies())
     this.$rejectButton.addEventListener('click', () => this.rejectCookies())
-  
+
     this.$cookieBannerHideButtons.forEach(($cookieBannerHideButton) => {
       $cookieBannerHideButton.addEventListener('click', () =>
         this.hideBanner()
       )
     })
+
+    return true // Return true if listeners are set up successfully
   }
 
   /**
    * Show the cookie banner if no valid consent cookie exists
+   * @returns {boolean} Returns true if the banner is shown, false otherwise
    */
   showBannerIfNoConsent() {
     const currentConsentCookie = CookieFunctions.getConsentCookie()
@@ -108,12 +113,13 @@ constructor($module) {
       this.$cookieBanner.removeAttribute('hidden')
       return true // Return true if the banner is shown
     }
-  
+
     return false // Return false if the banner is not shown
   }
 
   /**
    * Hide banner
+   * @returns {void}
    */
   hideBanner() {
     if (this.$cookieBanner) {
@@ -123,39 +129,42 @@ constructor($module) {
 
   /**
    * Accept cookies
+   * @returns {void}
    */
   acceptCookies() {
-    CookieFunctions.setConsentCookie({ analytics: true })
-    this.$cookieMessage.setAttribute('hidden', 'true')
-    this.revealConfirmationMessage(this.$cookieConfirmationAccept)
+    CookieFunctions.setConsentCookie({ analytics: true }) // Set consent for analytics cookies
+    this.$cookieMessage.setAttribute('hidden', 'true') // Hide the cookie message
+    this.revealConfirmationMessage(this.$cookieConfirmationAccept) // Show confirmation message
   }
 
   /**
    * Reject cookies
+   * @returns {void}
    */
   rejectCookies() {
-    CookieFunctions.setConsentCookie({ analytics: false })
-    this.$cookieMessage.setAttribute('hidden', 'true')
-    this.revealConfirmationMessage(this.$cookieConfirmationReject)
+    CookieFunctions.setConsentCookie({ analytics: false }) // Deny consent for analytics cookies
+    this.$cookieMessage.setAttribute('hidden', 'true') // Hide the cookie message
+    this.revealConfirmationMessage(this.$cookieConfirmationReject) // Show confirmation message
   }
 
   /**
    * Reveal confirmation message
    *
    * @param {HTMLElement} confirmationMessage - Confirmation message
+   * @returns {void}
    */
   revealConfirmationMessage(confirmationMessage) {
-    confirmationMessage.removeAttribute('hidden')
+    confirmationMessage.removeAttribute('hidden') // Show the confirmation message
 
     if (!confirmationMessage.getAttribute('tabindex')) {
-      confirmationMessage.setAttribute('tabindex', '-1')
+      confirmationMessage.setAttribute('tabindex', '-1') // Make it focusable
 
       confirmationMessage.addEventListener('blur', () => {
-        confirmationMessage.removeAttribute('tabindex')
+        confirmationMessage.removeAttribute('tabindex') // Remove tabindex after blur
       })
     }
 
-    confirmationMessage.focus()
+    confirmationMessage.focus() // Focus on the confirmation message
   }
 
   /**
@@ -164,7 +173,7 @@ constructor($module) {
    * @returns {boolean} Returns true if on the Cookies page
    */
   onCookiesPage() {
-    return window.location.pathname === '/cookies/'
+    return window.location.pathname === '/cookies/' // Check if the current page is the cookies page
   }
 }
 
