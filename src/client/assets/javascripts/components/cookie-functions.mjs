@@ -59,24 +59,25 @@ const DEFAULT_COOKIE_CONSENT = {
  *   manageCookie('hobnob', null)
  *
  * @param {string} name - manageCookie name
- * @param {string | false | null} [value] - manageCookie value
- * @param {{ days?: number }} [options] - manageCookie options
- * @returns {string | null | undefined} - Returns value when setting or deleting
+ * @param {string | false | null} [value=null] - manageCookie value
+ * @param {{ days?: number }} [options={}] - manageCookie options
+ * @returns {string | null | undefined} - Returns value when setting, getting, or deleting
  */
-export function manageCookie(name, value, options) {
+export function manageCookie(name, value = null, options = {}) {
   if (typeof value !== 'undefined') {
     if (value === false || value === null) {
-      deleteCookie(name)
-    } else {
-      // Default expiry date of 30 days
-      if (typeof options === 'undefined') {
-        options = { days: 30 }
-      }
-      setCookie(name, value, options)
+      return deleteCookie(name) // Return result of deleteCookie
     }
-  } else {
-    return getCookie(name)
+
+    // Default expiry date of 30 days if options are not provided
+    if (!options.days) {
+      options.days = 30
+    }
+
+    return setCookie(name, value, options) // Return result of setCookie
   }
+
+  return getCookie(name) // Return result of getCookie
 }
 
 /**
