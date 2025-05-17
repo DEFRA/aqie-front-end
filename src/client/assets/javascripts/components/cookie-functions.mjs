@@ -13,6 +13,9 @@
  */
 
 import Analytics from './load-analytics.mjs'
+import { createLogger } from '~/src/server/common/helpers/logging/logger'
+
+const logger = createLogger()
 
 /* Name of the cookie to save users cookie preferences to. */
 const CONSENT_COOKIE_NAME = 'airaqie_cookies_analytics'
@@ -153,44 +156,34 @@ export function setConsentCookie(options) {
  * Deletes any cookies the user has not consented to.
  */
 export function resetCookies() {
-  const options =
-    getConsentCookie() ||
-    // If no preferences or old version use the default
-    JSON.parse(JSON.stringify(DEFAULT_COOKIE_CONSENT))
+  try {
+    const options =
+      getConsentCookie() || JSON.parse(JSON.stringify(DEFAULT_COOKIE_CONSENT)) // Use default if no preferences
 
-  for (const cookieType in options) {
-    if (cookieType === 'version') {
-      continue
+    for (const cookieType in options) {
+      if (cookieType === 'version' || cookieType === 'essential') {
+        continue // Skip version and essential cookies
+      }
+
+      if (cookieType === 'analytics' && options[cookieType]) {
+        window[`ga-disable-UA-${TRACKING_PREVIEW_ID}`] = false
+        window[`ga-disable-UA-${TRACKING_LIVE_ID}`] = false
+        Analytics() // Enable GA if allowed
+        removeUACookies() // Remove UA cookies
+      } else {
+        window[`ga-disable-UA-${TRACKING_PREVIEW_ID}`] = true
+        window[`ga-disable-UA-${TRACKING_LIVE_ID}`] = true
+      }
+
+      if (!options[cookieType]) {
+        const cookiesInCategory = COOKIE_CATEGORIES[cookieType]
+        cookiesInCategory.forEach((cookie) => {
+          manageCookie(cookie, null) // Delete cookie
+        })
+      }
     }
-
-    // Essential cookies cannot be deselected, ignore this cookie type
-    if (cookieType === 'essential') {
-      continue
-    }
-
-    // Initialise analytics if allowed
-    if (cookieType === 'analytics' && options[cookieType]) {
-      // Enable GA if allowed
-      window[`ga-disable-UA-${TRACKING_PREVIEW_ID}`] = false
-      window[`ga-disable-UA-${TRACKING_LIVE_ID}`] = false
-      Analytics()
-      // Unset UA cookies if they've been set by GTM
-      removeUACookies()
-    } else {
-      // Disable GA if not allowed
-      window[`ga-disable-UA-${TRACKING_PREVIEW_ID}`] = true
-      window[`ga-disable-UA-${TRACKING_LIVE_ID}`] = true
-    }
-
-    if (!options[cookieType]) {
-      // Fetch the cookies in that category
-      const cookiesInCategory = COOKIE_CATEGORIES[cookieType]
-
-      cookiesInCategory.forEach((cookie) => {
-        // Delete cookie
-        manageCookie(cookie, null)
-      })
-    }
+  } catch (error) {
+    logger.error('Failed to reset cookies', error) // Log the error using logger
   }
 }
 
@@ -221,18 +214,15 @@ export function removeUACookies() {
  * @returns {string | boolean} manageCookie type value
  */
 function userAllowsCookieCategory(cookieCategory, cookiePreferences) {
-  // Essential cookies are always allowed
   if (cookieCategory === 'essential') {
-    return true
+    return true // Essential cookies are always allowed
   }
 
-  // Sometimes cookiePreferences is malformed in some of the tests, so we need to handle these
   try {
-    return cookiePreferences[cookieCategory]
+    return !!cookiePreferences[cookieCategory] // Return true if allowed
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error)
-    return false
+    logger.error(`Failed to check cookie category: ${cookieCategory}`, error) // Log the error using logger.error
+    return false // Return false if malformed
   }
 }
 
@@ -297,37 +287,41 @@ function getCookie(name) {
  * @param {{ days?: number }} [options] - manageCookie options
  */
 function setCookie(name, value, options) {
-  if (userAllowsCookie(name)) {
-    if (typeof options === 'undefined') {
-      options = {}
+  try {
+    if (userAllowsCookie(name)) {
+      options = options || {}
+      let cookieString = `${name}=${value}; path=/`
+      if (options.days) {
+        const date = new Date()
+        date.setTime(date.getTime() + options.days * 24 * 60 * 60 * 1000)
+        cookieString += `; expires=${date.toUTCString()}`
+      }
+      if (document.location.protocol === 'https:') {
+        cookieString += '; Secure'
+      }
+      document.cookie = cookieString // Set the cookie
     }
-    let cookieString = `${name}=${value}; path=/`
-    if (options.days) {
-      const date = new Date()
-      date.setTime(date.getTime() + options.days * 24 * 60 * 60 * 1000)
-      cookieString = `${cookieString}; expires=${date.toUTCString()}`
-    }
-    if (document.location.protocol === 'https:') {
-      cookieString = `${cookieString}; Secure`
-    }
-    document.cookie = cookieString
+  } catch (error) {
+    logger.error(`Failed to set cookie: ${name}`, error) // Log the error using logger.error
   }
 }
 
 /**
- * Delete cookie by name
+ * Delete cookie by name.
  *
  * @param {string} name - manageCookie name
+ * @returns {void}
  */
 function deleteCookie(name) {
-  if (manageCookie(name)) {
-    // Cookies need to be deleted in the same level of specificity in which they were set
-    // If a cookie was set with a specified domain, it needs to be specified when deleted
-    // If a cookie wasn't set with the domain attribute, it shouldn't be there when deleted
-    // You can't tell if a cookie was set with a domain attribute or not, so try both options
-    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`
-    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;domain=${window.location.hostname};path=/`
-    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;domain=.${window.location.hostname};path=/`
+  try {
+    if (manageCookie(name)) {
+      const domain = window.location.hostname
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;domain=${domain};path=/`
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;domain=.${domain};path=/`
+    }
+  } catch (error) {
+    logger.error(`Failed to delete cookie: ${name}`, error) // Log the error using logger
   }
 }
 
