@@ -248,10 +248,12 @@ function userAllowsCookie(cookieName) {
   }
 
   for (const category in COOKIE_CATEGORIES) {
-    const cookiesInCategory = COOKIE_CATEGORIES[category]
+    if (Object.hasOwn(COOKIE_CATEGORIES, category)) { // Restrict loop to own properties
+      const cookiesInCategory = COOKIE_CATEGORIES[category]
 
-    if (cookiesInCategory.indexOf(cookieName) !== '-1') {
-      return userAllowsCookieCategory(category, cookiePreferences)
+      if (cookiesInCategory.indexOf(cookieName) !== -1) {
+        return userAllowsCookieCategory(category, cookiePreferences)
+      }
     }
   }
 
