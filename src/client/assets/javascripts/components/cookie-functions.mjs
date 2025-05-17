@@ -13,9 +13,8 @@
  */
 
 import Analytics from './load-analytics.mjs'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
+import { logger } from '../common/helpers/logging/logger.js'
 
-const logger = createLogger()
 
 /* Name of the cookie to save users cookie preferences to. */
 const CONSENT_COOKIE_NAME = 'airaqie_cookies_analytics'
