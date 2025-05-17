@@ -42,21 +42,19 @@ const DEFAULT_COOKIE_CONSENT = {
  * Set, get, and delete cookies.
  *
  * @param {string} name - manageCookie name
- * @param {string | false | null} [value] - manageCookie value
- * @param {{ days?: number }} [options] - manageCookie options
- * @returns {string | null | undefined} - Returns value when setting or deleting
+ * @param {string | false | null} [value=null] - manageCookie value
+ * @param {{ days?: number }} [options={}] - manageCookie options
+ * @returns {string | null | undefined} - Returns value when setting, getting, or deleting
  */
-export function manageCookie(name, value, options) {
+export function manageCookie(name, value = null, options = {}) {
   if (typeof value !== 'undefined') {
     if (value === false || value === null) {
       return deleteCookie(name) // Return result of deleteCookie
-    } else {
-      if (typeof options === 'undefined') {
-        options = { days: 30 } // Default expiry date of 30 days
-      }
-      return setCookie(name, value, options) // Return result of setCookie
     }
+
+    return setCookie(name, value, options) // Return result of setCookie
   }
+
   return getCookie(name) // Return result of getCookie
 }
 
@@ -206,8 +204,8 @@ function userAllowsCookie(cookieName) {
   }
 
   for (const category in COOKIE_CATEGORIES) {
-    if (Object.prototype.hasOwnProperty.call(COOKIE_CATEGORIES, category)) {
-      // Restrict loop to own properties
+    if (Object.hasOwn(COOKIE_CATEGORIES, category)) {
+      // Use Object.hasOwn() to restrict loop to own properties
       const cookiesInCategory = COOKIE_CATEGORIES[category]
       if (cookiesInCategory.includes(cookieName)) {
         return userAllowsCookieCategory(category, cookiePreferences) // Return result
