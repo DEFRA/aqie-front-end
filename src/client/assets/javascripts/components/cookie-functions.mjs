@@ -94,15 +94,16 @@ export function getConsentCookie() {
 
   if (consentCookie) {
     try {
-      consentCookieObj = JSON.parse(consentCookie)
+      consentCookieObj = JSON.parse(consentCookie) // Attempt to parse the consent cookie
     } catch (error) {
-      return null
+      logger.error('Failed to parse consent cookie', error) // Log the error using logger.error
+      return null // Return null if parsing fails
     }
   } else {
-    return null
+    return null // Return null if no consent cookie exists
   }
 
-  return consentCookieObj
+  return consentCookieObj // Return the parsed consent cookie object
 }
 
 /**
