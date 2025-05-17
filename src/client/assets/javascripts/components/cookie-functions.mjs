@@ -1,10 +1,10 @@
 /**
- * Cookie functions
+ * manageCookie functions
  * ================
  *
  * Used by the cookie banner component and cookies page pattern.
  *
- * Includes function `Cookie()` for getting, setting, and deleting cookies, and
+ * Includes function `manageCookie()` for getting, setting, and deleting cookies, and
  * functions to manage the users' consent to cookies.
  *
  * Note: there is an inline script in cookie-banner.njk to show the banner
@@ -48,20 +48,20 @@ const DEFAULT_COOKIE_CONSENT = {
  * Set, get, and delete cookies.
  *
  *   Setting a cookie:
- *   Cookie('hobnob', 'tasty', { days: 30 })
+ *   manageCookie('hobnob', 'tasty', { days: 30 })
  *
  *   Reading a cookie:
- *   Cookie('hobnob')
+ *   manageCookie('hobnob')
  *
  *   Deleting a cookie:
- *   Cookie('hobnob', null)
+ *   manageCookie('hobnob', null)
  *
- * @param {string} name - Cookie name
- * @param {string | false | null} [value] - Cookie value
- * @param {{ days?: number }} [options] - Cookie options
+ * @param {string} name - manageCookie name
+ * @param {string | false | null} [value] - manageCookie value
+ * @param {{ days?: number }} [options] - manageCookie options
  * @returns {string | null | undefined} - Returns value when setting or deleting
  */
-export function Cookie(name, value, options) {
+export function manageCookie(name, value, options) {
   if (typeof value !== 'undefined') {
     if (value === false || value === null) {
       deleteCookie(name)
@@ -188,7 +188,7 @@ export function resetCookies() {
 
       cookiesInCategory.forEach((cookie) => {
         // Delete cookie
-        Cookie(cookie, null)
+        manageCookie(cookie, null)
       })
     }
   }
@@ -209,16 +209,16 @@ export function removeUACookies() {
     '_gat_UA-26179049-17',
     '_gat_UA-116229859-1'
   ]) {
-    Cookie(UACookie, null)
+    manageCookie(UACookie, null)
   }
 }
 
 /**
  * Check if user allows cookie category
  *
- * @param {string} cookieCategory - Cookie type
+ * @param {string} cookieCategory - manageCookie type
  * @param {ConsentPreferences} cookiePreferences - Consent preferences
- * @returns {string | boolean} Cookie type value
+ * @returns {string | boolean} manageCookie type value
  */
 function userAllowsCookieCategory(cookieCategory, cookiePreferences) {
   // Essential cookies are always allowed
@@ -239,8 +239,8 @@ function userAllowsCookieCategory(cookieCategory, cookiePreferences) {
 /**
  * Check if user allows cookie
  *
- * @param {string} cookieName - Cookie name
- * @returns {string | boolean} Cookie type value
+ * @param {string} cookieName - manageCookie name
+ * @returns {string | boolean} manageCookie type value
  */
 function userAllowsCookie(cookieName) {
   // Always allow setting the consent cookie
@@ -271,8 +271,8 @@ function userAllowsCookie(cookieName) {
 /**
  * Get cookie by name
  *
- * @param {string} name - Cookie name
- * @returns {string | null} Cookie value
+ * @param {string} name - manageCookie name
+ * @returns {string | null} manageCookie value
  */
 function getCookie(name) {
   const nameEQ = `${name}=`
@@ -292,9 +292,9 @@ function getCookie(name) {
 /**
  * Set cookie by name, value and options
  *
- * @param {string} name - Cookie name
- * @param {string} value - Cookie value
- * @param {{ days?: number }} [options] - Cookie options
+ * @param {string} name - manageCookie name
+ * @param {string} value - manageCookie value
+ * @param {{ days?: number }} [options] - manageCookie options
  */
 function setCookie(name, value, options) {
   if (userAllowsCookie(name)) {
@@ -317,10 +317,10 @@ function setCookie(name, value, options) {
 /**
  * Delete cookie by name
  *
- * @param {string} name - Cookie name
+ * @param {string} name - manageCookie name
  */
 function deleteCookie(name) {
-  if (Cookie(name)) {
+  if (manageCookie(name)) {
     // Cookies need to be deleted in the same level of specificity in which they were set
     // If a cookie was set with a specified domain, it needs to be specified when deleted
     // If a cookie wasn't set with the domain attribute, it shouldn't be there when deleted

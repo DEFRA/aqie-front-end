@@ -1,10 +1,10 @@
 /**
- * Cookie functions
+ * manageCookie functions
  * ================
  *
  * Used by the cookie banner component and cookies page pattern.
  *
- * Includes function `Cookie()` for getting, setting, and deleting cookies, and
+ * Includes function `manageCookie()` for getting, setting, and deleting cookies, and
  * functions to manage the users' consent to cookies.
  *
  * Note: there is an inline script in cookie-banner.njk to show the banner
@@ -40,12 +40,12 @@ const DEFAULT_COOKIE_CONSENT = {
 /**
  * Set, get, and delete cookies.
  *
- * @param {string} name - Cookie name
- * @param {string | false | null} [value] - Cookie value
- * @param {{ days?: number }} [options] - Cookie options
+ * @param {string} name - manageCookie name
+ * @param {string | false | null} [value] - manageCookie value
+ * @param {{ days?: number }} [options] - manageCookie options
  * @returns {string | null | undefined} - Returns value when setting or deleting
  */
-export function Cookie(name, value, options) {
+export function manageCookie(name, value, options) {
   if (typeof value !== 'undefined') {
     if (value === false || value === null) {
       return deleteCookie(name) // Return result of deleteCookie
@@ -137,7 +137,7 @@ export function resetCookies() {
     if (!options[cookieType]) {
       const cookiesInCategory = COOKIE_CATEGORIES[cookieType]
       cookiesInCategory.forEach((cookie) => {
-        Cookie(cookie, null) // Delete cookie
+        manageCookie(cookie, null) // Delete cookie
       })
     }
   }
@@ -146,7 +146,7 @@ export function resetCookies() {
 /**
  * Check if user allows cookie category.
  *
- * @param {string} cookieCategory - Cookie type
+ * @param {string} cookieCategory - manageCookie type
  * @param {ConsentPreferences} cookiePreferences - Consent preferences
  * @returns {boolean} True if user allows the cookie category
  */
@@ -166,7 +166,7 @@ function userAllowsCookieCategory(cookieCategory, cookiePreferences) {
 /**
  * Check if user allows cookie.
  *
- * @param {string} cookieName - Cookie name
+ * @param {string} cookieName - manageCookie name
  * @returns {boolean} True if user allows the cookie
  */
 function userAllowsCookie(cookieName) {
@@ -192,8 +192,8 @@ function userAllowsCookie(cookieName) {
 /**
  * Get cookie by name.
  *
- * @param {string} name - Cookie name
- * @returns {string | null} Cookie value
+ * @param {string} name - manageCookie name
+ * @returns {string | null} manageCookie value
  */
 function getCookie(name) {
   const nameEQ = `${name}=`
@@ -210,9 +210,9 @@ function getCookie(name) {
 /**
  * Set cookie by name, value, and options.
  *
- * @param {string} name - Cookie name
- * @param {string} value - Cookie value
- * @param {{ days?: number }} [options] - Cookie options
+ * @param {string} name - manageCookie name
+ * @param {string} value - manageCookie value
+ * @param {{ days?: number }} [options] - manageCookie options
  * @returns {void}
  */
 function setCookie(name, value, options) {
@@ -234,11 +234,11 @@ function setCookie(name, value, options) {
 /**
  * Delete cookie by name.
  *
- * @param {string} name - Cookie name
+ * @param {string} name - manageCookie name
  * @returns {void}
  */
 function deleteCookie(name) {
-  if (Cookie(name)) {
+  if (manageCookie(name)) {
     const domain = window.location.hostname
     document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`
     document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;domain=${domain};path=/`
