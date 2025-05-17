@@ -206,9 +206,12 @@ function userAllowsCookie(cookieName) {
   }
 
   for (const category in COOKIE_CATEGORIES) {
-    const cookiesInCategory = COOKIE_CATEGORIES[category]
-    if (cookiesInCategory.includes(cookieName)) {
-      return userAllowsCookieCategory(category, cookiePreferences) // Return result
+    if (Object.prototype.hasOwnProperty.call(COOKIE_CATEGORIES, category)) {
+      // Restrict loop to own properties
+      const cookiesInCategory = COOKIE_CATEGORIES[category]
+      if (cookiesInCategory.includes(cookieName)) {
+        return userAllowsCookieCategory(category, cookiePreferences) // Return result
+      }
     }
   }
 
