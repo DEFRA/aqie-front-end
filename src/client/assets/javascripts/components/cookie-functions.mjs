@@ -275,7 +275,7 @@ function getCookie(name) {
     while (cookie.charAt(0) === ' ') {
       cookie = cookie.substring(1, cookie.length)
     }
-    if (cookie.indexOf(nameEQ) === 0) {
+    if (cookie.startsWith(nameEQ)) { // Use String#startsWith instead of String#indexOf
       return decodeURIComponent(cookie.substring(nameEQ.length))
     }
   }
