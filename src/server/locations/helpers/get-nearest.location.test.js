@@ -10,7 +10,7 @@ import {
 // import { getPollutantLevelCy } from '~/src/server/locations/helpers/cy/pollutant-level-calculation'
 import { getAirQuality } from '~/src/server/data/en/air-quality.js'
 import { getAirQualityCy } from '~/src/server/data/cy/air-quality.js'
-import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
+import { LANG_EN } from '~/src/server/data/constants'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'
 import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
 
@@ -69,37 +69,6 @@ describe.skip('getNearestLocation', () => {
       /* mock data */
     })
     createLogger.mockReturnValue({ info: jest.fn() })
-  })
-
-  it.skip('should return nearest location data for English language', () => {
-    const result = getNearestLocation(
-      matches,
-      forecasts,
-      measurements,
-      location,
-      index,
-      lang
-    )
-    expect(result).toHaveProperty('forecastNum')
-    expect(result).toHaveProperty('nearestLocationsRange')
-    expect(result).toHaveProperty('airQuality')
-    expect(result).toHaveProperty('latlon')
-  })
-
-  it.skip('should return nearest location data for Welsh language', () => {
-    lang = LANG_CY
-    const result = getNearestLocation(
-      matches,
-      forecasts,
-      measurements,
-      location,
-      index,
-      lang
-    )
-    expect(result).toHaveProperty('forecastNum')
-    expect(result).toHaveProperty('nearestLocationsRange')
-    expect(result).toHaveProperty('airQuality')
-    expect(result).toHaveProperty('latlon')
   })
 
   it('should handle empty matches array', () => {
