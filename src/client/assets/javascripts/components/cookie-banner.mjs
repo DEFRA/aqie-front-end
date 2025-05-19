@@ -16,21 +16,16 @@ class CookieBanner {
    */
   constructor($module) {
     if (!this.isValidModule($module)) {
-      return
+      return // Exit early if the module is invalid
     }
 
-    const elementsInitialized = this.initializeElements($module)
-    if (!elementsInitialized) {
-      return
+    this.$cookieBanner = $module
+
+    if (!this.initializeElements() || !this.setupEventListeners()) {
+      return // Exit early if initialization or event setup fails
     }
 
-    const listenersSetUp = this.setupEventListeners()
-    if (!listenersSetUp) {
-      return
-    }
-
-    // Show the cookie banner if no valid consent cookie exists
-    this.showBannerIfNoConsent()
+    this.showBannerIfNoConsent() // Show the banner if no valid consent exists
   }
 
   /**
@@ -50,22 +45,19 @@ class CookieBanner {
   /**
    * Initialize DOM elements
    *
-   * @param {Element} $module - HTML element
    * @returns {boolean} Returns true if all elements are initialized successfully
    */
-  initializeElements($module) {
-    this.$cookieBanner = $module
-
-    this.$acceptButton = $module.querySelector(cookieBannerAcceptSelector)
-    this.$rejectButton = $module.querySelector(cookieBannerRejectSelector)
-    this.$cookieMessage = $module.querySelector(cookieMessageSelector)
-    this.$cookieConfirmationAccept = $module.querySelector(
+  initializeElements() {
+    this.$acceptButton = this.$cookieBanner.querySelector(cookieBannerAcceptSelector)
+    this.$rejectButton = this.$cookieBanner.querySelector(cookieBannerRejectSelector)
+    this.$cookieMessage = this.$cookieBanner.querySelector(cookieMessageSelector)
+    this.$cookieConfirmationAccept = this.$cookieBanner.querySelector(
       cookieConfirmationAcceptSelector
     )
-    this.$cookieConfirmationReject = $module.querySelector(
+    this.$cookieConfirmationReject = this.$cookieBanner.querySelector(
       cookieConfirmationRejectSelector
     )
-    this.$cookieBannerHideButtons = $module.querySelectorAll(
+    this.$cookieBannerHideButtons = this.$cookieBanner.querySelectorAll(
       cookieBannerHideButtonSelector
     )
 
@@ -75,7 +67,7 @@ class CookieBanner {
       this.$cookieMessage instanceof HTMLElement &&
       this.$cookieConfirmationAccept instanceof HTMLElement &&
       this.$cookieConfirmationReject instanceof HTMLElement &&
-      this.$cookieBannerHideButtons.length
+      this.$cookieBannerHideButtons.length > 0
 
     return isValid // Return true if all elements are valid, otherwise false
   }
