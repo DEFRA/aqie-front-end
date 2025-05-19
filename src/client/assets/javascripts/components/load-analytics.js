@@ -4,7 +4,7 @@ export default function loadAnalytics(...args) {
     // Load gtm script
     // Script based on snippet at https://developers.google.com/tag-manager/quickstart
     // prettier-ignore
-    ;(function (w, d, s, l, i, ...extraArgs) {
+    ;(function (...[w, d, s, l, i, ...extraArgs]) {
       w[l] = w[l] || []
       w[l].push({
         'gtm.start': new Date().getTime(),

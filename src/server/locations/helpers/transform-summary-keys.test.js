@@ -78,39 +78,6 @@ describe('transformKeys', () => {
     expect(translateDayToWelsh('Saturday')).toBe('Dydd Sadwrn')
     expect(translateDayToWelsh('NonexistentDay')).toBe('NonexistentDay')
   })
-
-  it.skip('should translate individual days to Welsh correctly within transformKeys', () => {
-    const lang = LANG_CY
-    SUMMARY_TRANSLATIONS.Friday = 'Dydd Gwener'
-    SUMMARY_TRANSLATIONS.Saturday = 'Dydd Sadwrn'
-    SUMMARY_TRANSLATIONS.Sunday = 'Dydd Sul'
-    SUMMARY_TRANSLATIONS.Monday = 'Dydd Llun'
-    SUMMARY_TRANSLATIONS.Tuesday = 'Dydd Mawrth'
-    SUMMARY_TRANSLATIONS.Wednesday = 'Dydd Mercher'
-
-    const dailySummaryWithDays = {
-      issue_date: '2025-02-19',
-      today: 'Sunny',
-      tomorrow: 'Cloudy',
-      outlook: 'Rainy',
-      Friday: 'Partly Cloudy',
-      Saturday: 'Rainy',
-      Sunday: 'Sunny',
-      Monday: 'Windy',
-      Tuesday: 'Snowy',
-      Wednesday: 'Stormy'
-    }
-
-    const result = transformKeys(dailySummaryWithDays, lang)
-
-    expect(result.transformedDailySummary).toEqual({
-      issue_date: '2025-02-19',
-      Heddiw: 'Sunny',
-      'Dydd Iau': 'Cloudy',
-      'Dydd Gwener i Dydd Mawrth': 'Rainy',
-      isCurrentDate: true
-    })
-  })
 })
 
 describe('translateDayToWelsh', () => {
