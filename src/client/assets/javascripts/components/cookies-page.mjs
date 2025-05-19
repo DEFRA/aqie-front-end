@@ -12,14 +12,14 @@ class CookiesPage {
       !($module instanceof HTMLElement) ||
       !document.body.classList.contains('govuk-frontend-supported')
     ) {
-      return this
+      return null // Exit early if the module is invalid
     }
 
     this.$page = $module
 
     const $cookieForm = this.$page.querySelector('.js-cookies-page-form')
     if (!($cookieForm instanceof HTMLFormElement)) {
-      return this
+      return null // Exit early if the form is invalid
     }
 
     this.$cookieForm = $cookieForm
@@ -36,7 +36,7 @@ class CookiesPage {
       !$cookieFormFieldsets.length ||
       !($cookieFormButton instanceof HTMLButtonElement)
     ) {
-      return this
+      return null // Exit early if required elements are missing
     }
 
     this.$cookieFormFieldsets = $cookieFormFieldsets
@@ -62,12 +62,15 @@ class CookiesPage {
     this.$cookieForm.addEventListener('submit', (event) =>
       this.savePreferences(event)
     )
+
+    return this // Return the instance for chaining or validation
   }
 
   /**
    * Save preferences
    *
    * @param {SubmitEvent} event - Form submit event
+   * @returns {void}
    */
   savePreferences(event) {
     // Stop default form submission behaviour
@@ -78,7 +81,7 @@ class CookiesPage {
     this.$cookieFormFieldsets.forEach(($cookieFormFieldset) => {
       const cookieType = this.getCookieType($cookieFormFieldset)
       if (!cookieType) {
-        return
+        return // Skip if cookie type is not found
       }
 
       const $selectedItem = $cookieFormFieldset.querySelector(
@@ -92,7 +95,7 @@ class CookiesPage {
 
     // Save preferences to cookie and show success notification
     setConsentCookie(preferences)
-    this.showSuccessNotification()
+    return this.showSuccessNotification() // Return the result of showing the notification
   }
 
   /**
@@ -100,6 +103,7 @@ class CookiesPage {
    *
    * @param {HTMLFieldSetElement} $cookieFormFieldset - Cookie form fieldset
    * @param {import('./cookie-functions.mjs').ConsentPreferences | null} preferences - Consent preferences
+   * @returns {HTMLInputElement | null} The updated radio button or null
    */
   showUserPreference($cookieFormFieldset, preferences) {
     const cookieType = this.getCookieType($cookieFormFieldset)
@@ -116,18 +120,20 @@ class CookiesPage {
       `input[name="cookies[${cookieType}]"][value=${radioValue}]`
     )
     if (!$radio) {
-      return
+      return null // Exit early if the radio button is not found
     }
 
     $radio.checked = true
+    return $radio // Return the updated radio button
   }
 
   /**
    * Show success notification
+   * @returns {boolean} Returns true if the notification is shown, false otherwise
    */
   showSuccessNotification() {
     if (!this.$successNotification) {
-      return
+      return false // Exit early if the success notification is not found
     }
 
     this.$successNotification.removeAttribute('hidden')
@@ -141,8 +147,10 @@ class CookiesPage {
 
     this.$successNotification.focus()
 
-    // scroll to the top of the page
+    // Scroll to the top of the page
     window.scrollTo(0, 0)
+
+    return true // Return true to indicate the notification was shown
   }
 
   /**
@@ -152,7 +160,7 @@ class CookiesPage {
    * @returns {string | null} Cookie type
    */
   getCookieType($cookieFormFieldset) {
-    return $cookieFormFieldset.getAttribute('data-cookie-type')
+    return $cookieFormFieldset.getAttribute('data-cookie-type') || null // Return the cookie type or null
   }
 }
 
