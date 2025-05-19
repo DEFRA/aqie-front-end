@@ -11,16 +11,19 @@ process.on('unhandledRejection', (error) => {
 })
 
 // Function to start the server
-const startServer = async (createServerFn, logger, config) => {
+const startServer = async (createServerFn, _localLogger, serverConfig) => {
   const server = await createServerFn()
   await server.start()
 
   logger.info('Server started successfully')
-  logger.info(`Access your frontend on http://localhost:${config.get('port')}`)
+  logger.info(
+    `Access your frontend on http://localhost:${serverConfig.get('port')}`
+  )
 }
 
 // Start the server and handle errors
 startServer(createServer, logger, config).catch((error) => {
+  // Use the global logger here
   logger.error('Failed to start server', error)
   process.exit(1)
 })

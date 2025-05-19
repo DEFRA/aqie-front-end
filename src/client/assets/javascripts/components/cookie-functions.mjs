@@ -1,10 +1,10 @@
 /**
- * Cookie functions
+ * manageCookie functions
  * ================
  *
  * Used by the cookie banner component and cookies page pattern.
  *
- * Includes function `Cookie()` for getting, setting, and deleting cookies, and
+ * Includes function `manageCookie()` for getting, setting, and deleting cookies, and
  * functions to manage the users' consent to cookies.
  *
  * Note: there is an inline script in cookie-banner.njk to show the banner
@@ -12,7 +12,9 @@
  * The consent cookie version is defined in cookie-banner.njk
  */
 
-import Analytics from './analytics.mjs'
+import Analytics from './load-analytics.mjs'
+import { logger } from '../common/helpers/logging/logger.js'
+
 
 /* Name of the cookie to save users cookie preferences to. */
 const CONSENT_COOKIE_NAME = 'airaqie_cookies_analytics'
@@ -48,33 +50,38 @@ const DEFAULT_COOKIE_CONSENT = {
  * Set, get, and delete cookies.
  *
  *   Setting a cookie:
- *   Cookie('hobnob', 'tasty', { days: 30 })
+ *   manageCookie('hobnob', 'tasty', { days: 30 })
  *
  *   Reading a cookie:
- *   Cookie('hobnob')
+ *   manageCookie('hobnob')
  *
  *   Deleting a cookie:
- *   Cookie('hobnob', null)
+ *   manageCookie('hobnob', null)
  *
- * @param {string} name - Cookie name
- * @param {string | false | null} [value] - Cookie value
- * @param {{ days?: number }} [options] - Cookie options
- * @returns {string | null | undefined} - Returns value when setting or deleting
+ * @param {string} name - manageCookie name
+ * @param {string | false | null} [value] - manageCookie value
+ * @param {{ days?: number }} [options={}] - manageCookie options
+ * @returns {string | null | undefined} - Returns value when setting, getting, or deleting
  */
-export function Cookie(name, value, options) {
-  if (typeof value !== 'undefined') {
-    if (value === false || value === null) {
-      deleteCookie(name)
-    } else {
-      // Default expiry date of 30 days
-      if (typeof options === 'undefined') {
-        options = { days: 30 }
-      }
-      setCookie(name, value, options)
-    }
-  } else {
-    return getCookie(name)
+export function manageCookie(name, value, options = {}) {
+  // Check the number of arguments to determine the operation
+  if (arguments.length === 1) {
+    // Get operation
+    return getCookie(name) // Return the cookie value
   }
+
+  if (value === false || value === null) {
+    // Delete operation
+    return deleteCookie(name) // Return result of deleteCookie
+  }
+
+  // Default expiry date of 30 days if options are not provided
+  if (!options.days) {
+    options.days = 30
+  }
+
+  // Set operation
+  return setCookie(name, value, options) // Return result of setCookie
 }
 
 /**
@@ -91,15 +98,16 @@ export function getConsentCookie() {
 
   if (consentCookie) {
     try {
-      consentCookieObj = JSON.parse(consentCookie)
+      consentCookieObj = JSON.parse(consentCookie) // Attempt to parse the consent cookie
     } catch (error) {
-      return null
+      logger.error('Failed to parse consent cookie', error) // Log the error using logger.error
+      return null // Return null if parsing fails
     }
   } else {
-    return null
+    return null // Return null if no consent cookie exists
   }
 
-  return consentCookieObj
+  return consentCookieObj // Return the parsed consent cookie object
 }
 
 /**
@@ -153,44 +161,34 @@ export function setConsentCookie(options) {
  * Deletes any cookies the user has not consented to.
  */
 export function resetCookies() {
-  const options =
-    getConsentCookie() ||
-    // If no preferences or old version use the default
-    JSON.parse(JSON.stringify(DEFAULT_COOKIE_CONSENT))
+  try {
+    const options =
+      getConsentCookie() || JSON.parse(JSON.stringify(DEFAULT_COOKIE_CONSENT)) // Use default if no preferences
 
-  for (const cookieType in options) {
-    if (cookieType === 'version') {
-      continue
+    for (const cookieType in options) {
+      if (cookieType === 'version' || cookieType === 'essential') {
+        continue // Skip version and essential cookies
+      }
+
+      if (cookieType === 'analytics' && options[cookieType]) {
+        window[`ga-disable-UA-${TRACKING_PREVIEW_ID}`] = false
+        window[`ga-disable-UA-${TRACKING_LIVE_ID}`] = false
+        Analytics() // Enable GA if allowed
+        removeUACookies() // Remove UA cookies
+      } else {
+        window[`ga-disable-UA-${TRACKING_PREVIEW_ID}`] = true
+        window[`ga-disable-UA-${TRACKING_LIVE_ID}`] = true
+      }
+
+      if (!options[cookieType]) {
+        const cookiesInCategory = COOKIE_CATEGORIES[cookieType]
+        cookiesInCategory.forEach((cookie) => {
+          manageCookie(cookie, null) // Delete cookie
+        })
+      }
     }
-
-    // Essential cookies cannot be deselected, ignore this cookie type
-    if (cookieType === 'essential') {
-      continue
-    }
-
-    // Initialise analytics if allowed
-    if (cookieType === 'analytics' && options[cookieType]) {
-      // Enable GA if allowed
-      window[`ga-disable-UA-${TRACKING_PREVIEW_ID}`] = false
-      window[`ga-disable-UA-${TRACKING_LIVE_ID}`] = false
-      Analytics()
-      // Unset UA cookies if they've been set by GTM
-      removeUACookies()
-    } else {
-      // Disable GA if not allowed
-      window[`ga-disable-UA-${TRACKING_PREVIEW_ID}`] = true
-      window[`ga-disable-UA-${TRACKING_LIVE_ID}`] = true
-    }
-
-    if (!options[cookieType]) {
-      // Fetch the cookies in that category
-      const cookiesInCategory = COOKIE_CATEGORIES[cookieType]
-
-      cookiesInCategory.forEach((cookie) => {
-        // Delete cookie
-        Cookie(cookie, null)
-      })
-    }
+  } catch (error) {
+    logger.error('Failed to reset cookies', error) // Log the error using logger
   }
 }
 
@@ -209,38 +207,35 @@ export function removeUACookies() {
     '_gat_UA-26179049-17',
     '_gat_UA-116229859-1'
   ]) {
-    Cookie(UACookie, null)
+    manageCookie(UACookie, null)
   }
 }
 
 /**
  * Check if user allows cookie category
  *
- * @param {string} cookieCategory - Cookie type
+ * @param {string} cookieCategory - manageCookie type
  * @param {ConsentPreferences} cookiePreferences - Consent preferences
- * @returns {string | boolean} Cookie type value
+ * @returns {string | boolean} manageCookie type value
  */
 function userAllowsCookieCategory(cookieCategory, cookiePreferences) {
-  // Essential cookies are always allowed
   if (cookieCategory === 'essential') {
-    return true
+    return true // Essential cookies are always allowed
   }
 
-  // Sometimes cookiePreferences is malformed in some of the tests, so we need to handle these
   try {
-    return cookiePreferences[cookieCategory]
+    return !!cookiePreferences[cookieCategory] // Return true if allowed
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error)
-    return false
+    logger.error(`Failed to check cookie category: ${cookieCategory}`, error) // Log the error using logger.error
+    return false // Return false if malformed
   }
 }
 
 /**
  * Check if user allows cookie
  *
- * @param {string} cookieName - Cookie name
- * @returns {string | boolean} Cookie type value
+ * @param {string} cookieName - manageCookie name
+ * @returns {string | boolean} manageCookie type value
  */
 function userAllowsCookie(cookieName) {
   // Always allow setting the consent cookie
@@ -257,10 +252,12 @@ function userAllowsCookie(cookieName) {
   }
 
   for (const category in COOKIE_CATEGORIES) {
-    const cookiesInCategory = COOKIE_CATEGORIES[category]
+    if (Object.hasOwn(COOKIE_CATEGORIES, category)) { // Restrict loop to own properties
+      const cookiesInCategory = COOKIE_CATEGORIES[category]
 
-    if (cookiesInCategory.indexOf(cookieName) !== '-1') {
-      return userAllowsCookieCategory(category, cookiePreferences)
+      if (cookiesInCategory.indexOf(cookieName) !== -1) {
+        return userAllowsCookieCategory(category, cookiePreferences)
+      }
     }
   }
 
@@ -271,8 +268,8 @@ function userAllowsCookie(cookieName) {
 /**
  * Get cookie by name
  *
- * @param {string} name - Cookie name
- * @returns {string | null} Cookie value
+ * @param {string} name - manageCookie name
+ * @returns {string | null} manageCookie value
  */
 function getCookie(name) {
   const nameEQ = `${name}=`
@@ -282,7 +279,7 @@ function getCookie(name) {
     while (cookie.charAt(0) === ' ') {
       cookie = cookie.substring(1, cookie.length)
     }
-    if (cookie.indexOf(nameEQ) === 0) {
+    if (cookie.startsWith(nameEQ)) { // Use String#startsWith instead of String#indexOf
       return decodeURIComponent(cookie.substring(nameEQ.length))
     }
   }
@@ -292,42 +289,46 @@ function getCookie(name) {
 /**
  * Set cookie by name, value and options
  *
- * @param {string} name - Cookie name
- * @param {string} value - Cookie value
- * @param {{ days?: number }} [options] - Cookie options
+ * @param {string} name - manageCookie name
+ * @param {string} value - manageCookie value
+ * @param {{ days?: number }} [options] - manageCookie options
  */
 function setCookie(name, value, options) {
-  if (userAllowsCookie(name)) {
-    if (typeof options === 'undefined') {
-      options = {}
+  try {
+    if (userAllowsCookie(name)) {
+      options = options || {}
+      let cookieString = `${name}=${value}; path=/`
+      if (options.days) {
+        const date = new Date()
+        date.setTime(date.getTime() + options.days * 24 * 60 * 60 * 1000)
+        cookieString += `; expires=${date.toUTCString()}`
+      }
+      if (document.location.protocol === 'https:') {
+        cookieString += '; Secure'
+      }
+      document.cookie = cookieString // Set the cookie
     }
-    let cookieString = `${name}=${value}; path=/`
-    if (options.days) {
-      const date = new Date()
-      date.setTime(date.getTime() + options.days * 24 * 60 * 60 * 1000)
-      cookieString = `${cookieString}; expires=${date.toUTCString()}`
-    }
-    if (document.location.protocol === 'https:') {
-      cookieString = `${cookieString}; Secure`
-    }
-    document.cookie = cookieString
+  } catch (error) {
+    logger.error(`Failed to set cookie: ${name}`, error) // Log the error using logger.error
   }
 }
 
 /**
- * Delete cookie by name
+ * Delete cookie by name.
  *
- * @param {string} name - Cookie name
+ * @param {string} name - manageCookie name
+ * @returns {void}
  */
 function deleteCookie(name) {
-  if (Cookie(name)) {
-    // Cookies need to be deleted in the same level of specificity in which they were set
-    // If a cookie was set with a specified domain, it needs to be specified when deleted
-    // If a cookie wasn't set with the domain attribute, it shouldn't be there when deleted
-    // You can't tell if a cookie was set with a domain attribute or not, so try both options
-    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`
-    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;domain=${window.location.hostname};path=/`
-    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;domain=.${window.location.hostname};path=/`
+  try {
+    if (manageCookie(name)) {
+      const domain = window.location.hostname
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;domain=${domain};path=/`
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;domain=.${domain};path=/`
+    }
+  } catch (error) {
+    logger.error(`Failed to delete cookie: ${name}`, error) // Log the error using logger
   }
 }
 

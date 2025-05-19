@@ -1,7 +1,12 @@
 import convict from 'convict'
 import path from 'path'
 
-const oneWeek = 7 * 24 * 60 * 60 * 1000
+// Define constants for configuration values
+const DEFAULT_PORT = 3000 // ''
+
+// Define a constant for one week in milliseconds
+const DAYS_IN_A_WEEK = 7 // ''
+const ONE_WEEK_IN_MILLISECONDS = DAYS_IN_A_WEEK * 24 * 60 * 60 * 1000 // ''
 
 const config = convict({
   env: {
@@ -13,13 +18,13 @@ const config = convict({
   port: {
     doc: 'The port to bind.',
     format: 'port',
-    default: 3000,
+    default: DEFAULT_PORT,
     env: 'PORT'
   },
   staticCacheTimeout: {
     doc: 'Static cache timeout in milliseconds',
     format: Number,
-    default: oneWeek,
+    default: ONE_WEEK_IN_MILLISECONDS,
     env: 'STATIC_CACHE_TIMEOUT'
   },
   serviceName: {

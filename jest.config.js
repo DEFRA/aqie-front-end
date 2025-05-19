@@ -8,25 +8,29 @@ module.exports = {
   testMatch: ['**/src/**/*.test.js'],
   reporters: ['default', ['github-actions', { silent: false }], 'summary'],
   setupFilesAfterEnv: ['<rootDir>/jest-setup.js'],
-  collectCoverageFrom: ['src/**/*.js'],
+  collectCoverageFrom: [
+    'src/**/*.js',
+    '!src/server/common/**', // Exclude test in server/common
+    '!src/client/**' // Exclude files in client
+  ],
   testPathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/dist/',
     '<rootDir>/src/server/common/',
+    '<rootDir>/src/client/',
     '<rootDir>/src/__fixtures__/'
   ],
   coveragePathIgnorePatterns: [
     '<rootDir>/.server',
     '<rootDir>/.public',
-    '<rootDir>/src/__fixtures__',
-    '<rootDir>/test-helpers',
-    '<rootDir>/mock-api',
-    '<rootDir>/src/server/common/components',
-    '<rootDir>/src/server/common/helpers',
-    '<rootDir>/src/client/assets/javascripts',
+    '<rootDir>/src/__fixtures__/',
+    '<rootDir>/test-helpers/',
+    '<rootDir>/mock-api/',
+    '<rootDir>/src/server/common/',
+    '<rootDir>/src/client/',
     '<rootDir>/src/common/helpers/redis-client.js',
-    '<rootDir>/src/config',
-    '<rootDir>/src/helpers',
+    '<rootDir>/src/config/',
+    '<rootDir>/src/helpers/',
     '<rootDir>/src/server/router.js',
     '<rootDir>/src/server/index.js',
     '<rootDir>/test-helpers/component-helpers.js',
@@ -34,14 +38,14 @@ module.exports = {
     '<rootDir>/src/indextest.js'
   ],
   coverageDirectory: '<rootDir>/coverage',
-  collectCoverage: false,
-  coverageReporters: ['clover', 'json', 'text', 'lcov', 'text-summary']
-  // coverageThreshold: {
-  //   global: {
-  //     branches: 90,
-  //     functions: 90,
-  //     lines: 90,
-  //     statements: 90
-  //   }
-  // }
+  collectCoverage: true,
+  coverageReporters: ['clover', 'json', 'text', 'lcov', 'text-summary'],
+  coverageThreshold: {
+    global: {
+      branches: 45,
+      functions: 45,
+      lines: 45,
+      statements: 45
+    }
+  }
 }

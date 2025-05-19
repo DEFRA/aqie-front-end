@@ -1,6 +1,6 @@
 // @ts-nocheck
 export default function loadAnalytics() {
-    if (!window.ga || !window.ga.loaded) {
+    if (!window.ga?.loaded) {
       window.dataLayer = window.dataLayer || []
       if(localStorage.getItem('consentMode') === null){
         window.dataLayer.push('consent', 'default', {
@@ -37,26 +37,26 @@ export default function loadAnalytics() {
         document.body.appendChild(k)
         const urlParams = new URLSearchParams(window.location.search);
         const userId = urlParams.get('userId');
-        const utm_source = urlParams.get('utm_source');
-        const utm_campaign = urlParams.get('utm_campaign');
-        const utm_medium = urlParams.get('utm_medium');
+        const utmSource = urlParams.get('utm_source'); // Renamed variable
+        const utmCampaign = urlParams.get('utm_campaign'); // Renamed variable
+        const utmMedium = urlParams.get('utm_medium'); // Renamed variable
         window.dataLayer.push('js', new Date())
-        window.dataLayer.push('config', 'G-8CMZBTDQBC',{
-          'user_id': utm_source
+        window.dataLayer.push('config', 'G-8CMZBTDQBC', {
+          'user_id': utmSource // Updated reference
         })
         window.dataLayer.push({
           'event': 'airQualityData',
           'userSeg': userId,
           'login_status': 'logged in',
-          'utm_source': utm_source,
-          utm_medium: utm_medium,
-          utm_campaign: utm_campaign
+          'utm_source': utmSource, // Updated reference
+          utm_medium: utmMedium, // Updated reference
+          utm_campaign: utmCampaign // Updated reference
         })
         ///
         const f = d.getElementsByTagName(s)[0],
-        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''
+        j = d.createElement(s), dl = l !== 'dataLayer' ? '&l=' + l : ''
         j.async = true;
-        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl
+        j.src = `https://www.googletagmanager.com/gtm.js?id=${i}${dl}`
         f.parentNode.insertBefore(j, f)
       })(window, document, 'script', 'dataLayer', 'GTM-PBFV8FNC')
     }
