@@ -16,11 +16,7 @@ class CookieBanner {
    */
   constructor($module) {
     try {
-      if (
-        !($module instanceof HTMLElement) || // Validate $module
-        !document.body.classList.contains('govuk-frontend-supported') || // Check GOV.UK frontend support
-        this.onCookiesPage() // Avoid initializing on the cookies page
-      ) {
+      if (!this.isValidModule($module)) {
         this.isValid = false // Set a flag to indicate invalid initialization
         return // Exit early without returning a value
       }
@@ -28,43 +24,71 @@ class CookieBanner {
       this.isValid = true // Set a flag to indicate valid initialization
       this.$cookieBanner = $module
 
-      const $acceptButton = $module.querySelector(cookieBannerAcceptSelector)
-      const $rejectButton = $module.querySelector(cookieBannerRejectSelector)
-      const $cookieMessage = $module.querySelector(cookieMessageSelector)
-      const $cookieConfirmationAccept = $module.querySelector(
-        cookieConfirmationAcceptSelector
-      )
-      const $cookieConfirmationReject = $module.querySelector(
-        cookieConfirmationRejectSelector
-      )
-      const $cookieBannerHideButtons = $module.querySelectorAll(
-        cookieBannerHideButtonSelector
-      )
-
-      if (
-        !($acceptButton instanceof HTMLButtonElement) ||
-        !($rejectButton instanceof HTMLButtonElement) ||
-        !($cookieMessage instanceof HTMLElement) ||
-        !($cookieConfirmationAccept instanceof HTMLElement) ||
-        !($cookieConfirmationReject instanceof HTMLElement) ||
-        !$cookieBannerHideButtons.length
-      ) {
+      if (!this.initializeElements($module)) {
         this.isValid = false // Set the flag to invalid
         return // Exit early without returning a value
       }
-
-      this.$acceptButton = $acceptButton
-      this.$rejectButton = $rejectButton
-      this.$cookieMessage = $cookieMessage
-      this.$cookieConfirmationAccept = $cookieConfirmationAccept
-      this.$cookieConfirmationReject = $cookieConfirmationReject
-      this.$cookieBannerHideButtons = $cookieBannerHideButtons
 
       this.initializeBanner()
     } catch (error) {
       console.error('Failed to initialize CookieBanner:', error) // eslint-disable-line no-console
       this.isValid = false // Set the flag to invalid in case of an error
     }
+  }
+
+  /**
+   * Validate the module element
+   *
+   * @param {Element} $module - HTML element
+   * @returns {boolean} Returns true if the module is valid
+   */
+  isValidModule($module) {
+    return (
+      $module instanceof HTMLElement && // Validate $module
+      document.body.classList.contains('govuk-frontend-supported') && // Check GOV.UK frontend support
+      !this.onCookiesPage() // Avoid initializing on the cookies page
+    )
+  }
+
+  /**
+   * Initialize elements in the cookie banner
+   *
+   * @param {Element} $module - HTML element
+   * @returns {boolean} Returns true if all elements are initialized successfully
+   */
+  initializeElements($module) {
+    const $acceptButton = $module.querySelector(cookieBannerAcceptSelector)
+    const $rejectButton = $module.querySelector(cookieBannerRejectSelector)
+    const $cookieMessage = $module.querySelector(cookieMessageSelector)
+    const $cookieConfirmationAccept = $module.querySelector(
+      cookieConfirmationAcceptSelector
+    )
+    const $cookieConfirmationReject = $module.querySelector(
+      cookieConfirmationRejectSelector
+    )
+    const $cookieBannerHideButtons = $module.querySelectorAll(
+      cookieBannerHideButtonSelector
+    )
+
+    if (
+      !($acceptButton instanceof HTMLButtonElement) ||
+      !($rejectButton instanceof HTMLButtonElement) ||
+      !($cookieMessage instanceof HTMLElement) ||
+      !($cookieConfirmationAccept instanceof HTMLElement) ||
+      !($cookieConfirmationReject instanceof HTMLElement) ||
+      !$cookieBannerHideButtons.length
+    ) {
+      return false // Return false if any element is invalid
+    }
+
+    this.$acceptButton = $acceptButton
+    this.$rejectButton = $rejectButton
+    this.$cookieMessage = $cookieMessage
+    this.$cookieConfirmationAccept = $cookieConfirmationAccept
+    this.$cookieConfirmationReject = $cookieConfirmationReject
+    this.$cookieBannerHideButtons = $cookieBannerHideButtons
+
+    return true // Return true if all elements are valid
   }
 
   /**
