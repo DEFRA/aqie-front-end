@@ -193,18 +193,18 @@ function isOnlyWords(str) {
 }
 
 function compareLastElements(previousUrl, currentUrl) {
-  // Define a function to compare the last elements of two URLs
-  const getLastElement = (url) => {
+  // Define a function to compare the last two elements of two URLs
+  const getLastTwoElements = (url) => {
     if (!url) return false // Return false if the URL is not provided
     const cleanUrl = url.split('?')[0] // Remove any text after '?'
     const parts = cleanUrl?.split('/') // Split the URL by '/'
-    return parts[parts.length - 1] // Return the last element of the URL
+    return parts.slice(-2).join('/') // Return the last two elements joined by '/'
   }
 
-  const lastElementPrevious = getLastElement(previousUrl) // Get the last element of the previous URL
-  const lastElementCurrent = getLastElement(currentUrl) // Get the last element of the current URL
+  const lastTwoElementsPrevious = getLastTwoElements(previousUrl) // Get the last two elements of the previous URL
+  const lastTwoElementsCurrent = getLastTwoElements(currentUrl) // Get the last two elements of the current URL
 
-  return lastElementPrevious === lastElementCurrent // Compare the last elements and return true if they are the same, otherwise false
+  return lastTwoElementsPrevious === lastTwoElementsCurrent // Compare the last two elements and return true if they are the same, otherwise false
 }
 
 export {
