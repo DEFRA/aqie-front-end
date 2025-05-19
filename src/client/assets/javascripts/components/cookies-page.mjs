@@ -98,34 +98,33 @@ class CookiesPage {
     return this.showSuccessNotification() // Return the result of showing the notification
   }
 
-  /**
+/**
    * Show user preference
    *
    * @param {HTMLFieldSetElement} $cookieFormFieldset - Cookie form fieldset
    * @param {import('./cookie-functions.mjs').ConsentPreferences | null} preferences - Consent preferences
    * @returns {HTMLInputElement | null} The updated radio button or null
    */
-  showUserPreference($cookieFormFieldset, preferences) {
-    const cookieType = this.getCookieType($cookieFormFieldset)
-    let preference = false
-
-    if (cookieType && preferences && preferences[cookieType] !== undefined) {
-      preference = preferences[cookieType]
-    }
-
-    const radioValue = preference ? 'yes' : 'no'
-
-    /** @satisfies {HTMLInputElement | null} */
-    const $radio = $cookieFormFieldset.querySelector(
-      `input[name="cookies[${cookieType}]"][value=${radioValue}]`
-    )
-    if (!$radio) {
-      return null // Exit early if the radio button is not found
-    }
-
-    $radio.checked = true
-    return $radio // Return the updated radio button
+showUserPreference($cookieFormFieldset, preferences) {
+  const cookieType = this.getCookieType($cookieFormFieldset)
+  if (!cookieType) {
+    return null // Exit early if the cookie type is not found
   }
+
+  const preference = preferences?.[cookieType] ?? false // Use optional chaining and nullish coalescing
+  const radioValue = preference ? 'yes' : 'no'
+
+  /** @satisfies {HTMLInputElement | null} */
+  const $radio = $cookieFormFieldset.querySelector(
+    `input[name="cookies[${cookieType}]"][value=${radioValue}]`
+  )
+  if (!$radio) {
+    return null // Exit early if the radio button is not found
+  }
+
+  $radio.checked = true
+  return $radio // Return the updated radio button
+}
 
   /**
    * Show success notification

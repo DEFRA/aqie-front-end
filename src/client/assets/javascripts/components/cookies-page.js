@@ -100,12 +100,16 @@ class CookiesPage {
    *
    * @param {HTMLFieldSetElement} $cookieFormFieldset - Cookie form fieldset
    * @param {import('./cookie-functions.js').ConsentPreferences | null} preferences - Consent preferences
+   * @returns {HTMLInputElement | null} The updated radio button or null
    */
   showUserPreference($cookieFormFieldset, preferences) {
     const cookieType = this.getCookieType($cookieFormFieldset)
-    let preference = false
+    if (!cookieType) {
+      return null // Exit early if the cookie type is not found
+    }
 
-    if (cookieType && preferences && preferences[cookieType] !== undefined) {
+    let preference = false
+    if (preferences && preferences[cookieType] !== undefined) {
       preference = preferences[cookieType]
     }
 
@@ -116,7 +120,7 @@ class CookiesPage {
       `input[name="cookies[${cookieType}]"][value=${radioValue}]`
     )
     if (!$radio) {
-      return // Exit early if the radio button is not found
+      return null // Exit early if the radio button is not found
     }
 
     $radio.checked = true
