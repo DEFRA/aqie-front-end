@@ -1,9 +1,5 @@
 import { getConsentCookie, setConsentCookie } from './cookie-functions.mjs'
 
-/**
- * Website cookies page
- */
-class CookiesPage {
   /**
    * @param {Element} $module - HTML element
    */
@@ -62,8 +58,6 @@ class CookiesPage {
     this.$cookieForm.addEventListener('submit', (event) =>
       this.savePreferences(event)
     )
-
-    return this // Return the instance for chaining or validation
   }
 
   /**
