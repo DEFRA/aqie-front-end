@@ -20,6 +20,7 @@ export const AIR_QUALITY_THRESHOLD_4 = 7
 export const REDIRECT_PATH_EN = '/search-location?lang=en'
 export const REDIRECT_PATH_CY = 'chwilio-lleoliad/cy?lang=cy'
 export const POSTCODE_SPACE_INDEX = 3
+export const LOCATION_NOT_FOUND_URL = '/location-not-found/'
 export const SYMBOLS_ARRAY = [
   '%',
   '$',

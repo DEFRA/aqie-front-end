@@ -9,7 +9,8 @@ import {
 import {
   LANG_EN,
   LOCATION_TYPE_UK,
-  LOCATION_TYPE_NI
+  LOCATION_TYPE_NI,
+  LOCATION_NOT_FOUND_URL
 } from '~/src/server/data/constants'
 import { handleUKLocationType } from '~/src/server/locations/helpers/extra-middleware-helpers'
 import { handleErrorInputAndRedirect } from '~/src/server/locations/helpers/error-input-and-redirect'
@@ -97,14 +98,6 @@ const searchMiddleware = async (request, h) => {
       request.yar.clear('searchTermsSaved')
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
-    // const { getNIPlaces } = await fetchData(request, h, {
-    //   locationType,
-    //   userLocation,
-    //   locationNameOrPostcode,
-    //   lang,
-    //   searchTerms,
-    //   secondSearchTerm
-    // })
     if (
       !getNIPlaces?.results ||
       getNIPlaces?.results.length === 0 ||
@@ -112,7 +105,7 @@ const searchMiddleware = async (request, h) => {
     ) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
-      return h.redirect('/location-not-found/?lang=en').takeover()
+      return h.redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`).takeover()()
     }
     if (
       !getNIPlaces?.results ||
@@ -121,7 +114,7 @@ const searchMiddleware = async (request, h) => {
     ) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
-      return h.redirect('/location-not-found/?lang=en').takeover()
+      return h.redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`).takeover()()
     }
     let title = ''
     let headerTitle = ''
@@ -152,7 +145,7 @@ const searchMiddleware = async (request, h) => {
   } else {
     // handle other location types
     request.yar.clear('searchTermsSaved')
-    return h.redirect('/location-not-found/?lang=en').takeover()
+    return h.redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`).takeover()
   }
 }
 
