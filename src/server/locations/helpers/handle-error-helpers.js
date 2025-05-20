@@ -24,9 +24,11 @@ import {
 /**
  * '' Handles the case where search terms are not provided.
  */
+const REFERER_PATH_INDEX = 3 // '' Index for the path segment in the referer header
+
 const getRefererPath = (request) => {
   // '' Extracts the path segment from the referer header.
-  const tempString = request?.headers?.referer?.split('/')[3]
+  const tempString = request?.headers?.referer?.split('/')[REFERER_PATH_INDEX]
   return tempString?.split('?')[0]
 }
 
