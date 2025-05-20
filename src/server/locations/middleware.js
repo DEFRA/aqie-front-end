@@ -7,10 +7,8 @@ import {
   getLanguageDates
 } from '~/src/server/locations/helpers/middleware-helpers'
 import { LANG_EN, LOCATION_TYPE_UK } from '~/src/server/data/constants'
-import {
-  handleErrorInputAndRedirect,
-  handleUKLocationType
-} from '~/src/server/locations/helpers/extra-middleware-helpers'
+import { handleUKLocationType } from '~/src/server/locations/helpers/extra-middleware-helpers'
+import { handleErrorInputAndRedirect } from '~/src/server/locations/helpers/error-input-and-redirect'
 import { getMonth } from '~/src/server/locations/helpers/location-type-util'
 import * as airQualityData from '~/src/server/data/en/air-quality.js'
 
