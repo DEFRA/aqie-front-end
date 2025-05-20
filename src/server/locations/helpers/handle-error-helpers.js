@@ -22,7 +22,7 @@ import {
   AIR_QUALITY_THRESHOLD_4
 } from '~/src/server/data/constants'
 /**
- * '' Handles the case where search terms are not provided.
+ * Handles the case where search terms are not provided.
  */
 const REFERER_PATH_INDEX = 3 // '' Index for the path segment in the referer header
 
