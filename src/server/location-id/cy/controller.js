@@ -141,8 +141,8 @@ const getLocationDetailsController = {
           welshMonth: calendarWelsh[getMonth],
           summaryDate:
             lang === LANG_CY
-              ? locationData.welshDate ?? locationData.summaryDate
-              : locationData.englishDate ?? locationData.summaryDate,
+              ? (locationData.welshDate ?? locationData.summaryDate)
+              : (locationData.englishDate ?? locationData.summaryDate),
           dailySummaryTexts: welsh.dailySummaryTexts,
           serviceName: multipleLocations.serviceName,
           lang
