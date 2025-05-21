@@ -100,24 +100,61 @@
   {% for key, pollutantDetail in pollutantTypes %}
    {% set pollutant = site.pollutants[key] %}
     {% if pollutant %}
-      {% set pollutantTime = pollutant.time.hour %}
-      {% set pollutantDay = pollutant.time.day %}
-      {% set pollutantMonth = pollutant.time.month %}
-      {% set pollutantYear = pollutant.time.year %}
-        {% set row = [
-          { 
-              html: "<a class='govuk-!-margin-bottom-1' href='" + pollutantDetail.href + "'>" + pollutantDetail.title + "</a><span class='govuk-caption-s govuk-!-margin-bottom-1'>" + daqi.pollutantTable.e + ' ' + pollutantDetail.low_range + "</span>",
-              classes: "defra-aq-levels-table__cell--pollutant" 
-          },
-          { 
-              html: (pollutant.value) +  " <span class='govuk-!-font-size-16 govuk-!-font-weight-regular'>μg/m<sup>3</sup></span>",
-              classes: "defra-aq-levels-table__cell--reading" 
-          },
-          { 
-              html: "<strong class='daqi-tag daqi-tag--" + (pollutant.daqi if pollutant.daqi else "default-aqi-value") + "'>" + pollutant.band + "</strong>",
-              classes: "defra-aq-levels-table__cell--level" 
-          }
-        ] %}
+      {# Defensive assignments for pollutant time fields #}
+      {% if pollutant.time and pollutant.time.hour is defined %}
+        {% set pollutantTime = pollutant.time.hour %}
+      {% else %}
+        {% set pollutantTime = '' %}
+      {% endif %}
+      {% if pollutant.time and pollutant.time.day is defined %}
+        {% set pollutantDay = pollutant.time.day %}
+      {% else %}
+        {% set pollutantDay = '' %}
+      {% endif %}
+      {% if pollutant.time and pollutant.time.month is defined %}
+        {% set pollutantMonth = pollutant.time.month %}
+      {% else %}
+        {% set pollutantMonth = '' %}
+      {% endif %}
+      {% if pollutant.time and pollutant.time.year is defined %}
+        {% set pollutantYear = pollutant.time.year %}
+      {% else %}
+        {% set pollutantYear = '' %}
+      {% endif %}
+      {# Defensive assignments for pollutant values #}
+      {% set pollutantHref = pollutantDetail.href or '#' %}
+      {% set pollutantTitle = pollutantDetail.title or '' %}
+      {% set pollutantLowRange = pollutantDetail.low_range or '' %}
+      {% if pollutant.value is defined %}
+        {% set pollutantValue = pollutant.value %}
+      {% else %}
+        {% set pollutantValue = '' %}
+      {% endif %}
+      {% if pollutant.daqi is defined %}
+        {% set pollutantDaqi = pollutant.daqi %}
+      {% else %}
+        {% set pollutantDaqi = 'default-aqi-value' %}
+      {% endif %}
+      {% if pollutant.band is defined %}
+        {% set pollutantBand = pollutant.band %}
+      {% else %}
+        {% set pollutantBand = '' %}
+      {% endif %}
+      {% set pollutantTableE = daqi.pollutantTable.e or '' %}
+      {% set row = [
+        {
+          html: "<a class='govuk-!-margin-bottom-1' href='" + pollutantHref + "'>" + pollutantTitle + "</a><span class='govuk-caption-s govuk-!-margin-bottom-1'>" + pollutantTableE + ' ' + pollutantLowRange + "</span>",
+          classes: "align-middle"
+        },
+        {
+          html: pollutantValue + " <span class='govuk-!-font-size-16 govuk-!-font-weight-regular'>μg/m<sup>3</sup></span>",
+          classes: "align-middle"
+        },
+        {
+          html: "<strong class='daqi-tag daqi-tag--" + pollutantDaqi + "'>" + pollutantBand + "</strong>",
+          classes: "align-middle"
+        }
+      ] %}
       {% set _ = rows.push(row) %}
     {% endif %}
   {% endfor %}
@@ -125,14 +162,13 @@
   {% set tableHtml %}
     <h3 class="govuk-heading-s govuk-!-margin-bottom-1 pollutant-table">{{ site.name }}</h3>
     <p>{{ siteTypeDescriptions[site.areaType] }}</p>
-    {{ aqLevelsTable({
-        id: loop.index,
+    {{ govukTable({
         classes: "govuk-!-margin-bottom-2",
         firstCellIsHeader: false,
         head: [
-          { text: daqi.pollutantTable.b, classes: "defra-aq-levels-table__cell--pollutant" },
-          { html: daqi.pollutantTable.c, classes: "defra-aq-levels-table__cell--reading" },
-          { html: daqi.pollutantTable.d, classes: "defra-aq-levels-table__cell--level" }
+          { text: daqi.pollutantTable.b },
+          { html: daqi.pollutantTable.c },
+          { html: daqi.pollutantTable.d }
         ],
         rows: rows
     }) }}
@@ -161,44 +197,83 @@
     items: tabs
   }) }}
 {% elif monitoringSites|length == 1 %}
-  {# Render only the aqLevelsTable for the single site #}
+  {# Render only the govukTable for the single site #}
   {% set site = monitoringSites[0] %}
   {% set rows = [] %}
-
   {# Populate rows with pollutant data #}
   {% for key, pollutantDetail in pollutantTypes %}
     {% set pollutant = site.pollutants[key] %}
     {% if pollutant %}
+      {# Defensive assignments for pollutant time fields #}
+      {% if pollutant.time and pollutant.time.hour is defined %}
+        {% set pollutantTime = pollutant.time.hour %}
+      {% else %}
+        {% set pollutantTime = '' %}
+      {% endif %}
+      {% if pollutant.time and pollutant.time.day is defined %}
+        {% set pollutantDay = pollutant.time.day %}
+      {% else %}
+        {% set pollutantDay = '' %}
+      {% endif %}
+      {% if pollutant.time and pollutant.time.month is defined %}
+        {% set pollutantMonth = pollutant.time.month %}
+      {% else %}
+        {% set pollutantMonth = '' %}
+      {% endif %}
+      {% if pollutant.time and pollutant.time.year is defined %}
+        {% set pollutantYear = pollutant.time.year %}
+      {% else %}
+        {% set pollutantYear = '' %}
+      {% endif %}
+      {# Defensive assignments for pollutant values #}
+      {% set pollutantHref = pollutantDetail.href or '#' %}
+      {% set pollutantTitle = pollutantDetail.title or '' %}
+      {% set pollutantLowRange = pollutantDetail.low_range or '' %}
+      {% if pollutant.value is defined %}
+        {% set pollutantValue = pollutant.value %}
+      {% else %}
+        {% set pollutantValue = '' %}
+      {% endif %}
+      {% if pollutant.daqi is defined %}
+        {% set pollutantDaqi = pollutant.daqi %}
+      {% else %}
+        {% set pollutantDaqi = 'default-aqi-value' %}
+      {% endif %}
+      {% if pollutant.band is defined %}
+        {% set pollutantBand = pollutant.band %}
+      {% else %}
+        {% set pollutantBand = '' %}
+      {% endif %}
+      {% set pollutantTableE = daqi.pollutantTable.e or '' %}
       {% set row = [
-        { 
-          html: "<a class='govuk-!-margin-bottom-1' href='" + pollutantDetail.href + "'>" + pollutantDetail.title + "</a><span class='govuk-caption-s govuk-!-margin-bottom-1'>" + daqi.pollutantTable.e + ' ' + pollutantDetail.low_range + "</span>",
-          classes: "defra-aq-levels-table__cell--pollutant" 
+        {
+          html: "<a class='govuk-!-margin-bottom-1' href='" + pollutantHref + "'>" + pollutantTitle + "</a><span class='govuk-caption-s govuk-!-margin-bottom-1'>" + pollutantTableE + ' ' + pollutantLowRange + "</span>",
+          classes: "align-middle"
         },
-        { 
-          html: (pollutant.value) + " <span class='govuk-!-font-size-16 govuk-!-font-weight-regular'>μg/m<sup>3</sup></span>",
-          classes: "defra-aq-levels-table__cell--reading" 
+        {
+          html: pollutantValue + " <span class='govuk-!-font-size-16 govuk-!-font-weight-regular'>μg/m<sup>3</sup></span>",
+          classes: "align-middle"
         },
-        { 
-          html: "<strong class='daqi-tag daqi-tag--" + (pollutant.daqi if pollutant.daqi else "default-aqi-value") + "'>" + pollutant.band + "</strong>",
-          classes: "defra-aq-levels-table__cell--level" 
+        {
+          html: "<strong class='daqi-tag daqi-tag--" + pollutantDaqi + "'>" + pollutantBand + "</strong>",
+          classes: "align-middle"
         }
       ] %}
       {% set _ = rows.push(row) %}
     {% endif %}
   {% endfor %}
 
-  {# Generate the aqLevelsTable for the single site #}
+  {# Generate the govukTable for the single site #}
   <h3 class="govuk-heading-s govuk-!-margin-bottom-1 pollutant-table">{{ site.name }}</h3>
   <p class="govuk-caption-m govuk-!-margin-bottom-3">{{ site.distance }} {{daqi.pollutantTable.a}}</p>
   <p>{{ siteTypeDescriptions[site.areaType] }}</p>
-  {{ aqLevelsTable({
-      id: 1,
+  {{ govukTable({
       classes: "govuk-!-margin-bottom-2",
       firstCellIsHeader: false,
       head: [
-        { text: daqi.pollutantTable.b, classes: "defra-aq-levels-table__cell--pollutant" },
-        { html: daqi.pollutantTable.c, classes: "defra-aq-levels-table__cell--reading" },
-        { html: daqi.pollutantTable.d, classes: "defra-aq-levels-table__cell--level" }
+        { text: daqi.pollutantTable.b },
+        { html: daqi.pollutantTable.c },
+        { html: daqi.pollutantTable.d }
       ],
       rows: rows
   }) }}
