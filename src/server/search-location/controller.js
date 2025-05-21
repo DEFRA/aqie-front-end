@@ -36,6 +36,8 @@ const getSessionData = (request) => {
   if (errors) {
     request.yar.set('errors', null)
     request.yar.set('errorMessage', null)
+  } else {
+    request.yar.set('locationType', '')
   }
 
   return { errors, errorMessage, locationType }
@@ -88,7 +90,7 @@ const prepareViewModel = ({
     },
     locations: searchLocation.searchParams.locations,
     button: searchLocation.button,
-    locationType,
+    locationType: isError ? locationType : '',
     errors: errors?.errors,
     errorMessage: errorMessage?.errorMessage,
     errorMessageRadio: errorMessage?.errorMessage,
@@ -105,6 +107,7 @@ const prepareViewModel = ({
  */
 const searchLocationController = {
   handler: (request, h) => {
+    request.yar.set('locationNameOrPostcode', '')
     const metaSiteUrl = getAirQualitySiteUrl(request)
     const lang = determineLanguage(request)
 

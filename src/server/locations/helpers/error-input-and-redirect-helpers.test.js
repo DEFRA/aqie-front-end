@@ -4,13 +4,9 @@ import {
   handleNIError,
   formatPostcode
 } from '~/src/server/locations/helpers/error-input-and-redirect-helpers'
-import {
-  LOCATION_TYPE_UK,
-  LOCATION_TYPE_NI,
-  LANG_EN,
-  LANG_CY
-} from '~/src/server/data/constants'
+import { LANG_EN, LANG_CY } from '~/src/server/data/constants'
 
+// Mock English and Welsh data
 jest.mock('~/src/server/data/en/en.js', () => ({
   english: {
     searchLocation: {
@@ -63,6 +59,7 @@ jest.mock('~/src/server/data/cy/cy.js', () => ({
 
 describe('error-input-and-redirect-helpers', () => {
   let mockRequest, mockH
+  // ''
 
   beforeEach(() => {
     mockRequest = {
@@ -104,6 +101,7 @@ describe('error-input-and-redirect-helpers', () => {
         ''
       )
       expect(mockH.redirect).toHaveBeenCalledWith('/search-location?lang=en')
+      // ''
     })
 
     it('should set errors and redirect for Welsh language', () => {
@@ -131,6 +129,7 @@ describe('error-input-and-redirect-helpers', () => {
         ''
       )
       expect(mockH.redirect).toHaveBeenCalledWith('chwilio-lleoliad/cy?lang=cy')
+      // ''
     })
   })
 
@@ -155,14 +154,11 @@ describe('error-input-and-redirect-helpers', () => {
         }
       })
       expect(mockRequest.yar.set).toHaveBeenCalledWith(
-        'locationType',
-        LOCATION_TYPE_UK
-      )
-      expect(mockRequest.yar.set).toHaveBeenCalledWith(
         'locationNameOrPostcode',
         'London'
       )
       expect(mockH.redirect).toHaveBeenCalledWith('/search-location?lang=en')
+      // ''
     })
   })
 
@@ -187,14 +183,11 @@ describe('error-input-and-redirect-helpers', () => {
         }
       })
       expect(mockRequest.yar.set).toHaveBeenCalledWith(
-        'locationType',
-        LOCATION_TYPE_NI
-      )
-      expect(mockRequest.yar.set).toHaveBeenCalledWith(
         'locationNameOrPostcode',
         'Belfast'
       )
       expect(mockH.redirect).toHaveBeenCalledWith('chwilio-lleoliad/cy?lang=cy')
+      // ''
     })
   })
 

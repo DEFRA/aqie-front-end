@@ -2,10 +2,12 @@
 import { english } from '~/src/server/data/en/en.js'
 import { searchLocationController } from '~/src/server/search-location/controller'
 import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url.js'
+
 describe('searchLocationController - english', () => {
   let mockRequest
   let mockH
   const mockContent = english
+  // ''
 
   beforeEach(() => {
     mockRequest = {
@@ -16,15 +18,11 @@ describe('searchLocationController - english', () => {
         get: jest.fn()
       }
     }
-    jest.mock('~/src/server/common/helpers/get-site-url', () => ({
-      getAirQualitySiteUrl: jest.fn((request) => {
-        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
-      })
-    }))
     mockH = {
       redirect: jest.fn().mockReturnValue('redirected'),
       view: jest.fn().mockReturnValue('view rendered')
     }
+    jest.clearAllMocks()
   })
 
   it('should redirect to the Welsh version if the language is "cy"', () => {
@@ -45,9 +43,10 @@ describe('searchLocationController - english', () => {
     const result = searchLocationController.handler(mockRequest, mockH)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith('/chwilio-lleoliad/cy?lang=cy')
+    // ''
   })
 
-  it('should redirect to search location index page', () => {
+  it('should render the search location index page for English', () => {
     mockRequest = {
       query: {
         lang: 'en'
@@ -85,15 +84,20 @@ describe('searchLocationController - english', () => {
       },
       locations: mockContent.searchLocation.searchParams.locations,
       button: mockContent.searchLocation.button,
+      locationType: '',
+      errors: undefined,
+      errorMessage: undefined,
+      errorMessageRadio: undefined,
       footerTxt: mockContent.footerTxt,
       phaseBanner: mockContent.phaseBanner,
       backlink: mockContent.backlink,
       cookieBanner: mockContent.cookieBanner,
       lang: mockRequest.query.lang
     })
+    // ''
   })
 
-  it('should redirect by default to search location index page with english version if lang is not cy/en but path is present', () => {
+  it('should default to English if lang is not "cy" or "en"', () => {
     mockRequest = {
       query: {
         lang: 'fr'
@@ -131,27 +135,36 @@ describe('searchLocationController - english', () => {
       },
       locations: mockContent.searchLocation.searchParams.locations,
       button: mockContent.searchLocation.button,
+      locationType: '',
+      errors: undefined,
+      errorMessage: undefined,
+      errorMessageRadio: undefined,
       footerTxt: mockContent.footerTxt,
       phaseBanner: mockContent.phaseBanner,
       backlink: mockContent.backlink,
       cookieBanner: mockContent.cookieBanner,
       lang: 'en'
     })
+    // ''
   })
 
-  it('should redirect to search location index page with error', () => {
+  it('should render the search location index page with errors', () => {
     mockRequest.query.lang = 'en'
-    const errors = { titleText: 'There is a problem' }
-    const errorMessage = { text: 'Select where you want to check' }
+    const errors = { errors: { titleText: 'There is a problem' } }
+    const errorMessage = {
+      errorMessage: { text: 'Select where you want to check' }
+    }
     const mrequest = {
       query: { lang: 'en' },
       path: '/search-location',
       yar: {
         get: jest.fn((key) => {
           if (key === 'errors') {
-            return { errors: { titleText: 'There is a problem' } }
+            return errors
           } else if (key === 'errorMessage') {
-            return { errorMessage: { text: 'Select where you want to check' } }
+            return errorMessage
+          } else if (key === 'locationType') {
+            return null
           } else {
             return null
           }
@@ -187,14 +200,15 @@ describe('searchLocationController - english', () => {
       locations: mockContent.searchLocation.searchParams.locations,
       button: mockContent.searchLocation.button,
       locationType: null,
-      errors: errors,
-      errorMessage: errorMessage,
-      errorMessageRadio: errorMessage,
+      errors: errors.errors,
+      errorMessage: errorMessage.errorMessage,
+      errorMessageRadio: errorMessage.errorMessage,
       footerTxt: mockContent.footerTxt,
       phaseBanner: mockContent.phaseBanner,
       backlink: mockContent.backlink,
       cookieBanner: mockContent.cookieBanner,
       lang: mockRequest.query.lang
     })
+    // ''
   })
 })

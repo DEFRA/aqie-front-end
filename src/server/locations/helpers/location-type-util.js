@@ -117,7 +117,6 @@ const filteredAndSelectedLocationType = (
         text: searchLocation.errorText.uk.fields.list.text // 'Enter a location or postcode'
       }
     })
-    request.yar.set('locationType', LOCATION_TYPE_UK)
     return h.redirect(SEARCH_LOCATION_PATH_EN)
   }
   if (!userLocation && locationType === LOCATION_TYPE_NI) {
@@ -137,7 +136,6 @@ const filteredAndSelectedLocationType = (
         text: searchLocation.errorText.ni.fields.list.text // 'Enter a postcode'
       }
     })
-    request.yar.set('locationType', LOCATION_TYPE_NI)
     return h.redirect(SEARCH_LOCATION_PATH_EN)
   }
   return null

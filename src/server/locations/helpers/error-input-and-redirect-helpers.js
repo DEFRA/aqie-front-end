@@ -1,6 +1,4 @@
 import {
-  LOCATION_TYPE_UK,
-  LOCATION_TYPE_NI,
   LANG_EN,
   LANG_CY,
   REDIRECT_PATH_CY,
@@ -68,7 +66,6 @@ const handleUKError = (request, h, lang, locationNameOrPostcode) => {
     }
   })
 
-  request.yar.set('locationType', LOCATION_TYPE_UK)
   request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
 
   const redirectPath = lang === LANG_EN ? REDIRECT_PATH_EN : REDIRECT_PATH_CY
@@ -99,7 +96,6 @@ const handleNIError = (request, h, lang, locationNameOrPostcode) => {
     }
   })
 
-  request.yar.set('locationType', LOCATION_TYPE_NI)
   request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
 
   const redirectPath = lang === LANG_EN ? REDIRECT_PATH_EN : REDIRECT_PATH_CY
