@@ -34,8 +34,7 @@ const getRefererPath = (request) => {
 
 const getLocationTypeAndName = (request, payload) => {
   // '' Retrieves locationType and locationNameOrPostcode from payload or session.
-  const locationType =
-    request.payload?.locationType || request.yar.get('locationType')
+  const locationType = request.payload?.locationType
   const locationNameOrPostcode =
     getLocationNameOrPostcode(locationType, payload) ||
     request.yar.get('locationNameOrPostcode')
@@ -84,7 +83,7 @@ const handleNoSearchTerms = (request, h, lang, payload) => {
     return handleMissingLocation(request, h, lang)
   }
 
-  const userLocation = formatPostcode(locationNameOrPostcode.toUpperCase())
+  const userLocation = formatPostcode(locationNameOrPostcode?.toUpperCase())
 
   if (!userLocation && locationType === LOCATION_TYPE_UK) {
     return handleUKError(request, h, lang, locationNameOrPostcode)

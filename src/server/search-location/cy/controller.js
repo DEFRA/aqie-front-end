@@ -9,6 +9,7 @@ import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
 const searchLocationController = {
   handler: (request, h) => {
     const { query, path } = request
+    request.yar.set('locationNameOrPostcode', '')
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     let lang = query?.lang?.slice(0, 2)
@@ -24,9 +25,9 @@ const searchLocationController = {
     }
     const errors = request.yar.get('errors')
     const errorMessage = request.yar.get('errorMessage')
-    const locationType = request.yar.get('locationType')
 
     if (errors) {
+      const locationType = request.yar.get('locationType')
       request.yar.set('errors', null)
       request.yar.set('errorMessage', null)
       return h.view('search-location/index', {
