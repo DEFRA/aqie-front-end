@@ -120,7 +120,7 @@ const config = convict({
   forecastsApiUrl: {
     doc: 'API forecast rss feed',
     format: String,
-    default: `https://aqie-back-end.dev.cdp-int.defra.cloud/forecasts`,
+    default: `https://aqie-forecast-api.dev.cdp-int.defra.cloud/forecast`,
     env: 'FORECAST_API_URL'
   },
   measurementsApiUrl: {
