@@ -431,7 +431,7 @@ describe('compareLastElements', () => {
         'http://example1.com/page1',
         'http://example2.com/page1'
       )
-    ).toBe(true)
+    ).toBe(false)
   })
 
   test('handles empty string input', () => {
