@@ -15,17 +15,48 @@ class CookieBanner {
    * @param {Element} $module - HTML element
    */
   constructor($module) {
-    if (
-      !($module instanceof HTMLElement) ||
-      !document.body.classList.contains('govuk-frontend-supported') ||
-      // Exit if we're on the cookies page to avoid circular journeys
-      this.onCookiesPage()
-    ) {
-      return this
+    try {
+      if (!this.isValidModule($module)) {
+        this.isValid = false // Set a flag to indicate invalid initialization
+        return // Exit early without returning a value
+      }
+
+      this.isValid = true // Set a flag to indicate valid initialization
+      this.$cookieBanner = $module
+
+      if (!this.initializeElements($module)) {
+        this.isValid = false // Set the flag to invalid
+        return // Exit early without returning a value
+      }
+
+      this.initializeBanner()
+    } catch (error) {
+      console.error('Failed to initialize CookieBanner:', error) // eslint-disable-line no-console
+      this.isValid = false // Set the flag to invalid in case of an error
     }
+  }
 
-    this.$cookieBanner = $module
+  /**
+   * Validate the module element
+   *
+   * @param {Element} $module - HTML element
+   * @returns {boolean} Returns true if the module is valid
+   */
+  isValidModule($module) {
+    return (
+      $module instanceof HTMLElement && // Validate $module
+      document.body.classList.contains('govuk-frontend-supported') && // Check GOV.UK frontend support
+      !this.onCookiesPage() // Avoid initializing on the cookies page
+    )
+  }
 
+  /**
+   * Initialize elements in the cookie banner
+   *
+   * @param {Element} $module - HTML element
+   * @returns {boolean} Returns true if all elements are initialized successfully
+   */
+  initializeElements($module) {
     const $acceptButton = $module.querySelector(cookieBannerAcceptSelector)
     const $rejectButton = $module.querySelector(cookieBannerRejectSelector)
     const $cookieMessage = $module.querySelector(cookieMessageSelector)
@@ -47,7 +78,7 @@ class CookieBanner {
       !($cookieConfirmationReject instanceof HTMLElement) ||
       !$cookieBannerHideButtons.length
     ) {
-      return this
+      return false // Return false if any element is invalid
     }
 
     this.$acceptButton = $acceptButton
@@ -57,18 +88,24 @@ class CookieBanner {
     this.$cookieConfirmationReject = $cookieConfirmationReject
     this.$cookieBannerHideButtons = $cookieBannerHideButtons
 
-    // Show the cookie banner to users who have not consented or have an
-    // outdated consent cookie
+    return true // Return true if all elements are valid
+  }
+
+  /**
+   * Initialize the cookie banner
+   */
+  initializeBanner() {
+    if (!this.isValid) {
+      return // Ensure the banner is valid before initializing
+    }
     const currentConsentCookie = CookieFunctions.getConsentCookie()
 
     if (
       !currentConsentCookie ||
       !CookieFunctions.isValidConsentCookie(currentConsentCookie)
     ) {
-      // If the consent cookie version is not valid, we need to remove any cookies which have been
-      // set previously
+      // Reset cookies if the consent cookie is invalid
       CookieFunctions.resetCookies()
-
       this.$cookieBanner.removeAttribute('hidden')
     }
 

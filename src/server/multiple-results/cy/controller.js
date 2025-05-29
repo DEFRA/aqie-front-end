@@ -64,8 +64,8 @@ const getLocationDataController = {
         welshMonth: calendarWelsh[getMonth],
         summaryDate:
           lang === LANG_CY
-            ? welshDate ?? summaryDate
-            : englishDate ?? summaryDate,
+            ? (welshDate ?? summaryDate)
+            : (englishDate ?? summaryDate),
         lang: LANG_CY
       })
     } catch (error) {

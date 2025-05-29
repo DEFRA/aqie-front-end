@@ -30,12 +30,13 @@
     "server:debug": "nodemon --exec babel-node --inspect ./src",
     "prestart": "npm run build",
     "start": "NODE_ENV=production node --use-strict ./.server",
-    "setup:husky": "node -e \"try { (await import('husky')).default() } catch (e) { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e }\" --input-type module"
+    "setup:husky": "node -e \"try { (await import('husky')).default() } catch (e) { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e }\" --input-type module",
+    "format:njk": "prettier --write \"src/**/*.njk\""
   },
   "author": "Defra DDTS",
   "license": "OGL-UK-3.0",
   "dependencies": {
-    "@babel/runtime": "7.24.4",
+    "@babel/runtime": "7.27.0",
     "@elastic/ecs-pino-format": "1.5.0",
     "@hapi/catbox-redis": "7.0.2",
     "@hapi/cookie": "12.0.1",
@@ -60,7 +61,8 @@
     "nunjucks": "3.2.4",
     "pino": "8.20.0",
     "proj4": "2.9.0",
-    "undici": "6.21.1"
+    "undici": "6.21.3",
+    "util": "0.12.5"
   },
   "devDependencies": {
     "@babel/cli": "7.24.1",
@@ -90,7 +92,7 @@
     "nodemon": "3.1.0",
     "npm-run-all": "4.1.5",
     "pino-pretty": "11.0.0",
-    "prettier": "3.2.5",
+    "prettier": "3.5.3",
     "resolve-url-loader": "5.0.0",
     "sass": "1.74.1",
     "sass-loader": "14.1.1",

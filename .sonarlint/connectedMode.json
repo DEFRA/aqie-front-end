@@ -1,4 +1,5 @@
 {
   "sonarCloudOrganization": "defra",
-  "projectKey": "DEFRA_aqie-front-end"
+  "projectKey": "DEFRA_aqie-front-end",
+  "region": "EU"
 }
