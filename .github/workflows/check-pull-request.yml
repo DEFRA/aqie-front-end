@@ -34,6 +34,7 @@ jobs:
       - name: Test Docker Image Build
         run: |
           set +e
+          npm cache clean --force # Clear npm cache to avoid conflicts
           docker build --no-cache --tag cdp-node-frontend-template .
           exit $?
       - name: SonarCloud Scan
