@@ -36,7 +36,8 @@ const handleUKLocationType = async (request, h, params) => {
     userLocation,
     locationNameOrPostcode,
     searchTerms,
-    secondSearchTerm
+    secondSearchTerm,
+    lang
   } = params
 
   // Deduplicate results
@@ -69,6 +70,7 @@ const handleUKLocationType = async (request, h, params) => {
   }
 
   // Handle no matches
+  request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
   request.yar.clear('searchTermsSaved')
   return h.redirect('/location-not-found').takeover()
 }
