@@ -126,12 +126,13 @@ const processMatches = (
   userLocation,
   locationNameOrPostcode,
   searchTerms,
-  secondSearchTerm = 'UNDEFINED'
+  secondSearchTerm
 ) => {
   const fullPostcodePattern = /^[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}$/i // Regex for full UK postcode
-  const partialPostcodePattern = /^[a-z]{1,2}\d[a-z\d]?$/i // Regex for partial UK postcode
-
+  const partialPostcodePattern =
+    /^(?:[A-Z]{1,2}\d{1,2}|[A-Z]\d[A-Z]|\d[A-Z]{2})$/i // Regex for partial UK postcode
   const isFullPostcode = isValidFullPostcodeUK(userLocation) // Check if user location is a full postcode
+
   // Filter matches based on criteria
   let selectedMatches = matches.filter((item) =>
     filterMatches(item, {

@@ -16,7 +16,10 @@ import { handleUKLocationType } from '~/src/server/locations/helpers/extra-middl
 import { handleErrorInputAndRedirect } from '~/src/server/locations/helpers/error-input-and-redirect'
 import { getMonth } from '~/src/server/locations/helpers/location-type-util'
 import * as airQualityData from '~/src/server/data/en/air-quality.js'
-import { isValidPartialPostcodeNI } from '~/src/server/locations/helpers/convert-string'
+import {
+  isValidPartialPostcodeNI,
+  isValidPartialPostcodeUK
+} from '~/src/server/locations/helpers/convert-string'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case.js'
 
@@ -55,6 +58,17 @@ const searchMiddleware = async (request, h) => {
     searchTerms,
     secondSearchTerm
   })
+
+  const isPartialPostcode = isValidPartialPostcodeUK(userLocation)
+  if (
+    isPartialPostcode ||
+    getOSPlaces === 'wrong postcode' ||
+    !getOSPlaces?.results ||
+    getNIPlaces?.results.length === 0
+  ) {
+    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+    return h.redirect('location-not-found').takeover()
+  }
 
   const { transformedDailySummary } = transformKeys(getDailySummary, lang)
   const { formattedDateSummary, getMonthSummary } = getFormattedDateSummary(
@@ -98,6 +112,7 @@ const searchMiddleware = async (request, h) => {
       request.yar.clear('searchTermsSaved')
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
+
     if (
       !getNIPlaces?.results ||
       getNIPlaces?.results.length === 0 ||
