@@ -18,6 +18,28 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        
+      - name: Configure npm registry
+        run: npm config set registry https://registry.npmmirror.com
+
+      - name: Clear npm cache
+        run: npm cache clean --force
+
+      - name: Install dependencies with retry
+        run: |
+          max_retries=3
+          count=0
+          until [ $count -ge $max_retries ]
+          do
+            npm ci && break
+            count=$((count+1))
+            echo "Retrying npm install... ($count/$max_retries)"
+            sleep 5
+          done
+          if [ $count -eq $max_retries ]; then
+            echo "npm install failed after $max_retries attempts."
+            exit 1
+          fi
 
       - name: Test code and Create Test Coverage Reports
         uses: actions/setup-node@v4
@@ -48,24 +70,3 @@ jobs:
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
             -Dsonar.pullrequest.branch=${{ github.head_ref }}
             -Dsonar.pullrequest.base=${{ github.base_ref }}
-      - name: Clear npm cache
-        run: npm cache clean --force
-
-      - name: Configure npm registry
-        run: npm config set registry https://registry.npmmirror.com
-
-      - name: Install dependencies with retry
-        run: |
-          max_retries=3
-          count=0
-          until [ $count -ge $max_retries ]
-          do
-            npm ci && break
-            count=$((count+1))
-            echo "Retrying npm install... ($count/$max_retries)"
-            sleep 5
-          done
-          if [ $count -eq $max_retries ]; then
-            echo "npm install failed after $max_retries attempts."
-            exit 1
-          fi
