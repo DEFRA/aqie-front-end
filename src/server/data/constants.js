@@ -21,6 +21,7 @@ export const REDIRECT_PATH_EN = '/search-location?lang=en'
 export const REDIRECT_PATH_CY = 'chwilio-lleoliad/cy?lang=cy'
 export const POSTCODE_SPACE_INDEX = 3
 export const LOCATION_NOT_FOUND_URL = '/location-not-found'
+export const WRONG_POSTCODE = 'wrong postcode'
 export const SYMBOLS_ARRAY = [
   '%',
   '$',

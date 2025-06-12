@@ -64,7 +64,7 @@ function removeAllWordsAfterUnderscore(str) {
 function isValidPartialPostcodeUK(postcode) {
   // Define a function to validate if a string is a partial postcode
   const partialPostcodeRegex =
-    /^(?:[A-Z]{1,2}\d{1,2}|[A-Z]\d[A-Z]|\d[A-Z]{2})$/i // Define a regular expression to match UK partial postcodes'  return partialPostcodeRegex.test(postcode) // Test the string against the regular expression ''
+    /^(?:[A-Z]{1,2}\d{1,2}|[A-Z]\d[A-Z]|\d[A-Z]{2})$/i
   return partialPostcodeRegex.test(postcode) // Test the string against the regular expression
 }
 

@@ -61,10 +61,10 @@ const filterMatches = (
   return (
     checkWords ||
     (name1.includes(normalizeString(userLocation)) &&
-      userLocation.includes(normalizeString(name1))) ||
+      normalizeString(userLocation).includes(normalizeString(name1))) ||
     (name2 &&
-      userLocation.includes(normalizeString(name2)) &&
-      name2.includes(normalizeString(userLocation)))
+      normalizeString(userLocation).includes(normalizeString(name2)) &&
+      normalizeString(name2).includes(normalizeString(userLocation)))
   )
 }
 

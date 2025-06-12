@@ -10,7 +10,8 @@ import {
   LANG_EN,
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI,
-  LOCATION_NOT_FOUND_URL
+  LOCATION_NOT_FOUND_URL,
+  WRONG_POSTCODE
 } from '~/src/server/data/constants'
 import { handleUKLocationType } from '~/src/server/locations/helpers/extra-middleware-helpers'
 import { handleErrorInputAndRedirect } from '~/src/server/locations/helpers/error-input-and-redirect'
@@ -59,10 +60,12 @@ const searchMiddleware = async (request, h) => {
     secondSearchTerm
   })
 
-  const isPartialPostcode = isValidPartialPostcodeUK(userLocation)
+  const isPartialPostcode =
+    isValidPartialPostcodeUK(userLocation) ||
+    isValidPartialPostcodeNI(userLocation)
   if (
     isPartialPostcode ||
-    getOSPlaces === 'wrong postcode' ||
+    getOSPlaces === WRONG_POSTCODE ||
     !getOSPlaces?.results ||
     getNIPlaces?.results.length === 0
   ) {
@@ -106,7 +109,6 @@ const searchMiddleware = async (request, h) => {
       english
     })
   } else if (redirectError.locationType === LOCATION_TYPE_NI) {
-    const isPartialPostcode = isValidPartialPostcodeNI(locationNameOrPostcode)
     if (isPartialPostcode) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
@@ -116,7 +118,7 @@ const searchMiddleware = async (request, h) => {
     if (
       !getNIPlaces?.results ||
       getNIPlaces?.results.length === 0 ||
-      getNIPlaces === 'wrong postcode'
+      getNIPlaces === WRONG_POSTCODE
     ) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
@@ -125,7 +127,7 @@ const searchMiddleware = async (request, h) => {
     if (
       !getNIPlaces?.results ||
       getNIPlaces?.results.length === 0 ||
-      getNIPlaces === 'wrong postcode'
+      getNIPlaces === WRONG_POSTCODE
     ) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
