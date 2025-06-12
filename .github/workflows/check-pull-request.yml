@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Configure npm registry
         run: npm config set registry https://registry.npmmirror.com
 
@@ -31,6 +31,7 @@ jobs:
           count=0
           until [ $count -ge $max_retries ]
           do
+            npm config set registry https://registry.npmmirror.com
             npm ci && break
             count=$((count+1))
             echo "Retrying npm install... ($count/$max_retries)"
