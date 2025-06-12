@@ -38,8 +38,9 @@ jobs:
             sleep 5
           done
           if [ $count -eq $max_retries ]; then
-            echo "npm install failed after $max_retries attempts."
-            exit 1
+            echo "npm install failed after $max_retries attempts. Switching to a different registry."
+            npm config set registry https://registry.npmjs.org
+            npm ci || exit 1
           fi
 
       - name: Test code and Create Test Coverage Reports
