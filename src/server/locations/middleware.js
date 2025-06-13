@@ -59,18 +59,39 @@ const searchMiddleware = async (request, h) => {
     searchTerms,
     secondSearchTerm
   })
-
+  if (
+    redirectError.locationType === LOCATION_TYPE_NI &&
+    (!getNIPlaces?.results || getNIPlaces?.results.length === 0)
+  ) {
+    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+    return h.redirect('location-not-found').takeover()
+  }
   const isPartialPostcode =
     isValidPartialPostcodeUK(userLocation) ||
     isValidPartialPostcodeNI(userLocation)
-  if (
-    isPartialPostcode ||
-    getOSPlaces === WRONG_POSTCODE ||
-    (!getOSPlaces?.results &&
-      redirectError.locationType === LOCATION_TYPE_UK) ||
-    getNIPlaces?.results.length === 0
-  ) {
+
+  // '' Helper function to check if location data is not found
+  const isLocationDataNotFound = () => {
+    // ''
+    const isUKTypeNoResults =
+      !getOSPlaces?.results && redirectError.locationType === LOCATION_TYPE_UK
+    const isNITypeNoResults =
+      redirectError.locationType === LOCATION_TYPE_NI &&
+      (!getNIPlaces?.results || getNIPlaces?.results.length === 0)
+    return (
+      isPartialPostcode ||
+      getOSPlaces === WRONG_POSTCODE ||
+      isUKTypeNoResults ||
+      isNITypeNoResults
+    )
+  }
+
+  if (isLocationDataNotFound()) {
     request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+    if (searchTerms) {
+      request.yar.clear('searchTermsSaved')
+      return h.redirect('error/index').takeover()
+    }
     return h.redirect('location-not-found').takeover()
   }
 
