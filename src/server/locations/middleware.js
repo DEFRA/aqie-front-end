@@ -10,13 +10,17 @@ import {
   LANG_EN,
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI,
-  LOCATION_NOT_FOUND_URL
+  LOCATION_NOT_FOUND_URL,
+  WRONG_POSTCODE
 } from '~/src/server/data/constants'
 import { handleUKLocationType } from '~/src/server/locations/helpers/extra-middleware-helpers'
 import { handleErrorInputAndRedirect } from '~/src/server/locations/helpers/error-input-and-redirect'
 import { getMonth } from '~/src/server/locations/helpers/location-type-util'
 import * as airQualityData from '~/src/server/data/en/air-quality.js'
-import { isValidPartialPostcodeNI } from '~/src/server/locations/helpers/convert-string'
+import {
+  isValidPartialPostcodeNI,
+  isValidPartialPostcodeUK
+} from '~/src/server/locations/helpers/convert-string'
 import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
 import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case.js'
 
@@ -56,6 +60,19 @@ const searchMiddleware = async (request, h) => {
     secondSearchTerm
   })
 
+  const isPartialPostcode =
+    isValidPartialPostcodeUK(userLocation) ||
+    isValidPartialPostcodeNI(userLocation)
+  if (
+    isPartialPostcode ||
+    getOSPlaces === WRONG_POSTCODE ||
+    !getOSPlaces?.results ||
+    getNIPlaces?.results.length === 0
+  ) {
+    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+    return h.redirect('location-not-found').takeover()
+  }
+
   const { transformedDailySummary } = transformKeys(getDailySummary, lang)
   const { formattedDateSummary, getMonthSummary } = getFormattedDateSummary(
     getDailySummary?.issue_date,
@@ -69,7 +86,7 @@ const searchMiddleware = async (request, h) => {
     calendarEnglish,
     calendarWelsh
   )
-
+  request.yar.set('searchTermsSaved', searchTerms)
   if (redirectError.locationType === LOCATION_TYPE_UK) {
     const locationType = redirectError.locationType
     return handleUKLocationType(request, h, {
@@ -92,16 +109,16 @@ const searchMiddleware = async (request, h) => {
       english
     })
   } else if (redirectError.locationType === LOCATION_TYPE_NI) {
-    const isPartialPostcode = isValidPartialPostcodeNI(locationNameOrPostcode)
     if (isPartialPostcode) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
+
     if (
       !getNIPlaces?.results ||
       getNIPlaces?.results.length === 0 ||
-      getNIPlaces === 'wrong postcode'
+      getNIPlaces === WRONG_POSTCODE
     ) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
@@ -110,7 +127,7 @@ const searchMiddleware = async (request, h) => {
     if (
       !getNIPlaces?.results ||
       getNIPlaces?.results.length === 0 ||
-      getNIPlaces === 'wrong postcode'
+      getNIPlaces === WRONG_POSTCODE
     ) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')

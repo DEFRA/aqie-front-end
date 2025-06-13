@@ -19,6 +19,30 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Configure npm registry
+        run: npm config set registry https://registry.npmmirror.com
+
+      - name: Clear npm cache
+        run: npm cache clean --force
+
+      - name: Install dependencies with retry
+        run: |
+          max_retries=3
+          count=0
+          until [ $count -ge $max_retries ]
+          do
+            npm config set registry https://registry.npmmirror.com
+            npm ci && break
+            count=$((count+1))
+            echo "Retrying npm install... ($count/$max_retries)"
+            sleep 5
+          done
+          if [ $count -eq $max_retries ]; then
+            echo "npm install failed after $max_retries attempts. Switching to a different registry."
+            npm config set registry https://registry.npmjs.org
+            npm ci || exit 1
+          fi
+
       - name: Test code and Create Test Coverage Reports
         uses: actions/setup-node@v4
         with:

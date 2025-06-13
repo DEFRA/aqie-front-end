@@ -5,64 +5,123 @@ import {
 import { searchTermsAndBorough } from '~/src/server/locations/helpers/search-terms-borough'
 import { searchTermsAndUnitary } from '~/src/server/locations/helpers/search-terms-unitary'
 
+/**
+ * '' Helper to normalize strings by converting to uppercase and removing spaces.
+ */
+const normalizeString = (str) => str?.toUpperCase().replace(/\s+/g, '') // ''
+
+/**
+ * '' Handles search term and borough matching logic.
+ */
+const handleSearchTermsAndBorough = (
+  searchTerms,
+  secondSearchTerm,
+  name1,
+  borough
+) => {
+  const exactWordFirstTerm = hasExactMatch(searchTerms, name1) // ''
+  const exactWordSecondTerm = hasExactMatch(secondSearchTerm, borough) // ''
+  return searchTermsAndBorough(
+    searchTerms,
+    name1,
+    secondSearchTerm,
+    borough,
+    exactWordFirstTerm,
+    exactWordSecondTerm
+  )
+}
+
+/**
+ * '' Handles search term and unitary matching logic.
+ */
+const handleSearchTermsAndUnitary = (
+  searchTerms,
+  secondSearchTerm,
+  name1,
+  name2,
+  unitary
+) => {
+  const exactWordFirstTerm = hasExactMatch(searchTerms, name1, name2) // ''
+  const exactWordSecondTerm = hasExactMatch(secondSearchTerm, unitary) // ''
+  return searchTermsAndUnitary(
+    searchTerms,
+    name1,
+    name2,
+    secondSearchTerm,
+    unitary,
+    exactWordFirstTerm,
+    exactWordSecondTerm
+  )
+}
+
+/**
+ * '' Handles full postcode matching logic.
+ */
+const handleFullPostcode = (name1, userLocation) => {
+  return (
+    name1.includes(normalizeString(userLocation)) &&
+    normalizeString(userLocation).includes(name1)
+  )
+}
+
+/**
+ * '' Handles generic word and name matching logic.
+ */
+const handleGenericMatching = (userLocation, item, name1, name2) => {
+  const checkWords = splitAndCheckSpecificWords(
+    userLocation,
+    item?.GAZETTEER_ENTRY.NAME1
+  ) // ''
+  return (
+    checkWords ||
+    (name1.includes(normalizeString(userLocation)) &&
+      normalizeString(userLocation).includes(normalizeString(name1))) ||
+    (name2 &&
+      normalizeString(userLocation).includes(normalizeString(name2)) &&
+      normalizeString(name2).includes(normalizeString(userLocation)))
+  )
+}
+
+/**
+ * '' Main filterMatches function to determine if an item matches the search criteria.
+ */
 const filterMatches = (
   item,
   { searchTerms, secondSearchTerm, isFullPostcode, userLocation }
 ) => {
-  const normalizeString = (str) => str?.toUpperCase().replace(/\s+/g, '') // Normalize string by converting to uppercase and removing spaces
-
-  const name1 = normalizeString(item?.GAZETTEER_ENTRY.NAME1)
-  const name2 = normalizeString(item?.GAZETTEER_ENTRY.NAME2)
+  const name1 = normalizeString(item?.GAZETTEER_ENTRY.NAME1) // ''
+  const name2 = normalizeString(item?.GAZETTEER_ENTRY.NAME2) // ''
   const borough = normalizeString(
     item?.GAZETTEER_ENTRY?.DISTRICT_BOROUGH
-  )?.replace(/-/g, ' ')
+  )?.replace(/-/g, ' ') // ''
   const unitary = normalizeString(
     item?.GAZETTEER_ENTRY?.COUNTY_UNITARY
-  )?.replace(/-/g, ' ')
+  )?.replace(/-/g, ' ') // ''
 
   if (searchTerms && borough) {
-    const exactWordFirstTerm = hasExactMatch(searchTerms, name1)
-    const exactWordSecondTerm = hasExactMatch(secondSearchTerm, borough)
-    return searchTermsAndBorough(
+    return handleSearchTermsAndBorough(
       searchTerms,
-      name1,
       secondSearchTerm,
-      borough,
-      exactWordFirstTerm,
-      exactWordSecondTerm
-    )
+      name1,
+      borough
+    ) // ''
   }
 
   if (searchTerms && unitary) {
-    const exactWordFirstTerm = hasExactMatch(searchTerms, name1, name2)
-    const exactWordSecondTerm = hasExactMatch(secondSearchTerm, unitary)
-    return searchTermsAndUnitary(
+    return handleSearchTermsAndUnitary(
       searchTerms,
+      secondSearchTerm,
       name1,
       name2,
-      secondSearchTerm,
-      unitary,
-      exactWordFirstTerm,
-      exactWordSecondTerm
-    )
+      unitary
+    ) // ''
   }
 
   if (isFullPostcode) {
-    return (
-      name1.includes(normalizeString(userLocation)) &&
-      normalizeString(userLocation).includes(name1)
-    )
+    return handleFullPostcode(name1, userLocation) // ''
   }
 
-  const checkWords = splitAndCheckSpecificWords(
-    userLocation,
-    item?.GAZETTEER_ENTRY.NAME1
-  )
-  return (
-    checkWords ||
-    name1.includes(normalizeString(userLocation)) ||
-    userLocation.includes(name2)
-  )
+  return handleGenericMatching(userLocation, item, name1, name2) // ''
 }
 
 export { filterMatches }
