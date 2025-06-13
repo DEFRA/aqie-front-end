@@ -127,7 +127,7 @@ const processMatches = (
   userLocation,
   locationNameOrPostcode,
   searchTerms,
-  secondSearchTerm = 'UNDEFINED'
+  secondSearchTerm = 'undefined'
 ) => {
   const fullPostcodePattern = /^[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}$/i // Regex for full UK postcode
   const partialPostcodePattern =
