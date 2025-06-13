@@ -225,9 +225,6 @@ async function fetchData(
     } else {
       logger.info(`getNIPlaces data fetched:`)
     }
-    if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
-      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-    }
 
     return { getDailySummary, getForecasts, getMeasurements, getNIPlaces }
   }
