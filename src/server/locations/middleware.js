@@ -66,7 +66,8 @@ const searchMiddleware = async (request, h) => {
   if (
     isPartialPostcode ||
     getOSPlaces === WRONG_POSTCODE ||
-    !getOSPlaces?.results ||
+    (!getOSPlaces?.results &&
+      redirectError.locationType === LOCATION_TYPE_UK) ||
     getNIPlaces?.results.length === 0
   ) {
     request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
