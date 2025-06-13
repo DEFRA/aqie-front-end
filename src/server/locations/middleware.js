@@ -86,7 +86,7 @@ const searchMiddleware = async (request, h) => {
     calendarEnglish,
     calendarWelsh
   )
-
+  request.yar.set('searchTermsSaved', searchTerms)
   if (redirectError.locationType === LOCATION_TYPE_UK) {
     const locationType = redirectError.locationType
     return handleUKLocationType(request, h, {
