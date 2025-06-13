@@ -52,6 +52,7 @@ const handleSingleMatch = (
     locationType,
     lang
   })
+
   return lang === LANG_EN
     ? h.redirect(`/location/${customId}`).takeover()
     : h.redirect(`/lleoliad/${customId}`).takeover()
@@ -126,7 +127,7 @@ const processMatches = (
   userLocation,
   locationNameOrPostcode,
   searchTerms,
-  secondSearchTerm
+  secondSearchTerm = undefined
 ) => {
   const fullPostcodePattern = /^[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}$/i // Regex for full UK postcode
   const partialPostcodePattern =

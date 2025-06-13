@@ -126,7 +126,7 @@
       {% set pollutantTitle = pollutantDetail.title or '' %}
       {% set pollutantLowRange = pollutantDetail.low_range or '' %}
       {% if pollutant.value is defined %}
-        {% set pollutantValue = pollutant.value %}
+        {% set pollutantValue = "<span class=\"govuk-!-font-weight-bold\">" ~ pollutant.value ~ "</span>" | safe %}
       {% else %}
         {% set pollutantValue = '' %}
       {% endif %}
@@ -143,7 +143,7 @@
       {% set pollutantTableE = daqi.pollutantTable.e or '' %}
       {% set row = [
         {
-          html: "<a class='govuk-!-margin-bottom-1' href='" + pollutantHref + "'>" + pollutantTitle + "</a><span class='govuk-caption-s govuk-!-margin-bottom-1'>" + pollutantTableE + ' ' + pollutantLowRange + "</span>",
+          html: "<a class='govuk-!-margin-bottom-1 govuk-!-font-weight-bold' href='" + pollutantHref + "'>" + pollutantTitle + "</a><span class='govuk-caption-s govuk-!-margin-bottom-1'>" + pollutantTableE + ' ' + pollutantLowRange + "</span>",
           classes: "align-middle"
         },
         {
@@ -230,7 +230,7 @@
       {% set pollutantTitle = pollutantDetail.title or '' %}
       {% set pollutantLowRange = pollutantDetail.low_range or '' %}
       {% if pollutant.value is defined %}
-        {% set pollutantValue = pollutant.value %}
+        {% set pollutantValue = "<span class=\"govuk-!-font-weight-bold\">" ~ pollutant.value ~ "</span>" | safe %}
       {% else %}
         {% set pollutantValue = '' %}
       {% endif %}
@@ -247,18 +247,19 @@
       {% set pollutantTableE = daqi.pollutantTable.e or '' %}
       {% set row = [
         {
-          html: "<a class='govuk-!-margin-bottom-1' href='" + pollutantHref + "'>" + pollutantTitle + "</a><span class='govuk-caption-s govuk-!-margin-bottom-1'>" + pollutantTableE + ' ' + pollutantLowRange + "</span>",
+          html: "<a class=\"govuk-!-margin-bottom-1 govuk-!-font-weight-bold\" href=\"" ~ pollutantHref ~ "\">" ~ pollutantTitle ~ "</a><span class=\"govuk-caption-s govuk-!-margin-bottom-1\">" ~ pollutantTableE ~ " " ~ pollutantLowRange ~ "</span>",
           classes: "align-middle"
         },
         {
-          html: pollutantValue + " <span class='govuk-!-font-size-16 govuk-!-font-weight-regular'>μg/m<sup>3</sup></span>",
+          html: pollutantValue ~ " <span class=\"govuk-!-font-size-16 govuk-!-font-weight-regular\">μg/m<sup>3</sup></span>",
           classes: "align-middle"
         },
         {
-          html: "<strong class='daqi-tag daqi-tag--" + pollutantDaqi + "'>" + pollutantBand + "</strong>",
+          html: "<strong class=\"daqi-tag daqi-tag--" ~ pollutantDaqi ~ "\">" ~ pollutantBand ~ "</strong>",
           classes: "align-middle"
         }
       ] %}
+      {# Push the row to the rows array #}
       {% set _ = rows.push(row) %}
     {% endif %}
   {% endfor %}
