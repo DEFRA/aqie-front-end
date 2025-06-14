@@ -101,9 +101,9 @@ const handleNoSearchTerms = (request, h, lang, payload) => {
  */
 const handleSearchTerms = (searchTerms) => {
   if (
-    isOnlyWords(searchTerms) ||
-    isValidFullPostcodeUK(searchTerms) ||
-    isValidPartialPostcodeUK(searchTerms)
+    isOnlyWords(searchTerms) &&
+    (isValidFullPostcodeUK(searchTerms) ||
+      isValidPartialPostcodeUK(searchTerms))
   ) {
     return {
       locationType: 'uk-location',
