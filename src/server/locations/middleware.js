@@ -54,8 +54,6 @@ const searchMiddleware = async (request, h) => {
   } = await fetchData(request, h, {
     locationType: redirectError.locationType,
     userLocation,
-    locationNameOrPostcode,
-    lang,
     searchTerms,
     secondSearchTerm
   })
