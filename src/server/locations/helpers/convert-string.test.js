@@ -439,3 +439,21 @@ describe('compareLastElements', () => {
     expect(compareLastElements('http://example.com/page1', '')).toBe(false)
   })
 })
+
+// Unit tests for convert-string.js
+const { convertString } = require('./convert-string')
+
+// Mock data
+const mockString = 'Test String'
+
+describe('convertString', () => {
+  it('should convert string to uppercase', () => {
+    const result = convertString(mockString)
+    expect(result).toBe('TEST STRING')
+  })
+
+  it('should handle empty string gracefully', () => {
+    const result = convertString('')
+    expect(result).toBe('')
+  })
+})

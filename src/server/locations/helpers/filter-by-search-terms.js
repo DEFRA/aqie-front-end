@@ -4,8 +4,10 @@ const UNDEFINED_TERM = 'UNDEFINED' // Represents an undefined secondary search t
 const filterBySearchTerms = (matches, search, isAlphanumeric) => {
   const { searchTerms, secondSearchTerm } = search
 
-  if (isAlphanumeric && searchTerms && secondSearchTerm !== UNDEFINED_TERM) {
-    return matches.slice(0, SINGLE_MATCH)
+  if (isAlphanumeric && searchTerms && secondSearchTerm === UNDEFINED_TERM) {
+    return matches
+      .filter((match) => match.name.includes(searchTerms))
+      .slice(0, SINGLE_MATCH)
   }
 
   if (searchTerms && matches.length > SINGLE_MATCH) {

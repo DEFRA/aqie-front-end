@@ -209,6 +209,8 @@ function compareLastElements(previousUrl, currentUrl) {
   return lastTwoElementsPrevious === lastTwoElementsCurrent // Compare the last two elements and return true if they are the same, otherwise false
 }
 
+const convertString = (input) => input.toUpperCase()
+
 export {
   removeAllWordsAfterUnderscore,
   convertStringToHyphenatedLowercaseWords,
@@ -230,5 +232,6 @@ export {
   hasExactMatch,
   hasCommonWord,
   isOnlyWords,
-  compareLastElements
+  compareLastElements,
+  convertString
 }

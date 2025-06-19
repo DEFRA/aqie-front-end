@@ -43,6 +43,9 @@ function getNearestLocation(
     pointsInRange(latlon, p)
   )
   const nearestLocationsRangeCal = measurements?.filter((item, i) => {
+    if (!item.location || !item.location.coordinates) {
+      return false
+    }
     const opt = pointsToDisplay.some((dis) => {
       return (
         item.location.coordinates[0] === dis.latitude &&
@@ -111,7 +114,7 @@ function getNearestLocation(
               curr.location.coordinates[1]
             ]
           },
-          id: curr.name.replaceAll(' ', ''),
+          id: curr.name?.replaceAll(' ', '') || '',
           name: curr.name,
           updated: curr.updated,
           distance: getDistance.toFixed(1),
@@ -123,7 +126,8 @@ function getNearestLocation(
     },
     []
   )
-  const forecastDay = moment.tz('Europe/London').format('dddd').substring(0, 3)
+  const forecastDay =
+    moment.tz('Europe/London')?.format('dddd')?.substring(0, 3) || ''
   const forecastNum =
     matches.length !== 0
       ? nearestLocation.map((current) => {
