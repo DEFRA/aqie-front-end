@@ -24,7 +24,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: .nvmrc
+          node-version-file: .nvmrc
           cache: npm
 
       # Ensure tests pass. Add more checks if required
