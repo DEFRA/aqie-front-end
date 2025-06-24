@@ -10,8 +10,12 @@ import {
 } from '~/src/server/locations/helpers/convert-string'
 import { LANG_EN, LANG_CY } from '~/src/server/data/constants'
 import { createURLRouteBookmarks } from '~/src/server/locations/helpers/create-bookmark-ids'
-import reduceMatches from '~/src/server/locations/helpers/reduce-matches'
+import { reduceMatches } from '~/src/server/locations/helpers/reduce-matches'
 import { filterMatches } from '~/src/server/locations/helpers/filter-matches'
+
+// Define constants globally
+const UNKNOWN_LOCATION = 'Unknown Location'
+const HTTP_STATUS_BAD_REQUEST = 400
 
 // Helper function to handle single match
 const handleSingleMatch = (
@@ -207,6 +211,15 @@ const getTitleAndHeaderTitle = (
  * Handles the case where DISTRICT_BOROUGH is present in the gazetteer entry.
  */
 const handleDistrictBorough = (gazetteerEntry, home) => {
+  if (!gazetteerEntry) {
+    return {
+      title: UNKNOWN_LOCATION,
+      headerTitle: UNKNOWN_LOCATION,
+      urlRoute: '',
+      term1: ''
+    }
+  }
+
   let title = ''
   let headerTitle = ''
   let urlRoute = ''
@@ -276,10 +289,19 @@ const getFormattedDateSummary = (issueDate, calendarEnglish) => {
 }
 
 // Helper function to deduplicate results
-const deduplicateResults = (results) => {
+const duplicateResults = (results) => {
   return Array.from(new Set(results.map((item) => JSON.stringify(item)))).map(
     (item) => JSON.parse(item)
   )
+}
+
+const validateLocation = (req, res, next) => {
+  const { locationId } = req.params
+  if (!locationId) {
+    res.status(HTTP_STATUS_BAD_REQUEST).send('Invalid locationId')
+    return
+  }
+  next()
 }
 
 export {
@@ -289,5 +311,6 @@ export {
   getTitleAndHeaderTitle,
   getLanguageDates,
   getFormattedDateSummary,
-  deduplicateResults
+  validateLocation,
+  duplicateResults
 }

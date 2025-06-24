@@ -1,0 +1,226 @@
+// Daqi table
+@namespace "http://www.w3.org/2000/svg";
+
+svg|svg { 
+  forced-color-adjust: preserve-parent-color; 
+}
+
+svg|foreignObject { 
+  forced-color-adjust: auto; 
+}
+
+.daqi-labels {
+  display: flex;
+  white-space: nowrap;
+  justify-content: space-between; 
+}
+
+.daqi-bar {
+  display: flex;
+  height: govuk-spacing(4);
+  margin-bottom: govuk-spacing(2);
+  border: 1px solid transparent;
+}
+
+.daqi-bar-segment {
+  width: 10%;
+  height: 100%;
+  margin-right: 2px;
+  border-right: 1px solid transparent;
+}
+
+.daqi-bar-segment:last-child {
+  border-right: none;
+  margin-right: 0;
+}
+
+.daqi-band {
+  @include govuk-font($size: 16, $weight: regular);
+  border: 0;
+  vertical-align: top;
+  text-align: left;
+  width: 30%;
+}
+
+.daqi-band:last-child, .daqi-band:nth-child(3) {
+  width: 20%;
+}
+
+.daqi-band:last-child {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.daqi-selected {
+  font-weight: bold; 
+}
+
+@media (prefers-contrast: more) {
+  .daqi-selected {
+    background-color: windowText;
+    color: windowText;
+  }
+}
+
+@media(forced-colors: active) {
+  .daqi-selected {
+    // stylelint-disable-next-line declaration-no-important
+      background-color: windowText !important;
+      forced-color-adjust: none;
+      color: govuk-colour("black");
+  }
+}
+@media(forced-colors: active) {
+  .daqi-selected,
+  .aq-forecast-dd.daqi-tag--1, 
+  .aq-forecast-dd.daqi-tag--2, 
+  .aq-forecast-dd.daqi-tag--3, 
+  .aq-forecast-dd.daqi-tag--4, 
+  .aq-forecast-dd.daqi-tag--5, 
+  .aq-forecast-dd.daqi-tag--6, 
+  .aq-forecast-dd.daqi-tag--7, 
+  .aq-forecast-dd.daqi-tag--8, 
+  .aq-forecast-dd.daqi-tag--9, 
+  .aq-forecast-dd.daqi-tag--10  {
+    // stylelint-disable-next-line declaration-no-important
+      background-color: windowText !important;
+      forced-color-adjust: none;
+      color: Window;
+  }
+
+  .aq-forecast-item {
+    .aq-forecast-dd.daqi-tag--1, 
+    .aq-forecast-dd.daqi-tag--2, 
+    .aq-forecast-dd.daqi-tag--3, 
+    .aq-forecast-dd.daqi-tag--4, 
+    .aq-forecast-dd.daqi-tag--5, 
+    .aq-forecast-dd.daqi-tag--6, 
+    .aq-forecast-dd.daqi-tag--7, 
+    .aq-forecast-dd.daqi-tag--8, 
+    .aq-forecast-dd.daqi-tag--9, 
+    .aq-forecast-dd.daqi-tag--10 {
+      border-right: 2px solid Window;  
+      width: 100%;          
+    } 
+  }
+
+ .aq-forecast-item:last-child { 
+  .aq-forecast-dd.daqi-tag--1, 
+  .aq-forecast-dd.daqi-tag--2, 
+  .aq-forecast-dd.daqi-tag--3, 
+  .aq-forecast-dd.daqi-tag--4, 
+  .aq-forecast-dd.daqi-tag--5, 
+  .aq-forecast-dd.daqi-tag--6, 
+  .aq-forecast-dd.daqi-tag--7, 
+  .aq-forecast-dd.daqi-tag--8, 
+  .aq-forecast-dd.daqi-tag--9, 
+  .aq-forecast-dd.daqi-tag--10  {
+      border-right: 1px solid windowText; 
+   } 
+  }
+}
+
+@media (inverted-colors: inverted) {
+  .daqi-selected {
+    background-color: windowText;
+    color: govuk-colour("black");
+  }
+}
+
+.daqi-0 {
+  background-color: $daqi-colour-0;
+  color: govuk-colour("black");
+}
+
+.daqi-1 {
+  background-color: $daqi-colour-1;
+  color: govuk-colour("white");
+  font-weight: bold; 
+}
+  
+.daqi-2 {
+  background-color: $daqi-colour-2;
+  color: govuk-colour("white");
+  font-weight: bold; 
+}
+  
+.daqi-3 {
+  background-color: $daqi-colour-3;
+  color: govuk-colour("white");
+  font-weight: bold; 
+}
+  
+.daqi-4 {
+  background-color: $daqi-colour-4;
+  color: govuk-colour("black");
+  font-weight: bold; 
+}
+  
+.daqi-5 {
+  background-color: $daqi-colour-5;
+  color: govuk-colour("black");
+  font-weight: bold; 
+}
+  
+.daqi-6 {
+  background-color: $daqi-colour-6;
+  color: govuk-colour("black");
+  font-weight: bold; 
+}
+  
+.daqi-7 {
+  background-color: $daqi-colour-7;
+  color: govuk-colour("white");
+  font-weight: bold; 
+}
+  
+.daqi-8 {
+  background-color: $daqi-colour-8;
+  color: govuk-colour("white");
+  font-weight: bold; 
+}
+  
+.daqi-9 {
+  background-color: $daqi-colour-9;
+  color: govuk-colour("white");
+  font-weight: bold; 
+ }
+  
+.daqi-10 {
+  background-color: $daqi-colour-10;
+  color: govuk-colour("white");
+  font-weight: bold; 
+}
+
+.govuk-details__text {
+  .health-advice tr:last-child td, .health-advice tr:last-child th {
+    border-bottom: 1px solid transparent;
+  }
+}
+
+.govuk-tabs__tab {
+  display: inline-block;
+  max-width: 12ch;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.defra-aq-tabs__label-distance {
+  padding-top: 5px;
+  display: block;
+  font-family: "GDS Transport", arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1.1429;
+  text-decoration: none;
+}
+
+@media (min-width: 40.0625em) {
+  .defra-aq-tabs__label-distance {
+    font-size: 1.1rem;
+    line-height: 0.5;
+  }
+}

@@ -1,6 +1,6 @@
 import {
   processMatches,
-  deduplicateResults
+  duplicateResults
 } from '~/src/server/locations/helpers/middleware-helpers'
 import { generateTitleData } from '~/src/server/locations/helpers/generate-title-data'
 import { handleSingleMatchHelper } from '~/src/server/locations/helpers/handle-single-match-helper'
@@ -15,13 +15,23 @@ const handleErrorInputAndRedirect = (
   searchTerms
 ) => {
   const locationNameOrPostcode = payload?.engScoWal || payload?.ni
+
   if (!payload?.locationType && !searchTerms) {
     request.yar.set('locationDataNotFound', {
       locationNameOrPostcode: '',
       lang
     })
-    return h.redirect('/location-not-found').takeover()
+
+    const redirectResult = h.redirect('/location-not-found')
+
+    // Ensure takeover is returned correctly
+    if (typeof redirectResult.takeover === 'function') {
+      redirectResult.takeover()
+    }
+
+    return { redirect: '/location-not-found' } // Explicitly return a valid result
   }
+
   return {
     locationType: payload?.locationType || '',
     userLocation: searchTerms || locationNameOrPostcode,
@@ -42,7 +52,7 @@ const handleUKLocationType = async (request, h, params) => {
 
   // Deduplicate results
   let { results } = getOSPlaces
-  results = deduplicateResults(results)
+  results = duplicateResults(results)
 
   // Process matches
   const { selectedMatches } = processMatches(
@@ -72,10 +82,15 @@ const handleUKLocationType = async (request, h, params) => {
   // Handle no matches
   request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
   request.yar.clear('searchTermsSaved')
-  if (searchTerms) {
-    return h.redirect('error/index').takeover()
+
+  const redirectResult = h.redirect('/location-not-found')
+
+  // Ensure takeover is returned correctly
+  if (typeof redirectResult.takeover === 'function') {
+    redirectResult.takeover()
   }
-  return h.redirect('/location-not-found').takeover()
+
+  return { redirect: '/location-not-found' } // Explicitly return a valid result
 }
 
 export { handleErrorInputAndRedirect, handleUKLocationType }
