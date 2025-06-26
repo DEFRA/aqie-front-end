@@ -40,4 +40,10 @@ const handleSingleMatchHelper = (
   })
 }
 
-export { handleSingleMatchHelper }
+const handleSingleMatchTest = (match) => {
+  if (!match) {
+    return null
+  }
+  return match
+}
+export { handleSingleMatchHelper, handleSingleMatchTest }

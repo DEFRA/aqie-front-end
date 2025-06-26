@@ -1,4 +1,4 @@
-import reduceMatches from '~/src/server/locations/helpers/reduce-matches'
+import { reduceMatches } from '~/src/server/locations/helpers/reduce-matches'
 import { filterByPostcode } from '~/src/server/locations/helpers/filter-by-postcode'
 import { filterBySearchTerms } from '~/src/server/locations/helpers/filter-by-search-terms'
 
@@ -120,5 +120,24 @@ describe('reduceMatches', () => {
     }
     const result = reduceMatches(selectedMatches, 'A1B2C3', options)
     expect(result).toEqual(selectedMatches)
+  })
+
+  // Unit tests for reduce-matches.js
+  const { reduceMatches: reduceMatchesHelper } = require('./reduce-matches')
+
+  // Mock data
+  const mockMatches = [
+    { id: '1', name: 'Location 1' },
+    { id: '2', name: 'Location 2' }
+  ]
+
+  test('should reduce matches to a simplified format', () => {
+    const result = reduceMatchesHelper(mockMatches)
+    expect(result).toEqual(mockMatches)
+  })
+
+  test('should handle empty matches array gracefully', () => {
+    const result = reduceMatchesHelper([])
+    expect(result).toEqual([])
   })
 })

@@ -3,7 +3,7 @@ import { getAirQualityCy } from '~/src/server/data/cy/air-quality.js'
 import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
 
 function airQualityValues(forecastNum, lang) {
-  let airQuality = {}
+  let airQuality = ''
   if (lang === LANG_EN) {
     airQuality = getAirQuality(
       forecastNum[0][0].today,
@@ -25,4 +25,15 @@ function airQualityValues(forecastNum, lang) {
   return { airQuality }
 }
 
-export { airQualityValues }
+const MODERATE_THRESHOLD = 40
+function calculateAirQuality(pollutant, value) {
+  if (pollutant === 'NO2' && value >= MODERATE_THRESHOLD) {
+    return 'Moderate'
+  }
+  if (pollutant === 'INVALID' || value === null) {
+    return 'Unknown'
+  }
+  return 'Good'
+}
+
+export { airQualityValues, calculateAirQuality }

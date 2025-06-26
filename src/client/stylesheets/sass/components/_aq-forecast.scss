@@ -1,0 +1,138 @@
+.aq-forecast-dl {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  @include govuk-responsive-margin(8, 'bottom');
+  border: 1px solid transparent;
+  @include govuk-font($size: 16, $weight: regular, $line-height: 1);
+  text-align: center;
+  padding: 0;
+  border-top: 1px solid #ffffff;
+  margin-bottom: 30px;
+}
+
+.aq-forecast-item {
+  flex: 1;
+  border-right: 2px solid #ffffff;
+}
+
+.aq-forecast-item:last-child {
+  border-right: none;
+}
+
+dt, dd {
+  margin-left: 0;
+}
+
+.aq-definition-list dt {
+  padding: 20px 20px 20px 0;
+  border-top: 1px solid #b1b4b6;
+  text-align: left;
+  vertical-align: top;
+}
+
+.aq-definition-list dd {
+  font-family: "GDS Transport", arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.25;
+  padding: 0 20px 20px 0;
+  margin: 0;
+  text-align: left;
+  vertical-align: top;
+}
+
+@media print {
+  .aq-definition-list dd {
+    font-family: sans-serif;
+  }
+}
+
+@media (min-width: 40.0625em) {
+  .aq-definition-list dd {
+    font-size: 1.1875rem;
+    line-height: 1.3158;
+  }
+}
+
+@media print {
+  .aq-definition-list dd {
+    font-size: 14pt;
+    line-height: 1.1500;
+  }
+}
+
+@media (min-width: 40.0625em) {
+  .aq-forecast-dl {
+    margin-bottom: 50px;
+  }
+}
+
+.aq-forecast-dt, .aq-forecast-dd {
+  text-align: center;
+}
+
+.aq-forecast-dt {
+  font-family: "GDS Transport", arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.25;
+  @include govuk-font($size: 19);
+  padding: govuk-spacing(2) 0 govuk-spacing(2) 0;
+  background-color: govuk-colour("light-grey");
+}
+
+@media print {
+  .aq-forecast-dt {
+    font-family: sans-serif;
+  }
+}
+@media (min-width: 40.0625em) {
+  .aq-forecast-dt {
+    font-size: 1.1875rem;
+    line-height: 1.3158;
+  }
+}
+
+@media print {
+  .aq-forecast-dt {
+    font-size: 14pt;
+    line-height: 1.15;
+  }
+}
+
+.aq-forecast-dd {
+  font-family: "GDS Transport", arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1;
+  text-align: center;
+  padding: 6px 0;
+  border-top: 1px solid #ffffff;
+}
+
+@media print {
+  .aq-forecast-dd {
+    font-family: sans-serif;
+  }
+}
+
+@media (min-width: 40.0625em) {
+  .aq-forecast-dd {
+    font-size: 1rem;
+    line-height: 1;
+  }
+}
+
+@media print {
+  .aq-forecast-dd {
+    font-size: 14pt;
+    line-height: 1;
+  }
+}

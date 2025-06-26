@@ -1,13 +1,13 @@
 module.exports = {
   rootDir: '.',
-  testEnvironment: 'jsdom',
+  testEnvironment: 'jsdom', // Switch to jsdom environment for DOM-related tests
   verbose: true,
   resetModules: true,
   clearMocks: true,
   silent: true,
   testMatch: ['**/src/**/*.test.js'],
   reporters: ['default', ['github-actions', { silent: false }], 'summary'],
-  setupFilesAfterEnv: ['<rootDir>/jest-setup.js'],
+  setupFilesAfterEnv: ['./jest-setup.js'],
   collectCoverageFrom: [
     'src/**/*.js',
     '!src/server/common/**', // Exclude test in server/common
@@ -47,5 +47,8 @@ module.exports = {
       lines: 45,
       statements: 45
     }
+  },
+  moduleNameMapper: {
+    '^~/(.*)$': '<rootDir>/$1'
   }
 }
