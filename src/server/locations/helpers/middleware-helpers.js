@@ -1,5 +1,5 @@
-import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
-import { english } from '~/src/server/data/en/en.js'
+import { convertFirstLetterIntoUppercase } from './convert-first-letter-into-upper-case.js'
+import { english } from '../../data/en/en.js'
 import moment from 'moment-timezone'
 import {
   convertStringToHyphenatedLowercaseWords,
@@ -7,11 +7,11 @@ import {
   splitAndKeepFirstWord,
   isValidFullPostcodeUK,
   formatUKPostcode
-} from '~/src/server/locations/helpers/convert-string'
-import { LANG_EN, LANG_CY } from '~/src/server/data/constants'
-import { createURLRouteBookmarks } from '~/src/server/locations/helpers/create-bookmark-ids'
-import { reduceMatches } from '~/src/server/locations/helpers/reduce-matches'
-import { filterMatches } from '~/src/server/locations/helpers/filter-matches'
+} from './convert-string.js'
+import { LANG_EN, LANG_CY } from '../../data/constants.js'
+import { createURLRouteBookmarks } from './create-bookmark-ids.js'
+import reduceMatches from './reduce-matches.js'
+import { filterMatches } from './filter-matches.js'
 
 // Define constants globally
 const UNKNOWN_LOCATION = 'Unknown Location'
@@ -177,20 +177,26 @@ const getTitleAndHeaderTitle = (
   let urlRoute = ''
   let term1 = ''
 
-  if (locationDetails[0]) {
+  if (locationDetails?.[0]) {
     const gazetteerEntry = locationDetails[0].GAZETTEER_ENTRY
 
-    if (gazetteerEntry.DISTRICT_BOROUGH) {
+    if (gazetteerEntry?.DISTRICT_BOROUGH) {
       ;({ title, headerTitle, urlRoute, term1 } = handleDistrictBorough(
         gazetteerEntry,
         home
       ))
-    } else {
+    } else if (gazetteerEntry?.COUNTY_UNITARY) {
       ;({ title, headerTitle, urlRoute, term1 } = handleCountyUnitary(
         gazetteerEntry,
         locationNameOrPostcode,
         home
       ))
+    } else {
+      // '' Handle case where neither DISTRICT_BOROUGH nor COUNTY_UNITARY is present
+      title = locationNameOrPostcode
+      headerTitle = locationNameOrPostcode
+      urlRoute = convertStringToHyphenatedLowercaseWords(locationNameOrPostcode)
+      term1 = locationNameOrPostcode
     }
   }
 

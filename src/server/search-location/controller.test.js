@@ -1,7 +1,14 @@
+/* global vi */
 /* eslint-disable */
-import { english } from '~/src/server/data/en/en.js'
-import { searchLocationController } from '~/src/server/search-location/controller'
-import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url.js'
+import { english } from '../data/en/en.js'
+import { searchLocationController } from './controller.js'
+import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
+
+vi.mock('../common/helpers/get-site-url.js', () => ({
+  getAirQualitySiteUrl: vi.fn((request) => {
+    return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+  })
+}))
 
 describe('searchLocationController - english', () => {
   let mockRequest
@@ -14,15 +21,15 @@ describe('searchLocationController - english', () => {
       query: {},
       path: '',
       yar: {
-        set: jest.fn(),
-        get: jest.fn()
+        set: vi.fn(),
+        get: vi.fn()
       }
     }
     mockH = {
-      redirect: jest.fn().mockReturnValue('redirected'),
-      view: jest.fn().mockReturnValue('view rendered')
+      redirect: vi.fn().mockReturnValue('redirected'),
+      view: vi.fn().mockReturnValue('view rendered')
     }
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should redirect to the Welsh version if the language is "cy"', () => {
@@ -32,8 +39,8 @@ describe('searchLocationController - english', () => {
       },
       path: '/chwilio-lleoliad/cy',
       yar: {
-        set: jest.fn(),
-        get: jest.fn()
+        set: vi.fn(),
+        get: vi.fn()
       }
     }
     const expectedUrl =
@@ -53,8 +60,8 @@ describe('searchLocationController - english', () => {
       },
       path: '/search-location',
       yar: {
-        set: jest.fn(),
-        get: jest.fn()
+        set: vi.fn(),
+        get: vi.fn()
       }
     }
     const expectedUrl =
@@ -104,8 +111,8 @@ describe('searchLocationController - english', () => {
       },
       path: '/search-location',
       yar: {
-        set: jest.fn(),
-        get: jest.fn()
+        set: vi.fn(),
+        get: vi.fn()
       }
     }
     const expectedUrl =
@@ -158,7 +165,7 @@ describe('searchLocationController - english', () => {
       query: { lang: 'en' },
       path: '/search-location',
       yar: {
-        get: jest.fn((key) => {
+        get: vi.fn((key) => {
           if (key === 'errors') {
             return errors
           } else if (key === 'errorMessage') {
@@ -169,7 +176,7 @@ describe('searchLocationController - english', () => {
             return null
           }
         }),
-        set: jest.fn()
+        set: vi.fn()
       }
     }
     const expectedUrl =

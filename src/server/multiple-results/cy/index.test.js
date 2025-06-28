@@ -1,14 +1,10 @@
-import { getLocationDataController } from '~/src/server/multiple-results/cy/controller.js'
-import { multipleResultsCy } from '~/src/server/multiple-results/cy/index.js'
+import { getLocationDataController } from './controller.js'
+import { multipleResultsCy } from './index.js'
 
 describe('multiple-results index plugin - cy', () => {
-  let server
-
-  beforeEach(() => {
-    server = {
-      route: jest.fn()
-    }
-  })
+  const server = {
+    route: vi.fn()
+  }
 
   test('should register multiple-results route', async () => {
     await multipleResultsCy.plugin.register(server)

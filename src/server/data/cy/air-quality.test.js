@@ -4,7 +4,7 @@ import {
   getDetailedInfo,
   getAirQualityCy,
   getHighestAQDetails
-} from '~/src/server/data/cy/air-quality.js'
+} from './air-quality.js'
 
 describe('getCommonMessage', () => {
   it('should return the correct message for isel band', () => {

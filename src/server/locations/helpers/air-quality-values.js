@@ -1,6 +1,6 @@
-import { getAirQuality } from '~/src/server/data/en/air-quality.js'
-import { getAirQualityCy } from '~/src/server/data/cy/air-quality.js'
-import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
+import { getAirQuality } from '../../data/en/air-quality.js'
+import { getAirQualityCy } from '../../data/cy/air-quality.js'
+import { LANG_CY, LANG_EN } from '../../data/constants.js'
 
 function airQualityValues(forecastNum, lang) {
   let airQuality = ''

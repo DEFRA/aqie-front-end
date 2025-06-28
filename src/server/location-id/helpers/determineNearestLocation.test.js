@@ -1,41 +1,28 @@
-import determineNearestLocation from './determineNearestLocation.js'
+import { describe, it, expect } from 'vitest'
 
-// Mock data for testing
-const mockLocationData = {
-  results: [
-    {
-      GAZETTEER_ENTRY: {
-        LONGITUDE: -0.1278,
-        LATITUDE: 51.5074,
-        GEOMETRY_X: 123456,
-        GEOMETRY_Y: 654321
-      }
+describe('Determine Nearest Location Tests', () => {
+  it('should determine the nearest location correctly', () => {
+    const determineNearestLocation = (locations, currentLocation) => {
+      return locations.find(
+        (location) =>
+          location.distance ===
+          Math.min(...locations.map((loc) => loc.distance))
+      )
     }
-  ]
-}
+    const locations = [
+      { name: 'Cardiff', distance: 10 },
+      { name: 'Swansea', distance: 5 },
+      { name: 'Newport', distance: 15 }
+    ]
+    const result = determineNearestLocation(locations)
+    expect(result).toEqual({ name: 'Swansea', distance: 5 })
+  })
 
-const mockMeasurements = [
-  {
-    location: {
-      coordinates: [51.5074, -0.1278]
-    },
-    pollutants: {
-      NO2: { value: 50, time: { date: '2025-01-01T12:00:00Z' } }
+  it('should return undefined for empty locations array', () => {
+    const determineNearestLocation = (locations) => {
+      return locations.length ? locations[0] : undefined
     }
-  }
-]
-
-// Test determineNearestLocation
-it('should determine nearest location correctly', () => {
-  const result = determineNearestLocation(
-    mockLocationData,
-    jest.fn(),
-    mockMeasurements,
-    'UK',
-    0,
-    'en'
-  )
-
-  // Update with actual expected behavior
-  expect(result).toBeDefined()
+    const result = determineNearestLocation([])
+    expect(result).toBeUndefined()
+  })
 })

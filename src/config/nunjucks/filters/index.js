@@ -1,12 +1,11 @@
-import { formatDate } from '~/src/config/nunjucks/filters/format-date'
-import { formatCurrency } from '~/src/config/nunjucks/filters/format-currency'
+import { formatDate } from './format-date.js'
+import { formatCurrency } from './format-currency.js'
 import {
   addMomentFilters,
   addDaysToTodayAbrev,
   addDaysToTodayAbrevWelsh
-} from '~/src/config/nunjucks/filters/moment-date-filters'
-import { addToSentenceCase } from '~/src/config/nunjucks/filters/format-sentence'
-import assign from 'lodash/assign.js'
+} from './moment-date-filters.js'
+import { addToSentenceCase } from './format-sentence.js'
 
 export {
   formatDate,

@@ -82,7 +82,7 @@ dt, dd {
   font-size: 1rem;
   line-height: 1.25;
   @include govuk-font($size: 19);
-  padding: govuk-spacing(2) 0 govuk-spacing(2) 0;
+  padding: govuk-spacing(2) 0;
   background-color: govuk-colour("light-grey");
 }
 

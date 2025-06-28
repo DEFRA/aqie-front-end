@@ -4,24 +4,24 @@ import {
   getMonth,
   configureLocationTypeAndRedirects,
   filteredAndSelectedLocationType
-} from '~/src/server/locations/helpers/location-type-util.js'
+} from './location-type-util.js'
+import { calendarEnglish } from '../../data/en/en.js'
 import {
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI,
-  LANG_CY,
-  SEARCH_LOCATION_ROUTE_EN,
   SEARCH_LOCATION_ROUTE_CY,
-  SEARCH_LOCATION_PATH_EN
-} from '~/src/server/data/constants'
-import { calendarEnglish } from '~/src/server/data/en/en.js'
+  SEARCH_LOCATION_PATH_EN,
+  SEARCH_LOCATION_ROUTE_EN,
+  LANG_CY
+} from '../../data/constants.js'
 
-jest.mock('moment-timezone', () => {
-  const originalMoment = jest.requireActual('moment-timezone')
+vi.mock('moment-timezone', () => {
+  const originalMoment = vi.importActual('moment-timezone')
   return {
     ...originalMoment,
     tz: {
       ...originalMoment.tz,
-      format: jest.fn(() => '01 January 2025')
+      format: vi.fn(() => '01 January 2025')
     }
   }
 })
@@ -45,7 +45,7 @@ describe('getLocationNameOrPostcode', () => {
 
 describe('handleRedirect', () => {
   test('redirects to the given route', () => {
-    const h = { redirect: jest.fn() }
+    const h = { redirect: vi.fn() }
     const redirectRoute = '/some-route'
     handleRedirect(h, redirectRoute)
     expect(h.redirect).toHaveBeenCalledWith(redirectRoute)
@@ -69,11 +69,11 @@ describe('configureLocationTypeAndRedirects', () => {
     request = {
       payload: { engScoWal: 'London', ni: 'Belfast' },
       yar: {
-        get: jest.fn(),
-        set: jest.fn()
+        get: vi.fn(),
+        set: vi.fn()
       }
     }
-    h = { redirect: jest.fn() }
+    h = { redirect: vi.fn() }
     options = {
       locationType: LOCATION_TYPE_UK,
       locationNameOrPostcode: '',
@@ -127,10 +127,10 @@ describe('filteredAndSelectedLocationType', () => {
   beforeEach(() => {
     request = {
       yar: {
-        set: jest.fn()
+        set: vi.fn()
       }
     }
-    h = { redirect: jest.fn() }
+    h = { redirect: vi.fn() }
     searchLocation = {
       errorText: {
         uk: {

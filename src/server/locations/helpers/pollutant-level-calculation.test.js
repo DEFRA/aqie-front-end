@@ -1,4 +1,4 @@
-import { getPollutantLevel } from '~/src/server/locations/helpers/pollutant-level-calculation'
+import { getPollutantLevel } from './pollutant-level-calculation'
 
 describe('getPollutantLevel', () => {
   it('should return correct DAQI and band for PM10', () => {

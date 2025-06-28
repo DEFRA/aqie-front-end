@@ -1,17 +1,29 @@
-import { english, calendarEnglish } from '~/src/server/data/en/en.js'
-import { calendarWelsh } from '~/src/server/data/cy/cy.js'
+import {
+  siteTypeDescriptions,
+  pollutantTypes
+} from '../data/en/monitoring-sites.js'
+import * as airQualityData from '../data/en/air-quality.js'
+import {
+  LANG_CY,
+  LANG_EN,
+  LOCATION_NOT_FOUND,
+  LOCATION_TYPE_NI,
+  LOCATION_TYPE_UK
+} from '../data/constants.js'
+import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
+import { english, calendarEnglish } from '../data/en/en.js'
+import { calendarWelsh } from '../data/cy/cy.js'
 import moment from 'moment-timezone'
-import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
-import { getNIData } from '~/src/server/locations/helpers/get-ni-single-data'
-import redirectToWelshLocation from '~/src/server/location-id/helpers/redirectToWelshLocation.js'
-import handleSearchTermsRedirection from '~/src/server/location-id/helpers/handleSearchTermsRedirection.js'
-import determineLocationType from '~/src/server/location-id/helpers/determineLocationType.js'
-import renderLocationDetailsView from '~/src/server/location-id/helpers/renderLocationDetailsView.js'
-import renderLocationNotFoundView from '~/src/server/location-id/helpers/renderLocationNotFoundView.js'
-import determineNearestLocation from '~/src/server/location-id/helpers/determineNearestLocation.js'
-import matchLocationId from '~/src/server/location-id/helpers/matchLocationId.js'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { LANG_EN, LOCATION_TYPE_NI } from '~/src/server/data/constants.js'
+import { convertFirstLetterIntoUppercase } from '../locations/helpers/convert-first-letter-into-upper-case.js'
+import { gazetteerEntryFilter } from '../locations/helpers/gazetteer-util.js'
+import { createLogger } from '../common/helpers/logging/logger.js'
+import { getSearchTermsFromUrl } from '../locations/helpers/get-search-terms-from-url.js'
+import { transformKeys } from '../locations/helpers/transform-summary-keys.js'
+import { airQualityValues } from '../locations/helpers/air-quality-values.js'
+import { getNearestLocation } from '../locations/helpers/get-nearest-location.js'
+import { getIdMatch } from '../locations/helpers/get-id-match.js'
+import { getNIData } from '../locations/helpers/get-ni-single-data.js'
+import { compareLastElements } from '../locations/helpers/convert-string.js'
 
 const logger = createLogger()
 const HTTP_INTERNAL_SERVER_ERROR = 500
@@ -40,8 +52,22 @@ const getLocationDetailsController = {
         request,
         h
       )
-      if (searchTermsRedirect) {
-        return searchTermsRedirect
+      if (
+        (previousUrl === undefined && !searchTermsSaved) ||
+        (isPreviousAndCurrentUrlEqual && !searchTermsSaved)
+      ) {
+        const { searchTerms, secondSearchTerm, searchTermsLocationType } =
+          getSearchTermsFromUrl(currentUrl)
+        request.yar.clear('locationData')
+        return h
+          .redirect(
+            `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(
+              secondSearchTerm
+            )}&searchTermsLocationType=${encodeURIComponent(
+              searchTermsLocationType
+            )}`
+          )
+          .takeover()
       }
 
       yar.clear('searchTermsSaved')

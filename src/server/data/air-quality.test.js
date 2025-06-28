@@ -2,7 +2,7 @@ import {
   getCommonMessage,
   getAirQuality,
   commonMessages
-} from '~/src/server/data/air-quality.js'
+} from './air-quality.js'
 
 describe('getCommonMessage', () => {
   it('should return the correct message for low band', () => {

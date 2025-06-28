@@ -1,24 +1,26 @@
 import path from 'path'
+import { fileURLToPath } from 'url'
 import nunjucks from 'nunjucks'
 import hapiVision from '@hapi/vision'
-
-import { config } from '~/src/config'
-import { context } from './context'
-import * as filters from './filters'
-import * as globals from './globals'
+import { config } from '../index.js'
+import { context } from './context.js'
+import * as filters from './filters/index.js'
+import * as globals from './globals.js'
 import {
   addMomentFilters,
   addDaysToTodayAbrev,
   addDaysToTodayAbrevWelsh,
   addToSentenceCase
-} from './filters/index'
+} from './filters/index.js'
+
+const dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const nunjucksEnvironment = nunjucks.configure(
   [
     'node_modules/govuk-frontend/dist/',
     path.normalize(
       path.resolve(
-        __dirname,
+        dirname,
         '..',
         '..',
         '..',
@@ -28,20 +30,20 @@ const nunjucksEnvironment = nunjucks.configure(
       )
     ),
     path.normalize(
-      path.resolve(__dirname, '..', '..', 'server', 'common', 'templates')
+      path.resolve(dirname, '..', '..', 'server', 'common', 'templates')
     ),
     path.normalize(
-      path.resolve(__dirname, '..', '..', 'server', 'common', 'components')
+      path.resolve(dirname, '..', '..', 'server', 'common', 'components')
     ),
     path.normalize(
-      path.resolve(__dirname, '..', '..', 'server', 'accessibility')
+      path.resolve(dirname, '..', '..', 'server', 'accessibility')
     ),
-    path.normalize(path.resolve(__dirname, '..', '..', 'server', 'cookies')),
-    path.normalize(path.resolve(__dirname, '..', '..', 'server', 'error')),
-    path.normalize(path.resolve(__dirname, '..', '..', 'server', 'home')),
+    path.normalize(path.resolve(dirname, '..', '..', 'server', 'cookies')),
+    path.normalize(path.resolve(dirname, '..', '..', 'server', 'error')),
+    path.normalize(path.resolve(dirname, '..', '..', 'server', 'home')),
     path.normalize(
       path.resolve(
-        __dirname,
+        dirname,
         '..',
         '..',
         'server',
@@ -56,8 +58,8 @@ const nunjucksEnvironment = nunjucks.configure(
     throwOnUndefined: false,
     trimBlocks: true,
     lstripBlocks: true,
-    watch: config.get('isDevelopment'),
-    noCache: config.get('isDevelopment')
+    watch: config.get('nunjucks.watch'),
+    noCache: config.get('nunjucks.noCache')
   }
 )
 
@@ -75,19 +77,19 @@ const nunjucksConfig = {
     compileOptions: {
       environment: nunjucksEnvironment
     },
-    relativeTo: path.normalize(path.resolve(__dirname, '..', '..')),
+    relativeTo: path.normalize(path.resolve(dirname, '..', '..')),
     path: 'server',
     isCached: config.get('isProduction'),
     context
   }
 }
 
-Object.keys(globals).forEach((global) => {
-  nunjucksEnvironment.addFilter(global, globals[global])
+Object.entries(globals).forEach(([name, global]) => {
+  nunjucksEnvironment.addGlobal(name, global)
 })
 
-Object.keys(filters).forEach((filter) => {
-  nunjucksEnvironment.addFilter(filter, filters[filter])
+Object.entries(filters).forEach(([name, filter]) => {
+  nunjucksEnvironment.addFilter(name, filter)
 })
 
 addMomentFilters(nunjucksEnvironment)

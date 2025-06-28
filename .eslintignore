@@ -1,0 +1,9 @@
+# Explicitly ignore .scss files and other problematic directories
+src/client/**/*
+src/client/assets/**/*
+src/**/*.scss
+.public/**/*
+dist/**/*
+.venv/**/*
+public/javascripts/**/*
+src/server/common/**/*

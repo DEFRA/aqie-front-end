@@ -1,5 +1,5 @@
-import { config } from '~/src/config'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
+import { config } from '../../../config/index.js'
+import { createLogger } from './logging/logger.js'
 
 const logger = createLogger()
 function getAirQualitySiteUrl(request) {

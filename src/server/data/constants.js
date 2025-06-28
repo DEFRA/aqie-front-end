@@ -1,6 +1,4 @@
 export const WELSH_TITLE = 'Gwirio ansawdd aer'
-export const LANG_EN = 'en'
-export const LANG_CY = 'cy'
 export const LOCATION_TYPE_UK = 'uk-location'
 export const LOCATION_TYPE_NI = 'ni-location'
 export const SEARCH_LOCATION_PATH_EN = '/search-location'
@@ -73,3 +71,5 @@ export const SUMMARY_TRANSLATIONS = {
   Sunday: 'Dydd Sul',
   Today: 'Heddiw'
 }
+export const LANG_EN = 'en'
+export const LANG_CY = 'cy'

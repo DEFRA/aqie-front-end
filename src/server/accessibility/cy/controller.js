@@ -1,6 +1,6 @@
-import { welsh } from '~/src/server/data/cy/cy.js'
-import { LANG_EN, LANG_CY } from '~/src/server/data/constants'
-import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
+import { welsh } from '../../data/cy/cy.js'
+import { LANG_EN, LANG_CY } from '../../data/constants.js'
+import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
 // Define the handler function
 const accessibilityHandler = (request, h, content = welsh) => {

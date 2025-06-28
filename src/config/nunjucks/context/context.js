@@ -1,16 +1,13 @@
 import path from 'node:path'
 import { readFileSync } from 'node:fs'
 
-import { config } from '~/src/config/index.js'
-import { createLogger } from '~/src/server/common/helpers/logging/logger.js'
-import { buildNavigation } from '~/src/config/nunjucks/context/build-navigation.js'
+import { config } from '../../index.js'
+import { createLogger } from '../../server/common/helpers/logging/logger.js'
+import { buildNavigation } from './build-navigation.js'
 
 const logger = createLogger()
 const assetPath = config.get('assetPath')
-const manifestPath = path.join(
-  config.get('root'),
-  '.public/assets-manifest.json'
-)
+const manifestPath = path.join(config.get('root'), '.public/manifest.json')
 
 /** @type {Record<string, string> | undefined} */
 let webpackManifest

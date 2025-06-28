@@ -1,5 +1,4 @@
-/* eslint-disable prettier/prettier */
-import { particulateMatter25Controller } from '~/src/server/particulate-matter-25/controller'
+import { particulateMatter25Controller } from './controller.js'
 
 const particulateMatter25 = {
   plugin: {

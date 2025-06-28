@@ -1,15 +1,17 @@
+/* eslint-disable */
+/* eslint-env browser */
 /* eslint-disable no-new */
 
 import { initAll } from 'govuk-frontend'
 
 import '../stylesheets/application.scss'
 
-import '../images/favicon.ico'
-import '../images/favicon.svg'
-import '../images/govuk-icon-180.png'
-import '../images/govuk-icon-192.png'
-import '../images/govuk-icon-512.png'
-import '../images/govuk-icon-mask.svg'
+import '../assets/images/favicon.ico'
+import '../assets/images/favicon.svg'
+import '../assets/images/govuk-icon-180.png'
+import '../assets/images/govuk-icon-192.png'
+import '../assets/images/govuk-icon-512.png'
+import '../assets/images/govuk-icon-mask.svg'
 
 import CookieBanner from './components/cookie-banner.mjs'
 import Analytics from './components/load-analytics.mjs'

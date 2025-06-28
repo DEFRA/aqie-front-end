@@ -1,5 +1,4 @@
-/* eslint-disable prettier/prettier */
-import { sulphurDioxideController } from '~/src/server/sulphur-dioxide/controller'
+import { sulphurDioxideController } from './controller.js'
 
 const sulphurDioxide = {
   plugin: {

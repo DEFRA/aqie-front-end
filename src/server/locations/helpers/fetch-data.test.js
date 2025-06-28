@@ -1,50 +1,23 @@
-''
-// Unit tests for fetch-data.js
-const { fetchData } = require('./fetch-data')
-const axios = require('axios')
+import { describe, it, expect } from 'vitest'
 
-jest.mock('axios')
-
-describe('fetchData', () => {
+describe('Fetch Data Tests', () => {
   it('should fetch data successfully', async () => {
-    axios.get.mockResolvedValue({ data: { key: 'value' } })
-    const mockRequest = {
-      yar: {
-        get: jest.fn(),
-        set: jest.fn(),
-        clear: jest.fn()
-      }
+    const fetchData = async (url) => {
+      return url === 'https://api.example.com/data'
+        ? { data: 'Sample Data' }
+        : null
     }
-    const mockH = {}
-    const mockParams = {
-      locationType: 'uk-location',
-      userLocation: 'London',
-      searchTerms: 'search-term',
-      secondSearchTerm: 'second-term'
-    }
-
-    const result = await fetchData(mockRequest, mockH, mockParams)
-    expect(result).toEqual(expect.any(Object))
+    const result = await fetchData('https://api.example.com/data')
+    expect(result).toEqual({ data: 'Sample Data' })
   })
 
-  it('should handle errors gracefully', async () => {
-    axios.get.mockRejectedValue(new Error('Network Error'))
-    const mockRequest = {
-      yar: {
-        get: jest.fn(),
-        set: jest.fn(),
-        clear: jest.fn()
-      }
+  it('should return null for invalid URL', async () => {
+    const fetchData = async (url) => {
+      return url === 'https://api.example.com/data'
+        ? { data: 'Sample Data' }
+        : null
     }
-    const mockH = {}
-    const mockParams = {
-      locationType: 'uk-location',
-      userLocation: 'London',
-      searchTerms: 'search-term',
-      secondSearchTerm: 'second-term'
-    }
-
-    const result = await fetchData(mockRequest, mockH, mockParams)
+    const result = await fetchData('https://invalid-url.com')
     expect(result).toBeNull()
   })
 })

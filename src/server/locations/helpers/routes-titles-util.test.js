@@ -1,15 +1,15 @@
-import { routesTitles } from '~/src/server/locations/helpers/routes-titles-util'
-import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
+import { routesTitles } from './routes-titles-util'
+import { convertStringToHyphenatedLowercaseWords } from './convert-string.js'
 
-jest.mock('~/src/server/locations/helpers/convert-string')
+vi.mock('./convert-string.js')
+
+beforeEach(() => {
+  convertStringToHyphenatedLowercaseWords.mockImplementation((str) =>
+    str.toLowerCase().replace(/ /g, '-')
+  )
+})
 
 describe('routesTitles', () => {
-  beforeEach(() => {
-    convertStringToHyphenatedLowercaseWords.mockImplementation((str) =>
-      str.toLowerCase().replace(/ /g, '-')
-    )
-  })
-
   it('should generate route paths with district and name2', () => {
     const matches = [
       {

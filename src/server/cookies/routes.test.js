@@ -1,5 +1,5 @@
-import { routes } from '~/src/server/cookies/routes'
-import { cookiesController } from '~/src/server/cookies/controller'
+import { routes } from './routes.js'
+import { cookiesController } from './controller.js'
 
 describe('Routes', () => {
   it('should include the cookies route', () => {

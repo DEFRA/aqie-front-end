@@ -1,8 +1,9 @@
 import { home } from './index'
+import { vi } from 'vitest'
 
 describe('home index plugin', () => {
   const server = {
-    route: jest.fn()
+    route: vi.fn()
   }
 
   test('should register home route', () => {

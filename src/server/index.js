@@ -1,77 +1,97 @@
 import path from 'path'
 import hapi from '@hapi/hapi'
 
-import { config } from '~/src/config'
-import { nunjucksConfig } from '~/src/config/nunjucks'
-import { router } from './router'
-import { requestLogger } from '~/src/server/common/helpers/logging/request-logger'
-import { catchAll } from '~/src/server/common/helpers/errors'
-import { secureContext } from '~/src/server/common/helpers/secure-context'
+import { config } from '../config/index.js'
+import { nunjucksConfig } from '../config/nunjucks/index.js'
+import { router } from './router.js'
+import { requestLogger } from './common/helpers/logging/request-logger.js'
+import { catchAll } from './common/helpers/errors.js'
+import { secureContext } from './common/helpers/secure-context/index.js'
 import hapiCookie from '@hapi/cookie'
-import { buildRedisClient } from '~/src/common/helpers/redis-client'
-import { Engine as CatboxRedis } from '@hapi/catbox-redis'
-import { Engine as CatboxMemory } from '@hapi/catbox-memory'
+import { getCacheEngine } from './common/helpers/session-cache/cache-engine.js'
+import { setupProxy } from './common/helpers/proxy/setup-proxy.js'
+import { pulse } from './common/helpers/pulse.js'
+import { requestTracing } from './common/helpers/request-tracing.js'
+import { createLogger } from './common/helpers/logging/logger.js'
 
-const isProduction = config.get('isProduction')
-const redisEnabled = config.get('redis.enabled')
 async function createServer() {
-  const server = hapi.server({
-    port: config.get('port'),
-    routes: {
-      validate: {
-        options: {
-          abortEarly: false
+  const logger = createLogger()
+  logger.info('Initializing server setup')
+
+  try {
+    setupProxy()
+    logger.info('Proxy setup completed')
+
+    const cacheEngine = getCacheEngine(config.get('session.cache.engine'))
+    logger.info(
+      `Cache engine initialized: ${config.get('session.cache.engine')}`
+    )
+
+    const server = hapi.server({
+      host: config.get('host'),
+      port: config.get('port'),
+      routes: {
+        validate: {
+          options: {
+            abortEarly: false
+          }
+        },
+        files: {
+          relativeTo: path.resolve(config.get('root'), '.public')
+        },
+        security: {
+          hsts: {
+            maxAge: 31536000,
+            includeSubDomains: true,
+            preload: false
+          },
+          xss: 'enabled',
+          noSniff: true,
+          xframe: true
         }
       },
-      files: {
-        relativeTo: path.resolve(config.get('root'), '.public')
+      router: {
+        stripTrailingSlash: true
       },
-      security: {
-        hsts: {
-          maxAge: 31536000,
-          includeSubDomains: true,
-          preload: false
-        },
-        xss: 'enabled',
-        noSniff: true,
-        xframe: true
+      cache: [
+        {
+          name: config.get('session.cache.name'),
+          engine: cacheEngine
+        }
+      ],
+      state: {
+        strictHeader: false
       }
-    },
-    router: {
-      stripTrailingSlash: true
-    },
-    cache: [
-      {
-        name: 'session',
-        engine: redisEnabled
-          ? new CatboxRedis({
-              client: buildRedisClient()
-            })
-          : new CatboxMemory()
-      }
-    ],
-    state: {
-      encoding: 'iron',
-      strictHeader: false,
-      ignoreErrors: true
+    })
+
+    logger.info('Server instance created')
+
+    const plugins = [
+      requestLogger,
+      hapiCookie,
+      requestTracing,
+      secureContext,
+      pulse,
+      nunjucksConfig,
+      router
+    ]
+
+    for (const plugin of plugins) {
+      logger.info(`Registering plugin: ${plugin.name || 'unknown'}`)
+      await server.register(plugin)
     }
-  })
 
-  if (isProduction) {
-    await server.register(secureContext)
+    logger.info('Plugins registered successfully')
+
+    server.ext('onPreResponse', catchAll)
+
+    logger.info('Extensions added successfully')
+
+    return server
+  } catch (error) {
+    logger.error('Error during server setup', error)
+    throw error
   }
-
-  await server.register(requestLogger)
-
-  await server.register([hapiCookie])
-
-  await server.register(router)
-
-  await server.register(nunjucksConfig)
-
-  server.ext('onPreResponse', catchAll)
-
-  return server
 }
 
 export { createServer }

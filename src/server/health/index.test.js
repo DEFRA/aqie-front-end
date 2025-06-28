@@ -1,4 +1,4 @@
-import { healthController } from './controller'
+import { healthController } from './controller.js'
 import { health } from './index'
 import Hapi from '@hapi/hapi'
 
@@ -11,9 +11,9 @@ describe('health index plugin', () => {
   })
 
   beforeEach(() => {
-    jest.mock('./controller', () => ({
+    vi.mock('./controller.js', () => ({
       healthController: {
-        handler: jest.fn(),
+        handler: vi.fn(),
         options: {}
       }
     }))

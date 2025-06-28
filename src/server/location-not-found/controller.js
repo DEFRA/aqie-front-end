@@ -2,8 +2,8 @@ import {
   LANG_CY,
   LOCATION_NOT_FOUND,
   LOCATION_NOT_FOUND_ROUTE_CY
-} from '~/src/server/data/constants' //
-import { english } from '~/src/server/data/en/en.js'
+} from '../data/constants.js' //
+import { english } from '../data/en/en.js'
 
 const locationNotFoundController = {
   handler: (request, h) => {

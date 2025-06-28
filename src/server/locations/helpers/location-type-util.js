@@ -5,8 +5,8 @@ import {
   SEARCH_LOCATION_ROUTE_EN,
   SEARCH_LOCATION_ROUTE_CY,
   SEARCH_LOCATION_PATH_EN
-} from '~/src/server/data/constants'
-import { calendarEnglish } from '~/src/server/data/en/en.js'
+} from '../../data/constants.js'
+import { calendarEnglish } from '../../data/en/en.js'
 import moment from 'moment-timezone'
 
 const getLocationNameOrPostcode = (locationType, payload) => {

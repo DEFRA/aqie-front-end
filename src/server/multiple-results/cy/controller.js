@@ -1,12 +1,12 @@
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { english } from '~/src/server/data/en/en.js'
-import { welsh } from '~/src/server/data/cy/cy.js'
+import { createLogger } from '../../common/helpers/logging/logger.js'
+import { english } from '../../data/en/en.js'
+import { welsh } from '../../data/cy/cy.js'
 import {
   LANG_CY,
   LANG_EN,
   MULTIPLE_LOCATIONS_ROUTE_EN
-} from '~/src/server/data/constants'
-import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
+} from '../../data/constants.js'
+import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
 const logger = createLogger()
 

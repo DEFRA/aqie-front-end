@@ -1,6 +1,13 @@
-import { locationIdCy } from '~/src/server/location-id/cy/index'
-import { getLocationDetailsController } from '~/src/server/location-id/cy/controller'
+import { locationIdCy } from './index'
+import { getLocationDetailsController } from './controller.js'
 import Hapi from '@hapi/hapi'
+
+vi.mock('./controller.js', () => ({
+  getLocationDetailsController: {
+    handler: vi.fn(),
+    options: {}
+  }
+}))
 
 describe('configureRoutes', () => {
   let server
@@ -8,15 +15,6 @@ describe('configureRoutes', () => {
   beforeAll(async () => {
     server = Hapi.server()
     await locationIdCy.plugin.register(server)
-  })
-
-  beforeEach(() => {
-    jest.mock('~/src/server/location-id/cy/controller', () => ({
-      getLocationDetailsController: {
-        handler: jest.fn(),
-        options: {}
-      }
-    }))
   })
 
   it('should configure routes correctly', () => {

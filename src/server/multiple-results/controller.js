@@ -1,10 +1,7 @@
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { english } from '~/src/server/data/en/en.js'
-import {
-  LANG_CY,
-  MULTIPLE_LOCATIONS_ROUTE_CY
-} from '~/src/server/data/constants'
-import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
+import { createLogger } from '../common/helpers/logging/logger.js'
+import { english } from '../data/en/en.js'
+import { LANG_CY, MULTIPLE_LOCATIONS_ROUTE_CY } from '../data/constants.js'
+import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
 const logger = createLogger()
 

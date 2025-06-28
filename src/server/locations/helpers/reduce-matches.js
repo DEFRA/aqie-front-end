@@ -1,5 +1,5 @@
-import { filterByPostcode } from '~/src/server/locations/helpers/filter-by-postcode'
-import { filterBySearchTerms } from '~/src/server/locations/helpers/filter-by-search-terms'
+import { filterByPostcode } from './filter-by-postcode.js'
+import { filterBySearchTerms } from './filter-by-search-terms.js'
 
 const MAX_POSTCODE_LENGTH = 6 // Maximum length for partial postcodes
 const SINGLE_MATCH = 1 // Limit to a single match

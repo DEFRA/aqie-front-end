@@ -1,5 +1,7 @@
+/* global vi */
+
 import { privacyCy } from './index.js'
-import { privacyController } from './controller'
+import { privacyController } from './controller.js'
 import Hapi from '@hapi/hapi'
 
 describe('privacy index plugin - cy', () => {
@@ -11,9 +13,9 @@ describe('privacy index plugin - cy', () => {
   })
 
   beforeEach(() => {
-    jest.mock('./controller', () => ({
+    vi.mock('./controller.js', () => ({
       privacyController: {
-        handler: jest.fn(),
+        handler: vi.fn(),
         options: {}
       }
     }))

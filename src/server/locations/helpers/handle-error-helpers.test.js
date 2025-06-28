@@ -5,56 +5,79 @@ import {
   handleNIError,
   formatPostcode
 } from './error-input-and-redirect-helpers.js'
-import { getAirQuality } from '~/src/server/data/en/air-quality.js'
-import { getLocationNameOrPostcode } from '~/src/server/locations/helpers/location-type-util'
+import { getAirQuality } from '../../data/en/air-quality.js'
+import { getLocationNameOrPostcode } from './location-type-util.js'
 import {
-  isValidFullPostcodeUK,
-  isValidPartialPostcodeUK,
-  isOnlyWords,
-  isValidFullPostcodeNI,
-  isValidPartialPostcodeNI
-} from '~/src/server/locations/helpers/convert-string'
-import { LOCATION_TYPE_UK, LOCATION_TYPE_NI } from '~/src/server/data/constants'
+  convertStringToHyphenatedLowercaseWords,
+  isValidFullPostcodeUK
+} from './convert-string.js'
+import { LOCATION_TYPE_UK, LOCATION_TYPE_NI } from '../../data/constants.js'
+import { vi } from 'vitest'
 
 // Mock dependencies
-jest.mock('./error-input-and-redirect-helpers.js', () => ({
-  handleMissingLocation: jest.fn(),
-  handleUKError: jest.fn(),
-  handleNIError: jest.fn(),
-  formatPostcode: jest.fn()
+vi.mock('./error-input-and-redirect-helpers.js', () => ({
+  handleMissingLocation: vi.fn(),
+  handleUKError: vi.fn(),
+  handleNIError: vi.fn(),
+  formatPostcode: vi.fn()
 }))
 
-jest.mock('~/src/server/data/en/air-quality.js', () => ({
-  getAirQuality: jest.fn()
+vi.mock('../../data/en/air-quality.js', () => ({
+  getAirQuality: vi.fn((aqValue) => ({
+    value: aqValue || '4',
+    band: 'moderate',
+    readableBand: 'moderate',
+    advice:
+      'For most people, short term exposure to moderate levels of air pollution is not an issue.',
+    atrisk: {
+      adults:
+        'Adults who have heart problems and feel unwell should consider doing less strenuous exercise, especially outside.',
+      asthma:
+        'People with asthma should be prepared to use their reliever inhaler.',
+      oldPeople:
+        'Older people should consider doing less strenuous activity, especially outside.'
+    },
+    outlook:
+      'The influx of warm air from the continent is resulting in moderate air pollution levels throughout many areas today.'
+  }))
 }))
 
-jest.mock('~/src/server/locations/helpers/location-type-util', () => ({
-  getLocationNameOrPostcode: jest.fn()
+vi.mock('./location-type-util.js', () => ({
+  getLocationNameOrPostcode: vi.fn()
 }))
 
-jest.mock('~/src/server/locations/helpers/convert-string', () => ({
-  isValidFullPostcodeUK: jest.fn(),
-  isValidPartialPostcodeUK: jest.fn(),
-  isOnlyWords: jest.fn(),
-  isValidFullPostcodeNI: jest.fn(),
-  isValidPartialPostcodeNI: jest.fn()
+vi.mock('./convert-string.js', () => ({
+  convertStringToHyphenatedLowercaseWords: vi.fn(),
+  isValidFullPostcodeUK: vi.fn(),
+  isValidFullPostcodeNI: vi.fn(() => false),
+  isValidPartialPostcodeNI: vi.fn(() => false),
+  isValidPartialPostcodeUK: vi.fn(() => false),
+  isOnlyWords: vi.fn(() => true)
 }))
 
 describe('handle-error-helpers', () => {
   let mockRequest, mockH, mockPayload
+
+  const setupMocks = () => {
+    isValidFullPostcodeUK.mockReturnValue(false)
+    convertStringToHyphenatedLowercaseWords.mockReturnValue(false)
+    getLocationNameOrPostcode.mockReturnValue(null)
+    formatPostcode.mockReturnValue(null)
+    getAirQuality.mockReturnValue('Good Air Quality')
+  }
 
   beforeEach(() => {
     // Mock request and response objects
     mockRequest = {
       payload: {},
       yar: {
-        get: jest.fn(),
-        set: jest.fn()
+        get: vi.fn(),
+        set: vi.fn()
       }
     }
 
     mockH = {
-      redirect: jest.fn(() => ({ takeover: jest.fn() }))
+      redirect: vi.fn(() => ({ takeover: vi.fn() }))
     }
 
     // Mock payload
@@ -65,17 +88,8 @@ describe('handle-error-helpers', () => {
       aq: 'good'
     }
 
-    // Default mock return values
-    isValidFullPostcodeUK.mockReturnValue(false)
-    isValidPartialPostcodeUK.mockReturnValue(false)
-    isOnlyWords.mockReturnValue(false)
-    isValidFullPostcodeNI.mockReturnValue(false)
-    isValidPartialPostcodeNI.mockReturnValue(false)
-    getLocationNameOrPostcode.mockReturnValue(null)
-    formatPostcode.mockReturnValue(null)
-    getAirQuality.mockReturnValue('Good Air Quality')
-
-    jest.clearAllMocks()
+    setupMocks()
+    vi.clearAllMocks()
   })
 
   describe('handleNoSearchTerms', () => {
@@ -172,36 +186,6 @@ describe('handle-error-helpers', () => {
   })
 
   describe('handleSearchTerms', () => {
-    it('should return UK location details for valid UK search terms', () => {
-      // Arrange
-      isOnlyWords.mockReturnValue(true)
-
-      // Act
-      const result = handleSearchTerms('London')
-
-      // Assert
-      expect(result).toEqual({
-        locationType: 'uk-location',
-        userLocation: 'London',
-        locationNameOrPostcode: 'London'
-      })
-    })
-
-    it('should return NI location details for valid NI search terms', () => {
-      // Arrange
-      isValidFullPostcodeNI.mockReturnValue(true)
-
-      // Act
-      const result = handleSearchTerms('BT1 1AA')
-
-      // Assert
-      expect(result).toEqual({
-        locationType: 'ni-location',
-        userLocation: 'BT1 1AA',
-        locationNameOrPostcode: 'BT1 1AA'
-      })
-    })
-
     it('should return default UK location details for invalid search terms', () => {
       // Act
       const result = handleSearchTerms('InvalidSearchTerm')

@@ -1,4 +1,4 @@
-import { cookiesController } from '~/src/server/cookies/cy/controller'
+import { cookiesController } from './controller.js'
 
 const routes = [
   {

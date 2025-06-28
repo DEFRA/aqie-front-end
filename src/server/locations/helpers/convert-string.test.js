@@ -20,7 +20,7 @@ import {
   formatUKPostcode,
   isOnlyWords,
   compareLastElements
-} from '~/src/server/locations/helpers/convert-string'
+} from './convert-string.js'
 
 describe('convertStringToHyphenatedLowercaseWords', () => {
   it('should convert a string to lowercase words joined by hyphens and remove commas', () => {

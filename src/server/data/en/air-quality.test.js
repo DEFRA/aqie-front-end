@@ -4,7 +4,7 @@ import {
   getDetailedInfo,
   getAirQuality,
   getHighestAQDetails
-} from '~/src/server/data/en/air-quality.js'
+} from './air-quality.js'
 
 describe('getCommonMessage', () => {
   it('should return the correct message for low band', () => {

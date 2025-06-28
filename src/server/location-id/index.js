@@ -1,4 +1,4 @@
-import { getLocationDetailsController } from '~/src/server/location-id/controller'
+import { getLocationDetailsController } from './controller.js'
 
 // Define the route configuration function
 const configureRoutes = (server) => {

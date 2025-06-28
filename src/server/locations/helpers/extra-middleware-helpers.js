@@ -1,10 +1,7 @@
-import {
-  processMatches,
-  duplicateResults
-} from '~/src/server/locations/helpers/middleware-helpers'
-import { generateTitleData } from '~/src/server/locations/helpers/generate-title-data'
-import { handleSingleMatchHelper } from '~/src/server/locations/helpers/handle-single-match-helper'
-import { handleMultipleMatchesHelper } from '~/src/server/locations/helpers/handle-multiple-match-helper'
+import { processMatches, deduplicateResults } from './middleware-helpers.js'
+import { generateTitleData } from './generate-title-data.js'
+import { handleSingleMatchHelper } from './handle-single-match-helper.js'
+import { handleMultipleMatchesHelper } from './handle-multiple-match-helper.js'
 
 // Helper function to handle redirection for invalid input
 const handleErrorInputAndRedirect = (

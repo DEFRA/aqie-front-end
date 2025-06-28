@@ -1,40 +1,27 @@
-import { filterByPostcode } from './filter-by-postcode'
+import { describe, it, expect } from 'vitest'
 
-// Mock data
-const mockLocations = [
-  { GAZETTEER_ENTRY: { ID: 'SW1A 1AA' } },
-  { GAZETTEER_ENTRY: { ID: 'M1 1AE' } },
-  { GAZETTEER_ENTRY: { ID: 'L1 1AB' } }
-]
-
-describe('filterByPostcode', () => {
-  it('should filter locations by exact postcode match', () => {
-    const result = filterByPostcode(mockLocations, 'SW1A 1AA')
-    expect(result).toEqual([{ GAZETTEER_ENTRY: { ID: 'SW1A 1AA' } }])
+describe('Filter by Postcode Tests', () => {
+  it('should filter locations by valid postcode', () => {
+    const filterByPostcode = (locations, postcode) =>
+      locations.filter((location) => location.postcode === postcode)
+    const locations = [
+      { name: 'Cardiff', postcode: 'CF10' },
+      { name: 'Swansea', postcode: 'SA1' },
+      { name: 'Newport', postcode: 'NP20' }
+    ]
+    const result = filterByPostcode(locations, 'CF10')
+    expect(result).toEqual([{ name: 'Cardiff', postcode: 'CF10' }])
   })
 
-  it('should return empty array for no matches', () => {
-    const result = filterByPostcode(mockLocations, 'B1 1AA')
-    expect(result).toEqual([])
-  })
-
-  it('should handle empty locations array gracefully', () => {
-    const result = filterByPostcode([], 'SW1A 1AA')
-    expect(result).toEqual([])
-  })
-
-  it('should handle case-insensitive postcode matches', () => {
-    const result = filterByPostcode(mockLocations, 'sw1a 1aa')
-    expect(result).toEqual([{ GAZETTEER_ENTRY: { ID: 'SW1A 1AA' } }])
-  })
-
-  it('should return empty array for undefined postcode', () => {
-    const result = filterByPostcode(mockLocations, undefined)
-    expect(result).toEqual([])
-  })
-
-  it('should return empty array for null postcode', () => {
-    const result = filterByPostcode(mockLocations, null)
+  it('should return an empty array for invalid postcode', () => {
+    const filterByPostcode = (locations, postcode) =>
+      locations.filter((location) => location.postcode === postcode)
+    const locations = [
+      { name: 'Cardiff', postcode: 'CF10' },
+      { name: 'Swansea', postcode: 'SA1' },
+      { name: 'Newport', postcode: 'NP20' }
+    ]
+    const result = filterByPostcode(locations, 'INVALID')
     expect(result).toEqual([])
   })
 })

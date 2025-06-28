@@ -1,6 +1,6 @@
-const nunjucks = require('nunjucks')
-const path = require('path')
-const { LANG_CY } = require('~/src/server/data/constants')
+import nunjucks from 'nunjucks'
+import path from 'path'
+import { LANG_CY } from '../../data/constants.js'
 
 describe('Nunjucks cookie banner Template', () => {
   let env

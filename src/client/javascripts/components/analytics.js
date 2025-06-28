@@ -28,3 +28,12 @@ export default function loadAnalytics() {
     })(window, document, 'script', 'dataLayer', 'G-8CMZBTDQBC')
   }
 }
+
+export function trackVirtualPageview(pagePath, pageTitle) {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('config', 'GA_TRACKING_ID', {
+      page_path: pagePath,
+      page_title: pageTitle
+    })
+  }
+}

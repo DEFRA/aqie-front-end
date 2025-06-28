@@ -1,4 +1,4 @@
-import { nitrogenDioxideController } from './controller'
+import { nitrogenDioxideController } from './controller.js'
 import { nitrogenDioxide } from './index.js'
 import Hapi from '@hapi/hapi'
 
@@ -11,9 +11,9 @@ describe('nitrogen dioxide index plugin - en', () => {
   })
 
   beforeEach(() => {
-    jest.mock('../nitrogen-dioxide/controller', () => ({
+    vi.mock('../nitrogen-dioxide/controller.js', () => ({
       nitrogenDioxideController: {
-        handler: jest.fn(),
+        handler: vi.fn(),
         options: {}
       }
     }))

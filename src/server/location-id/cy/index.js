@@ -1,4 +1,4 @@
-import { getLocationDetailsController } from '~/src/server/location-id/cy/controller'
+import { getLocationDetailsController } from './controller.js'
 
 const locationIdCy = {
   plugin: {

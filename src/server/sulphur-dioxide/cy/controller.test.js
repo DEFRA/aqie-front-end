@@ -1,7 +1,8 @@
-import { welsh } from '~/src/server/data/cy/cy.js'
-import { sulphurDioxideController } from '~/src/server/sulphur-dioxide/cy/controller'
-import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
-import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
+/* global vi */
+import { welsh } from '../../data/cy/cy.js'
+import { sulphurDioxideController } from './controller.js'
+import { LANG_CY, LANG_EN } from '../../data/constants.js'
+import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
 describe('sulphurDioxide Controller - Welsh', () => {
   let mockRequest
@@ -14,8 +15,8 @@ describe('sulphurDioxide Controller - Welsh', () => {
       path: '/llygryddion/sylffwr-deuocsid/cy'
     }
     mockH = {
-      redirect: jest.fn().mockReturnValue('redirected'),
-      view: jest.fn().mockReturnValue('view rendered')
+      redirect: vi.fn().mockReturnValue('redirected'),
+      view: vi.fn().mockReturnValue('view rendered')
     }
   })
 

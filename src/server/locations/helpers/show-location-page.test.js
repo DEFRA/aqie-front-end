@@ -1,11 +1,11 @@
-import { showLocationPage } from '~/src/server/locations/helpers/show-location-page'
+import { showLocationPage } from './show-location-page'
 
 describe('showLocationPage', () => {
   let h
 
   beforeEach(() => {
     h = {
-      view: jest.fn()
+      view: vi.fn()
     }
   })
 

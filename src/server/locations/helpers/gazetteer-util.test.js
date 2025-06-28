@@ -1,4 +1,4 @@
-import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-util'
+import { gazetteerEntryFilter } from './gazetteer-util.js'
 
 describe('gazetteerEntryFilter', () => {
   it('should generate title and headerTitle with district and name2', () => {

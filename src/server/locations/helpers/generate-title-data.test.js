@@ -1,5 +1,5 @@
 // Unit tests for generate-title-data.js
-const { generateTitleData } = require('./generate-title-data')
+import { generateTitleData } from './generate-title-data'
 
 // Mock data
 const mockMatches = [{ name: 'Match1' }, { name: 'Match2' }]

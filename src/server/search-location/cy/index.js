@@ -1,4 +1,4 @@
-import { searchLocationController } from '~/src/server/search-location/cy/controller'
+import { searchLocationController } from './controller.js'
 
 const searchLocationCy = {
   plugin: {

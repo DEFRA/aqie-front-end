@@ -1,5 +1,4 @@
-/* eslint-disable prettier/prettier */
-import { ozoneController } from '~/src/server/ozone/controller'
+import { ozoneController } from './controller.js'
 
 const ozone = {
   plugin: {
