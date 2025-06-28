@@ -1,12 +1,12 @@
-import * as airQualityData from '~/src/server/data/cy/air-quality.js'
-import { fetchData } from '~/src/server/locations/helpers/fetch-data'
-import { welsh, calendarWelsh } from '~/src/server/data/cy/cy.js'
-import { calendarEnglish } from '~/src/server/data/en/en.js'
+import * as airQualityData from '../../data/cy/air-quality.js'
+import { fetchData } from '../helpers/fetch-data.js'
+import { welsh, calendarWelsh } from '../../data/cy/cy.js'
+import { calendarEnglish } from '../../data/en/en.js'
 import {
   siteTypeDescriptions,
   pollutantTypes
-} from '~/src/server/data/cy/monitoring-sites.js'
-import { handleErrorInputAndRedirect } from '~/src/server/locations/helpers/error-input-and-redirect'
+} from '../../data/cy/monitoring-sites.js'
+import { handleErrorInputAndRedirect } from '../helpers/error-input-and-redirect.js'
 import {
   handleSingleMatch,
   handleMultipleMatches,
@@ -14,23 +14,23 @@ import {
   getTitleAndHeaderTitle,
   getLanguageDates,
   getFormattedDateSummary
-} from '~/src/server/locations/helpers/middleware-helpers'
+} from '../helpers/middleware-helpers.js'
 import {
   LANG_CY,
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI
-} from '~/src/server/data/constants'
-import { getMonth } from '~/src/server/locations/helpers/location-type-util'
+} from '../../data/constants.js'
+import { getMonth } from '../helpers/location-type-util.js'
 import {
   convertStringToHyphenatedLowercaseWords,
   isValidFullPostcodeUK,
   isValidPartialPostcodeUK,
   isValidPartialPostcodeNI,
   isOnlyWords
-} from '~/src/server/locations/helpers/convert-string'
-import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
-import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case.js'
-import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
+} from '../helpers/convert-string.js'
+import { sentenceCase } from '../../common/helpers/sentence-case.js'
+import { convertFirstLetterIntoUppercase } from '../helpers/convert-first-letter-into-upper-case.js'
+import { transformKeys } from '../helpers/transform-summary-keys.js'
 
 const searchMiddlewareCy = async (request, h) => {
   const { query, payload } = request

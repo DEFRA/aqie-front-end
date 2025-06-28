@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 async function showLocationPage(
   results,
   airQuality,
@@ -28,7 +27,7 @@ async function showLocationPage(
       transformedDailySummary,
       summaryDate
     })
-  } else if (locationString === 'multiple-results/multiple-locations')
+  } else if (locationString === 'multiple-results/multiple-locations') {
     return h.view(locationString, {
       results,
       airQuality,
@@ -40,5 +39,6 @@ async function showLocationPage(
       serviceName,
       userLocation
     })
+  }
 }
 export { showLocationPage }

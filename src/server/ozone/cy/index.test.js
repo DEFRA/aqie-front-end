@@ -1,4 +1,4 @@
-import { ozoneController } from './controller'
+import { ozoneController } from './controller.js'
 import { ozoneCy } from './index'
 import Hapi from '@hapi/hapi'
 
@@ -11,9 +11,9 @@ describe('ozone index plugin - cy', () => {
   })
 
   beforeEach(() => {
-    jest.mock('./controller', () => ({
+    vi.mock('./controller.js', () => ({
       ozoneController: {
-        handler: jest.fn(),
+        handler: vi.fn(),
         options: {}
       }
     }))

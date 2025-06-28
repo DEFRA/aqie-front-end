@@ -1,4 +1,4 @@
-import { routes } from '~/src/server/home/routes'
+import { routes } from '../home/routes.js'
 
 const home = {
   plugin: {

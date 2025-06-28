@@ -1,29 +1,29 @@
 import {
   siteTypeDescriptions,
   pollutantTypes
-} from '~/src/server/data/en/monitoring-sites.js'
-import * as airQualityData from '~/src/server/data/en/air-quality.js'
-import { english, calendarEnglish } from '~/src/server/data/en/en.js'
-import { calendarWelsh } from '~/src/server/data/cy/cy.js'
-import moment from 'moment-timezone'
-import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
-import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-util'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
+} from '../data/en/monitoring-sites.js'
+import * as airQualityData from '../data/en/air-quality.js'
 import {
   LANG_CY,
   LANG_EN,
   LOCATION_NOT_FOUND,
   LOCATION_TYPE_NI,
   LOCATION_TYPE_UK
-} from '~/src/server/data/constants'
-import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
-import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
-import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
-import { airQualityValues } from '~/src/server/locations/helpers/air-quality-values.js'
-import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
-import { getIdMatch } from '~/src/server/locations/helpers/get-id-match'
-import { getNIData } from '~/src/server/locations/helpers/get-ni-single-data'
-import { compareLastElements } from '~/src/server/locations/helpers/convert-string'
+} from '../data/constants.js'
+import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
+import { english, calendarEnglish } from '../data/en/en.js'
+import { calendarWelsh } from '../data/cy/cy.js'
+import moment from 'moment-timezone'
+import { convertFirstLetterIntoUppercase } from '../locations/helpers/convert-first-letter-into-upper-case.js'
+import { gazetteerEntryFilter } from '../locations/helpers/gazetteer-util.js'
+import { createLogger } from '../common/helpers/logging/logger.js'
+import { getSearchTermsFromUrl } from '../locations/helpers/get-search-terms-from-url.js'
+import { transformKeys } from '../locations/helpers/transform-summary-keys.js'
+import { airQualityValues } from '../locations/helpers/air-quality-values.js'
+import { getNearestLocation } from '../locations/helpers/get-nearest-location.js'
+import { getIdMatch } from '../locations/helpers/get-id-match.js'
+import { getNIData } from '../locations/helpers/get-ni-single-data.js'
+import { compareLastElements } from '../locations/helpers/convert-string.js'
 
 const logger = createLogger()
 
@@ -54,7 +54,11 @@ const getLocationDetailsController = {
         request.yar.clear('locationData')
         return h
           .redirect(
-            `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}`
+            `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(
+              secondSearchTerm
+            )}&searchTermsLocationType=${encodeURIComponent(
+              searchTermsLocationType
+            )}`
           )
           .takeover()
       }

@@ -1,7 +1,6 @@
-/* eslint-disable prettier/prettier */
 import * as geolib from 'geolib'
 import OsGridRef from 'mt-osgridref'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
+import { createLogger } from '../../common/helpers/logging/logger.js'
 const logger = createLogger()
 
 function pointsInRange(point1, point2) {

@@ -1,5 +1,5 @@
-import { proxyFetch } from '~/src/helpers/proxy-fetch.js'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
+import { proxyFetch } from '../../../helpers/proxy-fetch.js'
+import { createLogger } from '../../../server/common/helpers/logging/logger.js'
 const logger = createLogger()
 
 async function catchProxyFetchError(url, options, shouldCallApi) {

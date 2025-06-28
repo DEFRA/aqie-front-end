@@ -1,4 +1,4 @@
-import { accessibilityController } from '~/src/server/accessibility/controller'
+import { accessibilityController } from './controller.js'
 
 const routes = [
   {

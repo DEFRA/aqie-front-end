@@ -1,7 +1,7 @@
-import { welsh } from '~/src/server/data/cy/cy.js'
+import { welsh } from '../../data/cy/cy.js'
 import { particulateMatter25Controller } from '../cy/controller.js'
-import { LANG_EN, LANG_CY } from '~/src/server/data/constants.js'
-import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
+import { LANG_EN, LANG_CY } from '../../data/constants.js'
+import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
 describe('Particular matter25 Controller - English', () => {
   let mockRequest
@@ -13,14 +13,14 @@ describe('Particular matter25 Controller - English', () => {
       query: {},
       path: '/llygryddion/mater-gronynnol-25/cy'
     }
-    jest.mock('~/src/server/common/helpers/get-site-url', () => ({
-      getAirQualitySiteUrl: jest.fn((request) => {
+    vi.mock('../../common/helpers/get-site-url.js', () => ({
+      getAirQualitySiteUrl: vi.fn((request) => {
         return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
       })
     }))
     mockH = {
-      redirect: jest.fn().mockReturnValue('redirected'),
-      view: jest.fn().mockReturnValue('view rendered')
+      redirect: vi.fn().mockReturnValue('redirected'),
+      view: vi.fn().mockReturnValue('view rendered')
     }
   })
 

@@ -1,4 +1,4 @@
-import { searchTermsAndBorough } from '~/src/server/locations/helpers/search-terms-borough.js'
+import { searchTermsAndBorough } from './search-terms-borough.js'
 
 describe('searchTermsAndBorough', () => {
   test('returns false when exactWordFirstTerm is false', () => {

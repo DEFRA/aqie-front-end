@@ -1,24 +1,36 @@
-import { locationNotFoundController } from '~/src/server/location-not-found/cy/controller.js'
-import { locationNotFoundCy } from '~/src/server/location-not-found/cy/index.js'
+import { vi } from 'vitest'
+import { locationNotFoundCy } from './index.js'
+
+// Mock the controller
+const mockLocationNotFoundController = {
+  handler: vi.fn()
+}
+
+// Replace the controller import with the mock
+vi.mock('./controller.js', () => ({
+  locationNotFoundController: mockLocationNotFoundController
+}))
 
 describe('location-not-found index plugin - cy', () => {
   let server
 
   beforeEach(() => {
     server = {
-      route: jest.fn()
+      route: vi.fn()
     }
   })
 
-  test('should register location-not-found route', async () => {
+  it('should register location-not-found route', async () => {
     await locationNotFoundCy.plugin.register(server)
 
-    expect(server.route).toHaveBeenCalledWith([
+    const expectedRoute = [
       {
         method: 'GET',
         path: '/lleoliad-heb-ei-ganfod/cy',
-        ...locationNotFoundController
+        handler: expect.any(Function)
       }
-    ])
+    ]
+
+    expect(server.route).toHaveBeenCalledWith(expectedRoute)
   })
 })

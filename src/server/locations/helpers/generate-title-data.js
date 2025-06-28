@@ -1,7 +1,17 @@
-import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
-import { getTitleAndHeaderTitle } from '~/src/server/locations/helpers/middleware-helpers'
+import { convertStringToHyphenatedLowercaseWords } from './convert-string.js'
+import { getTitleAndHeaderTitle } from './middleware-helpers.js'
 // Helper function to generate title and route data
 const generateTitleData = (selectedMatches, locationNameOrPostcode) => {
+  if (!selectedMatches || !locationNameOrPostcode) {
+    return {
+      title: 'Unknown Location',
+      headerTitle: '',
+      urlRoute: '',
+      headerTitleRoute: '',
+      titleRoute: ''
+    }
+  }
+
   const { title, headerTitle, urlRoute } = getTitleAndHeaderTitle(
     selectedMatches,
     locationNameOrPostcode

@@ -1,4 +1,4 @@
-import { healthController } from '~/src/server/health/controller'
+import { healthController } from './controller.js'
 
 const health = {
   plugin: {

@@ -1,5 +1,5 @@
-import { getLocationDataController } from '~/src/server/multiple-results/controller.js'
-import { multipleResults } from '~/src/server/multiple-results/index.js'
+import { getLocationDataController } from './controller.js'
+import { multipleResults } from './index.js'
 import Hapi from '@hapi/hapi'
 
 describe('multiple-results index plugin - en', () => {
@@ -11,9 +11,9 @@ describe('multiple-results index plugin - en', () => {
   })
 
   beforeEach(() => {
-    jest.mock('~/src/server/multiple-results/controller', () => ({
+    vi.mock('./controller.js', () => ({
       getLocationDataController: {
-        handler: jest.fn(),
+        handler: vi.fn(),
         options: {}
       }
     }))

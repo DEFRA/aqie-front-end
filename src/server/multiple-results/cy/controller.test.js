@@ -1,36 +1,25 @@
-import { getLocationDataController } from '~/src/server/multiple-results/cy/controller'
-// import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { welsh } from '~/src/server/data/cy/cy.js'
+import { getLocationDataController } from './controller.js'
+import { welsh } from '../../data/cy/cy.js'
 import {
   LANG_CY,
   LANG_EN,
   MULTIPLE_LOCATIONS_ROUTE_EN
-} from '~/src/server/data/constants'
-// import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
+} from '../../data/constants.js'
 
-jest.mock('~/src/server/common/helpers/logging/logger')
-jest.mock('~/src/server/data/en/en.js')
-jest.mock('~/src/server/data/cy/cy.js')
-jest.mock('~/src/server/data/constants')
-jest.mock('~/src/server/common/helpers/get-site-url')
-
-// const logger = createLogger()
-
-jest.mock('~/src/server/common/helpers/logging/logger', () => ({
-  createLogger: () => ({
-    error: jest.fn()
-  })
-}))
-
-jest.mock('~/src/server/common/helpers/get-site-url', () => ({
-  getAirQualitySiteUrl: jest.fn().mockReturnValue('http://example.com')
+vi.mock('../../common/helpers/logging/logger.js')
+vi.mock('../../data/en/en.js')
+vi.mock('../../data/cy/cy.js')
+vi.mock('../../data/constants.js')
+const mockMetaSiteUrl = 'http://example.com'
+vi.mock('../../common/helpers/get-site-url.js', () => ({
+  getAirQualitySiteUrl: vi.fn(() => mockMetaSiteUrl)
 }))
 
 describe('getLocationDataController', () => {
   it('should redirect to English multiple locations route when lang is set to English', async () => {
     const request = {
       yar: {
-        get: jest.fn().mockReturnValue({
+        get: vi.fn().mockReturnValue({
           results: [],
           monitoringSites: [],
           transformedDailySummary: [],
@@ -49,7 +38,7 @@ describe('getLocationDataController', () => {
       path: '/test-path'
     }
     const h = {
-      redirect: jest.fn()
+      redirect: vi.fn()
     }
 
     await getLocationDataController.handler(request, h)
@@ -60,7 +49,7 @@ describe('getLocationDataController', () => {
   it('should return multiple locations view with correct data when lang is set to Welsh', async () => {
     const request = {
       yar: {
-        get: jest.fn().mockReturnValue({
+        get: vi.fn().mockReturnValue({
           results: [],
           monitoringSites: [],
           transformedDailySummary: [],
@@ -79,7 +68,7 @@ describe('getLocationDataController', () => {
       path: '/test-path'
     }
     const h = {
-      view: jest.fn()
+      view: vi.fn()
     }
 
     await getLocationDataController.handler(request, h)

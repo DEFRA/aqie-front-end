@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 // Pollutant reference data
 
 export const pollutantTypes = {

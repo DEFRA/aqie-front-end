@@ -1,9 +1,9 @@
-import { getNIData } from '~/src/server/locations/helpers/get-ni-single-data'
-import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
-import { LOCATION_TYPE_NI } from '~/src/server/data/constants'
+import { getNIData } from './get-ni-single-data.js'
+import { sentenceCase } from '../../common/helpers/sentence-case.js'
+import { LOCATION_TYPE_NI } from '../../data/constants.js'
 
-jest.mock('~/src/server/common/helpers/sentence-case', () => ({
-  sentenceCase: jest.fn()
+vi.mock('../../common/helpers/sentence-case.js', () => ({
+  sentenceCase: vi.fn()
 }))
 
 describe('getNIData', () => {

@@ -1,26 +1,26 @@
-import { handleErrorInputAndRedirect } from '~/src/server/locations/helpers/extra-middleware-helpers'
-import { fetchData } from '~/src/server/locations/helpers/fetch-data'
+import { handleErrorInputAndRedirect } from './extra-middleware-helpers.js'
+import { fetchData } from './fetch-data.js'
 
-jest.mock('~/src/server/locations/helpers/fetch-data', () => ({
-  fetchData: jest.fn() // Mock the fetchData function
+vi.mock('./fetch-data.js', () => ({
+  fetchData: vi.fn() // Mock the fetchData function
 }))
 
-jest.mock('~/src/server/locations/helpers/extra-middleware-helpers', () => ({
-  handleErrorInputAndRedirect: jest.fn(), // Mock the handleErrorInputAndRedirect function
-  handleUKLocationType: jest.fn(() =>
+vi.mock('./extra-middleware-helpers.js', () => ({
+  handleErrorInputAndRedirect: vi.fn(), // Mock the handleErrorInputAndRedirect function
+  handleUKLocationType: vi.fn(() =>
     Promise.resolve('Mocked handleUKLocationType')
   )
 }))
 
-jest.mock('~/src/server/locations/helpers/convert-string', () => ({
-  isValidFullPostcodeUK: jest.fn(),
-  isOnlyWords: jest.fn()
+vi.mock('./convert-string.js', () => ({
+  isValidFullPostcodeUK: vi.fn(),
+  isOnlyWords: vi.fn()
 }))
 
-jest.mock('~/src/server/locations/helpers/middleware-helpers', () => ({
-  handleSingleMatch: jest.fn(), // Mock handleSingleMatch
-  handleMultipleMatches: jest.fn(() => 'Multiple matches handled'), // Mock handleMultipleMatches
-  processMatches: jest.fn(() => ({
+vi.mock('./middleware-helpers.js', () => ({
+  handleSingleMatch: vi.fn(), // Mock handleSingleMatch
+  handleMultipleMatches: vi.fn(() => 'Multiple matches handled'), // Mock handleMultipleMatches
+  processMatches: vi.fn(() => ({
     selectedMatches: [] // Default return value
   }))
 }))

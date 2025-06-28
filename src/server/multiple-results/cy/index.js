@@ -1,4 +1,4 @@
-import { getLocationDataController } from '~/src/server/multiple-results/cy/controller'
+import { getLocationDataController } from './controller.js'
 
 const multipleResultsCy = {
   plugin: {

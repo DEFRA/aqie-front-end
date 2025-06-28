@@ -1,5 +1,5 @@
-import { routes } from '~/src/server/cookies/cy/routes'
-import { cookiesController } from '~/src/server/cookies/cy/controller'
+import { routes } from './routes.js'
+import { cookiesController } from './controller.js'
 
 describe('Routes', () => {
   it('should include the briwsion/cy route', () => {

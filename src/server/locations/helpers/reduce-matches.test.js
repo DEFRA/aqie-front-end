@@ -1,9 +1,9 @@
-import reduceMatches from '~/src/server/locations/helpers/reduce-matches'
-import { filterByPostcode } from '~/src/server/locations/helpers/filter-by-postcode'
-import { filterBySearchTerms } from '~/src/server/locations/helpers/filter-by-search-terms'
+import reduceMatches from './reduce-matches'
+import { filterByPostcode } from './filter-by-postcode'
+import { filterBySearchTerms } from './filter-by-search-terms'
 
-jest.mock('~/src/server/locations/helpers/filter-by-postcode')
-jest.mock('~/src/server/locations/helpers/filter-by-search-terms')
+vi.mock('./filter-by-postcode')
+vi.mock('./filter-by-search-terms')
 
 describe('reduceMatches', () => {
   const fullPostcodePattern = /^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$/i

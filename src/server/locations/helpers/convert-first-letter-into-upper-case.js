@@ -16,8 +16,9 @@ export const convertFirstLetterIntoUppercase = (str) => {
           word === 'quality' ||
           word === 'aer' ||
           word === 'ansawdd'
-        )
+        ) {
           return word.toLowerCase()
+        }
         if (word !== 'and' && word !== 'the' && word !== 'of') {
           return word === 'gov.uk'
             ? word.toUpperCase()
@@ -39,8 +40,9 @@ export const convertFirstLetterIntoUppercase = (str) => {
         word === 'quality' ||
         word === 'aer' ||
         word === 'ansawdd'
-      )
+      ) {
         return word.toLowerCase()
+      }
       if (word !== 'and' && word !== 'the' && word !== 'of') {
         return word === 'gov.uk'
           ? word.toUpperCase()

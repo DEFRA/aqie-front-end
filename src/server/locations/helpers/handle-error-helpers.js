@@ -1,18 +1,18 @@
-import { getAirQuality } from '~/src/server/data/en/air-quality.js'
-import { getLocationNameOrPostcode } from '~/src/server/locations/helpers/location-type-util'
+import { getAirQuality } from '../../data/en/air-quality.js'
+import { getLocationNameOrPostcode } from './location-type-util.js'
 import {
   handleMissingLocation,
   handleUKError,
   handleNIError,
   formatPostcode
-} from '~/src/server/locations/helpers/error-input-and-redirect-helpers.js'
+} from './error-input-and-redirect-helpers.js'
 import {
   isValidFullPostcodeUK,
   isValidPartialPostcodeUK,
   isOnlyWords,
   isValidFullPostcodeNI,
   isValidPartialPostcodeNI
-} from '~/src/server/locations/helpers/convert-string'
+} from './convert-string.js'
 import {
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI,
@@ -20,7 +20,7 @@ import {
   AIR_QUALITY_THRESHOLD_2,
   AIR_QUALITY_THRESHOLD_3,
   AIR_QUALITY_THRESHOLD_4
-} from '~/src/server/data/constants'
+} from '../../data/constants.js'
 /**
  * Handles the case where search terms are not provided.
  */
@@ -99,14 +99,30 @@ const handleNoSearchTerms = (request, h, lang, payload) => {
 /**
  * Handles the case where search terms are provided.
  */
+const DEFAULT_LOCATION_TYPE = 'uk-location'
+const NI_LOCATION_TYPE = 'ni-location'
+
 const handleSearchTerms = (searchTerms) => {
+  // Debugging logs
+  console.log('Validating search terms:', searchTerms)
+  console.log('isValidFullPostcodeNI:', isValidFullPostcodeNI(searchTerms))
+  console.log(
+    'isValidPartialPostcodeNI:',
+    isValidPartialPostcodeNI(searchTerms)
+  )
+  console.log('isValidFullPostcodeUK:', isValidFullPostcodeUK(searchTerms))
+  console.log(
+    'isValidPartialPostcodeUK:',
+    isValidPartialPostcodeUK(searchTerms)
+  )
+
+  // Prioritize UK postcodes over NI postcodes
   if (
-    isOnlyWords(searchTerms) &&
-    (isValidFullPostcodeUK(searchTerms) ||
-      isValidPartialPostcodeUK(searchTerms))
+    isValidFullPostcodeUK(searchTerms) ||
+    isValidPartialPostcodeUK(searchTerms)
   ) {
     return {
-      locationType: 'uk-location',
+      locationType: DEFAULT_LOCATION_TYPE,
       userLocation: searchTerms,
       locationNameOrPostcode: searchTerms
     }
@@ -117,14 +133,23 @@ const handleSearchTerms = (searchTerms) => {
     isValidPartialPostcodeNI(searchTerms)
   ) {
     return {
-      locationType: 'ni-location',
+      locationType: NI_LOCATION_TYPE,
       userLocation: searchTerms,
       locationNameOrPostcode: searchTerms
     }
   }
 
+  if (isOnlyWords(searchTerms)) {
+    return {
+      locationType: DEFAULT_LOCATION_TYPE,
+      userLocation: searchTerms,
+      locationNameOrPostcode: searchTerms
+    }
+  }
+
+  // Default to UK location for invalid search terms
   return {
-    locationType: 'uk-location',
+    locationType: DEFAULT_LOCATION_TYPE,
     userLocation: searchTerms,
     locationNameOrPostcode: searchTerms
   }

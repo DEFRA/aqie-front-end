@@ -1,4 +1,4 @@
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
+import { createLogger } from './logging/logger.js'
 const logger = createLogger()
 
 async function catchFetchError(url, options) {

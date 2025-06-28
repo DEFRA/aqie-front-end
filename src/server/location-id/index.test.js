@@ -1,12 +1,12 @@
-import { configureRoutes, locationId } from '~/src/server/location-id/index'
-import { getLocationDetailsController } from '~/src/server/location-id/controller'
+import { configureRoutes, locationId } from './index'
+import { getLocationDetailsController } from './controller.js'
 
 describe('configureRoutes', () => {
   let server
 
   beforeEach(() => {
     server = {
-      route: jest.fn()
+      route: vi.fn()
     }
   })
 
@@ -28,7 +28,7 @@ describe('locationId plugin', () => {
 
   beforeEach(() => {
     server = {
-      route: jest.fn()
+      route: vi.fn()
     }
   })
 

@@ -1,6 +1,6 @@
-import { cookiesController, cookiesHandler } from './controller'
-import { welsh } from '~/src/server/data/cy/cy.js'
-import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
+import { cookiesController, cookiesHandler } from './controller.js'
+import { welsh } from '../../data/cy/cy.js'
+import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
 describe('Cookies Handler', () => {
   let mockRequest
@@ -12,14 +12,14 @@ describe('Cookies Handler', () => {
       query: {},
       path: ''
     }
-    jest.mock('~/src/server/common/helpers/get-site-url', () => ({
-      getAirQualitySiteUrl: jest.fn((request) => {
+    vi.mock('../../common/helpers/get-site-url.js', () => ({
+      getAirQualitySiteUrl: vi.fn((request) => {
         return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
       })
     }))
     mockH = {
-      redirect: jest.fn().mockReturnValue('redirected'),
-      view: jest.fn().mockReturnValue('view rendered')
+      redirect: vi.fn().mockReturnValue('redirected'),
+      view: vi.fn().mockReturnValue('view rendered')
     }
   })
 

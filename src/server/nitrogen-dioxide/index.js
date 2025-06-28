@@ -1,5 +1,4 @@
-/* eslint-disable prettier/prettier */
-import { nitrogenDioxideController } from '~/src/server/nitrogen-dioxide/controller'
+import { nitrogenDioxideController } from './controller.js'
 
 const nitrogenDioxide = {
   plugin: {

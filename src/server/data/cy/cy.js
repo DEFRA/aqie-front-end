@@ -1,4 +1,4 @@
-import { WELSH_TITLE } from '~/src/server/data/constants'
+import { WELSH_TITLE } from '../constants.js'
 
 export const welsh = {
   home: {
@@ -311,7 +311,7 @@ export const welsh = {
         g: 'paill',
         h: 'gorsafoedd pŵer',
         i: 'Cerbydau',
-        j: 'Mae effeithiau iechyd byrdmor PM10 yn cynnwys:',
+        j: 'Mae effeithiau iechyd byrdymor PM10 yn cynnwys:',
         k: 'anhawster anadlu',
         l: 'pesychu',
         m: 'llid yn y llygaid, y trwyn a’r gwddf',

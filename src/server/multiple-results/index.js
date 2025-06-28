@@ -1,4 +1,4 @@
-import { getLocationDataController } from '~/src/server/multiple-results/controller'
+import { getLocationDataController } from './controller.js'
 
 const multipleResults = {
   plugin: {

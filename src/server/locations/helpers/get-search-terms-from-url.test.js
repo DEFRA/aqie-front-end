@@ -1,14 +1,14 @@
-import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
-import { getPostcode } from '~/src/server/locations/helpers/get-postcode-type'
-import { isOnlyWords } from '~/src/server/locations/helpers/convert-string'
-import { LOCATION_TYPE_NI, LOCATION_TYPE_UK } from '~/src/server/data/constants'
+import { getSearchTermsFromUrl } from './get-search-terms-from-url.js'
+import { getPostcode } from './get-postcode-type.js'
+import { isOnlyWords } from './convert-string.js'
+import { LOCATION_TYPE_NI, LOCATION_TYPE_UK } from '../../data/constants.js'
 
-jest.mock('~/src/server/locations/helpers/get-postcode-type', () => ({
-  getPostcode: jest.fn()
+vi.mock('./get-postcode-type.js', () => ({
+  getPostcode: vi.fn()
 }))
 
-jest.mock('~/src/server/locations/helpers/convert-string', () => ({
-  isOnlyWords: jest.fn()
+vi.mock('./convert-string.js', () => ({
+  isOnlyWords: vi.fn()
 }))
 
 describe('getSearchTermsFromUrl', () => {
