@@ -21,8 +21,6 @@ async function createServer() {
   try {
     setupProxy()
     logger.info('Proxy setup completed')
-
-    const cacheEngine = getCacheEngine(config.get('session.cache.engine'))
     logger.info(
       `Cache engine initialized: ${config.get('session.cache.engine')}`
     )
@@ -56,7 +54,7 @@ async function createServer() {
       cache: [
         {
           name: config.get('session.cache.name'),
-          engine: cacheEngine
+          engine: getCacheEngine(config.get('session.cache.engine'))
         }
       ],
       state: {
