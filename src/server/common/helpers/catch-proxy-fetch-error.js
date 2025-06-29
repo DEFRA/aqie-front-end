@@ -1,4 +1,4 @@
-import { proxyFetch } from '../../../helpers/proxy-fetch.js'
+import { proxyFetch } from '../../../server/common/helpers/proxy.js'
 import { createLogger } from '../../../server/common/helpers/logging/logger.js'
 const logger = createLogger()
 
