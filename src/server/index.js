@@ -71,11 +71,12 @@ async function createServer() {
       secureContext,
       pulse,
       nunjucksConfig,
-      router
+      router // `serveStaticFiles` is already registered in the `router` plugin
     ]
 
     for (const plugin of plugins) {
-      logger.info(`Registering plugin: ${plugin.name || 'unknown'}`)
+      const pluginName = plugin.name || plugin.plugin?.name || plugin.plugin?.plugin?.pkg?.name || 'CustomPluginName'
+      logger.info(`Registering plugin: ${pluginName}`)
       await server.register(plugin)
     }
 

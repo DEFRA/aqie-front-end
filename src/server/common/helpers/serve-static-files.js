@@ -1,4 +1,9 @@
+import path from 'path'
+import { fileURLToPath } from 'url'
 import { config } from '../../../config/index.js'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const serveStaticFiles = {
   plugin: {
@@ -31,8 +36,9 @@ const serveStaticFiles = {
           path: '/public/{param*}',
           handler: {
             directory: {
-              path: '.',
-              redirectToSlash: true
+              path: path.join(__dirname, '../../../public/assets'), // Updated to serve files from /public/assets
+              redirectToSlash: true,
+              index: true
             }
           }
         }
