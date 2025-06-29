@@ -1,19 +1,22 @@
 // @ts-nocheck
 
-import { JSDOM } from 'jsdom';
+import { JSDOM } from 'jsdom'
 
-let window;
-let document;
+let window
+let document
 
 if (typeof global !== 'undefined' && typeof window === 'undefined') {
-  const dom = new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>', {
-    url: 'http://localhost',
-  });
-  window = dom.window;
-  document = window.document;
+  const dom = new JSDOM(
+    '<!DOCTYPE html><html><head></head><body></body></html>',
+    {
+      url: 'http://localhost'
+    }
+  )
+  window = dom.window
+  document = window.document
 } else {
-  window = globalThis.window;
-  document = globalThis.document;
+  window = globalThis.window
+  document = globalThis.document
 }
 
 export default function loadAnalytics() {
@@ -49,8 +52,10 @@ export default function loadAnalytics() {
 
 export function trackVirtualPageview(url, title) {
   if (!window.dataLayer) {
-    console.warn('trackVirtualPageview: dataLayer is not available, initializing it.');
-    window.dataLayer = [];
+    console.warn(
+      'trackVirtualPageview: dataLayer is not available, initializing it.'
+    )
+    window.dataLayer = []
   }
 
   if (Array.isArray(window.dataLayer)) {
@@ -59,12 +64,17 @@ export function trackVirtualPageview(url, title) {
         event: 'virtualPageview',
         virtualPageviewUrl: url,
         virtualPageviewTitle: title
-      });
-      console.log('Data successfully pushed to window.dataLayer:', window.dataLayer); // Debug statement
+      })
+      console.log(
+        'Data successfully pushed to window.dataLayer:',
+        window.dataLayer
+      ) // Debug statement
     } catch (error) {
-      console.error('Error pushing data to window.dataLayer:', error);
+      console.error('Error pushing data to window.dataLayer:', error)
     }
   } else {
-    console.error('trackVirtualPageview: dataLayer is not an array after initialization.');
+    console.error(
+      'trackVirtualPageview: dataLayer is not an array after initialization.'
+    )
   }
 }
