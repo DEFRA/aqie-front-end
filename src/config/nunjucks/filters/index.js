@@ -13,6 +13,5 @@ export {
   addMomentFilters,
   addDaysToTodayAbrev,
   addDaysToTodayAbrevWelsh,
-  addToSentenceCase,
-  assign
+  addToSentenceCase
 }

@@ -56,8 +56,6 @@ const fetchOAuthToken = async () => {
   return dataToken.access_token
 }
 
-const SUCCESS_STATUS_CODE = 200 // Define constant for magic number
-
 async function fetchData(
   request,
   h,
@@ -65,94 +63,162 @@ async function fetchData(
 ) {
   let optionsOAuth
   let savedAccessToken
-  const northernIrelandPostcodeRegex = /^BT\d{1,2}\s?\d?[A-Z]{0,2}$/
-  const niPoscode = northernIrelandPostcodeRegex.test(userLocation)
-  try {
-    if (locationType === LOCATION_TYPE_NI && !isMockEnabled) {
-      savedAccessToken = request.yar.get('savedAccessToken')
-      if (!savedAccessToken) {
-        await fetchOAuthToken()
+  let accessToken
+  if (locationType === LOCATION_TYPE_NI && !isMockEnabled) {
+    savedAccessToken = request.yar.get('savedAccessToken')
+    if (savedAccessToken) {
+      accessToken = savedAccessToken
+    } else {
+      accessToken = await fetchOAuthToken()
+    }
+    optionsOAuth = {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
       }
     }
-    const SYMBOLS_ARRAY = ['@', '#', '$', '%'] // Example symbols array
-    const forecastSummaryURL = config.get('forecastSummaryUrl')
-    const forecastsAPIurl = config.get('forecastsApiUrl')
-    const measurementsAPIurl = config.get('measurementsApiUrl')
+  }
+  // Function to refresh the OAuth token and update the session
+  const refreshOAuthToken = async () => {
+    accessToken = await fetchOAuthToken()
+    request.yar.clear('savedAccessToken')
+    request.yar.set('savedAccessToken', accessToken)
+  }
+  // Set an interval to refresh the OAuth token every 19 minutes (1140 seconds)
+  const refreshIntervalId = setInterval(
+    () => {
+      // Assuming you have access to the request object here
+      if (locationType === LOCATION_TYPE_NI && !isMockEnabled) {
+        refreshOAuthToken()
+      } else {
+        clearRefreshInterval()
+      }
+    },
+    30 * 60 * 1000
+  ) // 1 minute in milliseconds
 
-    const [forecastError, getForecasts] = await catchFetchError(
-      forecastsAPIurl,
-      options
+  // Function to clear the interval
+  const clearRefreshInterval = () => {
+    clearInterval(refreshIntervalId)
+  }
+  const northernIrelandPostcodeRegex = /^BT\d{1,2}\s?\d?[A-Z]{0,2}$/
+  const niPoscode = northernIrelandPostcodeRegex.test(userLocation)
+  const forecastSummaryURL = config.get('forecastSummaryUrl')
+  const forecastsAPIurl = config.get('forecastsApiUrl')
+  const measurementsAPIurl = config.get('measurementsApiUrl')
+  // Invoking Forecast API
+  const [forecastError, getForecasts] = await catchFetchError(
+    forecastsAPIurl,
+    options
+  )
+  if (forecastError) {
+    logger.error(`Error fetching forecasts data: ${forecastError.message}`)
+  } else {
+    logger.info(`forecasts data fetched:`)
+  }
+  // Invoking MeasureMent API
+  const [errorMeasurements, getMeasurements] = await catchFetchError(
+    measurementsAPIurl,
+    options
+  )
+  if (errorMeasurements) {
+    logger.error(
+      `Error fetching Measurements data: ${errorMeasurements.message}`
     )
-    if (forecastError) {
-      throw new Error(`Error fetching forecasts data: ${forecastError.message}`)
-    }
+  } else {
+    logger.info(`getMeasurements data fetched:`)
+  }
+  // Invoking Forecast Summary API
+  const [statusCodeSummary, getDailySummary] = await catchProxyFetchError(
+    forecastSummaryURL,
+    options,
+    true
+  )
+  if (statusCodeSummary !== 200) {
+    logger.error(`Error fetching statusCodeSummary data: ${statusCodeSummary}`)
+  } else {
+    logger.info(`getDailySummary data fetched:`)
+  }
 
-    const [errorMeasurements, getMeasurements] = await catchFetchError(
-      measurementsAPIurl,
-      options
-    )
-    if (errorMeasurements) {
-      throw new Error(
-        `Error fetching Measurements data: ${errorMeasurements.message}`
-      )
-    }
+  if (locationType === 'uk-location') {
+    const filters = [
+      'LOCAL_TYPE:City',
+      'LOCAL_TYPE:Town',
+      'LOCAL_TYPE:Village',
+      'LOCAL_TYPE:Suburban_Area',
+      'LOCAL_TYPE:Postcode',
+      'LOCAL_TYPE:Airport'
+    ].join('+')
+    const osNamesApiUrl = config.get('osNamesApiUrl')
+    const osNamesApiKey = config.get('osNamesApiKey')
 
-    const [statusCodeSummary, getDailySummary] = await catchProxyFetchError(
-      forecastSummaryURL,
-      options,
-      true
-    )
-    if (statusCodeSummary !== SUCCESS_STATUS_CODE) {
-      throw new Error(
-        `Error fetching statusCodeSummary data: ${statusCodeSummary}`
-      )
+    if (
+      !isValidFullPostcodeUK(userLocation.toUpperCase()) &&
+      !isValidPartialPostcodeUK(userLocation.toUpperCase()) &&
+      searchTerms &&
+      secondSearchTerm !== 'UNDEFINED'
+    ) {
+      userLocation = `${searchTerms} ${secondSearchTerm}`
     }
+    const osNamesApiUrlFull = `${osNamesApiUrl}${encodeURIComponent(
+      userLocation
+    )}&fq=${encodeURIComponent(filters)}&key=${osNamesApiKey}`
+
     let shouldCallApi = !SYMBOLS_ARRAY.some((symbol) =>
       userLocation.includes(symbol)
     )
     if (niPoscode) {
       shouldCallApi = false
     }
-    if (locationType === LOCATION_TYPE_UK) {
-      const getOSPlacesData = await getOSPlaces(
-        userLocation,
-        searchTerms,
-        secondSearchTerm,
-        shouldCallApi,
-        options
+    logger.info(
+      `osPlace data requested osNamesApiUrlFull: ${osNamesApiUrlFull}`
+    )
+    // Invoking OS Names API
+    const [statusCodeOSPlace, getOSPlaces] = await catchProxyFetchError(
+      osNamesApiUrlFull,
+      options,
+      shouldCallApi
+    )
+    if (statusCodeOSPlace !== 200) {
+      logger.error(
+        `Error fetching statusCodeOSPlace data: ${statusCodeOSPlace}`
       )
-      logger.info(`getOSPlaces data fetched:`)
-
-      return {
-        getDailySummary,
-        getForecasts,
-        getMeasurements,
-        getOSPlaces: { ...getOSPlacesData }
-      }
-    } else if (locationType === LOCATION_TYPE_NI) {
-      const getNIPlacesData = await getNIPlaces(
-        userLocation,
-        isMockEnabled,
-        optionsOAuth
-      )
-      logger.info(`getNIPlaces data fetched:`)
-
-      return {
-        getDailySummary,
-        getForecasts,
-        getMeasurements,
-        getNIPlaces: getNIPlacesData
-      }
     } else {
-      // '' Handle the case where locationType is neither 'uk-location' nor LOCATION_TYPE_NI
-      logger.error('Invalid locationType provided to fetchData')
-      return null
+      logger.info(`getOSPlaces data fetched:`)
     }
-  } catch (error) {
-    logger.error(error.message)
-    return null
-  } finally {
-    // Optional cleanup logic can be added here if needed
+
+    return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
+  } else if (locationType === LOCATION_TYPE_NI) {
+    const osPlacesApiPostcodeNorthernIrelandUrl = config.get(
+      'osPlacesApiPostcodeNorthernIrelandUrl'
+    )
+    const mockOsPlacesApiPostcodeNorthernIrelandUrl = config.get(
+      'mockOsPlacesApiPostcodeNorthernIrelandUrl'
+    )
+    const userLocationLocal = formatNorthernIrelandPostcode(
+      userLocation.toUpperCase()
+    )
+    const postcodeNortherIrelandURL = isMockEnabled
+      ? `${mockOsPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocationLocal)}&_limit=1`
+      : `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
+    let [statusCodeNI, getNIPlaces] = await catchProxyFetchError(
+      postcodeNortherIrelandURL,
+      optionsOAuth,
+      true
+    )
+    if (isMockEnabled) {
+      getNIPlaces = {
+        results: Array.isArray(getNIPlaces) ? getNIPlaces : [getNIPlaces]
+      }
+    }
+    if (statusCodeNI !== 200) {
+      logger.error(`Error fetching statusCodeNI data: ${statusCodeNI}`)
+    } else {
+      logger.info(`getNIPlaces data fetched:`)
+    }
+
+    return { getDailySummary, getForecasts, getMeasurements, getNIPlaces }
   }
 }
 
