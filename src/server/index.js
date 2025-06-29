@@ -75,7 +75,11 @@ async function createServer() {
     ]
 
     for (const plugin of plugins) {
-      const pluginName = plugin.name || plugin.plugin?.name || plugin.plugin?.plugin?.pkg?.name || 'CustomPluginName'
+      const pluginName =
+        plugin.name ||
+        plugin.plugin?.name ||
+        plugin.plugin?.plugin?.pkg?.name ||
+        'CustomPluginName'
       logger.info(`Registering plugin: ${pluginName}`)
       await server.register(plugin)
     }
