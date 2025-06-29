@@ -78,8 +78,18 @@ if ($cookiesPage) {
   console.warn('Cookies page element not found') // eslint-disable-line no-console
 }
 // Initialise all GOV.UK Frontend components
-try {
-  initAll()
-} catch (error) {
-  console.error('Failed to initialize GOV.UK Frontend components:', error) // eslint-disable-line no-console
-}
+import {
+  createAll,
+  Button,
+  Checkboxes,
+  ErrorSummary,
+  Header,
+  Radios,
+  SkipLink
+} from 'govuk-frontend'
+createAll(Button)
+createAll(Checkboxes)
+createAll(ErrorSummary)
+createAll(Header)
+createAll(Radios)
+createAll(SkipLink)

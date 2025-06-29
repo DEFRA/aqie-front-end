@@ -31,10 +31,9 @@ function context(request) {
     serviceUrl: '/',
     breadcrumbs: [],
     navigation: buildNavigation(request),
-    getAssetPath: function (asset) {
-      const webpackAssetPath = webpackManifest[asset]
-
-      return `/${assetPath}/${webpackAssetPath}`
+    getAssetPath(asset) {
+      const webpackAssetPath = webpackManifest?.[asset]
+      return `${assetPath}/${webpackAssetPath ?? asset}`
     }
   }
 }
