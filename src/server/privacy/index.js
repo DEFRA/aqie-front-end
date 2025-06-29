@@ -1,5 +1,4 @@
-/* eslint-disable prettier/prettier */
-import { privacyController } from '~/src/server/privacy/controller'
+import { privacyController } from './controller.js'
 
 const privacy = {
   plugin: {

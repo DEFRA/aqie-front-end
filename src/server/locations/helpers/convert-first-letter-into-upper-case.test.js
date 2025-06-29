@@ -1,4 +1,4 @@
-import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
+import { convertFirstLetterIntoUppercase } from './convert-first-letter-into-upper-case.js'
 
 describe('convertFirstLetterIntoUppercase', () => {
   it('should capitalize the first letter of each word except "and", "the", "of", "air", "quality", "aer", "ansawdd"', () => {

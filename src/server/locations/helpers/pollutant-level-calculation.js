@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 function getPollutantLevel(polValue, pollutant) {
   let getDaqi = 0
   let getBand = ''

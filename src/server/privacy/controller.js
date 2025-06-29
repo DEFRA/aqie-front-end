@@ -1,7 +1,6 @@
-/* eslint-disable prettier/prettier */
-import { english } from '~/src/server/data/en/en.js'
-import { LANG_CY } from '~/src/server/data/constants'
-import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
+import { english } from '../data/en/en.js'
+import { LANG_CY } from '../data/constants.js'
+import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
 const privacyController = {
   handler: (request, h) => {

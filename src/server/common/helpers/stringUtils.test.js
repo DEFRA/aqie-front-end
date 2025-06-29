@@ -1,4 +1,4 @@
-import { firstLetterUppercase } from '~/src/server/common/helpers/stringUtils'
+import { firstLetterUppercase } from '../../common/helpers/stringUtils'
 
 describe('firstLetterUppercase', () => {
   it('should capitalize the first letter of each word except "and", "the", "of", "air", "quality", "aer", "ansawdd"', () => {

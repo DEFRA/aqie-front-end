@@ -1,7 +1,9 @@
-import { english } from '~/src/server/data/en/en.js'
-import { privacyController } from '~/src/server/privacy/controller.js'
-import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
-import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
+/* global vi */
+
+import { privacyController } from './controller.js'
+import { english } from '../data/en/en.js'
+import { LANG_CY, LANG_EN } from '../data/constants.js'
+import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
 describe('privacy controller - English', () => {
   let mockRequest
@@ -12,14 +14,14 @@ describe('privacy controller - English', () => {
       query: {},
       path: '/privacy'
     }
-    jest.mock('~/src/server/common/helpers/get-site-url', () => ({
-      getAirQualitySiteUrl: jest.fn((request) => {
+    vi.mock('../common/helpers/get-site-url.js', () => ({
+      getAirQualitySiteUrl: vi.fn((request) => {
         return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
       })
     }))
     mockH = {
-      redirect: jest.fn().mockReturnValue('redirected'),
-      view: jest.fn().mockReturnValue('view rendered')
+      redirect: vi.fn().mockReturnValue('redirected'),
+      view: vi.fn().mockReturnValue('view rendered')
     }
   })
 

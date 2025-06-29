@@ -2,7 +2,7 @@ import { homeCy } from './index'
 
 describe('home index plugin - cy', () => {
   const server = {
-    route: jest.fn()
+    route: vi.fn()
   }
 
   test('should register home routes', () => {

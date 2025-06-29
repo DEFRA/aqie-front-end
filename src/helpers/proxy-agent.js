@@ -1,4 +1,4 @@
-import { config } from '~/src/config'
+import { config } from '../config'
 import { HttpsProxyAgent } from 'https-proxy-agent'
 import { Url } from 'url'
 import { createLogger } from '~/src/server/common/helpers/logging/logger'

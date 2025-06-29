@@ -1,7 +1,8 @@
-import { nitrogenDioxideController } from '~/src/server/nitrogen-dioxide/controller'
-import { english } from '~/src/server/data/en/en.js'
-import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
-import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
+/* global vi */
+import { nitrogenDioxideController } from './controller.js'
+import { english } from '../data/en/en.js'
+import { LANG_CY, LANG_EN } from '../data/constants.js'
+import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
 describe('Nitrogen Dioxide Controller - English', () => {
   let mockRequest
@@ -13,14 +14,14 @@ describe('Nitrogen Dioxide Controller - English', () => {
       query: {},
       path: '/pollutants/nitrogen-dioxide'
     }
-    jest.mock('~/src/server/common/helpers/get-site-url', () => ({
-      getAirQualitySiteUrl: jest.fn((request) => {
+    vi.mock('../../common/helpers/get-site-url.js', () => ({
+      getAirQualitySiteUrl: vi.fn((request) => {
         return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
       })
     }))
     mockH = {
-      redirect: jest.fn().mockReturnValue('redirected'),
-      view: jest.fn().mockReturnValue('view rendered')
+      redirect: vi.fn().mockReturnValue('redirected'),
+      view: vi.fn().mockReturnValue('view rendered')
     }
   })
 

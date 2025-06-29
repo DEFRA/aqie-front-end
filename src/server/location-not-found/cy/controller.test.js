@@ -1,9 +1,9 @@
-import { locationNotFoundController } from '~/src/server/location-not-found/cy/controller'
-import { welsh } from '~/src/server/data/cy/cy.js'
+import { locationNotFoundController } from './controller.js'
+import { welsh } from '../../data/cy/cy.js'
 import {
   LOCATION_NOT_FOUND,
   LOCATION_NOT_FOUND_ROUTE_EN
-} from '~/src/server/data/constants'
+} from '../../data/constants.js'
 
 describe('locationNotFoundController - welsh', () => {
   let mockRequest
@@ -15,19 +15,19 @@ describe('locationNotFoundController - welsh', () => {
       query: {},
       path: '/lleoliad-heb-ei-ganfod/cy',
       yar: {
-        get: jest.fn().mockReturnValue({
+        get: vi.fn().mockReturnValue({
           locationNameOrPostcode: '',
           lang: 'cy'
         })
       }
     }
     mockH = {
-      redirect: jest.fn().mockReturnValue('redirected'),
-      view: jest.fn().mockReturnValue('view rendered')
+      redirect: vi.fn().mockReturnValue('redirected'),
+      view: vi.fn().mockReturnValue('view rendered')
     }
   })
 
-  test('should render the location not found view with empty location data', () => {
+  it('should render the location not found view with empty location data', () => {
     mockRequest.query.lang = 'cy'
     const result = locationNotFoundController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')

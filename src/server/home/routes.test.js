@@ -1,5 +1,5 @@
-import { configureRoutes } from '~/src/server/home/routes'
-import { homeController } from '~/src/server/home/controller'
+import { configureRoutes } from './routes.js'
+import { homeController } from './controller.js'
 
 describe('Route Configuration', () => {
   it('should configure the routes correctly', () => {

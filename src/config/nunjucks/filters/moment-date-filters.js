@@ -5,7 +5,7 @@ import {
   EUROPE_LONDON,
   CALENDAR_STRING,
   HOURS_TO_SUBTRACT
-} from '~/src/server/data/constants'
+} from '../../../server/data/constants.js'
 
 /**
  * Formats a moment date with lowercase 'am/pm'.

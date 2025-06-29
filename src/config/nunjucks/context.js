@@ -1,21 +1,18 @@
 import path from 'path'
-
-import { config } from '~/src/config'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
+import { config } from '../index.js'
+import { createLogger } from '../../server/common/helpers/logging/logger.js'
+import { readFileSync } from 'fs'
 
 const logger = createLogger()
 const assetPath = config.get('assetPath')
-const manifestPath = path.resolve(
-  config.get('root'),
-  '.public',
-  'manifest.json'
-)
+const manifestPath = path.resolve(config.get('root'), 'dist', 'manifest.json')
 let webpackManifest
 
 try {
-  webpackManifest = require(manifestPath)
+  const manifestContent = readFileSync(manifestPath, 'utf-8')
+  webpackManifest = JSON.parse(manifestContent)
 } catch (error) {
-  logger.error('Webpack Manifest assets file not found')
+  logger.error('Webpack Manifest assets file not found', error)
 }
 
 function buildNavigation(request) {
@@ -34,10 +31,12 @@ function context(request) {
     serviceUrl: '/',
     breadcrumbs: [],
     navigation: buildNavigation(request),
-    getAssetPath: function (asset) {
-      const webpackAssetPath = webpackManifest[asset]
-
-      return `/${assetPath}/${webpackAssetPath}`
+    getAssetPath(asset) {
+      const webpackAssetPath = webpackManifest?.[asset]
+      // Ensure no redundant '/public/' segments in the asset path
+      const normalizedAssetPath =
+        webpackAssetPath?.replace(/^\/public\//, '') ?? asset
+      return `${assetPath}/${normalizedAssetPath}`
     }
   }
 }

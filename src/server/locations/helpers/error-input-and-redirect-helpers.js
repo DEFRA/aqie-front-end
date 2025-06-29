@@ -4,9 +4,9 @@ import {
   REDIRECT_PATH_CY,
   REDIRECT_PATH_EN,
   POSTCODE_SPACE_INDEX
-} from '~/src/server/data/constants'
-import { english } from '~/src/server/data/en/en.js'
-import { welsh } from '~/src/server/data/cy/cy.js'
+} from '../../data/constants.js'
+import { english } from '../../data/en/en.js'
+import { welsh } from '../../data/cy/cy.js'
 
 /**
  * Handles missing location type and name/postcode.

@@ -1,6 +1,6 @@
-import { homeController, handleHomeRequest } from './controller'
-import { english } from '~/src/server/data/en/en.js'
-import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
+import { homeController, handleHomeRequest } from './controller.js'
+import { english } from '../data/en/en.js'
+import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
 describe('Home Controller', () => {
   let mockRequest
@@ -12,14 +12,14 @@ describe('Home Controller', () => {
       query: {},
       path: ''
     }
-    jest.mock('~/src/server/common/helpers/get-site-url', () => ({
-      getAirQualitySiteUrl: jest.fn((request) => {
+    vi.mock('../common/helpers/get-site-url.js', () => ({
+      getAirQualitySiteUrl: vi.fn((request) => {
         return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
       })
     }))
     mockH = {
-      redirect: jest.fn().mockReturnValue('redirected'),
-      view: jest.fn().mockReturnValue('view rendered')
+      redirect: vi.fn().mockReturnValue('redirected'),
+      view: vi.fn().mockReturnValue('view rendered')
     }
   })
 

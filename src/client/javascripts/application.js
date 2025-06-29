@@ -1,15 +1,13 @@
 /* eslint-disable no-new */
 
-import { initAll } from 'govuk-frontend'
-
 import '../stylesheets/application.scss'
 
-import '../images/favicon.ico'
-import '../images/favicon.svg'
-import '../images/govuk-icon-180.png'
-import '../images/govuk-icon-192.png'
-import '../images/govuk-icon-512.png'
-import '../images/govuk-icon-mask.svg'
+import '../assets/images/favicon.ico'
+import '../assets/images/favicon.svg'
+import '../assets/images/govuk-icon-180.png'
+import '../assets/images/govuk-icon-192.png'
+import '../assets/images/govuk-icon-512.png'
+import '../assets/images/govuk-icon-mask.svg'
 
 import CookieBanner from './components/cookie-banner.mjs'
 import Analytics from './components/load-analytics.mjs'
@@ -40,9 +38,11 @@ async function initializeComponent(Component, element) {
 }
 
 // Initialise cookie banner
+console.log('Initializing CookieBanner...')
 const $cookieBanner = document.querySelector(COOKIE_BANNER_SELECTOR)
 if ($cookieBanner) {
-  initializeComponent(CookieBanner, $cookieBanner) // ''
+  initializeComponent(CookieBanner, $cookieBanner)
+  console.log('CookieBanner initialized successfully')
 } else {
   console.warn('Cookie banner element not found') // eslint-disable-line no-console
 }
@@ -66,18 +66,34 @@ function initializeAnalytics() {
 }
 
 // Call the analytics initialization function
+console.log('Initializing Analytics...')
 initializeAnalytics()
+console.log('Analytics initialized successfully')
 
 // Initialise cookie page
+console.log('Initializing CookiesPage...')
 const $cookiesPage = document.querySelector(COOKIES_PAGE_SELECTOR)
 if ($cookiesPage) {
   initializeComponent(CookiesPage, $cookiesPage)
+  console.log('CookiesPage initialized successfully')
 } else {
   console.warn('Cookies page element not found') // eslint-disable-line no-console
 }
+
 // Initialise all GOV.UK Frontend components
-try {
-  initAll()
-} catch (error) {
-  console.error('Failed to initialize GOV.UK Frontend components:', error) // eslint-disable-line no-console
-}
+// Initialise all GOV.UK Frontend components
+import {
+  createAll,
+  Button,
+  Checkboxes,
+  ErrorSummary,
+  Header,
+  Radios,
+  SkipLink
+} from 'govuk-frontend'
+createAll(Button)
+createAll(Checkboxes)
+createAll(ErrorSummary)
+createAll(Header)
+createAll(Radios)
+createAll(SkipLink)

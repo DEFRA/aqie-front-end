@@ -1,28 +1,45 @@
 import moment from 'moment'
-import { LANG_CY, SUMMARY_TRANSLATIONS } from '~/src/server/data/constants'
+import { LANG_CY, SUMMARY_TRANSLATIONS } from '../../data/constants.js'
 
 const transformKeys = (dailySummary, lang) => {
-  const dailySummaryIssueDate = moment(dailySummary?.issue_date)
+  const isValidDate = (date) => moment(date, moment.ISO_8601, true).isValid()
+
+  const dailySummaryIssueDate = isValidDate(dailySummary?.issue_date)
+    ? moment(dailySummary.issue_date)
+    : moment.invalid()
+
   const currentDate = moment().startOf('day')
-  const isCurrentDate = currentDate.isSame(dailySummaryIssueDate, 'day')
-  const tomorrow = dailySummaryIssueDate.clone().add(1, 'days').format('dddd')
+  const isCurrentDate =
+    dailySummaryIssueDate.isValid() &&
+    currentDate.isSame(dailySummaryIssueDate, 'day')
+
+  const tomorrow = dailySummaryIssueDate.isValid()
+    ? dailySummaryIssueDate.clone().add(1, 'days').format('dddd')
+    : 'Invalid date'
+
   const remainingDays = []
   let transformedDailySummary
+
   for (let i = 2; i <= 6; i++) {
     remainingDays.push(
-      dailySummaryIssueDate.clone().add(i, 'days').format('dddd')
+      dailySummaryIssueDate.isValid()
+        ? dailySummaryIssueDate.clone().add(i, 'days').format('dddd')
+        : 'Invalid date'
     )
   }
+
   const remainingDaysRange = `${remainingDays[0]} to ${remainingDays[remainingDays.length - 1]}`
 
   if (lang === LANG_CY) {
     const translateDayToWelsh = (day) => {
       return SUMMARY_TRANSLATIONS[day] || day
     }
+
     const translateRangeToWelsh = (range) => {
       const [startDay, endDay] = range.split(' to ')
       return `${translateDayToWelsh(startDay)} i ${translateDayToWelsh(endDay)}`
     }
+
     transformedDailySummary = {
       issue_date: dailySummary?.issue_date ?? 'N/A',
       Heddiw: dailySummary.today,
@@ -39,6 +56,7 @@ const transformKeys = (dailySummary, lang) => {
       isCurrentDate
     }
   }
+
   return { transformedDailySummary }
 }
 

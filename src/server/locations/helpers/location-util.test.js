@@ -4,18 +4,18 @@ import {
   orderByDistance,
   convertPointToLonLat,
   coordinatesTotal
-} from '~/src/server/locations/helpers/location-util'
+} from './location-util'
 import * as geolib from 'geolib'
 import OsGridRef from 'mt-osgridref'
 
-jest.mock('geolib', () => ({
-  isPointWithinRadius: jest.fn(),
-  findNearest: jest.fn(),
-  orderByDistance: jest.fn(),
-  convertPointToLonLat: jest.fn(),
-  coordinatesTotal: jest.fn()
+vi.mock('geolib', () => ({
+  isPointWithinRadius: vi.fn(),
+  findNearest: vi.fn(),
+  orderByDistance: vi.fn(),
+  convertPointToLonLat: vi.fn(),
+  coordinatesTotal: vi.fn()
 }))
-jest.mock('mt-osgridref')
+vi.mock('mt-osgridref')
 
 describe('pointsInRange', () => {
   it('should return true if points are within range', () => {
@@ -30,7 +30,7 @@ describe('pointsInRange', () => {
   it('should return false if points are not within range', () => {
     const point1 = { lat: 51.5074, lon: -0.1278 }
     const point2 = { latitude: 48.8566, longitude: 2.3522 }
-    jest.spyOn(geolib, 'isPointWithinRadius').mockReturnValue(false)
+    vi.spyOn(geolib, 'isPointWithinRadius').mockReturnValue(false)
 
     const result = pointsInRange(point1, point2)
     expect(result).toBe(false)
@@ -59,7 +59,7 @@ describe('orderByDistance', () => {
     const lon = -0.1278
     const forecastCoordinates = [{ latitude: 51.5074, longitude: -0.1278 }]
     const orderedLocations = [{ latitude: 51.5074, longitude: -0.1278 }]
-    jest.spyOn(geolib, 'orderByDistance').mockReturnValue(orderedLocations)
+    vi.spyOn(geolib, 'orderByDistance').mockReturnValue(orderedLocations)
 
     const result = orderByDistance(lat, lon, forecastCoordinates)
     expect(result).toEqual(orderedLocations)

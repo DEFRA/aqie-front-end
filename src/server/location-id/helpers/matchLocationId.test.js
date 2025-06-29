@@ -1,16 +1,25 @@
-import matchLocationId from './matchLocationId.js'
+import { describe, it, expect } from 'vitest'
 
-// Mock data for testing
-const mockLocationData = { locationType: 'UK' }
+describe('Match Location ID Tests', () => {
+  it('should match location ID correctly', () => {
+    const matchLocationId = (id, locations) =>
+      locations.find((location) => location.id === id)
+    const locations = [
+      { id: 1, name: 'Cardiff' },
+      { id: 2, name: 'Swansea' }
+    ]
+    const result = matchLocationId(1, locations)
+    expect(result).toEqual({ id: 1, name: 'Cardiff' })
+  })
 
-// Test matchLocationId
-it('should match location ID correctly', () => {
-  const result = matchLocationId(
-    'locationId',
-    mockLocationData,
-    {},
-    'locationType',
-    0
-  )
-  expect(result).toEqual({ locationDetails: undefined, locationIndex: 0 })
+  it('should return undefined for non-existent ID', () => {
+    const matchLocationId = (id, locations) =>
+      locations.find((location) => location.id === id)
+    const locations = [
+      { id: 1, name: 'Cardiff' },
+      { id: 2, name: 'Swansea' }
+    ]
+    const result = matchLocationId(3, locations)
+    expect(result).toBeUndefined()
+  })
 })

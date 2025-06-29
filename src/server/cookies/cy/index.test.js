@@ -2,7 +2,7 @@ import { cookiesCy } from './index'
 
 describe('cookies index plugin - cy', () => {
   const server = {
-    route: jest.fn()
+    route: vi.fn()
   }
 
   test('should register cookies route', () => {

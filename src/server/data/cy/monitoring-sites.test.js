@@ -1,7 +1,4 @@
-import {
-  pollutantTypes,
-  siteTypeDescriptions
-} from '~/src/server/data/cy/monitoring-sites.js'
+import { pollutantTypes, siteTypeDescriptions } from './monitoring-sites.js'
 
 describe('pollutantTypes', () => {
   it('should have correct data for PM25', () => {

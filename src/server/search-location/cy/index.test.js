@@ -1,4 +1,4 @@
-import { searchLocationController } from './controller'
+import { searchLocationController } from './controller.js'
 import { searchLocationCy } from './index.js'
 import Hapi from '@hapi/hapi'
 
@@ -11,9 +11,9 @@ describe('search location index plugin - cy', () => {
   })
 
   beforeEach(() => {
-    jest.mock('./controller', () => ({
+    vi.mock('./controller.js', () => ({
       searchLocationController: {
-        handler: jest.fn(),
+        handler: vi.fn(),
         options: {}
       }
     }))

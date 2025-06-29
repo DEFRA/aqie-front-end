@@ -1,4 +1,4 @@
-import { homeController } from '~/src/server/home/controller'
+import { homeController } from '../home/controller.js'
 
 // Define the route configuration function
 const configureRoutes = (controller) => [

@@ -1,5 +1,5 @@
 .app-cards__heading {
-  margin: 0 0 govuk-spacing(6) 0;
+  margin: 0 0 govuk-spacing(6);
 }
 
 .app-cards__list {
@@ -47,7 +47,7 @@
   // We use grid to split the container into column widths, so manage the
   // horizontal spacing with internal margins.
   margin: 0 govuk-spacing(3);
-  padding: govuk-spacing(1) 0 govuk-spacing(4) 0;
+  padding: govuk-spacing(1) 0 govuk-spacing(4);
 }
 
 .app-cards__list-item-wrapper {

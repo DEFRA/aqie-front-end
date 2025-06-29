@@ -1,4 +1,4 @@
-import { convertStringToHyphenatedLowercaseWords } from '~/src/server/locations/helpers/convert-string'
+import { convertStringToHyphenatedLowercaseWords } from './convert-string.js'
 
 const routesTitles = (matches, locationNameOrPostcode) => {
   return matches.reduce((acc, item) => {

@@ -2,7 +2,7 @@ import { accessibilityCy } from './index'
 
 describe('accessibility index plugin - cy', () => {
   const server = {
-    route: jest.fn()
+    route: vi.fn()
   }
 
   test('should register accessibility route - cy', () => {

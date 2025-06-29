@@ -1,30 +1,35 @@
-import { fetchData } from '~/src/server/locations/helpers/fetch-data'
-import { english, calendarEnglish } from '~/src/server/data/en/en.js'
-import { calendarWelsh } from '~/src/server/data/cy/cy.js'
-import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
+import { fetchData } from './helpers/fetch-data.js'
+import { english, calendarEnglish } from '../data/en/en.js'
+import { calendarWelsh } from '../data/cy/cy.js'
+import { transformKeys } from './helpers/transform-summary-keys.js'
 import {
   getFormattedDateSummary,
   getLanguageDates
-} from '~/src/server/locations/helpers/middleware-helpers'
+} from './helpers/middleware-helpers.js'
 import {
   LANG_EN,
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI,
   LOCATION_NOT_FOUND_URL,
   WRONG_POSTCODE
-} from '~/src/server/data/constants'
-import { handleUKLocationType } from '~/src/server/locations/helpers/extra-middleware-helpers'
-import { handleErrorInputAndRedirect } from '~/src/server/locations/helpers/error-input-and-redirect'
-import { getMonth } from '~/src/server/locations/helpers/location-type-util'
-import * as airQualityData from '~/src/server/data/en/air-quality.js'
+} from '../data/constants.js'
+import { handleUKLocationType } from './helpers/extra-middleware-helpers.js'
+import { handleErrorInputAndRedirect } from './helpers/error-input-and-redirect.js'
+import { getMonth } from './helpers/location-type-util.js'
+import * as airQualityData from '../data/en/air-quality.js'
 import {
   isValidPartialPostcodeNI,
   isValidPartialPostcodeUK
-} from '~/src/server/locations/helpers/convert-string'
-import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
-import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case.js'
+} from './helpers/convert-string.js'
+import { sentenceCase } from '../common/helpers/sentence-case.js'
+import { convertFirstLetterIntoUppercase } from './helpers/convert-first-letter-into-upper-case.js'
+import { trackVirtualPageview } from '../../client/javascripts/components/analytics.js'
 
 const searchMiddleware = async (request, h) => {
+  trackVirtualPageview(
+    '/virtual-pageview/search-middleware',
+    'Location Search Middleware'
+  )
   const { query, payload } = request
   const lang = LANG_EN
   const month = getMonth(lang)

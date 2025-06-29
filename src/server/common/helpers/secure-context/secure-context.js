@@ -1,32 +1,43 @@
 import tls from 'node:tls'
 
-import { getTrustStoreCerts } from '~/src/server/common/helpers/secure-context/get-trust-store-certs'
+import { config } from '../../../../config/index.js'
+import { getTrustStoreCerts } from './get-trust-store-certs.js'
 
-const secureContext = {
+/**
+ * Creates a new secure context loaded from Base64 encoded certs
+ * @satisfies {ServerRegisterPluginObject<void>}
+ */
+export const secureContext = {
   plugin: {
     name: 'secure-context',
-    register: async (server) => {
-      const originalCreateSecureContext = tls.createSecureContext
+    register(server) {
+      if (config.get('isSecureContextEnabled')) {
+        const originalTlsCreateSecureContext = tls.createSecureContext
 
-      tls.createSecureContext = (options = {}) => {
-        const trustStoreCerts = getTrustStoreCerts(process.env)
+        tls.createSecureContext = function (options = {}) {
+          const trustStoreCerts = getTrustStoreCerts(process.env)
 
-        if (!trustStoreCerts.length) {
-          server.logger.info('Could not find any TRUSTSTORE_ certificates')
+          if (!trustStoreCerts.length) {
+            server.logger.info('Could not find any TRUSTSTORE_ certificates')
+          }
+
+          const tlsSecureContext = originalTlsCreateSecureContext(options)
+
+          trustStoreCerts.forEach((cert) => {
+            tlsSecureContext.context.addCACert(cert)
+          })
+
+          return tlsSecureContext
         }
 
-        const secureContext = originalCreateSecureContext(options)
-
-        trustStoreCerts.forEach((cert) => {
-          secureContext.context.addCACert(cert)
-        })
-
-        return secureContext
+        server.decorate('server', 'secureContext', tls.createSecureContext())
+      } else {
+        server.logger.info('Custom secure context is disabled')
       }
-
-      server.decorate('server', 'secureContext', tls.createSecureContext())
     }
   }
 }
 
-export { secureContext }
+/**
+ * @import { ServerRegisterPluginObject } from '@hapi/hapi'
+ */

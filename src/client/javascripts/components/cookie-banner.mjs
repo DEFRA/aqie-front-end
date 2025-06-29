@@ -61,6 +61,15 @@ class CookieBanner {
       cookieBannerHideButtonSelector
     )
 
+    console.log('CookieBanner Elements:', {
+      acceptButton: this.$acceptButton,
+      rejectButton: this.$rejectButton,
+      cookieMessage: this.$cookieMessage,
+      cookieConfirmationAccept: this.$cookieConfirmationAccept,
+      cookieConfirmationReject: this.$cookieConfirmationReject,
+      cookieBannerHideButtons: this.$cookieBannerHideButtons
+    })
+
     const isValid =
       this.$acceptButton instanceof HTMLButtonElement &&
       this.$rejectButton instanceof HTMLButtonElement &&
@@ -78,18 +87,31 @@ class CookieBanner {
    */
   setupEventListeners() {
     if (!this.$acceptButton || !this.$rejectButton || !this.$cookieBannerHideButtons) {
+      console.error('Missing elements for event listeners:', {
+        acceptButton: this.$acceptButton,
+        rejectButton: this.$rejectButton,
+        cookieBannerHideButtons: this.$cookieBannerHideButtons
+      })
       return false // Return false if required elements are missing
     }
 
-    this.$acceptButton.addEventListener('click', () => this.acceptCookies())
-    this.$rejectButton.addEventListener('click', () => this.rejectCookies())
-
-    this.$cookieBannerHideButtons.forEach(($cookieBannerHideButton) => {
-      $cookieBannerHideButton.addEventListener('click', () =>
-        this.hideBanner()
-      )
+    this.$acceptButton.addEventListener('click', () => {
+      console.log('Accept button clicked')
+      this.acceptCookies()
+    })
+    this.$rejectButton.addEventListener('click', () => {
+      console.log('Reject button clicked')
+      this.rejectCookies()
     })
 
+    this.$cookieBannerHideButtons.forEach(($cookieBannerHideButton) => {
+      $cookieBannerHideButton.addEventListener('click', () => {
+        console.log('Hide button clicked')
+        this.hideBanner()
+      })
+    })
+
+    console.log('Event listeners set up successfully')
     return true // Return true if listeners are set up successfully
   }
 
