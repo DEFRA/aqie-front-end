@@ -33,7 +33,10 @@ function context(request) {
     navigation: buildNavigation(request),
     getAssetPath(asset) {
       const webpackAssetPath = webpackManifest?.[asset]
-      return `${assetPath}/${webpackAssetPath ?? asset}`
+      // Ensure no redundant '/public/' segments in the asset path
+      const normalizedAssetPath =
+        webpackAssetPath?.replace(/^\/public\//, '') ?? asset
+      return `${assetPath}/${normalizedAssetPath}`
     }
   }
 }

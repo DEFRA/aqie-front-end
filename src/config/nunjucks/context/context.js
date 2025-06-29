@@ -36,7 +36,10 @@ export function context(request) {
     navigation: buildNavigation(request),
     getAssetPath(asset) {
       const webpackAssetPath = webpackManifest?.[asset]
-      return `${assetPath}/${webpackAssetPath ?? asset}`
+      const normalizedAssetPath =
+        webpackAssetPath?.replace(/^\/public\/images\//, 'assets/images/') ??
+        asset
+      return `${assetPath}/${normalizedAssetPath}`
     }
   }
 }
