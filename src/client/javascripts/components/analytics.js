@@ -29,11 +29,12 @@ export default function loadAnalytics() {
   }
 }
 
-export function trackVirtualPageview(pagePath, pageTitle) {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('config', 'GA_TRACKING_ID', {
-      page_path: pagePath,
-      page_title: pageTitle
+export function trackVirtualPageview(url, title) {
+  if (window.dataLayer) {
+    window.dataLayer.push({
+      event: 'virtualPageview',
+      virtualPageviewUrl: url,
+      virtualPageviewTitle: title
     })
   }
 }
