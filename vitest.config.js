@@ -14,9 +14,16 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reportsDirectory: './coverage',
-      reporter: ['text', 'html'], // Display coverage in the terminal and generate an HTML report
+      reporter: ['text', 'lcov'], // Display coverage in the terminal and generate an HTML report
       all: false, // Include all files in the coverage report
-      exclude: ['src/src/govuk/**/*'] // Exclude src/src/govuk from coverage
+      include: ['src/**'],
+      exclude: [
+        'src/src/govuk/**/*',
+        '.public',
+        'coverage',
+        'postcss.config.js',
+        'stylelint.config.js'
+      ] // Exclude src/src/govuk from coverage
     }
   }
 })
