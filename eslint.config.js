@@ -5,7 +5,7 @@ import neostandard from 'neostandard'
 const dirnamePath = dirname(fileURLToPath(import.meta.url)) // ''
 
 export default neostandard({
-  env: ['node', 'vitest', 'jest'],
+  env: ['node', 'vitest'],
   ignores: [
     ...neostandard.resolveIgnoresFromGitignore(),
     'src/client/**/*',

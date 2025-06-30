@@ -3,7 +3,7 @@
   "version": "0.15.0",
   "description": "CDP Frontend Template",
   "sideEffects": false,
-  "main": "src/index.mjs",
+  "main": "src/index.js",
   "type": "module",
   "engines": {
     "node": ">=22.16.0"
@@ -79,7 +79,6 @@
     "@babel/preset-env": "7.24.4",
     "@vitest/coverage-v8": "3.2.4",
     "autoprefixer": "^10.4.21",
-    "babel-jest": "29.7.0",
     "babel-loader": "^10.0.0",
     "cheerio": "1.1.0",
     "clean-webpack-plugin": "4.0.0",
@@ -88,8 +87,6 @@
     "eslint": "9.29.0",
     "fast-xml-parser": "4.5.0",
     "husky": "9.1.7",
-    "jest": "29.7.0",
-    "jest-environment-jsdom": "29.7.0",
     "json-server": "0.17.4",
     "mini-css-extract-plugin": "2.8.1",
     "neostandard": "0.12.1",
