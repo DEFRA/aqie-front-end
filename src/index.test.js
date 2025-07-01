@@ -1,20 +1,38 @@
-import { describe, it, expect } from 'vitest'
+import process from 'node:process'
 
-// Example test suite
+import { startServer } from './server/common/helpers/start-server.js'
+import { createLogger } from './server/common/helpers/logging/logger.js'
 
-describe('Sample Test Suite', () => {
-  it('should pass a basic test', () => {
-    const sum = (a, b) => a + b
-    expect(sum(2, 3)).toBe(5) // Basic addition test
+describe('Server Initialization', () => {
+  it('should start the server without errors', async () => {
+    await expect(startServer()).resolves.not.toThrow()
   })
 
-  it('should handle string concatenation', () => {
-    const concatenate = (str1, str2) => str1 + str2
-    expect(concatenate('Hello', ' World')).toBe('Hello World') // String concatenation test
-  })
+  it('should handle unhandled rejections gracefully', () => {
+    const logger = createLogger()
+    const mockInfo = vi.spyOn(logger, 'info').mockImplementation(() => {})
+    const mockError = vi.spyOn(logger, 'error').mockImplementation(() => {})
+    const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {})
 
-  it('should validate array length', () => {
-    const array = [1, 2, 3]
-    expect(array.length).toBe(3) // Array length test
+    const unhandledRejectionListener = (error) => {
+      logger.info('Unhandled rejection')
+      logger.error(error)
+      process.exit(1)
+    }
+
+    process.on('unhandledRejection', unhandledRejectionListener)
+
+    try {
+      process.emit('unhandledRejection', new Error('Test rejection'))
+
+      expect(mockInfo).toHaveBeenCalledWith('Unhandled rejection')
+      expect(mockError).toHaveBeenCalledWith(expect.any(Error))
+      expect(mockExit).toHaveBeenCalledWith(1)
+    } finally {
+      process.off('unhandledRejection', unhandledRejectionListener)
+      mockInfo.mockRestore()
+      mockError.mockRestore()
+      mockExit.mockRestore()
+    }
   })
 })

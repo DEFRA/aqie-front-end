@@ -6,6 +6,7 @@ const gazetteerEntryFilter = (locationDetails) => {
   let formattedPostcode = ''
   // check if LOCAL_TYPE is Postcode then title & headerTitle should append with POPULATED_PLACE
   if (
+    locationDetails.GAZETTEER_ENTRY &&
     locationDetails.GAZETTEER_ENTRY.LOCAL_TYPE === 'Postcode' &&
     locationDetails.GAZETTEER_ENTRY.POPULATED_PLACE
   ) {

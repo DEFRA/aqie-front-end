@@ -1,4 +1,4 @@
-import reduceMatches from './reduce-matches'
+import reduceMatches from './reduce-matches.js' // Corrected import to match default export
 import { filterByPostcode } from './filter-by-postcode'
 import { filterBySearchTerms } from './filter-by-search-terms'
 
