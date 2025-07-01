@@ -1,6 +1,6 @@
-import { LOCATION_TYPE_NI, LOCATION_TYPE_UK } from '~/src/server/data/constants'
-import { getPostcode } from '~/src/server/locations/helpers/get-postcode-type'
-import { isOnlyWords } from '~/src/server/locations/helpers/convert-string'
+import { LOCATION_TYPE_NI, LOCATION_TYPE_UK } from '../../data/constants.js'
+import { getPostcode } from './get-postcode-type.js'
+import { isOnlyWords } from './convert-string.js'
 
 const getSearchTermsFromUrl = (url) => {
   let searchTermsLang = ''

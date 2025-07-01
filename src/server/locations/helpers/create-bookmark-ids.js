@@ -1,7 +1,7 @@
 import {
   convertStringToHyphenatedLowercaseWords,
   isValidFullPostcodeUK
-} from '~/src/server/locations/helpers/convert-string'
+} from './convert-string.js'
 
 function createURLRouteBookmarks(selectedMatchesAddedIDs) {
   const normalizeString = (str) => str?.toLowerCase().replace(/\s+/g, '')

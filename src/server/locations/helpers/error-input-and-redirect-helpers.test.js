@@ -3,11 +3,11 @@ import {
   handleUKError,
   handleNIError,
   formatPostcode
-} from '~/src/server/locations/helpers/error-input-and-redirect-helpers'
-import { LANG_EN, LANG_CY } from '~/src/server/data/constants'
+} from './error-input-and-redirect-helpers'
+import { LANG_EN, LANG_CY } from '../../data/constants.js'
 
 // Mock English and Welsh data
-jest.mock('~/src/server/data/en/en.js', () => ({
+vi.mock('../../data/en/en.js', () => ({
   english: {
     searchLocation: {
       errorText: {
@@ -32,7 +32,7 @@ jest.mock('~/src/server/data/en/en.js', () => ({
   }
 }))
 
-jest.mock('~/src/server/data/cy/cy.js', () => ({
+vi.mock('../../data/cy/cy.js', () => ({
   welsh: {
     searchLocation: {
       errorText: {
@@ -64,15 +64,15 @@ describe('error-input-and-redirect-helpers', () => {
   beforeEach(() => {
     mockRequest = {
       yar: {
-        set: jest.fn()
+        set: vi.fn()
       }
     }
 
     mockH = {
-      redirect: jest.fn(() => ({ takeover: jest.fn() }))
+      redirect: vi.fn(() => ({ takeover: vi.fn() }))
     }
 
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('handleMissingLocation', () => {

@@ -1,13 +1,13 @@
-import { getAirQuality } from '~/src/server/data/cy/air-quality.js'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { welsh } from '~/src/server/data/cy/cy.js'
+import { getAirQualityCy } from '../../data/cy/air-quality.js'
+import { createLogger } from '../../common/helpers/logging/logger.js'
+import { welsh } from '../../data/cy/cy.js'
 import {
   LANG_CY,
   LANG_EN,
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI,
   LOCATION_NOT_FOUND
-} from '~/src/server/data/constants'
+} from '../../data/constants.js'
 
 const logger = createLogger()
 
@@ -33,7 +33,7 @@ const getLocationDataController = {
       cookieBanner
     } = welsh
     let locationType = request?.payload?.locationType
-    const airQuality = getAirQuality(request.payload?.aq, 2, 4, 5, 7)
+    const airQuality = getAirQualityCy(request.payload?.aq, 2, 4, 5, 7)
     let locationNameOrPostcode = ''
     if (locationType === LOCATION_TYPE_UK) {
       locationNameOrPostcode = request.payload.engScoWal.trim()

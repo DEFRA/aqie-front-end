@@ -1,4 +1,4 @@
-import { renderComponent } from '~/test-helpers/component-helpers'
+import { renderComponent } from '../../../../../test-helpers/component-helpers'
 
 describe('Breadcrumbs Component', () => {
   let $breadcrumbs

@@ -1,4 +1,4 @@
-import { formatUKPostcode } from '~/src/server/locations/helpers/convert-string'
+import { formatUKPostcode } from './convert-string.js'
 
 const gazetteerEntryFilter = (locationDetails) => {
   let title = ''

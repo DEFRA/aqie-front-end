@@ -1,10 +1,10 @@
-import { catchProxyFetchError } from '~/src/server/common/helpers/catch-proxy-fetch-error'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { config } from '~/src/config/index'
+import { catchProxyFetchError } from '../common/helpers/catch-proxy-fetch-error.js'
+import { createLogger } from '../common/helpers/logging/logger.js'
+import { config } from '../../config/index.js' // Updated imports to use relative paths
 import {
   isValidFullPostcodeUK,
   isValidPartialPostcodeUK
-} from '~/src/server/locations/helpers/convert-string'
+} from './convert-string.js'
 const logger = createLogger()
 const STATUS_CODE_SUCCESS = 200 // Define constant for success status code
 

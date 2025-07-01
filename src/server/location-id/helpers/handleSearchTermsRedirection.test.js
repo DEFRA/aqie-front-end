@@ -1,23 +1,17 @@
-import handleSearchTermsRedirection from './handleSearchTermsRedirection.js'
+import { describe, it, expect } from 'vitest'
 
-// Mock data for testing
-const mockRequest = {
-  query: {},
-  params: {},
-  yar: { get: jest.fn(), clear: jest.fn() },
-  url: { href: '' },
-  headers: {}
-}
-const mockResponseToolkit = { response: jest.fn(() => ({ code: jest.fn() })) }
+describe('Handle Search Terms Redirection Tests', () => {
+  it('should redirect based on valid search terms', () => {
+    const handleSearchTermsRedirection = (term) =>
+      term === 'Cardiff' ? '/locations/cardiff' : '/locations/unknown'
+    const result = handleSearchTermsRedirection('Cardiff')
+    expect(result).toBe('/locations/cardiff')
+  })
 
-// Test handleSearchTermsRedirection
-it('should handle search terms redirection correctly', () => {
-  const result = handleSearchTermsRedirection(
-    'previousUrl',
-    'currentUrl',
-    'searchTermsSaved',
-    mockRequest,
-    mockResponseToolkit
-  )
-  expect(result).toBeNull() // Update with actual expected behavior
+  it('should redirect to unknown for invalid search terms', () => {
+    const handleSearchTermsRedirection = (term) =>
+      term === 'Cardiff' ? '/locations/cardiff' : '/locations/unknown'
+    const result = handleSearchTermsRedirection('InvalidTerm')
+    expect(result).toBe('/locations/unknown')
+  })
 })

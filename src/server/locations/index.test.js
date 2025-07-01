@@ -2,9 +2,9 @@ import { configureRoutes, locations } from './index'
 
 describe('configureRoutes', () => {
   it('should configure routes with injected dependencies', () => {
-    const mockServer = { route: jest.fn() }
-    const mockMiddleware = jest.fn()
-    const mockController = { handler: jest.fn() }
+    const mockServer = { route: vi.fn() }
+    const mockMiddleware = vi.fn()
+    const mockController = { handler: vi.fn() }
 
     configureRoutes(mockServer, {
       middleware: mockMiddleware,
@@ -24,7 +24,7 @@ describe('configureRoutes', () => {
   })
 
   it('should use default dependencies if none are provided', () => {
-    const mockServer = { route: jest.fn() }
+    const mockServer = { route: vi.fn() }
 
     configureRoutes(mockServer)
 
@@ -34,10 +34,10 @@ describe('configureRoutes', () => {
 
 describe('locations plugin', () => {
   it('should register routes with the server', async () => {
-    const mockServer = { route: jest.fn() }
+    const mockServer = { route: vi.fn() }
     const mockDependencies = {
-      middleware: jest.fn(),
-      controller: { handler: jest.fn() }
+      middleware: vi.fn(),
+      controller: { handler: vi.fn() }
     }
 
     await locations.plugin.register(mockServer, {
@@ -57,7 +57,7 @@ describe('locations plugin', () => {
   })
 
   it('should use default dependencies if none are provided', async () => {
-    const mockServer = { route: jest.fn() }
+    const mockServer = { route: vi.fn() }
 
     await locations.plugin.register(mockServer, {})
 

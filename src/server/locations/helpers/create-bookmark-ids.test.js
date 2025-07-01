@@ -1,12 +1,12 @@
-import { createURLRouteBookmarks } from '~/src/server/locations/helpers/create-bookmark-ids.js'
+import { createURLRouteBookmarks } from './create-bookmark-ids.js'
 import {
   convertStringToHyphenatedLowercaseWords,
   isValidFullPostcodeUK
-} from '~/src/server/locations/helpers/convert-string'
+} from './convert-string.js'
 
-jest.mock('~/src/server/locations/helpers/convert-string', () => ({
-  convertStringToHyphenatedLowercaseWords: jest.fn(),
-  isValidFullPostcodeUK: jest.fn()
+vi.mock('./convert-string.js', () => ({
+  convertStringToHyphenatedLowercaseWords: vi.fn(),
+  isValidFullPostcodeUK: vi.fn()
 }))
 
 describe.skip('createURLRouteBookmarks', () => {

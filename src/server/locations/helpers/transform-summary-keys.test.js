@@ -1,13 +1,9 @@
-import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
-import {
-  LANG_CY,
-  LANG_EN,
-  SUMMARY_TRANSLATIONS
-} from '~/src/server/data/constants'
+import { transformKeys } from './transform-summary-keys.js'
+import { LANG_CY, LANG_EN, SUMMARY_TRANSLATIONS } from '../../data/constants.js'
 
 describe('transformKeys', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   const dailySummary = {

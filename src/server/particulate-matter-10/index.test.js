@@ -1,4 +1,4 @@
-import { particulateMatter10Controller } from './controller'
+import { particulateMatter10Controller } from './controller.js'
 import { particulateMatter10 } from './index'
 import Hapi from '@hapi/hapi'
 
@@ -11,9 +11,9 @@ describe('particulateMatter10 index plugin - en', () => {
   })
 
   beforeEach(() => {
-    jest.mock('./controller', () => ({
+    vi.mock('./controller.js', () => ({
       particulateMatter10Controller: {
-        handler: jest.fn(),
+        handler: vi.fn(),
         options: {}
       }
     }))

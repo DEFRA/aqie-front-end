@@ -1,4 +1,4 @@
-import { searchTermsAndUnitary } from '~/src/server/locations/helpers/search-terms-unitary.js'
+import { searchTermsAndUnitary } from './search-terms-unitary.js'
 
 describe('searchTermsAndUnitary', () => {
   test.skip('returns true when name2 matches searchTerms and secondSearchTerm is UNDEFINED', () => {

@@ -1,19 +1,45 @@
 import convict from 'convict'
-import path from 'path'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import convictFormatWithValidator from 'convict-format-with-validator'
+
+const fileName = fileURLToPath(import.meta.url)
+const dirName = path.dirname(fileName)
+
+const fourHoursMs = 14400000
 
 // Define constants for configuration values
-const DEFAULT_PORT = 3000 // ''
+const DEFAULT_PORT = 3000
 
 // Define a constant for one week in milliseconds
-const DAYS_IN_A_WEEK = 7 // ''
-const ONE_WEEK_IN_MILLISECONDS = DAYS_IN_A_WEEK * 24 * 60 * 60 * 1000 // ''
+const DAYS_IN_A_WEEK = 7
+const ONE_WEEK_IN_MILLISECONDS = DAYS_IN_A_WEEK * 24 * 60 * 60 * 1000
 
-const config = convict({
+const isProduction = process.env.NODE_ENV === 'production'
+const isTest = process.env.NODE_ENV === 'test'
+const isDevelopment = process.env.NODE_ENV === 'development'
+
+convict.addFormats(convictFormatWithValidator)
+
+export const config = convict({
+  serviceVersion: {
+    doc: 'The service version, this variable is injected into your docker container in CDP environments',
+    format: String,
+    nullable: true,
+    default: null,
+    env: 'SERVICE_VERSION'
+  },
   env: {
     doc: 'The application environment.',
     format: ['production', 'development', 'test'],
     default: 'development',
     env: 'NODE_ENV'
+  },
+  host: {
+    doc: 'The IP address to bind',
+    format: String,
+    default: '0.0.0.0',
+    env: 'HOST'
   },
   port: {
     doc: 'The port to bind.',
@@ -30,58 +56,91 @@ const config = convict({
   serviceName: {
     doc: 'Applications Service Name',
     format: String,
-    default: 'Check air quality'
+    default: 'aqie-front-end'
   },
   root: {
     doc: 'Project root',
     format: String,
-    default: path.normalize(path.join(__dirname, '..', '..'))
+    default: path.resolve(dirName, '../..')
   },
   assetPath: {
     doc: 'Asset path',
     format: String,
-    default: 'public',
+    default: '/public',
     env: 'ASSET_PATH'
   },
   isProduction: {
     doc: 'If this application running in the production environment',
     format: Boolean,
-    default: process.env.NODE_ENV === 'production'
+    default: isProduction
   },
   isDevelopment: {
     doc: 'If this application running in the development environment',
     format: Boolean,
-    default: process.env.NODE_ENV !== 'production'
+    default: isDevelopment
   },
   isTest: {
     doc: 'If this application running in the test environment',
     format: Boolean,
-    default: process.env.NODE_ENV === 'test'
+    default: isTest
   },
   enabledMock: {
     doc: 'Enabled Mock Data for Northern Ireland Names API',
     format: Boolean,
     default: false
   },
-  logLevel: {
-    doc: 'Logging level',
-    format: ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'],
-    default: 'info',
-    env: 'LOG_LEVEL'
+  log: {
+    enabled: {
+      doc: 'Is logging enabled',
+      format: Boolean,
+      default: process.env.NODE_ENV !== 'test',
+      env: 'LOG_ENABLED'
+    },
+    level: {
+      doc: 'Logging level',
+      format: ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'],
+      default: 'info',
+      env: 'LOG_LEVEL'
+    },
+    format: {
+      doc: 'Format to output logs in.',
+      format: ['ecs', 'pino-pretty'],
+      default: isProduction ? 'ecs' : 'pino-pretty',
+      env: 'LOG_FORMAT'
+    },
+    redact: {
+      doc: 'Log paths to redact',
+      format: Array,
+      default: isProduction
+        ? ['req.headers.authorization', 'req.headers.cookie', 'res.headers']
+        : []
+    }
   },
-  httpProxy: {
+  httpProxy: /** @type {SchemaObj<string | null>} */ {
     doc: 'HTTP Proxy',
     format: String,
     nullable: true,
     default: null,
     env: 'CDP_HTTP_PROXY'
   },
-  httpsProxy: {
+  httpsProxy: /** @type {SchemaObj<string | null>} */ {
     doc: 'HTTPS Proxy',
     format: String,
     nullable: true,
     default: null,
     env: 'CDP_HTTPS_PROXY'
+  },
+  isSecureContextEnabled: {
+    doc: 'Enable Secure Context',
+    format: Boolean,
+    default: isProduction,
+    env: 'ENABLE_SECURE_CONTEXT'
+  },
+  isMetricsEnabled: {
+    doc: 'Enable metrics reporting',
+    format: Boolean,
+    default: isProduction,
+    env: 'ENABLE_METRICS'
   },
   airQualityDomainUrl: {
     doc: 'Air Quality Domain Url',
@@ -92,7 +151,7 @@ const config = convict({
     doc: 'OS Name Places key',
     format: '*',
     sensitive: true,
-    default: '',
+    default: 'vvR3FiaNjSWCnFzSKBst23TX6efl0oL9',
     env: 'OS_NAMES_API_KEY'
   },
   osNamesApiUrl: {
@@ -108,19 +167,55 @@ const config = convict({
     sensitive: true,
     env: 'DAQIE_PASSWORD'
   },
+  session: {
+    cache: {
+      engine: {
+        doc: 'backend cache is written to',
+        format: ['redis', 'memory'],
+        default: isProduction ? 'redis' : 'memory',
+        env: 'SESSION_CACHE_ENGINE'
+      },
+      name: {
+        doc: 'server side session cache name',
+        format: String,
+        default: 'session',
+        env: 'SESSION_CACHE_NAME'
+      },
+      ttl: {
+        doc: 'server side session cache ttl',
+        format: Number,
+        default: fourHoursMs,
+        env: 'SESSION_CACHE_TTL'
+      }
+    },
+    cookie: {
+      ttl: {
+        doc: 'Session cookie ttl',
+        format: Number,
+        default: fourHoursMs,
+        env: 'SESSION_COOKIE_TTL'
+      },
+      password: {
+        doc: 'session cookie password',
+        format: String,
+        default: 'the-password-must-be-at-least-32-characters-long',
+        env: 'SESSION_COOKIE_PASSWORD',
+        sensitive: true
+      },
+      secure: {
+        doc: 'set secure flag on cookie',
+        format: Boolean,
+        default: isProduction,
+        env: 'SESSION_COOKIE_SECURE'
+      }
+    }
+  },
   cookiePassword: {
     doc: 'password for  cookie',
     format: '*',
     default: 'the-password-must-be-at-least-32-characters-long',
     sensitive: true,
     env: 'COOKIE_PASSWORD'
-  },
-  sessionCookiePassword: {
-    doc: 'session password for  cookie',
-    format: '*',
-    default: 'the-password-must-be-at-least-32-characters-long',
-    sensitive: true,
-    env: 'SESSION_COOKIE_PASSWORD'
   },
   forecastsApiUrl: {
     doc: 'API forecast rss feed',
@@ -197,13 +292,7 @@ const config = convict({
     default: '',
     env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_CLIENT_SCOPE'
   },
-  redis: {
-    enabled: {
-      doc: 'Enable Redis on your Frontend. Before you enable Redis, contact the CDP platform team as we need to set up config so you can run Redis in CDP environments',
-      format: Boolean,
-      default: false,
-      env: 'REDIS_ENABLED'
-    },
+  redis: /** @type {Schema<RedisConfig>} */ ({
     host: {
       doc: 'Redis cache host',
       format: String,
@@ -230,14 +319,38 @@ const config = convict({
       env: 'REDIS_KEY_PREFIX'
     },
     useSingleInstanceCache: {
-      doc: 'Enable the use of a single instance Redis Cache',
+      doc: 'Connect to a single instance of redis instead of a cluster.',
       format: Boolean,
-      default: process.env.NODE_ENV !== 'production',
+      default: !isProduction,
       env: 'USE_SINGLE_INSTANCE_CACHE'
+    },
+    useTLS: {
+      doc: 'Connect to redis using TLS',
+      format: Boolean,
+      default: isProduction,
+      env: 'REDIS_TLS'
+    }
+  }),
+  nunjucks: {
+    watch: {
+      doc: 'Reload templates when they are changed.',
+      format: Boolean,
+      default: isDevelopment
+    },
+    noCache: {
+      doc: 'Use a cache and recompile templates each time',
+      format: Boolean,
+      default: isDevelopment
+    }
+  },
+  tracing: {
+    header: {
+      doc: 'Which header to track',
+      format: String,
+      default: 'x-cdp-request-id',
+      env: 'TRACING_HEADER'
     }
   }
 })
 
 config.validate({ allowed: 'strict' })
-
-export { config }

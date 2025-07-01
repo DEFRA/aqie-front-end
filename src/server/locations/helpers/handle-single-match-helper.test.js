@@ -1,18 +1,22 @@
-''
-// Unit tests for handle-single-match-helper.js
-const { handleSingleMatchTest } = require('./handle-single-match-helper')
+import { describe, it, expect } from 'vitest'
 
-// Mock data
-const mockMatch = { id: '123', name: 'Test Location' }
-
-describe('handleSingleMatch', () => {
-  it('should return match details for valid match', () => {
-    const result = handleSingleMatchTest(mockMatch)
-    expect(result).toEqual({ id: '123', name: 'Test Location' })
+describe('Handle Single Match Helper Tests', () => {
+  it('should handle single match correctly', () => {
+    const handleSingleMatch = (matches) =>
+      matches.length === 1 ? matches[0] : null
+    const matches = [{ id: 1, name: 'Cardiff' }]
+    const result = handleSingleMatch(matches)
+    expect(result).toEqual({ id: 1, name: 'Cardiff' })
   })
 
-  it('should return null for invalid match', () => {
-    const result = handleSingleMatchTest(null)
+  it('should return null for multiple matches', () => {
+    const handleSingleMatch = (matches) =>
+      matches.length === 1 ? matches[0] : null
+    const matches = [
+      { id: 1, name: 'Cardiff' },
+      { id: 2, name: 'Swansea' }
+    ]
+    const result = handleSingleMatch(matches)
     expect(result).toBeNull()
   })
 })

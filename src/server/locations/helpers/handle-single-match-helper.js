@@ -1,4 +1,4 @@
-import { handleSingleMatch } from '~/src/server/locations/helpers/middleware-helpers'
+import { handleSingleMatch } from './middleware-helpers.js'
 // Helper function to handle a single match
 const handleSingleMatchHelper = (
   h,

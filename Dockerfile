@@ -19,6 +19,9 @@ RUN npm install --ignore-scripts
 COPY --chown=node:node --chmod=755 . .
 RUN npm run build
 
+# Ensure `.server` directory exists in the development stage
+RUN mkdir -p /home/node/.server
+
 CMD [ "npm", "run", "dev" ]
 
 FROM development AS production_build

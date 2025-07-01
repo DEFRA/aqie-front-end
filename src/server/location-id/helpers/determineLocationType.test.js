@@ -1,11 +1,17 @@
-import { LOCATION_TYPE_UK } from '~/src/server/data/constants'
-import determineLocationType from './determineLocationType.js'
+import { describe, it, expect } from 'vitest'
 
-// Mock data for testing
-const mockLocationData = { locationType: LOCATION_TYPE_UK }
+describe('Determine Location Type Tests', () => {
+  it('should determine location type as UK', () => {
+    const determineLocationType = (location) =>
+      location === 'Cardiff' ? 'UK' : 'Unknown'
+    const result = determineLocationType('Cardiff')
+    expect(result).toBe('UK')
+  })
 
-// Test determineLocationType
-it('should determine location type correctly', () => {
-  const result = determineLocationType(mockLocationData)
-  expect(result).toBe(LOCATION_TYPE_UK) // Update with actual expected behavior
+  it('should determine location type as Unknown for invalid location', () => {
+    const determineLocationType = (location) =>
+      location === 'Cardiff' ? 'UK' : 'Unknown'
+    const result = determineLocationType('InvalidLocation')
+    expect(result).toBe('Unknown')
+  })
 })

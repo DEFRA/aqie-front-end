@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
 
-npm test && npm run lint && npm run format:check
+# Ensure node and npm are in PATH
+export PATH=$PATH:/Users/2057586/.nvm/versions/node/v22.16.0/bin
+
+/Users/2057586/.nvm/versions/node/v22.16.0/bin/npm test && /Users/2057586/.nvm/versions/node/v22.16.0/bin/npm run lint && /Users/2057586/.nvm/versions/node/v22.16.0/bin/npm run format:check

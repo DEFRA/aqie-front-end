@@ -1,5 +1,5 @@
-import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
-import { LOCATION_TYPE_NI, LOCATION_TYPE_UK } from '~/src/server/data/constants'
+import { getSearchTermsFromUrl } from './get-search-terms-from-url.js'
+import { LOCATION_TYPE_NI, LOCATION_TYPE_UK } from '../../data/constants.js' // Updated imports to use relative paths
 
 // describe('getSearchTermsFromUrl', () => {
 //   it('should return correct search terms for English location', () => {

@@ -1,13 +1,13 @@
-import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-util'
-import { convertFirstLetterIntoUppercase } from '~/src/server/locations/helpers/convert-first-letter-into-upper-case'
-import { transformKeys } from '~/src/server/locations/helpers/transform-summary-keys.js'
-import { airQualityValues } from '~/src/server/locations/helpers/air-quality-values.js'
+import { gazetteerEntryFilter } from '../locations/helpers/gazetteer-util.js'
+import { convertFirstLetterIntoUppercase } from '../locations/helpers/convert-first-letter-into-upper-case.js'
+import { transformKeys } from '../locations/helpers/transform-summary-keys.js'
+import { airQualityValues } from '../locations/helpers/air-quality-values.js'
 import {
   siteTypeDescriptions,
   pollutantTypes
-} from '~/src/server/data/en/monitoring-sites.js'
-import * as airQualityData from '~/src/server/data/en/air-quality.js'
-import { LANG_CY } from '~/src/server/data/constants'
+} from '../data/en/monitoring-sites.js'
+import * as airQualityData from '../data/en/air-quality.js'
+import { LANG_CY } from '../data/constants.js'
 
 const renderLocationDetailsView = (locationDetails, config, h) => {
   const {

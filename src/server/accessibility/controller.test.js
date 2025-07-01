@@ -1,7 +1,8 @@
-import { accessibilityController } from '~/src/server/accessibility/controller'
-import { english } from '~/src/server/data/en/en.js'
-import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
-import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
+/* global vi */
+import { accessibilityController } from './controller.js'
+import { english } from '../data/en/en.js'
+import { LANG_CY, LANG_EN } from '../data/constants.js'
+import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
 describe('Accessibility Handler', () => {
   let mockRequest = {
@@ -9,14 +10,14 @@ describe('Accessibility Handler', () => {
     path: '/accessibility'
   }
   const mockContent = english
-  jest.mock('~/src/server/common/helpers/get-site-url', () => ({
-    getAirQualitySiteUrl: jest.fn((request) => {
+  vi.mock('../../common/helpers/get-site-url.js', () => ({
+    getAirQualitySiteUrl: vi.fn((request) => {
       return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
     })
   }))
   const mockH = {
-    redirect: jest.fn().mockReturnValue('redirected'),
-    view: jest.fn().mockReturnValue('view rendered')
+    redirect: vi.fn().mockReturnValue('redirected'),
+    view: vi.fn().mockReturnValue('view rendered')
   }
 
   it('should redirect to the Welsh version if the language is "cy"', () => {

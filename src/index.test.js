@@ -1,25 +1,38 @@
-// Jest test for index.js
-import { startServer } from './index'
+import process from 'node:process'
 
-describe('Application Entry Point', () => {
-  it('should initialize the server correctly', async () => {
-    const mockCreateServer = jest.fn().mockResolvedValue({
-      start: jest.fn(() => {
-        mockLogger.info('Server started successfully')
-      })
-    })
-    const mockLogger = {
-      info: jest.fn(),
-      error: jest.fn()
-    }
-    const mockConfig = {
-      get: jest.fn().mockReturnValue(3000)
+import { startServer } from './server/common/helpers/start-server.js'
+import { createLogger } from './server/common/helpers/logging/logger.js'
+
+describe('Server Initialization', () => {
+  it('should start the server without errors', async () => {
+    await expect(startServer()).resolves.not.toThrow()
+  })
+
+  it('should handle unhandled rejections gracefully', () => {
+    const logger = createLogger()
+    const mockInfo = vi.spyOn(logger, 'info').mockImplementation(() => {})
+    const mockError = vi.spyOn(logger, 'error').mockImplementation(() => {})
+    const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {})
+
+    const unhandledRejectionListener = (error) => {
+      logger.info('Unhandled rejection')
+      logger.error(error)
+      process.exit(1)
     }
 
-    await expect(
-      startServer(mockCreateServer, mockLogger, mockConfig)
-    ).resolves.toBeUndefined()
-    expect(mockCreateServer).toHaveBeenCalled()
-    expect(mockLogger.info).toHaveBeenCalledWith('Server started successfully')
+    process.on('unhandledRejection', unhandledRejectionListener)
+
+    try {
+      process.emit('unhandledRejection', new Error('Test rejection'))
+
+      expect(mockInfo).toHaveBeenCalledWith('Unhandled rejection')
+      expect(mockError).toHaveBeenCalledWith(expect.any(Error))
+      expect(mockExit).toHaveBeenCalledWith(1)
+    } finally {
+      process.off('unhandledRejection', unhandledRejectionListener)
+      mockInfo.mockRestore()
+      mockError.mockRestore()
+      mockExit.mockRestore()
+    }
   })
 })

@@ -1,5 +1,5 @@
-import { compareLastElements } from '~/src/server/locations/helpers/convert-string'
-import { getSearchTermsFromUrl } from '~/src/server/locations/helpers/get-search-terms-from-url'
+import { compareLastElements } from '../locations/helpers/convert-string.js'
+import { getSearchTermsFromUrl } from '../locations/helpers/get-search-terms-from-url.js'
 
 const handleSearchTermsRedirection = (
   previousUrl,

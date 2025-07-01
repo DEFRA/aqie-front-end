@@ -1,5 +1,5 @@
-import { sentenceCase } from '~/src/server/common/helpers/sentence-case'
-import { LOCATION_TYPE_NI } from '~/src/server/data/constants'
+import { sentenceCase } from '../../common/helpers/sentence-case.js'
+import { LOCATION_TYPE_NI } from '../../data/constants.js'
 
 function getNIData(locationData, distance, locationType) {
   let resultNI = []

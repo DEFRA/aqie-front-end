@@ -1,4 +1,4 @@
-import { getIdMatch } from '~/src/server/locations/helpers/get-id-match'
+import { getIdMatch } from '../locations/helpers/get-id-match.js' // Updated import to use relative path
 
 const matchLocationId = (
   locationId,

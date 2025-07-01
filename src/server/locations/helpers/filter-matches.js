@@ -1,9 +1,6 @@
-import {
-  hasExactMatch,
-  splitAndCheckSpecificWords
-} from '~/src/server/locations/helpers/convert-string'
-import { searchTermsAndBorough } from '~/src/server/locations/helpers/search-terms-borough'
-import { searchTermsAndUnitary } from '~/src/server/locations/helpers/search-terms-unitary'
+import { hasExactMatch, splitAndCheckSpecificWords } from './convert-string.js'
+import { searchTermsAndBorough } from './search-terms-borough.js'
+import { searchTermsAndUnitary } from './search-terms-unitary.js'
 
 /**
  * '' Helper to normalize strings by converting to uppercase and removing spaces.

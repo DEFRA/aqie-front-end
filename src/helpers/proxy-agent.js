@@ -1,7 +1,7 @@
-import { config } from '~/src/config'
+import { config } from '../config'
 import { HttpsProxyAgent } from 'https-proxy-agent'
 import { Url } from 'url'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
+import { createLogger } from '../server/common/helpers/logging/logger.js' // Updated import to use relative path
 
 const logger = createLogger()
 

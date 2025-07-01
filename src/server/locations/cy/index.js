@@ -1,5 +1,5 @@
-import { getLocationDataController } from '~/src/server/locations/cy/controller'
-import { searchMiddlewareCy } from '~/src/server/locations/cy/middleware-cy'
+import { getLocationDataController } from './controller.js'
+import { searchMiddlewareCy } from './middleware-cy.js'
 
 // Define the route configuration function
 const configureRoutesCy = (server) => {

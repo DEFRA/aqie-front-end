@@ -1,7 +1,7 @@
-import { english } from '~/src/server/data/en/en.js'
-import { welsh } from '~/src/server/data/cy/cy.js'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
+import { english } from '../../data/en/en.js'
+import { welsh } from '../../data/cy/cy.js'
+import { createLogger } from './logging/logger.js'
+import { LANG_CY, LANG_EN } from '../../data/constants.js'
 
 const logger = createLogger()
 

@@ -1,13 +1,13 @@
-import { english } from '~/src/server/data/en/en.js'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
+import { english } from '../../data/en/en.js'
+import { createLogger } from '../../common/helpers/logging/logger.js'
 import {
   handleNoSearchTerms,
   handleSearchTerms
-} from '~/src/server/locations/helpers/handle-error-helpers.js'
+} from './handle-error-helpers.js'
 import {
   STATUS_INTERNAL_SERVER_ERROR,
   STATUS_UNAUTHORIZED
-} from '~/src/server/data/constants'
+} from '../../data/constants.js'
 
 const logger = createLogger()
 

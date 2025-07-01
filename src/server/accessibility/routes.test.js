@@ -1,7 +1,7 @@
-import { routes } from './routes'
-import { accessibilityController } from '~/src/server/accessibility/controller'
+import { routes } from './routes.js'
+import { accessibilityController } from './controller.js'
 
-jest.mock('~/src/server/accessibility/controller')
+vi.mock('./controller.js')
 
 describe('Accessibility Routes', () => {
   it('should define the accessibility route', () => {

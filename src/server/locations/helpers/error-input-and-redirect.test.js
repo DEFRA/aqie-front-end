@@ -1,18 +1,15 @@
-import { handleErrorInputAndRedirect } from './error-input-and-redirect'
-import {
-  handleNoSearchTerms,
-  handleSearchTerms
-} from '~/src/server/locations/helpers/handle-error-helpers'
+import { handleErrorInputAndRedirect } from './error-input-and-redirect.js'
+import { handleNoSearchTerms, handleSearchTerms } from './handle-error-helpers'
 
 // Mock dependencies
-jest.mock('~/src/server/locations/helpers/handle-error-helpers.js', () => ({
-  handleNoSearchTerms: jest.fn(),
-  handleSearchTerms: jest.fn()
+vi.mock('./handle-error-helpers.js', () => ({
+  handleNoSearchTerms: vi.fn(),
+  handleSearchTerms: vi.fn()
 }))
 
-jest.mock('~/src/server/common/helpers/logging/logger', () => ({
-  createLogger: jest.fn(() => ({
-    error: jest.fn()
+vi.mock('../../common/helpers/logging/logger.js', () => ({
+  createLogger: vi.fn(() => ({
+    error: vi.fn()
   }))
 }))
 
@@ -24,14 +21,14 @@ describe('handleErrorInputAndRedirect', () => {
     mockRequest = {
       path: '/test-path',
       yar: {
-        get: jest.fn(),
-        set: jest.fn()
+        get: vi.fn(),
+        set: vi.fn()
       }
     }
 
     mockH = {
-      view: jest.fn(),
-      redirect: jest.fn(() => ({ takeover: jest.fn() }))
+      view: vi.fn(),
+      redirect: vi.fn(() => ({ takeover: vi.fn() }))
     }
 
     mockPayload = {
@@ -42,7 +39,7 @@ describe('handleErrorInputAndRedirect', () => {
     }
 
     // Reset all mocks
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should call handleNoSearchTerms when searchTerms is not provided', () => {

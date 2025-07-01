@@ -1,7 +1,14 @@
 /* eslint-disable */
-import { welsh } from '~/src/server/data/cy/cy.js'
-import { searchLocationController } from '~/src/server/search-location/cy/controller.js'
-import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url.js'
+import { welsh } from '../../data/cy/cy.js'
+import { searchLocationController } from './controller.js'
+import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
+import { vi } from 'vitest'
+
+vi.mock('../../common/helpers/get-site-url.js', () => ({
+  getAirQualitySiteUrl: vi.fn((request) => {
+    return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+  })
+}))
 
 describe('searchLocationController - welsh', () => {
   let mockRequest
@@ -13,18 +20,13 @@ describe('searchLocationController - welsh', () => {
       query: {},
       path: '',
       yar: {
-        set: jest.fn(),
-        get: jest.fn()
+        set: vi.fn(),
+        get: vi.fn()
       }
     }
-    jest.mock('~/src/server/common/helpers/get-site-url', () => ({
-      getAirQualitySiteUrlFromEnv: jest.fn((request) => {
-        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
-      })
-    }))
     mockH = {
-      redirect: jest.fn().mockReturnValue('redirected'),
-      view: jest.fn().mockReturnValue('view rendered')
+      redirect: vi.fn().mockReturnValue('redirected'),
+      view: vi.fn().mockReturnValue('view rendered')
     }
   })
 
@@ -42,8 +44,8 @@ describe('searchLocationController - welsh', () => {
       },
       path: '/chwilio-lleoliad/cy',
       yar: {
-        set: jest.fn(),
-        get: jest.fn()
+        set: vi.fn(),
+        get: vi.fn()
       }
     }
     const expectedUrl =
@@ -88,8 +90,8 @@ describe('searchLocationController - welsh', () => {
       },
       path: '/chwilio-lleoliad/cy',
       yar: {
-        set: jest.fn(),
-        get: jest.fn()
+        set: vi.fn(),
+        get: vi.fn()
       }
     }
     const expectedUrl =

@@ -1,4 +1,4 @@
-import { LANG_CY } from '~/src/server/data/constants'
+import { LANG_CY } from '../data/constants.js'
 
 const redirectToWelshLocation = (query, locationId, h) => {
   if (query?.lang === LANG_CY && !query?.searchTerms && locationId) {

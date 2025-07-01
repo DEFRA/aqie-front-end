@@ -1,10 +1,7 @@
-import {
-  processMatches,
-  duplicateResults
-} from '~/src/server/locations/helpers/middleware-helpers'
-import { generateTitleData } from '~/src/server/locations/helpers/generate-title-data'
-import { handleSingleMatchHelper } from '~/src/server/locations/helpers/handle-single-match-helper'
-import { handleMultipleMatchesHelper } from '~/src/server/locations/helpers/handle-multiple-match-helper'
+import { processMatches, deduplicateResults } from './middleware-helpers.js'
+import { generateTitleData } from './generate-title-data.js'
+import { handleSingleMatchHelper } from './handle-single-match-helper.js'
+import { handleMultipleMatchesHelper } from './handle-multiple-match-helper.js'
 
 // Helper function to handle redirection for invalid input
 const handleErrorInputAndRedirect = (
@@ -15,23 +12,13 @@ const handleErrorInputAndRedirect = (
   searchTerms
 ) => {
   const locationNameOrPostcode = payload?.engScoWal || payload?.ni
-
   if (!payload?.locationType && !searchTerms) {
     request.yar.set('locationDataNotFound', {
       locationNameOrPostcode: '',
       lang
     })
-
-    const redirectResult = h.redirect('/location-not-found')
-
-    // Ensure takeover is returned correctly
-    if (typeof redirectResult.takeover === 'function') {
-      redirectResult.takeover()
-    }
-
-    return { redirect: '/location-not-found' } // Explicitly return a valid result
+    return h.redirect('/location-not-found').takeover()
   }
-
   return {
     locationType: payload?.locationType || '',
     userLocation: searchTerms || locationNameOrPostcode,
@@ -52,7 +39,7 @@ const handleUKLocationType = async (request, h, params) => {
 
   // Deduplicate results
   let { results } = getOSPlaces
-  results = duplicateResults(results)
+  results = deduplicateResults(results)
 
   // Process matches
   const { selectedMatches } = processMatches(
@@ -82,15 +69,10 @@ const handleUKLocationType = async (request, h, params) => {
   // Handle no matches
   request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
   request.yar.clear('searchTermsSaved')
-
-  const redirectResult = h.redirect('/location-not-found')
-
-  // Ensure takeover is returned correctly
-  if (typeof redirectResult.takeover === 'function') {
-    redirectResult.takeover()
+  if (searchTerms) {
+    return h.redirect('error/index').takeover()
   }
-
-  return { redirect: '/location-not-found' } // Explicitly return a valid result
+  return h.redirect('/location-not-found').takeover()
 }
 
 export { handleErrorInputAndRedirect, handleUKLocationType }

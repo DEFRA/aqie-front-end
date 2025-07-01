@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import * as geolib from 'geolib'
 import moment from 'moment-timezone'
 import {
@@ -6,10 +5,10 @@ import {
   convertPointToLonLat,
   coordinatesTotal,
   pointsInRange
-} from '~/src/server/locations/helpers/location-util.js'
-import { getPollutantLevel } from '~/src/server/locations/helpers/pollutant-level-calculation'
-import { getPollutantLevelCy } from '~/src/server/locations/helpers/cy/pollutant-level-calculation'
-import { LANG_CY } from '~/src/server/data/constants'
+} from './location-util.js'
+import { getPollutantLevel } from './pollutant-level-calculation.js'
+import { getPollutantLevelCy } from './cy/pollutant-level-calculation.js'
+import { LANG_CY } from '../../data/constants.js'
 
 function getNearestLocation(
   matches,

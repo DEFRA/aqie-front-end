@@ -1,5 +1,5 @@
-import { configureRoutes } from '~/src/server/home/cy/routes'
-import { homeController } from '~/src/server/home/cy/controller'
+import { configureRoutes } from './routes.js'
+import { homeController } from './controller.js'
 
 describe('Route Configuration', () => {
   it('should configure the routes correctly', () => {

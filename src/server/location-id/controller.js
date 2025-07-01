@@ -1,69 +1,94 @@
-import { english, calendarEnglish } from '~/src/server/data/en/en.js'
-import { calendarWelsh } from '~/src/server/data/cy/cy.js'
+import {
+  siteTypeDescriptions,
+  pollutantTypes
+} from '../data/en/monitoring-sites.js'
+import * as airQualityData from '../data/en/air-quality.js'
+import {
+  LANG_CY,
+  LANG_EN,
+  LOCATION_NOT_FOUND,
+  LOCATION_TYPE_NI,
+  LOCATION_TYPE_UK
+} from '../data/constants.js'
+import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
+import { english, calendarEnglish } from '../data/en/en.js'
+import { calendarWelsh } from '../data/cy/cy.js'
 import moment from 'moment-timezone'
-import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
-import { getNIData } from '~/src/server/locations/helpers/get-ni-single-data'
-import redirectToWelshLocation from '~/src/server/location-id/helpers/redirectToWelshLocation.js'
-import handleSearchTermsRedirection from '~/src/server/location-id/helpers/handleSearchTermsRedirection.js'
-import determineLocationType from '~/src/server/location-id/helpers/determineLocationType.js'
-import renderLocationDetailsView from '~/src/server/location-id/helpers/renderLocationDetailsView.js'
-import renderLocationNotFoundView from '~/src/server/location-id/helpers/renderLocationNotFoundView.js'
-import determineNearestLocation from '~/src/server/location-id/helpers/determineNearestLocation.js'
-import matchLocationId from '~/src/server/location-id/helpers/matchLocationId.js'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { LANG_EN, LOCATION_TYPE_NI } from '~/src/server/data/constants.js'
+import { convertFirstLetterIntoUppercase } from '../locations/helpers/convert-first-letter-into-upper-case.js'
+import { gazetteerEntryFilter } from '../locations/helpers/gazetteer-util.js'
+import { createLogger } from '../common/helpers/logging/logger.js'
+import { getSearchTermsFromUrl } from '../locations/helpers/get-search-terms-from-url.js'
+import { transformKeys } from '../locations/helpers/transform-summary-keys.js'
+import { airQualityValues } from '../locations/helpers/air-quality-values.js'
+import { getNearestLocation } from '../locations/helpers/get-nearest-location.js'
+import { getIdMatch } from '../locations/helpers/get-id-match.js'
+import { getNIData } from '../locations/helpers/get-ni-single-data.js'
+import { compareLastElements } from '../locations/helpers/convert-string.js'
 
 const logger = createLogger()
-const HTTP_INTERNAL_SERVER_ERROR = 500
 
-// Ensure proper formatting of the try-catch block
 const getLocationDetailsController = {
   handler: async (request, h) => {
     try {
-      const { query, headers, params, yar, url } = request
-      const locationId = params.id
-      const searchTermsSaved = yar.get('searchTermsSaved')
+      const { query, headers } = request
+      const locationId = request.params.id
+      const searchTermsSaved = request.yar.get('searchTermsSaved')
 
-      // Extracted logic for Welsh redirection
-      const welshRedirect = redirectToWelshLocation(query, locationId, h)
-      if (welshRedirect) {
-        return welshRedirect
+      if (query?.lang && query?.lang === LANG_CY && !query?.searchTerms) {
+        /* eslint-disable camelcase */
+        return h.redirect(`/lleoliad/${locationId}/?lang=cy`)
       }
-
-      // Extracted logic for search terms redirection
+      // Get the previous URL hit by the user from the referer header
       const previousUrl = headers.referer || headers.referrer
-      const currentUrl = url.href
-      const searchTermsRedirect = handleSearchTermsRedirection(
+      const currentUrl = request.url.href
+      const isPreviousAndCurrentUrlEqual = compareLastElements(
         previousUrl,
-        currentUrl,
-        searchTermsSaved,
-        request,
-        h
+        currentUrl
       )
-      if (searchTermsRedirect) {
-        return searchTermsRedirect
+      if (
+        (previousUrl === undefined && !searchTermsSaved) ||
+        (isPreviousAndCurrentUrlEqual && !searchTermsSaved)
+      ) {
+        const { searchTerms, secondSearchTerm, searchTermsLocationType } =
+          getSearchTermsFromUrl(currentUrl)
+        request.yar.clear('locationData')
+        return h
+          .redirect(
+            `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(
+              secondSearchTerm
+            )}&searchTermsLocationType=${encodeURIComponent(
+              searchTermsLocationType
+            )}`
+          )
+          .takeover()
       }
+      request.yar.clear('searchTermsSaved')
 
-      yar.clear('searchTermsSaved')
-
-      // Extracted logic for language and date formatting
       const lang = query?.lang ?? LANG_EN
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')
-      const getMonth = calendarEnglish.findIndex((item) =>
-        item.includes(formattedDate[1])
-      )
-
+      const getMonth = calendarEnglish.findIndex(function (item) {
+        return item.indexOf(formattedDate[1]) !== -1
+      })
       const metaSiteUrl = getAirQualitySiteUrl(request)
-      const locationData = yar.get('locationData') || []
+      const {
+        notFoundLocation,
+        footerTxt,
+        phaseBanner,
+        backlink,
+        cookieBanner,
+        daqi,
+        multipleLocations
+      } = english
+      const locationData = request.yar.get('locationData') || []
       const { getForecasts, getMeasurements } = locationData
-
-      // Extracted logic for location type determination
-      const locationType = determineLocationType(locationData)
-
+      const locationType =
+        locationData.locationType === LOCATION_TYPE_UK
+          ? LOCATION_TYPE_UK
+          : LOCATION_TYPE_NI
       let distance
       if (locationData.locationType === LOCATION_TYPE_NI) {
-        distance = determineNearestLocation(
-          locationData,
+        distance = getNearestLocation(
+          locationData?.results,
           getForecasts,
           getMeasurements,
           locationType,
@@ -71,57 +96,72 @@ const getLocationDetailsController = {
           lang
         )
       }
-
       const indexNI = 0
       const { resultNI } = getNIData(locationData, distance, locationType)
-
-      // Extracted logic for matching location ID
-      const { locationIndex, locationDetails } = matchLocationId(
+      const { locationIndex, locationDetails } = getIdMatch(
         locationId,
         locationData,
         resultNI,
         locationType,
         indexNI
       )
-
-      const { forecastNum, nearestLocationsRange } = determineNearestLocation(
-        locationData,
+      const { forecastNum, nearestLocationsRange } = getNearestLocation(
+        locationData?.results,
         getForecasts,
         getMeasurements,
         locationType,
         locationIndex,
         lang
       )
-
-      logger.debug(`locationDetails: ${locationDetails}`)
-
-      const { notFoundLocation, daqi, multipleLocations } = english
-
       if (locationDetails) {
-        const config = {
-          english,
-          multipleLocations,
+        let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
+        title = convertFirstLetterIntoUppercase(title)
+        headerTitle = convertFirstLetterIntoUppercase(headerTitle)
+        const { transformedDailySummary } = transformKeys(
+          locationData.dailySummary,
+          lang
+        )
+        const { airQuality } = airQualityValues(forecastNum, lang)
+        return h.view('locations/location', {
+          result: locationDetails,
+          airQuality,
+          airQualityData: airQualityData.commonMessages,
+          monitoringSites: nearestLocationsRange,
+          siteTypeDescriptions,
+          pollutantTypes,
+          pageTitle: `${multipleLocations.titlePrefix} ${title} - ${multipleLocations.pageTitle}`,
+          metaSiteUrl,
+          description: `${daqi.description.a} ${headerTitle}${daqi.description.b}`,
+          title: `${multipleLocations.titlePrefix} ${headerTitle}`,
+          displayBacklink: true,
+          transformedDailySummary,
+          footerTxt,
+          phaseBanner,
+          backlink,
+          cookieBanner,
           daqi,
-          calendarWelsh,
-          getMonth,
-          forecastNum,
-          nearestLocationsRange,
-          locationData,
-          lang,
-          metaSiteUrl
-        }
-
-        return renderLocationDetailsView(locationDetails, config, h)
+          welshMonth: calendarWelsh[getMonth],
+          summaryDate:
+            lang === LANG_CY
+              ? locationData.welshDate
+              : locationData.englishDate,
+          dailySummaryTexts: english.dailySummaryTexts,
+          serviceName: multipleLocations.serviceName,
+          lang
+        })
+      } else {
+        return h.view(LOCATION_NOT_FOUND, {
+          paragraph: notFoundLocation.paragraphs,
+          serviceName: notFoundLocation.heading,
+          footerTxt,
+          phaseBanner,
+          backlink,
+          cookieBanner,
+          lang
+        })
       }
-
-      return renderLocationNotFoundView(notFoundLocation, english, lang, h)
     } catch (error) {
-      logger.error(`Error on single location: ${error.message}`)
-      const errorResponse = {
-        error: 'Internal Server Error',
-        message: error.message
-      }
-      return h.response(errorResponse).code(HTTP_INTERNAL_SERVER_ERROR)
+      logger.error(`error on single location ${error.message}`)
     }
   }
 }

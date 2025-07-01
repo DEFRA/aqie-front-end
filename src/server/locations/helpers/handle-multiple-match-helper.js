@@ -1,8 +1,8 @@
-import { handleMultipleMatches } from '~/src/server/locations/helpers/middleware-helpers'
+import { handleMultipleMatches } from './middleware-helpers.js'
 import {
   siteTypeDescriptions,
   pollutantTypes
-} from '~/src/server/data/en/monitoring-sites.js'
+} from '../../data/en/monitoring-sites.js'
 // Helper function to handle multiple matches
 const handleMultipleMatchesHelper = (h, request, params, selectedMatches) => {
   const {

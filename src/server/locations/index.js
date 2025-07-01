@@ -1,5 +1,5 @@
-import { getLocationDataController } from '~/src/server/locations/controller'
-import { searchMiddleware } from '~/src/server/locations/middleware'
+import { getLocationDataController } from './controller.js'
+import { searchMiddleware } from './middleware.js'
 
 // Define the route configuration function
 // This function configures the routes for the server

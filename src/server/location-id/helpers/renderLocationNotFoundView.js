@@ -1,4 +1,4 @@
-import { LOCATION_NOT_FOUND } from '~/src/server/data/constants'
+import { LOCATION_NOT_FOUND } from '../data/constants.js' // Updated import to use relative path
 
 const renderLocationNotFoundView = (notFoundLocation, english, lang, h) => {
   return h.view(LOCATION_NOT_FOUND, {

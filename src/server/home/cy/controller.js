@@ -1,7 +1,7 @@
-import { welsh } from '~/src/server/data/cy/cy.js'
-import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
-import { getAirQualitySiteUrl } from '~/src/server/common/helpers/get-site-url'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
+import { welsh } from '../../data/cy/cy.js'
+import { LANG_CY, LANG_EN } from '../../data/constants.js'
+import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
+import { createLogger } from '../../common/helpers/logging/logger.js'
 
 // Create a logger instance
 const logger = createLogger()

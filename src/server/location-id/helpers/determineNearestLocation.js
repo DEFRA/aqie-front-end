@@ -1,4 +1,4 @@
-import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
+import { getNearestLocation } from '../locations/helpers/get-nearest-location.js' // Updated import to use relative path
 
 const determineNearestLocation = (
   locationData,

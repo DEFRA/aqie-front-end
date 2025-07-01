@@ -1,27 +1,21 @@
 import * as geolib from 'geolib'
-import moment from 'moment-timezone'
 import {
   getNearLocation,
   convertPointToLonLat,
   coordinatesTotal,
   pointsInRange
-} from '~/src/server/locations/helpers/location-util.js'
-// import { getPollutantLevel } from '~/src/server/locations/helpers/pollutant-level-calculation'
-// import { getPollutantLevelCy } from '~/src/server/locations/helpers/cy/pollutant-level-calculation'
-import { getAirQuality } from '~/src/server/data/en/air-quality.js'
-import { getAirQualityCy } from '~/src/server/data/cy/air-quality.js'
-import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-location'
+} from './location-util.js'
+import { LANG_CY, LANG_EN } from '../../data/constants.js'
+import { getNearestLocation } from './get-nearest-location.js'
 
-jest.mock('geolib')
-jest.mock('moment-timezone')
-jest.mock('~/src/server/locations/helpers/location-util.js')
-jest.mock('~/src/server/locations/helpers/pollutant-level-calculation')
-jest.mock('~/src/server/locations/helpers/cy/pollutant-level-calculation')
-jest.mock('~/src/server/data/en/air-quality.js')
-jest.mock('~/src/server/data/cy/air-quality.js')
-jest.mock('~/src/server/common/helpers/logging/logger')
+vi.mock('geolib')
+vi.mock('moment-timezone')
+vi.mock('./location-util.js')
+vi.mock('./pollutant-level-calculation')
+vi.mock('./cy/pollutant-level-calculation')
+vi.mock('../../data/en/air-quality.js')
+vi.mock('../../data/cy/air-quality.js')
+vi.mock('../../common/helpers/logging/logger.js')
 
 describe.skip('getNearestLocation', () => {
   let matches, forecasts, measurements, location, index, lang
@@ -61,14 +55,6 @@ describe.skip('getNearestLocation', () => {
       { latitude: 51.5074, longitude: -0.1278 }
     ])
     pointsInRange.mockReturnValue(true)
-    moment.tz.mockReturnValue({ format: jest.fn().mockReturnValue('Mon') })
-    getAirQuality.mockReturnValue({
-      /* mock data */
-    })
-    getAirQualityCy.mockReturnValue({
-      /* mock data */
-    })
-    createLogger.mockReturnValue({ info: jest.fn() })
   })
 
   it.skip('should return nearest location data for English language', () => {

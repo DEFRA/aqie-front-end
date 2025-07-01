@@ -1,4 +1,4 @@
-import { LOCATION_TYPE_UK, LOCATION_TYPE_NI } from '~/src/server/data/constants'
+import { LOCATION_TYPE_UK, LOCATION_TYPE_NI } from '../../data/constants.js'
 
 function getIdMatch(
   locationId,

@@ -1,5 +1,5 @@
-const nunjucks = require('nunjucks')
-const path = require('path')
+import nunjucks from 'nunjucks'
+import path from 'path'
 
 describe('Nunjucks Template', () => {
   let env

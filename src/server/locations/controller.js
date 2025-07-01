@@ -1,26 +1,28 @@
-import { english } from '~/src/server/data/en/en.js'
-import { createLogger } from '~/src/server/common/helpers/logging/logger'
-import { LANG_CY, LANG_EN } from '~/src/server/data/constants'
+import { english } from '../data/en/en.js'
+import { createLogger } from '../common/helpers/logging/logger.js'
 
 const logger = createLogger()
 
 // Helper function to determine language
 const determineLanguage = (queryLang, path, referer) => {
   const lang = queryLang?.slice(0, 2)
-  if (lang === LANG_CY) {
-    return LANG_CY
+  if (lang === 'cy') {
+    return 'cy'
   }
-  if (lang === LANG_EN) {
-    return LANG_EN
+  if (lang === 'en') {
+    return 'en'
   }
   if (path === '/location') {
-    return LANG_EN
+    return 'en'
   }
-  return referer?.includes('search-location') ? LANG_EN : LANG_CY
+  if (referer?.includes('search-location')) {
+    return 'en'
+  }
+  return 'cy' // Default to Welsh
 }
 
 // Helper function to prepare view data
-const prepareViewData = (lang = LANG_EN) => {
+const prepareViewData = (lang = 'en') => {
   const {
     searchLocation,
     notFoundLocation,
@@ -40,7 +42,7 @@ const prepareViewData = (lang = LANG_EN) => {
     phaseBanner, // Phase banner data
     backlink, // Backlink data
     cookieBanner, // Cookie banner data
-    lang // Language
+    lang: lang || 'en' // Ensure lang defaults to 'en'
   }
 }
 
@@ -51,17 +53,24 @@ const getLocationDataController = {
       const { query, path, headers } = request // Destructure request properties
       const referer = headers?.referer // Extract referer from headers
 
+      logger.info('Handler invoked with request:', { query, path, referer }) // Log request details
+
       // Determine the language
       const lang = determineLanguage(query?.lang, path, referer)
+      logger.info('Determined language:', lang) // Log determined language
 
       // Prepare the view data
       const viewData = prepareViewData(lang)
+      logger.info('Prepared view data:', viewData) // Log view data
 
       // Render the view
-      return h.view('location-not-found/index', viewData)
+      const response = h.view('location-not-found/index', viewData)
+      logger.info('View rendered successfully') // Log successful rendering
+
+      return response
     } catch (error) {
       // Log the error and rethrow it
-      logger.error('Error in getLocationDataController.handler:', error) // ''
+      logger.error('Error in getLocationDataController.handler:', error) // Log error details
       throw error
     }
   }

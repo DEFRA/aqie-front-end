@@ -1,9 +1,9 @@
-import { locationNotFoundController } from '~/src/server/location-not-found/controller.js'
-import { english } from '~/src/server/data/en/en.js'
+import { locationNotFoundController } from './controller.js'
+import { english } from '../data/en/en.js'
 import {
   LOCATION_NOT_FOUND,
   LOCATION_NOT_FOUND_ROUTE_CY
-} from '~/src/server/data/constants.js'
+} from '../data/constants.js'
 
 describe('locationNotFoundController - english', () => {
   let mockRequest
@@ -15,22 +15,22 @@ describe('locationNotFoundController - english', () => {
       query: {},
       path: '/location-not-found',
       yar: {
-        get: jest.fn().mockReturnValue({
+        get: vi.fn().mockReturnValue({
           locationNameOrPostcode: '',
           lang: 'en'
         })
       }
     }
     mockH = {
-      redirect: jest.fn().mockReturnValue('redirected'),
-      view: jest.fn().mockReturnValue('view rendered')
+      redirect: vi.fn().mockReturnValue('redirected'),
+      view: vi.fn().mockReturnValue('view rendered')
     }
   })
 
-  test('should render the location not found view with empty location data', () => {
+  it('should render the location not found view with empty location data', () => {
     // const mrequest = {
     //   yar: {
-    //     get: jest.fn().mockReturnValue({
+    //     get: vi.fn().mockReturnValue({
     //       locationNameOrPostcode: 'Test Location',
     //       lang: 'en'
     //     })
@@ -56,7 +56,7 @@ describe('locationNotFoundController - english', () => {
   test.skip('should render the location not found page when invalid empty location data', () => {
     // const mrequest = {
     //   yar: {
-    //     get: jest.fn().mockReturnValue({
+    //     get: vi.fn().mockReturnValue({
     //       locationNameOrPostcode: 'dkjfhe',
     //       lang: 'en'
     //     })

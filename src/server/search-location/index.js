@@ -1,4 +1,4 @@
-import { searchLocationController } from '~/src/server/search-location/controller'
+import { searchLocationController } from './controller.js'
 import { EventEmitter } from 'events'
 
 // Increase the maximum number of listeners for the process object

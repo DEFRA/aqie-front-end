@@ -1,6 +1,4 @@
-''
-// Jest test for index.js in config
-import { config } from './index'
+import { config } from './index.js'
 
 describe('Config', () => {
   it('should load configuration correctly', () => {

@@ -1,4 +1,5 @@
-import { sulphurDioxideController } from './controller'
+/* global vi */
+import { sulphurDioxideController } from './controller.js'
 import { sulphurDioxide } from './index'
 import Hapi from '@hapi/hapi'
 
@@ -11,9 +12,9 @@ describe('sulphurDioxide index plugin - en', () => {
   })
 
   beforeEach(() => {
-    jest.mock('./controller', () => ({
+    vi.mock('./controller.js', () => ({
       sulphurDioxideController: {
-        handler: jest.fn(),
+        handler: vi.fn(),
         options: {}
       }
     }))

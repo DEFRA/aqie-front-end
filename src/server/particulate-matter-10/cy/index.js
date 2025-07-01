@@ -1,5 +1,4 @@
-/* eslint-disable prettier/prettier */
-import { particulateMatter10Controller } from '~/src/server/particulate-matter-10/cy/controller'
+import { particulateMatter10Controller } from './controller.js'
 
 const particulateMatter10Cy = {
   plugin: {

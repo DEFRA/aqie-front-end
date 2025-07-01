@@ -1,4 +1,5 @@
-import { sulphurDioxideController } from './controller'
+/* global vi */
+import { sulphurDioxideController } from './controller.js'
 import { sulphurDioxideCy } from './index'
 import Hapi from '@hapi/hapi'
 
@@ -11,15 +12,15 @@ describe('sulphurDioxide index plugin - cy', () => {
   })
 
   beforeEach(() => {
-    jest.mock('./controller', () => ({
+    vi.mock('./controller.js', () => ({
       sulphurDioxideController: {
-        handler: jest.fn(),
+        handler: vi.fn(),
         options: {}
       }
     }))
   })
 
-  test('should register sulphurDioxide route - cy', () => {
+  it('should register sulphurDioxide route - cy', () => {
     const routes = server.table()
     const sulphurDioxideCyRoute = routes.find(
       (routes) =>
