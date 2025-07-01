@@ -13,9 +13,8 @@ describe('Fetch Data Tests', () => {
 
   it('should return null for invalid URL', async () => {
     const fetchData = async (url) => {
-      return url === 'https://api.example.com/data'
-        ? { data: 'Sample Data' }
-        : null
+      const validUrls = new Set(['https://api.example.com/data'])
+      return validUrls.has(url) ? { data: 'Sample Data' } : null
     }
     const result = await fetchData('https://invalid-url.com')
     expect(result).toBeNull()

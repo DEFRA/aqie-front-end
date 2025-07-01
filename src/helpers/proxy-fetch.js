@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { config } from '../config/index.js'
 import { ProxyAgent, fetch as undiciFetch } from 'undici'
 

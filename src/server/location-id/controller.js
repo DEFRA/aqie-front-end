@@ -8,7 +8,8 @@ import {
   LANG_EN,
   LOCATION_NOT_FOUND,
   LOCATION_TYPE_NI,
-  LOCATION_TYPE_UK
+  LOCATION_TYPE_UK,
+  REDIRECT_STATUS_CODE
 } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 import { english, calendarEnglish } from '../data/en/en.js'
@@ -35,8 +36,9 @@ const getLocationDetailsController = {
       const searchTermsSaved = request.yar.get('searchTermsSaved')
 
       if (query?.lang && query?.lang === LANG_CY && !query?.searchTerms) {
-        /* eslint-disable camelcase */
-        return h.redirect(`/lleoliad/${locationId}/?lang=cy`).code(301)
+        return h
+          .redirect(`/lleoliad/${locationId}/?lang=cy`)
+          .code(REDIRECT_STATUS_CODE)
       }
       // Get the previous URL hit by the user from the referer header
       const previousUrl = headers.referer || headers.referrer
@@ -60,7 +62,7 @@ const getLocationDetailsController = {
               searchTermsLocationType
             )}`
           )
-          .code(301)
+          .code(REDIRECT_STATUS_CODE)
           .takeover()
       }
       request.yar.clear('searchTermsSaved')

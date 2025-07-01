@@ -4,7 +4,8 @@ import { welsh } from '../../data/cy/cy.js'
 import {
   LANG_CY,
   LANG_EN,
-  MULTIPLE_LOCATIONS_ROUTE_EN
+  MULTIPLE_LOCATIONS_ROUTE_EN,
+  REDIRECT_STATUS_CODE
 } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
@@ -38,7 +39,7 @@ const getLocationDataController = {
 
     const { query } = request
     if (query?.lang === LANG_EN) {
-      return h.redirect(MULTIPLE_LOCATIONS_ROUTE_EN).code(301)
+      return h.redirect(MULTIPLE_LOCATIONS_ROUTE_EN).code(REDIRECT_STATUS_CODE)
     }
     const metaSiteUrl = getAirQualitySiteUrl(request)
 

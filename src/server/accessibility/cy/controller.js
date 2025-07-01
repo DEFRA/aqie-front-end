@@ -29,7 +29,7 @@ const accessibilityHandler = (request, h, content = welsh) => {
 
   // Redirect to English version if language is 'en'
   if (lang === LANG_EN) {
-    return h.redirect('/accessibility?lang=en').code(301)
+    return h.redirect('/accessibility?lang=en').code(REDIRECT_STATUS_CODE)
   }
 
   // Default to Welsh if language is not LANG_CY or 'en' and path is '/hygyrchedd/cy'
@@ -61,4 +61,6 @@ const accessibilityController = {
   handler: accessibilityHandler
 }
 
-export { accessibilityController, accessibilityHandler }
+const REDIRECT_STATUS_CODE = 301
+
+export { accessibilityController, accessibilityHandler, REDIRECT_STATUS_CODE }

@@ -5,11 +5,14 @@ import { Cluster, Redis } from 'ioredis'
 import { config } from '../../../config/index.js'
 import { buildRedisClient } from './redis-client.js'
 
-vi.mock('ioredis', () => ({
-  ...vi.importActual('ioredis'),
-  Cluster: vi.fn().mockReturnValue({ on: () => ({}) }),
-  Redis: vi.fn().mockReturnValue({ on: () => ({}) })
-}))
+vi.mock('ioredis', async () => {
+  const actualIoredis = await vi.importActual('ioredis')
+  return {
+    ...actualIoredis,
+    Cluster: vi.fn().mockReturnValue({ on: () => ({}) }),
+    Redis: vi.fn().mockReturnValue({ on: () => ({}) })
+  }
+})
 
 describe('#buildRedisClient', () => {
   describe('When Redis Single InstanceCache is requested', () => {

@@ -3,7 +3,8 @@ import {
   LANG_CY,
   REDIRECT_PATH_CY,
   REDIRECT_PATH_EN,
-  POSTCODE_SPACE_INDEX
+  POSTCODE_SPACE_INDEX,
+  REDIRECT_STATUS_CODE
 } from '../../data/constants.js'
 import { english } from '../../data/en/en.js'
 import { welsh } from '../../data/cy/cy.js'
@@ -39,7 +40,7 @@ const handleMissingLocation = (request, h, lang) => {
     lang === LANG_CY
       ? 'chwilio-lleoliad/cy?lang=cy'
       : '/search-location?lang=en'
-  return h.redirect(redirectPath).code(301).takeover()
+  return h.redirect(redirectPath).code(REDIRECT_STATUS_CODE).takeover()
 }
 
 /**
@@ -69,7 +70,7 @@ const handleUKError = (request, h, lang, locationNameOrPostcode) => {
   request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
 
   const redirectPath = lang === LANG_EN ? REDIRECT_PATH_EN : REDIRECT_PATH_CY
-  return h.redirect(redirectPath).code(301).takeover()
+  return h.redirect(redirectPath).code(REDIRECT_STATUS_CODE).takeover()
 }
 
 /**
@@ -99,7 +100,7 @@ const handleNIError = (request, h, lang, locationNameOrPostcode) => {
   request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
 
   const redirectPath = lang === LANG_EN ? REDIRECT_PATH_EN : REDIRECT_PATH_CY
-  return h.redirect(redirectPath).code(301).takeover()
+  return h.redirect(redirectPath).code(REDIRECT_STATUS_CODE).takeover()
 }
 
 /**

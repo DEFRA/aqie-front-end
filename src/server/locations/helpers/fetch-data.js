@@ -2,7 +2,12 @@ import { config } from '../../../config/index.js'
 import { createLogger } from '../../common/helpers/logging/logger.js'
 import { catchFetchError } from '../../common/helpers/catch-fetch-error.js'
 import { catchProxyFetchError } from '../../common/helpers/catch-proxy-fetch-error.js'
-import { LOCATION_TYPE_NI, SYMBOLS_ARRAY } from '../../data/constants.js'
+import {
+  LOCATION_TYPE_NI,
+  SYMBOLS_ARRAY,
+  HTTP_STATUS_OK,
+  REFRESH_INTERVAL_MS
+} from '../../data/constants.js'
 import {
   isValidFullPostcodeUK,
   isValidPartialPostcodeUK,
@@ -27,7 +32,7 @@ const oauthTokenNorthernIrelandTenantId = config.get(
 const fetchOAuthToken = async () => {
   logger.info(`OAuth token requested:`)
   const url = `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`
-  const options = {
+  const tokenOptions = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
@@ -44,10 +49,10 @@ const fetchOAuthToken = async () => {
   // Invoking token API
   const [statusCodeToken, dataToken] = await catchProxyFetchError(
     url,
-    options,
+    tokenOptions,
     true
   )
-  if (statusCodeToken !== 200) {
+  if (statusCodeToken !== HTTP_STATUS_OK) {
     logger.error('Error OAuth statusCodeToken fetched:', statusCodeToken)
   } else {
     logger.info(`OAuth token fetched:::`)
@@ -58,7 +63,6 @@ const fetchOAuthToken = async () => {
 
 async function fetchData(
   request,
-  h,
   { locationType, userLocation, searchTerms, secondSearchTerm }
 ) {
   let optionsOAuth
@@ -86,17 +90,14 @@ async function fetchData(
     request.yar.set('savedAccessToken', accessToken)
   }
   // Set an interval to refresh the OAuth token every 19 minutes (1140 seconds)
-  const refreshIntervalId = setInterval(
-    () => {
-      // Assuming you have access to the request object here
-      if (locationType === LOCATION_TYPE_NI && !isMockEnabled) {
-        refreshOAuthToken()
-      } else {
-        clearRefreshInterval()
-      }
-    },
-    30 * 60 * 1000
-  ) // 1 minute in milliseconds
+  const refreshIntervalId = setInterval(() => {
+    // Assuming you have access to the request object here
+    if (locationType === LOCATION_TYPE_NI && !isMockEnabled) {
+      refreshOAuthToken()
+    } else {
+      clearRefreshInterval()
+    }
+  }, REFRESH_INTERVAL_MS) // 1 minute in milliseconds
 
   // Function to clear the interval
   const clearRefreshInterval = () => {
@@ -135,12 +136,13 @@ async function fetchData(
     options,
     true
   )
-  if (statusCodeSummary !== 200) {
+  if (statusCodeSummary !== HTTP_STATUS_OK) {
     logger.error(`Error fetching statusCodeSummary data: ${statusCodeSummary}`)
   } else {
     logger.info(`getDailySummary data fetched:`)
   }
 
+  // Refactored to use 'return' consistently
   if (locationType === 'uk-location') {
     const filters = [
       'LOCAL_TYPE:City',
@@ -180,7 +182,7 @@ async function fetchData(
       options,
       shouldCallApi
     )
-    if (statusCodeOSPlace !== 200) {
+    if (statusCodeOSPlace !== HTTP_STATUS_OK) {
       logger.error(
         `Error fetching statusCodeOSPlace data: ${statusCodeOSPlace}`
       )
@@ -212,13 +214,16 @@ async function fetchData(
         results: Array.isArray(getNIPlaces) ? getNIPlaces : [getNIPlaces]
       }
     }
-    if (statusCodeNI !== 200) {
+    if (statusCodeNI !== HTTP_STATUS_OK) {
       logger.error(`Error fetching statusCodeNI data: ${statusCodeNI}`)
     } else {
       logger.info(`getNIPlaces data fetched:`)
     }
 
     return { getDailySummary, getForecasts, getMeasurements, getNIPlaces }
+  } else {
+    logger.error('Unsupported location type provided:', locationType)
+    return null
   }
 }
 

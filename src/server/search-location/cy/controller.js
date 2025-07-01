@@ -2,7 +2,8 @@ import { welsh } from '../../data/cy/cy.js'
 import {
   LANG_CY,
   LANG_EN,
-  SEARCH_LOCATION_ROUTE_EN
+  SEARCH_LOCATION_ROUTE_EN,
+  REDIRECT_STATUS_CODE
 } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
@@ -21,7 +22,7 @@ const searchLocationController = {
       lang = LANG_CY
     }
     if (lang === LANG_EN) {
-      h.redirect(SEARCH_LOCATION_ROUTE_EN).code(301)
+      h.redirect(SEARCH_LOCATION_ROUTE_EN).code(REDIRECT_STATUS_CODE)
       return 'redirected'
     }
     const errors = request.yar.get('errors')

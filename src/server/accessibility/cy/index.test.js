@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { accessibilityCy } from './index'
 
 describe('accessibility index plugin - cy', () => {
