@@ -1,10 +1,10 @@
 import { cookiesController, cookiesHandler } from './controller.js'
 import { welsh } from '../../data/cy/cy.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
+import { createMockH } from '../../locations/helpers/error-input-and-redirect-helpers.test.js'
 
 describe('Cookies Handler', () => {
   let mockRequest
-  let mockH
   const mockContent = welsh
 
   beforeEach(() => {
@@ -17,13 +17,11 @@ describe('Cookies Handler', () => {
         return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
       })
     }))
-    mockH = {
-      redirect: vi.fn().mockReturnValue('redirected'),
-      view: vi.fn().mockReturnValue('view rendered')
-    }
   })
 
   it('should redirect to the English version if the language is "en"', () => {
+    const mockH = createMockH()
+
     mockRequest = {
       query: {
         lang: 'en'
@@ -35,11 +33,13 @@ describe('Cookies Handler', () => {
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = cookiesController.handler(mockRequest, mockH, mockContent)
-    expect(result).toBe('redirected')
+    expect(result.takeover()).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith('/cookies?lang=en')
   })
 
   it('should render the cookies page with the necessary data', () => {
+    const mockH = createMockH()
+
     mockRequest = {
       query: {
         lang: 'cy'
@@ -72,6 +72,8 @@ describe('Cookies Handler', () => {
   })
 
   it('should default to Welsh if language is not "cy" or "en" and path is "/preifatrwydd/cy"', () => {
+    const mockH = createMockH()
+
     mockRequest = {
       query: {
         lang: 'fr'

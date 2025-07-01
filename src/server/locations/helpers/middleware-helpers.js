@@ -54,8 +54,8 @@ const handleSingleMatch = (
   })
 
   return lang === LANG_EN
-    ? h.redirect(`/location/${customId}`).takeover()
-    : h.redirect(`/lleoliad/${customId}`).takeover()
+    ? h.redirect(`/location/${customId}`).code(301).takeover()
+    : h.redirect(`/lleoliad/${customId}`).code(301).takeover()
 }
 
 // Helper function to handle multiple matches
@@ -117,8 +117,8 @@ const handleMultipleMatches = (
   })
 
   return lang === LANG_EN
-    ? h.redirect('multiple-results').takeover()
-    : h.redirect('canlyniadau-lluosog/cy').takeover()
+    ? h.redirect('multiple-results').code(301).takeover()
+    : h.redirect('canlyniadau-lluosog/cy').code(301).takeover()
 }
 
 // Helper function to process matches

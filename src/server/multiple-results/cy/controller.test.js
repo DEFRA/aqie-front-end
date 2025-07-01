@@ -38,7 +38,9 @@ describe('getLocationDataController', () => {
       path: '/test-path'
     }
     const h = {
-      redirect: vi.fn()
+      redirect: vi.fn(() => ({
+        code: vi.fn().mockReturnValue('redirected')
+      }))
     }
 
     await getLocationDataController.handler(request, h)

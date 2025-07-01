@@ -57,9 +57,21 @@ vi.mock('../../data/cy/cy.js', () => ({
   }
 }))
 
+export const createMockH = () => {
+  const codeSpy = vi.fn(() => ({
+    takeover: vi.fn(() => 'redirected')
+  }))
+
+  return {
+    redirect: vi.fn(() => ({
+      code: codeSpy
+    })),
+    view: vi.fn().mockReturnValue('view rendered')
+  }
+}
+
 describe('error-input-and-redirect-helpers', () => {
   let mockRequest, mockH
-  // ''
 
   beforeEach(() => {
     mockRequest = {
@@ -68,9 +80,7 @@ describe('error-input-and-redirect-helpers', () => {
       }
     }
 
-    mockH = {
-      redirect: vi.fn(() => ({ takeover: vi.fn() }))
-    }
+    mockH = createMockH()
 
     vi.clearAllMocks()
   })
@@ -130,6 +140,26 @@ describe('error-input-and-redirect-helpers', () => {
       )
       expect(mockH.redirect).toHaveBeenCalledWith('chwilio-lleoliad/cy?lang=cy')
       // ''
+    })
+
+    it('should redirect with a 301 status code for English language', () => {
+      const lang = 'en'
+
+      handleMissingLocation(mockRequest, mockH, lang)
+
+      expect(mockH.redirect).toHaveBeenCalledWith('/search-location?lang=en')
+      const codeSpy = mockH.redirect.mock.results[0].value.code
+      expect(codeSpy).toHaveBeenCalledWith(301)
+    })
+
+    it('should redirect with a 301 status code for Welsh language', () => {
+      const lang = 'cy'
+
+      handleMissingLocation(mockRequest, mockH, lang)
+
+      expect(mockH.redirect).toHaveBeenCalledWith('chwilio-lleoliad/cy?lang=cy')
+      const codeSpy = mockH.redirect.mock.results[0].value.code
+      expect(codeSpy).toHaveBeenCalledWith(301)
     })
   })
 

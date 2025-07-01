@@ -77,7 +77,8 @@ describe('handle-error-helpers', () => {
     }
 
     mockH = {
-      redirect: vi.fn(() => ({ takeover: vi.fn() }))
+      redirect: vi.fn(() => ({ code: vi.fn(() => ({ takeover: vi.fn() })) })),
+      view: vi.fn().mockReturnValue('view rendered')
     }
 
     // Mock payload

@@ -11,7 +11,7 @@ const ozoneController = {
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     if (query?.lang && query?.lang === LANG_CY) {
-      return h.redirect(`/llygryddion/oson/cy?lang=cy`)
+      return h.redirect(`/llygryddion/oson/cy?lang=cy`).code(301)
     }
     return h.view('ozone/index', {
       pageTitle: ozone.pageTitle,

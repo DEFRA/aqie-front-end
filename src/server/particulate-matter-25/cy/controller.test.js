@@ -18,8 +18,9 @@ describe('Particular matter25 Controller - English', () => {
         return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
       })
     }))
+    const mockCode = vi.fn()
     mockH = {
-      redirect: vi.fn().mockReturnValue('redirected'),
+      redirect: vi.fn(() => ({ code: mockCode })),
       view: vi.fn().mockReturnValue('view rendered')
     }
   })

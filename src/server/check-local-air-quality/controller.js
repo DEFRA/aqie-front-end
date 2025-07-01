@@ -8,7 +8,7 @@ const handleHomeRequest = (request, h, content = english) => {
   const metaSiteUrl = getAirQualitySiteUrl(request)
 
   if (query.lang === LANG_CY) {
-    return h.redirect(LANG_CY)
+    return h.redirect(LANG_CY).code(301)
   }
 
   return h.view('home/index', {

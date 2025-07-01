@@ -20,7 +20,7 @@ const handleHomeRequest = (request, h, content = welsh) => {
   }
   // Redirect to the English version if the language is 'en'
   if (query.lang === LANG_EN) {
-    return h.redirect(`/?lang=en`)
+    return h.redirect(`/?lang=en`).code(301)
   }
 
   // Render the home page with the necessary data

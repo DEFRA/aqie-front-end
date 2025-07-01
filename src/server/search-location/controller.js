@@ -112,7 +112,7 @@ const searchLocationController = {
     const lang = determineLanguage(request)
 
     if (lang === LANG_CY) {
-      return h.redirect(SEARCH_LOCATION_ROUTE_CY)
+      return h.redirect(SEARCH_LOCATION_ROUTE_CY).code(301)
     }
 
     const { errors, errorMessage, locationType } = getSessionData(request)

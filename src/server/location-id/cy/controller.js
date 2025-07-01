@@ -36,7 +36,7 @@ const getLocationDetailsController = {
 
       if (query?.lang && query?.lang === LANG_EN && !query?.searchTerms) {
         /* eslint-disable camelcase */
-        return h.redirect(`/location/${locationId}/?lang=en`)
+        return h.redirect(`/location/${locationId}/?lang=en`).code(301)
       }
       // Get the previous URL hit by the user from the referer header
       const previousUrl = headers.referer || headers.referrer

@@ -49,32 +49,3 @@ export default function loadAnalytics() {
     })(window, document, 'script', 'dataLayer', 'G-8CMZBTDQBC');
   }
 }
-
-export function trackVirtualPageview(url, title) {
-  if (!window.dataLayer) {
-    console.warn(
-      'trackVirtualPageview: dataLayer is not available, initializing it.'
-    )
-    window.dataLayer = []
-  }
-
-  if (Array.isArray(window.dataLayer)) {
-    try {
-      window.dataLayer.push({
-        event: 'virtualPageview',
-        virtualPageviewUrl: url,
-        virtualPageviewTitle: title
-      })
-      console.log(
-        'Data successfully pushed to window.dataLayer:',
-        window.dataLayer
-      ) // Debug statement
-    } catch (error) {
-      console.error('Error pushing data to window.dataLayer:', error)
-    }
-  } else {
-    console.error(
-      'trackVirtualPageview: dataLayer is not an array after initialization.'
-    )
-  }
-}

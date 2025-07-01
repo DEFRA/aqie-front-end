@@ -284,7 +284,7 @@ const searchMiddlewareCy = async (request, h) => {
       getMeasurements: getMeasurements?.measurements,
       lang
     })
-    return h.redirect(`/lleoliad/${urlRoute}?lang=cy`).takeover()
+    return h.redirect(`/lleoliad/${urlRoute}?lang=cy`).code(301).takeover()
   } else {
     // handle other location types
     request.yar.clear('searchTermsSaved')

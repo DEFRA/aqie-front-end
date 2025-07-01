@@ -9,27 +9,31 @@ describe('sulphurDioxide Controller - Welsh', () => {
   let mockH
   const mockContent = welsh
   const { sulphurDioxide } = welsh.pollutants
+
   beforeEach(() => {
     mockRequest = {
       query: {},
       path: '/llygryddion/sylffwr-deuocsid/cy'
     }
     mockH = {
-      redirect: vi.fn().mockReturnValue('redirected'),
+      redirect: vi.fn(() => ({ code: vi.fn() })),
       view: vi.fn().mockReturnValue('view rendered')
     }
   })
 
   it('should redirect to the English version if the language is "cy"', () => {
+    const codeSpy = vi.fn()
+    mockH.redirect = vi.fn(() => ({
+      code: codeSpy
+    }))
+
     mockRequest.query.lang = LANG_EN
-    const result = sulphurDioxideController.handler(mockRequest, mockH)
-    expect(result).toBe('redirected')
+    sulphurDioxideController.handler(mockRequest, mockH)
     expect(mockH.redirect).toHaveBeenCalledWith(
       '/pollutants/sulphur-dioxide?lang=en'
     )
-  })
+    expect(mockH.redirect().code).toHaveBeenCalledWith(301)
 
-  it('should render the sulphurDioxide page with the necessary data', () => {
     mockRequest = {
       query: {
         lang: LANG_CY

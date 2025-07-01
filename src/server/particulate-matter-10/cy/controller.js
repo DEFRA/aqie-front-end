@@ -10,7 +10,7 @@ const particulateMatter10Controller = {
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     if (query?.lang && query?.lang === 'en') {
-      return h.redirect(`/pollutants/particulate-matter-10?lang=en`)
+      return h.redirect(`/pollutants/particulate-matter-10?lang=en`).code(301)
     }
     let lang = query?.lang?.slice(0, 2)
     if (

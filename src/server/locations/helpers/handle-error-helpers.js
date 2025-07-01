@@ -80,6 +80,13 @@ const handleNoSearchTerms = (request, h, lang, payload) => {
   }
 
   if (!locationType && !locationNameOrPostcode) {
+    console.log('Debugging handleNoSearchTerms - Missing Location:', {
+      locationType,
+      locationNameOrPostcode,
+      referer: str
+    })
+
+    // Call handleMissingLocation instead of redirecting directly
     return handleMissingLocation(request, h, lang)
   }
 
@@ -92,6 +99,12 @@ const handleNoSearchTerms = (request, h, lang, payload) => {
   if (!userLocation && locationType === LOCATION_TYPE_NI) {
     return handleNIError(request, h, lang, locationNameOrPostcode)
   }
+
+  console.log('Debugging handleNoSearchTerms:', {
+    locationType,
+    locationNameOrPostcode,
+    referer: str
+  })
 
   return { locationType, userLocation, locationNameOrPostcode }
 }

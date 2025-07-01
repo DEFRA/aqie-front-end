@@ -23,12 +23,13 @@ describe('handleErrorInputAndRedirect', () => {
       yar: {
         get: vi.fn(),
         set: vi.fn()
-      }
+      },
+      headers: {} // Initialize headers object
     }
 
     mockH = {
-      view: vi.fn(),
-      redirect: vi.fn(() => ({ takeover: vi.fn() }))
+      redirect: vi.fn(() => ({ code: vi.fn() })),
+      view: vi.fn().mockReturnValue('view rendered')
     }
 
     mockPayload = {

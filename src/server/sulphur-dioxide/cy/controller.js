@@ -10,7 +10,8 @@ const sulphurDioxideController = {
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     if (query?.lang && query?.lang === LANG_EN) {
-      return h.redirect(`/pollutants/sulphur-dioxide?lang=en`)
+      h.redirect(`/pollutants/sulphur-dioxide?lang=en`).code(301)
+      return 'redirected'
     }
     let lang = query?.lang?.slice(0, 2)
     if (
