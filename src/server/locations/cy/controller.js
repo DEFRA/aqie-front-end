@@ -21,7 +21,7 @@ const getLocationDataController = {
       lang = LANG_CY
     }
     if (query?.lang && query?.lang === LANG_EN) {
-      return h.redirect(`/location?lang=en`)
+      return h.redirect(`/location?lang=en`).code(301)
     }
     const {
       searchLocation,
@@ -51,7 +51,7 @@ const getLocationDataController = {
     if (!locationNameOrPostcode && !locationType) {
       request.yar.set('locationType', '')
       if (str === 'chwilio-lleoliad') {
-        return h.redirect(`/chwilio-lleoliad/cy?lang=cy`)
+        return h.redirect(`/chwilio-lleoliad/cy?lang=cy`).code(301)
       }
     }
     try {

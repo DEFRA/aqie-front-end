@@ -27,7 +27,7 @@ const privacyController = {
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     if (lang && lang === LANG_CY) {
-      return h.redirect(`/preifatrwydd/cy?lang=cy`)
+      return h.redirect(`/preifatrwydd/cy?lang=cy`).code(301)
     }
     return h.view('privacy/index', {
       pageTitle,

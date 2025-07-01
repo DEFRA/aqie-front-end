@@ -30,7 +30,7 @@ const cookiesHandler = (request, h, content = english) => {
 
   // Redirect to the Welsh version if the language is LANG_CY
   if (query?.lang === LANG_CY) {
-    return h.redirect(`/briwsion/cy?lang=${query?.lang}`)
+    return h.redirect(`/briwsion/cy?lang=${query?.lang}`).code(301)
   }
 
   // Determine the language

@@ -19,7 +19,9 @@ describe('Nitrogen Dioxide Controller - Welsh', () => {
       })
     }))
     mockH = {
-      redirect: vi.fn().mockReturnValue('redirected'),
+      redirect: vi.fn(() => ({
+        code: vi.fn().mockReturnValue('redirected')
+      })),
       view: vi.fn().mockReturnValue('view rendered')
     }
   })

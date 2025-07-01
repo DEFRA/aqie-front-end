@@ -11,7 +11,7 @@ const particulateMatter25Controller = {
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     if (query?.lang && query?.lang === LANG_CY) {
-      return h.redirect(`/llygryddion/mater-gronynnol-25/cy?lang=cy`)
+      return h.redirect(`/llygryddion/mater-gronynnol-25/cy?lang=cy`).code(301)
     }
     return h.view('particulate-matter-25/index', {
       pageTitle: particulateMatter25.pageTitle,

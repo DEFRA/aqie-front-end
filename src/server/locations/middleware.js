@@ -23,13 +23,8 @@ import {
 } from './helpers/convert-string.js'
 import { sentenceCase } from '../common/helpers/sentence-case.js'
 import { convertFirstLetterIntoUppercase } from './helpers/convert-first-letter-into-upper-case.js'
-import { trackVirtualPageview } from '../../client/javascripts/components/analytics.js'
 
 const searchMiddleware = async (request, h) => {
-  trackVirtualPageview(
-    '/virtual-pageview/search-middleware',
-    'Location Search Middleware'
-  )
   const { query, payload } = request
   const lang = LANG_EN
   const month = getMonth(lang)
@@ -137,7 +132,7 @@ const searchMiddleware = async (request, h) => {
     if (isPartialPostcode) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
-      return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
+      return h.redirect('/lleoliad-heb-ei-ganfod/cy').code(301).takeover()
     }
 
     if (
@@ -147,7 +142,10 @@ const searchMiddleware = async (request, h) => {
     ) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
-      return h.redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`).takeover()()
+      return h
+        .redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`)
+        .code(301)
+        .takeover()()
     }
     if (
       !getNIPlaces?.results ||
@@ -156,7 +154,10 @@ const searchMiddleware = async (request, h) => {
     ) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
-      return h.redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`).takeover()()
+      return h
+        .redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`)
+        .code(301)
+        .takeover()()
     }
     let title = ''
     let headerTitle = ''
@@ -183,7 +184,7 @@ const searchMiddleware = async (request, h) => {
       getMeasurements: getMeasurements?.measurements,
       lang
     })
-    return h.redirect(`/location/${urlRoute}?lang=en`).takeover()
+    return h.redirect(`/location/${urlRoute}?lang=en`).code(301).takeover()
   } else {
     // handle other location types
     request.yar.clear('searchTermsSaved')

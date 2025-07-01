@@ -11,7 +11,7 @@ const sulphurDioxideController = {
 
     const lang = LANG_EN
     if (query?.lang && query?.lang === LANG_CY) {
-      return h.redirect(`/llygryddion/sylffwr-deuocsid/cy?lang=cy`)
+      return h.redirect(`/llygryddion/sylffwr-deuocsid/cy?lang=cy`).code(301)
     }
     return h.view('sulphur-dioxide/index', {
       pageTitle: sulphurDioxide.pageTitle,

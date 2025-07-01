@@ -44,11 +44,15 @@ describe('getLocationNameOrPostcode', () => {
 })
 
 describe('handleRedirect', () => {
-  test('redirects to the given route', () => {
-    const h = { redirect: vi.fn() }
+  it('should redirect to the given route with a 301 status code', () => {
+    const mockCode = vi.fn()
+    const mockH = {
+      redirect: vi.fn(() => ({ code: mockCode }))
+    }
     const redirectRoute = '/some-route'
-    handleRedirect(h, redirectRoute)
-    expect(h.redirect).toHaveBeenCalledWith(redirectRoute)
+    handleRedirect(mockH, redirectRoute)
+    expect(mockH.redirect).toHaveBeenCalledWith(redirectRoute)
+    expect(mockCode).toHaveBeenCalledWith(301)
   })
 })
 

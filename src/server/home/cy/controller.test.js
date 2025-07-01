@@ -1,10 +1,10 @@
 import { homeController, handleHomeRequest } from './controller.js'
 import { welsh } from '../../data/cy/cy.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
+import { createMockH } from '../../locations/helpers/error-input-and-redirect-helpers.test.js'
 
 describe('Home Controller', () => {
   let mockRequest
-  let mockH
   const mockContent = welsh
 
   beforeEach(() => {
@@ -20,23 +20,23 @@ describe('Home Controller', () => {
         return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
       })
     }))
-    mockH = {
-      redirect: vi.fn().mockReturnValue('redirected'),
-      view: vi.fn().mockReturnValue('view rendered')
-    }
   })
 
   it('should redirect to the English version if the language is "en"', () => {
+    const mockH = createMockH()
+
     mockRequest.query.lang = 'en'
     const expectedUrl = 'https://check-air-quality.service.gov.uk/?lang=en'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = homeController.handler(mockRequest, mockH, mockContent)
-    expect(result).toBe('redirected')
+    expect(result.takeover()).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith('/?lang=en')
   })
 
   it('should render the home page with the necessary data', () => {
+    const mockH = createMockH()
+
     mockRequest.query.lang = 'cy'
     const expectedUrl = 'https://check-air-quality.service.gov.uk/?lang=cy'
     const actualUrl = getAirQualitySiteUrl(mockRequest)

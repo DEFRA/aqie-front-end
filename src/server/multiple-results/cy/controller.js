@@ -38,7 +38,7 @@ const getLocationDataController = {
 
     const { query } = request
     if (query?.lang === LANG_EN) {
-      return h.redirect(MULTIPLE_LOCATIONS_ROUTE_EN)
+      return h.redirect(MULTIPLE_LOCATIONS_ROUTE_EN).code(301)
     }
     const metaSiteUrl = getAirQualitySiteUrl(request)
 

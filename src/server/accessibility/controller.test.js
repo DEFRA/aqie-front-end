@@ -15,10 +15,23 @@ describe('Accessibility Handler', () => {
       return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
     })
   }))
-  const mockH = {
+  let mockH = {
     redirect: vi.fn().mockReturnValue('redirected'),
     view: vi.fn().mockReturnValue('view rendered')
   }
+
+  beforeEach(() => {
+    mockH = {
+      redirect: vi.fn().mockImplementation((url) => {
+        return {
+          code: vi.fn().mockImplementation((statusCode) => {
+            return 'redirected'
+          })
+        }
+      }),
+      view: vi.fn().mockReturnValue('view rendered')
+    }
+  })
 
   it('should redirect to the Welsh version if the language is "cy"', () => {
     mockRequest.query.lang = LANG_CY

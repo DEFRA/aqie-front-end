@@ -11,7 +11,7 @@ const nitrogenDioxideController = {
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     if (query?.lang && query?.lang === LANG_CY) {
-      return h.redirect(`/llygryddion/nitrogen-deuocsid/cy?lang=cy`)
+      return h.redirect(`/llygryddion/nitrogen-deuocsid/cy?lang=cy`).code(301)
     }
     return h.view('nitrogen-dioxide/index', {
       pageTitle: nitrogenDioxide.pageTitle,

@@ -20,7 +20,13 @@ describe('privacy controller - English', () => {
       })
     }))
     mockH = {
-      redirect: vi.fn().mockReturnValue('redirected'),
+      redirect: vi.fn().mockImplementation((url) => {
+        return {
+          code: vi.fn().mockImplementation((statusCode) => {
+            return 'redirected'
+          })
+        }
+      }),
       view: vi.fn().mockReturnValue('view rendered')
     }
   })

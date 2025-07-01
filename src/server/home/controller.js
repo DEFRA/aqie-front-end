@@ -18,7 +18,7 @@ const handleHomeRequest = (request, h, content = english) => {
     logger.warn('Session (yar) is not available on the request object') // ''
   }
   if (query.lang === LANG_CY) {
-    return h.redirect(LANG_CY)
+    return h.redirect(LANG_CY).code(301)
   }
 
   return h.view('home/index', {

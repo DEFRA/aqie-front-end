@@ -25,16 +25,22 @@ describe('searchLocationController - welsh', () => {
       }
     }
     mockH = {
-      redirect: vi.fn().mockReturnValue('redirected'),
+      redirect: vi.fn(() => ({ code: vi.fn() })),
       view: vi.fn().mockReturnValue('view rendered')
     }
   })
 
   it('should redirect to the Welsh version if the language is "en"', () => {
+    const codeSpy = vi.fn()
+    mockH.redirect = vi.fn(() => ({
+      code: codeSpy
+    }))
+
     mockRequest.query.lang = 'en'
     const result = searchLocationController.handler(mockRequest, mockH)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith('/search-location?lang=en')
+    expect(codeSpy).toHaveBeenCalledWith(301)
   })
 
   it('should redirect by default to search location index page with welsh version if lang is not cy/en', () => {

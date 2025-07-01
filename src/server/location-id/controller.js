@@ -36,7 +36,7 @@ const getLocationDetailsController = {
 
       if (query?.lang && query?.lang === LANG_CY && !query?.searchTerms) {
         /* eslint-disable camelcase */
-        return h.redirect(`/lleoliad/${locationId}/?lang=cy`)
+        return h.redirect(`/lleoliad/${locationId}/?lang=cy`).code(301)
       }
       // Get the previous URL hit by the user from the referer header
       const previousUrl = headers.referer || headers.referrer
@@ -60,6 +60,7 @@ const getLocationDetailsController = {
               searchTermsLocationType
             )}`
           )
+          .code(301)
           .takeover()
       }
       request.yar.clear('searchTermsSaved')

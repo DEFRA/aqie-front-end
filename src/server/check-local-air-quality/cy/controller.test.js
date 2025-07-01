@@ -2,11 +2,10 @@
 import { homeController, handleHomeRequest } from './controller.js'
 import { welsh } from '../../data/cy/cy.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
-import { vi } from 'vitest'
 
 describe('Home Controller', () => {
   let mockRequest
-  let mockH
+  let mockH // Declare mockH at the top of the test file
   const mockContent = welsh
 
   beforeEach(() => {
@@ -20,7 +19,15 @@ describe('Home Controller', () => {
       })
     }))
     mockH = {
-      redirect: vi.fn().mockReturnValue('redirected'),
+      redirect: vi.fn().mockImplementation((url) => {
+        return {
+          code: vi.fn().mockImplementation((statusCode) => {
+            return {
+              takeover: vi.fn().mockReturnValue('redirected')
+            }
+          })
+        }
+      }),
       view: vi.fn().mockReturnValue('view rendered')
     }
   })
@@ -36,7 +43,7 @@ describe('Home Controller', () => {
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = homeController.handler(mockRequest, mockH, mockContent)
-    expect(result).toBe('redirected')
+    expect(result.takeover()).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith('/?lang=en')
   })
 

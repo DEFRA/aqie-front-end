@@ -20,7 +20,7 @@ const getLocationNameOrPostcode = (locationType, payload) => {
 }
 
 const handleRedirect = (h, redirectRoute) => {
-  return h.redirect(redirectRoute)
+  return h.redirect(redirectRoute).code(301)
 }
 
 const getMonth = () => {
@@ -73,10 +73,10 @@ const configureLocationTypeAndRedirects = (
       errorMessage: { text: searchLocation.errorText.radios.list.text }
     })
     if (query?.lang === LANG_CY) {
-      return h.redirect(SEARCH_LOCATION_ROUTE_CY)
+      return h.redirect(SEARCH_LOCATION_ROUTE_CY).code(301)
     }
     if (str === SEARCH_LOCATION_PATH_EN) {
-      return h.redirect(SEARCH_LOCATION_ROUTE_EN)
+      return h.redirect(SEARCH_LOCATION_ROUTE_EN).code(301)
     }
   }
 }
