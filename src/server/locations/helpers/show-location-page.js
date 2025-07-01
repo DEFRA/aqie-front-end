@@ -39,6 +39,8 @@ async function showLocationPage(
       serviceName,
       userLocation
     })
+  } else {
+    return null
   }
 }
 export { showLocationPage }
