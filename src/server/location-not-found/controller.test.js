@@ -28,15 +28,6 @@ describe('locationNotFoundController - english', () => {
   })
 
   it('should render the location not found view with empty location data', () => {
-    // const mrequest = {
-    //   yar: {
-    //     get: vi.fn().mockReturnValue({
-    //       locationNameOrPostcode: 'Test Location',
-    //       lang: 'en'
-    //     })
-    //   }
-    // }
-    // const locationData = { locationNameOrPostcode: '', lang: 'en' }
     const result = locationNotFoundController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
     expect(mockH.view).toHaveBeenCalledWith(LOCATION_NOT_FOUND, {
@@ -54,14 +45,6 @@ describe('locationNotFoundController - english', () => {
   })
 
   test.skip('should render the location not found page when invalid empty location data', () => {
-    // const mrequest = {
-    //   yar: {
-    //     get: vi.fn().mockReturnValue({
-    //       locationNameOrPostcode: 'dkjfhe',
-    //       lang: 'en'
-    //     })
-    //   }
-    // }
     const locationData = { locationNameOrPostcode: 'dkjfhe', lang: 'en' }
     const result = locationNotFoundController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')

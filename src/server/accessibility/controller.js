@@ -1,5 +1,5 @@
 import { english } from '../data/en/en.js'
-import { LANG_CY, LANG_EN } from '../data/constants.js'
+import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
 // Define the handler function
@@ -28,7 +28,9 @@ const accessibilityHandler = (request, h, content = english) => {
 
   // Redirect to the Welsh version if the language is 'LANG_CY'
   if (query?.lang === LANG_CY) {
-    return h.redirect(`/hygyrchedd/cy?lang=${query?.lang}`).code(301)
+    return h
+      .redirect(`/hygyrchedd/cy?lang=${query?.lang}`)
+      .code(REDIRECT_STATUS_CODE)
   }
 
   // Determine the language

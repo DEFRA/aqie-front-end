@@ -4,7 +4,8 @@ import {
   LANG_CY,
   SEARCH_LOCATION_ROUTE_EN,
   SEARCH_LOCATION_ROUTE_CY,
-  SEARCH_LOCATION_PATH_EN
+  SEARCH_LOCATION_PATH_EN,
+  REDIRECT_STATUS_CODE
 } from '../../data/constants.js'
 import { calendarEnglish } from '../../data/en/en.js'
 import moment from 'moment-timezone'
@@ -20,7 +21,7 @@ const getLocationNameOrPostcode = (locationType, payload) => {
 }
 
 const handleRedirect = (h, redirectRoute) => {
-  return h.redirect(redirectRoute).code(301)
+  return h.redirect(redirectRoute).code(REDIRECT_STATUS_CODE)
 }
 
 const getMonth = () => {
@@ -73,10 +74,10 @@ const configureLocationTypeAndRedirects = (
       errorMessage: { text: searchLocation.errorText.radios.list.text }
     })
     if (query?.lang === LANG_CY) {
-      return h.redirect(SEARCH_LOCATION_ROUTE_CY).code(301)
+      return h.redirect(SEARCH_LOCATION_ROUTE_CY).code(REDIRECT_STATUS_CODE)
     }
     if (str === SEARCH_LOCATION_PATH_EN) {
-      return h.redirect(SEARCH_LOCATION_ROUTE_EN).code(301)
+      return h.redirect(SEARCH_LOCATION_ROUTE_EN).code(REDIRECT_STATUS_CODE)
     }
   }
 }

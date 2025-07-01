@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { welsh } from '../../data/cy/cy.js'
 import { searchLocationController } from './controller.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'

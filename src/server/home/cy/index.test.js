@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { homeCy } from './index'
 
 describe('home index plugin - cy', () => {

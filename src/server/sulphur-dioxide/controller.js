@@ -1,5 +1,5 @@
 import { english } from '../data/en/en.js'
-import { LANG_CY, LANG_EN } from '../data/constants.js'
+import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
 const sulphurDioxideController = {
@@ -11,7 +11,9 @@ const sulphurDioxideController = {
 
     const lang = LANG_EN
     if (query?.lang && query?.lang === LANG_CY) {
-      return h.redirect(`/llygryddion/sylffwr-deuocsid/cy?lang=cy`).code(301)
+      return h
+        .redirect(`/llygryddion/sylffwr-deuocsid/cy?lang=cy`)
+        .code(REDIRECT_STATUS_CODE)
     }
     return h.view('sulphur-dioxide/index', {
       pageTitle: sulphurDioxide.pageTitle,

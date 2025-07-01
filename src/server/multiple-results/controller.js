@@ -1,6 +1,10 @@
 import { createLogger } from '../common/helpers/logging/logger.js'
 import { english } from '../data/en/en.js'
-import { LANG_CY, MULTIPLE_LOCATIONS_ROUTE_CY } from '../data/constants.js'
+import {
+  LANG_CY,
+  MULTIPLE_LOCATIONS_ROUTE_CY,
+  REDIRECT_STATUS_CODE
+} from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
 const logger = createLogger()
@@ -32,7 +36,7 @@ const getLocationDataController = {
     const { query } = request
 
     if (query?.lang === LANG_CY) {
-      return h.redirect(MULTIPLE_LOCATIONS_ROUTE_CY).code(301)
+      return h.redirect(MULTIPLE_LOCATIONS_ROUTE_CY).code(REDIRECT_STATUS_CODE)
     }
     const metaSiteUrl = getAirQualitySiteUrl(request)
 

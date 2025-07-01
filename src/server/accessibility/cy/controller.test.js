@@ -1,7 +1,13 @@
 import { accessibilityController, accessibilityHandler } from './controller.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 import { welsh } from '../../data/cy/cy.js'
-import { LANG_CY, LANG_EN } from '../../data/constants.js'
+import {
+  LANG_CY,
+  LANG_EN,
+  BASE_URL,
+  REDIRECT_STATUS_CODE
+} from '../../data/constants.js'
+import { vi } from 'vitest'
 
 describe('Accessibility Handler', () => {
   let mockRequest = {
@@ -11,7 +17,7 @@ describe('Accessibility Handler', () => {
   const mockContent = welsh
   vi.mock('../../common/helpers/get-site-url.js', () => ({
     getAirQualitySiteUrl: vi.fn((request) => {
-      return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+      return `${BASE_URL}${request.path}?lang=${request.query.lang}`
     })
   }))
   let mockH
@@ -21,7 +27,7 @@ describe('Accessibility Handler', () => {
       redirect: vi.fn().mockImplementation((url) => {
         return {
           code: vi.fn().mockImplementation((statusCode) => {
-            return 'redirected'
+            return statusCode === REDIRECT_STATUS_CODE ? 'redirected' : 'error'
           })
         }
       }),

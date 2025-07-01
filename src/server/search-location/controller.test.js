@@ -1,5 +1,4 @@
 /* global vi */
-/* eslint-disable */
 import { english } from '../data/en/en.js'
 import { searchLocationController } from './controller.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'

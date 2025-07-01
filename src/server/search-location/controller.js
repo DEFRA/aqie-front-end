@@ -2,7 +2,8 @@ import { english } from '../data/en/en.js'
 import {
   LANG_CY,
   LANG_EN,
-  SEARCH_LOCATION_ROUTE_CY
+  SEARCH_LOCATION_ROUTE_CY,
+  REDIRECT_STATUS_CODE
 } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
@@ -112,7 +113,7 @@ const searchLocationController = {
     const lang = determineLanguage(request)
 
     if (lang === LANG_CY) {
-      return h.redirect(SEARCH_LOCATION_ROUTE_CY).code(301)
+      return h.redirect(SEARCH_LOCATION_ROUTE_CY).code(REDIRECT_STATUS_CODE)
     }
 
     const { errors, errorMessage, locationType } = getSessionData(request)

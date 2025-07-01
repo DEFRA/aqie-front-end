@@ -73,3 +73,8 @@ export const SUMMARY_TRANSLATIONS = {
 }
 export const LANG_EN = 'en'
 export const LANG_CY = 'cy'
+export const BASE_URL = 'https://check-air-quality.service.gov.uk'
+export const REDIRECT_STATUS_CODE = 301
+export const SAMPLE_LOCATION_NAME = 'Sample Location'
+export const HTTP_STATUS_OK = 200
+export const REFRESH_INTERVAL_MS = 30 * 60 * 1000

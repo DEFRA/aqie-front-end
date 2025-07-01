@@ -276,7 +276,7 @@ function getCookie(name) {
   const cookies = document.cookie.split(';')
   for (let i = 0, len = cookies.length; i < len; i++) {
     let cookie = cookies[i]
-    while (cookie.charAt(0) === ' ') {
+    while (cookie.startsWith(' ')) {
       cookie = cookie.substring(1, cookie.length)
     }
     if (cookie.startsWith(nameEQ)) { // Use String#startsWith instead of String#indexOf

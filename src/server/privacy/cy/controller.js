@@ -22,7 +22,6 @@ const privacyController = {
       footerTxt,
       multipleLocations: { serviceName }
     } = welsh
-    /* eslint-disable camelcase */
     const { query, path } = request
     const metaSiteUrl = getAirQualitySiteUrl(request)
 

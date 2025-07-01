@@ -79,7 +79,7 @@ const searchMiddlewareCy = async (request, h) => {
     return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
   }
   const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
-    await fetchData(request, h, {
+    await fetchData(request, {
       locationType,
       userLocation,
       locationNameOrPostcode,
@@ -233,7 +233,7 @@ const searchMiddlewareCy = async (request, h) => {
       request.yar.clear('searchTermsSaved')
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
-    const { getNIPlaces } = await fetchData(request, h, {
+    const { getNIPlaces } = await fetchData(request, {
       locationType,
       userLocation,
       locationNameOrPostcode,

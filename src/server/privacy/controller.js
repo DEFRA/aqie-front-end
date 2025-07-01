@@ -20,7 +20,6 @@ const privacyController = {
       footerTxt,
       multipleLocations: { serviceName }
     } = english
-    /* eslint-disable camelcase */
     const {
       query: { lang }
     } = request

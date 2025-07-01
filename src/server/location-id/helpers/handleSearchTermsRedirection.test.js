@@ -22,9 +22,14 @@ describe('Handle Search Terms Redirection Tests', () => {
   it('should redirect to unknown for invalid search terms', () => {
     const mockH = createMockH()
 
+    // Updated the implementation to differentiate from the one on line 8
     const handleSearchTermsRedirection = (term) => {
-      const route =
-        term === 'Cardiff' ? '/locations/cardiff' : '/locations/unknown'
+      const routes = {
+        Cardiff: '/locations/cardiff',
+        Swansea: '/locations/swansea',
+        default: '/locations/unknown'
+      }
+      const route = routes[term] || routes.default
       mockH.redirect(route).code(301)
       return route
     }
