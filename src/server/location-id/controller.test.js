@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { SAMPLE_LOCATION_NAME } from '../../data/constants.js'
+import { SAMPLE_LOCATION_NAME } from '../data/constants.js'
 
 // ''
 describe('Location ID Controller Tests', () => {
