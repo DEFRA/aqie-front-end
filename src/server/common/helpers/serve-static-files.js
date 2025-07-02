@@ -36,7 +36,7 @@ const serveStaticFiles = {
           path: '/public/{param*}',
           handler: {
             directory: {
-              path: path.join(__dirname, '../../../public/assets'), // Updated to serve files from /public/assets
+              path: '.', // Corrected to serve files from .public
               redirectToSlash: true,
               index: true
             }
