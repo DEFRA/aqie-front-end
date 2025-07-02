@@ -16,7 +16,7 @@ EXPOSE ${PORT} ${PORT_DEBUG}
 COPY --chown=node:node --chmod=755 package*.json ./
 RUN npm install
 COPY --chown=node:node --chmod=755 . .
-RUN npm run build:frontend
+RUN npm run build:frontend 2>/dev/null
 
 CMD [ "npm", "run", "docker:dev" ]
 
@@ -24,7 +24,7 @@ FROM development AS production_build
 
 ENV NODE_ENV=production
 
-RUN npm run build:frontend
+RUN npm run build:frontend 2>/dev/null
 
 FROM defradigital/node:${PARENT_VERSION} AS production
 ARG PARENT_VERSION

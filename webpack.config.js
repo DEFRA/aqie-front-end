@@ -17,11 +17,18 @@ const govukFrontendPath = path.dirname(
 
 const ruleTypeAssetResource = 'asset/resource'
 
+// Extracted repeated prefixes into constants
+const ASSET_JS_PATH = 'assets/javascripts'
+const ASSET_CSS_PATH = 'assets/stylesheets'
+
 export default {
   context: path.resolve(dirname, 'src/client'),
   entry: {
     application: {
-      import: ['./javascripts/application.js', './stylesheets/application.scss']
+      import: [
+        './assets/javascripts/application.js',
+        './assets/stylesheets/application.scss'
+      ]
     }
   },
   experiments: {
@@ -36,13 +43,13 @@ export default {
   output: {
     filename:
       NODE_ENV === 'production'
-        ? 'javascripts/[name].[contenthash:7].min.js'
-        : 'javascripts/[name].js',
+        ? `${ASSET_JS_PATH}/[name].[contenthash:7].min.js`
+        : `${ASSET_JS_PATH}/[name].js`,
 
     chunkFilename:
       NODE_ENV === 'production'
-        ? 'javascripts/[name].[chunkhash:7].min.js'
-        : 'javascripts/[name].js',
+        ? `${ASSET_JS_PATH}/[name].[chunkhash:7].min.js`
+        : `${ASSET_JS_PATH}/[name].js`,
 
     path: path.join(dirname, '.public'),
     publicPath: '/public/',
@@ -82,8 +89,8 @@ export default {
           binary: false,
           filename:
             NODE_ENV === 'production'
-              ? 'stylesheets/[name].[contenthash:7].min.css'
-              : 'stylesheets/[name].css'
+              ? `${ASSET_CSS_PATH}/[name].[contenthash:7].min.css`
+              : `${ASSET_CSS_PATH}/[name].css`
         },
         use: [
           'postcss-loader',
@@ -171,7 +178,8 @@ export default {
   stats: {
     errorDetails: true,
     loggingDebug: ['sass-loader'],
-    preset: 'minimal'
+    preset: 'minimal',
+    warnings: false
   },
   target: 'browserslist:javascripts'
 }
