@@ -17,6 +17,10 @@ const govukFrontendPath = path.dirname(
 
 const ruleTypeAssetResource = 'asset/resource'
 
+// Extracted repeated prefixes into constants
+const ASSET_JS_PATH = 'assets/javascripts'
+const ASSET_CSS_PATH = 'assets/stylesheets'
+
 export default {
   context: path.resolve(dirname, 'src/client'),
   entry: {
@@ -39,13 +43,13 @@ export default {
   output: {
     filename:
       NODE_ENV === 'production'
-        ? 'assets/javascripts/[name].[contenthash:7].min.js'
-        : 'assets/javascripts/[name].js',
+        ? `${ASSET_JS_PATH}/[name].[contenthash:7].min.js`
+        : `${ASSET_JS_PATH}/[name].js`,
 
     chunkFilename:
       NODE_ENV === 'production'
-        ? 'assets/javascripts/[name].[chunkhash:7].min.js'
-        : 'assets/javascripts/[name].js',
+        ? `${ASSET_JS_PATH}/[name].[chunkhash:7].min.js`
+        : `${ASSET_JS_PATH}/[name].js`,
 
     path: path.join(dirname, '.public'),
     publicPath: '/public/',
@@ -54,15 +58,7 @@ export default {
   },
   resolve: {
     alias: {
-      '/public/assets': path.join(dirname, '.public/assets'),
-      '/public/assets/javascripts': path.join(
-        dirname,
-        '.public/assets/javascripts'
-      ),
-      '/public/assets/stylesheets': path.join(
-        dirname,
-        '.public/assets/stylesheets'
-      )
+      '/public/assets': path.join(dirname, '.public/assets')
     }
   },
   module: {
@@ -93,8 +89,8 @@ export default {
           binary: false,
           filename:
             NODE_ENV === 'production'
-              ? 'stylesheets/[name].[contenthash:7].min.css'
-              : 'stylesheets/[name].css'
+              ? `${ASSET_CSS_PATH}/[name].[contenthash:7].min.css`
+              : `${ASSET_CSS_PATH}/[name].css`
         },
         use: [
           'postcss-loader',
