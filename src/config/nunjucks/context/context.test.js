@@ -36,8 +36,8 @@ describe('context and cache', () => {
       beforeEach(() => {
         // Return JSON string
         mockReadFileSync.mockReturnValue(`{
-        "application.js": "javascripts/application.js",
-        "stylesheets/application.scss": "stylesheets/application.css"
+        "application.js": "assets/javascripts/application.js",
+        "application.scss": "assets/stylesheets/application.css"
       }`)
 
         contextResult = contextImport.context(mockRequest)
@@ -68,7 +68,7 @@ describe('context and cache', () => {
       describe('With valid asset path', () => {
         test('Should provide expected asset path', () => {
           expect(contextResult.getAssetPath('application.js')).toBe(
-            '/public/javascripts/application.js'
+            '/public/assets/javascripts/application.js'
           )
         })
       })
@@ -120,8 +120,8 @@ describe('context and cache', () => {
       beforeEach(() => {
         // Return JSON string
         mockReadFileSync.mockReturnValue(`{
-        "application.js": "javascripts/application.js",
-        "stylesheets/application.scss": "stylesheets/application.css"
+        "application.js": "assets/javascripts/application.js",
+        "application.scss": "assets/stylesheets/application.css"
       }`)
 
         contextResult = contextImport.context(mockRequest)

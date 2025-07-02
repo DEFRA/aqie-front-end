@@ -51,10 +51,34 @@ const serveStaticFiles = {
             }
           },
           method: 'GET',
+          path: '/public/javascripts/{param*}',
+          handler: {
+            directory: {
+              path: path.join(
+                __dirname,
+                '../../../../.public/assets/javascripts'
+              ),
+              redirectToSlash: true,
+              index: true
+            }
+          }
+        },
+        {
+          options: {
+            auth: false,
+            cache: {
+              expiresIn: config.get('staticCacheTimeout'),
+              privacy: 'private'
+            }
+          },
+          method: 'GET',
           path: '/public/stylesheets/{param*}',
           handler: {
             directory: {
-              path: path.join(__dirname, '../../../../.public/stylesheets'),
+              path: path.join(
+                __dirname,
+                '../../../../.public/assets/stylesheets'
+              ),
               redirectToSlash: true,
               index: true
             }

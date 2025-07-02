@@ -21,7 +21,10 @@ export default {
   context: path.resolve(dirname, 'src/client'),
   entry: {
     application: {
-      import: ['./javascripts/application.js', './stylesheets/application.scss']
+      import: [
+        './assets/javascripts/application.js',
+        './assets/stylesheets/application.scss'
+      ]
     }
   },
   experiments: {
@@ -36,13 +39,13 @@ export default {
   output: {
     filename:
       NODE_ENV === 'production'
-        ? 'javascripts/[name].[contenthash:7].min.js'
-        : 'javascripts/[name].js',
+        ? 'assets/javascripts/[name].[contenthash:7].min.js'
+        : 'assets/javascripts/[name].js',
 
     chunkFilename:
       NODE_ENV === 'production'
-        ? 'javascripts/[name].[chunkhash:7].min.js'
-        : 'javascripts/[name].js',
+        ? 'assets/javascripts/[name].[chunkhash:7].min.js'
+        : 'assets/javascripts/[name].js',
 
     path: path.join(dirname, '.public'),
     publicPath: '/public/',
@@ -51,7 +54,15 @@ export default {
   },
   resolve: {
     alias: {
-      '/public/assets': path.join(dirname, '.public/assets')
+      '/public/assets': path.join(dirname, '.public/assets'),
+      '/public/assets/javascripts': path.join(
+        dirname,
+        '.public/assets/javascripts'
+      ),
+      '/public/assets/stylesheets': path.join(
+        dirname,
+        '.public/assets/stylesheets'
+      )
     }
   },
   module: {
@@ -171,7 +182,8 @@ export default {
   stats: {
     errorDetails: true,
     loggingDebug: ['sass-loader'],
-    preset: 'minimal'
+    preset: 'minimal',
+    warnings: false
   },
   target: 'browserslist:javascripts'
 }
