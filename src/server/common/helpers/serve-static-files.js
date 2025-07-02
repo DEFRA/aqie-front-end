@@ -33,10 +33,46 @@ const serveStaticFiles = {
             }
           },
           method: 'GET',
+          path: '/public/images/{param*}',
+          handler: {
+            directory: {
+              path: path.join(__dirname, '../../../../.public/assets/images'),
+              redirectToSlash: true,
+              index: true
+            }
+          }
+        },
+        {
+          options: {
+            auth: false,
+            cache: {
+              expiresIn: config.get('staticCacheTimeout'),
+              privacy: 'private'
+            }
+          },
+          method: 'GET',
+          path: '/public/stylesheets/{param*}',
+          handler: {
+            directory: {
+              path: path.join(__dirname, '../../../../.public/stylesheets'),
+              redirectToSlash: true,
+              index: true
+            }
+          }
+        },
+        {
+          options: {
+            auth: false,
+            cache: {
+              expiresIn: config.get('staticCacheTimeout'),
+              privacy: 'private'
+            }
+          },
+          method: 'GET',
           path: '/public/{param*}',
           handler: {
             directory: {
-              path: '.', // Corrected to serve files from .public
+              path: path.join(__dirname, '../../../../.public'),
               redirectToSlash: true,
               index: true
             }

@@ -1,5 +1,5 @@
 import { english } from '../data/en/en.js'
-import { LANG_CY } from '../data/constants.js'
+import { LANG_CY, REDIRECT_STATUS_CODE } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
 const privacyController = {
@@ -26,7 +26,7 @@ const privacyController = {
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     if (lang && lang === LANG_CY) {
-      return h.redirect(`/preifatrwydd/cy?lang=cy`).code(301)
+      return h.redirect(`/preifatrwydd/cy?lang=cy`).code(REDIRECT_STATUS_CODE)
     }
     return h.view('privacy/index', {
       pageTitle,

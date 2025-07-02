@@ -1,5 +1,5 @@
 import { welsh } from '../../data/cy/cy.js'
-import { LANG_CY, LANG_EN } from '../../data/constants.js'
+import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
 const sulphurDioxideController = {
@@ -10,7 +10,9 @@ const sulphurDioxideController = {
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     if (query?.lang && query?.lang === LANG_EN) {
-      h.redirect(`/pollutants/sulphur-dioxide?lang=en`).code(301)
+      h.redirect(`/pollutants/sulphur-dioxide?lang=en`).code(
+        REDIRECT_STATUS_CODE
+      )
       return 'redirected'
     }
     let lang = query?.lang?.slice(0, 2)

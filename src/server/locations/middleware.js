@@ -25,6 +25,165 @@ import {
 import { sentenceCase } from '../common/helpers/sentence-case.js'
 import { convertFirstLetterIntoUppercase } from './helpers/convert-first-letter-into-upper-case.js'
 
+const handleLocationDataNotFound = (
+  request,
+  h,
+  locationNameOrPostcode,
+  lang,
+  searchTerms
+) => {
+  request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+  if (searchTerms) {
+    request.yar.clear('searchTermsSaved')
+    return h.redirect('error/index').takeover()
+  }
+  return h.redirect('location-not-found').takeover()
+}
+
+const processUKLocationType = (
+  request,
+  h,
+  redirectError,
+  userLocation,
+  locationNameOrPostcode,
+  lang,
+  searchTerms,
+  secondSearchTerm,
+  getOSPlaces,
+  airQualityData,
+  getDailySummary,
+  getForecasts,
+  getMeasurements,
+  transformedDailySummary,
+  calendarWelsh,
+  englishDate,
+  welshDate,
+  month,
+  english
+) => {
+  const locationType = redirectError.locationType
+  return handleUKLocationType(request, h, {
+    locationType,
+    userLocation,
+    locationNameOrPostcode,
+    lang,
+    searchTerms,
+    secondSearchTerm,
+    getOSPlaces,
+    airQualityData,
+    getDailySummary,
+    getForecasts,
+    getMeasurements,
+    transformedDailySummary,
+    calendarWelsh,
+    englishDate,
+    welshDate,
+    month,
+    english
+  })
+}
+
+const processNILocationType = (
+  request,
+  h,
+  redirectError,
+  locationNameOrPostcode,
+  lang,
+  getNIPlaces,
+  transformedDailySummary,
+  englishDate,
+  welshDate,
+  getDailySummary,
+  month,
+  multipleLocations,
+  home,
+  getForecasts,
+  getMeasurements
+) => {
+  if (
+    !getNIPlaces?.results ||
+    getNIPlaces?.results.length === 0 ||
+    getNIPlaces === WRONG_POSTCODE
+  ) {
+    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+    request.yar.clear('searchTermsSaved')
+    return h
+      .redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`)
+      .code(REDIRECT_STATUS_CODE)
+      .takeover()
+  }
+
+  const postcode = getNIPlaces?.results[0].postcode
+  const town = sentenceCase(getNIPlaces?.results[0].town)
+  const locationTitle = `${postcode}, ${town}`
+
+  const locationData = {
+    results: getNIPlaces?.results,
+    urlRoute: `${getNIPlaces?.results[0].postcode.toLowerCase()}`.replace(
+      /\s+/g,
+      ''
+    ),
+    locationType: redirectError.locationType,
+    transformedDailySummary,
+    englishDate,
+    dailySummary: getDailySummary,
+    welshDate,
+    getMonth: month,
+    title: `${multipleLocations.titlePrefix} ${convertFirstLetterIntoUppercase(locationTitle)}`,
+    pageTitle: `${multipleLocations.titlePrefix} ${convertFirstLetterIntoUppercase(locationTitle)} - ${home.pageTitle}`,
+    getForecasts: getForecasts?.forecasts,
+    getMeasurements: getMeasurements?.measurements,
+    lang
+  }
+
+  request.yar.clear('locationData')
+  request.yar.set('locationData', locationData)
+  return h
+    .redirect(`/location/${locationData.urlRoute}?lang=en`)
+    .code(REDIRECT_STATUS_CODE)
+    .takeover()
+}
+
+const isLocationDataNotFound = (
+  userLocation,
+  redirectError,
+  getOSPlaces,
+  getNIPlaces
+) => {
+  const isPartialPostcode =
+    isValidPartialPostcodeUK(userLocation) ||
+    isValidPartialPostcodeNI(userLocation)
+
+  const isUKTypeNoResults =
+    !getOSPlaces?.results && redirectError.locationType === LOCATION_TYPE_UK
+
+  const isNITypeNoResults =
+    redirectError.locationType === LOCATION_TYPE_NI &&
+    (!getNIPlaces?.results || getNIPlaces?.results.length === 0)
+
+  return (
+    isPartialPostcode ||
+    getOSPlaces === WRONG_POSTCODE ||
+    isUKTypeNoResults ||
+    isNITypeNoResults
+  )
+}
+
+const processLocationData = async (
+  request,
+  redirectError,
+  userLocation,
+  searchTerms,
+  secondSearchTerm
+) => {
+  return await fetchData(request, {
+    locationType: redirectError.locationType,
+    userLocation,
+    searchTerms,
+    secondSearchTerm
+  })
+}
+
 const searchMiddleware = async (request, h) => {
   const { query, payload } = request
   const lang = LANG_EN
@@ -52,46 +211,42 @@ const searchMiddleware = async (request, h) => {
     getMeasurements,
     getOSPlaces,
     getNIPlaces
-  } = await fetchData(request, {
-    locationType: redirectError.locationType,
+  } = await processLocationData(
+    request,
+    redirectError,
     userLocation,
     searchTerms,
     secondSearchTerm
-  })
+  )
 
   if (
     redirectError.locationType === LOCATION_TYPE_NI &&
     (!getNIPlaces?.results || getNIPlaces?.results.length === 0)
   ) {
-    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-    return h.redirect('location-not-found').takeover()
-  }
-
-  const isPartialPostcode =
-    isValidPartialPostcodeUK(userLocation) ||
-    isValidPartialPostcodeNI(userLocation)
-
-  const isLocationDataNotFound = () => {
-    const isUKTypeNoResults =
-      !getOSPlaces?.results && redirectError.locationType === LOCATION_TYPE_UK
-    const isNITypeNoResults =
-      redirectError.locationType === LOCATION_TYPE_NI &&
-      (!getNIPlaces?.results || getNIPlaces?.results.length === 0)
-    return (
-      isPartialPostcode ||
-      getOSPlaces === WRONG_POSTCODE ||
-      isUKTypeNoResults ||
-      isNITypeNoResults
+    return handleLocationDataNotFound(
+      request,
+      h,
+      locationNameOrPostcode,
+      lang,
+      searchTerms
     )
   }
 
-  if (isLocationDataNotFound()) {
-    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-    if (searchTerms) {
-      request.yar.clear('searchTermsSaved')
-      return h.redirect('error/index').takeover()
-    }
-    return h.redirect('location-not-found').takeover()
+  if (
+    isLocationDataNotFound(
+      userLocation,
+      redirectError,
+      getOSPlaces,
+      getNIPlaces
+    )
+  ) {
+    return handleLocationDataNotFound(
+      request,
+      h,
+      locationNameOrPostcode,
+      lang,
+      searchTerms
+    )
   }
 
   const { transformedDailySummary } = transformKeys(getDailySummary, lang)
@@ -110,9 +265,10 @@ const searchMiddleware = async (request, h) => {
   request.yar.set('searchTermsSaved', searchTerms)
 
   if (redirectError.locationType === LOCATION_TYPE_UK) {
-    const locationType = redirectError.locationType
-    return handleUKLocationType(request, h, {
-      locationType,
+    return processUKLocationType(
+      request,
+      h,
+      redirectError,
       userLocation,
       locationNameOrPostcode,
       lang,
@@ -127,61 +283,27 @@ const searchMiddleware = async (request, h) => {
       calendarWelsh,
       englishDate,
       welshDate,
-      month: getMonth(lang),
+      month,
       english
-    })
+    )
   } else if (redirectError.locationType === LOCATION_TYPE_NI) {
-    if (isPartialPostcode) {
-      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-      request.yar.clear('searchTermsSaved')
-      return h
-        .redirect('/lleoliad-heb-ei-ganfod/cy')
-        .code(REDIRECT_STATUS_CODE)
-        .takeover()
-    }
-
-    if (
-      !getNIPlaces?.results ||
-      getNIPlaces?.results.length === 0 ||
-      getNIPlaces === WRONG_POSTCODE
-    ) {
-      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-      request.yar.clear('searchTermsSaved')
-      return h
-        .redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`)
-        .code(REDIRECT_STATUS_CODE)
-        .takeover()
-    }
-
-    const postcode = getNIPlaces?.results[0].postcode
-    const town = sentenceCase(getNIPlaces?.results[0].town)
-    const locationTitle = `${postcode}, ${town}`
-
-    const locationData = {
-      results: getNIPlaces?.results,
-      urlRoute: `${getNIPlaces?.results[0].postcode.toLowerCase()}`.replace(
-        /\s+/g,
-        ''
-      ),
-      locationType: redirectError.locationType,
+    return processNILocationType(
+      request,
+      h,
+      redirectError,
+      locationNameOrPostcode,
+      lang,
+      getNIPlaces,
       transformedDailySummary,
       englishDate,
-      dailySummary: getDailySummary,
       welshDate,
-      getMonth: month,
-      title: `${multipleLocations.titlePrefix} ${convertFirstLetterIntoUppercase(locationTitle)}`,
-      pageTitle: `${multipleLocations.titlePrefix} ${convertFirstLetterIntoUppercase(locationTitle)} - ${home.pageTitle}`,
-      getForecasts: getForecasts?.forecasts,
-      getMeasurements: getMeasurements?.measurements,
-      lang
-    }
-
-    request.yar.clear('locationData')
-    request.yar.set('locationData', locationData)
-    return h
-      .redirect(`/location/${locationData.urlRoute}?lang=en`)
-      .code(REDIRECT_STATUS_CODE)
-      .takeover()
+      getDailySummary,
+      month,
+      multipleLocations,
+      home,
+      getForecasts,
+      getMeasurements
+    )
   } else {
     request.yar.clear('searchTermsSaved')
     return h.redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`).takeover()
