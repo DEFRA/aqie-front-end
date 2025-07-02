@@ -26,7 +26,13 @@ const setupMockH = () => ({
 })
 
 // Extracted helper functions for validation logic
-const validateRedirect = (mockRequest, expectedUrl, redirectPath, mockH, mockContent) => {
+const validateRedirect = (
+  mockRequest,
+  expectedUrl,
+  redirectPath,
+  mockH,
+  mockContent
+) => {
   const actualUrl = getAirQualitySiteUrl(mockRequest)
   expect(actualUrl).toBe(expectedUrl)
   const result = accessibilityController.handler(
@@ -63,7 +69,13 @@ const validateRender = (mockRequest, expectedUrl, lang, mockH, mockContent) => {
 const testRedirectToEnglish = (mockH, mockContent) => {
   const mockRequest = setupMockRequest(LANG_EN, '/accessibility')
   const expectedUrl = `${BASE_ACCESSIBILITY_URL}?lang=en`
-  validateRedirect(mockRequest, expectedUrl, '/accessibility?lang=en', mockH, mockContent)
+  validateRedirect(
+    mockRequest,
+    expectedUrl,
+    '/accessibility?lang=en',
+    mockH,
+    mockContent
+  )
 }
 
 const testRenderAccessibilityPage = (mockH, mockContent) => {
@@ -87,18 +99,12 @@ describe('Accessibility Handler', () => {
     mockH = setupMockH()
   })
 
-  it(
-    'should redirect to the English version if the language is "en"',
-    () => testRedirectToEnglish(mockH, mockContent)
-  )
+  it('should redirect to the English version if the language is "en"', () =>
+    testRedirectToEnglish(mockH, mockContent))
 
-  it(
-    'should render the accessibility page with the necessary data',
-    () => testRenderAccessibilityPage(mockH, mockContent)
-  )
+  it('should render the accessibility page with the necessary data', () =>
+    testRenderAccessibilityPage(mockH, mockContent))
 
-  it(
-    'should render the accessibility page by Default to Welsh if language is not cy and en',
-    () => testDefaultToWelsh(mockH, mockContent)
-  )
+  it('should render the accessibility page by Default to Welsh if language is not cy and en', () =>
+    testDefaultToWelsh(mockH, mockContent))
 })
