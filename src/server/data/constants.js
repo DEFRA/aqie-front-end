@@ -77,4 +77,5 @@ export const BASE_URL = 'https://check-air-quality.service.gov.uk'
 export const REDIRECT_STATUS_CODE = 301
 export const SAMPLE_LOCATION_NAME = 'Sample Location'
 export const HTTP_STATUS_OK = 200
-export const REFRESH_INTERVAL_MS = 30 * 60 * 1000
+export const MINUTES_IN_HALF_HOUR = 30
+export const REFRESH_INTERVAL_MS = MINUTES_IN_HALF_HOUR * 60 * 1000

@@ -50,6 +50,7 @@ const configureLocationTypeAndRedirects = (
   } else {
     locationNameOrPostcode = ''
   }
+
   if (!locationType && str !== SEARCH_LOCATION_PATH_EN) {
     locationType = request.yar.get('locationType')
     locationNameOrPostcode = request.yar.get('locationNameOrPostcode')
@@ -58,6 +59,7 @@ const configureLocationTypeAndRedirects = (
     request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
     request.yar.set('airQuality', airQuality)
   }
+
   if (!locationNameOrPostcode && !locationType) {
     request.yar.set('errors', {
       errors: {
@@ -73,13 +75,17 @@ const configureLocationTypeAndRedirects = (
     request.yar.set('errorMessage', {
       errorMessage: { text: searchLocation.errorText.radios.list.text }
     })
+
     if (query?.lang === LANG_CY) {
       return h.redirect(SEARCH_LOCATION_ROUTE_CY).code(REDIRECT_STATUS_CODE)
     }
+
     if (str === SEARCH_LOCATION_PATH_EN) {
       return h.redirect(SEARCH_LOCATION_ROUTE_EN).code(REDIRECT_STATUS_CODE)
     }
   }
+
+  return null
 }
 
 const filteredAndSelectedLocationType = (

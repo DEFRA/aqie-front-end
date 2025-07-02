@@ -1,49 +1,42 @@
 import { accessibilityController, accessibilityHandler } from './controller.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 import { welsh } from '../../data/cy/cy.js'
-import {
-  LANG_CY,
-  LANG_EN,
-  BASE_URL,
-  REDIRECT_STATUS_CODE
-} from '../../data/constants.js'
+import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../../data/constants.js'
 import { vi } from 'vitest'
 
+const BASE_ACCESSIBILITY_URL =
+  'https://check-air-quality.service.gov.uk/accessibility'
+const BASE_WELSH_ACCESSIBILITY_URL =
+  'https://check-air-quality.service.gov.uk/hygyrchedd'
+
+const setupMockRequest = (lang, path) => ({
+  query: { lang },
+  path
+})
+
+const setupMockH = () => ({
+  redirect: vi.fn().mockImplementation(() => {
+    return {
+      code: vi.fn().mockImplementation((statusCode) => {
+        return statusCode === REDIRECT_STATUS_CODE ? 'redirected' : 'error'
+      })
+    }
+  }),
+  view: vi.fn().mockReturnValue('view rendered')
+})
+
+const mockContent = welsh
+
 describe('Accessibility Handler', () => {
-  let mockRequest = {
-    query: {},
-    path: ''
-  }
-  const mockContent = welsh
-  vi.mock('../../common/helpers/get-site-url.js', () => ({
-    getAirQualitySiteUrl: vi.fn((request) => {
-      return `${BASE_URL}${request.path}?lang=${request.query.lang}`
-    })
-  }))
   let mockH
 
   beforeEach(() => {
-    mockH = {
-      redirect: vi.fn().mockImplementation((url) => {
-        return {
-          code: vi.fn().mockImplementation((statusCode) => {
-            return statusCode === REDIRECT_STATUS_CODE ? 'redirected' : 'error'
-          })
-        }
-      }),
-      view: vi.fn().mockReturnValue('view rendered')
-    }
+    mockH = setupMockH()
   })
 
-  it('should redirect to the English version if the language is "en"', () => {
-    mockRequest = {
-      query: {
-        lang: LANG_EN
-      },
-      path: '/accessibility'
-    }
-    const expectedUrl =
-      'https://check-air-quality.service.gov.uk/accessibility?lang=en'
+  const testRedirectToEnglish = () => {
+    const mockRequest = setupMockRequest(LANG_EN, '/accessibility')
+    const expectedUrl = `${BASE_ACCESSIBILITY_URL}?lang=en`
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = accessibilityController.handler(
@@ -53,13 +46,11 @@ describe('Accessibility Handler', () => {
     )
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith('/accessibility?lang=en')
-  })
+  }
 
-  it('should render the accessibility page with the necessary data', () => {
-    mockRequest.query.lang = LANG_CY
-    mockRequest.path = '/hygyrchedd/cy'
-    const expectedUrl =
-      'https://check-air-quality.service.gov.uk/hygyrchedd/cy?lang=cy'
+  const testRenderAccessibilityPage = () => {
+    const mockRequest = setupMockRequest(LANG_CY, '/hygyrchedd/cy')
+    const expectedUrl = `${BASE_WELSH_ACCESSIBILITY_URL}/cy?lang=cy`
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = accessibilityController.handler(
@@ -83,13 +74,11 @@ describe('Accessibility Handler', () => {
       cookieBanner: mockContent.cookieBanner,
       lang: LANG_CY
     })
-  })
+  }
 
-  it('should render the accessibility page by Default to Welsh if language is not cy and en', () => {
-    mockRequest.query.lang = 'fr'
-    mockRequest.path = '/hygyrchedd/cy'
-    const expectedUrl =
-      'https://check-air-quality.service.gov.uk/hygyrchedd/cy?lang=fr'
+  const testDefaultToWelsh = () => {
+    const mockRequest = setupMockRequest('fr', '/hygyrchedd/cy')
+    const expectedUrl = `${BASE_WELSH_ACCESSIBILITY_URL}/cy?lang=fr`
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = accessibilityHandler(mockRequest, mockH, mockContent)
@@ -109,5 +98,20 @@ describe('Accessibility Handler', () => {
       cookieBanner: mockContent.cookieBanner,
       lang: LANG_CY
     })
-  })
+  }
+
+  it(
+    'should redirect to the English version if the language is "en"',
+    testRedirectToEnglish
+  )
+
+  it(
+    'should render the accessibility page with the necessary data',
+    testRenderAccessibilityPage
+  )
+
+  it(
+    'should render the accessibility page by Default to Welsh if language is not cy and en',
+    testDefaultToWelsh
+  )
 })
