@@ -40,27 +40,26 @@ const handleLocationDataNotFound = (
   return h.redirect('location-not-found').takeover()
 }
 
-const processUKLocationType = (
-  request,
-  h,
-  redirectError,
-  userLocation,
-  locationNameOrPostcode,
-  lang,
-  searchTerms,
-  secondSearchTerm,
-  getOSPlaces,
-  airQualityData,
-  getDailySummary,
-  getForecasts,
-  getMeasurements,
-  transformedDailySummary,
-  calendarWelsh,
-  englishDate,
-  welshDate,
-  month,
-  english
-) => {
+const processUKLocationType = (request, h, redirectError, options = {}) => {
+  const {
+    userLocation,
+    locationNameOrPostcode,
+    lang,
+    searchTerms,
+    secondSearchTerm,
+    getOSPlaces,
+    airQualityData,
+    getDailySummary,
+    getForecasts,
+    getMeasurements,
+    transformedDailySummary,
+    calendarWelsh,
+    englishDate,
+    welshDate,
+    month,
+    english
+  } = options
+
   const locationType = redirectError.locationType
   return handleUKLocationType(request, h, {
     locationType,
@@ -83,23 +82,22 @@ const processUKLocationType = (
   })
 }
 
-const processNILocationType = (
-  request,
-  h,
-  redirectError,
-  locationNameOrPostcode,
-  lang,
-  getNIPlaces,
-  transformedDailySummary,
-  englishDate,
-  welshDate,
-  getDailySummary,
-  month,
-  multipleLocations,
-  home,
-  getForecasts,
-  getMeasurements
-) => {
+const processNILocationType = (request, h, redirectError, options = {}) => {
+  const {
+    locationNameOrPostcode,
+    lang,
+    getNIPlaces,
+    transformedDailySummary,
+    englishDate,
+    welshDate,
+    getDailySummary,
+    month,
+    multipleLocations,
+    home,
+    getForecasts,
+    getMeasurements
+  } = options
+
   if (
     !getNIPlaces?.results ||
     getNIPlaces?.results.length === 0 ||
@@ -265,10 +263,7 @@ const searchMiddleware = async (request, h) => {
   request.yar.set('searchTermsSaved', searchTerms)
 
   if (redirectError.locationType === LOCATION_TYPE_UK) {
-    return processUKLocationType(
-      request,
-      h,
-      redirectError,
+    return processUKLocationType(request, h, redirectError, {
       userLocation,
       locationNameOrPostcode,
       lang,
@@ -285,12 +280,9 @@ const searchMiddleware = async (request, h) => {
       welshDate,
       month,
       english
-    )
+    })
   } else if (redirectError.locationType === LOCATION_TYPE_NI) {
-    return processNILocationType(
-      request,
-      h,
-      redirectError,
+    return processNILocationType(request, h, redirectError, {
       locationNameOrPostcode,
       lang,
       getNIPlaces,
@@ -303,7 +295,7 @@ const searchMiddleware = async (request, h) => {
       home,
       getForecasts,
       getMeasurements
-    )
+    })
   } else {
     request.yar.clear('searchTermsSaved')
     return h.redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`).takeover()

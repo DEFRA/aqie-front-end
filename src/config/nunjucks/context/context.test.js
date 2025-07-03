@@ -15,6 +15,15 @@ vi.mock('../../../server/common/helpers/logging/logger.js', () => ({
   createLogger: () => ({ error: (...args) => mockLoggerError(...args) })
 }))
 
+/**
+ * '' - Helper function to simulate manifest file read failure
+ */
+function simulateManifestReadFailure() {
+  mockReadFileSync.mockImplementation(() => {
+    throw new SyntaxError('Unexpected token in JSON')
+  })
+}
+
 describe('context and cache', () => {
   beforeEach(() => {
     mockReadFileSync.mockReset()
@@ -64,25 +73,56 @@ describe('context and cache', () => {
           serviceUrl: '/'
         })
       })
+    })
 
-      describe('With valid asset path', () => {
-        test('Should provide expected asset path', () => {
-          expect(contextResult.getAssetPath('application.js')).toBe(
-            '/public/assets/javascripts/application.js'
-          )
-        })
+    // '' - Flattened tests to avoid deep nesting
+    describe('context.getAssetPath with valid asset path', () => {
+      let contextImport
+      let contextResult
+
+      beforeAll(async () => {
+        contextImport = await import('./context.js')
       })
 
-      describe('With invalid asset path', () => {
-        test('Should provide expected asset', () => {
-          expect(contextResult.getAssetPath('an-image.png')).toBe(
-            '/public/an-image.png'
-          )
-        })
+      beforeEach(() => {
+        mockReadFileSync.mockReturnValue(`{
+        "application.js": "assets/javascripts/application.js",
+        "application.scss": "assets/stylesheets/application.css"
+      }`)
+        contextResult = contextImport.context(mockRequest)
+      })
+
+      test('Should provide expected asset path', () => {
+        expect(contextResult.getAssetPath('application.js')).toBe(
+          '/public/assets/javascripts/application.js'
+        )
       })
     })
 
-    describe('When webpack manifest file read fails', () => {
+    describe('context.getAssetPath with invalid asset path', () => {
+      let contextImport
+      let contextResult
+
+      beforeAll(async () => {
+        contextImport = await import('./context.js')
+      })
+
+      beforeEach(() => {
+        mockReadFileSync.mockReturnValue(`{
+        "application.js": "assets/javascripts/application.js",
+        "application.scss": "assets/stylesheets/application.css"
+      }`)
+        contextResult = contextImport.context(mockRequest)
+      })
+
+      test('Should provide expected asset', () => {
+        expect(contextResult.getAssetPath('an-image.png')).toBe(
+          '/public/an-image.png'
+        )
+      })
+    })
+
+    describe('When manifest read fails', () => {
       let contextImport
 
       beforeAll(async () => {
@@ -90,10 +130,7 @@ describe('context and cache', () => {
       })
 
       beforeEach(() => {
-        mockReadFileSync.mockImplementation(() => {
-          throw new SyntaxError('Unexpected token in JSON')
-        })
-
+        simulateManifestReadFailure()
         contextImport.context(mockRequest)
       })
 
