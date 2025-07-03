@@ -50,6 +50,12 @@ function addMomentFilters(env) {
 
 const addDaysToTodayAbrev = function (env) {
   try {
+    if (!env || typeof env.addFilter !== 'function') {
+      console.error(
+        'Invalid Nunjucks environment passed to addDaysToTodayAbrev.'
+      )
+      throw new Error('Invalid Nunjucks environment.')
+    }
     env.addFilter('addDaysToTodayAbrev', function (days) {
       if (typeof days !== 'number') {
         days = 0
@@ -61,7 +67,9 @@ const addDaysToTodayAbrev = function (env) {
       // Return the formatted future date
       return futureDate.format(CALENDAR_STRING.DDD)
     })
+    console.log('Filter addDaysToTodayAbrev registered successfully.')
   } catch (error) {
+    console.error('Error registering addDaysToTodayAbrev filter:', error)
     return error
   }
 }

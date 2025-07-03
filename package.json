@@ -57,7 +57,7 @@
     "geolib": "3.3.4",
     "glob": "^11.0.3",
     "global-agent": "^3.0.0",
-    "govuk-frontend": "5.10.2",
+    "govuk-frontend": "^5.11.0",
     "hapi-pino": "12.1.0",
     "hapi-pulse": "^3.0.1",
     "https-proxy-agent": "7.0.4",

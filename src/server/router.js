@@ -31,8 +31,11 @@ import { multipleResults } from './multiple-results/index.js'
 import { multipleResultsCy } from './multiple-results/cy/index.js'
 import { locationNotFound } from './location-not-found/index.js'
 import { locationNotFoundCy } from './location-not-found/cy/index.js'
+import { fileURLToPath } from 'node:url'
+import path from 'node:path'
 
 const sessionCookiePassword = config.get('session.cookie.password')
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const options = {
   storeBlank: false,
@@ -88,6 +91,41 @@ const router = {
         plugin: yar,
         options
       })
+
+      // Serve static files from .well-known directory
+      server.route({
+        method: 'GET',
+        path: '/.well-known/{param*}',
+        handler: {
+          directory: {
+            path: path.resolve(__dirname, '../../.well-known'),
+            redirectToSlash: true,
+            index: true
+          }
+        }
+      })
+
+      // Check for duplicate route registration
+      const existingRoutes = server.table().map((route) => route.path)
+
+      if (!existingRoutes.includes('/public/{param*}')) {
+        // Serve static files from public directory
+        server.route({
+          method: 'GET',
+          path: '/public/{param*}',
+          handler: {
+            directory: {
+              path: path.resolve(__dirname, '../../public'),
+              redirectToSlash: true,
+              index: true
+            }
+          }
+        })
+      } else {
+        console.warn(
+          'Route /public/{param*} already exists. Skipping registration.'
+        )
+      }
     }
   }
 }
