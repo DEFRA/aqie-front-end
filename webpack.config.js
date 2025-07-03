@@ -45,7 +45,10 @@ export default {
         : 'javascripts/[name].js',
 
     path: path.join(dirname, '.public'),
-    publicPath: '/public/',
+    publicPath:
+      NODE_ENV === 'production'
+        ? 'https://aqie-front-end.dev.cdp-int.defra.cloud/public/'
+        : '/public/', // Adjusted production publicPath to match development environment
     libraryTarget: 'module',
     module: true
   },
@@ -164,6 +167,10 @@ export default {
         {
           from: path.join(govukFrontendPath, 'dist/govuk/assets'),
           to: 'assets'
+        },
+        {
+          from: path.join(dirname, 'src/client/assets/stylesheets'), // Ensure stylesheets are copied to the public folder
+          to: 'stylesheets'
         }
       ]
     })
