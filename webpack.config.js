@@ -45,7 +45,7 @@ export default {
         : 'javascripts/[name].js',
 
     path: path.join(dirname, '.public'),
-    publicPath: '/public/',
+    publicPath: '/public/', // Reverted to original publicPath
     libraryTarget: 'module',
     module: true
   },
@@ -164,6 +164,10 @@ export default {
         {
           from: path.join(govukFrontendPath, 'dist/govuk/assets'),
           to: 'assets'
+        },
+        {
+          from: path.join(dirname, 'src/client/assets/stylesheets'), // Ensure stylesheets are copied to the public folder
+          to: 'stylesheets'
         }
       ]
     })
