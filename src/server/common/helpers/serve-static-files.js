@@ -1,14 +1,10 @@
-import path from 'path'
-import { fileURLToPath } from 'url'
-import { config } from '../../../config/index.js' // Ensure correct import path
+import { config } from '../../../config/index.js'
+import { statusCodes } from '../constants/status-codes.js'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-const serveStaticFiles = {
+export const serveStaticFiles = {
   plugin: {
     name: 'staticFiles',
-    register: async (server) => {
+    register(server) {
       server.route([
         {
           options: {
@@ -19,12 +15,25 @@ const serveStaticFiles = {
             }
           },
           method: 'GET',
-          path: '/public/{param*}',
+          path: '/favicon.ico',
+          handler(_request, h) {
+            return h.response().code(statusCodes.noContent).type('image/x-icon')
+          }
+        },
+        {
+          options: {
+            auth: false,
+            cache: {
+              expiresIn: config.get('staticCacheTimeout'),
+              privacy: 'private'
+            }
+          },
+          method: 'GET',
+          path: `${config.get('assetPath')}/{param*}`,
           handler: {
             directory: {
-              path: path.resolve(__dirname, '../../../../.public'), // Ensure absolute path resolution
-              redirectToSlash: true,
-              index: true
+              path: '.',
+              redirectToSlash: true
             }
           }
         }
@@ -32,5 +41,3 @@ const serveStaticFiles = {
     }
   }
 }
-
-export { serveStaticFiles }

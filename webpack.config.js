@@ -17,18 +17,11 @@ const govukFrontendPath = path.dirname(
 
 const ruleTypeAssetResource = 'asset/resource'
 
-// Extracted repeated prefixes into constants
-const ASSET_JS_PATH = 'assets/javascripts'
-const ASSET_CSS_PATH = 'assets/stylesheets'
-
 export default {
-  context: path.resolve(dirname, 'src/client'),
+  context: path.resolve(dirname, 'src/client/assets'),
   entry: {
     application: {
-      import: [
-        './assets/javascripts/application.js',
-        './assets/stylesheets/application.scss'
-      ]
+      import: ['./javascripts/application.js', './stylesheets/application.scss']
     }
   },
   experiments: {
@@ -43,13 +36,13 @@ export default {
   output: {
     filename:
       NODE_ENV === 'production'
-        ? `${ASSET_JS_PATH}/[name].[contenthash:7].min.js`
-        : `${ASSET_JS_PATH}/[name].js`,
+        ? 'javascripts/[name].[contenthash:7].min.js'
+        : 'javascripts/[name].js',
 
     chunkFilename:
       NODE_ENV === 'production'
-        ? `${ASSET_JS_PATH}/[name].[chunkhash:7].min.js`
-        : `${ASSET_JS_PATH}/[name].js`,
+        ? 'javascripts/[name].[chunkhash:7].min.js'
+        : 'javascripts/[name].js',
 
     path: path.join(dirname, '.public'),
     publicPath: '/public/',
@@ -58,7 +51,7 @@ export default {
   },
   resolve: {
     alias: {
-      '/public/assets': path.join(dirname, '.public/assets')
+      '/public/assets': path.join(govukFrontendPath, 'dist/govuk/assets')
     }
   },
   module: {
@@ -89,8 +82,8 @@ export default {
           binary: false,
           filename:
             NODE_ENV === 'production'
-              ? `${ASSET_CSS_PATH}/[name].[contenthash:7].min.css`
-              : `${ASSET_CSS_PATH}/[name].css`
+              ? 'stylesheets/[name].[contenthash:7].min.css'
+              : 'stylesheets/[name].css'
         },
         use: [
           'postcss-loader',
@@ -99,7 +92,7 @@ export default {
             options: {
               sassOptions: {
                 loadPaths: [
-                  path.join(dirname, 'src/client/stylesheets'),
+                  path.join(dirname, 'src/client/assets/stylesheets'),
                   path.join(dirname, 'src/server/common/components'),
                   path.join(dirname, 'src/server/common/templates/partials')
                 ],
@@ -179,7 +172,7 @@ export default {
     errorDetails: true,
     loggingDebug: ['sass-loader'],
     preset: 'minimal',
-    warnings: false
+    warnings: false // Suppress warnings
   },
   target: 'browserslist:javascripts'
 }
