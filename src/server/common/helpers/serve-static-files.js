@@ -1,6 +1,6 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { config } from '../../../config/index.js'
+import { config } from '../../../config/index.js' // Ensure correct import path
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -22,7 +22,7 @@ const serveStaticFiles = {
           path: '/public/{param*}',
           handler: {
             directory: {
-              path: path.join(__dirname, '../../../../.public'),
+              path: path.resolve(__dirname, '../../../../.public'), // Ensure absolute path resolution
               redirectToSlash: true,
               index: true
             }
