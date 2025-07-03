@@ -45,10 +45,7 @@ export default {
         : 'javascripts/[name].js',
 
     path: path.join(dirname, '.public'),
-    publicPath:
-      NODE_ENV === 'production'
-        ? 'https://aqie-front-end.dev.cdp-int.defra.cloud/public/'
-        : '/public/', // Adjusted production publicPath to match development environment
+    publicPath: '/public/', // Reverted to original publicPath
     libraryTarget: 'module',
     module: true
   },
