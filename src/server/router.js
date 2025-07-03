@@ -108,9 +108,6 @@ const router = {
       // Check for duplicate route registration
       const existingRoutes = server.table().map((route) => route.path)
 
-      // Debug logging for existing routes
-      console.log('Existing routes:', existingRoutes)
-
       if (!existingRoutes.includes('/public/{param*}')) {
         // Serve static files from public directory
         server.route({
