@@ -197,41 +197,6 @@ try {
 }
 
 // Add detailed debug logging for Nunjucks environment initialization
-console.log(
-  'Initializing Nunjucks environment with the following configuration:',
-  {
-    paths: [
-      'node_modules/govuk-frontend/dist/',
-      path.resolve(dirname, '../../node_modules/govuk-frontend/dist/'),
-      path.resolve(dirname, '../../server/common/templates'),
-      path.resolve(dirname, '../../server/common/components'),
-      path.resolve(dirname, '../../server/common/templates/partials'),
-      path.resolve(dirname, '../../server/home/partials'),
-      path.resolve(dirname, '../../server/home'),
-      path.resolve(dirname, '../../server/check-local-air-quality/partials'),
-      path.resolve(dirname, '../../server/common/templates/partials'),
-      path.resolve(dirname, '../../server/common/templates/partials/daqi'),
-      path.resolve(
-        dirname,
-        '../../server/common/templates/partials/pollutants'
-      ),
-      path.resolve(dirname, '../../server/error/partials'),
-      path.resolve(
-        dirname,
-        '../../node_modules/govuk-frontend/dist/govuk/components/cookie-banner/'
-      )
-    ],
-    options: {
-      autoescape: true,
-      throwOnUndefined: false,
-      trimBlocks: true,
-      lstripBlocks: true,
-      watch: config.get('nunjucks.watch'),
-      noCache: config.get('nunjucks.noCache')
-    }
-  }
-)
-
 if (
   !nunjucksEnvironment ||
   typeof nunjucksEnvironment.addFilter !== 'function'
