@@ -33,7 +33,9 @@ import { locationNotFound } from './location-not-found/index.js'
 import { locationNotFoundCy } from './location-not-found/cy/index.js'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
+import { createLogger } from './common/helpers/logging/logger.js'
 
+const logger = createLogger()
 const sessionCookiePassword = config.get('session.cookie.password')
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -122,7 +124,7 @@ const router = {
           }
         })
       } else {
-        console.warn(
+        logger.warn(
           'Route /public/{param*} already exists. Skipping registration.'
         )
       }

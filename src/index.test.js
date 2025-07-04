@@ -4,8 +4,18 @@ import { startServer } from './server/common/helpers/start-server.js'
 import { createLogger } from './server/common/helpers/logging/logger.js'
 
 describe('Server Initialization', () => {
+  let server
+
+  afterEach(async () => {
+    if (server) {
+      await server.stop()
+      server = null
+    }
+  })
+
   it('should start the server without errors', async () => {
-    await expect(startServer()).resolves.not.toThrow()
+    server = await startServer()
+    expect(server).toBeDefined()
   })
 
   it('should handle unhandled rejections gracefully', () => {

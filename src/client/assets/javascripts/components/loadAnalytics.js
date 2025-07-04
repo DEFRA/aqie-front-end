@@ -38,7 +38,7 @@ export default function loadAnalytics() {
       j.src = 'https://www.googletagmanager.com/gtag/js?id=G-8CMZBTDQBC';
       d.head.appendChild(j);
       w.dataLayer = w.dataLayer || [];
-      console.log('Initializing dataLayer:', w.dataLayer); // Debug statement
+      logger.info('Initializing dataLayer:', w.dataLayer); // Debug statement
       function gtag() {
         w.dataLayer.push(arguments);
       }

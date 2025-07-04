@@ -175,6 +175,14 @@ export default {
         {
           from: path.join(dirname, 'src/client/assets/stylesheets'),
           to: 'stylesheets'
+        },
+        {
+          from: path.join(dirname, 'src/client/assets/images/favicon.svg'),
+          to: 'images/favicon.svg'
+        },
+        {
+          from: path.join(dirname, 'src/client/assets/images/favicon.ico'),
+          to: 'images/favicon.ico'
         }
       ]
     })

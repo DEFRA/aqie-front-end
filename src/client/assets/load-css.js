@@ -1,5 +1,8 @@
-''
+import { createLogger } from '../../server/common/helpers/logging/logger'
+
 // Dynamically load the correct CSS file based on Webpack's assets-manifest.json
+const logger = createLogger('load-css')
+
 fetch('/public/assets-manifest.json')
   .then((response) => {
     if (!response.ok) {
@@ -15,9 +18,9 @@ fetch('/public/assets-manifest.json')
       link.href = `/public/${cssFile}`
       document.head.appendChild(link)
     } else {
-      console.error('CSS file not found in manifest')
+      logger.error('CSS file not found in manifest')
     }
   })
   .catch((error) => {
-    console.error('Error loading CSS file:', error)
+    logger.error('Error loading CSS file:', error)
   })

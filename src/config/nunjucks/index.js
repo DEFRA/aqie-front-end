@@ -2,7 +2,6 @@ import path from 'path'
 import nunjucks from 'nunjucks'
 import hapiVision from '@hapi/vision'
 import { fileURLToPath } from 'node:url'
-import fs from 'fs'
 
 import { config } from '../index.js'
 import { context } from './context/context.js'
@@ -12,6 +11,9 @@ import {
 } from './filters/index.js'
 import * as globals from './globals/globals.js'
 import * as filters from './filters/index.js'
+import { createLogger } from '../../server/common/helpers/logging/logger.js'
+
+const logger = createLogger('nunjucks')
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const nunjucksEnvironment = nunjucks.configure(
@@ -86,142 +88,11 @@ nunjucksEnvironment.addFilter('date', function (date, format) {
   return new Intl.DateTimeFormat('en-GB', options).format(new Date(date))
 })
 
-// Add debug logging for template rendering
-nunjucksEnvironment.addFilter('debugTemplate', function (templateName) {
-  console.log(`Rendering template: ${templateName}`)
-  return templateName
-})
-
-// Add debug logging for resolved paths
-console.log('Resolved Nunjucks search paths:', [
-  'node_modules/govuk-frontend/dist/',
-  path.resolve(dirname, '../../node_modules/govuk-frontend/dist/'),
-  path.resolve(dirname, '../../server/common/templates'),
-  path.resolve(dirname, '../../server/common/components'),
-  path.resolve(dirname, '../../server/common/templates/partials'),
-  path.resolve(dirname, '../../server/home/partials'),
-  path.resolve(dirname, '../../server/home'),
-  path.resolve(dirname, '../../server/check-local-air-quality/partials'),
-  path.resolve(dirname, '../../server/common/templates/partials'),
-  path.resolve(dirname, '../../server/common/templates/partials/daqi'),
-  path.resolve(dirname, '../../server/common/templates/partials/pollutants'),
-  path.resolve(dirname, '../../server/error/partials'),
-  path.resolve(
-    dirname,
-    '../../node_modules/govuk-frontend/dist/govuk/components/cookie-banner/'
-  )
-])
-
-// Add debug logging for template existence
-;['partials/error-500.njk', 'partials/cookie-banner.njk'].forEach(
-  (template) => {
-    const templatePath = path.resolve(
-      dirname,
-      `../../server/common/templates/${template}`
-    )
-    console.log(`Checking existence of template: ${templatePath}`)
-    console.log('Exists:', fs.existsSync(templatePath))
-  }
-)
-
-// Enhance fallback logic for missing templates
-nunjucksEnvironment.addFilter('fallbackTemplate', function (templateName) {
-  try {
-    return nunjucksEnvironment.render(templateName)
-  } catch (error) {
-    console.error(`Template not found: ${templateName}. Error details:`, error)
-    try {
-      return nunjucksEnvironment.render('partials/error-500.njk')
-    } catch (fallbackError) {
-      console.error(
-        'Fallback template rendering failed. Error details:',
-        fallbackError
-      )
-      return '<h1>Internal Server Error</h1>'
-    }
-  }
-})
-
-// Test template rendering
-const testTemplates = [
-  'partials/cookie-banner.njk',
-  'partials/error-500.njk',
-  'partials/daqi-index.njk'
-]
-
-testTemplates.forEach((template) => {
-  try {
-    console.log(`Testing template: ${template}`)
-    console.log(`Rendered successfully: ${template}`)
-  } catch (error) {
-    console.error(
-      `Error rendering template: ${template}. Error details:`,
-      error
-    )
-  }
-})
-
-// Add debug logging for GOV.UK macros
-const govukTablePath = path.resolve(
-  dirname,
-  '../../node_modules/govuk-frontend/dist/govuk/components/table/macro.njk'
-)
-console.log(`Checking existence of GOV.UK Table macro: ${govukTablePath}`)
-console.log('Exists:', fs.existsSync(govukTablePath))
-
-// Test rendering GOV.UK Table macro
-try {
-  const testTableTemplate = `{% from "govuk/components/table/macro.njk" import govukTable %}
-  {{ govukTable({
-    caption: "Test Table",
-    firstCellIsHeader: true,
-    head: [
-      { text: "Column 1" },
-      { text: "Column 2" }
-    ],
-    rows: [
-      [
-        { text: "Row 1, Column 1" },
-        { text: "Row 1, Column 2" }
-      ],
-      [
-        { text: "Row 2, Column 1" },
-        { text: "Row 2, Column 2" }
-      ]
-    ]
-  }) }}`
-  const renderedTable = nunjucksEnvironment.renderString(testTableTemplate)
-  console.log('Rendered GOV.UK Table macro successfully:', renderedTable)
-} catch (error) {
-  console.error('Error rendering GOV.UK Table macro. Error details:', error)
-}
-
-// Add detailed debug logging for Nunjucks environment initialization
-if (
-  !nunjucksEnvironment ||
-  typeof nunjucksEnvironment.addFilter !== 'function'
-) {
-  console.error(
-    'Nunjucks environment is invalid or not initialized properly:',
-    nunjucksEnvironment
-  )
-  throw new Error('Nunjucks environment initialization failed.')
-}
-
-console.log(
-  'Nunjucks environment initialized successfully:',
-  nunjucksEnvironment
-)
-
 // Register filters with debug logging
 try {
-  console.log(
-    'Registering filters with Nunjucks environment:',
-    nunjucksEnvironment
-  )
   addDaysToTodayAbrev(nunjucksEnvironment)
   addDaysToTodayAbrevWelsh(nunjucksEnvironment)
-  console.log('Filters registered successfully.')
+  logger.info('Filters registered successfully.')
 } catch (error) {
-  console.error('Error registering filters:', error)
+  logger.error('Error registering filters:', error)
 }
