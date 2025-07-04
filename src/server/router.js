@@ -100,7 +100,7 @@ const router = {
         path: '/.well-known/{param*}',
         handler: {
           directory: {
-            path: path.resolve(__dirname, '../../.well-known'),
+            path: path.resolve(__dirname, '../../.public/.well-known'),
             redirectToSlash: true,
             index: true
           }
