@@ -12,7 +12,6 @@ export function buildRedisClient(redisConfig) {
   const logger = createLogger()
   const port = 6379
   const db = 0
-  const keyPrefix = redisConfig.keyPrefix
   const host = redisConfig.host
   let redisClient
 
@@ -30,7 +29,6 @@ export function buildRedisClient(redisConfig) {
     port,
     host,
     db,
-    keyPrefix,
     enableReadyCheck: false, // Disable ready check
     ...credentials,
     ...tls
@@ -47,7 +45,6 @@ export function buildRedisClient(redisConfig) {
         }
       ],
       {
-        keyPrefix,
         slotsRefreshTimeout: 10000,
         dnsLookup: (address, callback) => callback(null, address),
         redisOptions: commonRedisOptions
