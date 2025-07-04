@@ -37,12 +37,12 @@ export default {
     filename:
       NODE_ENV === 'production'
         ? 'javascripts/[name].[contenthash:7].min.js'
-        : 'javascripts/[name].[hash:7].js',
+        : 'javascripts/[name].[contenthash:7].js',
 
     chunkFilename:
       NODE_ENV === 'production'
-        ? 'javascripts/[name].[chunkhash:7].min.js'
-        : 'javascripts/[name].[hash:7].js',
+        ? 'javascripts/[name].[contenthash:7].min.js'
+        : 'javascripts/[name].[contenthash:7].js',
 
     path: path.join(dirname, '.public'),
     publicPath: '/public/', // Reverted to original publicPath
@@ -83,7 +83,7 @@ export default {
           filename:
             NODE_ENV === 'production'
               ? 'stylesheets/[name].[contenthash:7].min.css'
-              : 'stylesheets/[name].[hash:7].css'
+              : 'stylesheets/[name].[contenthash:7].css'
         },
         use: [
           'postcss-loader',
