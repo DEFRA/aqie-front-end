@@ -5,6 +5,7 @@ import CopyPlugin from 'copy-webpack-plugin'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import TerserPlugin from 'terser-webpack-plugin'
 import { WebpackAssetsManifest } from 'webpack-assets-manifest'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 
 const { NODE_ENV = 'development' } = process.env
 
@@ -159,6 +160,12 @@ export default {
   plugins: [
     new CleanWebpackPlugin(),
     new WebpackAssetsManifest(),
+    new MiniCssExtractPlugin({
+      filename:
+        NODE_ENV === 'production'
+          ? 'stylesheets/[name].[contenthash:7].min.css'
+          : 'stylesheets/[name].[contenthash:7].css'
+    }),
     new CopyPlugin({
       patterns: [
         {
@@ -166,7 +173,7 @@ export default {
           to: 'assets'
         },
         {
-          from: path.join(dirname, 'src/client/assets/stylesheets'), // Ensure stylesheets are copied to the public folder
+          from: path.join(dirname, 'src/client/assets/stylesheets'),
           to: 'stylesheets'
         }
       ]
