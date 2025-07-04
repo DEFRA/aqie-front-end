@@ -1,4 +1,8 @@
-import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-util'
+import { gazetteerEntryFilter } from '~/src/server/locations/helpers/gazetteer-util.js'
+import { formatUKPostcode } from '~/src/server/locations/helpers/convert-string.js'
+jest.mock('~/src/server/locations/helpers/convert-string', () => ({
+  formatUKPostcode: jest.fn((postcode) => `Formatted-${postcode}`)
+}))
 
 describe('gazetteerEntryFilter', () => {
   it('should generate title and headerTitle with district and name2', () => {
@@ -58,6 +62,107 @@ describe('gazetteerEntryFilter', () => {
     expect(result).toEqual({
       title: 'DL10 4BW, North Yorkshire',
       headerTitle: 'DL10 4BW, North Yorkshire'
+    })
+  })
+})
+
+describe('gazetteerEntryFilter', () => {
+  it('Postcode with POPULATED_PLACE and NAME2', () => {
+    const result = gazetteerEntryFilter({
+      GAZETTEER_ENTRY: {
+        LOCAL_TYPE: 'Postcode',
+        POPULATED_PLACE: 'London',
+        NAME2: 'SW1A'
+      }
+    })
+    expect(result).toEqual({
+      title: 'SW1A, London',
+      headerTitle: 'SW1A, London'
+    })
+  })
+
+  it('Postcode with POPULATED_PLACE and NAME1 (no NAME2)', () => {
+    const result = gazetteerEntryFilter({
+      GAZETTEER_ENTRY: {
+        LOCAL_TYPE: 'Postcode',
+        POPULATED_PLACE: 'Manchester',
+        NAME1: 'M1 1AE'
+      }
+    })
+    expect(formatUKPostcode).toHaveBeenCalledWith('M1 1AE')
+    expect(result).toEqual({
+      title: 'Formatted-M1 1AE, Manchester',
+      headerTitle: 'Formatted-M1 1AE, Manchester'
+    })
+  })
+
+  it('Postcode without POPULATED_PLACE', () => {
+    const result = gazetteerEntryFilter({
+      GAZETTEER_ENTRY: {
+        LOCAL_TYPE: 'Postcode',
+        NAME1: 'M1 1AE',
+        DISTRICT_BOROUGH: 'Greater Manchester'
+      }
+    })
+    expect(result).toEqual({
+      title: 'M1 1AE, Greater Manchester',
+      headerTitle: 'M1 1AE, Greater Manchester'
+    })
+  })
+
+  it('Non-Postcode with DISTRICT_BOROUGH and NAME2', () => {
+    const result = gazetteerEntryFilter({
+      GAZETTEER_ENTRY: {
+        LOCAL_TYPE: 'Town',
+        DISTRICT_BOROUGH: 'Leeds',
+        NAME2: 'Headingley'
+      }
+    })
+    expect(result).toEqual({
+      title: 'Headingley, Leeds',
+      headerTitle: 'Headingley, Leeds'
+    })
+  })
+
+  it('Non-Postcode with DISTRICT_BOROUGH and NAME1 (no NAME2)', () => {
+    const result = gazetteerEntryFilter({
+      GAZETTEER_ENTRY: {
+        LOCAL_TYPE: 'Town',
+        DISTRICT_BOROUGH: 'Leeds',
+        NAME1: 'Hyde Park'
+      }
+    })
+    expect(result).toEqual({
+      title: 'Hyde Park, Leeds',
+      headerTitle: 'Hyde Park, Leeds'
+    })
+  })
+
+  it('Non-Postcode with COUNTY_UNITARY and NAME2 (no DISTRICT_BOROUGH)', () => {
+    const result = gazetteerEntryFilter({
+      GAZETTEER_ENTRY: {
+        LOCAL_TYPE: 'Village',
+        COUNTY_UNITARY: 'Kent',
+        NAME2: 'Canterbury'
+      }
+    })
+    expect(result).toEqual({
+      title: 'Canterbury, Kent',
+      headerTitle: 'Canterbury, Kent'
+    })
+  })
+
+  it('Non-Postcode with COUNTY_UNITARY and NAME1 (no NAME2, no DISTRICT_BOROUGH)', () => {
+    const result = gazetteerEntryFilter({
+      GAZETTEER_ENTRY: {
+        LOCAL_TYPE: 'Village',
+        COUNTY_UNITARY: 'Kent',
+        NAME1: 'Ashford'
+      }
+    })
+    expect(result).toEqual({
+      title: 'Ashford, Kent',
+      headerTitle: 'Ashford, Kent'
     })
   })
 })
