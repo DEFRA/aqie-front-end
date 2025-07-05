@@ -1,7 +1,7 @@
 /* global vi */
 import { welsh } from '../../data/cy/cy.js'
 import { sulphurDioxideController } from './controller.js'
-import { LANG_CY, LANG_EN } from '../../data/constants.js'
+import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
 describe('sulphurDioxide Controller - Welsh', () => {
@@ -32,7 +32,7 @@ describe('sulphurDioxide Controller - Welsh', () => {
     expect(mockH.redirect).toHaveBeenCalledWith(
       '/pollutants/sulphur-dioxide?lang=en'
     )
-    expect(mockH.redirect().code).toHaveBeenCalledWith(301)
+    expect(mockH.redirect().code).toHaveBeenCalledWith(REDIRECT_STATUS_CODE)
 
     mockRequest = {
       query: {

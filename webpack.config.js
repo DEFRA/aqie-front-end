@@ -169,12 +169,24 @@ export default {
     new CopyPlugin({
       patterns: [
         {
+          from: path.join(dirname, 'src/client/assets/.well-known'),
+          to: '.well-known'
+        },
+        {
           from: path.join(govukFrontendPath, 'dist/govuk/assets'),
           to: 'assets'
         },
         {
           from: path.join(dirname, 'src/client/assets/stylesheets'),
           to: 'stylesheets'
+        },
+        {
+          from: path.join(dirname, 'src/client/assets/images/favicon.svg'),
+          to: 'images/favicon.svg'
+        },
+        {
+          from: path.join(dirname, 'src/client/assets/images/favicon.ico'),
+          to: 'images/favicon.ico'
         }
       ]
     })

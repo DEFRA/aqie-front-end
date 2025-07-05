@@ -4,7 +4,7 @@ import {
   handleNIError,
   formatPostcode
 } from './error-input-and-redirect-helpers'
-import { LANG_EN, LANG_CY } from '../../data/constants.js'
+import { LANG_EN, LANG_CY, REDIRECT_STATUS_CODE } from '../../data/constants.js'
 
 // Mock English and Welsh data
 vi.mock('../../data/en/en.js', () => ({
@@ -149,7 +149,7 @@ describe('error-input-and-redirect-helpers', () => {
 
       expect(mockH.redirect).toHaveBeenCalledWith('/search-location?lang=en')
       const codeSpy = mockH.redirect.mock.results[0].value.code
-      expect(codeSpy).toHaveBeenCalledWith(301)
+      expect(codeSpy).toHaveBeenCalledWith(REDIRECT_STATUS_CODE)
     })
 
     it('should redirect with a 301 status code for Welsh language', () => {
@@ -159,7 +159,7 @@ describe('error-input-and-redirect-helpers', () => {
 
       expect(mockH.redirect).toHaveBeenCalledWith('chwilio-lleoliad/cy?lang=cy')
       const codeSpy = mockH.redirect.mock.results[0].value.code
-      expect(codeSpy).toHaveBeenCalledWith(301)
+      expect(codeSpy).toHaveBeenCalledWith(REDIRECT_STATUS_CODE)
     })
   })
 

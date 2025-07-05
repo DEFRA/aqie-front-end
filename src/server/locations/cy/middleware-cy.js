@@ -18,7 +18,8 @@ import {
 import {
   LANG_CY,
   LOCATION_TYPE_UK,
-  LOCATION_TYPE_NI
+  LOCATION_TYPE_NI,
+  REDIRECT_STATUS_CODE
 } from '../../data/constants.js'
 import { getMonth } from '../helpers/location-type-util.js'
 import {
@@ -284,7 +285,10 @@ const searchMiddlewareCy = async (request, h) => {
       getMeasurements: getMeasurements?.measurements,
       lang
     })
-    return h.redirect(`/lleoliad/${urlRoute}?lang=cy`).code(301).takeover()
+    return h
+      .redirect(`/lleoliad/${urlRoute}?lang=cy`)
+      .code(REDIRECT_STATUS_CODE)
+      .takeover()
   } else {
     // handle other location types
     request.yar.clear('searchTermsSaved')

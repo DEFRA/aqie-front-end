@@ -1,14 +1,11 @@
 import { vi } from 'vitest'
 import { locationNotFoundCy } from './index.js'
 
-// Mock the controller
-const mockLocationNotFoundController = {
-  handler: vi.fn()
-}
-
 // Replace the controller import with the mock
 vi.mock('./controller.js', () => ({
-  locationNotFoundController: mockLocationNotFoundController
+  locationNotFoundController: {
+    handler: vi.fn()
+  }
 }))
 
 describe('location-not-found index plugin - cy', () => {

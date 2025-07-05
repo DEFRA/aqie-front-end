@@ -54,7 +54,6 @@ const setSessionValues = (
 }
 
 const handleNoSearchTerms = (request, h, lang, payload) => {
-  // '' Main handler for missing search terms.
   const str = getRefererPath(request)
   let { locationType, locationNameOrPostcode } = getLocationTypeAndName(
     request,
@@ -80,13 +79,6 @@ const handleNoSearchTerms = (request, h, lang, payload) => {
   }
 
   if (!locationType && !locationNameOrPostcode) {
-    console.log('Debugging handleNoSearchTerms - Missing Location:', {
-      locationType,
-      locationNameOrPostcode,
-      referer: str
-    })
-
-    // Call handleMissingLocation instead of redirecting directly
     return handleMissingLocation(request, h, lang)
   }
 
@@ -100,12 +92,6 @@ const handleNoSearchTerms = (request, h, lang, payload) => {
     return handleNIError(request, h, lang, locationNameOrPostcode)
   }
 
-  console.log('Debugging handleNoSearchTerms:', {
-    locationType,
-    locationNameOrPostcode,
-    referer: str
-  })
-
   return { locationType, userLocation, locationNameOrPostcode }
 }
 
@@ -116,20 +102,6 @@ const DEFAULT_LOCATION_TYPE = 'uk-location'
 const NI_LOCATION_TYPE = 'ni-location'
 
 const handleSearchTerms = (searchTerms) => {
-  // Debugging logs
-  console.log('Validating search terms:', searchTerms)
-  console.log('isValidFullPostcodeNI:', isValidFullPostcodeNI(searchTerms))
-  console.log(
-    'isValidPartialPostcodeNI:',
-    isValidPartialPostcodeNI(searchTerms)
-  )
-  console.log('isValidFullPostcodeUK:', isValidFullPostcodeUK(searchTerms))
-  console.log(
-    'isValidPartialPostcodeUK:',
-    isValidPartialPostcodeUK(searchTerms)
-  )
-
-  // Prioritize UK postcodes over NI postcodes
   if (
     isValidFullPostcodeUK(searchTerms) ||
     isValidPartialPostcodeUK(searchTerms)
@@ -160,7 +132,6 @@ const handleSearchTerms = (searchTerms) => {
     }
   }
 
-  // Default to UK location for invalid search terms
   return {
     locationType: DEFAULT_LOCATION_TYPE,
     userLocation: searchTerms,

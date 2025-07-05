@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { REDIRECT_STATUS_CODE } from '../../data/constants.js'
 import { createMockH } from '../../locations/helpers/error-input-and-redirect-helpers.test.js'
 
 describe('Handle Search Terms Redirection Tests', () => {
@@ -8,7 +9,7 @@ describe('Handle Search Terms Redirection Tests', () => {
     const handleSearchTermsRedirection = (term) => {
       const route =
         term === 'Cardiff' ? '/locations/cardiff' : '/locations/unknown'
-      mockH.redirect(route).code(301)
+      mockH.redirect(route).code(REDIRECT_STATUS_CODE)
       return route
     }
 
@@ -16,7 +17,7 @@ describe('Handle Search Terms Redirection Tests', () => {
     expect(result).toBe('/locations/cardiff')
     expect(mockH.redirect).toHaveBeenCalledWith('/locations/cardiff')
     const codeSpy = mockH.redirect.mock.results[0].value.code
-    expect(codeSpy).toHaveBeenCalledWith(301)
+    expect(codeSpy).toHaveBeenCalledWith(REDIRECT_STATUS_CODE)
   })
 
   it('should redirect to unknown for invalid search terms', () => {
@@ -30,7 +31,7 @@ describe('Handle Search Terms Redirection Tests', () => {
         default: '/locations/unknown'
       }
       const route = routes[term] || routes.default
-      mockH.redirect(route).code(301)
+      mockH.redirect(route).code(REDIRECT_STATUS_CODE)
       return route
     }
 
@@ -38,6 +39,6 @@ describe('Handle Search Terms Redirection Tests', () => {
     expect(result).toBe('/locations/unknown')
     expect(mockH.redirect).toHaveBeenCalledWith('/locations/unknown')
     const codeSpy = mockH.redirect.mock.results[0].value.code
-    expect(codeSpy).toHaveBeenCalledWith(301)
+    expect(codeSpy).toHaveBeenCalledWith(REDIRECT_STATUS_CODE)
   })
 })

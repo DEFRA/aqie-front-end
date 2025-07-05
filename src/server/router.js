@@ -30,10 +30,11 @@ import { config } from '../config/index.js'
 import { multipleResults } from './multiple-results/index.js'
 import { multipleResultsCy } from './multiple-results/cy/index.js'
 import { locationNotFound } from './location-not-found/index.js'
-import { locationNotFoundCy } from './location-not-found/cy/index.js'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
+import { createLogger } from './common/helpers/logging/logger.js'
 
+const logger = createLogger()
 const sessionCookiePassword = config.get('session.cookie.password')
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -84,7 +85,6 @@ const router = {
         multipleResults,
         multipleResultsCy,
         locationNotFound,
-        locationNotFoundCy,
         health
       ])
       await server.register({
@@ -98,7 +98,7 @@ const router = {
         path: '/.well-known/{param*}',
         handler: {
           directory: {
-            path: path.resolve(__dirname, '../../.well-known'),
+            path: path.resolve(__dirname, '../../.public/.well-known'),
             redirectToSlash: true,
             index: true
           }
@@ -122,7 +122,7 @@ const router = {
           }
         })
       } else {
-        console.warn(
+        logger.warn(
           'Route /public/{param*} already exists. Skipping registration.'
         )
       }

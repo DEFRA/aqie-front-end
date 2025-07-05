@@ -6,6 +6,9 @@ import {
   CALENDAR_STRING,
   HOURS_TO_SUBTRACT
 } from '../../../server/data/constants.js'
+import { createLogger } from '../../../server/common/helpers/logging/logger.js'
+
+const logger = createLogger('moment-date-filters')
 
 /**
  * Formats a moment date with lowercase 'am/pm'.
@@ -51,7 +54,7 @@ function addMomentFilters(env) {
 const addDaysToTodayAbrev = function (env) {
   try {
     if (!env || typeof env.addFilter !== 'function') {
-      console.error(
+      logger.error(
         'Invalid Nunjucks environment passed to addDaysToTodayAbrev.'
       )
       throw new Error('Invalid Nunjucks environment.')
@@ -67,9 +70,8 @@ const addDaysToTodayAbrev = function (env) {
       // Return the formatted future date
       return futureDate.format(CALENDAR_STRING.DDD)
     })
-    console.log('Filter addDaysToTodayAbrev registered successfully.')
   } catch (error) {
-    console.error('Error registering addDaysToTodayAbrev filter:', error)
+    logger.error('Error registering addDaysToTodayAbrev filter:', error)
     return error
   }
 }
@@ -88,6 +90,7 @@ const addDaysToTodayAbrevWelsh = function (env) {
       return futureDate.format(CALENDAR_STRING.DDD)
     })
   } catch (error) {
+    logger.error('Error registering addDaysToTodayAbrevWelsh filter:', error)
     return error
   }
 }

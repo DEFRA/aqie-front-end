@@ -1,4 +1,4 @@
-import { locationNotFoundController } from '../controller.js'
+import { locationNotFoundController } from './controller.js'
 
 const locationNotFoundCy = {
   plugin: {

@@ -1,10 +1,13 @@
 import { describe, it, expect, vi } from 'vitest'
 import { h } from 'some-hypothetical-library'
+import { REDIRECT_STATUS_CODE } from '../data/constants.js'
 
 // Mocking the h.redirect function
 vi.mock('some-hypothetical-library', () => ({
   h: {
-    redirect: vi.fn(() => ({ code: vi.fn() }))
+    redirect: vi.fn(() => ({
+      code: vi.fn(() => 'redirected')
+    }))
   }
 }))
 
@@ -27,9 +30,9 @@ describe('Locations Middleware Tests', () => {
     const mockRedirect = h.redirect
     const mockCode = mockRedirect().code
 
-    mockCode(301)
+    mockCode(REDIRECT_STATUS_CODE)
 
     expect(mockRedirect).toHaveBeenCalled()
-    expect(mockCode).toHaveBeenCalledWith(301)
+    expect(mockCode).toHaveBeenCalledWith(REDIRECT_STATUS_CODE)
   })
 })

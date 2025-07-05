@@ -6,7 +6,8 @@ import {
   LANG_EN,
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI,
-  LOCATION_NOT_FOUND
+  LOCATION_NOT_FOUND,
+  REDIRECT_STATUS_CODE
 } from '../../data/constants.js'
 
 const logger = createLogger()
@@ -21,7 +22,7 @@ const getLocationDataController = {
       lang = LANG_CY
     }
     if (query?.lang && query?.lang === LANG_EN) {
-      return h.redirect(`/location?lang=en`).code(301)
+      return h.redirect(`/location?lang=en`).code(REDIRECT_STATUS_CODE)
     }
     const {
       searchLocation,
@@ -51,7 +52,9 @@ const getLocationDataController = {
     if (!locationNameOrPostcode && !locationType) {
       request.yar.set('locationType', '')
       if (str === 'chwilio-lleoliad') {
-        return h.redirect(`/chwilio-lleoliad/cy?lang=cy`).code(301)
+        return h
+          .redirect(`/chwilio-lleoliad/cy?lang=cy`)
+          .code(REDIRECT_STATUS_CODE)
       }
     }
     try {

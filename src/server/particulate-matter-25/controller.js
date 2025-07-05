@@ -1,5 +1,5 @@
 import { english } from '../data/en/en.js'
-import { LANG_CY, LANG_EN } from '../data/constants.js'
+import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
 const particulateMatter25Controller = {
@@ -11,7 +11,9 @@ const particulateMatter25Controller = {
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     if (query?.lang && query?.lang === LANG_CY) {
-      return h.redirect(`/llygryddion/mater-gronynnol-25/cy?lang=cy`).code(301)
+      return h
+        .redirect(`/llygryddion/mater-gronynnol-25/cy?lang=cy`)
+        .code(REDIRECT_STATUS_CODE)
     }
     return h.view('particulate-matter-25/index', {
       pageTitle: particulateMatter25.pageTitle,

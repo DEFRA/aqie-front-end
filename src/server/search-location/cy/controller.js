@@ -22,8 +22,7 @@ const searchLocationController = {
       lang = LANG_CY
     }
     if (lang === LANG_EN) {
-      h.redirect(SEARCH_LOCATION_ROUTE_EN).code(REDIRECT_STATUS_CODE)
-      return 'redirected'
+      return h.redirect(SEARCH_LOCATION_ROUTE_EN).code(REDIRECT_STATUS_CODE)
     }
     const errors = request.yar.get('errors')
     const errorMessage = request.yar.get('errorMessage')

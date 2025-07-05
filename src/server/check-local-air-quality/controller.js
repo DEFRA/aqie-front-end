@@ -1,5 +1,5 @@
 import { english } from '../data/en/en.js'
-import { LANG_CY, LANG_EN } from '../data/constants.js'
+import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
 const handleHomeRequest = (request, h, content = english) => {
@@ -8,7 +8,7 @@ const handleHomeRequest = (request, h, content = english) => {
   const metaSiteUrl = getAirQualitySiteUrl(request)
 
   if (query.lang === LANG_CY) {
-    return h.redirect(LANG_CY).code(301)
+    return h.redirect(LANG_CY).code(REDIRECT_STATUS_CODE)
   }
 
   return h.view('home/index', {

@@ -1,21 +1,23 @@
 {% extends 'layouts/page.njk' %}
 {% set displayBreadcrumbs = false %}
 {% set title = "We could not find" + " " + (data['q'] | toSentenceCase) %}
+{% set paragraph = paragraph if paragraph else {} %}
+{% set userLocation = userLocation if userLocation else 'Unknown location' %}
 
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l odd-page">{{paragraph.a}} '{{ (userLocation | toSentenceCase)  }}'</h1>
-    <p class="govuk-body">{{paragraph.b}}</p>
+    <h1 class="govuk-heading-l odd-page">{{paragraph.a if paragraph.a else 'We could not find'}} '{{ (userLocation | toSentenceCase) }}'</h1>
+    <p class="govuk-body">{{paragraph.b if paragraph.b else 'Please check the details and try again.'}}</p>
 
     <ul class="govuk-list govuk-list--bullet">
-      <li>{{paragraph.c}}</li>
-      <li>{{paragraph.d}}</li>
-      <li>{{paragraph.e}}</li>
+      <li>{{paragraph.c if paragraph.c else 'Ensure the location is correct.'}}</li>
+      <li>{{paragraph.d if paragraph.d else 'Try searching again.'}}</li>
+      <li>{{paragraph.e if paragraph.e else 'Contact support if the issue persists.'}}</li>
     </ul>
-    {% set queryhref %}/search-location?lang=en{% endset %}
-    <p class="govuk-body">{{paragraph.f}}</p>
-    <p class="govuk-body"><a href={%if htmlLang == 'en' %}"{{queryhref}}" {%else%}'/chwilio-lleoliad/cy?lang=cy'{%endif%}>{{paragraph.g}}</a></p>
+    {% set queryhref = '/search-location?lang=en' %}
+    <p class="govuk-body">{{paragraph.f if paragraph.f else 'You can return to the search page using the link below.'}}</p>
+    <p class="govuk-body"><a href={%if htmlLang == 'en' %}"{{queryhref}}" {%else%}'/chwilio-lleoliad/cy?lang=cy'{%endif%}>{{paragraph.g if paragraph.g else 'Return to search page'}}</a></p>
   </div>
 </div>
 {% endblock %}
