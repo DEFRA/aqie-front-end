@@ -12,11 +12,9 @@ const particulateMatter25Controller = {
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     if (query?.lang && query?.lang === LANG_EN) {
-      return (
-        h
-          .redirect(`/pollutants/particulate-matter-25?lang=en`)
-          .code(REDIRECT_STATUS_CODE) || 'redirected'
-      )
+      return h
+        .redirect(`/pollutants/particulate-matter-25?lang=en`)
+        .code(REDIRECT_STATUS_CODE)
     }
     let lang = query?.lang?.slice(0, 2)
     if (

@@ -12,7 +12,8 @@ import {
   SEARCH_LOCATION_ROUTE_CY,
   SEARCH_LOCATION_PATH_EN,
   SEARCH_LOCATION_ROUTE_EN,
-  LANG_CY
+  LANG_CY,
+  REDIRECT_STATUS_CODE
 } from '../../data/constants.js'
 
 vi.mock('moment-timezone', () => {
@@ -52,7 +53,7 @@ describe('handleRedirect', () => {
     const redirectRoute = '/some-route'
     handleRedirect(mockH, redirectRoute)
     expect(mockH.redirect).toHaveBeenCalledWith(redirectRoute)
-    expect(mockCode).toHaveBeenCalledWith(301)
+    expect(mockCode).toHaveBeenCalledWith(REDIRECT_STATUS_CODE)
   })
 })
 

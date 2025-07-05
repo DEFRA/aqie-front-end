@@ -30,7 +30,6 @@ import { config } from '../config/index.js'
 import { multipleResults } from './multiple-results/index.js'
 import { multipleResultsCy } from './multiple-results/cy/index.js'
 import { locationNotFound } from './location-not-found/index.js'
-import { locationNotFoundCy } from './location-not-found/cy/index.js'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { createLogger } from './common/helpers/logging/logger.js'
@@ -86,7 +85,6 @@ const router = {
         multipleResults,
         multipleResultsCy,
         locationNotFound,
-        locationNotFoundCy,
         health
       ])
       await server.register({

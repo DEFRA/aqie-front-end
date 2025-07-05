@@ -22,8 +22,12 @@ describe('locationNotFoundController - welsh', () => {
       }
     }
     mockH = {
-      redirect: vi.fn().mockReturnValue('redirected'),
-      view: vi.fn().mockReturnValue('view rendered')
+      redirect: vi.fn(() => ({
+        code: vi.fn(() => ({
+          takeover: vi.fn(() => 'redirected')
+        }))
+      })),
+      view: vi.fn(() => 'view rendered')
     }
   })
 

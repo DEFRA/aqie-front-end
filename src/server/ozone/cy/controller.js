@@ -12,8 +12,7 @@ const ozoneController = {
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     if (query?.lang && query?.lang === LANG_EN) {
-      h.redirect(`/pollutants/ozone?lang=en`).code(REDIRECT_STATUS_CODE)
-      return 'redirected' // Explicitly return 'redirected' after redirect
+      return h.redirect(`/pollutants/ozone?lang=en`).code(REDIRECT_STATUS_CODE)
     }
     let lang = query?.lang?.slice(0, 2)
     if (

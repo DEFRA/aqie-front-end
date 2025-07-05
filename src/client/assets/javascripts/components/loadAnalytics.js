@@ -20,7 +20,7 @@ if (typeof global !== 'undefined' && typeof window === 'undefined') {
 }
 
 export default function loadAnalytics() {
-  if (!window.ga || !window.ga.loaded) {
+  if (!window.ga?.loaded) {
     // Load gtm script
     // Script based on snippet at https://developers.google.com/tag-manager/quickstart
     // prettier-ignore
@@ -38,9 +38,8 @@ export default function loadAnalytics() {
       j.src = 'https://www.googletagmanager.com/gtag/js?id=G-8CMZBTDQBC';
       d.head.appendChild(j);
       w.dataLayer = w.dataLayer || [];
-      logger.info('Initializing dataLayer:', w.dataLayer); // Debug statement
-      function gtag() {
-        w.dataLayer.push(arguments);
+      function gtag(...args) {
+        w.dataLayer.push(args);
       }
       gtag('js', new Date());
       gtag('config', 'G-8CMZBTDQBC');

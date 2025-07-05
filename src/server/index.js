@@ -13,6 +13,7 @@ import { setupProxy } from './common/helpers/proxy/setup-proxy.js'
 import { pulse } from './common/helpers/pulse.js'
 import { requestTracing } from './common/helpers/request-tracing.js'
 import { createLogger } from './common/helpers/logging/logger.js'
+import { locationNotFoundCy } from './location-not-found/cy/index.js'
 
 async function createServer() {
   const logger = createLogger()
@@ -71,7 +72,8 @@ async function createServer() {
       secureContext,
       pulse,
       nunjucksConfig,
-      router // `serveStaticFiles` is already registered in the `router` plugin
+      router, // `serveStaticFiles` is already registered in the `router` plugin
+      locationNotFoundCy.plugin
     ]
 
     for (const plugin of plugins) {

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { createMockH } from '../../locations/helpers/error-input-and-redirect-helpers.test.js'
+import { REDIRECT_STATUS_CODE } from '../../../server/data/constants.js'
 
 describe('Redirect to Welsh Location Tests', () => {
   it('should redirect to the correct Welsh location with a 301 status code', () => {
@@ -7,7 +8,7 @@ describe('Redirect to Welsh Location Tests', () => {
 
     const redirectToWelshLocation = (location) => {
       const route = `https://welsh-location.com/${location}`
-      mockH.redirect(route).code(301)
+      mockH.redirect(route).code(REDIRECT_STATUS_CODE)
       return route
     }
 
@@ -17,6 +18,6 @@ describe('Redirect to Welsh Location Tests', () => {
       'https://welsh-location.com/Cardiff'
     )
     const codeSpy = mockH.redirect.mock.results[0].value.code
-    expect(codeSpy).toHaveBeenCalledWith(301)
+    expect(codeSpy).toHaveBeenCalledWith(REDIRECT_STATUS_CODE)
   })
 })

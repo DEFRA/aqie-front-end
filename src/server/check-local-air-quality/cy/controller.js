@@ -1,5 +1,5 @@
 import { welsh } from '../../data/cy/cy.js'
-import { LANG_CY, LANG_EN } from '../../data/constants.js'
+import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
 // Define the handler function
@@ -10,7 +10,7 @@ const handleHomeRequest = (request, h, content = welsh) => {
 
   // Redirect to the English version if the language is 'en'
   if (query.lang === LANG_EN) {
-    return h.redirect(`/?lang=en`).code(301)
+    return h.redirect(`/?lang=en`).code(REDIRECT_STATUS_CODE)
   }
 
   // Determine the language

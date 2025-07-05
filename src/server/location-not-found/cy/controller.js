@@ -1,7 +1,8 @@
 import {
   LANG_EN,
   LOCATION_NOT_FOUND,
-  LOCATION_NOT_FOUND_ROUTE_EN
+  LOCATION_NOT_FOUND_ROUTE_EN,
+  REDIRECT_STATUS_CODE
 } from '../../data/constants.js'
 import { welsh } from '../../data/cy/cy.js'
 
@@ -9,7 +10,10 @@ const locationNotFoundController = {
   handler: (request, h) => {
     const { query } = request
     if (query?.lang === LANG_EN) {
-      return h.redirect(LOCATION_NOT_FOUND_ROUTE_EN)
+      return h
+        .redirect(LOCATION_NOT_FOUND_ROUTE_EN)
+        .code(REDIRECT_STATUS_CODE)
+        .takeover()
     }
     const locationData = request.yar.get('locationDataNotFound') || []
     const { locationNameOrPostcode, lang } = locationData

@@ -18,10 +18,11 @@ describe('Ozone Controller - Welsh', () => {
         return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
       })
     }))
-    const mockCode = vi.fn()
     mockH = {
-      redirect: vi.fn(() => ({ code: mockCode })),
-      view: vi.fn().mockReturnValue('view rendered')
+      redirect: vi.fn(() => ({
+        code: vi.fn(() => 'redirected')
+      })),
+      view: vi.fn(() => 'view rendered')
     }
   })
 

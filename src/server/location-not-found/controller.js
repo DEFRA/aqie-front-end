@@ -1,7 +1,8 @@
 import {
   LANG_CY,
   LOCATION_NOT_FOUND,
-  LOCATION_NOT_FOUND_ROUTE_CY
+  LOCATION_NOT_FOUND_ROUTE_CY,
+  REDIRECT_STATUS_CODE
 } from '../data/constants.js' //
 import { english } from '../data/en/en.js'
 
@@ -9,25 +10,29 @@ const locationNotFoundController = {
   handler: (request, h) => {
     const { query } = request
     if (query?.lang === LANG_CY) {
-      return h.redirect(LOCATION_NOT_FOUND_ROUTE_CY)
+      return h
+        .redirect(LOCATION_NOT_FOUND_ROUTE_CY)
+        .code(REDIRECT_STATUS_CODE)
+        .takeover()
     }
-    const locationData = request.yar.get('locationDataNotFound') || []
-    const { locationNameOrPostcode, lang } = locationData
+    const locationData = request.yar.get('locationDataNotFound') || {}
+    const { locationNameOrPostcode = 'Unknown location', lang = 'en' } =
+      locationData
     const {
-      notFoundLocation,
-      home,
-      footerTxt,
-      phaseBanner,
-      backlink,
-      cookieBanner,
-      multipleLocations
+      notFoundLocation = {},
+      home = {},
+      footerTxt = '',
+      phaseBanner = {},
+      backlink = {},
+      cookieBanner = {},
+      multipleLocations = {}
     } = english
     return h.view(LOCATION_NOT_FOUND, {
       userLocation: locationNameOrPostcode,
-      serviceName: notFoundLocation.heading,
-      paragraph: notFoundLocation.paragraphs,
-      pageTitle: `${notFoundLocation.paragraphs.a} ${locationNameOrPostcode} - ${home.pageTitle}`,
-      description: multipleLocations.description,
+      serviceName: notFoundLocation.heading || 'Service unavailable',
+      paragraph: notFoundLocation.paragraphs || {},
+      pageTitle: `${notFoundLocation.paragraphs?.a || 'Error'} ${locationNameOrPostcode} - ${home.pageTitle || 'Home'}`,
+      description: multipleLocations.description || '',
       footerTxt,
       phaseBanner,
       backlink,

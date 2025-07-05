@@ -12,6 +12,7 @@ import {
 import * as globals from './globals/globals.js'
 import * as filters from './filters/index.js'
 import { createLogger } from '../../server/common/helpers/logging/logger.js'
+import { addToSentenceCase } from './filters/format-sentence.js'
 
 const logger = createLogger('nunjucks')
 
@@ -80,7 +81,7 @@ nunjucksEnvironment.addFilter('minusOneHour', function (date) {
   return newDate
 })
 
-nunjucksEnvironment.addFilter('date', function (date, format) {
+nunjucksEnvironment.addFilter('date', function (date, _format) {
   if (!date || isNaN(new Date(date).getTime())) {
     return 'Invalid date'
   }
@@ -92,6 +93,7 @@ nunjucksEnvironment.addFilter('date', function (date, format) {
 try {
   addDaysToTodayAbrev(nunjucksEnvironment)
   addDaysToTodayAbrevWelsh(nunjucksEnvironment)
+  addToSentenceCase(nunjucksEnvironment)
   logger.info('Filters registered successfully.')
 } catch (error) {
   logger.error('Error registering filters:', error)
