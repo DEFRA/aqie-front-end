@@ -302,13 +302,13 @@ export const config = convict({
     username: {
       doc: 'Redis cache username',
       format: String,
-      default: '',
+      default: process.env.REDIS_USERNAME || '',
       env: 'REDIS_USERNAME'
     },
     password: {
       doc: 'Redis cache password',
       format: '*',
-      default: '',
+      default: process.env.REDIS_PASSWORD || '',
       sensitive: true,
       env: 'REDIS_PASSWORD'
     },
