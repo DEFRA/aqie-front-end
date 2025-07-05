@@ -56,7 +56,7 @@ export const config = convict({
   serviceName: {
     doc: 'Applications Service Name',
     format: String,
-    default: 'aqie-front-end'
+    default: 'Check air quality'
   },
   root: {
     doc: 'Project root',
@@ -116,14 +116,14 @@ export const config = convict({
         : []
     }
   },
-  httpProxy: /** @type {SchemaObj<string | null>} */ {
+  httpProxy: {
     doc: 'HTTP Proxy',
     format: String,
     nullable: true,
     default: null,
-    env: 'CDP_HTTP_PROXY'
+    env: 'HTTP_PROXY'
   },
-  httpsProxy: /** @type {SchemaObj<string | null>} */ {
+  httpsProxy: {
     doc: 'HTTPS Proxy',
     format: String,
     nullable: true,
@@ -292,7 +292,7 @@ export const config = convict({
     default: '',
     env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_CLIENT_SCOPE'
   },
-  redis: /** @type {Schema<RedisConfig>} */ ({
+  redis: {
     host: {
       doc: 'Redis cache host',
       format: String,
@@ -302,20 +302,20 @@ export const config = convict({
     username: {
       doc: 'Redis cache username',
       format: String,
-      default: process.env.REDIS_USERNAME || '',
+      default: '',
       env: 'REDIS_USERNAME'
     },
     password: {
       doc: 'Redis cache password',
       format: '*',
-      default: process.env.REDIS_PASSWORD || '',
+      default: '',
       sensitive: true,
       env: 'REDIS_PASSWORD'
     },
     keyPrefix: {
       doc: 'Redis cache key prefix name used to isolate the cached results across multiple clients',
       format: String,
-      default: 'aqie-front-end',
+      default: 'aqie-front-end:',
       env: 'REDIS_KEY_PREFIX'
     },
     useSingleInstanceCache: {
@@ -330,7 +330,7 @@ export const config = convict({
       default: isProduction,
       env: 'REDIS_TLS'
     }
-  }),
+  },
   nunjucks: {
     watch: {
       doc: 'Reload templates when they are changed.',

@@ -1,5 +1,4 @@
 import inert from '@hapi/inert'
-import yar from '@hapi/yar'
 import { home } from './home/index.js'
 import { homeCy } from './home/cy/index.js'
 import { searchLocation } from './search-location/index.js'
@@ -26,7 +25,6 @@ import { cookiesCy } from './cookies/cy/index.js'
 import { accessibility } from './accessibility/index.js'
 import { accessibilityCy } from './accessibility/cy/index.js'
 import { health } from './health/index.js'
-import { config } from '../config/index.js'
 import { multipleResults } from './multiple-results/index.js'
 import { multipleResultsCy } from './multiple-results/cy/index.js'
 import { locationNotFound } from './location-not-found/index.js'
@@ -35,28 +33,15 @@ import path from 'node:path'
 import { createLogger } from './common/helpers/logging/logger.js'
 
 const logger = createLogger()
-const sessionCookiePassword = config.get('session.cookie.password')
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-
-const options = {
-  storeBlank: false,
-  cookieOptions: {
-    password: sessionCookiePassword,
-    isSecure: true
-  },
-  errorOnCacheNotReady: true,
-  maxCookieSize: 0,
-  cache: {
-    cache: 'session'
-  }
-}
 
 const router = {
   plugin: {
     name: 'router',
     register: async (server) => {
       await server.register([inert])
-      await server.register([
+
+      const plugins = [
         home,
         homeCy,
         searchLocation,
@@ -86,12 +71,14 @@ const router = {
         multipleResultsCy,
         locationNotFound,
         health
-      ])
-      await server.register({
-        plugin: yar,
-        options
-      })
+      ]
 
+      for (const plugin of plugins) {
+        const pluginName =
+          plugin.name || plugin.plugin?.name || 'CustomPluginName'
+        logger.info(`Registering plugin: ${pluginName}`)
+        await server.register(plugin)
+      }
       // Serve static files from .well-known directory
       server.route({
         method: 'GET',
