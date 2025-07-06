@@ -10,6 +10,22 @@ describe('locationNotFoundController - english', () => {
   let mockH
   const mockContent = english
 
+  // '' Helper function to mock the redirect chain
+  function createMockRedirect() {
+    // '' Returns an object with a code method
+    return {
+      code: function () {
+        // '' Returns an object with a takeover method
+        return {
+          takeover: function () {
+            // '' Returns the string 'redirected'
+            return 'redirected'
+          }
+        }
+      }
+    }
+  }
+
   beforeEach(() => {
     mockRequest = {
       query: {},
@@ -22,11 +38,7 @@ describe('locationNotFoundController - english', () => {
       }
     }
     mockH = {
-      redirect: vi.fn(() => ({
-        code: vi.fn(() => ({
-          takeover: vi.fn(() => 'redirected')
-        }))
-      })),
+      redirect: vi.fn(() => createMockRedirect()),
       view: vi.fn(() => 'view rendered')
     }
   })

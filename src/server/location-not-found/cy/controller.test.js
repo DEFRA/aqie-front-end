@@ -10,6 +10,19 @@ describe('locationNotFoundController - welsh', () => {
   let mockH
   const mockContent = welsh
 
+  // '' Helper function for mock takeover
+  const mockTakeover = () => 'redirected'
+
+  // '' Helper function for mock code
+  const mockCode = () => ({
+    takeover: vi.fn(mockTakeover)
+  })
+
+  // '' Helper function for mock redirect
+  const mockRedirect = () => ({
+    code: vi.fn(mockCode)
+  })
+
   beforeEach(() => {
     mockRequest = {
       query: {},
@@ -22,11 +35,7 @@ describe('locationNotFoundController - welsh', () => {
       }
     }
     mockH = {
-      redirect: vi.fn(() => ({
-        code: vi.fn(() => ({
-          takeover: vi.fn(() => 'redirected')
-        }))
-      })),
+      redirect: vi.fn(mockRedirect),
       view: vi.fn(() => 'view rendered')
     }
   })
