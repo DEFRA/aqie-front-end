@@ -69,7 +69,7 @@ describe('context and cache', () => {
               href: '/about'
             }
           ],
-          serviceName: 'aqie-front-end',
+          serviceName: 'Check air quality',
           serviceUrl: '/'
         })
       })
@@ -189,7 +189,7 @@ describe('context and cache', () => {
               href: '/about'
             }
           ],
-          serviceName: 'aqie-front-end',
+          serviceName: 'Check air quality',
           serviceUrl: '/'
         })
       })

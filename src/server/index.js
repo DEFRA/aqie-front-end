@@ -9,6 +9,7 @@ import { catchAll } from './common/helpers/errors.js'
 import { secureContext } from './common/helpers/secure-context/index.js'
 import hapiCookie from '@hapi/cookie'
 import { getCacheEngine } from './common/helpers/session-cache/cache-engine.js'
+import { sessionCache } from './common/helpers/session-cache/session-cache.js'
 import { setupProxy } from './common/helpers/proxy/setup-proxy.js'
 import { pulse } from './common/helpers/pulse.js'
 import { requestTracing } from './common/helpers/request-tracing.js'
@@ -22,13 +23,9 @@ async function createServer() {
   try {
     setupProxy()
     logger.info('Proxy setup completed')
-    logger.info(
-      `Cache engine initialized: ${config.get('session.cache.engine')}`
-    )
-
     const server = hapi.server({
-      host: config.get('host'),
       port: config.get('port'),
+      host: config.get('host'),
       routes: {
         validate: {
           options: {
@@ -71,6 +68,7 @@ async function createServer() {
       requestTracing,
       secureContext,
       pulse,
+      sessionCache,
       nunjucksConfig,
       router, // `serveStaticFiles` is already registered in the `router` plugin
       locationNotFoundCy.plugin

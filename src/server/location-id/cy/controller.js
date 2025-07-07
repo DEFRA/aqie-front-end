@@ -26,29 +26,43 @@ import { getNIData } from '../../locations/helpers/get-ni-single-data.js'
 
 const logger = createLogger()
 
+function shouldRedirectToEnglish(query) {
+  return query?.lang && query?.lang === LANG_EN && !query?.searchTerms
+}
+
+function getPreviousUrl(request) {
+  return request.headers.referer || request.headers.referrer
+}
+
+function buildRedirectUrl(currentUrl) {
+  const { searchTerms, secondSearchTerm, searchTermsLocationType } =
+    getSearchTermsFromUrl(currentUrl)
+  return `/lleoliad?lang=cy&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}`
+}
+
+function getLocationType(locationData) {
+  return locationData.locationType === LOCATION_TYPE_UK
+    ? LOCATION_TYPE_UK
+    : LOCATION_TYPE_NI
+}
+
 const getLocationDetailsController = {
   handler: async (request, h) => {
     try {
-      const { query, headers } = request
+      const { query } = request
       const locationId = request.params.id
       const searchTermsSaved = request.yar.get('searchTermsSaved')
 
-      if (query?.lang && query?.lang === LANG_EN && !query?.searchTerms) {
+      if (shouldRedirectToEnglish(query)) {
         return h.redirect(`/location/${locationId}/?lang=en`)
       }
       // Get the previous URL hit by the user from the referer header
-      const previousUrl = headers.referer || headers.referrer
+      const previousUrl = getPreviousUrl(request)
       const currentUrl = request.url.href
 
       if (previousUrl === undefined && !searchTermsSaved) {
-        const { searchTerms, secondSearchTerm, searchTermsLocationType } =
-          getSearchTermsFromUrl(currentUrl)
         request.yar.clear('locationData')
-        return h
-          .redirect(
-            `/lleoliad?lang=cy&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}`
-          )
-          .takeover()
+        return h.redirect(buildRedirectUrl(currentUrl)).takeover()
       }
       request.yar.clear('searchTermsSaved')
       const lang = LANG_CY
@@ -68,10 +82,7 @@ const getLocationDetailsController = {
       } = welsh
       const locationData = request.yar.get('locationData') || []
       const { getForecasts, getMeasurements } = locationData
-      const locationType =
-        locationData.locationType === LOCATION_TYPE_UK
-          ? LOCATION_TYPE_UK
-          : LOCATION_TYPE_NI
+      const locationType = getLocationType(locationData)
       let distance
       if (locationData.locationType === LOCATION_TYPE_NI) {
         distance = getNearestLocation(

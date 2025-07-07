@@ -1,23 +1,22 @@
 {% extends "govuk/template.njk" %}
 
-{% from "heading/macro.njk" import appHeading %}
-{% from "back-link/macro.njk" import govukBackLink %}
-{% from "phase-banner/macro.njk" import govukPhaseBanner %}
-{% from "search/macro.njk" import appSearch -%}
-{% from "error-summary/macro.njk" import govukErrorSummary %}
-{% from "button/macro.njk" import govukButton -%}
-{% from "table/macro.njk" import govukTable -%}
-{% from "inset-text/macro.njk" import govukInsetText -%}
-{% from "details/macro.njk" import govukDetails -%}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/button/macro.njk" import govukButton -%}
+{% from "govuk/components/table/macro.njk" import govukTable -%}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText -%}
+{% from "govuk/components/details/macro.njk" import govukDetails -%}
+{% from "govuk/components/input/macro.njk" import govukInput -%}
+{% from "govuk/components/radios/macro.njk" import govukRadios -%}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "govuk/components/cookie-banner/macro.njk" import govukCookieBanner %}
+{% from "tabs/macro.njk" import govukTabs %}
 {% from "pollutant/macro.njk" import appPollutant %}
-{% from "toggletip/macro.njk" import toggletip %}
-{% from "input/macro.njk" import govukInput -%}
-{% from "radios/macro.njk" import govukRadios -%}
-{% from "notification-banner/macro.njk" import govukNotificationBanner %}
-{% from "cookie-banner/macro.njk" import govukCookieBanner %}
+{% from "search/macro.njk" import appSearch -%}
 {% from "language-toggle/macro.njk" import dwpLanguageToggle %}
 {% from "footer/macro.njk" import govukFooterWelsh %}
-{% from "tabs/macro.njk" import govukTabs %}
+{% from "heading/macro.njk" import appHeading %}
 
 {% set metaTitle = (pageTitle or 'Check air quality - GOV.UK') %}
 {% set metaDescription = description | default('Check air quality in your local area and the air pollution forecast for the next 5 days. Also, get health advice to reduce your exposure to pollutants.') %}
@@ -167,7 +166,23 @@
 {% endblock %}
 
 {% block content %}
-
+  {{ govukTabs({
+    id: "example-tabs",
+    items: [
+      {
+        label: "Tab 1",
+        panel: {
+          html: "<p>Content for Tab 1</p>"
+        }
+      },
+      {
+        label: "Tab 2",
+        panel: {
+          html: "<p>Content for Tab 2</p>"
+        }
+      }
+    ]
+  }) }}
 {% endblock %}
 
 {% block footer %}
