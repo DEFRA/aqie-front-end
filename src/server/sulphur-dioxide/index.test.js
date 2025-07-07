@@ -23,8 +23,8 @@ describe('sulphurDioxide index plugin - en', () => {
   test('should register sulphurDioxide route', () => {
     const routes = server.table()
     const sulphurDioxideRoute = routes.find(
-      (routes) =>
-        routes.path === '/pollutants/sulphur-dioxide' && routes.method === 'get'
+      (route) =>
+        route.path === '/pollutants/sulphur-dioxide' && route.method === 'get'
     )
     expect(sulphurDioxideRoute).toBeDefined()
     expect(sulphurDioxideRoute.settings.handler).toBe(

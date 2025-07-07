@@ -28,12 +28,11 @@ import { health } from './health/index.js'
 import { multipleResults } from './multiple-results/index.js'
 import { multipleResultsCy } from './multiple-results/cy/index.js'
 import { locationNotFound } from './location-not-found/index.js'
-import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { createLogger } from './common/helpers/logging/logger.js'
+import { SERVER_DIRNAME } from './data/constants.js'
 
 const logger = createLogger()
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const router = {
   plugin: {
@@ -85,7 +84,7 @@ const router = {
         path: '/.well-known/{param*}',
         handler: {
           directory: {
-            path: path.resolve(__dirname, '../../.public/.well-known'),
+            path: path.resolve(SERVER_DIRNAME, '../../.public/.well-known'),
             redirectToSlash: true,
             index: true
           }
@@ -102,7 +101,7 @@ const router = {
           path: '/public/{param*}',
           handler: {
             directory: {
-              path: path.resolve(__dirname, '../../public'),
+              path: path.resolve(SERVER_DIRNAME, '../../public'),
               redirectToSlash: true,
               index: true
             }

@@ -1,3 +1,6 @@
+import { fileURLToPath } from 'node:url'
+import path from 'node:path'
+
 export const WELSH_TITLE = 'Gwirio ansawdd aer'
 export const LOCATION_TYPE_UK = 'uk-location'
 export const LOCATION_TYPE_NI = 'ni-location'
@@ -79,3 +82,6 @@ export const SAMPLE_LOCATION_NAME = 'Sample Location'
 export const HTTP_STATUS_OK = 200
 export const MINUTES_IN_HALF_HOUR = 30
 export const REFRESH_INTERVAL_MS = MINUTES_IN_HALF_HOUR * 60 * 1000
+
+// '' - Constant for the server directory name
+export const SERVER_DIRNAME = path.dirname(fileURLToPath(import.meta.url))
