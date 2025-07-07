@@ -12,6 +12,7 @@ export function buildRedisClient(redisConfig) {
   const logger = createLogger()
   const port = 6379
   const db = 0
+  const keyPrefix = redisConfig.keyPrefix
   const host = redisConfig.host
   let redisClient
 
@@ -24,18 +25,15 @@ export function buildRedisClient(redisConfig) {
         }
   const tls = redisConfig.useTLS ? { tls: {} } : {}
 
-  // Extract common Redis client configuration options
-  const commonRedisOptions = {
-    port,
-    host,
-    db,
-    enableReadyCheck: false, // Disable ready check
-    ...credentials,
-    ...tls
-  }
-
   if (redisConfig.useSingleInstanceCache) {
-    redisClient = new Redis(commonRedisOptions)
+    redisClient = new Redis({
+      port,
+      host,
+      db,
+      keyPrefix,
+      ...credentials,
+      ...tls
+    })
   } else {
     redisClient = new Cluster(
       [
@@ -45,9 +43,14 @@ export function buildRedisClient(redisConfig) {
         }
       ],
       {
+        keyPrefix,
         slotsRefreshTimeout: 10000,
         dnsLookup: (address, callback) => callback(null, address),
-        redisOptions: commonRedisOptions
+        redisOptions: {
+          db,
+          ...credentials,
+          ...tls
+        }
       }
     )
   }

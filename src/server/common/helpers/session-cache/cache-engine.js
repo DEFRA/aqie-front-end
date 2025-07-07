@@ -1,18 +1,10 @@
-import { buildRedisClient } from '../redis-client.js'
-import { config } from '../../../../config/index.js'
 import { Engine as CatboxRedis } from '@hapi/catbox-redis'
 import { Engine as CatboxMemory } from '@hapi/catbox-memory'
 
 import { createLogger } from '../logging/logger.js'
+import { buildRedisClient } from '../redis-client.js'
+import { config } from '../../../../config/index.js'
 
-/**
- * @typedef {'redis' | 'memory'} Engine
- */
-
-/**
- * @param {Engine} [engine]
- * @returns CatboxRedis | CatboxMemory
- */
 export function getCacheEngine(engine) {
   const logger = createLogger()
 
@@ -29,7 +21,5 @@ export function getCacheEngine(engine) {
   }
 
   logger.info('Using Catbox Memory session cache')
-  return new CatboxMemory({
-    maxSize: 1000 // Example configuration
-  })
+  return new CatboxMemory()
 }

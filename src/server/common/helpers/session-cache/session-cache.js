@@ -1,11 +1,11 @@
 import yar from '@hapi/yar'
+
 import { config } from '../../../../config/index.js'
 
 const sessionConfig = config.get('session')
 
 /**
  * Set options.maxCookieSize to 0 to always use server-side storage
- * @satisfies {ServerRegisterPluginObject<YarOptions>}
  */
 export const sessionCache = {
   plugin: yar,
@@ -23,37 +23,5 @@ export const sessionCache = {
       isSecure: config.get('session.cookie.secure'),
       clearInvalid: true
     }
-  }
-}
-
-/**
- * @import { ServerRegisterPluginObject } from '@hapi/hapi'
- * @import { YarOptions } from '@hapi/yar'
- */
-
-// Ensure @hapi/yar plugin is registered only once
-export async function registerSessionCache(server, logger) {
-  if (!server.plugins.yar) {
-    logger.info('Registering @hapi/yar plugin in session-cache')
-    await server.register({
-      plugin: yar,
-      options: {
-        name: sessionConfig.cache.name,
-        cache: {
-          cache: sessionConfig.cache.name,
-          expiresIn: sessionConfig.cache.ttl
-        },
-        storeBlank: false,
-        errorOnCacheNotReady: true,
-        cookieOptions: {
-          password: sessionConfig.cookie.password,
-          ttl: sessionConfig.cookie.ttl,
-          isSecure: config.get('session.cookie.secure'),
-          clearInvalid: true
-        }
-      }
-    })
-  } else {
-    logger.info('@hapi/yar plugin already registered in session-cache')
   }
 }
