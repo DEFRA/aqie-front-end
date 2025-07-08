@@ -9,7 +9,7 @@ function searchTermsAndUnitary(
 ) {
   const normalizeString = (str) => str?.toUpperCase().replace(/\s+/g, '')
   if (name2) {
-    if (secondSearchTerm === 'UNDEFINED') {
+    if (secondSearchTerm === 'UNDEFINED' || secondSearchTerm === '') {
       return (
         name2?.includes(normalizeString(searchTerms)) &&
         normalizeString(searchTerms).includes(name2)
@@ -24,7 +24,7 @@ function searchTermsAndUnitary(
       )
     }
   }
-  if (secondSearchTerm === 'UNDEFINED') {
+  if (secondSearchTerm === 'UNDEFINED' || secondSearchTerm === '') {
     return (
       name1?.includes(normalizeString(searchTerms)) &&
       normalizeString(searchTerms).includes(name1)
