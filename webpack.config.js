@@ -37,15 +37,15 @@ export default {
     filename:
       NODE_ENV === 'production'
         ? 'javascripts/[name].[contenthash:7].min.js'
-        : 'javascripts/[name].[contenthash:7].js',
+        : 'javascripts/[name].js',
 
     chunkFilename:
       NODE_ENV === 'production'
-        ? 'javascripts/[name].[contenthash:7].min.js'
-        : 'javascripts/[name].[contenthash:7].js',
+        ? 'javascripts/[name].[chunkhash:7].min.js'
+        : 'javascripts/[name].js',
 
     path: path.join(dirname, '.public'),
-    publicPath: '/public/', // Reverted to original publicPath
+    publicPath: '/public/',
     libraryTarget: 'module',
     module: true
   },
@@ -83,7 +83,7 @@ export default {
           filename:
             NODE_ENV === 'production'
               ? 'stylesheets/[name].[contenthash:7].min.css'
-              : 'stylesheets/[name].[contenthash:7].css'
+              : 'stylesheets/[name].css'
         },
         use: [
           'postcss-loader',
@@ -92,7 +92,7 @@ export default {
             options: {
               sassOptions: {
                 loadPaths: [
-                  path.join(dirname, 'src/client/assets/stylesheets'),
+                  path.join(dirname, 'src/client/stylesheets'),
                   path.join(dirname, 'src/server/common/components'),
                   path.join(dirname, 'src/server/common/templates/partials')
                 ],
@@ -162,24 +162,8 @@ export default {
     new CopyPlugin({
       patterns: [
         {
-          from: path.join(dirname, 'src/client/assets/.well-known'),
-          to: '.well-known'
-        },
-        {
           from: path.join(govukFrontendPath, 'dist/govuk/assets'),
           to: 'assets'
-        },
-        {
-          from: path.join(dirname, 'src/client/assets/stylesheets'),
-          to: 'stylesheets'
-        },
-        {
-          from: path.join(dirname, 'src/client/assets/images/favicon.svg'),
-          to: 'images/favicon.svg'
-        },
-        {
-          from: path.join(dirname, 'src/client/assets/images/favicon.ico'),
-          to: 'images/favicon.ico'
         }
       ]
     })
@@ -187,8 +171,7 @@ export default {
   stats: {
     errorDetails: true,
     loggingDebug: ['sass-loader'],
-    preset: 'minimal',
-    warnings: false // Suppress warnings
+    preset: 'minimal'
   },
   target: 'browserslist:javascripts'
 }
