@@ -34,8 +34,22 @@ jobs:
           npm run build:frontend
           npm test
 
+      - name: Fetch main branch
+        run: git fetch origin main:refs/remotes/origin/main || true
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5.2.0 #  (or check latest version on https://github.com/marketplace/actions/official-sonarqube-scan)
+        with:
+          projectBaseDir: .
+          args: >
+            -Dsonar.projectKey=DEFRA_aqie-front-end
+            -Dsonar.organization=defra
+            -Dsonar.sources=src/
+            -Dsonar.exclusions=src/**/*.test.js,src/server/common/**,src/client/**
+            -Dsonar.tests=src/
+            -Dsonar.test.inclusions=src/**/*.test.js
+            -Dsonar.test.exclusions=src/server/common/**,src/client/**
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
