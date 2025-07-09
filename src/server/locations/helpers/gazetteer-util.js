@@ -1,4 +1,4 @@
-import { formatUKPostcode } from '../../../server/locations/helpers/convert-string'
+import { formatUKPostcode } from './convert-string.js' // Adjusted import path for ESM with .js extension
 
 const gazetteerEntryFilter = (locationDetails) => {
   let title = ''
