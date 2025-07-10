@@ -124,14 +124,14 @@ const getLocationDetailsController = {
         const { airQuality } = airQualityValues(forecastNum, lang)
 
         logger.info(
-          `Before Session (yar) size in MB: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
+          `Before Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
         )
         // Replace the large getForecasts with a single-record version
         locationData.getForecasts = nearestLocation
         // Save the updated locationData back into session
         request.yar.set('locationData', locationData)
         logger.info(
-          `After Session (yar) size in MB: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
+          `After Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
         )
 
         return h.view('locations/location', {
