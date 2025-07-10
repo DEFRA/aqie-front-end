@@ -24,6 +24,7 @@ import { getNearestLocation } from '~/src/server/locations/helpers/get-nearest-l
 import { getIdMatch } from '~/src/server/locations/helpers/get-id-match'
 import { getNIData } from '~/src/server/locations/helpers/get-ni-single-data'
 import { compareLastElements } from '~/src/server/locations/helpers/convert-string'
+import sizeof from 'object-sizeof'
 
 const logger = createLogger()
 
@@ -101,14 +102,15 @@ const getLocationDetailsController = {
         locationType,
         indexNI
       )
-      const { forecastNum, nearestLocationsRange } = getNearestLocation(
-        locationData?.results,
-        getForecasts,
-        getMeasurements,
-        locationType,
-        locationIndex,
-        lang
-      )
+      const { forecastNum, nearestLocationsRange, nearestLocation } =
+        getNearestLocation(
+          locationData?.results,
+          getForecasts,
+          getMeasurements,
+          locationType,
+          locationIndex,
+          lang
+        )
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
         title = convertFirstLetterIntoUppercase(title)
@@ -118,6 +120,18 @@ const getLocationDetailsController = {
           lang
         )
         const { airQuality } = airQualityValues(forecastNum, lang)
+
+        logger.info(
+          `Before Session (yar) size in MB: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
+        )
+        // Replace the large getForecasts with a single-record version
+        locationData.getForecasts = nearestLocation
+        // Save the updated locationData back into session
+        request.yar.set('locationData', locationData)
+        logger.info(
+          `After Session (yar) size in MB: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
+        )
+
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,
