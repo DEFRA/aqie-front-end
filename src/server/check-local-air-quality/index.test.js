@@ -1,5 +1,5 @@
 import { home } from './index'
-import { vi } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 
 describe('home index plugin', () => {
   const server = {

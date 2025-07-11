@@ -1,6 +1,7 @@
-import { pollutantTypes, siteTypeDescriptions } from './monitoring-sites.js'
 import { vi } from 'vitest'
+import { pollutantTypes, siteTypeDescriptions } from './monitoring-sites.js'
 
+// Mock the monitoring-sites.js module using the imported constant
 vi.mock('./monitoring-sites.js', () => ({
   pollutantTypes: {
     NO2: {
@@ -23,11 +24,7 @@ vi.mock('./monitoring-sites.js', () => ({
       href: '/pollutants/particulate-matter-25',
       low_range: '0 to 35'
     },
-    O3: {
-      title: 'Ozone',
-      href: '/pollutants/ozone',
-      low_range: '0 to 100'
-    },
+    O3: { title: 'Ozone', href: '/pollutants/ozone', low_range: '0 to 100' },
     SO2: {
       title: 'Sulphur dioxide',
       href: '/pollutants/sulphur-dioxide',

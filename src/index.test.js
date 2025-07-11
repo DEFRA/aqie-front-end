@@ -2,6 +2,7 @@ import process from 'node:process'
 
 import { startServer } from './server/common/helpers/start-server.js'
 import { createLogger } from './server/common/helpers/logging/logger.js'
+import { vi } from 'vitest'
 
 describe('Server Initialization', () => {
   let server

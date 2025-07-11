@@ -2,6 +2,7 @@ import { cookiesController, cookiesHandler } from './controller.js'
 import { welsh } from '../../data/cy/cy.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 import { createMockH } from '../../locations/helpers/error-input-and-redirect-helpers.test.js'
+import { vi } from 'vitest'
 
 describe('Cookies Handler', () => {
   let mockRequest

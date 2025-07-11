@@ -1,4 +1,5 @@
 import { cookies } from './index'
+import { vi } from 'vitest'
 
 describe('cookies index plugin - en', () => {
   const server = {

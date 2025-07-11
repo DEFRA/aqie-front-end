@@ -2,6 +2,7 @@
 import { homeController, handleHomeRequest } from './controller.js'
 import { welsh } from '../../data/cy/cy.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
+import { vi } from 'vitest' // Import vi from Vitest for mocking
 
 describe('Home Controller', () => {
   let mockRequest

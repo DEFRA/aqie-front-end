@@ -4,6 +4,7 @@ import {
   LOCATION_NOT_FOUND,
   LOCATION_NOT_FOUND_ROUTE_CY
 } from '../data/constants.js'
+import { vi } from 'vitest'
 
 describe('locationNotFoundController - english', () => {
   let mockRequest
