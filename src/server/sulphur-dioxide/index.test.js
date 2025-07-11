@@ -1,4 +1,3 @@
-/* global vi */
 import { sulphurDioxideController } from './controller.js'
 import { sulphurDioxide } from './index'
 import Hapi from '@hapi/hapi'

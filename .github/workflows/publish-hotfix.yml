@@ -20,7 +20,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Depth 0 is required for branch-based versioning
+          fetch-depth: 0
 
       - name: Test code and Create Test Coverage Reports
         uses: actions/setup-node@v4

@@ -1,38 +1,15 @@
-import { pollutantTypes, siteTypeDescriptions } from './monitoring-sites.js'
 import { vi } from 'vitest'
+import { pollutantTypes, siteTypeDescriptions } from './monitoring-sites.js'
 
+// Mock the monitoring-sites.js module using the imported constant
 vi.mock('./monitoring-sites.js', () => ({
   pollutantTypes: {
-    NO2: {
-      title: 'Nitrogen dioxide',
-      href: '/pollutants/nitrogen-dioxide',
-      low_range: '0 to 200'
-    },
-    MP10: {
-      title: 'PM10',
-      href: '/pollutants/particulate-matter-10',
-      low_range: '0 to 50'
-    },
-    GE10: {
-      title: 'PM10',
-      href: '/pollutants/particulate-matter-10',
-      low_range: '0 to 50'
-    },
-    PM25: {
-      title: 'PM2.5',
-      href: '/pollutants/particulate-matter-25',
-      low_range: '0 to 35'
-    },
-    O3: {
-      title: 'Ozone',
-      href: '/pollutants/ozone',
-      low_range: '0 to 100'
-    },
-    SO2: {
-      title: 'Sulphur dioxide',
-      href: '/pollutants/sulphur-dioxide',
-      low_range: '0 to 100'
-    }
+    NO2: { title: 'Nitrogen dioxide', href: '/pollutants/nitrogen-dioxide', low_range: '0 to 200' },
+    MP10: { title: 'PM10', href: '/pollutants/particulate-matter-10', low_range: '0 to 50' },
+    GE10: { title: 'PM10', href: '/pollutants/particulate-matter-10', low_range: '0 to 50' },
+    PM25: { title: 'PM2.5', href: '/pollutants/particulate-matter-25', low_range: '0 to 35' },
+    O3: { title: 'Ozone', href: '/pollutants/ozone', low_range: '0 to 100' },
+    SO2: { title: 'Sulphur dioxide', href: '/pollutants/sulphur-dioxide', low_range: '0 to 100' }
   },
   siteTypeDescriptions: {
     'Background Urban':
