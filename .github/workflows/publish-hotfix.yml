@@ -57,7 +57,7 @@ jobs:
 
       # Step 5: Run tests and generate coverage report
       - name: Run tests
-        run: npm test -- --coverage
+        run: npm test
 
       # Step 6: Fetch main branch
       - name: Fetch main branch
