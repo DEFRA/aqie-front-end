@@ -74,7 +74,7 @@ jobs:
             -Dsonar.projectKey=DEFRA_aqie-front-end
             -Dsonar.organization=defra
             -Dsonar.sources=src/
-            -Dsonar.exclusions=src/**/*.test.js,src/server/common/**,src/client/**
+            -Dsonar.exclusions=src/server/common/**,src/client/**
             -Dsonar.tests=src/
             -Dsonar.test.inclusions=src/**/*.test.js
             -Dsonar.test.exclusions=src/server/common/**,src/client/**
