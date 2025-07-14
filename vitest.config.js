@@ -22,7 +22,9 @@ export default defineConfig({
         '.public',
         'coverage',
         'postcss.config.js',
-        'stylelint.config.js'
+        'stylelint.config.js',
+        'src/src/govuk/**/*', // Ignore files inside src/src/govuk from testing
+        'src/server/common/**/*' // Ignore files inside src/server/common from testing
       ] // Exclude src/src/govuk from coverage
     }
   }
