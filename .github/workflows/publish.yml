@@ -27,6 +27,12 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
+      - name: Make apply.sh executable
+        run: chmod +x .github/template/apply.sh
+
+      - name: Run template apply script
+        run: .github/template/apply.sh DEFRA/template-frontend
+
       - name: Make template apply script executable
         run: chmod +x .github/template/apply.sh
 

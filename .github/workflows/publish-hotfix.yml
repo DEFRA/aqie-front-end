@@ -22,6 +22,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Make apply.sh executable
+        run: chmod +x .github/template/apply.sh
+
+      - name: Run template apply script
+        run: .github/template/apply.sh DEFRA/template-frontend
+
       - name: Test code and Create Test Coverage Reports
         uses: actions/setup-node@v4
         with:
