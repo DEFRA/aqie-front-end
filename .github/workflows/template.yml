@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+      - name: Make apply.sh executable
+        run: chmod +x .github/template/apply.sh
       - name: Apply template
         run: |
           .github/template/apply.sh ${{ github.repository }}
