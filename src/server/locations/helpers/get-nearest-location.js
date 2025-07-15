@@ -42,15 +42,14 @@ function getNearestLocation(
     pointsInRange(latlon, p)
   )
   const nearestLocationsRangeCal = measurements?.filter((item, i) => {
-    if (!item.location || !item.location.coordinates) {
+    if (!item.location?.coordinates) {
       return false
     }
-    const opt = pointsToDisplay.some((dis) => {
-      return (
+    const opt = pointsToDisplay.some(
+      (dis) =>
         item.location.coordinates[0] === dis.latitude &&
         item.location.coordinates[1] === dis.longitude
-      )
-    })
+    )
     return opt
   })
   // TODO select and filter locations and pollutants which are not null or don't have exceptions

@@ -7,7 +7,12 @@ import {
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI,
   LOCATION_NOT_FOUND,
-  REDIRECT_STATUS_CODE
+  REDIRECT_STATUS_CODE,
+  AIR_QUALITY_THRESHOLD_1,
+  AIR_QUALITY_THRESHOLD_2,
+  AIR_QUALITY_THRESHOLD_3,
+  AIR_QUALITY_THRESHOLD_4,
+  LANG_SLICE_LENGTH
 } from '../../data/constants.js'
 
 const logger = createLogger()
@@ -17,7 +22,7 @@ const getLocationDataController = {
     const { query, path } = request
     const tempString = request?.headers?.referer?.split('/')[3]
     const str = tempString?.split('?')[0]
-    let lang = query?.lang?.slice(0, 2)
+    let lang = query?.lang?.slice(0, LANG_SLICE_LENGTH)
     if (lang !== LANG_CY && lang !== LANG_EN && path === '/lleoliad') {
       lang = LANG_CY
     }
@@ -34,7 +39,13 @@ const getLocationDataController = {
       cookieBanner
     } = welsh
     let locationType = request?.payload?.locationType
-    const airQuality = getAirQualityCy(request.payload?.aq, 2, 4, 5, 7)
+    const airQuality = getAirQualityCy(
+      request.payload?.aq,
+      AIR_QUALITY_THRESHOLD_1,
+      AIR_QUALITY_THRESHOLD_2,
+      AIR_QUALITY_THRESHOLD_3,
+      AIR_QUALITY_THRESHOLD_4
+    )
     let locationNameOrPostcode = ''
     if (locationType === LOCATION_TYPE_UK) {
       locationNameOrPostcode = request.payload.engScoWal.trim()
