@@ -7,22 +7,126 @@ import {
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI,
   LOCATION_NOT_FOUND,
-  REDIRECT_STATUS_CODE
+  REDIRECT_STATUS_CODE,
+  AIR_QUALITY_THRESHOLD_1,
+  AIR_QUALITY_THRESHOLD_2,
+  AIR_QUALITY_THRESHOLD_3,
+  AIR_QUALITY_THRESHOLD_4,
+  LANG_SLICE_LENGTH,
+  REFERER_PATH_INDEX
 } from '../../data/constants.js'
 
 const logger = createLogger()
 
+function getLang(query, path) {
+  let lang = query?.lang?.slice(0, LANG_SLICE_LENGTH)
+  if (lang !== LANG_CY && lang !== LANG_EN && path === '/lleoliad') {
+    lang = LANG_CY
+  }
+  return lang
+}
+
+function getLocationTypeAndName(request, str) {
+  let locationType = request?.payload?.locationType
+  let locationNameOrPostcode = ''
+  if (locationType === LOCATION_TYPE_UK) {
+    locationNameOrPostcode = request.payload.engScoWal.trim()
+  } else if (locationType === LOCATION_TYPE_NI) {
+    locationNameOrPostcode = request.payload.ni
+  }
+  if (!locationType && str !== 'chwilio-lleoliad') {
+    locationType = request.yar.get('locationType')
+    locationNameOrPostcode = request.yar.get('locationNameOrPostcode')
+  } else {
+    request.yar.set('locationType', locationType)
+    request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
+  }
+  return { locationType, locationNameOrPostcode }
+}
+
+function handleRedirectIfNeeded(query, h) {
+  if (query?.lang && query?.lang === LANG_EN) {
+    return h.redirect(`/location?lang=en`).code(REDIRECT_STATUS_CODE)
+  }
+  return null
+}
+
+function handleMissingLocation(
+  locationNameOrPostcode,
+  locationType,
+  str,
+  request,
+  h
+) {
+  if (!locationNameOrPostcode && !locationType) {
+    request.yar.set('locationType', '')
+    if (str === 'chwilio-lleoliad') {
+      return h
+        .redirect(`/chwilio-lleoliad/cy?lang=cy`)
+        .code(REDIRECT_STATUS_CODE)
+    }
+  }
+  return null
+}
+
+function renderNotFoundView(
+  h,
+  {
+    notFoundLocation,
+    locationNameOrPostcode,
+    home,
+    footerTxt,
+    searchLocation,
+    phaseBanner,
+    backlink,
+    cookieBanner,
+    lang,
+    query
+  }
+) {
+  return h.view(LOCATION_NOT_FOUND, {
+    userLocation: locationNameOrPostcode,
+    pageTitle: `${notFoundLocation.paragraphs.a} ${locationNameOrPostcode} - ${home.pageTitle}`,
+    paragraph: notFoundLocation.paragraphs,
+    footerTxt,
+    serviceName: searchLocation.serviceName,
+    phaseBanner,
+    backlink,
+    cookieBanner,
+    lang: query?.lang ?? lang
+  })
+}
+
+function renderErrorView(
+  h,
+  request,
+  footerTxt,
+  phaseBanner,
+  cookieBanner,
+  welshData,
+  lang
+) {
+  return h.view('error/index', {
+    footerTxt,
+    url: request.path,
+    phaseBanner,
+    displayBacklink: false,
+    cookieBanner,
+    serviceName: welshData.multipleLocations.serviceName,
+    notFoundUrl: welshData.notFoundUrl,
+    lang
+  })
+}
+
 const getLocationDataController = {
   handler: async (request, h) => {
     const { query, path } = request
-    const tempString = request?.headers?.referer?.split('/')[3]
+    const tempString = request?.headers?.referer?.split('/')[REFERER_PATH_INDEX]
     const str = tempString?.split('?')[0]
-    let lang = query?.lang?.slice(0, 2)
-    if (lang !== LANG_CY && lang !== LANG_EN && path === '/lleoliad') {
-      lang = LANG_CY
-    }
-    if (query?.lang && query?.lang === LANG_EN) {
-      return h.redirect(`/location?lang=en`).code(REDIRECT_STATUS_CODE)
+    const lang = getLang(query, path)
+    const redirect = handleRedirectIfNeeded(query, h)
+    if (redirect) {
+      return redirect
     }
     const {
       searchLocation,
@@ -33,54 +137,54 @@ const getLocationDataController = {
       home,
       cookieBanner
     } = welsh
-    let locationType = request?.payload?.locationType
-    const airQuality = getAirQualityCy(request.payload?.aq, 2, 4, 5, 7)
-    let locationNameOrPostcode = ''
-    if (locationType === LOCATION_TYPE_UK) {
-      locationNameOrPostcode = request.payload.engScoWal.trim()
-    } else if (locationType === LOCATION_TYPE_NI) {
-      locationNameOrPostcode = request.payload.ni
-    }
-    if (!locationType && str !== 'chwilio-lleoliad') {
-      locationType = request.yar.get('locationType')
-      locationNameOrPostcode = request.yar.get('locationNameOrPostcode')
-    } else {
-      request.yar.set('locationType', locationType)
-      request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
+    const airQuality = getAirQualityCy(
+      request.payload?.aq,
+      AIR_QUALITY_THRESHOLD_1,
+      AIR_QUALITY_THRESHOLD_2,
+      AIR_QUALITY_THRESHOLD_3,
+      AIR_QUALITY_THRESHOLD_4
+    )
+    const { locationType, locationNameOrPostcode } = getLocationTypeAndName(
+      request,
+      str
+    )
+    if (!request.yar.get('airQuality')) {
       request.yar.set('airQuality', airQuality)
     }
-    if (!locationNameOrPostcode && !locationType) {
-      request.yar.set('locationType', '')
-      if (str === 'chwilio-lleoliad') {
-        return h
-          .redirect(`/chwilio-lleoliad/cy?lang=cy`)
-          .code(REDIRECT_STATUS_CODE)
-      }
+    const missingLocationRedirect = handleMissingLocation(
+      locationNameOrPostcode,
+      locationType,
+      str,
+      request,
+      h
+    )
+    if (missingLocationRedirect) {
+      return missingLocationRedirect
     }
     try {
-      return h.view(LOCATION_NOT_FOUND, {
-        userLocation: locationNameOrPostcode,
-        pageTitle: `${notFoundLocation.paragraphs.a} ${locationNameOrPostcode} - ${home.pageTitle}`,
-        paragraph: notFoundLocation.paragraphs,
+      return renderNotFoundView(h, {
+        notFoundLocation,
+        locationNameOrPostcode,
+        home,
         footerTxt,
-        serviceName: searchLocation.serviceName,
+        searchLocation,
         phaseBanner,
         backlink,
         cookieBanner,
-        lang: request.query?.lang ?? lang
+        lang,
+        query
       })
     } catch (error) {
       logger.error(`error from location refresh ${error.message}`)
-      return h.view('error/index', {
+      return renderErrorView(
+        h,
+        request,
         footerTxt,
-        url: request.path,
         phaseBanner,
-        displayBacklink: false,
         cookieBanner,
-        serviceName: welsh.multipleLocations.serviceName,
-        notFoundUrl: welsh.notFoundUrl,
+        welsh,
         lang
-      })
+      )
     }
   }
 }

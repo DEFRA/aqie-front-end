@@ -8,7 +8,7 @@ import {
 } from './location-util.js'
 import { getPollutantLevel } from './pollutant-level-calculation.js'
 import { getPollutantLevelCy } from './cy/pollutant-level-calculation.js'
-import { LANG_CY } from '../../data/constants.js'
+import { LANG_CY, FORECAST_DAY_SLICE_LENGTH } from '../../data/constants.js'
 
 function getNearestLocation(
   matches,
@@ -42,15 +42,14 @@ function getNearestLocation(
     pointsInRange(latlon, p)
   )
   const nearestLocationsRangeCal = measurements?.filter((item, i) => {
-    if (!item.location || !item.location.coordinates) {
+    if (!item.location?.coordinates) {
       return false
     }
-    const opt = pointsToDisplay.some((dis) => {
-      return (
+    const opt = pointsToDisplay.some(
+      (dis) =>
         item.location.coordinates[0] === dis.latitude &&
         item.location.coordinates[1] === dis.longitude
-      )
-    })
+    )
     return opt
   })
   // TODO select and filter locations and pollutants which are not null or don't have exceptions
@@ -126,7 +125,10 @@ function getNearestLocation(
     []
   )
   const forecastDay =
-    moment.tz('Europe/London')?.format('dddd')?.substring(0, 3) || ''
+    moment
+      .tz('Europe/London')
+      ?.format('dddd')
+      ?.substring(0, FORECAST_DAY_SLICE_LENGTH) || ''
   const forecastNum =
     matches.length !== 0
       ? nearestLocation.map((current) => {

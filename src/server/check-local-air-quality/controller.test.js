@@ -1,6 +1,7 @@
 import { homeController, handleHomeRequest } from './controller.js'
 import { english } from '../data/en/en.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
+import { vi } from 'vitest'
 
 describe('Home Controller', () => {
   let mockRequest

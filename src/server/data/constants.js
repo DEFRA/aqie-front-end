@@ -1,5 +1,8 @@
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
+export const REFERER_PATH_INDEX = 3
+export const FORECAST_DAY_SLICE_LENGTH = 3
+export const LANG_SLICE_LENGTH = 2
 
 export const WELSH_TITLE = 'Gwirio ansawdd aer'
 export const LOCATION_TYPE_UK = 'uk-location'
@@ -14,15 +17,12 @@ export const MULTIPLE_LOCATIONS_ROUTE_EN = '/multiple-results?lang=en'
 export const MULTIPLE_LOCATIONS_ROUTE_CY = '/canlyniadau-lluosog/cy?lang=cy'
 export const STATUS_UNAUTHORIZED = 401
 export const STATUS_INTERNAL_SERVER_ERROR = 500
-export const AIR_QUALITY_THRESHOLD_1 = 2
-export const AIR_QUALITY_THRESHOLD_2 = 4
-export const AIR_QUALITY_THRESHOLD_3 = 5
-export const AIR_QUALITY_THRESHOLD_4 = 7
 export const REDIRECT_PATH_EN = '/search-location?lang=en'
 export const REDIRECT_PATH_CY = 'chwilio-lleoliad/cy?lang=cy'
 export const POSTCODE_SPACE_INDEX = 3
 export const LOCATION_NOT_FOUND_URL = '/location-not-found'
 export const WRONG_POSTCODE = 'wrong postcode'
+export const GOVUK_SRC_EXCLUDE = 'src/src/govuk/**/*'
 export const SYMBOLS_ARRAY = [
   '%',
   '$',
@@ -82,6 +82,10 @@ export const SAMPLE_LOCATION_NAME = 'Sample Location'
 export const HTTP_STATUS_OK = 200
 export const MINUTES_IN_HALF_HOUR = 30
 export const REFRESH_INTERVAL_MS = MINUTES_IN_HALF_HOUR * 60 * 1000
+export const AIR_QUALITY_THRESHOLD_1 = 1
+export const AIR_QUALITY_THRESHOLD_2 = 2
+export const AIR_QUALITY_THRESHOLD_3 = 3
+export const AIR_QUALITY_THRESHOLD_4 = 4
 
 // '' - Constant for the server directory name
 export const SERVER_DIRNAME = path.dirname(fileURLToPath(import.meta.url))

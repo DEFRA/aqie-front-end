@@ -1,4 +1,5 @@
 import { defineConfig, configDefaults } from 'vitest/config'
+import { GOVUK_SRC_EXCLUDE } from './src/server/data/constants.js'
 
 export default defineConfig({
   test: {
@@ -8,21 +9,23 @@ export default defineConfig({
     threads: false, // Disable worker threads to avoid EPERM errors
     exclude: [
       ...configDefaults.exclude,
-      'src/src/govuk/**/*', // Ignore files inside src/src/govuk from testing
+      GOVUK_SRC_EXCLUDE, // Ignore files inside src/src/govuk from testing
       'src/server/common/**/*' // Ignore files inside src/server/common from testing
     ],
     coverage: {
       provider: 'v8',
       reportsDirectory: './coverage',
       reporter: ['text', 'lcov'], // Display coverage in the terminal and generate an HTML report
-      all: false, // Include all files in the coverage report
       include: ['src/**'],
       exclude: [
-        'src/src/govuk/**/*',
+        GOVUK_SRC_EXCLUDE,
         '.public',
         'coverage',
         'postcss.config.js',
-        'stylelint.config.js'
+        'stylelint.config.js',
+        GOVUK_SRC_EXCLUDE, // Ignore files inside src/src/govuk from testing
+        'src/server/common/**/*', // Ignore files inside src/server/common from testing
+        'src/client/**'
       ] // Exclude src/src/govuk from coverage
     }
   }

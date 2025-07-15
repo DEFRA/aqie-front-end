@@ -1,6 +1,5 @@
 import path from 'node:path'
 import { config } from '../../../config/index.js'
-import { statusCodes } from '../constants/status-codes.js'
 
 // ''
 // Serve favicon.ico and favicon.svg from the correct build output location
@@ -104,4 +103,3 @@ export const serveStaticFiles = {
     }
   }
 }
-;('')

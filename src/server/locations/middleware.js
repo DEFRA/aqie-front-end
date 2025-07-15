@@ -48,16 +48,13 @@ const processUKLocationType = (request, h, redirectError, options = {}) => {
     searchTerms,
     secondSearchTerm,
     getOSPlaces,
-    airQualityData,
     getDailySummary,
     getForecasts,
     getMeasurements,
     transformedDailySummary,
-    calendarWelsh,
     englishDate,
     welshDate,
-    month,
-    english
+    month
   } = options
 
   const locationType = redirectError.locationType
@@ -174,7 +171,8 @@ const processLocationData = async (
   searchTerms,
   secondSearchTerm
 ) => {
-  return await fetchData(request, {
+  // '' Return the promise directly to avoid redundant await
+  return fetchData(request, {
     locationType: redirectError.locationType,
     userLocation,
     searchTerms,
