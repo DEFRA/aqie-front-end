@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Test code and Create Test Coverage Reports
         uses: actions/setup-node@v4
@@ -37,6 +39,9 @@ jobs:
           set +e
           docker build --no-cache --tag aqie-front-end .
           exit $?
+
+      - name: Fetch main branch for SonarCloud PR analysis
+        run: git fetch --no-tags --prune --depth=1 origin +refs/heads/main:refs/remotes/origin/main
 
       - name: SonarCloud Scan
         if: github.actor != 'dependabot[bot]'

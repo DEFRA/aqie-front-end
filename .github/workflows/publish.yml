@@ -22,6 +22,8 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Build and Publish
         uses: DEFRA/cdp-build-action/build@main
@@ -33,6 +35,9 @@ jobs:
           npm ci
           npm run build:frontend
           npm test
+
+      - name: Fetch main branch for SonarCloud PR analysis
+        run: git fetch --no-tags --prune --depth=1 origin +refs/heads/main:refs/remotes/origin/main
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5.2.0 #  (or check latest version on https://github.com/marketplace/actions/official-sonarqube-scan)
