@@ -18,21 +18,13 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-      - name: Ensure apply.sh has correct line endings and permissions
+      - name: Ensure apply.sh has correct line endings
         run: |
           sed -i 's/\r$//' .github/template/apply.sh
-          chmod +x .github/template/apply.sh
-          head -1 .github/template/apply.sh | grep -q '#!/bin/bash'
-      - name: Make template scripts executable
-        run: |
-          chmod +x .github/template/apply.sh
-          chmod +x .github/template/cleanup.sh
       - name: Apply template
-        run: |
-          bash .github/template/apply.sh ${{ github.repository }}
+        run: bash .github/template/apply.sh ${{ github.repository }}
       - name: Cleanup
-        run: |
-          bash .github/template/cleanup.sh
+        run: bash .github/template/cleanup.sh
       - name: Commit and push changes
         run: |
           git config --global user.name 'GitHub Actions'
