@@ -8,7 +8,7 @@ import {
 } from './location-util.js'
 import { getPollutantLevel } from './pollutant-level-calculation.js'
 import { getPollutantLevelCy } from './cy/pollutant-level-calculation.js'
-import { LANG_CY } from '../../data/constants.js'
+import { LANG_CY, FORECAST_DAY_SLICE_LENGTH } from '../../data/constants.js'
 
 function getNearestLocation(
   matches,
@@ -125,7 +125,10 @@ function getNearestLocation(
     []
   )
   const forecastDay =
-    moment.tz('Europe/London')?.format('dddd')?.substring(0, 3) || ''
+    moment
+      .tz('Europe/London')
+      ?.format('dddd')
+      ?.substring(0, FORECAST_DAY_SLICE_LENGTH) || ''
   const forecastNum =
     matches.length !== 0
       ? nearestLocation.map((current) => {
