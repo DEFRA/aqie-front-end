@@ -26,9 +26,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: List template directory
-        run: ls -l .github/template/
-
       # Step 2: Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
