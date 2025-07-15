@@ -11,77 +11,36 @@ on:
       - reopened
       - synchronize
       - ready_for_review
-  push:
-    branches:
-      - main
 
 jobs:
-  ci-pipeline:
-    name: CI Pipeline
+  pr-validator:
+    name: Run Pull Request Checks
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Checkout the code
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      # Step 2: Set up Node.js
-      - name: Set up Node.js
+      - name: Test code and Create Test Coverage Reports
         uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: npm
+      - run: |
+          npm ci
+          npm run build:frontend
+          npm run format:check
+          npm run lint
+          npm test
 
-      # Step 3: Install dependencies
-      - name: Install dependencies
-        run: npm ci
-
-      # Step 4: Build frontend
-      - name: Build frontend
-        run: npm run build:frontend
-
-      # Step 5: Format check
-      - name: Format check
-        run: npm run format:check
-
-      # Step 6: Lint
-      - name: Lint
-        run: npm run lint
-
-      # Step 7: Run tests and generate coverage report
-      - name: Run tests
-        run: npm test
-
-      # Step 8: Test Docker Image Build
       - name: Test Docker Image Build
         run: |
           set +e
           docker build --no-cache --tag aqie-front-end .
           exit $?
 
-      # Step 9: Fetch main branch
-      - name: Fetch main branch
-        run: git fetch origin main:refs/remotes/origin/main || true
-
-      # Step 10: SonarCloud Scan
       - name: SonarCloud Scan
         if: github.actor != 'dependabot[bot]'
-        uses: SonarSource/sonarqube-scan-action@v5.2.0 # (or check latest version)
-        with:
-          projectBaseDir: .
-          args: >
-            -Dsonar.projectKey=DEFRA_aqie-front-end
-            -Dsonar.organization=defra
-            -Dsonar.sources=src/
-            -Dsonar.exclusions=src/server/common/**,src/client/**
-            -Dsonar.tests=src/
-            -Dsonar.test.inclusions=src/**/*.test.js
-            -Dsonar.test.exclusions=src/server/common/**,src/client/**
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
-            -Dsonar.pullrequest.branch=${{ github.head_ref }}
-            -Dsonar.pullrequest.base=${{ github.base_ref }}
+        uses: SonarSource/sonarqube-scan-action@v5.2.0 #  (or check latest version on https://github.com/marketplace/actions/official-sonarqube-scan)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
