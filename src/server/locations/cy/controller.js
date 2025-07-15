@@ -162,9 +162,7 @@ const getLocationDataController = {
       return missingLocationRedirect
     }
     try {
-      return renderNotFoundView(
-        h,
-        {
+      return renderNotFoundView(h, {
         notFoundLocation,
         locationNameOrPostcode,
         home,
@@ -175,8 +173,7 @@ const getLocationDataController = {
         cookieBanner,
         lang,
         query
-        }
-      )
+      })
     } catch (error) {
       logger.error(`error from location refresh ${error.message}`)
       return renderErrorView(
