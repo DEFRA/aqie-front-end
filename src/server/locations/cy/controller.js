@@ -12,7 +12,8 @@ import {
   AIR_QUALITY_THRESHOLD_2,
   AIR_QUALITY_THRESHOLD_3,
   AIR_QUALITY_THRESHOLD_4,
-  LANG_SLICE_LENGTH
+  LANG_SLICE_LENGTH,
+  REFERER_PATH_INDEX
 } from '../../data/constants.js'
 
 const logger = createLogger()
@@ -119,11 +120,13 @@ function renderErrorView(
 const getLocationDataController = {
   handler: async (request, h) => {
     const { query, path } = request
-    const tempString = request?.headers?.referer?.split('/')[3]
+    const tempString = request?.headers?.referer?.split('/')[REFERER_PATH_INDEX]
     const str = tempString?.split('?')[0]
     const lang = getLang(query, path)
     const redirect = handleRedirectIfNeeded(query, h)
-    if (redirect) return redirect
+    if (redirect) {
+      return redirect
+    }
     const {
       searchLocation,
       notFoundLocation,

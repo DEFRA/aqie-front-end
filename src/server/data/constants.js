@@ -1,5 +1,6 @@
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
+export const REFERER_PATH_INDEX = 3
 export const FORECAST_DAY_SLICE_LENGTH = 3
 export const LANG_SLICE_LENGTH = 2
 
