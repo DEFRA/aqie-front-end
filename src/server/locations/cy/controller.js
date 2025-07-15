@@ -71,17 +71,18 @@ function handleMissingLocation(
 
 function renderNotFoundView(
   h,
-  LOCATION_NOT_FOUND,
-  notFoundLocation,
-  locationNameOrPostcode,
-  home,
-  footerTxt,
-  searchLocation,
-  phaseBanner,
-  backlink,
-  cookieBanner,
-  lang,
-  query
+  {
+    notFoundLocation,
+    locationNameOrPostcode,
+    home,
+    footerTxt,
+    searchLocation,
+    phaseBanner,
+    backlink,
+    cookieBanner,
+    lang,
+    query
+  }
 ) {
   return h.view(LOCATION_NOT_FOUND, {
     userLocation: locationNameOrPostcode,
@@ -102,7 +103,7 @@ function renderErrorView(
   footerTxt,
   phaseBanner,
   cookieBanner,
-  welsh,
+  welshData,
   lang
 ) {
   return h.view('error/index', {
@@ -111,8 +112,8 @@ function renderErrorView(
     phaseBanner,
     displayBacklink: false,
     cookieBanner,
-    serviceName: welsh.multipleLocations.serviceName,
-    notFoundUrl: welsh.notFoundUrl,
+    serviceName: welshData.multipleLocations.serviceName,
+    notFoundUrl: welshData.notFoundUrl,
     lang
   })
 }
@@ -157,11 +158,13 @@ const getLocationDataController = {
       request,
       h
     )
-    if (missingLocationRedirect) return missingLocationRedirect
+    if (missingLocationRedirect) {
+      return missingLocationRedirect
+    }
     try {
       return renderNotFoundView(
         h,
-        LOCATION_NOT_FOUND,
+        {
         notFoundLocation,
         locationNameOrPostcode,
         home,
@@ -172,6 +175,7 @@ const getLocationDataController = {
         cookieBanner,
         lang,
         query
+        }
       )
     } catch (error) {
       logger.error(`error from location refresh ${error.message}`)
