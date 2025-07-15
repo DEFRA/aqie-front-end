@@ -29,10 +29,10 @@ jobs:
           chmod +x .github/template/cleanup.sh
       - name: Apply template
         run: |
-          .github/template/apply.sh ${{ github.repository }}
+          bash .github/template/apply.sh ${{ github.repository }}
       - name: Cleanup
         run: |
-          .github/template/cleanup.sh
+          bash .github/template/cleanup.sh
       - name: Commit and push changes
         run: |
           git config --global user.name 'GitHub Actions'
