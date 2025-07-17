@@ -1,2 +1,8 @@
-<h1 class="govuk-heading-xl">Page Not Found</h1>
-<p class="govuk-body">The page you are looking for cannot be found. Please check the URL or return to the homepage.</p>
+<div class="govuk-grid-row app-heading not-found" data-testid="app-heading">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">{{ notFoundUrl.nonService.heading }} {{ msError }}</h1>
+  </div>
+</div>
+<p class="govuk-body">{{ notFoundUrl.nonService.paragraphs.a }}</p>
+<p class="govuk-body">{{ notFoundUrl.nonService.paragraphs.b }}</p>
+<p class="govuk-body">{{ notFoundUrl.nonService.paragraphs.c }}<a href="mailto:checklocalairquality@defra.gov.uk">{{ notFoundUrl.nonService.paragraphs.d }}</a>{{ notFoundUrl.nonService.paragraphs.e }}</p>

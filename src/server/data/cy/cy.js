@@ -80,7 +80,11 @@ export const welsh = {
         'Ni allem ddod o hyd i’r dudalen hon - Gwirio ansawdd aer - GOV.UK',
       heading: 'Ni allem ddod o hyd i’r dudalen hon',
       paragraphs: {
-        a: 'Ewch yn ôl i ansawdd aer'
+        a: 'Ewch yn ôl i ansawdd aer',
+        b: 'If you pasted the web address, check you copied the entire address.',
+        c: 'Contact the ',
+        d: 'air quality team',
+        e: ' if you continue to get this error message.'
       }
     },
     serviceAPI: {
