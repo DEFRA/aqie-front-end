@@ -29,6 +29,8 @@ const nunjucksEnvironment = nunjucks.configure(
     path.resolve(dirname, '../../server/check-local-air-quality/partials'),
     path.resolve(dirname, '../../server/common/templates/partials'),
     path.resolve(dirname, '../../server/common/templates/partials/daqi'),
+    path.resolve(dirname, '../../server/cookies/partials'),
+    path.resolve(dirname, '../../server/accessibility/partials'),
     path.resolve(dirname, '../../server/common/templates/partials/pollutants'),
     path.resolve(dirname, '../../server/error/partials'),
     path.resolve(
