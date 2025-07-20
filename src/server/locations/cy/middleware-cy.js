@@ -152,7 +152,11 @@ const searchMiddlewareCy = async (request, h) => {
       (!exactWordFirstTerm || !exactWordSecondTerm)
     ) {
       request.yar.clear('searchTermsSaved')
-      return h.redirect('error/index').takeover()
+      return h
+        .redirect(
+          `error/index?from=${encodeURIComponent(request.url.pathname)}`
+        )
+        .takeover()
     }
     if (selectedMatches.length === 0) {
       request.yar.clear('searchTermsSaved')

@@ -8,9 +8,9 @@
     {% include 'partials/error-500.njk' %}
   {% elif statusCode == '404' or statusCode == '400' %}
     {% if lang == 'en' %}
-      {% include 'partials/error-404-en.njk' %}
+      {% include 'error-404-en.njk' %}
     {% elif lang == 'cy' %}
-      {% include 'partials/error-404-cy.njk' %}
+      {% include 'error-404-cy.njk' %}
     {% endif %}
   {% endif %}
 {% endblock %}

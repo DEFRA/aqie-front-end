@@ -42,33 +42,36 @@ describe('Nunjucks Template', () => {
   })
 
   it('should render the error-404-cy template correctly', () => {
+    // ''
+    // Updated context to match the template keys in error-404-cy.njk
     const context = {
       notFoundUrl: {
         nonService: {
-          heading: 'Page not found',
+          heading: 'Tudalen heb ei chanfod',
           paragraphs: {
-            aa: 'Sorry, we cannot find the page you are looking for.',
-            b: 'Please check the URL and try again.',
-            c: 'If you continue to experience issues, please contact us at ',
+            a: 'Mae’n ddrwg gennym, ni allwn ddod o hyd i’r dudalen rydych yn chwilio amdani.',
+            b: 'Gwiriwch y cyfeiriad URL a rhowch gynnig arall arni.',
+            c: 'Os ydych yn parhau i gael problemau, cysylltwch â ni yn ',
             d: 'checklocalairquality@defra.gov.uk',
-            e: ' for further assistance.'
+            e: ' am gymorth pellach.'
           }
         }
       },
       msError: '404'
     }
     const result = env.render('error-404-cy.njk', context)
-    expect(result.replace(/\s+/g, ' ')).toContain(
-      '<h1 class="govuk-heading-xl">Page not found 404</h1>'
+    const html = result.replace(/\s+/g, ' ')
+    expect(html).toContain(
+      '<h1 class="govuk-heading-xl">Tudalen heb ei chanfod 404</h1>'
     )
-    expect(result.replace(/\s+/g, ' ')).toContain(
-      '<p class="govuk-body">Sorry, we cannot find the page you are looking for.</p>'
+    expect(html).toContain(
+      '<p class="govuk-body">Mae’n ddrwg gennym, ni allwn ddod o hyd i’r dudalen rydych yn chwilio amdani.</p>'
     )
-    expect(result.replace(/\s+/g, ' ')).toContain(
-      '<p class="govuk-body">Please check the URL and try again.</p>'
+    expect(html).toContain(
+      '<p class="govuk-body">Gwiriwch y cyfeiriad URL a rhowch gynnig arall arni.</p>'
     )
-    expect(result.replace(/\s+/g, ' ')).toContain(
-      '<p class="govuk-body">If you continue to experience issues, please contact us at <a href="mailto:checklocalairquality@defra.gov.uk">checklocalairquality@defra.gov.uk</a> for further assistance.</p>'
+    expect(html).toContain(
+      '<p class="govuk-body">Os ydych yn parhau i gael problemau, cysylltwch â ni yn <a href="mailto:checklocalairquality@defra.gov.uk">checklocalairquality@defra.gov.uk</a> am gymorth pellach.</p>'
     )
   })
 })
