@@ -5,7 +5,7 @@ import { searchTermsAndUnitary } from './search-terms-unitary.js'
 /**
  * '' Helper to normalize strings by converting to uppercase and removing spaces.
  */
-const normalizeString = (str) => str?.toUpperCase().replace(/\s+/g, '') // ''
+const normalizeString = (str) => str?.toUpperCase().replace(/\s+/g, '')
 
 /**
  * '' Handles search term and borough matching logic.
@@ -16,8 +16,8 @@ const handleSearchTermsAndBorough = (
   name1,
   borough
 ) => {
-  const exactWordFirstTerm = hasExactMatch(searchTerms, name1) // ''
-  const exactWordSecondTerm = hasExactMatch(secondSearchTerm, borough) // ''
+  const exactWordFirstTerm = hasExactMatch(searchTerms, name1)
+  const exactWordSecondTerm = hasExactMatch(secondSearchTerm, borough)
   return searchTermsAndBorough(
     searchTerms,
     name1,
@@ -38,8 +38,8 @@ const handleSearchTermsAndUnitary = (
   name2,
   unitary
 ) => {
-  const exactWordFirstTerm = hasExactMatch(searchTerms, name1, name2) // ''
-  const exactWordSecondTerm = hasExactMatch(secondSearchTerm, unitary) // ''
+  const exactWordFirstTerm = hasExactMatch(searchTerms, name1, name2)
+  const exactWordSecondTerm = hasExactMatch(secondSearchTerm, unitary)
   return searchTermsAndUnitary(
     searchTerms,
     name1,
@@ -68,7 +68,7 @@ const handleGenericMatching = (userLocation, item, name1, name2) => {
   const checkWords = splitAndCheckSpecificWords(
     userLocation,
     item?.GAZETTEER_ENTRY.NAME1
-  ) // ''
+  )
   return (
     checkWords ||
     (name1.includes(normalizeString(userLocation)) &&
@@ -86,14 +86,14 @@ const filterMatches = (
   item,
   { searchTerms, secondSearchTerm, isFullPostcode, userLocation }
 ) => {
-  const name1 = normalizeString(item?.GAZETTEER_ENTRY.NAME1) // ''
-  const name2 = normalizeString(item?.GAZETTEER_ENTRY.NAME2) // ''
+  const name1 = normalizeString(item?.GAZETTEER_ENTRY.NAME1)
+  const name2 = normalizeString(item?.GAZETTEER_ENTRY.NAME2)
   const borough = normalizeString(
     item?.GAZETTEER_ENTRY?.DISTRICT_BOROUGH
-  )?.replace(/-/g, ' ') // ''
+  )?.replace(/-/g, ' ')
   const unitary = normalizeString(
     item?.GAZETTEER_ENTRY?.COUNTY_UNITARY
-  )?.replace(/-/g, ' ') // ''
+  )?.replace(/-/g, ' ')
 
   if (searchTerms && borough) {
     return handleSearchTermsAndBorough(
@@ -101,7 +101,7 @@ const filterMatches = (
       secondSearchTerm,
       name1,
       borough
-    ) // ''
+    )
   }
 
   if (searchTerms && unitary) {
@@ -111,14 +111,14 @@ const filterMatches = (
       name1,
       name2,
       unitary
-    ) // ''
+    )
   }
 
   if (isFullPostcode) {
-    return handleFullPostcode(name1, userLocation) // ''
+    return handleFullPostcode(name1, userLocation)
   }
 
-  return handleGenericMatching(userLocation, item, name1, name2) // ''
+  return handleGenericMatching(userLocation, item, name1, name2)
 }
 
 export { filterMatches }

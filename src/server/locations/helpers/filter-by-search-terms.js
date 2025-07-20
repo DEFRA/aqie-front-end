@@ -2,11 +2,23 @@ const SINGLE_MATCH = 1 // Limit to a single match
 const UNDEFINED_TERM = 'UNDEFINED' // Represents an undefined secondary search term
 
 const filterBySearchTerms = (matches, search, isAlphanumeric) => {
+  const normalizeString = (str) => str?.toUpperCase().replace(/\s+/g, '')
   const { searchTerms, secondSearchTerm } = search
 
   if (isAlphanumeric && searchTerms && secondSearchTerm === UNDEFINED_TERM) {
+    const safeSearch = typeof searchTerms === 'string' ? searchTerms : ''
     return matches
-      .filter((match) => match.name.includes(searchTerms))
+      .filter((match) => {
+        const name =
+          match &&
+          match.GAZETTEER_ENTRY &&
+          typeof match.GAZETTEER_ENTRY.NAME1 === 'string'
+            ? match.GAZETTEER_ENTRY.NAME1
+            : ''
+        return String(normalizeString(name)).includes(
+          String(normalizeString(safeSearch))
+        )
+      })
       .slice(0, SINGLE_MATCH)
   }
 

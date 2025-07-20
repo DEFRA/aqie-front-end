@@ -26,7 +26,8 @@ function statusCodeMessage(statusCode, lang) {
 }
 
 function catchAll(request, h) {
-  const { query, response, path } = request
+  const { query, response, path, headers } = request
+  const referer = headers?.referer
   let lang = path?.split('/').pop()?.slice(0, 2)
   if (lang === LANG_CY) {
     lang = LANG_CY
