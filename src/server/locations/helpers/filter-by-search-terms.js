@@ -10,9 +10,7 @@ const filterBySearchTerms = (matches, search, isAlphanumeric) => {
     return matches
       .filter((match) => {
         const name =
-          match &&
-          match.GAZETTEER_ENTRY &&
-          typeof match.GAZETTEER_ENTRY.NAME1 === 'string'
+          typeof match?.GAZETTEER_ENTRY?.NAME1 === 'string'
             ? match.GAZETTEER_ENTRY.NAME1
             : ''
         return String(normalizeString(name)).includes(
