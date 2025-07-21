@@ -101,7 +101,6 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
   logger.info(`getNIPlaces data: ${JSON.stringify(getNIPlaces)}`)
   logger.info(`getNIPlaces data results: ${getNIPlaces?.results}`)
   logger.info(`getNIPlaces data results length: ${getNIPlaces?.results.length}`)
-  logger.info(`getNIPlaces data WRONG_POSTCODE: ${WRONG_POSTCODE}`)
 
   if (
     !getNIPlaces?.results ||
@@ -164,6 +163,11 @@ const isLocationDataNotFound = (
     redirectError.locationType === LOCATION_TYPE_NI &&
     (!getNIPlaces?.results || getNIPlaces?.results.length === 0)
 
+  logger.info(`isPartialPostcode xxx: ${isPartialPostcode}`)
+  logger.info(`isUKTypeNoResults xxx: ${isUKTypeNoResults}`)
+  logger.info(`isNITypeNoResults xxx: ${isNITypeNoResults}`)
+  logger.info(`getOSPlaces xxx: ${getOSPlaces}`)
+  logger.info(`WRONG_POSTCODE xxx: ${WRONG_POSTCODE}`)
   return (
     isPartialPostcode ||
     getOSPlaces === WRONG_POSTCODE ||
@@ -244,6 +248,9 @@ const searchMiddleware = async (request, h) => {
       getNIPlaces
     )
   ) {
+    logger.info(
+      `Location data not found for userLocation: ${userLocation}, searchTerms: ${searchTerms}`
+    )
     return handleLocationDataNotFound(
       request,
       h,
