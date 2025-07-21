@@ -41,7 +41,7 @@ jobs:
           exit $?
 
       - name: Fetch main branch for SonarCloud PR analysis
-        run: git fetch --no-tags --prune --depth=1 origin +refs/heads/main:refs/remotes/origin/main
+        run: git fetch --no-tags --prune --depth=0 origin +refs/heads/main:refs/remotes/origin/main
 
       - name: SonarCloud Scan
         if: github.actor != 'dependabot[bot]'
