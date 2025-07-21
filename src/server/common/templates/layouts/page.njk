@@ -15,7 +15,7 @@
 {% from "pollutant/macro.njk" import appPollutant %}
 {% from "search/macro.njk" import appSearch -%}
 {% from "language-toggle/macro.njk" import dwpLanguageToggle %}
-{% from "govuk/components/footer/macro.njk" import govukFooter -%}
+{% from "footer/macro.njk" import govukFooterWelsh -%}
 {% from "heading/macro.njk" import appHeading %}
 
 {% set metaTitle = (pageTitle or 'Check air quality - GOV.UK') %}
@@ -189,7 +189,7 @@
   {% set privacyhref %}/privacy?lang={{htmlLang}}{% endset %}
   {% set cookieshref %}/cookies?lang={{htmlLang}}{% endset %}
   {% set accessibilityhref %}/accessibility?lang={{htmlLang}}{% endset %}
-  {{ govukFooter({
+  {{ govukFooterWelsh({
     meta: {
       items: [
         {

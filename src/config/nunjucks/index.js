@@ -23,6 +23,7 @@ const nunjucksEnvironment = nunjucks.configure(
     path.resolve(dirname, '../../node_modules/govuk-frontend/dist/'),
     path.resolve(dirname, '../../server/common/templates'),
     path.resolve(dirname, '../../server/common/components'),
+    path.resolve(dirname, '../../server/common/components/footer'),
     path.resolve(dirname, '../../server/common/templates/partials'),
     path.resolve(dirname, '../../server/home/partials'),
     path.resolve(dirname, '../../server/home'),
