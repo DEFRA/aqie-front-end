@@ -37,7 +37,7 @@ jobs:
           npm test
 
       - name: Fetch main branch for SonarCloud PR analysis
-        run: git fetch --no-tags --prune --depth=0 origin +refs/heads/main:refs/remotes/origin/main
+        run: git fetch --no-tags --prune origin +refs/heads/main:refs/remotes/origin/main
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5.2.0 #  (or check latest version on https://github.com/marketplace/actions/official-sonarqube-scan)
