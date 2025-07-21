@@ -24,6 +24,9 @@ import {
 } from './helpers/convert-string.js'
 import { sentenceCase } from '../common/helpers/sentence-case.js'
 import { convertFirstLetterIntoUppercase } from './helpers/convert-first-letter-into-upper-case.js'
+import { createLogger } from '../common/helpers/logging/logger.js'
+
+const logger = createLogger()
 
 const handleLocationDataNotFound = (
   request,
@@ -94,6 +97,11 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
     getForecasts,
     getMeasurements
   } = options
+
+  logger.info(`getNIPlaces data: ${JSON.stringify(getNIPlaces)}`)
+  logger.info(`getNIPlaces data results: ${getNIPlaces?.results}`)
+  logger.info(`getNIPlaces data results length: ${getNIPlaces?.results.length}`)
+  logger.info(`getNIPlaces data WRONG_POSTCODE: ${WRONG_POSTCODE}`)
 
   if (
     !getNIPlaces?.results ||
