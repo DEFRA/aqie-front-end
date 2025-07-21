@@ -144,6 +144,8 @@ const handleNILocationData = async (userLocation, optionsOAuth) => {
       results: Array.isArray(getNIPlaces) ? getNIPlaces : [getNIPlaces]
     }
   }
+  logger.info(`getNIPlaces data requested url: ${postcodeNortherIrelandURL}`)
+  logger.info(`getNIPlaces data: ${JSON.stringify(getNIPlaces)}`)
 
   if (statusCodeNI !== HTTP_STATUS_OK) {
     logger.error(`Error fetching statusCodeNI data: ${statusCodeNI}`)
