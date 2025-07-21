@@ -161,7 +161,7 @@ export const english = {
     privacy: 'Privacy',
     accessibility: 'Accessibility statement',
     paragraphs: {
-      a: 'All content is available under theeee',
+      a: 'All content is available under the',
       b: 'Open Government Licence v3.0, ',
       c: 'except where otherwise stated',
       d: 'Crown copyright'
