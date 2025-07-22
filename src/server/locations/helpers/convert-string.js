@@ -62,16 +62,20 @@ function removeAllWordsAfterUnderscore(str) {
 }
 
 function isValidPartialPostcodeUK(postcode) {
-  // Define a function to validate if a string is a partial postcode
+  // Define a function to validate if a string is a partial UK postcode (excluding Northern Ireland postcodes)
+  // Exclude BT (Northern Ireland) using negative lookahead
+  // If new NI prefixes are introduced, add them to the negative lookahead below
   const partialPostcodeRegex =
-    /^(?:[A-Z]{1,2}\d{1,2}|[A-Z]\d[A-Z]|\d[A-Z]{2})$/i
-  return partialPostcodeRegex.test(postcode) // Test the string against the regular expression
+    /^(?!BT)(?:[A-Z]{1,2}\d{1,2}|[A-Z]\d[A-Z]|\d[A-Z]{2})$/i
+  return partialPostcodeRegex.test(postcode)
 }
 
 function isValidFullPostcodeUK(postcode) {
-  // Define a function to validate if a string is a partial postcode
-  const fullPostcodeRegex = /^[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}$/i // Regular expression to match UK postcodes // Define a regular expression to match UK full postcodes
-  return fullPostcodeRegex.test(postcode) // Test the string against the regular expression
+  // Define a function to validate if a string is a full UK postcode (excluding Northern Ireland postcodes)
+  // Exclude BT (Northern Ireland) using negative lookahead
+  // If new NI prefixes are introduced, add them to the negative lookahead below
+  const fullPostcodeRegex = /^(?!BT)[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i
+  return fullPostcodeRegex.test(postcode)
 }
 
 function isValidPartialPostcodeNI(postcode) {
