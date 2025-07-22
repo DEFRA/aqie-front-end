@@ -158,11 +158,15 @@ const processMatches = (
     locationNameOrPostcode,
     options
   )
-
+  logger.info(
+    `Selected matches after filtering: ${JSON.stringify(selectedMatches)}`
+  )
   // Add IDs to selected matches
   const { selectedMatchesAddedIDs } = createURLRouteBookmarks(selectedMatches)
   selectedMatches = selectedMatchesAddedIDs
-
+  logger.info(
+    `Selected matches after adding IDs 2xxx: ${JSON.stringify(selectedMatches)}`
+  )
   return { selectedMatches }
 }
 
