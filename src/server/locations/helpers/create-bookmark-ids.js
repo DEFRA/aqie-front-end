@@ -1,8 +1,10 @@
-import { logger } from '~/src/client/assets/javascripts/common/helpers/logging/logger.js'
+import { createLogger } from '../../common/helpers/logging/logger.js'
 import {
   convertStringToHyphenatedLowercaseWords,
   isValidFullPostcodeUK
 } from './convert-string.js'
+
+const logger = createLogger()
 
 function createURLRouteBookmarks(selectedMatchesAddedIDs) {
   const normalizeString = (str) => str?.toLowerCase().replace(/\s+/g, '')
