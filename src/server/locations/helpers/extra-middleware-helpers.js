@@ -2,7 +2,9 @@ import { processMatches, deduplicateResults } from './middleware-helpers.js'
 import { generateTitleData } from './generate-title-data.js'
 import { handleSingleMatchHelper } from './handle-single-match-helper.js'
 import { handleMultipleMatchesHelper } from './handle-multiple-match-helper.js'
+import { createLogger } from '../../common/helpers/logging/logger.js'
 
+const logger = createLogger()
 // Helper function to handle redirection for invalid input
 const handleErrorInputAndRedirect = (
   request,
@@ -49,7 +51,9 @@ const handleUKLocationType = async (request, h, params) => {
     searchTerms,
     secondSearchTerm
   )
-
+  logger.info(
+    `Selected matches before filtering 3xxx: ${JSON.stringify(selectedMatches)}`
+  )
   // Handle matches
   if (selectedMatches.length === 1) {
     const titleData = generateTitleData(selectedMatches, locationNameOrPostcode)
