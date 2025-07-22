@@ -12,6 +12,9 @@ import { LANG_EN, LANG_CY, REDIRECT_STATUS_CODE } from '../../data/constants.js'
 import { createURLRouteBookmarks } from './create-bookmark-ids.js'
 import reduceMatches from './reduce-matches.js'
 import { filterMatches } from './filter-matches.js'
+import { createLogger } from '../../common/helpers/logging/logger.js'
+
+const logger = createLogger()
 
 // Helper function to handle single match
 const handleSingleMatch = (
@@ -52,7 +55,7 @@ const handleSingleMatch = (
     locationType,
     lang
   })
-
+  logger.info(`Redirecting to location with custom ID: ${customId}`)
   return lang === LANG_EN
     ? h.redirect(`/location/${customId}`).code(REDIRECT_STATUS_CODE).takeover()
     : h.redirect(`/lleoliad/${customId}`).code(REDIRECT_STATUS_CODE).takeover()
