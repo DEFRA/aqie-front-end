@@ -105,6 +105,7 @@ const DEFAULT_LOCATION_TYPE = 'uk-location'
 const NI_LOCATION_TYPE = 'ni-location'
 
 const handleSearchTerms = (searchTerms) => {
+  logger.info(`Handling search terms: ${searchTerms}`)
   if (
     isValidFullPostcodeUK(searchTerms) ||
     isValidPartialPostcodeUK(searchTerms)
