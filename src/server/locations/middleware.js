@@ -166,7 +166,7 @@ const isLocationDataNotFound = (
   logger.info(`isPartialPostcode xxx: ${isPartialPostcode}`)
   logger.info(`isUKTypeNoResults xxx: ${isUKTypeNoResults}`)
   logger.info(`isNITypeNoResults xxx: ${isNITypeNoResults}`)
-  logger.info(`getOSPlaces xxx: ${getOSPlaces}`)
+  logger.info(`getOSPlaces xxx: ${JSON.stringify(getOSPlaces)}`)
   logger.info(`WRONG_POSTCODE xxx: ${WRONG_POSTCODE}`)
   return (
     isPartialPostcode ||
@@ -276,6 +276,9 @@ const searchMiddleware = async (request, h) => {
   request.yar.set('searchTermsSaved', searchTerms)
 
   if (redirectError.locationType === LOCATION_TYPE_UK) {
+    logger.info(
+      `Processing UK location type for redirectError.locationType: ${redirectError.locationType}`
+    )
     return processUKLocationType(request, h, redirectError, {
       userLocation,
       locationNameOrPostcode,
@@ -295,6 +298,9 @@ const searchMiddleware = async (request, h) => {
       english
     })
   } else if (redirectError.locationType === LOCATION_TYPE_NI) {
+    logger.info(
+      `Processing NI location type for redirectError.locationType: ${redirectError.locationType}`
+    )
     return processNILocationType(request, h, redirectError, {
       locationNameOrPostcode,
       lang,
