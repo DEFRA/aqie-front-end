@@ -21,6 +21,9 @@ import {
   AIR_QUALITY_THRESHOLD_3,
   AIR_QUALITY_THRESHOLD_4
 } from '../../data/constants.js'
+import { createLogger } from '../../common/helpers/logging/logger.js'
+
+const logger = createLogger()
 /**
  * Handles the case where search terms are not provided.
  */
@@ -106,8 +109,9 @@ const handleSearchTerms = (searchTerms) => {
     isValidFullPostcodeUK(searchTerms) ||
     isValidPartialPostcodeUK(searchTerms)
   ) {
+    logger.info(`Valid UK LOCATION_TYPE_UK: ${LOCATION_TYPE_UK}`)
     return {
-      locationType: DEFAULT_LOCATION_TYPE,
+      locationType: LOCATION_TYPE_UK,
       userLocation: searchTerms,
       locationNameOrPostcode: searchTerms
     }
@@ -117,6 +121,7 @@ const handleSearchTerms = (searchTerms) => {
     isValidFullPostcodeNI(searchTerms) ||
     isValidPartialPostcodeNI(searchTerms)
   ) {
+    logger.info(`Valid NI NI_LOCATION_TYPE: ${NI_LOCATION_TYPE}`)
     return {
       locationType: NI_LOCATION_TYPE,
       userLocation: searchTerms,
@@ -125,13 +130,14 @@ const handleSearchTerms = (searchTerms) => {
   }
 
   if (isOnlyWords(searchTerms)) {
+    logger.info(`Valid words DEFAULT_LOCATION_TYPE: ${DEFAULT_LOCATION_TYPE}`)
     return {
       locationType: DEFAULT_LOCATION_TYPE,
       userLocation: searchTerms,
       locationNameOrPostcode: searchTerms
     }
   }
-
+  logger.info(`DEFAULT_LOCATION_TYPE last: ${DEFAULT_LOCATION_TYPE}`)
   return {
     locationType: DEFAULT_LOCATION_TYPE,
     userLocation: searchTerms,
