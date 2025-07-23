@@ -86,6 +86,7 @@ export const AIR_QUALITY_THRESHOLD_1 = 1
 export const AIR_QUALITY_THRESHOLD_2 = 2
 export const AIR_QUALITY_THRESHOLD_3 = 3
 export const AIR_QUALITY_THRESHOLD_4 = 4
+export const DEFAULT_LOCATION_TYPE = 'uk-location'
 
 // '' - Constant for the server directory name
 export const SERVER_DIRNAME = path.dirname(fileURLToPath(import.meta.url))

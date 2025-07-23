@@ -16,14 +16,13 @@ import {
 import {
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI,
+  DEFAULT_LOCATION_TYPE,
   AIR_QUALITY_THRESHOLD_1,
   AIR_QUALITY_THRESHOLD_2,
   AIR_QUALITY_THRESHOLD_3,
   AIR_QUALITY_THRESHOLD_4
 } from '../../data/constants.js'
-import { createLogger } from '../../common/helpers/logging/logger.js'
 
-const logger = createLogger()
 /**
  * Handles the case where search terms are not provided.
  */
@@ -101,16 +100,12 @@ const handleNoSearchTerms = (request, h, lang, payload) => {
 /**
  * Handles the case where search terms are provided.
  */
-const DEFAULT_LOCATION_TYPE = 'uk-location'
-const NI_LOCATION_TYPE = 'ni-location'
 
 const handleSearchTerms = (searchTerms) => {
-  logger.info(`Handling search terms: ${searchTerms}`)
   if (
     isValidFullPostcodeUK(searchTerms) ||
     isValidPartialPostcodeUK(searchTerms)
   ) {
-    logger.info(`Valid UK LOCATION_TYPE_UK: ${LOCATION_TYPE_UK}`)
     return {
       locationType: LOCATION_TYPE_UK,
       userLocation: searchTerms,
@@ -122,23 +117,20 @@ const handleSearchTerms = (searchTerms) => {
     isValidFullPostcodeNI(searchTerms) ||
     isValidPartialPostcodeNI(searchTerms)
   ) {
-    logger.info(`Valid NI NI_LOCATION_TYPE: ${NI_LOCATION_TYPE}`)
     return {
-      locationType: NI_LOCATION_TYPE,
+      locationType: LOCATION_TYPE_NI,
       userLocation: searchTerms,
       locationNameOrPostcode: searchTerms
     }
   }
 
   if (isOnlyWords(searchTerms)) {
-    logger.info(`Valid words DEFAULT_LOCATION_TYPE: ${DEFAULT_LOCATION_TYPE}`)
     return {
       locationType: DEFAULT_LOCATION_TYPE,
       userLocation: searchTerms,
       locationNameOrPostcode: searchTerms
     }
   }
-  logger.info(`DEFAULT_LOCATION_TYPE last: ${DEFAULT_LOCATION_TYPE}`)
   return {
     locationType: DEFAULT_LOCATION_TYPE,
     userLocation: searchTerms,

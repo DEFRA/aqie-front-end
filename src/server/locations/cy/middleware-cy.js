@@ -25,6 +25,7 @@ import { getMonth } from '../helpers/location-type-util.js'
 import {
   convertStringToHyphenatedLowercaseWords,
   isValidFullPostcodeUK,
+  isValidFullPostcodeNI,
   isValidPartialPostcodeUK,
   isValidPartialPostcodeNI,
   isOnlyWords
@@ -69,7 +70,14 @@ const searchMiddlewareCy = async (request, h) => {
     request.yar.clear('searchTermsSaved')
     return h.redirect('error/index').takeover()
   }
-  const isLocationValidPostcode = isValidFullPostcodeUK(userLocation)
+  let isLocationValidPostcode
+  if (redirectError.locationType === 'uk-location') {
+    isLocationValidPostcode = isValidFullPostcodeUK(userLocation)
+  } else if (redirectError.locationType === 'ni-location') {
+    isLocationValidPostcode = isValidFullPostcodeNI(userLocation)
+  } else {
+    isLocationValidPostcode = false
+  }
   const wordsOnly = isOnlyWords(userLocation)
   if (!isLocationValidPostcode && !wordsOnly) {
     request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
