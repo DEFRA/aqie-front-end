@@ -24,9 +24,6 @@ import {
 } from './helpers/convert-string.js'
 import { sentenceCase } from '../common/helpers/sentence-case.js'
 import { convertFirstLetterIntoUppercase } from './helpers/convert-first-letter-into-upper-case.js'
-import { createLogger } from '../common/helpers/logging/logger.js'
-
-const logger = createLogger()
 
 const handleLocationDataNotFound = (
   request,
@@ -97,11 +94,6 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
     getForecasts,
     getMeasurements
   } = options
-
-  logger.info(`getNIPlaces data: ${JSON.stringify(getNIPlaces)}`)
-  logger.info(`getNIPlaces data results: ${getNIPlaces?.results}`)
-  logger.info(`getNIPlaces data results length: ${getNIPlaces?.results.length}`)
-
   if (
     !getNIPlaces?.results ||
     getNIPlaces?.results.length === 0 ||
@@ -163,11 +155,6 @@ const isLocationDataNotFound = (
     redirectError.locationType === LOCATION_TYPE_NI &&
     (!getNIPlaces?.results || getNIPlaces?.results.length === 0)
 
-  logger.info(`isPartialPostcode xxx: ${isPartialPostcode}`)
-  logger.info(`isUKTypeNoResults xxx: ${isUKTypeNoResults}`)
-  logger.info(`isNITypeNoResults xxx: ${isNITypeNoResults}`)
-  logger.info(`getOSPlaces xxx: ${JSON.stringify(getOSPlaces)}`)
-  logger.info(`WRONG_POSTCODE xxx: ${WRONG_POSTCODE}`)
   return (
     isPartialPostcode ||
     getOSPlaces === WRONG_POSTCODE ||
@@ -248,9 +235,6 @@ const searchMiddleware = async (request, h) => {
       getNIPlaces
     )
   ) {
-    logger.info(
-      `Location data not found for userLocation: ${userLocation}, searchTerms: ${searchTerms}`
-    )
     return handleLocationDataNotFound(
       request,
       h,
@@ -276,9 +260,6 @@ const searchMiddleware = async (request, h) => {
   request.yar.set('searchTermsSaved', searchTerms)
 
   if (redirectError.locationType === LOCATION_TYPE_UK) {
-    logger.info(
-      `Processing UK location type for redirectError.locationType: ${redirectError.locationType}`
-    )
     return processUKLocationType(request, h, redirectError, {
       userLocation,
       locationNameOrPostcode,
@@ -298,9 +279,6 @@ const searchMiddleware = async (request, h) => {
       english
     })
   } else if (redirectError.locationType === LOCATION_TYPE_NI) {
-    logger.info(
-      `Processing NI location type for redirectError.locationType: ${redirectError.locationType}`
-    )
     return processNILocationType(request, h, redirectError, {
       locationNameOrPostcode,
       lang,
