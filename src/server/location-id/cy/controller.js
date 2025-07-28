@@ -62,7 +62,8 @@ const getLocationDetailsController = {
 
       if (previousUrl === undefined && !searchTermsSaved) {
         request.yar.clear('locationData')
-        return h.redirect(buildRedirectUrl(currentUrl)).takeover()
+        console.log('redirectioning to location search 2')
+        return h.redirect(buildRedirectUrl(currentUrl)).code(REDIRECT_STATUS_CODE).takeover()
       }
       request.yar.clear('searchTermsSaved')
       const lang = LANG_CY
@@ -162,9 +163,7 @@ const getLocationDetailsController = {
       }
     } catch (error) {
       logger.error(`error on single location ${error.message}`)
-      return h.status(500).render('error', {
-        error: 'An error occurred while retrieving location details.'
-      })
+      return h.response('Internal Server Error').code(500)
     }
   }
 }

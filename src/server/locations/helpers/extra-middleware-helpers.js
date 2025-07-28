@@ -19,6 +19,7 @@ const handleErrorInputAndRedirect = (
       locationNameOrPostcode: '',
       lang
     })
+    console.log('redirectioning to location search 22')
     return h.redirect('/location-not-found').takeover()
   }
   return {
@@ -74,8 +75,10 @@ const handleUKLocationType = async (request, h, params) => {
   request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
   request.yar.clear('searchTermsSaved')
   if (searchTerms) {
+    console.log('redirectioning to location search 22')
     return h.redirect('error/index').takeover()
   }
+  console.log('redirectioning to location search 23')
   return h.redirect('/location-not-found').takeover()
 }
 

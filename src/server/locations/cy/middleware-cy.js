@@ -68,6 +68,7 @@ const searchMiddlewareCy = async (request, h) => {
   if (locationType === 'Invalid Postcode') {
     request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
     request.yar.clear('searchTermsSaved')
+    console.log('redirectioning to location search 6')
     return h.redirect('error/index').takeover()
   }
   let isLocationValidPostcode
@@ -83,8 +84,10 @@ const searchMiddlewareCy = async (request, h) => {
     request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
     request.yar.clear('searchTermsSaved')
     if (searchTerms) {
+      console.log('redirectioning to location search 7')
       return h.redirect('error/index').takeover()
     }
+    console.log('redirectioning to location search 8')
     return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
   }
   const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
@@ -99,6 +102,7 @@ const searchMiddlewareCy = async (request, h) => {
   if (!getDailySummary) {
     request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
     request.yar.clear('searchTermsSaved')
+    console.log('redirectioning to location search 9')
     return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
   }
   const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
@@ -126,6 +130,7 @@ const searchMiddlewareCy = async (request, h) => {
     if (searchTerms && !wordsOnly && !isPartialPostcode && !isFullPostcode) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
+      console.log('redirectioning to location search 10')
       return h.redirect('error/index').takeover()
     }
     if (
@@ -134,11 +139,13 @@ const searchMiddlewareCy = async (request, h) => {
     ) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
+      console.log('redirectioning to location search 11')
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
     if (!results && searchTerms) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
+      console.log('redirectioning to location search 12')
       return h.redirect('error/index').takeover()
     }
     // Remove duplicates from the results array
@@ -160,6 +167,7 @@ const searchMiddlewareCy = async (request, h) => {
       (!exactWordFirstTerm || !exactWordSecondTerm)
     ) {
       request.yar.clear('searchTermsSaved')
+      console.log('redirectioning to location search 13')
       return h
         .redirect(
           `error/index?from=${encodeURIComponent(request.url.pathname)}`
@@ -168,6 +176,7 @@ const searchMiddlewareCy = async (request, h) => {
     }
     if (selectedMatches.length === 0) {
       request.yar.clear('searchTermsSaved')
+      console.log('redirectioning to location search 14')
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
     userLocation = userLocation.toLowerCase()
@@ -237,6 +246,7 @@ const searchMiddlewareCy = async (request, h) => {
       })
     } else {
       request.yar.clear('searchTermsSaved')
+      console.log('redirectioning to location search 15')
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
   } else if (locationType === LOCATION_TYPE_NI) {
@@ -244,6 +254,7 @@ const searchMiddlewareCy = async (request, h) => {
     if (isPartialPostcode) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
+      console.log('redirectioning to location search 16')
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
     const { getNIPlaces } = await fetchData(request, {
@@ -261,6 +272,7 @@ const searchMiddlewareCy = async (request, h) => {
     ) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
+      console.log('redirectioning to location search 17')
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
     if (
@@ -270,6 +282,7 @@ const searchMiddlewareCy = async (request, h) => {
     ) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
+      console.log('redirectioning to location search 18')
       return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
     }
     let title = ''
@@ -304,6 +317,7 @@ const searchMiddlewareCy = async (request, h) => {
   } else {
     // handle other location types
     request.yar.clear('searchTermsSaved')
+    console.log('redirectioning to location search 19')
     return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
   }
 }

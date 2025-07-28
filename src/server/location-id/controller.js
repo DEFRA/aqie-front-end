@@ -54,6 +54,7 @@ const getLocationDetailsController = {
         const { searchTerms, secondSearchTerm, searchTermsLocationType } =
           getSearchTermsFromUrl(currentUrl)
         request.yar.clear('locationData')
+        console.log('redirectioning to location search 1')
         return h
           .redirect(
             `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(
@@ -165,6 +166,7 @@ const getLocationDetailsController = {
       }
     } catch (error) {
       logger.error(`error on single location ${error.message}`)
+      return h.response('Internal Server Error').code(500)
     }
   }
 }

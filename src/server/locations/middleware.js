@@ -35,8 +35,10 @@ const handleLocationDataNotFound = (
   request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
   if (searchTerms) {
     request.yar.clear('searchTermsSaved')
+    console.log('redirectioning to location search 3')
     return h.redirect('error/index').takeover()
   }
+  console.log('redirectioning to location search 4')
   return h.redirect('location-not-found').takeover()
 }
 
@@ -295,6 +297,7 @@ const searchMiddleware = async (request, h) => {
     })
   } else {
     request.yar.clear('searchTermsSaved')
+    console.log('redirectioning to location search 5')
     return h.redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`).takeover()
   }
 }

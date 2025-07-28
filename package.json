@@ -9,8 +9,8 @@
     "node": ">=22.16.0"
   },
   "scripts": {
-    "build": "NODE_ENV=production webpack",
-    "build:frontend": "NODE_ENV=production webpack",
+    "build": "cross-env NODE_ENV=production webpack",
+    "build:frontend": "cross-env NODE_ENV=production webpack",
     "dev": "run-p frontend:watch server:watch",
     "dev:debug": "run-p frontend:watch server:debug",
     "docker:dev": "npm run dev",

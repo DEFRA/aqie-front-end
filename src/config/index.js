@@ -89,6 +89,12 @@ export const config = convict({
     format: Boolean,
     default: false
   },
+  useMockMeasurements: {
+    doc: 'Use Mock Measurements API',
+    format: Boolean,
+    default: true,
+    env: 'USE_MOCK_MEASUREMENTS'
+  },
   log: {
     enabled: {
       doc: 'Is logging enabled',

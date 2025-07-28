@@ -9,8 +9,12 @@ import {
 import { getPollutantLevel } from './pollutant-level-calculation.js'
 import { getPollutantLevelCy } from './cy/pollutant-level-calculation.js'
 import { LANG_CY, FORECAST_DAY_SLICE_LENGTH } from '../../data/constants.js'
+import { fetchMeasurements } from './fetch-data.js'
+import { createLogger } from '../../common/helpers/logging/logger.js'
 
-function getNearestLocation(
+const logger = createLogger()
+
+async function getNearestLocation(
   matches,
   forecasts,
   measurements,
@@ -24,6 +28,13 @@ function getNearestLocation(
     matches.length !== 0 ? coordinatesTotal(forecasts, location) : []
   const measurementsCoordinates =
     matches.length !== 0 ? coordinatesTotal(measurements, location) : []
+  
+  // Fetch new measurements with parameters if latlon is available
+  let newMeasurements = []
+  if (latlon?.lat && latlon?.lon) {
+    newMeasurements = await fetchMeasurements(latlon.lat, latlon.lon, true)
+  }
+  console.log(`newMeasurements: ${JSON.stringify(newMeasurements)}`)
   const nearestLocation =
     matches.length !== 0
       ? getNearLocation(
@@ -145,7 +156,7 @@ function getNearestLocation(
           return [...todayDate, ...otherdays]
         })
       : 0
-  return { forecastNum, nearestLocationsRange, latlon }
+  return { forecastNum, newMeasurements, latlon }
 }
 
 export { getNearestLocation }
