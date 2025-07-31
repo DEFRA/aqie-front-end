@@ -194,21 +194,21 @@ export const fetchMeasurements = async (
     })
 
     const mockMeasurementsUrl = `http://localhost:5000/measurements?${queryParams.toString()}`
-    const [errorMeasurements, getMeasurements] = await catchFetchError(
+    const [mockErrorMeasurements, mockGetMeasurements] = await catchFetchError(
       mockMeasurementsUrl,
       options
     )
 
-    if (errorMeasurements) {
+    if (mockErrorMeasurements) {
       logger.error(
-        `Error fetching Mock Measurements data: ${errorMeasurements.message}`
+        `Error fetching Mock Measurements data: ${mockErrorMeasurements.message}`
       )
       return []
     } else {
       logger.info(`Mock getMeasurements data fetched:`)
     }
 
-    return getMeasurements || []
+    return mockGetMeasurements || []
   }
 
   // Call original measurements API without query parameters
