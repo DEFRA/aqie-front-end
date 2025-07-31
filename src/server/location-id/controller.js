@@ -9,7 +9,8 @@ import {
   LOCATION_NOT_FOUND,
   LOCATION_TYPE_NI,
   LOCATION_TYPE_UK,
-  REDIRECT_STATUS_CODE
+  REDIRECT_STATUS_CODE,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR
 } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 import { english, calendarEnglish } from '../data/en/en.js'
@@ -75,7 +76,6 @@ function handleSearchTermsRedirect(
 function buildLocationViewData({
   locationDetails,
   nearestLocationsRange,
-  nearestLocation,
   locationData,
   forecastNum,
   lang,
@@ -202,7 +202,9 @@ const getLocationDetailsController = {
 
       // Handle Welsh redirect
       const welshRedirect = handleWelshRedirect(query, locationId, h)
-      if (welshRedirect) return welshRedirect
+      if (welshRedirect) {
+        return welshRedirect
+      }
 
       // Handle search terms redirect
       const searchTermsRedirect = handleSearchTermsRedirect(
@@ -212,7 +214,9 @@ const getLocationDetailsController = {
         request,
         h
       )
-      if (searchTermsRedirect) return searchTermsRedirect
+      if (searchTermsRedirect) {
+        return searchTermsRedirect
+      }
 
       request.yar.clear('searchTermsSaved')
 
@@ -262,7 +266,6 @@ const getLocationDetailsController = {
           buildLocationViewData({
             locationDetails,
             nearestLocationsRange,
-            nearestLocation,
             locationData,
             forecastNum,
             lang,
@@ -275,7 +278,9 @@ const getLocationDetailsController = {
       }
     } catch (error) {
       logger.error(`error on single location ${error.message}`)
-      return h.response('Internal Server Error').code(500)
+      return h
+        .response('Internal Server Error')
+        .code(HTTP_STATUS_INTERNAL_SERVER_ERROR)
     }
   }
 }
