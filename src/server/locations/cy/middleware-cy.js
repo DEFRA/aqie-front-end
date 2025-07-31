@@ -90,15 +90,17 @@ const searchMiddlewareCy = async (request, h) => {
     console.log('redirectioning to location search 8')
     return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
   }
-  const { getDailySummary, getForecasts, getOSPlaces } =
-    await fetchData(request, {
+  const { getDailySummary, getForecasts, getOSPlaces } = await fetchData(
+    request,
+    {
       locationType,
       userLocation,
       locationNameOrPostcode,
       lang,
       searchTerms,
       secondSearchTerm
-    })
+    }
+  )
   if (!getDailySummary) {
     request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
     request.yar.clear('searchTermsSaved')
@@ -195,7 +197,6 @@ const searchMiddlewareCy = async (request, h) => {
         searchTerms,
         selectedMatches,
         getForecasts,
-        getMeasurements,
         getDailySummary,
         transformedDailySummary,
         englishDate,
@@ -224,7 +225,6 @@ const searchMiddlewareCy = async (request, h) => {
         locationNameOrPostcode,
         userLocation,
         getForecasts,
-        getMeasurements,
         multipleLocations,
         airQualityData,
         siteTypeDescriptions,
@@ -307,7 +307,6 @@ const searchMiddlewareCy = async (request, h) => {
       title: `${multipleLocations.titlePrefix} ${headerTitle}`,
       pageTitle: `${multipleLocations.titlePrefix} ${title}`,
       getForecasts: getForecasts?.forecasts,
-      getMeasurements: getMeasurements?.measurements,
       lang
     })
     return h

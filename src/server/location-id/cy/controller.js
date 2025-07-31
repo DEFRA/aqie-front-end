@@ -67,7 +67,10 @@ const getLocationDetailsController = {
       if (previousUrl === undefined && !searchTermsSaved) {
         request.yar.clear('locationData')
         console.log('redirectioning to location search 2')
-        return h.redirect(buildRedirectUrl(currentUrl)).code(REDIRECT_STATUS_CODE).takeover()
+        return h
+          .redirect(buildRedirectUrl(currentUrl))
+          .code(REDIRECT_STATUS_CODE)
+          .takeover()
       }
       request.yar.clear('searchTermsSaved')
       const lang = LANG_CY
@@ -108,14 +111,15 @@ const getLocationDetailsController = {
         locationType,
         indexNI
       )
-      const { forecastNum, nearestLocationsRange, nearestLocation} = await getNearestLocation(
-        locationData?.results,
-        getForecasts,
-        locationType,
-        locationIndex,
-        lang,
-        useMockMeasurements
-      )
+      const { forecastNum, nearestLocationsRange, nearestLocation } =
+        await getNearestLocation(
+          locationData?.results,
+          getForecasts,
+          locationType,
+          locationIndex,
+          lang,
+          useMockMeasurements
+        )
 
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
@@ -127,14 +131,18 @@ const getLocationDetailsController = {
         )
         const { airQuality } = airQualityValues(forecastNum, lang)
 
-logger.info(`Before Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`)
+        logger.info(
+          `Before Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
+        )
         // Replace the large getForecasts with a single-record version
         locationData.getForecasts = nearestLocation
         // Replace the large getMeasurements with a filtered version
         locationData.getMeasurements = nearestLocationsRange
         // Save the updated locationData back into session
         request.yar.set('locationData', locationData)
-        logger.info(`After Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`)
+        logger.info(
+          `After Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
+        )
 
         return h.view('locations/location', {
           result: locationDetails,

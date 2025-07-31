@@ -52,7 +52,6 @@ const processUKLocationType = (request, h, redirectError, options = {}) => {
     getOSPlaces,
     getDailySummary,
     getForecasts,
-    getMeasurements,
     transformedDailySummary,
     englishDate,
     welshDate,
@@ -71,7 +70,6 @@ const processUKLocationType = (request, h, redirectError, options = {}) => {
     airQualityData,
     getDailySummary,
     getForecasts,
-    getMeasurements,
     transformedDailySummary,
     calendarWelsh,
     englishDate,
@@ -93,8 +91,7 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
     month,
     multipleLocations,
     home,
-    getForecasts,
-    getMeasurements
+    getForecasts
   } = options
   if (
     !getNIPlaces?.results ||
@@ -128,7 +125,6 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
     title: `${multipleLocations.titlePrefix} ${convertFirstLetterIntoUppercase(locationTitle)}`,
     pageTitle: `${multipleLocations.titlePrefix} ${convertFirstLetterIntoUppercase(locationTitle)} - ${home.pageTitle}`,
     getForecasts: getForecasts?.forecasts,
-    getMeasurements: getMeasurements?.measurements,
     lang
   }
 
@@ -202,19 +198,14 @@ const searchMiddleware = async (request, h) => {
 
   const { userLocation, locationNameOrPostcode } = redirectError
 
-  const {
-    getDailySummary,
-    getForecasts,
-    getMeasurements,
-    getOSPlaces,
-    getNIPlaces
-  } = await processLocationData(
-    request,
-    redirectError,
-    userLocation,
-    searchTerms,
-    secondSearchTerm
-  )
+  const { getDailySummary, getForecasts, getOSPlaces, getNIPlaces } =
+    await processLocationData(
+      request,
+      redirectError,
+      userLocation,
+      searchTerms,
+      secondSearchTerm
+    )
 
   if (
     redirectError.locationType === LOCATION_TYPE_NI &&
@@ -272,7 +263,6 @@ const searchMiddleware = async (request, h) => {
       airQualityData,
       getDailySummary,
       getForecasts,
-      getMeasurements,
       transformedDailySummary,
       calendarWelsh,
       englishDate,
@@ -292,8 +282,7 @@ const searchMiddleware = async (request, h) => {
       month,
       multipleLocations,
       home,
-      getForecasts,
-      getMeasurements
+      getForecasts
     })
   } else {
     request.yar.clear('searchTermsSaved')

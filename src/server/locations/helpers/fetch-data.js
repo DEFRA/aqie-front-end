@@ -28,7 +28,7 @@ const isMockEnabled = config.get('enabledMock')
 const oauthTokenNorthernIrelandTenantId = config.get(
   'oauthTokenNorthernIrelandTenantId'
 )
-const useMockMeasurements = config.get('useMockMeasurements')
+// const useMockMeasurements = config.get('useMockMeasurements')
 
 const fetchOAuthToken = async () => {
   logger.info(`OAuth token requested:`)
@@ -169,9 +169,15 @@ const fetchForecasts = async () => {
   return getForecasts
 }
 
-export const fetchMeasurements = async (latitude, longitude, useMockMeasurements) => {
+export const fetchMeasurements = async (
+  latitude,
+  longitude,
+  useMockMeasurements
+) => {
   if (useMockMeasurements) {
-    console.log(`Using mock measurements with latitude: ${latitude}, longitude: ${longitude}`)
+    console.log(
+      `Using mock measurements with latitude: ${latitude}, longitude: ${longitude}`
+    )
     // Build query parameters for mock API with dynamic lat/lon
     const currentDate = new Date().toISOString().split('T')[0]
     const queryParams = new URLSearchParams({
@@ -179,11 +185,11 @@ export const fetchMeasurements = async (latitude, longitude, useMockMeasurements
       'start-end': currentDate,
       'with-closed': 'false',
       'with-pollutants': 'true',
-      'latitude': latitude || '',
-      'longitude': longitude || '',
-      'networks': 'AURN',
-      'totalItems': '3',
-      'distance': '60',
+      latitude: latitude || '',
+      longitude: longitude || '',
+      networks: 'AURN',
+      totalItems: '3',
+      distance: '60',
       'daqi-pollutant': 'true'
     })
 
