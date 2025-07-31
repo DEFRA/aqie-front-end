@@ -17,24 +17,20 @@ const logger = createLogger()
 async function getNearestLocation(
   matches,
   forecasts,
-  measurements,
   location,
   index,
-  lang
+  lang,
+  useMockMeasurements
 ) {
-  const latlon =
+  if (!useMockMeasurements) {
+const latlon =
     matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
   const forecastCoordinates =
     matches.length !== 0 ? coordinatesTotal(forecasts, location) : []
+  const getMeasurments = await fetchMeasurements(latlon.lat, latlon.lon, useMockMeasurements)
   const measurementsCoordinates =
-    matches.length !== 0 ? coordinatesTotal(measurements, location) : []
-  
-  // Fetch new measurements with parameters if latlon is available
-  let newMeasurements = []
-  if (latlon?.lat && latlon?.lon) {
-    newMeasurements = await fetchMeasurements(latlon.lat, latlon.lon, true)
-  }
-  console.log(`newMeasurements: ${JSON.stringify(newMeasurements)}`)
+    matches.length !== 0 ? coordinatesTotal(getMeasurments?.measurements, location) : []
+
   const nearestLocation =
     matches.length !== 0
       ? getNearLocation(
@@ -52,7 +48,7 @@ async function getNearestLocation(
   const pointsToDisplay = nearestMeasurementsPoints.filter((p) =>
     pointsInRange(latlon, p)
   )
-  const nearestLocationsRangeCal = measurements?.filter((item, i) => {
+  const nearestLocationsRangeCal = getMeasurments?.measurements?.filter((item, i) => {
     if (!item.location?.coordinates) {
       return false
     }
@@ -156,7 +152,59 @@ async function getNearestLocation(
           return [...todayDate, ...otherdays]
         })
       : 0
-  return { forecastNum, newMeasurements, latlon }
-}
+  return { forecastNum, nearestLocationsRange, nearestLocation, latlon }
+  } else {
+    const latlon =
+    matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
+    // Fetch new measurements with parameters if latlon is available
+  let newMeasurements = []
+  let nearestLocationsRange = []
+  if (latlon?.lat && latlon?.lon) {
+    newMeasurements = await fetchMeasurements(latlon.lat, latlon.lon, useMockMeasurements)
+  }
+
+if (newMeasurements) {
+  nearestLocationsRange = newMeasurements?.measurements
+}  
+  console.log(`newMeasurements: ${JSON.stringify(newMeasurements)}`)
+  const forecastCoordinates =
+    matches.length !== 0 ? coordinatesTotal(forecasts, location) : []
+
+ const nearestLocation =
+    matches.length !== 0
+      ? getNearLocation(
+          latlon?.lat,
+          latlon?.lon,
+          forecastCoordinates,
+          forecasts
+        )
+      : {}
+const forecastDay =
+    moment
+      .tz('Europe/London')
+      ?.format('dddd')
+      ?.substring(0, FORECAST_DAY_SLICE_LENGTH) || ''
+  const forecastNum =
+    matches.length !== 0
+      ? nearestLocation.map((current) => {
+          let todayDate = []
+          const otherdays = []
+
+          current.forecast.forEach(({ day, value }) => {
+            if (day === forecastDay) {
+              todayDate = [{ today: value }]
+            } else {
+              otherdays.push({ [day]: value })
+            }
+          })
+          return [...todayDate, ...otherdays]
+        })
+      : 0
+
+    return { forecastNum, nearestLocationsRange, nearestLocation, latlon }
+  }
+  }
+  
+
 
 export { getNearestLocation }

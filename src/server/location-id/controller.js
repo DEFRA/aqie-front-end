@@ -25,6 +25,8 @@ import { getNearestLocation } from '../locations/helpers/get-nearest-location.js
 import { getIdMatch } from '../locations/helpers/get-id-match.js'
 import { getNIData } from '../locations/helpers/get-ni-single-data.js'
 import { compareLastElements } from '../locations/helpers/convert-string.js'
+import sizeof from 'object-sizeof'
+import { config } from '../../config/index.js'
 
 const logger = createLogger()
 
@@ -34,6 +36,7 @@ const getLocationDetailsController = {
       const { query, headers } = request
       const locationId = request.params.id
       const searchTermsSaved = request.yar.get('searchTermsSaved')
+      const useMockMeasurements = config.get('useMockMeasurements')
 
       if (query?.lang && query?.lang === LANG_CY && !query?.searchTerms) {
         return h
@@ -84,7 +87,7 @@ const getLocationDetailsController = {
         multipleLocations
       } = english
       const locationData = request.yar.get('locationData') || []
-      const { getForecasts, getMeasurements } = locationData
+      const { getForecasts } = locationData
       const locationType =
         locationData.locationType === LOCATION_TYPE_UK
           ? LOCATION_TYPE_UK
@@ -94,10 +97,10 @@ const getLocationDetailsController = {
         distance = getNearestLocation(
           locationData?.results,
           getForecasts,
-          getMeasurements,
           locationType,
           0,
-          lang
+          lang,
+          useMockMeasurements
         )
       }
       const indexNI = 0
@@ -109,13 +112,13 @@ const getLocationDetailsController = {
         locationType,
         indexNI
       )
-      const { forecastNum, nearestLocationsRange } = getNearestLocation(
+      const { forecastNum, nearestLocationsRange, nearestLocation} = await getNearestLocation(
         locationData?.results,
         getForecasts,
-        getMeasurements,
         locationType,
         locationIndex,
-        lang
+        lang,
+        useMockMeasurements
       )
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
@@ -126,6 +129,15 @@ const getLocationDetailsController = {
           lang
         )
         const { airQuality } = airQualityValues(forecastNum, lang)
+        logger.info(`Before Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`)
+        // Replace the large getForecasts with a single-record version
+        locationData.getForecasts = nearestLocation
+        // Replace the large getMeasurements with a filtered version
+        locationData.getMeasurements = nearestLocationsRange
+        // Save the updated locationData back into session
+        request.yar.set('locationData', locationData)
+        logger.info(
+          `After Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`)
         return h.view('locations/location', {
           result: locationDetails,
           airQuality,

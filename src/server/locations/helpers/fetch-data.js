@@ -220,7 +220,7 @@ export const fetchMeasurements = async (latitude, longitude, useMockMeasurements
     logger.info(`getMeasurements data fetched:`)
   }
 
-  return getMeasurements
+  return getMeasurements || []
 }
 
 const fetchDailySummary = async () => {
@@ -242,7 +242,7 @@ const fetchDailySummary = async () => {
 
 async function fetchData(
   request,
-  { locationType, userLocation, searchTerms, secondSearchTerm, latitude, longitude, useMockMeasurements }
+  { locationType, userLocation, searchTerms, secondSearchTerm }
 ) {
   let optionsOAuth
   let accessToken
@@ -261,7 +261,6 @@ async function fetchData(
   }
 
   const getForecasts = await fetchForecasts()
-  const getMeasurements = await fetchMeasurements(latitude, longitude, useMockMeasurements)
   const getDailySummary = await fetchDailySummary()
 
   if (locationType === LOCATION_TYPE_UK) {
@@ -270,10 +269,10 @@ async function fetchData(
       searchTerms,
       secondSearchTerm
     )
-    return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
+    return { getDailySummary, getForecasts, getOSPlaces }
   } else if (locationType === LOCATION_TYPE_NI) {
     const getNIPlaces = await handleNILocationData(userLocation, optionsOAuth)
-    return { getDailySummary, getForecasts, getMeasurements, getNIPlaces }
+    return { getDailySummary, getForecasts, getNIPlaces }
   } else {
     logger.error('Unsupported location type provided:', locationType)
     return null

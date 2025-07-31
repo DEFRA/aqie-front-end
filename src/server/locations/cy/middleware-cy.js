@@ -90,7 +90,7 @@ const searchMiddlewareCy = async (request, h) => {
     console.log('redirectioning to location search 8')
     return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
   }
-  const { getDailySummary, getForecasts, getMeasurements, getOSPlaces } =
+  const { getDailySummary, getForecasts, getOSPlaces } =
     await fetchData(request, {
       locationType,
       userLocation,
