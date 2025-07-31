@@ -10,7 +10,7 @@ import {
   LOCATION_TYPE_NI,
   LOCATION_TYPE_UK,
   REDIRECT_STATUS_CODE,
-  HTTP_STATUS_INTERNAL_SERVER_ERROR
+  STATUS_INTERNAL_SERVER_ERROR
 } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 import { english, calendarEnglish } from '../data/en/en.js'
@@ -280,7 +280,7 @@ const getLocationDetailsController = {
       logger.error(`error on single location ${error.message}`)
       return h
         .response('Internal Server Error')
-        .code(HTTP_STATUS_INTERNAL_SERVER_ERROR)
+        .code(STATUS_INTERNAL_SERVER_ERROR)
     }
   }
 }
