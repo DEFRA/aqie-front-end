@@ -15,7 +15,8 @@ import {
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI,
   LOCATION_NOT_FOUND,
-  REDIRECT_STATUS_CODE
+  REDIRECT_STATUS_CODE,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR
 } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 import { getSearchTermsFromUrl } from '../../locations/helpers/get-search-terms-from-url.js'
@@ -184,7 +185,9 @@ const getLocationDetailsController = {
       }
     } catch (error) {
       logger.error(`error on single location ${error.message}`)
-      return h.response('Internal Server Error').code(500)
+      return h
+        .response('Internal Server Error')
+        .code(HTTP_STATUS_INTERNAL_SERVER_ERROR)
     }
   }
 }

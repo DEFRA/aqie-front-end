@@ -90,7 +90,9 @@ function buildNearestLocationEntry(curr, latlon, lang) {
       }
     ) * 0.000621371192
   const newpollutants = buildPollutantsObject(curr, lang)
-  if (Object.keys(newpollutants).length === 0) return null
+  if (Object.keys(newpollutants).length === 0) {
+    return null
+  }
   return {
     area: curr.area,
     areaType: curr.areaType,
@@ -108,7 +110,9 @@ function buildNearestLocationEntry(curr, latlon, lang) {
 
 // Helper to build nearestLocationsRange for !useMockMeasurements
 function buildNearestLocationsRange(matches, getMeasurments, latlon, lang) {
-  if (!getMeasurments?.measurements) return []
+  if (!getMeasurments?.measurements) {
+    return []
+  }
   const measurementsCoordinates =
     matches.length !== 0
       ? coordinatesTotal(getMeasurments.measurements, latlon)
@@ -123,7 +127,9 @@ function buildNearestLocationsRange(matches, getMeasurments, latlon, lang) {
   )
   const nearestLocationsRangeCal = getMeasurments.measurements.filter(
     (item) => {
-      if (!item.location?.coordinates) return false
+      if (!item.location?.coordinates) {
+        return false
+      }
       return pointsToDisplay.some(
         (dis) =>
           item.location.coordinates[0] === dis.latitude &&
