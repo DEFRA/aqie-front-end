@@ -87,7 +87,13 @@ export const config = convict({
   enabledMock: {
     doc: 'Enabled Mock Data for Northern Ireland Names API',
     format: Boolean,
-    default: false
+    default: true
+  },
+  useMockMeasurements: {
+    doc: 'Use Mock Measurements API',
+    format: Boolean,
+    default: true,
+    env: 'USE_MOCK_MEASUREMENTS'
   },
   log: {
     enabled: {
@@ -263,7 +269,7 @@ export const config = convict({
   mockOsPlacesApiPostcodeNorthernIrelandUrl: {
     doc: 'Search postcode Northern Ireland with Mock osPlaces url',
     format: String,
-    default: 'http://localhost:5000/results?postcode='
+    default: 'http://localhost:5001/results?postcode='
   },
   redirectUriNIreland: {
     doc: 'Redirect URI for Northern Ireland',

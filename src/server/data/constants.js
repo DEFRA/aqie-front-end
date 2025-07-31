@@ -3,7 +3,6 @@ import path from 'node:path'
 export const REFERER_PATH_INDEX = 3
 export const FORECAST_DAY_SLICE_LENGTH = 3
 export const LANG_SLICE_LENGTH = 2
-
 export const WELSH_TITLE = 'Gwirio ansawdd aer'
 export const LOCATION_TYPE_UK = 'uk-location'
 export const LOCATION_TYPE_NI = 'ni-location'

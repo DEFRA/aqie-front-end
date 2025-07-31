@@ -23,7 +23,6 @@ const handleSingleMatch = (
   {
     selectedMatches,
     getForecasts,
-    getMeasurements,
     getDailySummary,
     transformedDailySummary,
     englishDate,
@@ -43,7 +42,6 @@ const handleSingleMatch = (
     results: selectedMatches,
     getForecasts: getForecasts?.forecasts,
     transformedDailySummary,
-    getMeasurements: getMeasurements?.measurements,
     englishDate,
     dailySummary: getDailySummary,
     welshDate,
@@ -70,7 +68,6 @@ const handleMultipleMatches = (
     locationNameOrPostcode,
     userLocation,
     getForecasts,
-    getMeasurements,
     multipleLocations,
     airQualityData,
     siteTypeDescriptions,
@@ -94,7 +91,6 @@ const handleMultipleMatches = (
   request.yar.set('locationData', {
     results: selectedMatches,
     getForecasts: getForecasts?.forecasts,
-    getMeasurements: getMeasurements?.measurements,
     multipleLocations,
     title: multipleLocations.title,
     paragraphs: multipleLocations.paragraphs,

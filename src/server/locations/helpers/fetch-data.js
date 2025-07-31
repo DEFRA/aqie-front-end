@@ -28,6 +28,7 @@ const isMockEnabled = config.get('enabledMock')
 const oauthTokenNorthernIrelandTenantId = config.get(
   'oauthTokenNorthernIrelandTenantId'
 )
+// const useMockMeasurements = config.get('useMockMeasurements')
 
 const fetchOAuthToken = async () => {
   logger.info(`OAuth token requested:`)
@@ -168,7 +169,49 @@ const fetchForecasts = async () => {
   return getForecasts
 }
 
-const fetchMeasurements = async () => {
+export const fetchMeasurements = async (
+  latitude,
+  longitude,
+  useMockMeasurements
+) => {
+  if (useMockMeasurements) {
+    console.log(
+      `Using mock measurements with latitude: ${latitude}, longitude: ${longitude}`
+    )
+    // Build query parameters for mock API with dynamic lat/lon
+    const currentDate = new Date().toISOString().split('T')[0]
+    const queryParams = new URLSearchParams({
+      'latest-measurement': 'true',
+      'start-end': currentDate,
+      'with-closed': 'false',
+      'with-pollutants': 'true',
+      latitude: latitude || '',
+      longitude: longitude || '',
+      networks: 'AURN',
+      totalItems: '3',
+      distance: '60',
+      'daqi-pollutant': 'true'
+    })
+
+    const mockMeasurementsUrl = `http://localhost:5000/measurements?${queryParams.toString()}`
+    const [mockErrorMeasurements, mockGetMeasurements] = await catchFetchError(
+      mockMeasurementsUrl,
+      options
+    )
+
+    if (mockErrorMeasurements) {
+      logger.error(
+        `Error fetching Mock Measurements data: ${mockErrorMeasurements.message}`
+      )
+      return []
+    } else {
+      logger.info(`Mock getMeasurements data fetched:`)
+    }
+
+    return mockGetMeasurements || []
+  }
+
+  // Call original measurements API without query parameters
   const measurementsAPIurl = config.get('measurementsApiUrl')
   const [errorMeasurements, getMeasurements] = await catchFetchError(
     measurementsAPIurl,
@@ -183,7 +226,7 @@ const fetchMeasurements = async () => {
     logger.info(`getMeasurements data fetched:`)
   }
 
-  return getMeasurements
+  return getMeasurements || []
 }
 
 const fetchDailySummary = async () => {
@@ -224,7 +267,6 @@ async function fetchData(
   }
 
   const getForecasts = await fetchForecasts()
-  const getMeasurements = await fetchMeasurements()
   const getDailySummary = await fetchDailySummary()
 
   if (locationType === LOCATION_TYPE_UK) {
@@ -233,10 +275,10 @@ async function fetchData(
       searchTerms,
       secondSearchTerm
     )
-    return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
+    return { getDailySummary, getForecasts, getOSPlaces }
   } else if (locationType === LOCATION_TYPE_NI) {
     const getNIPlaces = await handleNILocationData(userLocation, optionsOAuth)
-    return { getDailySummary, getForecasts, getMeasurements, getNIPlaces }
+    return { getDailySummary, getForecasts, getNIPlaces }
   } else {
     logger.error('Unsupported location type provided:', locationType)
     return null
