@@ -9,8 +9,8 @@
     "node": ">=22.16.0"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack",
-    "build:frontend": "cross-env NODE_ENV=production webpack",
+    "build": "NODE_ENV=production webpack",
+    "build:frontend": "NODE_ENV=production webpack",
     "dev": "run-p frontend:watch server:watch",
     "dev:debug": "run-p frontend:watch server:debug",
     "docker:dev": "npm run dev",
@@ -69,7 +69,6 @@
     "mt-osgridref": "0.1.0",
     "node-fetch": "3.3.2",
     "nunjucks": "3.2.4",
-    "object-sizeof": "2.6.5",
     "pino": "^9.7.0",
     "pino-pretty": "^13.0.0",
     "proj4": "2.9.0",
