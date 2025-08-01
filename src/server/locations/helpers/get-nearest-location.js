@@ -11,7 +11,7 @@ import { getPollutantLevelCy } from './cy/pollutant-level-calculation.js'
 import { LANG_CY, FORECAST_DAY_SLICE_LENGTH } from '../../data/constants.js'
 import { fetchMeasurements } from './fetch-data.js'
 
-// Helper to get latlon and forecastCoordinates
+// Helper to get latlon and forecastCoordinates //
 function getLatLonAndForecastCoords(matches, location, index, forecasts) {
   const latlon =
     matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
