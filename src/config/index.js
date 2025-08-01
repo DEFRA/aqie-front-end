@@ -275,7 +275,7 @@ export const config = convict({
   mockOsPlacesApiPostcodeNorthernIrelandUrl: {
     doc: 'Search postcode Northern Ireland with Mock osPlaces url',
     format: String,
-    default: 'http://localhost:5001/results?postcode='
+    default: 'http://localhost:5000/results?postcode='
   },
   redirectUriNIreland: {
     doc: 'Redirect URI for Northern Ireland',
