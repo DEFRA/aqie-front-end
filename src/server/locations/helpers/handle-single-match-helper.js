@@ -9,6 +9,7 @@ const handleSingleMatchHelper = (
 ) => {
   const {
     getForecasts,
+    getMeasurements,
     getDailySummary,
     transformedDailySummary,
     englishDate,
@@ -23,6 +24,7 @@ const handleSingleMatchHelper = (
   return handleSingleMatch(h, request, {
     selectedMatches,
     getForecasts,
+    getMeasurements,
     getDailySummary,
     transformedDailySummary,
     englishDate,

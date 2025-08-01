@@ -70,7 +70,6 @@ const handleUKError = (request, h, lang, locationNameOrPostcode) => {
   request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
 
   const redirectPath = lang === LANG_EN ? REDIRECT_PATH_EN : REDIRECT_PATH_CY
-  console.log('redirectioning to location search 20')
   return h.redirect(redirectPath).code(REDIRECT_STATUS_CODE).takeover()
 }
 
@@ -101,7 +100,6 @@ const handleNIError = (request, h, lang, locationNameOrPostcode) => {
   request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
 
   const redirectPath = lang === LANG_EN ? REDIRECT_PATH_EN : REDIRECT_PATH_CY
-  console.log('redirectioning to location search 21')
   return h.redirect(redirectPath).code(REDIRECT_STATUS_CODE).takeover()
 }
 
