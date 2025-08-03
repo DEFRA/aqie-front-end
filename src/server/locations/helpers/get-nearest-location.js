@@ -108,7 +108,7 @@ function buildNearestLocationEntry(curr, latlon, lang) {
   }
 }
 
-// Helper to build nearestLocationsRange for !useMockMeasurements
+// Helper to build nearestLocationsRange for !useNewRicardoMeasurementsEnabled
 function buildNearestLocationsRange(matches, getMeasurments, latlon, lang) {
   if (!getMeasurments?.measurements) {
     return []
@@ -150,7 +150,7 @@ async function getNearestLocation(
   location,
   index,
   lang,
-  useMockMeasurements
+  useNewRicardoMeasurementsEnabled
 ) {
   const { latlon, forecastCoordinates } = getLatLonAndForecastCoords(
     matches,
@@ -169,11 +169,11 @@ async function getNearestLocation(
       ?.format('dddd')
       ?.substring(0, FORECAST_DAY_SLICE_LENGTH) || ''
 
-  if (!useMockMeasurements) {
+  if (!useNewRicardoMeasurementsEnabled) {
     getMeasurments = await fetchMeasurements(
       latlon.lat,
       latlon.lon,
-      useMockMeasurements
+      useNewRicardoMeasurementsEnabled
     )
     nearestLocationsRange = buildNearestLocationsRange(
       matches,
@@ -187,11 +187,41 @@ async function getNearestLocation(
       newMeasurements = await fetchMeasurements(
         latlon.lat,
         latlon.lon,
-        useMockMeasurements
+        useNewRicardoMeasurementsEnabled
       )
     }
-    if (newMeasurements) {
-      nearestLocationsRange = newMeasurements?.measurements
+    // if (newMeasurements) {
+    //   nearestLocationsRange = newMeasurements?.measurements
+    // }
+    if (newMeasurements?.measurements) {
+      nearestLocationsRange = newMeasurements.measurements.map(
+        (measurement) => {
+          const updatedPollutants = {}
+
+          Object.entries(measurement.pollutants || {}).forEach(
+            ([pollutant, data]) => {
+              const polValue = data?.value
+              if (polValue !== null && polValue !== -99 && polValue !== '0') {
+                const { getDaqi, getBand } =
+                  lang === LANG_CY
+                    ? getPollutantLevelCy(polValue, pollutant)
+                    : getPollutantLevel(polValue, pollutant)
+
+                updatedPollutants[pollutant] = {
+                  ...data,
+                  daqi: getDaqi,
+                  band: getBand
+                }
+              }
+            }
+          )
+
+          return {
+            ...measurement,
+            pollutants: updatedPollutants
+          }
+        }
+      )
     }
   }
   nearestLocation =

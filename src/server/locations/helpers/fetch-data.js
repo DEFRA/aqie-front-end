@@ -28,8 +28,6 @@ const isMockEnabled = config.get('enabledMock')
 const oauthTokenNorthernIrelandTenantId = config.get(
   'oauthTokenNorthernIrelandTenantId'
 )
-// const useMockMeasurements = config.get('useMockMeasurements')
-
 const fetchOAuthToken = async () => {
   logger.info(`OAuth token requested:`)
   const url = `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`
@@ -172,61 +170,58 @@ const fetchForecasts = async () => {
 export const fetchMeasurements = async (
   latitude,
   longitude,
-  useMockMeasurements
+  useNewRicardoMeasurementsEnabled
 ) => {
-  if (useMockMeasurements) {
-    console.log(
-      `Using mock measurements with latitude: ${latitude}, longitude: ${longitude}`
-    )
-    // Build query parameters for mock API with dynamic lat/lon
-    const currentDate = new Date().toISOString().split('T')[0]
-    const queryParams = new URLSearchParams({
-      'latest-measurement': 'true',
-      'start-end': currentDate,
-      'with-closed': 'false',
-      'with-pollutants': 'true',
-      latitude: latitude || '',
-      longitude: longitude || '',
-      networks: 'AURN',
-      totalItems: '3',
-      distance: '60',
-      'daqi-pollutant': 'true'
-    })
+  const formatCoordinate = (coord) => Number(coord).toFixed(6)
+  const getCurrentDate = () => new Date().toISOString().split('T')[0]
 
-    const mockMeasurementsUrl = `http://localhost:5000/measurements?${queryParams.toString()}`
-    const [mockErrorMeasurements, mockGetMeasurements] = await catchFetchError(
-      mockMeasurementsUrl,
-      options
-    )
-
-    if (mockErrorMeasurements) {
-      logger.error(
-        `Error fetching Mock Measurements data: ${mockErrorMeasurements.message}`
-      )
+  const fetchDataFromApi = async (url) => {
+    const [error, getMeasurements] = await catchFetchError(url, options)
+    if (error) {
+      logger.error(`Error fetching data: ${error.message}`)
       return []
-    } else {
-      logger.info(`Mock getMeasurements data fetched:`)
+    }
+    logger.info(`Data fetched successfully.`)
+    return getMeasurements || []
+  }
+
+  try {
+    if (useNewRicardoMeasurementsEnabled) {
+      logger.info(
+        `Using mock measurements with latitude: ${latitude}, longitude: ${longitude}`
+      )
+
+      const queryParams = new URLSearchParams({
+        page: '1',
+        'latest-measurement': 'true',
+        'start-date': getCurrentDate(),
+        'with-closed': 'false',
+        'with-pollutants': 'true',
+        latitude: formatCoordinate(latitude),
+        longitude: formatCoordinate(longitude),
+        'networks[]': '4',
+        totalItems: '3',
+        distance: '60',
+        'daqi-pollutant': 'true'
+      })
+
+      const baseUrl = config.get('ricardoMeasurementsApiUrl')
+      const newRicardoMeasurementsApiUrl = `${baseUrl}?${queryParams.toString()}`
+      logger.info(
+        `New Ricardo measurements API URL: ${newRicardoMeasurementsApiUrl}`
+      )
+
+      return await fetchDataFromApi(newRicardoMeasurementsApiUrl)
     }
 
-    return mockGetMeasurements || []
+    // Call old measurements API without query parameters
+    const measurementsAPIurl = config.get('measurementsApiUrl')
+    logger.info(`Old measurements API URL: ${measurementsAPIurl}`)
+    return await fetchDataFromApi(measurementsAPIurl)
+  } catch (err) {
+    logger.error(`Unexpected error in fetchMeasurements: ${err.message}`)
+    return []
   }
-
-  // Call original measurements API without query parameters
-  const measurementsAPIurl = config.get('measurementsApiUrl')
-  const [errorMeasurements, getMeasurements] = await catchFetchError(
-    measurementsAPIurl,
-    options
-  )
-
-  if (errorMeasurements) {
-    logger.error(
-      `Error fetching Measurements data: ${errorMeasurements.message}`
-    )
-  } else {
-    logger.info(`getMeasurements data fetched:`)
-  }
-
-  return getMeasurements || []
 }
 
 const fetchDailySummary = async () => {

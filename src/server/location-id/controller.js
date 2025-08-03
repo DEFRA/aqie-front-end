@@ -152,7 +152,7 @@ async function getNearestLocationData(
   locationType,
   locationId,
   lang,
-  useMockMeasurements
+  useNewRicardoMeasurementsEnabled
 ) {
   let distance
   if (locationData.locationType === LOCATION_TYPE_NI) {
@@ -162,7 +162,7 @@ async function getNearestLocationData(
       locationType,
       0,
       lang,
-      useMockMeasurements
+      useNewRicardoMeasurementsEnabled
     )
   }
   const indexNI = 0
@@ -181,7 +181,7 @@ async function getNearestLocationData(
       locationType,
       locationIndex,
       lang,
-      useMockMeasurements
+      useNewRicardoMeasurementsEnabled
     )
   return {
     locationDetails,
@@ -197,7 +197,9 @@ const getLocationDetailsController = {
       const { query, headers } = request
       const locationId = request.params.id
       const searchTermsSaved = request.yar.get('searchTermsSaved')
-      const useMockMeasurements = config.get('useMockMeasurements')
+      const useNewRicardoMeasurementsEnabled = config.get(
+        'useNewRicardoMeasurementsEnabled'
+      )
       const currentUrl = request.url.href
 
       // Handle Welsh redirect
@@ -245,7 +247,7 @@ const getLocationDetailsController = {
         locationType,
         locationId,
         lang,
-        useMockMeasurements
+        useNewRicardoMeasurementsEnabled
       )
 
       if (locationDetails) {
