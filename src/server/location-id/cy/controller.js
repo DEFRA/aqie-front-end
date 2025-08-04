@@ -15,7 +15,8 @@ import {
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI,
   LOCATION_NOT_FOUND,
-  REDIRECT_STATUS_CODE
+  REDIRECT_STATUS_CODE,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR
 } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 import { getSearchTermsFromUrl } from '../../locations/helpers/get-search-terms-from-url.js'
@@ -55,7 +56,9 @@ const getLocationDetailsController = {
       const { query } = request
       const locationId = request.params.id
       const searchTermsSaved = request.yar.get('searchTermsSaved')
-      const useMockMeasurements = config.get('useMockMeasurements')
+      const useNewRicardoMeasurementsEnabled = config.get(
+        'useNewRicardoMeasurementsEnabled'
+      )
 
       if (shouldRedirectToEnglish(query)) {
         return h.redirect(`/location/${locationId}/?lang=en`)
@@ -67,7 +70,10 @@ const getLocationDetailsController = {
       if (previousUrl === undefined && !searchTermsSaved) {
         request.yar.clear('locationData')
         console.log('redirectioning to location search 2')
-        return h.redirect(buildRedirectUrl(currentUrl)).code(REDIRECT_STATUS_CODE).takeover()
+        return h
+          .redirect(buildRedirectUrl(currentUrl))
+          .code(REDIRECT_STATUS_CODE)
+          .takeover()
       }
       request.yar.clear('searchTermsSaved')
       const lang = LANG_CY
@@ -96,7 +102,7 @@ const getLocationDetailsController = {
           locationType,
           0,
           lang,
-          useMockMeasurements
+          useNewRicardoMeasurementsEnabled
         )
       }
       const indexNI = 0
@@ -108,14 +114,15 @@ const getLocationDetailsController = {
         locationType,
         indexNI
       )
-      const { forecastNum, nearestLocationsRange, nearestLocation} = await getNearestLocation(
-        locationData?.results,
-        getForecasts,
-        locationType,
-        locationIndex,
-        lang,
-        useMockMeasurements
-      )
+      const { forecastNum, nearestLocationsRange, nearestLocation } =
+        await getNearestLocation(
+          locationData?.results,
+          getForecasts,
+          locationType,
+          locationIndex,
+          lang,
+          useNewRicardoMeasurementsEnabled
+        )
 
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
@@ -127,14 +134,18 @@ const getLocationDetailsController = {
         )
         const { airQuality } = airQualityValues(forecastNum, lang)
 
-logger.info(`Before Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`)
+        logger.info(
+          `Before Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
+        )
         // Replace the large getForecasts with a single-record version
         locationData.getForecasts = nearestLocation
         // Replace the large getMeasurements with a filtered version
         locationData.getMeasurements = nearestLocationsRange
         // Save the updated locationData back into session
         request.yar.set('locationData', locationData)
-        logger.info(`After Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`)
+        logger.info(
+          `After Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
+        )
 
         return h.view('locations/location', {
           result: locationDetails,
@@ -176,7 +187,9 @@ logger.info(`Before Session (yar) size in MB for geForecasts: ${(sizeof(request.
       }
     } catch (error) {
       logger.error(`error on single location ${error.message}`)
-      return h.response('Internal Server Error').code(500)
+      return h
+        .response('Internal Server Error')
+        .code(HTTP_STATUS_INTERNAL_SERVER_ERROR)
     }
   }
 }

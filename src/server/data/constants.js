@@ -3,7 +3,6 @@ import path from 'node:path'
 export const REFERER_PATH_INDEX = 3
 export const FORECAST_DAY_SLICE_LENGTH = 3
 export const LANG_SLICE_LENGTH = 2
-
 export const WELSH_TITLE = 'Gwirio ansawdd aer'
 export const LOCATION_TYPE_UK = 'uk-location'
 export const LOCATION_TYPE_NI = 'ni-location'
@@ -87,6 +86,7 @@ export const AIR_QUALITY_THRESHOLD_2 = 2
 export const AIR_QUALITY_THRESHOLD_3 = 3
 export const AIR_QUALITY_THRESHOLD_4 = 4
 export const DEFAULT_LOCATION_TYPE = 'uk-location'
+export const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500
 
 // '' - Constant for the server directory name
 export const SERVER_DIRNAME = path.dirname(fileURLToPath(import.meta.url))

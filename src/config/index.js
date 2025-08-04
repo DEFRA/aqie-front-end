@@ -87,13 +87,13 @@ export const config = convict({
   enabledMock: {
     doc: 'Enabled Mock Data for Northern Ireland Names API',
     format: Boolean,
-    default: true
+    default: false
   },
-  useMockMeasurements: {
-    doc: 'Use Mock Measurements API',
+  useNewRicardoMeasurementsEnabled: {
+    doc: 'Falg To Use New Ricardo Measurements API',
     format: Boolean,
     default: true,
-    env: 'USE_MOCK_MEASUREMENTS'
+    env: 'USE_NEW_RICARDO_MEASUREMENTS_ENABLED'
   },
   log: {
     enabled: {
@@ -234,6 +234,12 @@ export const config = convict({
     format: String,
     default: `https://aqie-back-end.dev.cdp-int.defra.cloud/measurements`,
     env: 'MEASUREMENTS_API_URL'
+  },
+  ricardoMeasurementsApiUrl: {
+    doc: 'New Ricardo API url',
+    format: String,
+    default: `https://aqie-back-end.dev.cdp-int.defra.cloud/monitoringStationInfo?`,
+    env: 'NEW_RICARDO_MEASUREMENTS_API_URL'
   },
   forecastSummaryUrl: {
     doc: 'Summary forecast url',
