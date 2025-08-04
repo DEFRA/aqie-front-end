@@ -262,7 +262,6 @@ async function fetchData(
   }
 
   const getForecasts = await fetchForecasts()
-  const getMeasurements = await fetchMeasurements()
   const getDailySummary = await fetchDailySummary()
 
   if (locationType === LOCATION_TYPE_UK) {
@@ -271,10 +270,10 @@ async function fetchData(
       searchTerms,
       secondSearchTerm
     )
-    return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
+    return { getDailySummary, getForecasts, getOSPlaces }
   } else if (locationType === LOCATION_TYPE_NI) {
     const getNIPlaces = await handleNILocationData(userLocation, optionsOAuth)
-    return { getDailySummary, getForecasts, getMeasurements, getNIPlaces }
+    return { getDailySummary, getForecasts, getNIPlaces }
   } else {
     logger.error('Unsupported location type provided:', locationType)
     return null

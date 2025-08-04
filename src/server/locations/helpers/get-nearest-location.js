@@ -226,21 +226,20 @@ async function getNearestLocation(
   }
   nearestLocation =
     matches.length !== 0
-      ? nearestLocation.map((current) => {
-          let todayDate = []
-          const otherdays = []
-
-          current.forecast.forEach(({ day, value }) => {
-            if (day === forecastDay) {
-              todayDate = [{ today: value }]
-            } else {
-              otherdays.push({ [day]: value })
-            }
-          })
-          return [...todayDate, ...otherdays]
-        })
-      : 0
-  return { forecastNum, nearestLocationsRange, latlon }
+      ? getNearLocation(
+          latlon?.lat,
+          latlon?.lon,
+          forecastCoordinates,
+          forecasts
+        )
+      : {}
+  forecastNum = buildForecastNum(matches, nearestLocation, forecastDay)
+  return {
+    forecastNum,
+    nearestLocationsRange,
+    nearestLocation,
+    latlon: resultLatlon
+  }
 }
 
 export { getNearestLocation }

@@ -9,7 +9,8 @@ import {
   LOCATION_NOT_FOUND,
   LOCATION_TYPE_NI,
   LOCATION_TYPE_UK,
-  REDIRECT_STATUS_CODE
+  REDIRECT_STATUS_CODE,
+  STATUS_INTERNAL_SERVER_ERROR
 } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 import { english, calendarEnglish } from '../data/en/en.js'
@@ -25,6 +26,8 @@ import { getNearestLocation } from '../locations/helpers/get-nearest-location.js
 import { getIdMatch } from '../locations/helpers/get-id-match.js'
 import { getNIData } from '../locations/helpers/get-ni-single-data.js'
 import { compareLastElements } from '../locations/helpers/convert-string.js'
+import sizeof from 'object-sizeof'
+import { config } from '../../config/index.js'
 
 const logger = createLogger()
 
@@ -241,61 +244,45 @@ const getLocationDetailsController = {
       } = await getNearestLocationData(
         locationData,
         getForecasts,
-        getMeasurements,
         locationType,
         locationId,
         lang,
         useNewRicardoMeasurementsEnabled
       )
+
       if (locationDetails) {
-        let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
-        title = convertFirstLetterIntoUppercase(title)
-        headerTitle = convertFirstLetterIntoUppercase(headerTitle)
-        const { transformedDailySummary } = transformKeys(
-          locationData.dailySummary,
-          lang
+        logger.info(
+          `Before Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
         )
-        const { airQuality } = airQualityValues(forecastNum, lang)
-        return h.view('locations/location', {
-          result: locationDetails,
-          airQuality,
-          airQualityData: airQualityData.commonMessages,
-          monitoringSites: nearestLocationsRange,
-          siteTypeDescriptions,
-          pollutantTypes,
-          pageTitle: `${multipleLocations.titlePrefix} ${title} - ${multipleLocations.pageTitle}`,
-          metaSiteUrl,
-          description: `${daqi.description.a} ${headerTitle}${daqi.description.b}`,
-          title: `${multipleLocations.titlePrefix} ${headerTitle}`,
-          displayBacklink: true,
-          transformedDailySummary,
-          footerTxt,
-          phaseBanner,
-          backlink,
-          cookieBanner,
-          daqi,
-          welshMonth: calendarWelsh[getMonth],
-          summaryDate:
-            lang === LANG_CY
-              ? locationData.welshDate
-              : locationData.englishDate,
-          dailySummaryTexts: english.dailySummaryTexts,
-          serviceName: multipleLocations.serviceName,
-          lang
-        })
+        updateSessionWithNearest(
+          request,
+          locationData,
+          nearestLocation,
+          nearestLocationsRange
+        )
+        logger.info(
+          `After Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
+        )
+        return h.view(
+          'locations/location',
+          buildLocationViewData({
+            locationDetails,
+            nearestLocationsRange,
+            locationData,
+            forecastNum,
+            lang,
+            getMonth,
+            metaSiteUrl
+          })
+        )
       } else {
-        return h.view(LOCATION_NOT_FOUND, {
-          paragraph: notFoundLocation.paragraphs,
-          serviceName: notFoundLocation.heading,
-          footerTxt,
-          phaseBanner,
-          backlink,
-          cookieBanner,
-          lang
-        })
+        return h.view(LOCATION_NOT_FOUND, buildNotFoundViewData(lang))
       }
     } catch (error) {
       logger.error(`error on single location ${error.message}`)
+      return h
+        .response('Internal Server Error')
+        .code(STATUS_INTERNAL_SERVER_ERROR)
     }
   }
 }
