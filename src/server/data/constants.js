@@ -87,6 +87,7 @@ export const AIR_QUALITY_THRESHOLD_2 = 2
 export const AIR_QUALITY_THRESHOLD_3 = 3
 export const AIR_QUALITY_THRESHOLD_4 = 4
 export const DEFAULT_LOCATION_TYPE = 'uk-location'
+export const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500
 
 // '' - Constant for the server directory name
 export const SERVER_DIRNAME = path.dirname(fileURLToPath(import.meta.url))

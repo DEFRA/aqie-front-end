@@ -52,6 +52,9 @@ const getLocationDetailsController = {
       const { query } = request
       const locationId = request.params.id
       const searchTermsSaved = request.yar.get('searchTermsSaved')
+      const useNewRicardoMeasurementsEnabled = config.get(
+        'useNewRicardoMeasurementsEnabled'
+      )
 
       if (shouldRedirectToEnglish(query)) {
         return h.redirect(`/location/${locationId}/?lang=en`)
@@ -91,7 +94,8 @@ const getLocationDetailsController = {
           getMeasurements,
           locationType,
           0,
-          lang
+          lang,
+          useNewRicardoMeasurementsEnabled
         )
       }
       const indexNI = 0
@@ -103,14 +107,15 @@ const getLocationDetailsController = {
         locationType,
         indexNI
       )
-      const { forecastNum, nearestLocationsRange } = getNearestLocation(
-        locationData?.results,
-        getForecasts,
-        getMeasurements,
-        locationType,
-        locationIndex,
-        lang
-      )
+      const { forecastNum, nearestLocationsRange, nearestLocation } =
+        await getNearestLocation(
+          locationData?.results,
+          getForecasts,
+          locationType,
+          locationIndex,
+          lang,
+          useNewRicardoMeasurementsEnabled
+        )
 
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
