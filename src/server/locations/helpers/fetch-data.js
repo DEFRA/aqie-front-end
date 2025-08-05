@@ -28,7 +28,6 @@ const isMockEnabled = config.get('enabledMock')
 const oauthTokenNorthernIrelandTenantId = config.get(
   'oauthTokenNorthernIrelandTenantId'
 )
-
 const fetchOAuthToken = async () => {
   logger.info(`OAuth token requested:`)
   const url = `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`
@@ -168,22 +167,61 @@ const fetchForecasts = async () => {
   return getForecasts
 }
 
-const fetchMeasurements = async () => {
-  const measurementsAPIurl = config.get('measurementsApiUrl')
-  const [errorMeasurements, getMeasurements] = await catchFetchError(
-    measurementsAPIurl,
-    options
-  )
+export const fetchMeasurements = async (
+  latitude,
+  longitude,
+  useNewRicardoMeasurementsEnabled
+) => {
+  const formatCoordinate = (coord) => Number(coord).toFixed(6)
+  const getCurrentDate = () => new Date().toISOString().split('T')[0]
 
-  if (errorMeasurements) {
-    logger.error(
-      `Error fetching Measurements data: ${errorMeasurements.message}`
-    )
-  } else {
-    logger.info(`getMeasurements data fetched:`)
+  const fetchDataFromApi = async (url) => {
+    const [error, getMeasurements] = await catchFetchError(url, options)
+    if (error) {
+      logger.error(`Error fetching data: ${error.message}`)
+      return []
+    }
+    logger.info(`Data fetched successfully.`)
+    return getMeasurements || []
   }
 
-  return getMeasurements
+  try {
+    if (useNewRicardoMeasurementsEnabled) {
+      logger.info(
+        `Using mock measurements with latitude: ${latitude}, longitude: ${longitude}`
+      )
+
+      const queryParams = new URLSearchParams({
+        page: '1',
+        'latest-measurement': 'true',
+        'start-date': getCurrentDate(),
+        'with-closed': 'false',
+        'with-pollutants': 'true',
+        latitude: formatCoordinate(latitude),
+        longitude: formatCoordinate(longitude),
+        'networks[]': '4',
+        totalItems: '3',
+        distance: '60',
+        'daqi-pollutant': 'true'
+      })
+
+      const baseUrl = config.get('ricardoMeasurementsApiUrl')
+      const newRicardoMeasurementsApiUrl = `${baseUrl}?${queryParams.toString()}`
+      logger.info(
+        `New Ricardo measurements API URL: ${newRicardoMeasurementsApiUrl}`
+      )
+
+      return await fetchDataFromApi(newRicardoMeasurementsApiUrl)
+    }
+
+    // Call old measurements API without query parameters
+    const measurementsAPIurl = config.get('measurementsApiUrl')
+    logger.info(`Old measurements API URL: ${measurementsAPIurl}`)
+    return await fetchDataFromApi(measurementsAPIurl)
+  } catch (err) {
+    logger.error(`Unexpected error in fetchMeasurements: ${err.message}`)
+    return []
+  }
 }
 
 const fetchDailySummary = async () => {
@@ -224,7 +262,6 @@ async function fetchData(
   }
 
   const getForecasts = await fetchForecasts()
-  const getMeasurements = await fetchMeasurements()
   const getDailySummary = await fetchDailySummary()
 
   if (locationType === LOCATION_TYPE_UK) {
@@ -233,10 +270,10 @@ async function fetchData(
       searchTerms,
       secondSearchTerm
     )
-    return { getDailySummary, getForecasts, getMeasurements, getOSPlaces }
+    return { getDailySummary, getForecasts, getOSPlaces }
   } else if (locationType === LOCATION_TYPE_NI) {
     const getNIPlaces = await handleNILocationData(userLocation, optionsOAuth)
-    return { getDailySummary, getForecasts, getMeasurements, getNIPlaces }
+    return { getDailySummary, getForecasts, getNIPlaces }
   } else {
     logger.error('Unsupported location type provided:', locationType)
     return null
