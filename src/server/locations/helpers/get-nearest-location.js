@@ -8,7 +8,7 @@ import {
 } from './location-util.js'
 import { getPollutantLevel } from './pollutant-level-calculation.js'
 import { getPollutantLevelCy } from './cy/pollutant-level-calculation.js'
-import { LANG_CY, FORECAST_DAY_SLICE_LENGTH } from '../../data/constants.js'
+import { LANG_CY, FORECAST_DAY_SLICE_LENGTH, MINUS_NINETY_NINE } from '../../data/constants.js'
 import { fetchMeasurements } from './fetch-data.js'
 
 // Helper to get latlon and forecastCoordinates //
@@ -43,7 +43,11 @@ function buildPollutantsObject(curr, lang) {
   const newpollutants = []
   Object.keys(curr.pollutants).forEach((pollutant) => {
     const polValue = curr.pollutants[pollutant].value
-    if (polValue !== null && polValue !== -99 && polValue !== '0') {
+    if (
+      polValue !== null &&
+      polValue !== MINUS_NINETY_NINE &&
+      polValue !== '0'
+    ) {
       const { getDaqi, getBand } =
         lang === LANG_CY
           ? getPollutantLevelCy(polValue, pollutant)
@@ -190,9 +194,7 @@ async function getNearestLocation(
         useNewRicardoMeasurementsEnabled
       )
     }
-    // if (newMeasurements) {
-    //   nearestLocationsRange = newMeasurements?.measurements
-    // }
+
     if (newMeasurements?.measurements) {
       nearestLocationsRange = newMeasurements.measurements.map(
         (measurement) => {
@@ -201,7 +203,11 @@ async function getNearestLocation(
           Object.entries(measurement.pollutants || {}).forEach(
             ([pollutant, data]) => {
               const polValue = data?.value
-              if (polValue !== null && polValue !== -99 && polValue !== '0') {
+              if (
+                polValue !== null &&
+                polValue !== MINUS_NINETY_NINE &&
+                polValue !== '0'
+              ) {
                 const { getDaqi, getBand } =
                   lang === LANG_CY
                     ? getPollutantLevelCy(polValue, pollutant)
