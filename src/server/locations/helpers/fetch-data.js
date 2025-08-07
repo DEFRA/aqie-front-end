@@ -6,7 +6,8 @@ import {
   LOCATION_TYPE_NI,
   SYMBOLS_ARRAY,
   HTTP_STATUS_OK,
-  LOCATION_TYPE_UK
+  LOCATION_TYPE_UK,
+  ROUND_OF_SIX
 } from '../../data/constants.js'
 import {
   isValidFullPostcodeUK,
@@ -172,8 +173,7 @@ export const fetchMeasurements = async (
   longitude,
   useNewRicardoMeasurementsEnabled
 ) => {
-  const formatCoordinate = (coord) => Number(coord).toFixed(6)
-  const getCurrentDate = () => new Date().toISOString().split('T')[0]
+  const formatCoordinate = (coord) => Number(coord).toFixed(ROUND_OF_SIX)
 
   const fetchDataFromApi = async (url) => {
     const [error, getMeasurements] = await catchFetchError(url, options)
@@ -194,7 +194,6 @@ export const fetchMeasurements = async (
       const queryParams = new URLSearchParams({
         page: '1',
         'latest-measurement': 'true',
-        'start-date': getCurrentDate(),
         'with-closed': 'false',
         'with-pollutants': 'true',
         latitude: formatCoordinate(latitude),
