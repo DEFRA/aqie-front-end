@@ -8,7 +8,11 @@ import {
 } from './location-util.js'
 import { getPollutantLevel } from './pollutant-level-calculation.js'
 import { getPollutantLevelCy } from './cy/pollutant-level-calculation.js'
-import { LANG_CY, FORECAST_DAY_SLICE_LENGTH, MINUS_NINETY_NINE } from '../../data/constants.js'
+import {
+  LANG_CY,
+  FORECAST_DAY_SLICE_LENGTH,
+  MINUS_NINETY_NINE
+} from '../../data/constants.js'
 import { fetchMeasurements } from './fetch-data.js'
 
 // Helper to get latlon and forecastCoordinates //
