@@ -9,8 +9,8 @@ describe('pollutantTypes', () => {
     })
   })
 
-  it('should have correct data for MP10', () => {
-    expect(pollutantTypes.MP10).toEqual({
+  it('should have correct data for PM10', () => {
+    expect(pollutantTypes.PM10).toEqual({
       title: 'PM10',
       href: '/pollutants/particulate-matter-10',
       low_range: '0 to 50'

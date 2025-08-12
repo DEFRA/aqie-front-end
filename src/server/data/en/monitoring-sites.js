@@ -6,7 +6,7 @@ export const pollutantTypes = {
     href: '/pollutants/particulate-matter-25',
     low_range: '0 to 35'
   },
-  MP10: {
+  PM10: {
     title: 'PM10',
     href: '/pollutants/particulate-matter-10',
     low_range: '0 to 50'
