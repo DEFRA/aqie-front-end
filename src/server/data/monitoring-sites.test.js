@@ -9,7 +9,7 @@ vi.mock('./monitoring-sites.js', () => ({
       href: '/pollutants/nitrogen-dioxide',
       low_range: '0 to 200'
     },
-    MP10: {
+    PM10: {
       title: 'PM10',
       href: '/pollutants/particulate-matter-10',
       low_range: '0 to 50'
@@ -55,8 +55,8 @@ describe('pollutantTypes', () => {
       low_range: '0 to 200'
     })
   })
-  it('should have correct data for MP10', () => {
-    expect(mock.pollutantTypes.MP10).toEqual({
+  it('should have correct data for PM10', () => {
+    expect(mock.pollutantTypes.PM10).toEqual({
       title: 'PM10',
       href: '/pollutants/particulate-matter-10',
       low_range: '0 to 50'

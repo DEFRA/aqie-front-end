@@ -6,7 +6,7 @@ export const pollutantTypes = {
     href: '/llygryddion/mater-gronynnol-25/cy',
     low_range: '0 i 35'
   },
-  MP10: {
+  PM10: {
     title: 'PM10',
     href: '/llygryddion/mater-gronynnol-10/cy',
     low_range: '0 i 50'
