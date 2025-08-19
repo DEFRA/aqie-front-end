@@ -47,6 +47,7 @@ const fetchOAuthToken = async () => {
     })
   }
   // Invoking token API
+  logger.info(`Fetching OAuth token from clientSecret: ${clientSecret}`)
   const [statusCodeToken, dataToken] = await catchProxyFetchError(
     url,
     tokenOptions,
