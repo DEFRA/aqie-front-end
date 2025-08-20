@@ -14,7 +14,9 @@ import {
   MINUS_NINETY_NINE
 } from '../../data/constants.js'
 import { fetchMeasurements } from './fetch-data.js'
-import { logger } from '../../common/helpers/logging/logger.js'
+import { createLogger } from '../../common/helpers/logging/logger.js'
+
+const logger = createLogger()
 
 // Helper to get latlon and forecastCoordinates //
 function getLatLonAndForecastCoords(matches, location, index, forecasts) {
