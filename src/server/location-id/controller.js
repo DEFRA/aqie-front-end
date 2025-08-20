@@ -265,6 +265,7 @@ const getLocationDetailsController = {
       )
       const metaSiteUrl = getAirQualitySiteUrl(request)
       const locationData = request.yar.get('locationData') || []
+      logger.info(`locationDataaaxxx: ${JSON.stringify(locationData)}`)
       const { getForecasts } = locationData
       const locationType =
         locationData.locationType === LOCATION_TYPE_UK
