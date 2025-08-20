@@ -179,7 +179,9 @@ async function getNearestLocation(
       ?.substring(0, FORECAST_DAY_SLICE_LENGTH) || ''
 
   if (!useNewRicardoMeasurementsEnabled) {
-    logger.info(`Fetching new measurements for lattt2: ${latlon?.lat}, lon: ${latlon?.lon}`)
+    logger.info(
+      `Fetching new measurements for lattt2: ${latlon?.lat}, lon: ${latlon?.lon}`
+    )
     getMeasurments = await fetchMeasurements(
       latlon.lat,
       latlon.lon,
@@ -193,7 +195,9 @@ async function getNearestLocation(
     )
   } else {
     let newMeasurements = []
-    logger.info(`Fetching new measurements for lattt: ${latlon?.lat}, lon: ${latlon?.lon}`)
+    logger.info(
+      `Fetching new measurements for lattt: ${latlon?.lat}, lon: ${latlon?.lon}`
+    )
     if (latlon?.lat && latlon?.lon) {
       newMeasurements = await fetchMeasurements(
         latlon.lat,
@@ -228,7 +232,9 @@ async function getNearestLocation(
               }
             }
           )
-          logger.info(`Updated pollutants for measurementtt: ${JSON.stringify(updatedPollutants)}`)
+          logger.info(
+            `Updated pollutants for measurementtt: ${JSON.stringify(updatedPollutants)}`
+          )
           logger.info(`Updated measurementtt: ${JSON.stringify(measurement)}`)
           return {
             ...measurement,
@@ -247,17 +253,19 @@ async function getNearestLocation(
           forecasts
         )
       : {}
-      logger.info(`nearestLocationnnn: ${JSON.stringify(nearestLocation)}`)
-      logger.info(`matchessss: ${JSON.stringify(matches)}`)
-      logger.info(`forecastDayyyy: ${JSON.stringify(forecastDay)}`)
+  logger.info(`nearestLocationnnn: ${JSON.stringify(nearestLocation)}`)
+  logger.info(`matchessss: ${JSON.stringify(matches)}`)
+  logger.info(`forecastDayyyy: ${JSON.stringify(forecastDay)}`)
   forecastNum = buildForecastNum(matches, nearestLocation, forecastDay)
 
   // Logging all variables returned in the object
   logger.info(`forecastNumxxx: ${JSON.stringify(forecastNum)}`)
-  logger.info(`nearestLocationsRangexxx: ${JSON.stringify(nearestLocationsRange)}`)
+  logger.info(
+    `nearestLocationsRangexxx: ${JSON.stringify(nearestLocationsRange)}`
+  )
   logger.info(`nearestLocationxxx: ${JSON.stringify(nearestLocation)}`)
   logger.info(`latlon (resultLatlonxxx): ${JSON.stringify(resultLatlon)}`)
-  
+
   return {
     forecastNum,
     nearestLocationsRange,
