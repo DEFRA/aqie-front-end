@@ -30,7 +30,7 @@ const oauthTokenNorthernIrelandTenantId = config.get(
   'oauthTokenNorthernIrelandTenantId'
 )
 const fetchOAuthToken = async () => {
-  logger.info(`OAuth token requested:`)
+  logger.info(`OAuth token requestedd: ${oauthTokenNorthernIrelandTenantId}`)
   const url = `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`
   const tokenOptions = {
     method: 'POST',
