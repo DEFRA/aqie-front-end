@@ -38,9 +38,6 @@ const handleSingleMatch = (
   }
 ) => {
   const customId = selectedMatches.length === 1 ? urlRoute : headerTitleRoute // Use the helper function to generate the custom ID
-  logger.info(
-    `getForecasts?.forecastsxxxx2: ${JSON.stringify(getForecasts?.forecasts)}`
-  )
   request.yar.set('locationData', {
     results: selectedMatches,
     getForecasts: getForecasts?.forecasts,
@@ -91,9 +88,6 @@ const handleMultipleMatches = (
 ) => {
   const resolvedLocationNameOrPostcode =
     locationNameOrPostcode ?? 'Unknown Location'
-  logger.info(
-    `getForecasts?.forecastsxxxx: ${JSON.stringify(getForecasts?.forecasts)}`
-  )
   request.yar.set('locationData', {
     results: selectedMatches,
     getForecasts: getForecasts?.forecasts,

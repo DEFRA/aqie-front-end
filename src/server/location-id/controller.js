@@ -89,39 +89,7 @@ function buildLocationViewData({
     locationData.dailySummary,
     lang
   )
-  logger.info(
-    `Transformed daily summary ${JSON.stringify(transformedDailySummary)}`
-  )
-  logger.info(`forecastNummm ${JSON.stringify(forecastNum)}`)
   const { airQuality } = airQualityValues(forecastNum, lang)
-
-  // Logging all variables returned in the object
-  logger.info(`result (locationDetailss): ${JSON.stringify(locationDetails)}`)
-  logger.info(`airQualityy: ${JSON.stringify(airQuality)}`)
-  logger.info(
-    `airQualityData.commonMessagess: ${JSON.stringify(airQualityData.commonMessages)}`
-  )
-  logger.info(
-    `monitoringSites (nearestLocationsRangee): ${JSON.stringify(nearestLocationsRange)}`
-  )
-  logger.info(`siteTypeDescriptionss: ${JSON.stringify(siteTypeDescriptions)}`)
-  logger.info(`pollutantTypess: ${JSON.stringify(pollutantTypes)}`)
-  logger.info(
-    `pageTitlee: ${english.multipleLocations.titlePrefix} ${title} - ${english.multipleLocations.pageTitle}`
-  )
-  logger.info(`metaSiteUrll: ${metaSiteUrl}`)
-  logger.info(
-    `descriptionn: ${english.daqi.description.a} ${headerTitle}${english.daqi.description.b}`
-  )
-  logger.info(`titlee: ${english.multipleLocations.titlePrefix} ${headerTitle}`)
-  logger.info(`displayBacklinkk: ${true}`)
-  logger.info(
-    `transformedDailySummaryy: ${JSON.stringify(transformedDailySummary)}`
-  )
-  logger.info(`footerTxtt: ${JSON.stringify(english.footerTxt)}`)
-  logger.info(`phaseBannerr: ${JSON.stringify(english.phaseBanner)}`)
-  logger.info(`backlinkk: ${JSON.stringify(english.backlink)}`)
-
   return {
     result: locationDetails,
     airQuality,
@@ -206,10 +174,6 @@ async function getNearestLocationData(
     locationType,
     indexNI
   )
-  logger.info(`fetched for locationIndexxx ${JSON.stringify(locationIndex)}`)
-  logger.info(
-    `fetched for locationDetailsss ${JSON.stringify(locationDetails)}`
-  )
   const { forecastNum, nearestLocationsRange, nearestLocation } =
     await getNearestLocation(
       locationData?.results,
@@ -265,7 +229,6 @@ const getLocationDetailsController = {
       )
       const metaSiteUrl = getAirQualitySiteUrl(request)
       const locationData = request.yar.get('locationData') || []
-      logger.info(`locationDataaaxxx: ${JSON.stringify(locationData)}`)
       const { getForecasts } = locationData
       const locationType =
         locationData.locationType === LOCATION_TYPE_UK
@@ -286,16 +249,7 @@ const getLocationDetailsController = {
         lang,
         useNewRicardoMeasurementsEnabled
       )
-      logger.info(
-        `fetched for locationDetails ${JSON.stringify(locationDetails)}`
-      )
-      logger.info(`fetched for forecastNum ${JSON.stringify(forecastNum)}`)
-      logger.info(
-        `fetched for nearestLocationsRange ${JSON.stringify(nearestLocationsRange)}`
-      )
-      logger.info(
-        `fetched for nearestLocation ${JSON.stringify(nearestLocation)}`
-      )
+
       if (locationDetails) {
         logger.info(
           `Before Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
