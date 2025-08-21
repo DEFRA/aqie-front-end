@@ -24,9 +24,6 @@ import {
 } from './helpers/convert-string.js'
 import { sentenceCase } from '../common/helpers/sentence-case.js'
 import { convertFirstLetterIntoUppercase } from './helpers/convert-first-letter-into-upper-case.js'
-import { createLogger } from '../common/helpers/logging/logger.js'
-
-const logger = createLogger()
 
 const handleLocationDataNotFound = (
   request,
@@ -207,9 +204,7 @@ const searchMiddleware = async (request, h) => {
       searchTerms,
       secondSearchTerm
     )
-  logger.info(
-    `getForecasts?.forecasts000: ${JSON.stringify(getForecasts?.forecasts)}`
-  )
+
   if (
     redirectError.locationType === LOCATION_TYPE_NI &&
     (!getNIPlaces?.results || getNIPlaces?.results.length === 0)

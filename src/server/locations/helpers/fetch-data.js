@@ -159,9 +159,7 @@ const fetchForecasts = async () => {
     forecastsAPIurl,
     options
   )
-  logger.info(
-    `getForecasts?.forecastsFirst2: ${JSON.stringify(getForecasts?.forecasts)}`
-  )
+
   if (forecastError) {
     logger.error(`Error fetching forecasts data: ${forecastError.message}`)
   } else {
@@ -264,9 +262,6 @@ async function fetchData(
   }
 
   const getForecasts = await fetchForecasts()
-  logger.info(
-    `getForecasts?.forecastsFirst: ${JSON.stringify(getForecasts?.forecasts)}`
-  )
   const getDailySummary = await fetchDailySummary()
 
   if (locationType === LOCATION_TYPE_UK) {
