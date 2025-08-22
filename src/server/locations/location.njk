@@ -161,6 +161,7 @@
 
   {% set tableHtml %}
     <h3 class="govuk-heading-s govuk-!-margin-bottom-1 pollutant-table">{{ site.name }}</h3>
+    {# Distance text visible only on mobile devices #}
     <p class="defra-aq-tabs__mobile-distance govuk-caption-m">{{ site.distance }} {{daqi.pollutantTable.a}}</p>
     <p>{{ siteTypeDescriptions[site.areaType] }}</p>
     {{ govukTable({
