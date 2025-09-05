@@ -1,5 +1,6 @@
 import { compareLastElements } from '../locations/helpers/convert-string.js'
 import { getSearchTermsFromUrl } from '../locations/helpers/get-search-terms-from-url.js'
+import { REDIRECT_STATUS_CODE } from '../../data/constants.js'
 
 const handleSearchTermsRedirection = (
   previousUrl,
@@ -26,6 +27,7 @@ const handleSearchTermsRedirection = (
           secondSearchTerm
         )}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}`
       )
+      .code(REDIRECT_STATUS_CODE)
       .takeover()
   }
   return null

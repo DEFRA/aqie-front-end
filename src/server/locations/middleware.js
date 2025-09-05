@@ -98,10 +98,7 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
   ) {
     request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
     request.yar.clear('searchTermsSaved')
-    return h
-      .redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`)
-      .code(REDIRECT_STATUS_CODE)
-      .takeover()
+    return h.redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`).takeover()
   }
 
   const postcode = getNIPlaces?.results[0].postcode

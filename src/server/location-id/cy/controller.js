@@ -61,7 +61,9 @@ const getLocationDetailsController = {
       )
 
       if (shouldRedirectToEnglish(query)) {
-        return h.redirect(`/location/${locationId}/?lang=en`)
+        return h
+          .redirect(`/location/${locationId}/?lang=en`)
+          .code(REDIRECT_STATUS_CODE)
       }
       // Get the previous URL hit by the user from the referer header
       const previousUrl = getPreviousUrl(request)
