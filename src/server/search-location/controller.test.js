@@ -13,7 +13,6 @@ describe('searchLocationController - english', () => {
   let mockRequest
   let mockH
   const mockContent = english
-  // ''
 
   beforeEach(() => {
     mockRequest = {
@@ -221,6 +220,40 @@ describe('searchLocationController - english', () => {
       cookieBanner: mockContent.cookieBanner,
       lang: mockRequest.query.lang
     })
+  })
+
+  it('should display normal view when no errors exist', () => {
     // ''
+    mockRequest.query.lang = 'en'
+    mockRequest.path = '/search-location'
+    mockRequest.yar.get = vi.fn((key) => {
+      // Return null for all session keys to simulate no errors
+      return null
+    })
+
+    const result = searchLocationController.handler(mockRequest, mockH)
+
+    expect(result).toBe('view rendered')
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('locationType', '')
+    expect(mockH.view).toHaveBeenCalledWith(
+      'search-location/index',
+      expect.objectContaining({
+        pageTitle: mockContent.searchLocation.pageTitle,
+        errors: undefined,
+        errorMessage: undefined,
+        locationType: ''
+      })
+    )
+  })
+
+  it('should handle Welsh language redirect correctly', () => {
+    // ''
+    mockRequest.query.lang = 'cy'
+    mockRequest.path = '/search-location'
+
+    const result = searchLocationController.handler(mockRequest, mockH)
+
+    expect(result).toBe('redirected')
+    expect(mockH.redirect).toHaveBeenCalledWith('/chwilio-lleoliad/cy?lang=cy')
   })
 })

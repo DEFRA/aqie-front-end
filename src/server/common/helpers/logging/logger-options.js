@@ -21,7 +21,7 @@ export const loggerOptions = {
   enabled: logConfig.enabled,
   ignorePaths: ['/health'],
   redact: {
-    paths: logConfig.redact,
+    paths: Array.isArray(logConfig.redact) ? logConfig.redact : [],
     remove: true
   },
   level: logConfig.level,

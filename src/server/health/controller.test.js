@@ -1,15 +1,36 @@
-import { describe, it, expect } from 'vitest'
+import { describe, test, expect, vi, beforeEach } from 'vitest'
 
-describe('Health Controller Tests', () => {
-  it('should return health status as healthy', () => {
-    const getHealthStatus = () => 'healthy'
-    const result = getHealthStatus()
-    expect(result).toBe('healthy')
+describe('Health Controller', () => {
+  let mockRequest, mockH
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+
+    mockRequest = {}
+
+    mockH = {
+      response: vi.fn().mockReturnValue({
+        code: vi.fn().mockReturnValue('success response')
+      })
+    }
   })
 
-  it('should handle error in health status gracefully', () => {
-    const getHealthStatus = (error) => (error ? 'unhealthy' : 'healthy')
-    const result = getHealthStatus(true)
-    expect(result).toBe('unhealthy')
+  test('should export healthController', async () => {
+    // ''
+    const module = await import('./controller.js')
+
+    expect(module.healthController).toBeDefined()
+    expect(module.healthController.handler).toBeDefined()
+    expect(typeof module.healthController.handler).toBe('function')
+  })
+
+  test('should return success response with 200 status code', async () => {
+    // ''
+    const module = await import('./controller.js')
+    const result = await module.healthController.handler(mockRequest, mockH)
+
+    expect(mockH.response).toHaveBeenCalledWith({ message: 'success' })
+    expect(mockH.response().code).toHaveBeenCalledWith(200)
+    expect(result).toBe('success response')
   })
 })
