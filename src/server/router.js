@@ -28,6 +28,7 @@ import { health } from './health/index.js'
 import { multipleResults } from './multiple-results/index.js'
 import { multipleResultsCy } from './multiple-results/cy/index.js'
 import { locationNotFound } from './location-not-found/index.js'
+import { notify } from './notify/register/sms-alerts/index.js'
 import path from 'node:path'
 import { createLogger } from './common/helpers/logging/logger.js'
 import { SERVER_DIRNAME } from './data/constants.js'
@@ -69,7 +70,8 @@ const router = {
         multipleResults,
         multipleResultsCy,
         locationNotFound,
-        health
+        health,
+        notify
       ]
 
       for (const plugin of plugins) {
