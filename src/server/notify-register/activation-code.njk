@@ -1,0 +1,84 @@
+{% extends 'layouts/page.njk' %}
+
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      
+      {% if error %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: [
+            {
+              text: error.text,
+              href: "#activation-code"
+            }
+          ]
+        }) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-xl">{{ heading }}</h1>
+      
+      <p class="govuk-body">{{ description }}</p>
+      
+      <p class="govuk-body">Enter the code to activate your air quality alert.</p>
+
+      {% if developmentHint %}
+        <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+          <div class="govuk-notification-banner__header">
+            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">Development Mode</h2>
+          </div>
+          <div class="govuk-notification-banner__content">
+            <p class="govuk-notification-banner__heading">{{ developmentHint }}</p>
+            <p class="govuk-body-s">This hint will not appear in production.</p>
+          </div>
+        </div>
+      {% endif %}
+
+      <form method="post">
+        <div class="govuk-form-group{% if error %} govuk-form-group--error{% endif %}">
+          {% if error %}
+            <p id="activation-code-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ error.text }}
+            </p>
+          {% endif %}
+          
+          <input class="govuk-input govuk-input--width-10{% if error %} govuk-input--error{% endif %}" 
+                 id="activation-code" 
+                 name="activationCode" 
+                 type="text" 
+                 inputmode="numeric"
+                 pattern="[0-9]*"
+                 maxlength="5"
+                 aria-describedby="{% if error %}activation-code-error{% endif %}"
+                 value="{{ activationCode or '' }}">
+        </div>
+        
+        <p class="govuk-body">The code expires in 24 hours.</p>
+
+        {{ govukDetails({
+          summaryText: "Not received a text message?",
+          html: '<p class="govuk-body">Text messages sometimes take a few minutes to arrive.</p>
+                 <p class="govuk-body">If you do not receive a text message after 10 minutes, check that you have:</p>
+                 <ul class="govuk-list govuk-list--bullet">
+                   <li>entered your number correctly</li>
+                   <li>mobile phone signal</li>
+                 </ul>'
+        }) }}
+
+        {{ govukButton({
+          text: "Continue",
+          type: "submit"
+        }) }}
+      </form>
+      
+      <p class="govuk-body">
+        <a href="/notify/confirm-mobile" class="govuk-link">Send a new activation code</a>
+      </p>
+    </div>
+  </div>
+{% endblock %}

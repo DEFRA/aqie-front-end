@@ -7,7 +7,13 @@ export default {
     '**/public/**',
     '**/package/**',
     '**/vendor/**',
-    'src/client/assets/stylesheets/components/**/*.scss'
+    'src/client/assets/stylesheets/components/**/*.scss',
+    'src/server/common/**/*.scss',
+    '**/*.map',
+    '**/*.scss.map',
+    'node_modules/**',
+    '.cache/**',
+    'coverage/**'
   ]
 }
 

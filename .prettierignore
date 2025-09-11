@@ -3,3 +3,14 @@
 package-lock.json
 node_modules
 coverage
+src/server/common/components/
+src/client/
+*.map
+*.scss.map
+.cache
+dist
+build
+.next
+.nyc_output
+**/.DS_Store
+**/Thumbs.db

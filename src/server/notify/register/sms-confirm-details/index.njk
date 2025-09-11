@@ -1,0 +1,92 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form class="form" action="/notify/register/sms-confirm-details" method="post" novalidate>
+        {% if error %}
+          <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+            <h2 class="govuk-error-summary__title" id="error-summary-title">
+              There is a problem
+            </h2>
+            <div class="govuk-error-summary__body">
+              <ul class="govuk-list govuk-error-summary__list">
+                <li>
+                  <a href="#confirm-details">{{ error.message }}</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        {% endif %}
+
+        <h1 class="govuk-heading-l">Confirm your alert details</h1>
+        
+        <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Mobile phone number
+            </dt>
+            <dd class="govuk-summary-list__value">
+              {{ mobileNumber }}
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="/notify/register/sms-mobile-number">
+                Change<span class="govuk-visually-hidden"> mobile phone number</span>
+              </a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Location
+            </dt>
+            <dd class="govuk-summary-list__value">
+              {{ location }}
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="/search-location">
+                Change<span class="govuk-visually-hidden"> location</span>
+              </a>
+            </dd>
+          </div>
+        </dl>
+
+        <div class="govuk-form-group{% if error and error.field === 'confirmDetails' %} govuk-form-group--error{% endif %}">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+              <h2 class="govuk-fieldset__heading">
+                Do you want to receive air quality alerts for this location?
+              </h2>
+            </legend>
+            {% if error and error.field === 'confirmDetails' %}
+              <p id="confirm-details-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
+              </p>
+            {% endif %}
+            <div class="govuk-radios" data-module="govuk-radios">
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="confirm-details" name="confirmDetails" type="radio" value="yes"
+                       {% if formData and formData.confirmDetails === 'yes' %}checked{% endif %}
+                       {% if error and error.field === 'confirmDetails' %}aria-describedby="confirm-details-error"{% endif %}>
+                <label class="govuk-label govuk-radios__label" for="confirm-details">
+                  Yes, send me air quality alerts
+                </label>
+              </div>
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="confirm-details-2" name="confirmDetails" type="radio" value="no"
+                       {% if formData and formData.confirmDetails === 'no' %}checked{% endif %}
+                       {% if error and error.field === 'confirmDetails' %}aria-describedby="confirm-details-error"{% endif %}>
+                <label class="govuk-label govuk-radios__label" for="confirm-details-2">
+                  No, I do not want to receive alerts
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <button type="submit" class="govuk-button" data-module="govuk-button">
+          Continue
+        </button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

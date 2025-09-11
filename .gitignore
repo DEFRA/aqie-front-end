@@ -10,3 +10,6 @@ coverage
 .cache
 .envrc
 .env
+src/server/common/components/
+**/*.map
+**/*.scss.map

@@ -28,7 +28,12 @@ import { health } from './health/index.js'
 import { multipleResults } from './multiple-results/index.js'
 import { multipleResultsCy } from './multiple-results/cy/index.js'
 import { locationNotFound } from './location-not-found/index.js'
-import { notify } from './notify/register/sms-alerts/index.js'
+import { notify } from './notify/register/sms-mobile-number/index.js'
+import { sendActivation } from './notify/register/sms-send-activation/index.js'
+import { checkMessage } from './notify/register/sms-verify-code/index.js'
+import { sendNewCode } from './notify/register/sms-send-new-code/index.js'
+import { confirmAlertDetails } from './notify/register/sms-confirm-details/index.js'
+import { alertsSuccess } from './notify/register/sms-success/index.js'
 import path from 'node:path'
 import { createLogger } from './common/helpers/logging/logger.js'
 import { SERVER_DIRNAME } from './data/constants.js'
@@ -71,7 +76,12 @@ const router = {
         multipleResultsCy,
         locationNotFound,
         health,
-        notify
+        notify,
+        sendActivation,
+        checkMessage,
+        sendNewCode,
+        confirmAlertDetails,
+        alertsSuccess
       ]
 
       for (const plugin of plugins) {

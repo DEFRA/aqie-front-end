@@ -1,0 +1,38 @@
+{% extends 'layouts/page.njk' %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      
+      {% if error %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: [
+            {
+              text: error.text
+            }
+          ]
+        }) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-xl">{{ heading }}</h1>
+      
+      <p class="govuk-body">{{ description }}</p>
+      
+      <ul class="govuk-list govuk-list--bullet">
+        <li>when the air quality forecast in {{ location.name }} is high or very high</li>
+        <li>if a nearby monitoring site detects high or very high pollution levels anywhere in the Greater London region</li>
+      </ul>
+
+      <form method="post">
+        {{ govukButton({
+          text: "Continue",
+          type: "submit"
+        }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}
