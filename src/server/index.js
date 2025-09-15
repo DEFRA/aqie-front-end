@@ -16,7 +16,6 @@ import { pulse } from './common/helpers/pulse.js'
 import { requestTracing } from './common/helpers/request-tracing.js'
 import { createLogger } from './common/helpers/logging/logger.js'
 import { locationNotFoundCy } from './location-not-found/cy/index.js'
-import { jsDetectionPlugin } from './common/helpers/javascript-detection-plugin.js'
 
 async function createServer() {
   const logger = createLogger()
@@ -72,7 +71,6 @@ async function createServer() {
       sessionCache,
       hapiCookie,
       nunjucksConfig,
-      jsDetectionPlugin,
       router,
       locationNotFoundCy
     ]
