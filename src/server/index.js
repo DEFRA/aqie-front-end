@@ -6,6 +6,7 @@ import { nunjucksConfig } from '../config/nunjucks/index.js'
 import { router } from './router.js'
 import { requestLogger } from './common/helpers/logging/request-logger.js'
 import { catchAll } from './common/helpers/errors.js'
+// JavaScript detection middleware is now handled by the plugin
 import { secureContext } from './common/helpers/secure-context/index.js'
 import hapiCookie from '@hapi/cookie'
 import { getCacheEngine } from './common/helpers/session-cache/cache-engine.js'
@@ -15,6 +16,7 @@ import { pulse } from './common/helpers/pulse.js'
 import { requestTracing } from './common/helpers/request-tracing.js'
 import { createLogger } from './common/helpers/logging/logger.js'
 import { locationNotFoundCy } from './location-not-found/cy/index.js'
+import { jsDetectionPlugin } from './common/helpers/javascript-detection-plugin.js'
 
 async function createServer() {
   const logger = createLogger()
@@ -64,14 +66,15 @@ async function createServer() {
 
     const plugins = [
       requestLogger,
-      hapiCookie,
       requestTracing,
       secureContext,
       pulse,
       sessionCache,
+      hapiCookie,
       nunjucksConfig,
-      router, // `serveStaticFiles` is already registered in the `router` plugin
-      locationNotFoundCy.plugin
+      jsDetectionPlugin,
+      router,
+      locationNotFoundCy
     ]
 
     for (const plugin of plugins) {
@@ -80,12 +83,13 @@ async function createServer() {
         plugin.plugin?.name ||
         plugin.plugin?.plugin?.pkg?.name ||
         'CustomPluginName'
-      logger.info(`Registering plugin: ${pluginName}`)
+      logger.info(`Registering plugin 1: ${pluginName}`)
       await server.register(plugin)
     }
 
     logger.info('Plugins registered successfully')
 
+    // Register global middleware (jsDetectionMiddleware is now handled by the plugin)
     server.ext('onPreResponse', catchAll)
 
     logger.info('Extensions added successfully')

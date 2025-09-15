@@ -9,7 +9,7 @@ const dirName = path.dirname(fileName)
 const fourHoursMs = 14400000
 
 // Define constants for configuration values
-const DEFAULT_PORT = 3000
+const DEFAULT_PORT = 3001
 
 // Define a constant for one week in milliseconds
 const DAYS_IN_A_WEEK = 7

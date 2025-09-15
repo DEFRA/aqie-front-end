@@ -30,7 +30,7 @@ const oauthTokenNorthernIrelandTenantId = config.get(
   'oauthTokenNorthernIrelandTenantId'
 )
 const fetchOAuthToken = async () => {
-  logger.info(`OAuth token requestedd: ${oauthTokenNorthernIrelandTenantId}`)
+  logger.info('OAuth token requested')
   const url = `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`
   const tokenOptions = {
     method: 'POST',
@@ -47,7 +47,7 @@ const fetchOAuthToken = async () => {
     })
   }
   // Invoking token API
-  logger.info(`Fetching OAuth token from clientSecret: ${clientSecret}`)
+  logger.info('Fetching OAuth token...')
   const [statusCodeToken, dataToken] = await catchProxyFetchError(
     url,
     tokenOptions,
