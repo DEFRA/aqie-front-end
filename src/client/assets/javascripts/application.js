@@ -8,10 +8,6 @@ import '../images/govuk-icon-180.png'
 import '../images/govuk-icon-192.png'
 import '../images/govuk-icon-512.png'
 import '../images/govuk-icon-mask.svg'
-
-// Import JavaScript detection to run on page load
-import './javascript-detection.js'
-
 import CookieBanner from './components/cookie-banner.mjs'
 import Analytics from './components/load-analytics.mjs'
 import {
@@ -102,37 +98,3 @@ createAll(Header)
 createAll(Radios)
 createAll(SkipLink)
 createAll(Tabs)
-
-// ===== JAVASCRIPT DETECTION - INLINE =====
-// Adding this directly here since the import wasn't working
-console.log('=== JAVASCRIPT DETECTION SCRIPT LOADED ===')
-console.log('🟢 JavaScript detection script is running!')
-console.log('⏰ Timestamp:', new Date().toISOString())
-
-window.jsDetectionLoaded = true
-window.jsDetectionTimestamp = new Date().toISOString()
-
-// Send a simple POST request to confirm JavaScript is working
-console.log('🚀 ABOUT TO SEND FETCH REQUEST to /api/js-enabled')
-fetch('/api/js-enabled', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  credentials: 'same-origin'
-})
-  .then(function (response) {
-    console.log('✅ JS ping sent successfully! Status:', response.status)
-    console.log('📍 Response URL:', response.url)
-    return response.json()
-  })
-  .then(function (data) {
-    console.log('📩 Server response:', data)
-    console.log('🎉 JavaScript detection completed successfully!')
-    window.jsDetectionCompleted = true
-  })
-  .catch(function (error) {
-    console.log('❌ JS ping failed:', error)
-    console.log('🔍 Error details:', error.message)
-    window.jsDetectionFailed = true
-  })

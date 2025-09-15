@@ -60,11 +60,7 @@ describe('Home Controller', () => {
       backlink: mockContent.backlink,
       cookieBanner: mockContent.cookieBanner,
       serviceName: '',
-      lang: 'en',
-      jsEnabled: undefined,
-      homePageMode: 'basic',
-      enableAdvancedSearch: false,
-      enableInteractiveMap: false
+      lang: 'en'
     })
   })
 })

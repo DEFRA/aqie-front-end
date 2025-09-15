@@ -10,50 +10,6 @@ const handleHomeRequest = (request, h, content = english) => {
   const { query } = request
   const { home, footerTxt, phaseBanner, backlink, cookieBanner } = content
   const metaSiteUrl = getAirQualitySiteUrl(request)
-
-  // DEBUG: Check if middleware executed
-  logger.info(
-    `🎯 CONTROLLER ENTRY: Middleware executed = ${request.middlewareExecuted}, timestamp = ${request.middlewareTimestamp}`
-  )
-  logger.info(
-    `🎯 CONTROLLER ENTRY: request.jsEnabled = ${request.jsEnabled} (type: ${typeof request.jsEnabled})`
-  )
-
-  // Simple JavaScript Detection - Just use the flag!
-  logger.info(
-    `🔍 DEBUG: request.jsEnabled = ${request.jsEnabled} (type: ${typeof request.jsEnabled})`
-  )
-
-  // Add explicit boolean conversion for debugging
-  const jsEnabledBoolean = Boolean(request.jsEnabled)
-  logger.info(
-    `🔍 EXPLICIT BOOLEAN: Boolean(request.jsEnabled) = ${jsEnabledBoolean}`
-  )
-  logger.info(
-    `🔍 STRICT EQUALITY: request.jsEnabled === true is ${request.jsEnabled === true}`
-  )
-  logger.info(
-    `🔍 LOOSE EQUALITY: request.jsEnabled === true is ${request.jsEnabled === true}`
-  )
-
-  // Use explicit true comparison instead of truthy check
-  if (request.jsEnabled === true) {
-    logger.info('🚀 HOME: User has JavaScript enabled - enhanced experience')
-    // Set up enhanced features
-    request.homePageMode = 'enhanced'
-    request.enableAdvancedSearch = true
-    request.enableInteractiveMap = true
-  } else {
-    logger.info('📱 HOME: User has JavaScript disabled - basic experience')
-    logger.info(
-      `🔍 ELSE BLOCK: request.jsEnabled = ${request.jsEnabled}, type = ${typeof request.jsEnabled}`
-    )
-    // Set up basic features
-    request.homePageMode = 'basic'
-    request.enableAdvancedSearch = false
-    request.enableInteractiveMap = false
-  }
-
   // Check if request.yar and its set method exist before calling it ''
   if (request.yar && typeof request.yar.set === 'function') {
     request.yar.set('locationType', '') // ''
@@ -78,13 +34,7 @@ const handleHomeRequest = (request, h, content = english) => {
     backlink,
     cookieBanner,
     serviceName: '',
-    lang: LANG_EN,
-    // Simple JavaScript flag
-    jsEnabled: request.jsEnabled,
-    // Custom properties based on JS detection
-    homePageMode: request.homePageMode,
-    enableAdvancedSearch: request.enableAdvancedSearch,
-    enableInteractiveMap: request.enableInteractiveMap
+    lang: LANG_EN
   })
 }
 
