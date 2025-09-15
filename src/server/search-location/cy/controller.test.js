@@ -136,4 +136,39 @@ describe('searchLocationController - welsh', () => {
       lang: mockRequest.query.lang
     })
   })
+
+  it('should display error view when errors exist', () => {
+    // ''
+    const mockErrors = {
+      errors: [{ field: 'location', message: 'Error message' }]
+    }
+    const mockErrorMessage = {
+      errorMessage: 'There was an error'
+    }
+
+    mockRequest.query.lang = 'cy'
+    mockRequest.path = '/chwilio-lleoliad/cy'
+    mockRequest.yar.get = vi.fn((key) => {
+      if (key === 'errors') return mockErrors
+      if (key === 'errorMessage') return mockErrorMessage
+      if (key === 'locationType') return 'test-type'
+      return null
+    })
+
+    const result = searchLocationController.handler(mockRequest, mockH)
+
+    expect(result).toBe('view rendered')
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('errors', null)
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('errorMessage', null)
+    expect(mockH.view).toHaveBeenCalledWith(
+      'search-location/index',
+      expect.objectContaining({
+        pageTitle: `Gwall: ${mockContent.searchLocation.pageTitle}`,
+        errors: mockErrors.errors,
+        errorMessage: mockErrorMessage.errorMessage,
+        errorMessageRadio: mockErrorMessage.errorMessage,
+        locationType: 'test-type'
+      })
+    )
+  })
 })

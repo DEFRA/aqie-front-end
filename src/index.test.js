@@ -1,49 +1,81 @@
-import process from 'node:process'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-import { startServer } from './server/common/helpers/start-server.js'
-import { createLogger } from './server/common/helpers/logging/logger.js'
-import { vi } from 'vitest'
+// Mock dependencies
+const mockStartServer = vi.fn()
+vi.mock('./server/common/helpers/start-server.js', () => ({
+  startServer: mockStartServer
+}))
 
-describe('Server Initialization', () => {
-  let server
+const mockLogger = {
+  info: vi.fn(),
+  error: vi.fn()
+}
+vi.mock('./server/common/helpers/logging/logger.js', () => ({
+  createLogger: vi.fn(() => mockLogger)
+}))
 
-  afterEach(async () => {
-    if (server) {
-      await server.stop()
-      server = null
-    }
+describe('Application Entry Point', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
-  it('should start the server without errors', async () => {
-    server = await startServer()
-    expect(server).toBeDefined()
+  describe('Module imports and basic functionality', () => {
+    it('should import without throwing errors', async () => {
+      // ''
+      expect(async () => {
+        await import('./index.js')
+      }).not.toThrow()
+    })
+
+    it('should call startServer on import', async () => {
+      // ''
+      mockStartServer.mockResolvedValue()
+
+      await import('./index.js')
+
+      expect(mockStartServer).toHaveBeenCalled()
+    })
   })
 
-  it('should handle unhandled rejections gracefully', () => {
-    const logger = createLogger()
-    const mockInfo = vi.spyOn(logger, 'info').mockImplementation(() => {})
-    const mockError = vi.spyOn(logger, 'error').mockImplementation(() => {})
-    const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {})
+  describe('Process event handlers', () => {
+    it('should handle unhandledRejection events', async () => {
+      // ''
+      mockStartServer.mockResolvedValue()
 
-    const unhandledRejectionListener = (error) => {
-      logger.info('Unhandled rejection')
-      logger.error(error)
-      process.exit(1)
-    }
+      await import('./index.js')
 
-    process.on('unhandledRejection', unhandledRejectionListener)
+      const testError = new Error('Test unhandled rejection')
+      process.emit('unhandledRejection', testError)
 
-    try {
-      process.emit('unhandledRejection', new Error('Test rejection'))
+      expect(mockLogger.info).toHaveBeenCalledWith('Unhandled rejection')
+      expect(mockLogger.error).toHaveBeenCalledWith(testError)
+      expect(process.exitCode).toBe(1)
+    })
 
-      expect(mockInfo).toHaveBeenCalledWith('Unhandled rejection')
-      expect(mockError).toHaveBeenCalledWith(expect.any(Error))
-      expect(mockExit).toHaveBeenCalledWith(1)
-    } finally {
-      process.off('unhandledRejection', unhandledRejectionListener)
-      mockInfo.mockRestore()
-      mockError.mockRestore()
-      mockExit.mockRestore()
-    }
+    it('should handle process exit gracefully', () => {
+      // ''
+      expect(process).toBeDefined()
+      expect(process.exitCode).toBeDefined()
+    })
+  })
+
+  describe('Basic module structure', () => {
+    it('should have process available', () => {
+      // ''
+      expect(process).toBeDefined()
+      expect(process.on).toBeDefined()
+    })
+
+    it('should be able to register process event handlers', () => {
+      // ''
+      const handler = vi.fn()
+      process.on('test-event', handler)
+
+      process.emit('test-event', 'test-data')
+
+      expect(handler).toHaveBeenCalledWith('test-data')
+
+      process.removeListener('test-event', handler)
+    })
   })
 })

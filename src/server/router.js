@@ -75,7 +75,7 @@ const router = {
       for (const plugin of plugins) {
         const pluginName =
           plugin.name || plugin.plugin?.name || 'CustomPluginName'
-        logger.info(`Registering plugin: ${pluginName}`)
+        logger.info(`Registering plugin 2: ${pluginName}`)
         await server.register(plugin)
       }
       // Serve static files from .well-known directory
