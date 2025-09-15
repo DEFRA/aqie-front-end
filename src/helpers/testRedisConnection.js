@@ -6,10 +6,11 @@ export async function testRedisConnection() {
 
   try {
     await redis.ping()
-    await redis.disconnect()
+    redis.disconnect()
     return true
   } catch (error) {
-    await redis.disconnect()
+    console.error('Redis connection test failed:', error.message)
+    redis.disconnect()
     return false
   }
 }
