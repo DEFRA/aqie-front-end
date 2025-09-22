@@ -85,36 +85,18 @@ svg|foreignObject {
     // stylelint-disable-next-line declaration-no-important
       background-color: windowText !important;
       forced-color-adjust: none;
-      color: Window;
+      color: govuk-colour("black");
   }
 
   .aq-forecast-item {
-    .aq-forecast-dd.daqi-tag--1, 
-    .aq-forecast-dd.daqi-tag--2, 
-    .aq-forecast-dd.daqi-tag--3, 
-    .aq-forecast-dd.daqi-tag--4, 
-    .aq-forecast-dd.daqi-tag--5, 
-    .aq-forecast-dd.daqi-tag--6, 
-    .aq-forecast-dd.daqi-tag--7, 
-    .aq-forecast-dd.daqi-tag--8, 
-    .aq-forecast-dd.daqi-tag--9, 
-    .aq-forecast-dd.daqi-tag--10 {
-      border-right: 2px solid Window;  
+    .aq-forecast-dd.daqi-tag--2 {
+      border-right: 2px solid govuk-colour("black");  
       width: 100%;          
     } 
   }
 
  .aq-forecast-item:last-child { 
-  .aq-forecast-dd.daqi-tag--1, 
-  .aq-forecast-dd.daqi-tag--2, 
-  .aq-forecast-dd.daqi-tag--3, 
-  .aq-forecast-dd.daqi-tag--4, 
-  .aq-forecast-dd.daqi-tag--5, 
-  .aq-forecast-dd.daqi-tag--6, 
-  .aq-forecast-dd.daqi-tag--7, 
-  .aq-forecast-dd.daqi-tag--8, 
-  .aq-forecast-dd.daqi-tag--9, 
-  .aq-forecast-dd.daqi-tag--10  {
+  .aq-forecast-dd.daqi-tag--2 {
       border-right: 1px solid windowText; 
    } 
   }
