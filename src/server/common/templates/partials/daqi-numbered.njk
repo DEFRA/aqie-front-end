@@ -2,7 +2,8 @@
 {% from "govuk/components/tabs/macro.njk" import govukTabs %}
 {# Use existing date filters from legacy forecast templates '' #}
 {% if airQuality and airQuality.today %}
-{% set todayAbbrev = 0 | addDaysToTodayAbrev %}
+{# '' First tab label is translatable via content files #}
+{% set todayAbbrev = daqi.tabs.today | default('Today') %}
 
 {% macro daqiNumberedBar(value, readableBand) %}
   {% set safeValue = value | default(0) %}

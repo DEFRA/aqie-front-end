@@ -17,13 +17,26 @@
 
 .defra-aq-tabs {
     margin-bottom: 0;
-    padding: 0;
+    padding: 0; // '' container has no frame; borders are provided by list (top) and panel (sides/bottom)
+    border: 0; // '' no outer frame here
+    background-color: govuk-colour("white");
 
     // Mobile-first: tabs are visible and functional on mobile
     .govuk-tabs__list {
         display: block;
+        // '' Top edge of the component is the tab baseline
+        border: 0;
+        margin: 0;
+        position: static; // '' do not overlap the container border
+        top: auto;
+        @include govuk-media-query($from: tablet) {
+            border-bottom: 1px solid $govuk-border-colour; // '' baseline under tabs forms the top edge of the box
+            margin-bottom: -1px; // '' ensure the panel side borders meet the baseline with no gap
+            width: 100%; // '' extend the baseline across the full component width
+        }
         @include govuk-media-query($until: tablet) {
-            border-bottom: 1px solid $govuk-border-colour;
+            border: 0; // '' list is hidden on mobile
+            top: auto; // '' ensure no overlap on mobile either
             margin-bottom: govuk-spacing(4);
         }
         
@@ -54,8 +67,15 @@
             text-align: left;
             border-bottom: 1px solid transparent;
             
-            &:hover, &:focus {
+            // '' Mouse up (hover): pressed fill
+            &:hover {
                 background-color: govuk-colour("light-grey");
+                text-decoration: none;
+            }
+            // '' Mouse down (active): no fill, underline text
+            &:active {
+                background-color: transparent;
+                text-decoration: underline;
             }
         }
         
@@ -65,39 +85,54 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            // '' Ensure the visited/selected highlight covers the full anchor box, not a thin strip
+            &:visited {
+                background: transparent;
+                text-decoration: none;
+            }
+            // '' Mouse up (hover): pressed fill
+            &:hover {
+                background-color: govuk-colour("light-grey");
+                text-decoration: none;
+            }
+            // '' Mouse down (active): no fill + underline
+            &:active {
+                background-color: transparent;
+                text-decoration: underline;
+            }
         }
     }
 
     // '' Dynamic tab coloring based on DAQI values
     .daqi-tab--1, .daqi-tab--2, .daqi-tab--3 {
         border-bottom: 3px solid $daqi-colour-1;
-
+        // '' Avoid colouring the list item itself when selected to prevent a thin strip above the tab
         &.govuk-tabs__list-item--selected {
-            background-color: rgba($daqi-colour-1, 0.1);
+            background: transparent;
         }
     }
 
     .daqi-tab--4, .daqi-tab--5, .daqi-tab--6 {
         border-bottom: 3px solid $daqi-colour-4;
-
+        // '' Avoid colouring the list item itself when selected to prevent a thin strip above the tab
         &.govuk-tabs__list-item--selected {
-            background-color: rgba($daqi-colour-4, 0.1);
+            background: transparent;
         }
     }
 
     .daqi-tab--7, .daqi-tab--8 {
         border-bottom: 3px solid $daqi-colour-7;
-
+        // '' Avoid colouring the list item itself when selected to prevent a thin strip above the tab
         &.govuk-tabs__list-item--selected {
-            background-color: rgba($daqi-colour-7, 0.1);
+            background: transparent;
         }
     }
 
     .daqi-tab--9, .daqi-tab--10 {
         border-bottom: 3px solid $daqi-colour-9;
-
+        // '' Avoid colouring the list item itself when selected to prevent a thin strip above the tab
         &.govuk-tabs__list-item--selected {
-            background-color: rgba($daqi-colour-9, 0.1);
+            background: transparent;
         }
     }
 
@@ -114,21 +149,27 @@
     }
 
     .govuk-tabs__panel--forecast {
-        margin-bottom: govuk-spacing(0);
-        padding-bottom: govuk-spacing(0);
-        border-bottom:1px solid $govuk-border-colour;
+        // '' Base: mobile-first padding and full box
+        margin-bottom: 0;
+        padding: govuk-spacing(4) govuk-spacing(3);
+        // '' Mobile draws a complete box since the tab list is collapsed
+        border: 1px solid $govuk-border-colour;
+        // '' On tablet and up, the top edge is the tab list baseline
+        @include govuk-media-query($until: tablet) {
+            // '' keep full box on mobile
+            border: 1px solid $govuk-border-colour;
+        }
         @include govuk-media-query($from: tablet) {
-            margin-bottom: govuk-spacing(6);
-            padding-bottom: 0;
-            border: 0;
+            // '' Match: padding: 30px 20px; border sides+bottom; no top border
+            padding: govuk-spacing(6) govuk-spacing(4); // '' 30px 20px
+            border-left: 1px solid $govuk-border-colour;
+            border-right: 1px solid $govuk-border-colour;
+            border-bottom: 1px solid $govuk-border-colour;
+            border-top: 0;
         }
     }
 
-    .govuk-tabs__panel--forecast:last-child {
-        border: 0;
-        margin-bottom: govuk-spacing(4);
-        padding-bottom: 0;
-    }
+    // '' Do not remove borders from the last panel; borders form the continuous frame
 }
 
     .aq-tabs {
@@ -199,6 +240,38 @@
     }
 }
 
+// '' Selected tab should sit visually connected to the bordered box
+.defra-aq-tabs .govuk-tabs__list-item--selected .govuk-tabs__tab {
+    background-color: govuk-colour("white"); // '' no !important so GOV.UK :focus can apply
+    border-bottom: 0; // '' avoid extra line between tab and panel
+    // '' Keep selected tab white on hover/active; let :focus use GOV.UK yellow
+    &:hover,
+    &:active {
+        background-color: govuk-colour("white");
+        text-decoration: none;
+    }
+    
+    &:focus {
+        text-decoration: none;
+    }
+}
+
+// '' Enlarge focus highlight for selected tab by applying focus to the whole list item
+// '' Let default GOV.UK focus style apply to `.govuk-tabs__tab:focus` (yellow background and box-shadow)
+
+// '' Using default GOV.UK focus style for `.govuk-tabs__tab:focus` (yellow background and box-shadow)
+// '' Override: in this component we want a clean yellow box around the text (no top/bottom lines)
+// '' Stronger override to fully remove GOV.UK focus shadows in this component
+
+
+.govuk-frontend-supported .defra-aq-tabs .govuk-tabs__tab:focus,
+.defra-aq-tabs .govuk-tabs__list-item--selected .govuk-tabs__tab:focus {
+    background-color: govuk-colour("yellow"); // '' keep GOV.UK yellow
+    outline: 3px solid transparent; // '' suppress default outline
+    box-shadow: none; // '' remove yellow/black focus lines so height equals text bounding box
+    text-decoration: none; // '' no underline on focus
+}
+
 .aq-forecast-tabs__title, .defra-aq-site__distance {
     @include mq ($from: tablet) {
         display: none;
@@ -252,11 +325,4 @@
     border-top: 0 solid #b1b4b6;
 }
 
-@media (min-width: 40.0625em) {
-    .govuk-frontend-supported .govuk-tabs__panel {
-        margin-bottom: 20px!important; /* stylelint-disable-line declaration-no-important */
-        padding: 30px 0 0;
-        border: 0 solid #b1b4b6;
-        border-top: 0;
-    }
-}
+// '' Keep default GOV.UK panel styles; forecast panels define their own borders/padding above to maintain a continuous frame

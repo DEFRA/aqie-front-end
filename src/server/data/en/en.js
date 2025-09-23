@@ -198,6 +198,9 @@ export const english = {
       d: 'Air pollutants monitored near by',
       e: 'UK forecast'
     },
+    tabs: {
+      today: 'Today'
+    },
     pollutantText: {
       a: 'Particulate matter (PM)',
       b: 'Particulate matter are tiny pieces of solid or liquid particles suspended in the air. They come from sources like car tyres, brakes, exhausts, dust, wood burning and pollen.',

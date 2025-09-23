@@ -181,6 +181,9 @@ export const welsh = {
       d: 'Llygryddion aer sy’n cael eu monitro gerllaw',
       e: 'Rhagolwg y DU'
     },
+    tabs: {
+      today: 'Heddiw'
+    },
     pollutantText: {
       a: 'Mater gronynnol (PM)',
       b: 'Mae mater gronynnol yn ddarnau mân iawn o ronynnau solet neu hylif sydd wedi’u dal yn yr awyr.Maen nhw’n dod o ffynonellau fel teiars ceir, breciau, pibellau gwacáu, llwch, llosgi coed a phaill.',
