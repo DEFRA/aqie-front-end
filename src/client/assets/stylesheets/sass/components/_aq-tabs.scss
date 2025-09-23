@@ -19,16 +19,86 @@
     margin-bottom: 0;
     padding: 0;
 
+    // Mobile-first: tabs are visible and functional on mobile
     .govuk-tabs__list {
-        display: none; 
+        display: block;
+        @include govuk-media-query($until: tablet) {
+            border-bottom: 1px solid $govuk-border-colour;
+            margin-bottom: govuk-spacing(4);
+        }
+        
+        @include govuk-media-query($from: tablet) {
+            display: block;
+        }
     }
     
     .govuk-tabs__list-item {
         text-align: left;
+        
+        @include govuk-media-query($until: tablet) {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
     }
 
     .govuk-tabs__list-item--forecast {
         text-align: center;
+    }
+
+    // '' Mobile responsive behavior for DAQI tabs
+    .govuk-tabs__tab {
+        @include govuk-media-query($until: tablet) {
+            padding: govuk-spacing(2) govuk-spacing(3);
+            display: block;
+            width: 100%;
+            text-align: left;
+            border-bottom: 1px solid transparent;
+            
+            &:hover, &:focus {
+                background-color: govuk-colour("light-grey");
+            }
+        }
+        
+        @include govuk-media-query($from: tablet) {
+            display: inline-block;
+            max-width: 12ch;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+
+    // '' Dynamic tab coloring based on DAQI values
+    .daqi-tab--1, .daqi-tab--2, .daqi-tab--3 {
+        border-bottom: 3px solid $daqi-colour-1;
+
+        &.govuk-tabs__list-item--selected {
+            background-color: rgba($daqi-colour-1, 0.1);
+        }
+    }
+
+    .daqi-tab--4, .daqi-tab--5, .daqi-tab--6 {
+        border-bottom: 3px solid $daqi-colour-4;
+
+        &.govuk-tabs__list-item--selected {
+            background-color: rgba($daqi-colour-4, 0.1);
+        }
+    }
+
+    .daqi-tab--7, .daqi-tab--8 {
+        border-bottom: 3px solid $daqi-colour-7;
+
+        &.govuk-tabs__list-item--selected {
+            background-color: rgba($daqi-colour-7, 0.1);
+        }
+    }
+
+    .daqi-tab--9, .daqi-tab--10 {
+        border-bottom: 3px solid $daqi-colour-9;
+
+        &.govuk-tabs__list-item--selected {
+            background-color: rgba($daqi-colour-9, 0.1);
+        }
     }
 
     .govuk-tabs__panel h3 {

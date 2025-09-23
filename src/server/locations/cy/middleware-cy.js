@@ -68,7 +68,24 @@ const searchMiddlewareCy = async (request, h) => {
   if (locationType === 'Invalid Postcode') {
     request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
     request.yar.clear('searchTermsSaved')
-    return h.redirect('error/index').takeover()
+    // '' Render error view directly
+    return h
+      .view('error/index', {
+        pageTitle: welsh.notFoundUrl.nonService.pageTitle,
+        heading: 'Tudalen heb ei chanfod',
+        statusCode: 404,
+        message: 'Tudalen heb ei chanfod',
+        url: request.path,
+        notFoundUrl: welsh.notFoundUrl,
+        displayBacklink: false,
+        phaseBanner: welsh.phaseBanner,
+        footerTxt: welsh.footerTxt,
+        cookieBanner: welsh.cookieBanner,
+        serviceName: welsh.multipleLocations.serviceName,
+        lang
+      })
+      .code(404)
+      .takeover()
   }
   let isLocationValidPostcode
   if (redirectError.locationType === 'uk-location') {
@@ -83,7 +100,23 @@ const searchMiddlewareCy = async (request, h) => {
     request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
     request.yar.clear('searchTermsSaved')
     if (searchTerms) {
-      return h.redirect('error/index').takeover()
+      return h
+        .view('error/index', {
+          pageTitle: welsh.notFoundUrl.nonService.pageTitle,
+          heading: 'Tudalen heb ei chanfod',
+          statusCode: 404,
+          message: 'Tudalen heb ei chanfod',
+          url: request.path,
+          notFoundUrl: welsh.notFoundUrl,
+          displayBacklink: false,
+          phaseBanner: welsh.phaseBanner,
+          footerTxt: welsh.footerTxt,
+          cookieBanner: welsh.cookieBanner,
+          serviceName: welsh.multipleLocations.serviceName,
+          lang
+        })
+        .code(404)
+        .takeover()
     }
     return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
   }
@@ -128,7 +161,23 @@ const searchMiddlewareCy = async (request, h) => {
     if (searchTerms && !wordsOnly && !isPartialPostcode && !isFullPostcode) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
-      return h.redirect('error/index').takeover()
+      return h
+        .view('error/index', {
+          pageTitle: welsh.notFoundUrl.nonService.pageTitle,
+          heading: 'Tudalen heb ei chanfod',
+          statusCode: 404,
+          message: 'Tudalen heb ei chanfod',
+          url: request.path,
+          notFoundUrl: welsh.notFoundUrl,
+          displayBacklink: false,
+          phaseBanner: welsh.phaseBanner,
+          footerTxt: welsh.footerTxt,
+          cookieBanner: welsh.cookieBanner,
+          serviceName: welsh.multipleLocations.serviceName,
+          lang
+        })
+        .code(404)
+        .takeover()
     }
     if (
       (!results || results.length === 0 || getOSPlaces === 'wrong postcode') &&
@@ -141,7 +190,23 @@ const searchMiddlewareCy = async (request, h) => {
     if (!results && searchTerms) {
       request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
       request.yar.clear('searchTermsSaved')
-      return h.redirect('error/index').takeover()
+      return h
+        .view('error/index', {
+          pageTitle: welsh.notFoundUrl.nonService.pageTitle,
+          heading: 'Tudalen heb ei chanfod',
+          statusCode: 404,
+          message: 'Tudalen heb ei chanfod',
+          url: request.path,
+          notFoundUrl: welsh.notFoundUrl,
+          displayBacklink: false,
+          phaseBanner: welsh.phaseBanner,
+          footerTxt: welsh.footerTxt,
+          cookieBanner: welsh.cookieBanner,
+          serviceName: welsh.multipleLocations.serviceName,
+          lang
+        })
+        .code(404)
+        .takeover()
     }
     // Remove duplicates from the results array
     results = Array.from(

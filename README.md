@@ -40,6 +40,26 @@ Install application dependencies:
 npm install
 ```
 
+### Environment variables (.env)
+
+This project reads environment variables via `dotenv`. For local development:
+
+1. Copy `.env.example` to `.env` and fill in values:
+
+```bash
+cp .env.example .env
+```
+
+2. At minimum, set `OS_NAMES_API_KEY` to enable UK location lookups (Ordnance Survey Names API):
+
+```env
+OS_NAMES_API_KEY=your_os_names_key_here
+```
+
+3. Optional variables (proxies, NI OAuth for testing NI flows, feature toggles) are documented in `.env.example`.
+
+You can still export variables in your shell if you prefer; `.env` is simply a convenience for local runs and tests.
+
 ### Development
 
 To run the application in `development` mode run:
@@ -47,6 +67,8 @@ To run the application in `development` mode run:
 ```bash
 npm run dev
 ```
+
+If you update `.env`, restart the dev server to pick up changes.
 
 ### Local JSON API
 

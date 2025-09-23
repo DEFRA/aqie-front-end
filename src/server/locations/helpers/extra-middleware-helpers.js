@@ -3,6 +3,7 @@ import { generateTitleData } from './generate-title-data.js'
 import { handleSingleMatchHelper } from './handle-single-match-helper.js'
 import { handleMultipleMatchesHelper } from './handle-multiple-match-helper.js'
 import { createLogger } from '../../common/helpers/logging/logger.js'
+import { english } from '../../data/en/en.js'
 
 const logger = createLogger()
 // Helper function to handle redirection for invalid input
@@ -74,7 +75,24 @@ const handleUKLocationType = async (request, h, params) => {
   request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
   request.yar.clear('searchTermsSaved')
   if (searchTerms) {
-    return h.redirect('error/index').takeover()
+    // '' Render error view directly to avoid redirect to catchAll
+    return h
+      .view('error/index', {
+        pageTitle: 'Page not found',
+        heading: 'Page not found',
+        statusCode: 404,
+        message: 'Page not found',
+        url: request.path,
+        notFoundUrl: english.notFoundUrl,
+        displayBacklink: false,
+        phaseBanner: english.phaseBanner,
+        footerTxt: english.footerTxt,
+        cookieBanner: english.cookieBanner,
+        serviceName: english.multipleLocations.serviceName,
+        lang
+      })
+      .code(404)
+      .takeover()
   }
   return h.redirect('/location-not-found').takeover()
 }
