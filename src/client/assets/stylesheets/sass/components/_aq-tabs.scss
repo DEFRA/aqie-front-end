@@ -250,19 +250,13 @@
         background-color: govuk-colour("white");
         text-decoration: none;
     }
-    
+
     &:focus {
         text-decoration: none;
     }
 }
 
-// '' Enlarge focus highlight for selected tab by applying focus to the whole list item
-// '' Let default GOV.UK focus style apply to `.govuk-tabs__tab:focus` (yellow background and box-shadow)
-
-// '' Using default GOV.UK focus style for `.govuk-tabs__tab:focus` (yellow background and box-shadow)
-// '' Override: in this component we want a clean yellow box around the text (no top/bottom lines)
-// '' Stronger override to fully remove GOV.UK focus shadows in this component
-
+// '' Focus override for this component
 
 .govuk-frontend-supported .defra-aq-tabs .govuk-tabs__tab:focus,
 .defra-aq-tabs .govuk-tabs__list-item--selected .govuk-tabs__tab:focus {
