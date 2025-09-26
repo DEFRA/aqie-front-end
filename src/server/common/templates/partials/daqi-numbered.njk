@@ -27,13 +27,11 @@
 {% endmacro %}
 
 {% set todayPanel %}
-  {# Mirror heading semantics from legacy daqi.njk without hardcoded defaults '' #}
-  {% set daqiValue = airQuality.today.value | default(0) %}
   <h2 class="govuk-heading-m govuk-!-margin-bottom-4">
     <span>
-      {{ daqi.paragraphs.a }} {{ airQuality.today.readableBand | default('') }}
+  {{ daqi.paragraphs.a }} {{ airQuality.today.readableBand | lower | default('') }}
       <span class="govuk-visually-hidden"> {{ daqi.paragraphs.b }}</span>
-      <span class="govuk-visually-hidden">, {{ daqiValue }} {{ daqi.paragraphs.c }}</span>
+      <span class="govuk-visually-hidden">, {{ airQuality.today.value | default(0) }} {{ daqi.paragraphs.c }}</span>
     </span>
   </h2>
   {{ daqiNumberedBar(airQuality.today.value | default(0), airQuality.today.readableBand | default('')) }}
@@ -62,12 +60,14 @@
   {% set day2Panel %}
     <h2 class="govuk-heading-m govuk-!-margin-bottom-4">
       <span>
-        {{ daqi.paragraphs.a }} {{ airQuality.day2.readableBand | capitalize | default('') }}
+  {{ daqi.paragraphs.a }} {{ airQuality.day2.readableBand | lower | default('') }}
         <span class="govuk-visually-hidden"> {{ daqi.paragraphs.b }}</span>
         <span class="govuk-visually-hidden">, {{ airQuality.day2.value | default(0) }} {{ daqi.paragraphs.c }}</span>
       </span>
     </h2>
     {{ daqiNumberedBar(airQuality.day2.value | default(0), airQuality.day2.readableBand | capitalize | default('')) }}
+
+    {# No forecast summary in tab panel; restore original markup #}
   {% endset %}
   {% set _ = items.push({
     label: day2Label,
@@ -87,12 +87,14 @@
   {% set day3Panel %}
     <h2 class="govuk-heading-m govuk-!-margin-bottom-4">
       <span>
-        {{ daqi.paragraphs.a }} {{ airQuality.day3.readableBand | capitalize | default('') }}
+  {{ daqi.paragraphs.a }} {{ airQuality.day3.readableBand | lower | default('') }}
         <span class="govuk-visually-hidden"> {{ daqi.paragraphs.b }}</span>
         <span class="govuk-visually-hidden">, {{ airQuality.day3.value | default(0) }} {{ daqi.paragraphs.c }}</span>
       </span>
     </h2>
     {{ daqiNumberedBar(airQuality.day3.value | default(0), airQuality.day3.readableBand | capitalize | default('')) }}
+
+    {# No forecast summary in tab panel; restore original markup #}
   {% endset %}
   {% set _ = items.push({
     label: day3Label,
@@ -112,12 +114,14 @@
   {% set day4Panel %}
     <h2 class="govuk-heading-m govuk-!-margin-bottom-4">
       <span>
-        {{ daqi.paragraphs.a }} {{ airQuality.day4.readableBand | capitalize | default('') }}
+  {{ daqi.paragraphs.a }} {{ airQuality.day4.readableBand | lower | default('') }}
         <span class="govuk-visually-hidden"> {{ daqi.paragraphs.b }}</span>
         <span class="govuk-visually-hidden">, {{ airQuality.day4.value | default(0) }} {{ daqi.paragraphs.c }}</span>
       </span>
     </h2>
     {{ daqiNumberedBar(airQuality.day4.value | default(0), airQuality.day4.readableBand | capitalize | default('')) }}
+
+    {# No forecast summary in tab panel; restore original markup #}
   {% endset %}
   {% set _ = items.push({
     label: day4Label,
@@ -137,12 +141,14 @@
   {% set day5Panel %}
     <h2 class="govuk-heading-m govuk-!-margin-bottom-4">
       <span>
-        {{ daqi.paragraphs.a }} {{ airQuality.day5.readableBand | capitalize | default('') }}
+  {{ daqi.paragraphs.a }} {{ airQuality.day5.readableBand | lower | default('') }}
         <span class="govuk-visually-hidden"> {{ daqi.paragraphs.b }}</span>
         <span class="govuk-visually-hidden">, {{ airQuality.day5.value | default(0) }} {{ daqi.paragraphs.c }}</span>
       </span>
     </h2>
     {{ daqiNumberedBar(airQuality.day5.value | default(0), airQuality.day5.readableBand | capitalize | default('')) }}
+
+    {# No forecast summary in tab panel; restore original markup #}
   {% endset %}
   {% set _ = items.push({
     label: day5Label,

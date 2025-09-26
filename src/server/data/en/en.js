@@ -196,7 +196,7 @@ export const english = {
       b: 'Latest at 5am on',
       c: 'How air pollutants can affect your health',
       d: 'Air pollutants monitored near by',
-      e: 'UK forecast'
+      e: ''
     },
     tabs: {
       today: 'Today'

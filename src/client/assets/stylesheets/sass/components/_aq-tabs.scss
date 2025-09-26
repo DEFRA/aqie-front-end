@@ -61,7 +61,8 @@
     // '' Mobile responsive behavior for DAQI tabs
     .govuk-tabs__tab {
         @include govuk-media-query($until: tablet) {
-            padding: govuk-spacing(2) govuk-spacing(3);
+            // Slightly reduce horizontal padding on mobile
+            padding: govuk-spacing(2);
             display: block;
             width: 100%;
             text-align: left;
@@ -77,31 +78,58 @@
                 background-color: transparent;
                 text-decoration: underline;
             }
+            // Responsive label sizing on mobile: tighten vertical spacing and reduce fonts
+            // mobile label (moved out to reduce nesting)
+
+            // numeric DAQI label styles moved to top-level to reduce nesting
         }
         
         @include govuk-media-query($from: tablet) {
             display: inline-block;
-            max-width: 12ch;
+            max-width: 10ch;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            // '' Ensure the visited/selected highlight covers the full anchor box, not a thin strip
-            &:visited {
-                background: transparent;
-                text-decoration: none;
-            }
-            // '' Mouse up (hover): pressed fill
-            &:hover {
-                background-color: govuk-colour("light-grey");
-                text-decoration: none;
-            }
-            // '' Mouse down (active): no fill + underline
-            &:active {
-                background-color: transparent;
-                text-decoration: underline;
-            }
+            // Tablet+ - tighten padding and reduce horizontal spacing so more tabs fit
+            padding-top: govuk-spacing(1);
+            padding-bottom: govuk-spacing(1);
+            padding-left: govuk-spacing(2);
+            padding-right: govuk-spacing(2);
         }
     }
+
+// Extracted pseudo-class rules to reduce nesting depth
+.defra-aq-tabs .govuk-tabs__tab:visited {
+    background: transparent;
+    text-decoration: none;
+}
+
+.defra-aq-tabs .govuk-tabs__tab:hover {
+    background-color: govuk-colour("light-grey");
+    text-decoration: none;
+}
+
+.defra-aq-tabs .govuk-tabs__tab:active {
+    background-color: transparent;
+    text-decoration: underline;
+}
+
+// Numeric DAQI label styles for mobile and tablet+ (top-level)
+.defra-aq-tabs__label-daqi {
+    @include govuk-font($size: 19);
+    line-height: 1.05;
+    padding-top: govuk-spacing(0);
+    padding-bottom: govuk-spacing(1);
+}
+
+@include govuk-media-query($from: tablet) {
+    .defra-aq-tabs__label-daqi {
+        @include govuk-font($size: 24);
+        line-height: 1.05;
+        display: inline-block;
+        vertical-align: middle;
+    }
+}
 
     // '' Dynamic tab coloring based on DAQI values
     .daqi-tab--1, .daqi-tab--2, .daqi-tab--3 {
@@ -170,6 +198,26 @@
     }
 
     // '' Do not remove borders from the last panel; borders form the continuous frame
+}
+
+// Moved label rules here to reduce nesting depth inside .govuk-tabs__tab
+.defra-aq-tabs__label {
+    display: block;
+    margin: 0;
+    padding: 0;
+    @include govuk-font($size: 16);
+    line-height: 1.1;
+
+    @include govuk-media-query($from: tablet) {
+        display: inline-block;
+        vertical-align: middle;
+        margin: 0 0.125rem;
+        @include govuk-font($size: 19);
+        line-height: 1.05;
+        max-width: 9ch;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
 
     .aq-tabs {

@@ -24,8 +24,8 @@
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full-until-desktop govuk-grid-column-two-thirds-from-desktop">
-  {# '' Use the new DAQI partial with tabs/numbered bar - replaces old forecast sections #}
   {% include "daqi-numbered.njk" %}
+  <h2 class="govuk-heading-m govuk-!-margin-bottom-4 govuk-!-margin-top-6">Forecast Summary UK</h2>
       {% if transformedDailySummary and transformedDailySummary.isCurrentDate %}
       <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ daqi.pageTexts.e }}</h2>
         {% for key, value in transformedDailySummary %}

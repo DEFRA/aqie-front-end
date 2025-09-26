@@ -98,3 +98,16 @@ createAll(Header)
 createAll(Radios)
 createAll(SkipLink)
 createAll(Tabs)
+
+// DAQI label/bar alignment: measure columns and set CSS variable so labels and bar stay aligned
+import daqiColumns from './daqi-columns.js'
+if (daqiColumns && typeof daqiColumns.init === 'function') {
+  if (
+    document.readyState === 'complete' ||
+    document.readyState === 'interactive'
+  ) {
+    daqiColumns.init()
+  } else {
+    window.addEventListener('DOMContentLoaded', () => daqiColumns.init())
+  }
+}
