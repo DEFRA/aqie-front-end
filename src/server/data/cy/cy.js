@@ -5,10 +5,11 @@ export const welsh = {
     pageTitle: 'Gwirio ansawdd aer - GOV.UK',
     heading: `${WELSH_TITLE}`,
     caption:
-      'Mae\'r mynegai ansawdd aer dyddiol(DAQI) yn dweud wrthoch chi am lefelau llygredd aer. Mae\'n darparu cyngor iechyd ar gyfer y lefelau presennol.',
+      "Mae'r mynegai ansawdd aer dyddiol(DAQI) yn dweud wrthoch chi am lefelau llygredd aer. Mae'n darparu cyngor iechyd ar gyfer y lefelau presennol.",
     summaryText:
       'Sut y gall lefelau gwahanol o lygredd aer effeithio ar iechyd',
-    predictionLink: 'Darganfyddwch sut mae llygredd aer yn cael ei ragweld a\'i fesur',
+    predictionLink:
+      "Darganfyddwch sut mae llygredd aer yn cael ei ragweld a'i fesur",
     page: `${WELSH_TITLE}`,
     paragraphs: {
       a: 'Defnyddiwch y gwasanaeth yma:',

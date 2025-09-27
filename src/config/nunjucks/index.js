@@ -35,7 +35,10 @@ const nunjucksEnvironment = nunjucks.configure(
     path.resolve(__dirname, '../../server/common/templates/macros/logo'),
     path.resolve(__dirname, '../../server/cookies/partials'),
     path.resolve(__dirname, '../../server/accessibility/partials'),
-    path.resolve(__dirname, '../../server/common/templates/partials/pollutants'),
+    path.resolve(
+      __dirname,
+      '../../server/common/templates/partials/pollutants'
+    ),
     path.resolve(__dirname, '../../server/error/partials'),
     path.resolve(
       __dirname,
