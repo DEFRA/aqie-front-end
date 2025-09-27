@@ -238,9 +238,13 @@ const getLocationDetailsController = {
         const { searchTerms, secondSearchTerm, searchTermsLocationType } =
           getSearchTermsFromUrl(currentUrl)
         request.yar.clear('locationData')
+        // ''
+        const safeSearchTerms = searchTerms || ''
+        const safeSecondSearchTerm = secondSearchTerm || ''
+        const safeSearchTermsLocationType = searchTermsLocationType || ''
         const searchParams =
-          searchTerms || secondSearchTerm || searchTermsLocationType
-            ? `&searchTerms=${encodeURIComponent(searchTerms || '')}&secondSearchTerm=${encodeURIComponent(secondSearchTerm || '')}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType || '')}`
+          safeSearchTerms || safeSecondSearchTerm || safeSearchTermsLocationType
+            ? `&searchTerms=${encodeURIComponent(safeSearchTerms)}&secondSearchTerm=${encodeURIComponent(safeSecondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(safeSearchTermsLocationType)}`
             : ''
         return h
           .redirect(`/location?lang=${encodeURIComponent(lang)}${searchParams}`)

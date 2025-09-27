@@ -27,14 +27,24 @@
 {% endmacro %}
 
 {% set todayPanel %}
-  <h2 class="govuk-heading-m govuk-!-margin-bottom-4">
-    <span>
-  {{ daqi.paragraphs.a }} {{ airQuality.today.readableBand | lower | default('') }}
-      <span class="govuk-visually-hidden"> {{ daqi.paragraphs.b }}</span>
-      <span class="govuk-visually-hidden">, {{ airQuality.today.value | default(0) }} {{ daqi.paragraphs.c }}</span>
-    </span>
-  </h2>
+  {% if lang == "en" %}
+    <span class="govuk-caption-s govuk-!-margin-bottom-4">Daily Air Quality Index (DAQI)</span>
+  {% else %}
+    <span class="govuk-caption-s govuk-!-margin-bottom-4">Mynegai Ansawdd Aer Dyddiol (DAQI)</span>
+  {% endif %}
   {{ daqiNumberedBar(airQuality.today.value | default(0), airQuality.today.readableBand | default('')) }}
+
+  {# Add daily summary details for today #}
+  {% if transformedDailySummary and transformedDailySummary.Today %}
+    <div class="daqitab-summary govuk-!-margin-top-6">
+      <h3 class="govuk-heading-s">{{ daqi.pageTexts.e }}</h3>
+      <p>{{ transformedDailySummary.Today }}</p>
+      
+      <p><a href="#" class="govuk-link">{{ daqi.predictionLink }}</a></p>
+      
+      <p class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.pageTexts.b }} {{ summaryDate }}</p>
+    </div>
+  {% endif %}
 {% endset %}
 
 {# Build tabs with dynamic coloring using existing variables '' #}
@@ -58,16 +68,30 @@
   {% set day2Label = 1 | addDaysToTodayAbrev %}
   {% set day2TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day2.value | default(0) | string) %}
   {% set day2Panel %}
-    <h2 class="govuk-heading-m govuk-!-margin-bottom-4">
-      <span>
-  {{ daqi.paragraphs.a }} {{ airQuality.day2.readableBand | lower | default('') }}
-        <span class="govuk-visually-hidden"> {{ daqi.paragraphs.b }}</span>
-        <span class="govuk-visually-hidden">, {{ airQuality.day2.value | default(0) }} {{ daqi.paragraphs.c }}</span>
-      </span>
-    </h2>
+    {% if lang == "en" %}
+      <span class="govuk-caption-s govuk-!-margin-bottom-4">Daily Air Quality Index (DAQI)</span>
+    {% else %}
+      <span class="govuk-caption-s govuk-!-margin-bottom-4">Mynegai Ansawdd Aer Dyddiol (DAQI)</span>
+    {% endif %}
     {{ daqiNumberedBar(airQuality.day2.value | default(0), airQuality.day2.readableBand | capitalize | default('')) }}
 
-    {# No forecast summary in tab panel; restore original markup #}
+    {# Add daily summary details for day2 (tomorrow) #}
+    {% if transformedDailySummary %}
+      {% for key, value in transformedDailySummary %}
+        {% if key != 'issue_date' and key != 'isCurrentDate' and key != 'Today' and key != 'Heddiw' %}
+          {% if not (' to ' in key) and not (' i ' in key) %}
+            <div class="daqitab-summary govuk-!-margin-top-6">
+              <h3 class="govuk-heading-s">{{ daqi.pageTexts.e }}</h3>
+              <p>{{ value }}</p>
+              
+              <p><a href="#" class="govuk-link">{{ daqi.predictionLink }}</a></p>
+              
+              <p class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.pageTexts.b }} {{ summaryDate }}</p>
+            </div>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
   {% endset %}
   {% set _ = items.push({
     label: day2Label,
@@ -85,16 +109,30 @@
   {% set day3Label = 2 | addDaysToTodayAbrev %}
   {% set day3TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day3.value | default(0) | string) %}
   {% set day3Panel %}
-    <h2 class="govuk-heading-m govuk-!-margin-bottom-4">
-      <span>
-  {{ daqi.paragraphs.a }} {{ airQuality.day3.readableBand | lower | default('') }}
-        <span class="govuk-visually-hidden"> {{ daqi.paragraphs.b }}</span>
-        <span class="govuk-visually-hidden">, {{ airQuality.day3.value | default(0) }} {{ daqi.paragraphs.c }}</span>
-      </span>
-    </h2>
+    {% if lang == "en" %}
+      <span class="govuk-caption-s govuk-!-margin-bottom-4">Daily Air Quality Index (DAQI)</span>
+    {% else %}
+      <span class="govuk-caption-s govuk-!-margin-bottom-4">Mynegai Ansawdd Aer Dyddiol (DAQI)</span>
+    {% endif %}
     {{ daqiNumberedBar(airQuality.day3.value | default(0), airQuality.day3.readableBand | capitalize | default('')) }}
 
-    {# No forecast summary in tab panel; restore original markup #}
+    {# Add daily summary details for day3 (part of remaining days range) #}
+    {% if transformedDailySummary %}
+      {% for key, value in transformedDailySummary %}
+        {% if key != 'issue_date' and key != 'isCurrentDate' and key != 'Today' and key != 'Heddiw' %}
+          {% if (' to ' in key) or (' i ' in key) %}
+            <div class="daqitab-summary govuk-!-margin-top-6">
+              <h3 class="govuk-heading-s">{{ daqi.pageTexts.e }}</h3>
+              <p>{{ value }}</p>
+              
+              <p><a href="#" class="govuk-link">{{ daqi.predictionLink }}</a></p>
+              
+              <p class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.pageTexts.b }} {{ summaryDate }}</p>
+            </div>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
   {% endset %}
   {% set _ = items.push({
     label: day3Label,
@@ -112,16 +150,30 @@
   {% set day4Label = 3 | addDaysToTodayAbrev %}
   {% set day4TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day4.value | default(0) | string) %}
   {% set day4Panel %}
-    <h2 class="govuk-heading-m govuk-!-margin-bottom-4">
-      <span>
-  {{ daqi.paragraphs.a }} {{ airQuality.day4.readableBand | lower | default('') }}
-        <span class="govuk-visually-hidden"> {{ daqi.paragraphs.b }}</span>
-        <span class="govuk-visually-hidden">, {{ airQuality.day4.value | default(0) }} {{ daqi.paragraphs.c }}</span>
-      </span>
-    </h2>
+    {% if lang == "en" %}
+      <span class="govuk-caption-s govuk-!-margin-bottom-4">Daily Air Quality Index (DAQI)</span>
+    {% else %}
+      <span class="govuk-caption-s govuk-!-margin-bottom-4">Mynegai Ansawdd Aer Dyddiol (DAQI)</span>
+    {% endif %}
     {{ daqiNumberedBar(airQuality.day4.value | default(0), airQuality.day4.readableBand | capitalize | default('')) }}
 
-    {# No forecast summary in tab panel; restore original markup #}
+    {# Add daily summary details for day4 (part of remaining days range) #}
+    {% if transformedDailySummary %}
+      {% for key, value in transformedDailySummary %}
+        {% if key != 'issue_date' and key != 'isCurrentDate' and key != 'Today' and key != 'Heddiw' %}
+          {% if (' to ' in key) or (' i ' in key) %}
+            <div class="daqitab-summary govuk-!-margin-top-6">
+              <h3 class="govuk-heading-s">{{ daqi.pageTexts.e }}</h3>
+              <p>{{ value }}</p>
+              
+              <p><a href="#" class="govuk-link">{{ daqi.predictionLink }}</a></p>
+              
+              <p class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.pageTexts.b }} {{ summaryDate }}</p>
+            </div>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
   {% endset %}
   {% set _ = items.push({
     label: day4Label,
@@ -139,16 +191,30 @@
   {% set day5Label = 4 | addDaysToTodayAbrev %}
   {% set day5TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day5.value | default(0) | string) %}
   {% set day5Panel %}
-    <h2 class="govuk-heading-m govuk-!-margin-bottom-4">
-      <span>
-  {{ daqi.paragraphs.a }} {{ airQuality.day5.readableBand | lower | default('') }}
-        <span class="govuk-visually-hidden"> {{ daqi.paragraphs.b }}</span>
-        <span class="govuk-visually-hidden">, {{ airQuality.day5.value | default(0) }} {{ daqi.paragraphs.c }}</span>
-      </span>
-    </h2>
+    {% if lang == "en" %}
+      <span class="govuk-caption-s govuk-!-margin-bottom-4">Daily Air Quality Index (DAQI)</span>
+    {% else %}
+      <span class="govuk-caption-s govuk-!-margin-bottom-4">Mynegai Ansawdd Aer Dyddiol (DAQI)</span>
+    {% endif %}
     {{ daqiNumberedBar(airQuality.day5.value | default(0), airQuality.day5.readableBand | capitalize | default('')) }}
 
-    {# No forecast summary in tab panel; restore original markup #}
+    {# Add daily summary details for day5 (part of remaining days range) #}
+    {% if transformedDailySummary %}
+      {% for key, value in transformedDailySummary %}
+        {% if key != 'issue_date' and key != 'isCurrentDate' and key != 'Today' and key != 'Heddiw' %}
+          {% if (' to ' in key) or (' i ' in key) %}
+            <div class="daqitab-summary govuk-!-margin-top-6">
+              <h3 class="govuk-heading-s">{{ daqi.pageTexts.e }}</h3>
+              <p>{{ value }}</p>
+              
+              <p><a href="#" class="govuk-link">{{ daqi.predictionLink }}</a></p>
+              
+              <p class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.pageTexts.b }} {{ summaryDate }}</p>
+            </div>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
   {% endset %}
   {% set _ = items.push({
     label: day5Label,

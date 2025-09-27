@@ -1,12 +1,12 @@
 import 'dotenv/config'
 import convict from 'convict'
-import path from 'node:path'
+import path, { dirname } from 'node:path'
 import { existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import convictFormatWithValidator from 'convict-format-with-validator'
 
 const fileName = fileURLToPath(import.meta.url)
-const dirName = path.dirname(fileName)
+const dirName = dirname(fileName)
 
 const fourHoursMs = 14400000
 
@@ -375,7 +375,6 @@ if (isDevelopment) {
       config.loadFile(localConfigPath)
     } catch (err) {
       // Ignore malformed local configs but log for awareness
-      // eslint-disable-next-line no-console
       console.warn(`Failed to load local config: ${localConfigPath}`, err)
     }
   }

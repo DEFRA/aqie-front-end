@@ -168,11 +168,6 @@ export const english = {
     }
   },
   daqi: {
-    paragraphs: {
-      a: 'The air pollution forecast for today is',
-      b: 'on a scale of low to very high',
-      c: 'out of 10'
-    },
     description: {
       a: 'Check air quality for',
       b: '. Get health advice, pollutant information and guidance on how to reduce your exposure to air pollution.'
@@ -180,6 +175,7 @@ export const english = {
     caption:
       'The daily air quality index (DAQI) tells you about levels of air pollution. It provides health advice for current levels.',
     summaryText: 'How different levels of air pollution can affect health',
+    predictionLink: 'Find out how air pollution is predicted and measured',
     headText: {
       a: 'Level',
       b: 'Index',

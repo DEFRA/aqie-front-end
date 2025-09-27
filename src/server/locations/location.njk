@@ -25,23 +25,11 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full-until-desktop govuk-grid-column-two-thirds-from-desktop">
   {% include "daqi-numbered.njk" %}
-  <h2 class="govuk-heading-m govuk-!-margin-bottom-4 govuk-!-margin-top-6">Forecast Summary UK</h2>
-      {% if transformedDailySummary and transformedDailySummary.isCurrentDate %}
-      <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ daqi.pageTexts.e }}</h2>
-        {% for key, value in transformedDailySummary %}
-        {% if key != 'issue_date' and key != 'isCurrentDate' %}
-            <h2 class="govuk-heading-s govuk-!-margin-bottom-1">{{ key }}</h2>
-            <p>{{ value }}</p>
-        {% endif %}
-        {% endfor %}
-      <p class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.pageTexts.b }} {{ summaryDate }}</p>
-      {% endif %}
-      <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6 govuk-!-margin-top-6">
       {% if airQuality.today.value >= 1 and airQuality.today.value <= 3 %}
-          <h2 class="govuk-heading-m">{{ daqi.healthAdvice.paragraphs.a }} {{ airQuality.today.readableBand }} {{ daqi.healthAdvice.paragraphs.b }}</h2>
+          <h2 class="govuk-heading-m govuk-!-margin-top-9">{{ daqi.healthAdvice.paragraphs.a }} {{ airQuality.today.readableBand }} {{ daqi.healthAdvice.paragraphs.b }}</h2>
           <p>{{ airQuality.today.advice }}</p>
       {% elseif airQuality.today.value >= 4 %}
-          <h2 class="govuk-heading-m">{{ daqi.healthAdvice.paragraphs.a }} {{ airQuality.today.readableBand }} {{ daqi.healthAdvice.paragraphs.b }}</h2>
+          <h2 class="govuk-heading-m govuk-!-margin-top-9">{{ daqi.healthAdvice.paragraphs.a }} {{ airQuality.today.readableBand }} {{ daqi.healthAdvice.paragraphs.b }}</h2>
           <p>{{ airQuality.today.advice }}</p>
           {% set adultsText %}
             {{ (airQuality.today.atrisk.adults) }}

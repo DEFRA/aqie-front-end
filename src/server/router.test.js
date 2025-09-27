@@ -131,7 +131,8 @@ vi.mock('node:path', () => ({
   default: {
     resolve: vi.fn((...args) => args.join('/')),
     join: vi.fn((...args) => args.join('/'))
-  }
+  },
+  dirname: vi.fn((path) => '/mock/dirname')
 }))
 
 describe('Router Tests', () => {

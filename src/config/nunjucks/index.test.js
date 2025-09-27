@@ -5,7 +5,8 @@ vi.mock('path', () => ({
   default: {
     dirname: vi.fn(() => '/mock/dirname'),
     resolve: vi.fn((...args) => args.join('/'))
-  }
+  },
+  dirname: vi.fn(() => '/mock/dirname')
 }))
 
 vi.mock('nunjucks', () => ({

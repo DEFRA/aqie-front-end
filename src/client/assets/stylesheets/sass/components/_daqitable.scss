@@ -44,16 +44,17 @@ svg|foreignObject {
 // '' DAQI numbered bar styling to match design image exactly
 .daqi-numbered {
   position: relative;
+  width: 590px; // '' Set fixed width so JavaScript calculates columns to total exactly 590px
 
   .daqi-bar {
     display: grid;
-    // Reduced from 40px to 36px to better match the visual divider height and improve fit
-    height: 36px;
+    // Set to 40px for better visual balance and consistency
+    height: 40px;
     margin-bottom: govuk-spacing(2);
     border: none;
     position: relative;
     // Use shared column sizing so labels and bar remain aligned
-    grid-template-columns: var(--daqi-columns, repeat(9, 50px) 100px);
+    grid-template-columns: var(--daqi-columns, repeat(9, 51px) 100px);
     gap: 3px;
     // '' separators moved to label level to avoid duplication with design
     background-image: none;
@@ -100,7 +101,7 @@ svg|foreignObject {
   .daqi-labels {
   display: grid;
   // Use the same columns as the bar so labels keep their alignment during resize
-  grid-template-columns: var(--daqi-columns, repeat(9, 50px) 100px);
+  grid-template-columns: var(--daqi-columns, repeat(9, 51px) 100px);
   column-gap: 3px; // '' match the bar's inter-cell gap so label centers align
     align-items: center;
     margin-top: govuk-spacing(2);
@@ -141,7 +142,7 @@ svg|foreignObject {
       background-repeat: no-repeat;
       background-size: 3px 100%, 3px 100%, 3px 100%;
       // primary: use JS-provided divider offsets when available; fallback to hardcoded positions
-      background-position: var(--daqi-divider-1, 156px) 0, var(--daqi-divider-2, 315px) 0, var(--daqi-divider-3, 474px) 0;
+      background-position: var(--daqi-divider-1, 159px) 0, var(--daqi-divider-2, 321px) 0, var(--daqi-divider-3, 483px) 0;
       pointer-events: none;
       z-index: 1;
     }
@@ -150,7 +151,7 @@ svg|foreignObject {
     @media (min-width: 770px) and (max-width: 939.98px) {
       &::before {
         // shift by +1px to compensate for subpixel rounding in this range
-        background-position: 157px 0, 316px 0, 475px 0;
+        background-position: 160px 0, 322px 0, 484px 0;
       }
     }
     

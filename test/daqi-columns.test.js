@@ -83,7 +83,6 @@ describe('daqi-columns module', () => {
       .querySelector('.daqi-numbered')
       .style.getPropertyValue('--daqi-columns')
     // Debug output
-    // eslint-disable-next-line no-console
     console.log('DEBUG --daqi-columns:', cssValue)
     expect(cssValue).toBe('50px 50px 50px 50px 50px 50px 50px 50px 50px 100px')
   })

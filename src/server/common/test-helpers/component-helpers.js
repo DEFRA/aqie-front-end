@@ -1,17 +1,17 @@
 import { fileURLToPath } from 'node:url'
-import path from 'path'
+import path, { dirname } from 'node:path'
 import nunjucks from 'nunjucks'
 import { load } from 'cheerio'
 import { camelCase } from 'lodash'
 import * as filters from '../../config/nunjucks/filters.js'
 import * as globals from '../../config/nunjucks/globals.js' // Updated imports to use relative paths
 
-const dirname = path.dirname(fileURLToPath(import.meta.url))
+const __dirname = dirname(fileURLToPath(import.meta.url))
 const nunjucksTestEnv = nunjucks.configure(
   [
     '~/node_modules/govuk-frontend/dist/',
-    path.normalize(path.resolve(dirname, '../templates')),
-    path.normalize(path.resolve(dirname, '../components'))
+    path.normalize(path.resolve(__dirname, '../templates')),
+    path.normalize(path.resolve(__dirname, '../components'))
   ],
   {
     trimBlocks: true,
