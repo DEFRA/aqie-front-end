@@ -237,16 +237,16 @@ function setDaqiColumns() {
 
     // Calculate divider positions for individual mode
     // Convert px values back to numbers for calculation
-    const colsNumeric = cols.map(col => parseInt(col.replace('px', ''), 10))
+    const colsNumeric = cols.map((col) => parseInt(col.replace('px', ''), 10))
     const GAP = 3 // gap between segments
     const offsets = []
-    
+
     for (const n of [3, 6, 9]) {
       const sum = colsNumeric.slice(0, n).reduce((s, v) => s + v, 0)
       const gaps = GAP * (n - 1)
       offsets.push(sum + gaps)
     }
-    
+
     // Set CSS custom properties for divider positions
     container.style.setProperty('--daqi-divider-1', offsets[0] + 'px')
     container.style.setProperty('--daqi-divider-2', offsets[1] + 'px')

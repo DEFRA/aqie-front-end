@@ -9,8 +9,7 @@ export const welsh = {
     summaryText:
       'Sut y gall lefelau gwahanol o lygredd aer effeithio ar iechyd',
     predictionLinkText: 'Darganfyddwch',
-    predictionLink:
-      "sut mae llygredd aer yn cael ei ragweld a'i fesur",
+    predictionLink: "sut mae llygredd aer yn cael ei ragweld a'i fesur",
     page: `${WELSH_TITLE}`,
     paragraphs: {
       a: 'Defnyddiwch y gwasanaeth yma:',
