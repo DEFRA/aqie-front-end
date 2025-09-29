@@ -175,7 +175,8 @@ export const english = {
     caption:
       'The daily air quality index (DAQI) tells you about levels of air pollution. It provides health advice for current levels.',
     summaryText: 'How different levels of air pollution can affect health',
-    predictionLink: 'Find out how air pollution is predicted and measured',
+    predictionLinkText: 'Find out',
+    predictionLink: 'how air pollution is predicted and measured',
     headText: {
       a: 'Level',
       b: 'Index',

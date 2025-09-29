@@ -44,7 +44,15 @@ svg|foreignObject {
 // '' DAQI numbered bar styling to match design image exactly
 .daqi-numbered {
   position: relative;
-  width: 590px; // '' Set fixed width so JavaScript calculates columns to total exactly 590px
+  // '' Responsive width: use 590px when space allows, scale down when needed
+  width: min(590px, 100%);
+  max-width: 100%; // '' Prevent overflow in narrow containers
+  overflow-x: auto; // '' Allow horizontal scrolling if needed
+
+  // '' Ensure full 590px width at desktop to fix expansion issue
+  @media (min-width: 768px) {
+    width: 590px;
+  }
 
   .daqi-bar {
     display: grid;
@@ -459,5 +467,13 @@ svg|foreignObject {
   .defra-aq-tabs__label-distance {
     font-size: 1.1rem;
     line-height: 0.5;
+  }
+}
+
+// '' Tablet and desktop: hide horizontal scrollbars since we have more space
+@media (min-width: 768px) {
+  .daqi-numbered {
+    overflow-x: hidden; // '' No scrollbars needed on larger screens
+    box-sizing: border-box;
   }
 }
