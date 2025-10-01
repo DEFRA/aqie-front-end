@@ -71,10 +71,10 @@ describe('daqi-columns grouped behaviour', () => {
   })
 
   it('makes groups 1-3,4-6,7-9 each equal to last label width (distributes remainder)', () => {
-    // Mock viewport width to be within grouping threshold so grouping logic applies
-    // Use 800px (between MOBILE_THRESHOLD 768 and GROUPING_THRESHOLD 940)
+    // Mock viewport width to be within large tablet threshold so grouping logic applies
+    // Use 900px (between TABLET_LARGE_THRESHOLD 768 and DESKTOP_THRESHOLD 1020)
     Object.defineProperty(window, 'innerWidth', {
-      value: 800,
+      value: 900,
       configurable: true
     })
 

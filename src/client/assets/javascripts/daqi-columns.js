@@ -77,18 +77,145 @@ function setDaqiColumns() {
     (typeof window !== 'undefined' && window.innerWidth) ||
     document.documentElement.clientWidth
 
-  // threshold in px for applying grouped sizing (covers mobile + tablet)
-  const GROUPING_THRESHOLD = 940
-  
-  // '' For mobile devices (< 768px), skip grid column calculations and let CSS flexbox handle layout
-  const MOBILE_THRESHOLD = 768
+  // Define responsive thresholds for different viewport stages
+  const DESKTOP_THRESHOLD = 1020  // Above this: desktop grid layout
+  const TABLET_LARGE_THRESHOLD = 768  // 768-1020px: large tablet grouping
+  const TABLET_SMALL_THRESHOLD = 640  // 640-768px: small tablet grouping
+  // Below 640px: mobile flexbox layout
 
-  // Only apply grouping when viewport is narrow and we have a non-zero width
-  // measured (avoid JSDOM 0-width) and the expected 10 segments exist.
+  // Helper function to find available width
+  function findAvailableWidth(el) {
+    const MIN_REASONABLE = 40
+    let current = el
+    for (let i = 0; i < 8 && current; i++) {
+      const w =
+        current.clientWidth ||
+        Math.round(current.getBoundingClientRect().width)
+      if (w && w > MIN_REASONABLE) return w
+      current = current.parentElement
+    }
+    // fallback to viewport width
+    return (
+      (typeof window !== 'undefined' && window.innerWidth) ||
+      document.documentElement.clientWidth ||
+      0
+    )
+  }
+
+  // Stage 1: Small tablet (640-768px) - tighter grouping
   if (
     viewportWidth > 0 &&
-    viewportWidth <= GROUPING_THRESHOLD &&
-    viewportWidth > MOBILE_THRESHOLD && // '' Skip for mobile - let flexbox handle it
+    viewportWidth >= TABLET_SMALL_THRESHOLD &&
+    viewportWidth < TABLET_LARGE_THRESHOLD &&
+    segments.length === 10
+  ) {
+    // Implement small tablet grouping behavior
+    let lastLabel = container.querySelector(
+      '.daqi-labels .daqi-band:last-child'
+    )
+    let groupWidth = 0
+
+    if (lastLabel) {
+      const lr = lastLabel.getBoundingClientRect()
+      groupWidth = Math.round(lr.width * 0.9) // Slightly smaller for small tablets
+    }
+
+    // fallback to the last segment width if label not present or too small
+    if (!groupWidth || groupWidth < 20) {
+      const lastSegRect = segments[9].getBoundingClientRect()
+      groupWidth = Math.round(lastSegRect.width * 0.9)
+    }
+
+    // enforce reasonable minimums to avoid collapsing
+    groupWidth = Math.max(groupWidth, 32) // Smaller minimum for small tablets
+
+    // compute per-segment widths for small tablet
+    const base = Math.floor(groupWidth / 3)
+    const remainder = groupWidth - base * 3
+
+    const oneGroup = []
+    for (let i = 0; i < 3; i++) {
+      oneGroup.push(base + (i < remainder ? 1 : 0))
+    }
+
+    const cols = [].concat(oneGroup, oneGroup, oneGroup)
+    const firstNineRaw = cols.slice(0, 9)
+    const lastRaw = groupWidth
+
+    // Scale to container for small tablet
+    const GAP = 2 // Smaller gap for small tablets
+    const rawTotal =
+      firstNineRaw.reduce((s, v) => s + v, 0) + lastRaw + GAP * cols.length
+
+    const availableWidth = findAvailableWidth(container)
+    
+    let scaledFirstNine = firstNineRaw.slice()
+    let scaledLast = lastRaw
+
+    if (availableWidth > 0 && rawTotal > 0) {
+      const scale = availableWidth / rawTotal
+      const gapsTotal = GAP * cols.length
+      const targetTotalForColumns = Math.max(
+        0,
+        Math.round(availableWidth - gapsTotal)
+      )
+
+      const floatScaled = firstNineRaw
+        .concat([lastRaw])
+        .map(
+          (n) =>
+            n *
+            (targetTotalForColumns /
+              (firstNineRaw.reduce((s, v) => s + v, 0) + lastRaw))
+        )
+      const rounded = floatScaled.map((v) => Math.max(1, Math.round(v)))
+      let diff = targetTotalForColumns - rounded.reduce((s, v) => s + v, 0)
+      let i = 0
+      while (diff !== 0) {
+        rounded[i % rounded.length] += diff > 0 ? 1 : -1
+        diff += diff > 0 ? -1 : 1
+        i++
+      }
+
+      scaledFirstNine = rounded.slice(0, 9)
+      scaledLast = rounded[9]
+    }
+
+    const firstNine = scaledFirstNine.map((n) => n + 'px').join(' ')
+    const last = scaledLast + 'px'
+    const cssValue = firstNine + ' ' + last
+
+    container.style.setProperty('--daqi-columns', cssValue)
+
+    // Compute divider offsets for small tablet
+    const colsScaled = scaledFirstNine.concat([scaledLast])
+    const offsets = []
+    for (const n of [3, 6, 9]) {
+      const sum = colsScaled.slice(0, n).reduce((s, v) => s + v, 0)
+      const gaps = GAP * (n - 1)
+      offsets.push(sum + gaps)
+    }
+    container.style.setProperty(
+      '--daqi-divider-1',
+      Math.round(offsets[0]) + 'px'
+    )
+    container.style.setProperty(
+      '--daqi-divider-2',
+      Math.round(offsets[1]) + 'px'
+    )
+    container.style.setProperty(
+      '--daqi-divider-3',
+      Math.round(offsets[2]) + 'px'
+    )
+
+    return
+  }
+
+  // Stage 2: Large tablet (768-1020px) - standard grouping
+  if (
+    viewportWidth > 0 &&
+    viewportWidth >= TABLET_LARGE_THRESHOLD &&
+    viewportWidth < DESKTOP_THRESHOLD &&
     segments.length === 10
   ) {
     // try to measure the last label under the bar first
@@ -137,30 +264,7 @@ function setDaqiColumns() {
     const rawTotal =
       firstNineRaw.reduce((s, v) => s + v, 0) + lastRaw + GAP * cols.length
 
-    // measure available width and scale columns so the visual bar fills the
-    // logical container (usually the tab panel). In some layouts the direct
-    // `.daqi-numbered` element can report a very small width (e.g. due to
-    // display quirks or nested flex/transform wrappers). Walk up the DOM to
-    // find the nearest ancestor with a sensible width and use that so the
-    // bar scales in proportion to the tab component.
-    function findAvailableWidth(el) {
-      const MIN_REASONABLE = 40
-      let current = el
-      for (let i = 0; i < 8 && current; i++) {
-        const w =
-          current.clientWidth ||
-          Math.round(current.getBoundingClientRect().width)
-        if (w && w > MIN_REASONABLE) return w
-        current = current.parentElement
-      }
-      // fallback to viewport width
-      return (
-        (typeof window !== 'undefined' && window.innerWidth) ||
-        document.documentElement.clientWidth ||
-        0
-      )
-    }
-
+    // measure available width and scale columns so we can scale to the container
     const availableWidth = findAvailableWidth(container)
 
     let scaledFirstNine = firstNineRaw.slice()
@@ -231,7 +335,7 @@ function setDaqiColumns() {
   // '' Mobile case: clear any existing grid columns to let flexbox handle layout
   if (
     viewportWidth > 0 &&
-    viewportWidth <= MOBILE_THRESHOLD &&
+    viewportWidth < TABLET_SMALL_THRESHOLD &&
     segments.length === 10
   ) {
     // '' Remove grid column CSS variables on mobile to allow flexbox
@@ -243,7 +347,7 @@ function setDaqiColumns() {
   }
 
   // Default behaviour: restore original desktop layout for wide viewports
-  if (viewportWidth > GROUPING_THRESHOLD && segments.length === 10) {
+  if (viewportWidth >= DESKTOP_THRESHOLD && segments.length === 10) {
     // '' Desktop: use fixed layout - remove CSS columns but set proper divider positions
     container.style.removeProperty('--daqi-columns')
     

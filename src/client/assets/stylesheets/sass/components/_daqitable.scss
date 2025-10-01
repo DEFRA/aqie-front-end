@@ -50,17 +50,12 @@ svg|foreignObject {
   overflow-x: auto; // '' Allow horizontal scrolling if needed
 
   // '' Mobile: container scales with viewport while maintaining consistent padding
-  @include govuk-media-query($until: tablet) {
+  @media (max-width: 639px) {
     width: calc(100% - 2rem); // '' Dynamic width based on viewport
     max-width: 100%;
     margin: 0 auto; // '' Center the container
     padding: 0 govuk-spacing(2); // '' Consistent padding
     box-sizing: border-box;
-    
-    @media (max-width: 640px) {
-      width: calc(100% - 1rem); // '' Less margin for narrow screens
-      padding: 0 govuk-spacing(1); // '' Reduce padding
-    }
     
     @media (max-width: 480px) {
       width: calc(100% - 0.5rem); // '' Minimal margins for very narrow screens  
@@ -78,9 +73,35 @@ svg|foreignObject {
       width: 100%; // '' DAQI bar fills the dynamic container
     }
   }
+  
+  // '' Small tablet (640-768px): intermediate sizing
+  @media (min-width: 640px) and (max-width: 767px) {
+    width: 520px; // '' Fixed width for small tablets
+    max-width: calc(100% - 2rem);
+    margin: 0 auto;
+    padding: 0 govuk-spacing(2);
+    box-sizing: border-box;
+    
+    .daqi-bar {
+      width: 100%;
+    }
+  }
+  
+  // '' Large tablet (768-1020px): larger intermediate sizing
+  @media (min-width: 768px) and (max-width: 1019px) {
+    width: 590px; // '' Fixed width for large tablets
+    max-width: calc(100% - 2rem);
+    margin: 0 auto;
+    padding: 0 govuk-spacing(2);
+    box-sizing: border-box;
+    
+    .daqi-bar {
+      width: 100%;
+    }
+  }
 
   // '' Ensure full 590px width at desktop to fix expansion issue
-  @media (min-width: 768px) {
+  @media (min-width: 1020px) {
     width: 590px;
   }
 
@@ -98,7 +119,7 @@ svg|foreignObject {
     background-image: none;
     
     // '' Mobile: cells scale dynamically with container while maintaining proportions
-    @include govuk-media-query($until: tablet) {
+    @media (max-width: 639px) {
       display: flex !important;
       width: 100%;
       margin: 0;
@@ -123,14 +144,21 @@ svg|foreignObject {
           flex: 100; // '' Proportional scaling based on desktop 100px
         }
         
-        // '' No dividers for now - need to find better approach
-        // '' Group dividers should be between groups, not inside cells
-        
         // '' Very narrow viewports: no dividers for now
         @media (max-width: 340px) {
           // '' Will implement proper group separators
         }
       }
+    }
+    
+    // '' Small tablet (640-768px): grid with tighter spacing
+    @media (min-width: 640px) and (max-width: 767px) {
+      gap: 2px; // '' Smaller gap for small tablets
+    }
+    
+    // '' Large tablet (768-1020px): grid with standard spacing
+    @media (min-width: 768px) and (max-width: 1019px) {
+      gap: 3px; // '' Standard gap for large tablets
     }
   }
 
@@ -291,31 +319,51 @@ svg|foreignObject {
       }
     }
 
-        // '' Extend responsive divider behavior to larger mobile and tablet viewports
-    @include govuk-media-query($from: tablet) {
-      // Show dividers for tablet viewports (JS will set appropriate positions)
-      @media (max-width: 940px) {
-        &::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 24px;
-          background-image:
-            linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-            linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-            linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
-          background-position: calc(var(--daqi-divider-1, 102px) * 100% / 375px) 0, calc(var(--daqi-divider-2, 206px) * 100% / 375px) 0, calc(var(--daqi-divider-3, 309px) * 100% / 375px) 0;
-          background-repeat: no-repeat;
-          background-size: 3px 100%, 3px 100%, 3px 100%;
-          pointer-events: none;
-          z-index: 1;
-        }
+        // '' Extend responsive divider behavior to tablet viewports
+    // Small tablet (640-768px): show dividers with tighter positioning
+    @media (min-width: 640px) and (max-width: 767px) {
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 24px;
+        background-image:
+          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
+        background-position: var(--daqi-divider-1, 130px) 0, var(--daqi-divider-2, 260px) 0, var(--daqi-divider-3, 390px) 0;
+        background-repeat: no-repeat;
+        background-size: 2px 100%, 2px 100%, 2px 100%; // Thinner lines for small tablets
+        pointer-events: none;
+        z-index: 1;
       }
+    }
+    
+    // Large tablet (768-1020px): show dividers with standard positioning
+    @media (min-width: 768px) and (max-width: 1019px) {
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 24px;
+        background-image:
+          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
+        background-position: var(--daqi-divider-1, 148px) 0, var(--daqi-divider-2, 296px) 0, var(--daqi-divider-3, 444px) 0;
+        background-repeat: no-repeat;
+        background-size: 3px 100%, 3px 100%, 3px 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+    }
       
       // Show dividers for desktop viewports too (JS will set proper positions)
-      @media (min-width: 941px) {
+      @media (min-width: 1020px) {
         &::before {
           content: '';
           position: absolute;
@@ -334,7 +382,6 @@ svg|foreignObject {
           z-index: 1;
         }
       }
-    }
   }
 }
 

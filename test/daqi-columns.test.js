@@ -59,10 +59,10 @@ describe('daqi-columns module', () => {
     })
   })
 
-  it('sets --daqi-columns CSS variable based on segment widths for narrow viewports', () => {
-    // Mock viewport width to be narrow (tablet) so CSS variables get set
+  it('sets --daqi-columns CSS variable based on segment widths for large tablet viewports', () => {
+    // Mock viewport width to be large tablet (768-1020px) so CSS variables get set
     Object.defineProperty(window, 'innerWidth', {
-      value: 800, // Between MOBILE_THRESHOLD (768) and GROUPING_THRESHOLD (940)
+      value: 900, // Between TABLET_LARGE_THRESHOLD (768) and DESKTOP_THRESHOLD (1020)
       configurable: true
     })
 
@@ -99,34 +99,124 @@ describe('daqi-columns module', () => {
     expect(cssValue).toBe('45px 44px 43px 44px 43px 43px 44px 43px 43px 131px')
   })
 
-  it('removes CSS columns but sets divider positions for desktop viewports (>940px)', () => {
-    // Mock viewport width to be desktop
+  it('removes CSS variables for mobile viewports below 640px', () => {
+    // Mock viewport width to be mobile (<640px) so CSS variables get removed
     Object.defineProperty(window, 'innerWidth', {
-      value: 1200, // Above GROUPING_THRESHOLD (940)
+      value: 500, // Below TABLET_SMALL_THRESHOLD (640)
       configurable: true
     })
 
-    // Set initial CSS variables to verify columns are removed but dividers are set
-    container.style.setProperty('--daqi-columns', 'initial value')
+    // Set initial CSS variables to test removal
+    container.style.setProperty('--daqi-columns', 'test-value')
     container.style.setProperty('--daqi-divider-1', '100px')
-    container.style.setProperty('--daqi-divider-2', '200px')
-    container.style.setProperty('--daqi-divider-3', '300px')
 
-    // Create segments
+    // Call the function under test
+    daqiColumnsModule.setDaqiColumns()
+
+    const cssValue = container.style.getPropertyValue('--daqi-columns')
+    const divider1 = container.style.getPropertyValue('--daqi-divider-1')
+    expect(cssValue).toBe('')
+    expect(divider1).toBe('')
+  })
+
+  it('calculates divider positions for desktop viewports', () => {
+    // Mock viewport width to be desktop (>1020px) so dividers get calculated
+    Object.defineProperty(window, 'innerWidth', {
+      value: 1200, // Above DESKTOP_THRESHOLD (1020)
+      configurable: true
+    })
+
+    // Mock getBoundingClientRect for segments  
     const segments = document.querySelectorAll('.daqi-bar-segment')
     segments.forEach((seg, i) => {
-      seg.getBoundingClientRect = () => ({ width: i === 9 ? 100 : 50 })
+      seg.getBoundingClientRect = () => ({ width: i === 9 ? 100 : 51 })
     })
 
     // Call the function under test
     daqiColumnsModule.setDaqiColumns()
 
-    // Verify --daqi-columns is removed (empty string means property was removed)
-    expect(container.style.getPropertyValue('--daqi-columns')).toBe('')
+    const cssValue = container.style.getPropertyValue('--daqi-columns')
+    const divider1 = container.style.getPropertyValue('--daqi-divider-1')
+    const divider2 = container.style.getPropertyValue('--daqi-divider-2')
+    const divider3 = container.style.getPropertyValue('--daqi-divider-3')
     
-    // Verify divider CSS variables are set with calculated desktop positions
-    expect(container.style.getPropertyValue('--daqi-divider-1')).toBe('156px') // 50*3 + 3*2 = 156
-    expect(container.style.getPropertyValue('--daqi-divider-2')).toBe('315px') // 50*6 + 3*5 = 315
-    expect(container.style.getPropertyValue('--daqi-divider-3')).toBe('474px') // 50*9 + 3*8 = 474
+    // Desktop should remove columns but set calculated divider positions
+    expect(cssValue).toBe('')
+    expect(divider1).toBe('159px') // 3 * 51 + 2 * 3px gaps = 159px
+    expect(divider2).toBe('321px') // 6 * 51 + 5 * 3px gaps = 321px
+    expect(divider3).toBe('483px') // 9 * 51 + 8 * 3px gaps = 483px
+  })
+
+  test('should handle small tablet viewport (640-768px) with tighter grouping', async () => {
+    // '' Mock viewport width for small tablet (640-768px)
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: 700
+    })
+
+    // '' Create mock DOM for testing with proper tab structure
+    const panel = document.createElement('div')
+    panel.className = 'govuk-tabs__panel'
+    
+    const container = document.createElement('div')
+    container.className = 'daqi-numbered'
+    container.innerHTML = `
+      <div class="daqi-labels">
+        <div class="daqi-band">Very high</div>
+      </div>
+      <div class="daqi-bar">
+        <div class="daqi-bar-segment"></div>
+        <div class="daqi-bar-segment"></div>
+        <div class="daqi-bar-segment"></div>
+        <div class="daqi-bar-segment"></div>
+        <div class="daqi-bar-segment"></div>
+        <div class="daqi-bar-segment"></div>
+        <div class="daqi-bar-segment"></div>
+        <div class="daqi-bar-segment"></div>
+        <div class="daqi-bar-segment"></div>
+        <div class="daqi-bar-segment"></div>
+      </div>
+    `
+    
+    panel.appendChild(container)
+    document.body.appendChild(panel)
+
+    // '' Mock getBoundingClientRect for labels and container
+    const lastLabel = container.querySelector('.daqi-labels .daqi-band')
+    lastLabel.getBoundingClientRect = () => ({ width: 50 })
+    
+    container.getBoundingClientRect = () => ({ width: 520 }) // Small tablet container width
+    Object.defineProperty(container, 'clientWidth', {
+      value: 520,
+      configurable: true
+    })
+
+    // '' Mock getBoundingClientRect for segments too
+    const segments = container.querySelectorAll('.daqi-bar-segment')
+    segments.forEach((seg) => {
+      seg.getBoundingClientRect = () => ({ width: 50 })
+    })
+
+    // '' Mock getComputedStyle to make panel visible
+    window.getComputedStyle = (el) => {
+      if (el.classList && el.classList.contains('govuk-tabs__panel')) {
+        return { display: 'block', visibility: 'visible' }
+      }
+      return { display: 'block', visibility: 'visible' }
+    }
+
+    // '' Call the function
+    const daqiColumnsModule = await import('../src/client/assets/javascripts/daqi-columns.js')
+    daqiColumnsModule.setDaqiColumns()
+
+    // '' Verify CSS custom properties are set for small tablet
+    expect(container.style.getPropertyValue('--daqi-columns')).toBeTruthy()
+    expect(container.style.getPropertyValue('--daqi-divider-1')).toBeTruthy()
+    expect(container.style.getPropertyValue('--daqi-divider-2')).toBeTruthy()
+    expect(container.style.getPropertyValue('--daqi-divider-3')).toBeTruthy()
+
+    // '' Clean up
+    document.body.removeChild(panel)
   })
 })

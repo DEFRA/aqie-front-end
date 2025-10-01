@@ -65,9 +65,9 @@ describe('daqi-columns ResizeObserver behavior', () => {
   })
 
   it('responds to ResizeObserver events by updating --daqi-columns', () => {
-    // Mock window width for tablet viewport so CSS variables get set
+    // Mock window width for large tablet viewport so CSS variables get set
     Object.defineProperty(window, 'innerWidth', {
-      value: 800, // Between MOBILE_THRESHOLD (768) and GROUPING_THRESHOLD (940)
+      value: 900, // Between TABLET_LARGE_THRESHOLD (768) and DESKTOP_THRESHOLD (1020)
       configurable: true
     })
 
