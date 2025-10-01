@@ -242,7 +242,17 @@ function setDaqiColumns() {
     return
   }
 
-  // Default behaviour: measure each segment individually
+  // Default behaviour: restore original desktop layout for wide viewports
+  if (viewportWidth > GROUPING_THRESHOLD && segments.length === 10) {
+    // '' Desktop: use fixed layout - remove CSS variables to let CSS defaults apply
+    container.style.removeProperty('--daqi-columns')
+    container.style.removeProperty('--daqi-divider-1')
+    container.style.removeProperty('--daqi-divider-2')
+    container.style.removeProperty('--daqi-divider-3')
+    return
+  }
+
+  // Fallback: measure each segment individually for edge cases
   const cols = Array.from(segments).map((seg) => {
     const rect = seg.getBoundingClientRect()
     return Math.round(rect.width) + 'px'
