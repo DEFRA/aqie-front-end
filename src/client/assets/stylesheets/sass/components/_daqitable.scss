@@ -47,24 +47,27 @@ svg|foreignObject {
   // '' Responsive width: use 590px when space allows, scale down when needed
   width: min(590px, 100%);
   max-width: 100%; // '' Prevent overflow in narrow containers
-  overflow-x: auto; // '' Allow horizontal scrolling if needed
+  overflow: hidden; // '' Prevent any scrolling - container must fit within bounds
 
   // '' Mobile: container scales with viewport while maintaining consistent padding
   @media (max-width: 639px) {
     width: calc(100% - 2rem); // '' Dynamic width based on viewport
-    max-width: 100%;
+    max-width: calc(100vw - 2rem); // '' Ensure we never exceed viewport width
     margin: 0 auto; // '' Center the container
     padding: 0 govuk-spacing(2); // '' Consistent padding
     box-sizing: border-box;
+    overflow: hidden; // '' Prevent scrolling on mobile
     
     @media (max-width: 480px) {
-      width: calc(100% - 0.5rem); // '' Minimal margins for very narrow screens  
+      width: calc(100% - 1rem); // '' Minimal margins for very narrow screens  
+      max-width: calc(100vw - 1rem);
       padding: 0 0.5rem; // '' Minimal padding
     }
     
     // '' Extra narrow viewports: maximize available space
     @media (max-width: 340px) {
-      width: calc(100% - 0.25rem); // '' Almost full width
+      width: calc(100% - 0.5rem); // '' Almost full width
+      max-width: calc(100vw - 0.5rem);
       padding: 0 0.25rem; // '' Very minimal padding
       margin: 0 auto;
     }
@@ -77,10 +80,11 @@ svg|foreignObject {
   // '' Small tablet (640-768px): intermediate sizing
   @media (min-width: 640px) and (max-width: 767px) {
     width: 520px; // '' Fixed width for small tablets
-    max-width: calc(100% - 2rem);
+    max-width: calc(100vw - 2rem); // '' Ensure we never exceed viewport
     margin: 0 auto;
     padding: 0 govuk-spacing(2);
     box-sizing: border-box;
+    overflow: hidden; // '' Prevent scrolling
     
     .daqi-bar {
       width: 100%;
@@ -90,19 +94,22 @@ svg|foreignObject {
   // '' Large tablet (768-1020px): larger intermediate sizing
   @media (min-width: 768px) and (max-width: 1019px) {
     width: 590px; // '' Fixed width for large tablets
-    max-width: calc(100% - 2rem);
+    max-width: calc(100vw - 2rem); // '' Ensure we never exceed viewport
     margin: 0 auto;
     padding: 0 govuk-spacing(2);
     box-sizing: border-box;
+    overflow: hidden; // '' Prevent scrolling
     
     .daqi-bar {
       width: 100%;
     }
   }
 
-  // '' Ensure full 590px width at desktop to fix expansion issue
+  // '' Desktop: full 590px width when space allows
   @media (min-width: 1020px) {
     width: 590px;
+    max-width: calc(100vw - 2rem); // '' Ensure we never exceed viewport
+    overflow: hidden; // '' Prevent scrolling
   }
 
   .daqi-bar {
@@ -117,6 +124,10 @@ svg|foreignObject {
     gap: 3px;
     // '' separators moved to label level to avoid duplication with design
     background-image: none;
+    width: 100%; // '' Ensure bar fills container
+    max-width: 100%; // '' Prevent bar from exceeding container
+    box-sizing: border-box; // '' Include padding/border in width calculation
+    overflow: hidden; // '' Prevent bar content from causing scrolling
     
     // '' Mobile: cells scale dynamically with container while maintaining proportions
     @media (max-width: 639px) {
@@ -212,6 +223,10 @@ svg|foreignObject {
     justify-content: start; // '' prevent space-between from generic .daqi-labels rule
     align-content: start;
   // padding removed to keep grid perfectly aligned with bar geometry
+    width: 100%; // '' Ensure labels container fills parent
+    max-width: 100%; // '' Prevent labels from exceeding container
+    box-sizing: border-box; // '' Include padding/border in width calculation
+    overflow: hidden; // '' Prevent label overflow from causing scrolling
 
     // '' Desktop default: grid-based layout
     .daqi-band {
@@ -229,6 +244,8 @@ svg|foreignObject {
       border: 0 !important; // '' remove any generic borders
       // stylelint-disable-next-line declaration-no-important
       padding: 0 !important;
+      overflow: hidden; // '' Prevent text overflow
+      text-overflow: ellipsis; // '' Show ellipsis for long text
       
       // Low - spans cells 1,2,3 (3 tracks)
       &:nth-child(1) {
@@ -609,10 +626,9 @@ svg|foreignObject {
   }
 }
 
-// '' Tablet and desktop: hide horizontal scrollbars since we have more space
+// '' Ensure box-sizing for consistent sizing calculations
 @media (min-width: 768px) {
   .daqi-numbered {
-    overflow-x: hidden; // '' No scrollbars needed on larger screens
     box-sizing: border-box;
   }
 }
