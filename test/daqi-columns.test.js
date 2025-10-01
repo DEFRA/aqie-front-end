@@ -93,10 +93,15 @@ describe('daqi-columns module', () => {
     // Call the function under test
     daqiColumnsModule.setDaqiColumns()
 
+    // For large tablet viewports (768-1020px), we now use flexbox so CSS variables should be cleared
     const cssValue = document
       .querySelector('.daqi-numbered')
       .style.getPropertyValue('--daqi-columns')
-    expect(cssValue).toBe('45px 44px 43px 44px 43px 43px 44px 43px 43px 131px')
+    expect(cssValue).toBe('') // Flexbox clears grid variables
+    
+    // Divider variables should also be cleared for flexbox
+    const divider1 = document.querySelector('.daqi-numbered').style.getPropertyValue('--daqi-divider-1')
+    expect(divider1).toBe('')
   })
 
   it('removes CSS variables for mobile viewports below 640px', () => {
@@ -210,11 +215,11 @@ describe('daqi-columns module', () => {
     const daqiColumnsModule = await import('../src/client/assets/javascripts/daqi-columns.js')
     daqiColumnsModule.setDaqiColumns()
 
-    // '' Verify CSS custom properties are set for small tablet
-    expect(container.style.getPropertyValue('--daqi-columns')).toBeTruthy()
-    expect(container.style.getPropertyValue('--daqi-divider-1')).toBeTruthy()
-    expect(container.style.getPropertyValue('--daqi-divider-2')).toBeTruthy()
-    expect(container.style.getPropertyValue('--daqi-divider-3')).toBeTruthy()
+    // '' Small tablet viewports (640-768px) now use flexbox, so CSS variables should be cleared
+    expect(container.style.getPropertyValue('--daqi-columns')).toBe('')
+    expect(container.style.getPropertyValue('--daqi-divider-1')).toBe('')
+    expect(container.style.getPropertyValue('--daqi-divider-2')).toBe('')
+    expect(container.style.getPropertyValue('--daqi-divider-3')).toBe('')
 
     // '' Clean up
     document.body.removeChild(panel)

@@ -77,9 +77,9 @@ svg|foreignObject {
     }
   }
   
-  // '' Small tablet (640-768px): intermediate sizing
+  // '' Small tablet (640-768px): dynamic responsive sizing
   @media (min-width: 640px) and (max-width: 767px) {
-    width: 520px; // '' Fixed width for small tablets
+    width: calc(100% - 2rem); // '' Dynamic width based on viewport
     max-width: calc(100vw - 2rem); // '' Ensure we never exceed viewport
     margin: 0 auto;
     padding: 0 govuk-spacing(2);
@@ -91,9 +91,9 @@ svg|foreignObject {
     }
   }
   
-  // '' Large tablet (768-1020px): larger intermediate sizing
+  // '' Large tablet (768-1020px): dynamic responsive sizing
   @media (min-width: 768px) and (max-width: 1019px) {
-    width: 590px; // '' Fixed width for large tablets
+    width: calc(100% - 2rem); // '' Dynamic width based on viewport
     max-width: calc(100vw - 2rem); // '' Ensure we never exceed viewport
     margin: 0 auto;
     padding: 0 govuk-spacing(2);
@@ -162,14 +162,58 @@ svg|foreignObject {
       }
     }
     
-    // '' Small tablet (640-768px): grid with tighter spacing
+    // '' Small tablet (640-768px): flexbox with proportional scaling
     @media (min-width: 640px) and (max-width: 767px) {
+      display: flex !important;
+      width: 100%;
+      margin: 0;
       gap: 2px; // '' Smaller gap for small tablets
+      
+      .daqi-bar-segment {
+        // '' Dynamic scaling maintaining desktop proportional relationships
+        &:nth-child(1),
+        &:nth-child(2),
+        &:nth-child(3),
+        &:nth-child(4),
+        &:nth-child(5),
+        &:nth-child(6),
+        &:nth-child(7),
+        &:nth-child(8),
+        &:nth-child(9) {
+          flex: 51; // '' Proportional scaling based on desktop 51px
+        }
+        
+        &:nth-child(10) {
+          flex: 100; // '' Proportional scaling based on desktop 100px
+        }
+      }
     }
     
-    // '' Large tablet (768-1020px): grid with standard spacing
+    // '' Large tablet (768-1020px): flexbox with proportional scaling
     @media (min-width: 768px) and (max-width: 1019px) {
+      display: flex !important;
+      width: 100%;
+      margin: 0;
       gap: 3px; // '' Standard gap for large tablets
+      
+      .daqi-bar-segment {
+        // '' Dynamic scaling maintaining desktop proportional relationships
+        &:nth-child(1),
+        &:nth-child(2),
+        &:nth-child(3),
+        &:nth-child(4),
+        &:nth-child(5),
+        &:nth-child(6),
+        &:nth-child(7),
+        &:nth-child(8),
+        &:nth-child(9) {
+          flex: 51; // '' Proportional scaling based on desktop 51px
+        }
+        
+        &:nth-child(10) {
+          flex: 100; // '' Proportional scaling based on desktop 100px
+        }
+      }
     }
   }
 
@@ -304,39 +348,82 @@ svg|foreignObject {
       
       .daqi-band {
         text-align: center;
-        font-size: 14px;
-        font-weight: govuk-font-weight("regular");
-        color: govuk-colour("black");
-        white-space: nowrap;
+        flex: 1;
         position: relative;
+        z-index: 2;
         
-        // Reset desktop grid positioning for mobile
+        @include govuk-font($size: 14, $weight: regular);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        
+        // Reset grid positioning for mobile
         grid-column: unset;
-        left: unset;
         justify-self: unset;
-        width: auto;
+        left: unset;
         transform: unset;
-        
-        // Unique class-based label positioning for precision
-        &.daqi-band-low {
-          transform: translateX(10px);
-        }
-        
-        &.daqi-band-moderate {
-          transform: translateX(35px);
-        }
-        
-        &.daqi-band-high {
-          transform: translateX(35px);
-        }
-        
-        &.daqi-band-very-high {
-          transform: translateX(24px);
-        }
+        width: auto;
+        max-width: 100%;
       }
     }
-
-        // '' Extend responsive divider behavior to tablet viewports
+    
+    // '' Small tablet (640-768px): flexbox layout like mobile
+    @media (min-width: 640px) and (max-width: 767px) {
+      display: flex;
+      width: 100%;
+      margin: 5px 0 0;
+      justify-content: space-around;
+      position: relative;
+      
+      .daqi-band {
+        text-align: center;
+        flex: 1;
+        position: relative;
+        
+        @include govuk-font($size: 14, $weight: regular); // Valid GOV.UK font size for small tablets
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        
+        // Reset grid positioning
+        grid-column: unset;
+        justify-self: unset;
+        left: unset;
+        transform: unset;
+        width: auto;
+        max-width: 100%;
+      }
+    }
+    
+    // '' Large tablet (768-1020px): flexbox layout like mobile
+    @media (min-width: 768px) and (max-width: 1019px) {
+      display: flex;
+      width: 100%;
+      margin: 5px 0 0;
+      justify-content: space-around;
+      position: relative;
+      
+      .daqi-band {
+        text-align: center;
+        flex: 1;
+        position: relative;
+        
+        @include govuk-font($size: 16, $weight: regular); // Same as desktop for large tablets
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        
+        // Reset grid positioning
+        grid-column: unset;
+        justify-self: unset;
+        left: unset;
+        transform: unset;
+        width: auto;
+        max-width: 100%;
+      }
+    }
+    
+    // '' Extend responsive divider behavior to tablet viewports  
     // Small tablet (640-768px): show dividers with tighter positioning
     @media (min-width: 640px) and (max-width: 767px) {
       &::before {
@@ -379,27 +466,27 @@ svg|foreignObject {
       }
     }
       
-      // Show dividers for desktop viewports too (JS will set proper positions)
-      @media (min-width: 1020px) {
-        &::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 24px;
-          background-image:
-            linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-            linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-            linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
-          background-position: var(--daqi-divider-1, 196px) 0, var(--daqi-divider-2, 392px) 0, var(--daqi-divider-3, 588px) 0;
-          background-repeat: no-repeat;
-          background-size: 3px 100%, 3px 100%, 3px 100%;
-          pointer-events: none;
-          z-index: 1;
-        }
+    // Show dividers for desktop viewports too (JS will set proper positions)
+    @media (min-width: 1020px) {
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 24px;
+        background-image:
+          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
+        background-position: var(--daqi-divider-1, 196px) 0, var(--daqi-divider-2, 392px) 0, var(--daqi-divider-3, 588px) 0;
+        background-repeat: no-repeat;
+        background-size: 3px 100%, 3px 100%, 3px 100%;
+        pointer-events: none;
+        z-index: 1;
       }
-  }
+    }
+  } // Close .daqi-labels
 }
 
 .daqi-number {

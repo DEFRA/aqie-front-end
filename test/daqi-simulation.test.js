@@ -3,7 +3,7 @@ import { JSDOM } from 'jsdom'
 import { getAirQuality } from '../src/server/data/air-quality.js'
 
 // Import the DAQI columns module
-import daqiColumnsModule from '../src/client/assets/javascripts/daqi-columns.js'
+// import daqiColumnsModule from '../src/client/assets/javascripts/daqi-columns.js'
 
 describe('DAQI Simulation Tests', () => {
   let dom
@@ -256,7 +256,7 @@ describe('DAQI Simulation Tests', () => {
     })
 
     it('should handle very high value visual representation', () => {
-      const airQuality = getAirQuality(10)
+      const airQualityData = getAirQuality(10)
       
       // Test the last segment (10th) is properly positioned
       const segment10 = container.querySelector('.daqi-10')
@@ -267,6 +267,7 @@ describe('DAQI Simulation Tests', () => {
       expect(segment10.style.width).toBe('100px')
       
       console.log('✓ DAQI 10 visual representation - Last segment with 100px width')
+      console.log('Air quality data:', airQualityData)
     })
 
     it('should simulate outlook messaging for very high', () => {

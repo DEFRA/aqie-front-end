@@ -99,10 +99,10 @@ describe('daqi-columns grouped behaviour', () => {
     const cssValue = document
       .querySelector('.daqi-numbered')
       .style.getPropertyValue('--daqi-columns')
-    // 97 / 3 = 32 remainder 1 -> groups become [33,32,32] replicated -> nine segments
-    expect(cssValue).toBe('33px 32px 32px 33px 32px 32px 33px 32px 32px 97px')
+    // In tablet range (768-1020px), variables are cleared for flexbox layout
+    expect(cssValue).toBe('')
 
-    // Also assert divider offsets are present and numeric
+    // Also assert divider offsets are cleared for flexbox layout
     const d1 = document
       .querySelector('.daqi-numbered')
       .style.getPropertyValue('--daqi-divider-1')
@@ -113,8 +113,8 @@ describe('daqi-columns grouped behaviour', () => {
       .querySelector('.daqi-numbered')
       .style.getPropertyValue('--daqi-divider-3')
 
-    expect(d1).toMatch(/px$/)
-    expect(d2).toMatch(/px$/)
-    expect(d3).toMatch(/px$/)
+    expect(d1).toBe('')
+    expect(d2).toBe('')
+    expect(d3).toBe('')
   })
 })

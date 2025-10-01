@@ -64,8 +64,8 @@ describe('daqi-columns ResizeObserver behavior', () => {
     }
   })
 
-  it('responds to ResizeObserver events by updating --daqi-columns', () => {
-    // Mock window width for large tablet viewport so CSS variables get set
+  it('responds to ResizeObserver events by updating columns for tablet viewport', () => {
+    // Mock window width for large tablet viewport - now uses flexbox instead of CSS variables
     Object.defineProperty(window, 'innerWidth', {
       value: 900, // Between TABLET_LARGE_THRESHOLD (768) and DESKTOP_THRESHOLD (1020)
       configurable: true
@@ -99,7 +99,8 @@ describe('daqi-columns ResizeObserver behavior', () => {
     const cssValue = document
       .querySelector('.daqi-numbered')
       .style.getPropertyValue('--daqi-columns')
-    expect(cssValue).toBe('45px 44px 43px 44px 43px 43px 44px 43px 43px 131px')
+    // In tablet range (768-1020px), variables are cleared for flexbox layout
+    expect(cssValue).toBe('')
 
     vi.useRealTimers()
   })

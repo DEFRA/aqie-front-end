@@ -102,233 +102,33 @@ function setDaqiColumns() {
     )
   }
 
-  // Stage 1: Small tablet (640-768px) - tighter grouping
+  // Stage 1: Small tablet (640-768px) - use flexbox like mobile
   if (
     viewportWidth > 0 &&
     viewportWidth >= TABLET_SMALL_THRESHOLD &&
     viewportWidth < TABLET_LARGE_THRESHOLD &&
     segments.length === 10
   ) {
-    // Implement small tablet grouping behavior
-    let lastLabel = container.querySelector(
-      '.daqi-labels .daqi-band:last-child'
-    )
-    let groupWidth = 0
-
-    if (lastLabel) {
-      const lr = lastLabel.getBoundingClientRect()
-      groupWidth = Math.round(lr.width * 0.9) // Slightly smaller for small tablets
-    }
-
-    // fallback to the last segment width if label not present or too small
-    if (!groupWidth || groupWidth < 20) {
-      const lastSegRect = segments[9].getBoundingClientRect()
-      groupWidth = Math.round(lastSegRect.width * 0.9)
-    }
-
-    // enforce reasonable minimums to avoid collapsing
-    groupWidth = Math.max(groupWidth, 32) // Smaller minimum for small tablets
-
-    // compute per-segment widths for small tablet
-    const base = Math.floor(groupWidth / 3)
-    const remainder = groupWidth - base * 3
-
-    const oneGroup = []
-    for (let i = 0; i < 3; i++) {
-      oneGroup.push(base + (i < remainder ? 1 : 0))
-    }
-
-    const cols = [].concat(oneGroup, oneGroup, oneGroup)
-    const firstNineRaw = cols.slice(0, 9)
-    const lastRaw = groupWidth
-
-    // Scale to container for small tablet
-    const GAP = 2 // Smaller gap for small tablets
-    const rawTotal =
-      firstNineRaw.reduce((s, v) => s + v, 0) + lastRaw + GAP * cols.length
-
-    const availableWidth = findAvailableWidth(container)
-    
-    let scaledFirstNine = firstNineRaw.slice()
-    let scaledLast = lastRaw
-
-    if (availableWidth > 0 && rawTotal > 0) {
-      const scale = availableWidth / rawTotal
-      const gapsTotal = GAP * cols.length
-      const targetTotalForColumns = Math.max(
-        0,
-        Math.round(availableWidth - gapsTotal)
-      )
-
-      const floatScaled = firstNineRaw
-        .concat([lastRaw])
-        .map(
-          (n) =>
-            n *
-            (targetTotalForColumns /
-              (firstNineRaw.reduce((s, v) => s + v, 0) + lastRaw))
-        )
-      const rounded = floatScaled.map((v) => Math.max(1, Math.round(v)))
-      let diff = targetTotalForColumns - rounded.reduce((s, v) => s + v, 0)
-      let i = 0
-      while (diff !== 0) {
-        rounded[i % rounded.length] += diff > 0 ? 1 : -1
-        diff += diff > 0 ? -1 : 1
-        i++
-      }
-
-      scaledFirstNine = rounded.slice(0, 9)
-      scaledLast = rounded[9]
-    }
-
-    const firstNine = scaledFirstNine.map((n) => n + 'px').join(' ')
-    const last = scaledLast + 'px'
-    const cssValue = firstNine + ' ' + last
-
-    container.style.setProperty('--daqi-columns', cssValue)
-
-    // Compute divider offsets for small tablet
-    const colsScaled = scaledFirstNine.concat([scaledLast])
-    const offsets = []
-    for (const n of [3, 6, 9]) {
-      const sum = colsScaled.slice(0, n).reduce((s, v) => s + v, 0)
-      const gaps = GAP * (n - 1)
-      offsets.push(sum + gaps)
-    }
-    container.style.setProperty(
-      '--daqi-divider-1',
-      Math.round(offsets[0]) + 'px'
-    )
-    container.style.setProperty(
-      '--daqi-divider-2',
-      Math.round(offsets[1]) + 'px'
-    )
-    container.style.setProperty(
-      '--daqi-divider-3',
-      Math.round(offsets[2]) + 'px'
-    )
-
+    // '' Remove grid column CSS variables on small tablets to allow flexbox
+    container.style.removeProperty('--daqi-columns')
+    container.style.removeProperty('--daqi-divider-1')
+    container.style.removeProperty('--daqi-divider-2')
+    container.style.removeProperty('--daqi-divider-3')
     return
   }
 
-  // Stage 2: Large tablet (768-1020px) - standard grouping
+  // Stage 2: Large tablet (768-1020px) - use flexbox like mobile
   if (
     viewportWidth > 0 &&
     viewportWidth >= TABLET_LARGE_THRESHOLD &&
     viewportWidth < DESKTOP_THRESHOLD &&
     segments.length === 10
   ) {
-    // try to measure the last label under the bar first
-    let lastLabel = container.querySelector(
-      '.daqi-labels .daqi-band:last-child'
-    )
-    let groupWidth = 0
-
-    if (lastLabel) {
-      const lr = lastLabel.getBoundingClientRect()
-      groupWidth = Math.round(lr.width)
-    }
-
-    // fallback to the last segment width if label not present or too small
-    if (!groupWidth || groupWidth < 20) {
-      const lastSegRect = segments[9].getBoundingClientRect()
-      groupWidth = Math.round(lastSegRect.width)
-    }
-
-    // enforce reasonable minimums to avoid collapsing
-    groupWidth = Math.max(groupWidth, 36)
-
-    // compute per-segment widths for the first 9 segments so that each
-    // group of 3 sums exactly to the measured `groupWidth`. This avoids
-    // rounding drift and ensures groups 1-3, 4-6 and 7-9 equal the width
-    // of the 'Very high' label (cell 10). Distribute any remainder
-    // across the first segments in each group for visual balance.
-    const base = Math.floor(groupWidth / 3)
-    const remainder = groupWidth - base * 3 // 0..2
-
-    // build one group's segments e.g. [base+1, base+1, base] when remainder=2
-    const oneGroup = []
-    for (let i = 0; i < 3; i++) {
-      oneGroup.push(base + (i < remainder ? 1 : 0))
-    }
-
-    // replicate the group 3 times to make nine segment widths
-    const cols = [].concat(oneGroup, oneGroup, oneGroup)
-
-    // build css value: nine per-segment widths and last large one
-    const firstNineRaw = cols.slice(0, 9)
-    const lastRaw = groupWidth
-
-    // compute raw total width including gaps so we can scale to the container
-    const GAP = 3
-    const rawTotal =
-      firstNineRaw.reduce((s, v) => s + v, 0) + lastRaw + GAP * cols.length
-
-    // measure available width and scale columns so we can scale to the container
-    const availableWidth = findAvailableWidth(container)
-
-    let scaledFirstNine = firstNineRaw.slice()
-    let scaledLast = lastRaw
-
-    if (availableWidth > 0 && rawTotal > 0) {
-      const scale = availableWidth / rawTotal
-      // When scaling, distribute rounding so the sum of scaled widths equals availableWidth minus gaps
-      const gapsTotal = GAP * cols.length
-      const targetTotalForColumns = Math.max(
-        0,
-        Math.round(availableWidth - gapsTotal)
-      )
-
-      // compute float-scaled values and round, then adjust for rounding drift
-      const floatScaled = firstNineRaw
-        .concat([lastRaw])
-        .map(
-          (n) =>
-            n *
-            (targetTotalForColumns /
-              (firstNineRaw.reduce((s, v) => s + v, 0) + lastRaw))
-        )
-      const rounded = floatScaled.map((v) => Math.max(1, Math.round(v)))
-      // fix rounding difference
-      let diff = targetTotalForColumns - rounded.reduce((s, v) => s + v, 0)
-      let i = 0
-      while (diff !== 0) {
-        rounded[i % rounded.length] += diff > 0 ? 1 : -1
-        diff += diff > 0 ? -1 : 1
-        i++
-      }
-
-      scaledFirstNine = rounded.slice(0, 9)
-      scaledLast = rounded[9]
-    }
-
-    const firstNine = scaledFirstNine.map((n) => n + 'px').join(' ')
-    const last = scaledLast + 'px'
-    const cssValue = firstNine + ' ' + last
-
-    container.style.setProperty('--daqi-columns', cssValue)
-
-    // compute divider offsets after 3,6,9 segments (include gap of 3px between columns)
-    const colsScaled = scaledFirstNine.concat([scaledLast])
-    const offsets = []
-    for (const n of [3, 6, 9]) {
-      const sum = colsScaled.slice(0, n).reduce((s, v) => s + v, 0)
-      const gaps = GAP * (n - 1)
-      offsets.push(sum + gaps)
-    }
-    container.style.setProperty(
-      '--daqi-divider-1',
-      Math.round(offsets[0]) + 'px'
-    )
-    container.style.setProperty(
-      '--daqi-divider-2',
-      Math.round(offsets[1]) + 'px'
-    )
-    container.style.setProperty(
-      '--daqi-divider-3',
-      Math.round(offsets[2]) + 'px'
-    )
-
+    // '' Remove grid column CSS variables on large tablets to allow flexbox
+    container.style.removeProperty('--daqi-columns')
+    container.style.removeProperty('--daqi-divider-1')
+    container.style.removeProperty('--daqi-divider-2')
+    container.style.removeProperty('--daqi-divider-3')
     return
   }
   
