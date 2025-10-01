@@ -65,6 +65,12 @@ describe('daqi-columns ResizeObserver behavior', () => {
   })
 
   it('responds to ResizeObserver events by updating --daqi-columns', () => {
+    // Mock window width for tablet viewport so CSS variables get set
+    Object.defineProperty(window, 'innerWidth', {
+      value: 800, // Between MOBILE_THRESHOLD (768) and GROUPING_THRESHOLD (940)
+      configurable: true
+    })
+
     // Mock getBoundingClientRect for initial widths
     segments.forEach((el) => {
       const width = parseInt(el.style.width, 10)
@@ -93,7 +99,7 @@ describe('daqi-columns ResizeObserver behavior', () => {
     const cssValue = document
       .querySelector('.daqi-numbered')
       .style.getPropertyValue('--daqi-columns')
-    expect(cssValue).toBe('50px 50px 50px 50px 50px 50px 50px 50px 50px 100px')
+    expect(cssValue).toBe('45px 44px 43px 44px 43px 43px 44px 43px 43px 131px')
 
     vi.useRealTimers()
   })

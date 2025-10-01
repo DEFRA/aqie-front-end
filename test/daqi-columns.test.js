@@ -59,13 +59,27 @@ describe('daqi-columns module', () => {
     })
   })
 
-  it('sets --daqi-columns CSS variable based on segment widths', () => {
-    // Ensure getBoundingClientRect works under JSDOM by mocking
-    const segments = Array.from(document.querySelectorAll('.daqi-bar-segment'))
-    // Mock getBoundingClientRect to return the widths we set
-    segments.forEach((el) => {
-      const width = parseInt(el.style.width, 10)
-      el.getBoundingClientRect = () => ({ width })
+  it('sets --daqi-columns CSS variable based on segment widths for narrow viewports', () => {
+    // Mock viewport width to be narrow (tablet) so CSS variables get set
+    Object.defineProperty(window, 'innerWidth', {
+      value: 800, // Between MOBILE_THRESHOLD (768) and GROUPING_THRESHOLD (940)
+      configurable: true
+    })
+
+    // Create labels container to avoid fallback to segment width
+    const labels = document.createElement('div')
+    labels.className = 'daqi-labels'
+    for (let i = 0; i < 10; i++) {
+      const band = document.createElement('div')
+      band.className = 'daqi-band'
+      labels.appendChild(band)
+    }
+    container.appendChild(labels)
+
+    // Mock getBoundingClientRect for segments
+    const segments = document.querySelectorAll('.daqi-bar-segment')
+    segments.forEach((seg, i) => {
+      seg.getBoundingClientRect = () => ({ width: i === 9 ? 100 : 50 })
     })
 
     // Also mock getBoundingClientRect for last label if present
@@ -82,8 +96,35 @@ describe('daqi-columns module', () => {
     const cssValue = document
       .querySelector('.daqi-numbered')
       .style.getPropertyValue('--daqi-columns')
-    // Debug output
-    console.log('DEBUG --daqi-columns:', cssValue)
-    expect(cssValue).toBe('50px 50px 50px 50px 50px 50px 50px 50px 50px 100px')
+    expect(cssValue).toBe('45px 44px 43px 44px 43px 43px 44px 43px 43px 131px')
+  })
+
+  it('removes CSS variables for desktop viewports (>940px)', () => {
+    // Mock viewport width to be desktop
+    Object.defineProperty(window, 'innerWidth', {
+      value: 1200, // Above GROUPING_THRESHOLD (940)
+      configurable: true
+    })
+
+    // Set initial CSS variables to verify they get removed
+    container.style.setProperty('--daqi-columns', 'initial value')
+    container.style.setProperty('--daqi-divider-1', '100px')
+    container.style.setProperty('--daqi-divider-2', '200px')
+    container.style.setProperty('--daqi-divider-3', '300px')
+
+    // Create segments
+    const segments = document.querySelectorAll('.daqi-bar-segment')
+    segments.forEach((seg, i) => {
+      seg.getBoundingClientRect = () => ({ width: i === 9 ? 100 : 50 })
+    })
+
+    // Call the function under test
+    daqiColumnsModule.setDaqiColumns()
+
+    // Verify CSS variables are removed (empty string means property was removed)
+    expect(container.style.getPropertyValue('--daqi-columns')).toBe('')
+    expect(container.style.getPropertyValue('--daqi-divider-1')).toBe('')
+    expect(container.style.getPropertyValue('--daqi-divider-2')).toBe('')
+    expect(container.style.getPropertyValue('--daqi-divider-3')).toBe('')
   })
 })
