@@ -1,93 +1,86 @@
-.govuk-tabs__list {
-    @include govuk-media-query($until: tablet) {
-        display: none;
-        @include defra-visually-hidden;
-    }
-}
+// '' Hide content list on mobile for ALL tabs components in the project
+// '' Tablet+: Use horizontal tabs navigation
 
-.govuk-tabs__title {
-    display: none;
-}
-
-.defra-aq-tabs__mobile-distance {
+.defra-aq-tabs.daqi-tabs .defra-aq-tabs__mobile-distance {
     @include govuk-media-query($from: tablet) {
         display: none;
     }
 }
 
+// Hide content list on mobile for ALL tabs components
 .defra-aq-tabs {
+    @include govuk-media-query($until: tablet) {
+        .govuk-tabs__list {
+            display: none; // Hide content list on mobile for all tabs components
+        }
+        
+        .govuk-tabs__title {
+            display: none; // Hide tab titles on mobile for all tabs components
+        }
+    }
+}
+
+// Hide headings on tablet+ since tabs provide navigation
+// ALL STYLING SCOPED TO .defra-aq-tabs.daqi-tabs - ONLY AFFECTS DAQI TABS COMPONENT
+.defra-aq-tabs.daqi-tabs {
     margin-bottom: 0;
     padding: 0; // '' container has no frame; borders are provided by list (top) and panel (sides/bottom)
     border: 0; // '' no outer frame here
     background-color: govuk-colour("white");
     width: 650px; // '' Set the overall tab component width to 650px
     max-width: 100%; // '' Ensure it doesn't overflow on smaller screens
+    
+    // Hide headings on tablet+ since tabs provide navigation
+    @include govuk-media-query($from: tablet) {
+        .govuk-tabs__panel h2.govuk-heading-m {
+            display: none;
+        }
+    }
+    
+    // Mobile styling: add borders and blue heading lines (content list already hidden globally)
+    @include govuk-media-query($until: tablet) {
+        .govuk-tabs__panel {
+            border: 1px solid $govuk-border-colour;
+            margin-bottom: govuk-spacing(4);
+            padding: govuk-spacing(4) govuk-spacing(3); // Add padding inside panels on mobile
+            
+            h2.govuk-heading-m {
+                border-bottom: 2px solid $govuk-link-colour; // Blue horizontal line for heading
+                padding-bottom: govuk-spacing(2);
+                margin-bottom: govuk-spacing(4);
+            }
+        }
+    }
+    
+    // '' Let GOV.UK tabs component handle mobile behavior automatically
+    // '' (stacked sections with table of contents as per design system)
 
-    // Mobile-first: tabs are visible and functional on mobile
+    // Standard GOV.UK tabs list styling (let component handle mobile/tablet behavior)
     .govuk-tabs__list {
-        display: block;
         // '' Top edge of the component is the tab baseline
         border: 0;
         margin: 0;
         position: static; // '' do not overlap the container border
         top: auto;
+        
         @include govuk-media-query($from: tablet) {
             border-bottom: 1px solid $govuk-border-colour; // '' baseline under tabs forms the top edge of the box
             margin-bottom: -1px; // '' ensure the panel side borders meet the baseline with no gap
-            width: 100%; // '' extend the baseline across the full component width
-        }
-        @include govuk-media-query($until: tablet) {
-            border: 0; // '' list is hidden on mobile
-            top: auto; // '' ensure no overlap on mobile either
-            margin-bottom: govuk-spacing(4);
-        }
-        
-        @include govuk-media-query($from: tablet) {
-            display: block;
+            // '' Let GOV.UK handle the width and positioning naturally
         }
     }
     
     .govuk-tabs__list-item {
         text-align: left;
-        
-        @include govuk-media-query($until: tablet) {
-            margin-bottom: 0;
-            border-bottom: none;
-        }
     }
 
     .govuk-tabs__list-item--forecast {
         text-align: center;
     }
 
-    // '' Mobile responsive behavior for DAQI tabs
+    // '' Let GOV.UK tabs handle mobile behavior - only add tablet+ enhancements
     .govuk-tabs__tab {
-        @include govuk-media-query($until: tablet) {
-            // Slightly reduce horizontal padding on mobile
-            padding: govuk-spacing(2);
-            display: block;
-            width: 100%;
-            text-align: left;
-            border-bottom: 1px solid transparent;
-            
-            // '' Mouse up (hover): pressed fill
-            &:hover {
-                background-color: govuk-colour("light-grey");
-                text-decoration: none;
-            }
-            // '' Mouse down (active): no fill, underline text
-            &:active {
-                background-color: transparent;
-                text-decoration: underline;
-            }
-            // Responsive label sizing on mobile: tighten vertical spacing and reduce fonts
-            // mobile label (moved out to reduce nesting)
-
-            // numeric DAQI label styles moved to top-level to reduce nesting
-        }
-        
         @include govuk-media-query($from: tablet) {
-            display: inline-block;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -98,72 +91,55 @@
     }
 
 // Extracted pseudo-class rules to reduce nesting depth
-.defra-aq-tabs .govuk-tabs__tab:visited {
+.defra-aq-tabs.daqi-tabs .govuk-tabs__tab:visited {
     background: transparent;
     text-decoration: none;
 }
 
-.defra-aq-tabs .govuk-tabs__tab:hover {
+.defra-aq-tabs.daqi-tabs .govuk-tabs__tab:hover {
     background-color: govuk-colour("light-grey");
     text-decoration: none;
 }
 
-.defra-aq-tabs .govuk-tabs__tab:active {
+.defra-aq-tabs.daqi-tabs .govuk-tabs__tab:active {
     background-color: transparent;
     text-decoration: underline;
 }
 
 // High specificity override - no !important needed
-.defra-aq-tabs.defra-aq-tabs .govuk-tabs__list-item,
-.govuk-frontend-supported .defra-aq-tabs.defra-aq-tabs .govuk-tabs__list-item {
-    margin: 0;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-}
-
-// Override GOV.UK tab padding for tablet and above to achieve 50px height
+// Only apply flex styling to tabs on tablet+, not mobile table of contents
 @include govuk-media-query($from: tablet) {
-    .defra-aq-tabs.defra-aq-tabs .govuk-tabs__list-item,
-    .govuk-frontend-supported .defra-aq-tabs.defra-aq-tabs .govuk-tabs__list-item {
-        padding: govuk-spacing(3) govuk-spacing(4); // 15px top/bottom, 20px left/right for 50px total height
+    .defra-aq-tabs.daqi-tabs.defra-aq-tabs .govuk-tabs__list-item,
+    .govuk-frontend-supported .defra-aq-tabs.daqi-tabs.defra-aq-tabs .govuk-tabs__list-item {
+        margin: 0;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
     }
 }
 
-.defra-aq-tabs.defra-aq-tabs .govuk-tabs__tab {
-    margin: 0;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    line-height: normal;
+// '' Let GOV.UK use its default tab padding for proper height
+// '' Removed custom 50px height override to use standard GOV.UK sizing
+// Only apply custom tab styling on tablet+, not mobile table of contents
+@include govuk-media-query($from: tablet) {
+    .defra-aq-tabs.daqi-tabs.defra-aq-tabs .govuk-tabs__tab {
+        margin: 0;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        line-height: normal;
+    }
 }
 
 // Override selected state GOV.UK padding specifically
-.govuk-frontend-supported .defra-aq-tabs.defra-aq-tabs .govuk-tabs__list-item--selected {
+.govuk-frontend-supported .defra-aq-tabs.daqi-tabs.defra-aq-tabs .govuk-tabs__list-item--selected {
     margin-top: 0;
     margin-bottom: 0;
 }
 
-// Numeric DAQI label styles for mobile and tablet+ (top-level)
-.defra-aq-tabs__label-daqi {
-    @include govuk-font($size: 19);
-    line-height: 1.05;
-    padding-top: govuk-spacing(0);
-    padding-bottom: govuk-spacing(1);
-}
-
-@include govuk-media-query($from: tablet) {
-    .defra-aq-tabs__label-daqi {
-        @include govuk-font($size: 24);
-        line-height: 1.05;
-        display: inline-block;
-        vertical-align: middle;
-    }
-}
-
-    // '' Dynamic tab coloring based on DAQI values
+// Dynamic tab coloring based on DAQI values
     .daqi-tab--1, .daqi-tab--2, .daqi-tab--3 {
         border-bottom: 3px solid $daqi-colour-1;
         // '' Avoid colouring the list item itself when selected to prevent a thin strip above the tab
@@ -204,6 +180,15 @@
         }
     }
 
+    .govuk-tabs__panel {
+        margin-top: 15px;
+        
+        @include govuk-media-query($from: tablet) {
+            // '' Pull panel up to connect left/right borders with tab list
+            margin-top: -1px;
+        }
+    }
+
     .govuk-tabs__panel:last-child {
         margin-bottom: govuk-spacing(4);
     }
@@ -233,7 +218,7 @@
 }
 
 // Moved label rules here to reduce nesting depth inside .govuk-tabs__tab
-.defra-aq-tabs__label {
+.defra-aq-tabs.daqi-tabs .defra-aq-tabs__label {
     display: block;
     margin: 0;
     padding: 0;
@@ -309,19 +294,19 @@
         }
     }
 
-.defra-aq-tabs-status {
+.defra-aq-tabs.daqi-tabs .defra-aq-tabs-status {
     display: block;
     position: absolute;
 }
 
-.defra-aq-tabs .govuk-tabs__list-item--selected {
+.defra-aq-tabs.daqi-tabs .govuk-tabs__list-item--selected {
     .defra-aq-tabs-status {
         display: none;
     }
 }
 
 // '' Selected tab should sit visually connected to the bordered box
-.defra-aq-tabs .govuk-tabs__list-item--selected .govuk-tabs__tab {
+.defra-aq-tabs.daqi-tabs .govuk-tabs__list-item--selected .govuk-tabs__tab {
     background-color: govuk-colour("white"); // '' no !important so GOV.UK :focus can apply
     border-bottom: 0; // '' avoid extra line between tab and panel
     // '' Keep selected tab white on hover/active; let :focus use GOV.UK yellow
@@ -336,14 +321,51 @@
     }
 }
 
-// '' Focus override for this component
+// '' Enhanced focus override for accessibility
 
-.govuk-frontend-supported .defra-aq-tabs .govuk-tabs__tab:focus,
-.defra-aq-tabs .govuk-tabs__list-item--selected .govuk-tabs__tab:focus {
-    background-color: govuk-colour("yellow"); // '' keep GOV.UK yellow
-    outline: 3px solid transparent; // '' suppress default outline
+.govuk-frontend-supported .defra-aq-tabs.daqi-tabs .govuk-tabs__tab:focus,
+.defra-aq-tabs.daqi-tabs .govuk-tabs__list-item--selected .govuk-tabs__tab:focus {
+    background-color: govuk-colour("yellow"); // '' GOV.UK focus yellow
+    color: govuk-colour("black");
+    outline: 3px solid govuk-colour("black"); // '' Ensure visible outline
+    outline-offset: 0; // '' Keep outline tight to element
     box-shadow: none; // '' remove yellow/black focus lines so height equals text bounding box
     text-decoration: none; // '' no underline on focus
+    z-index: 10; // '' Ensure focus outline is always visible
+}
+
+// '' Enhanced high contrast mode support
+@media (forced-colors: active) {
+    .govuk-frontend-supported .defra-aq-tabs.daqi-tabs .govuk-tabs__tab:focus,
+    .defra-aq-tabs.daqi-tabs .govuk-tabs__list-item--selected .govuk-tabs__tab:focus {
+        outline-color: Highlight;
+        forced-color-adjust: none;
+    }
+    
+    .defra-aq-tabs.daqi-tabs .govuk-tabs__list-item {
+        border: 1px solid windowText;
+    }
+    
+    .defra-aq-tabs.daqi-tabs .govuk-tabs__list-item--selected {
+        background-color: Highlight;
+        color: HighlightText;
+    }
+}
+
+// '' Use standard GOV.UK tab styling for proper heights
+// Only apply flex layout to tabs on tablet+, not mobile table of contents
+@include govuk-media-query($from: tablet) {
+    .defra-aq-tabs.daqi-tabs .govuk-tabs__tab {
+        // '' Removed custom min-height to use GOV.UK defaults
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        // '' Ensure sufficient color contrast
+        &:visited {
+            color: inherit; // '' Maintain tab styling for visited state
+        }
+    }
 }
 
 .aq-forecast-tabs__title, .defra-aq-site__distance {
@@ -358,45 +380,4 @@
     @include govuk-media-query($from: tablet) {
         @include govuk-responsive-margin(4, 'bottom');
     }
-} 
-
-
-
-
-.js-enabled {
-    .defra-aq-tabs .govuk-tabs__tab:active .defra-aq-tabs__label,
-    .defra-aq-tabs .govuk-tabs__tab:focus .defra-aq-tabs__label,
-    .govuk-tabs__list-item--selected .defra-aq-tabs__label {
-        text-decoration: none;
-    }
 }
-
-.js-enabled .defra-aq-tabs {
-    > h3 {
-        @include govuk-media-query($from: tablet) {
-            display: block;
-        }
-    }
-
-
-    .govuk-tabs__list {
-        @include govuk-media-query($from: tablet) {
-            display: block;
-        }  
-    }
-
-    .govuk-tabs__panel--sites {
-        @include govuk-media-query($from: tablet) {
-            padding-top: govuk-spacing(1);
-            padding-left: 0;
-            padding-right: 0;
-            border: 0;
-        }
-    } 
-}
-
-.defra-aq-levels-table__row {
-    border-top: 0 solid #b1b4b6;
-}
-
-// '' Keep default GOV.UK panel styles; forecast panels define their own borders/padding above to maintain a continuous frame

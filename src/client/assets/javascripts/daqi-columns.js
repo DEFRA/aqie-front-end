@@ -6,12 +6,13 @@ if (typeof document !== 'undefined' && typeof window !== 'undefined') {
     setDaqiColumns()
     setTimeout(setDaqiColumns, 0)
   })
-  // Listen for tab switches and force recalculation
+  // Listen for tab switches and force recalculation - only for DAQI tabs
   document.addEventListener('click', (e) => {
     if (
       e.target &&
       e.target.classList &&
-      e.target.classList.contains('govuk-tabs__tab')
+      e.target.classList.contains('govuk-tabs__tab') &&
+      e.target.closest('.daqi-tabs') // Only apply to DAQI tabs component
     ) {
       setTimeout(setDaqiColumns, 40)
     }
@@ -78,12 +79,16 @@ function setDaqiColumns() {
 
   // threshold in px for applying grouped sizing (covers mobile + tablet)
   const GROUPING_THRESHOLD = 940
+  
+  // '' For mobile devices (< 768px), skip grid column calculations and let CSS flexbox handle layout
+  const MOBILE_THRESHOLD = 768
 
   // Only apply grouping when viewport is narrow and we have a non-zero width
   // measured (avoid JSDOM 0-width) and the expected 10 segments exist.
   if (
     viewportWidth > 0 &&
     viewportWidth <= GROUPING_THRESHOLD &&
+    viewportWidth > MOBILE_THRESHOLD && // '' Skip for mobile - let flexbox handle it
     segments.length === 10
   ) {
     // try to measure the last label under the bar first
@@ -220,6 +225,20 @@ function setDaqiColumns() {
       Math.round(offsets[2]) + 'px'
     )
 
+    return
+  }
+  
+  // '' Mobile case: clear any existing grid columns to let flexbox handle layout
+  if (
+    viewportWidth > 0 &&
+    viewportWidth <= MOBILE_THRESHOLD &&
+    segments.length === 10
+  ) {
+    // '' Remove grid column CSS variables on mobile to allow flexbox
+    container.style.removeProperty('--daqi-columns')
+    container.style.removeProperty('--daqi-divider-1')
+    container.style.removeProperty('--daqi-divider-2')
+    container.style.removeProperty('--daqi-divider-3')
     return
   }
 

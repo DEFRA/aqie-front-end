@@ -49,6 +49,36 @@ svg|foreignObject {
   max-width: 100%; // '' Prevent overflow in narrow containers
   overflow-x: auto; // '' Allow horizontal scrolling if needed
 
+  // '' Mobile: container scales with viewport while maintaining consistent padding
+  @include govuk-media-query($until: tablet) {
+    width: calc(100% - 2rem); // '' Dynamic width based on viewport
+    max-width: 100%;
+    margin: 0 auto; // '' Center the container
+    padding: 0 govuk-spacing(2); // '' Consistent padding
+    box-sizing: border-box;
+    
+    @media (max-width: 640px) {
+      width: calc(100% - 1rem); // '' Less margin for narrow screens
+      padding: 0 govuk-spacing(1); // '' Reduce padding
+    }
+    
+    @media (max-width: 480px) {
+      width: calc(100% - 0.5rem); // '' Minimal margins for very narrow screens  
+      padding: 0 0.5rem; // '' Minimal padding
+    }
+    
+    // '' Extra narrow viewports: maximize available space
+    @media (max-width: 340px) {
+      width: calc(100% - 0.25rem); // '' Almost full width
+      padding: 0 0.25rem; // '' Very minimal padding
+      margin: 0 auto;
+    }
+    
+    .daqi-bar {
+      width: 100%; // '' DAQI bar fills the dynamic container
+    }
+  }
+
   // '' Ensure full 590px width at desktop to fix expansion issue
   @media (min-width: 768px) {
     width: 590px;
@@ -66,6 +96,42 @@ svg|foreignObject {
     gap: 3px;
     // '' separators moved to label level to avoid duplication with design
     background-image: none;
+    
+    // '' Mobile: cells scale dynamically with container while maintaining proportions
+    @include govuk-media-query($until: tablet) {
+      display: flex !important;
+      width: 100%;
+      margin: 0;
+      gap: 1px;
+      
+      .daqi-bar-segment {
+        // '' Dynamic scaling maintaining desktop proportional relationships
+        // '' Desktop: cells 1-9 are 51px each, cell 10 is 100px (ratio 51:100)
+        &:nth-child(1),
+        &:nth-child(2),
+        &:nth-child(3),
+        &:nth-child(4),
+        &:nth-child(5),
+        &:nth-child(6),
+        &:nth-child(7),
+        &:nth-child(8),
+        &:nth-child(9) {
+          flex: 51; // '' Proportional scaling based on desktop 51px
+        }
+        
+        &:nth-child(10) {
+          flex: 100; // '' Proportional scaling based on desktop 100px
+        }
+        
+        // '' No dividers for now - need to find better approach
+        // '' Group dividers should be between groups, not inside cells
+        
+        // '' Very narrow viewports: no dividers for now
+        @media (max-width: 340px) {
+          // '' Will implement proper group separators
+        }
+      }
+    }
   }
 
   .daqi-bar-segment {
@@ -119,67 +185,22 @@ svg|foreignObject {
     align-content: start;
   // padding removed to keep grid perfectly aligned with bar geometry
 
-    // '' subtle group ticks under labels to mirror the design (not full height)
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0; // from top of labels container
-      left: 0;
-      right: 0;
-      height: 24px; // match the separator height used between cells
-      // Draw a 1px line centered within a 3px strip to avoid half-pixel rounding
-      background-image:
-        linear-gradient(
-          to right,
-          transparent 1px,
-          $govuk-border-colour 1px 2px,
-          transparent 2px
-        ),
-        linear-gradient(
-          to right,
-          transparent 1px,
-          $govuk-border-colour 1px 2px,
-          transparent 2px
-        ),
-        linear-gradient(
-          to right,
-          transparent 1px,
-          $govuk-border-colour 1px 2px,
-          transparent 2px
-        );
-      background-repeat: no-repeat;
-      background-size: 3px 100%, 3px 100%, 3px 100%;
-      // primary: use JS-provided divider offsets when available; fallback to hardcoded positions
-      background-position: var(--daqi-divider-1, 159px) 0, var(--daqi-divider-2, 321px) 0, var(--daqi-divider-3, 483px) 0;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    // '' Responsive fine-tune: avoid rounding misalignment on mid-width viewports
-    @media (min-width: 770px) and (max-width: 939.98px) {
-      &::before {
-        // shift by +1px to compensate for subpixel rounding in this range
-        background-position: 160px 0, 322px 0, 484px 0;
-      }
-    }
-    
+    // '' Desktop default: grid-based layout
     .daqi-band {
       @include govuk-font($size: 16, $weight: regular);
-        // stylelint-disable-next-line declaration-no-important
-        text-align: center !important; // '' override generic .daqi-band alignment
-      position: relative; // '' allow anchor for separators
+      // stylelint-disable-next-line declaration-no-important
+      text-align: center !important; // '' override generic .daqi-band alignment
+      position: relative;
       display: block;
-        justify-self: stretch; // default - overridden per-label below
+      justify-self: stretch;
       white-space: nowrap; // '' prevent labels from wrapping onto two lines
       // stylelint-disable-next-line declaration-no-important
-      width: auto !important; // '' override generic width rules incl. nth-child(3)/last-child
+      width: auto !important; // '' override generic width rules
       max-width: 100%;
       // stylelint-disable-next-line declaration-no-important
-      border: 0 !important; // '' remove any generic borders (e.g., 3px white)
+      border: 0 !important; // '' remove any generic borders
       // stylelint-disable-next-line declaration-no-important
       padding: 0 !important;
-      // stylelint-disable-next-line declaration-no-important
-      margin: 0 !important;
       
       // Low - spans cells 1,2,3 (3 tracks)
       &:nth-child(1) {
@@ -195,7 +216,7 @@ svg|foreignObject {
       
       // High - span cells 7–9 (center aligns to cell 8)
       &:nth-child(3) {
-        grid-column: 8 / 9; // pin to the exact column for cell 8
+        grid-column: 8 / 9;
         justify-self: center;
         width: max-content;
         transform: none;
@@ -208,45 +229,95 @@ svg|foreignObject {
         width: max-content;
       }
     }
+
+    // '' Mobile: flexbox-based layout with precise GROUP center alignment
+    @include govuk-media-query($until: tablet) {
+      display: flex;
+      width: 100%;
+      margin: 5px 0 0;
+      justify-content: space-around;
+      position: relative;
+      
+      // Add responsive dividers between groups for mobile (using original working approach)
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 24px;
+        background-image:
+          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
+        background-position: calc(var(--daqi-divider-1, 102px) * 100% / 375px) 0, calc(var(--daqi-divider-2, 206px) * 100% / 375px) 0, calc(var(--daqi-divider-3, 309px) * 100% / 375px) 0;
+        background-repeat: no-repeat;
+        background-size: 3px 100%, 3px 100%, 3px 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+      
+      .daqi-band {
+        text-align: center;
+        font-size: 14px;
+        font-weight: govuk-font-weight("regular");
+        color: govuk-colour("black");
+        white-space: nowrap;
+        position: relative;
+        
+        // Reset desktop grid positioning for mobile
+        grid-column: unset;
+        left: unset;
+        justify-self: unset;
+        width: auto;
+        transform: unset;
+        
+        // Unique class-based label positioning for precision
+        &.daqi-band-low {
+          transform: translateX(10px);
+        }
+        
+        &.daqi-band-moderate {
+          transform: translateX(35px);
+        }
+        
+        &.daqi-band-high {
+          transform: translateX(35px);
+        }
+        
+        &.daqi-band-very-high {
+          transform: translateX(24px);
+        }
+      }
+    }
+
+        // '' Extend responsive divider behavior to larger mobile and tablet viewports
+    @include govuk-media-query($from: tablet) {
+      // Only show dividers when in grouped/mobile layout mode (when JS applies grouped columns)
+      @media (max-width: 940px) {
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 24px;
+          background-image:
+            linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+            linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+            linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
+          background-position: calc(var(--daqi-divider-1, 102px) * 100% / 375px) 0, calc(var(--daqi-divider-2, 206px) * 100% / 375px) 0, calc(var(--daqi-divider-3, 309px) * 100% / 375px) 0;
+          background-repeat: no-repeat;
+          background-size: 3px 100%, 3px 100%, 3px 100%;
+          pointer-events: none;
+          z-index: 1;
+        }
+      }
+    }
   }
 }
 
-// Label overrides will be applied within the mobile media query block below
-
-// When grouped sizing is applied (mobile/tablet) ensure label alignment is
-// centered relative to their group columns. We target widths <= GROUPING_THRESHOLD
-// (match JS threshold) so these rules only apply when JS is likely to set
-// `--daqi-columns` to grouped values.
-@media (max-width: 940px) {
-  .daqi-numbered .daqi-labels .daqi-band:nth-child(2) {
-    grid-column: 4 / 7; // span cells 4..6 visually
-    justify-self: center;
-    width: 100%;
-    text-align: center;
-    transform: none;
-
-    position: relative;
-  }
-
-  .daqi-numbered .daqi-labels .daqi-band:nth-child(2) .daqi-band-inner,
-  .daqi-numbered .daqi-labels .daqi-band:nth-child(2) .daqi-band__inner {
-    position: absolute;
-    left: calc((var(--daqi-divider-1, 156px) + var(--daqi-divider-2, 315px)) / 2 - 50% - 10px);
-    top: 0;
-    transform: translateX(0);
-    width: max-content;
-    text-align: center;
-    pointer-events: none;
-  }
-
-  .daqi-numbered .daqi-labels .daqi-band:nth-child(3) {
-    grid-column: 7 / 10;
-    justify-self: center;
-    transform: none;
-  }
-}
-
-  .daqi-number {
+.daqi-number {
     // Use GOV.UK type-scale size to avoid build errors; keep visually tight
     @include govuk-font($size: 16, $weight: bold);
     color: govuk-colour("black");

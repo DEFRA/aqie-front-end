@@ -18,15 +18,16 @@
       {% endfor %}
     </div>
     <div class="daqi-labels" aria-hidden="true">
-      <span class="daqi-band">{{ daqi.levels.a }}</span>
-      <span class="daqi-band" style="text-align:center">{{ daqi.levels.b }}</span>
-      <span class="daqi-band" style="text-align:center">{{ daqi.levels.c }}</span>
-      <span class="daqi-band">{{ daqi.levels.d }}</span>
+      <span class="daqi-band daqi-band-low">{{ daqi.levels.a }}</span>
+      <span class="daqi-band daqi-band-moderate" style="text-align:center">{{ daqi.levels.b }}</span>
+      <span class="daqi-band daqi-band-high" style="text-align:center">{{ daqi.levels.c }}</span>
+      <span class="daqi-band daqi-band-very-high">{{ daqi.levels.d }}</span>
     </div>
   </div>
 {% endmacro %}
 
 {% set todayPanel %}
+  <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ todayAbbrev }}</h2>
   {% if lang == "en" %}
     <span class="govuk-caption-s govuk-!-margin-bottom-4">Daily Air Quality Index (DAQI)</span>
   {% else %}
@@ -68,6 +69,7 @@
   {% set day2Label = 1 | addDaysToTodayAbrev %}
   {% set day2TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day2.value | default(0) | string) %}
   {% set day2Panel %}
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ day2Label }}</h2>
     {% if lang == "en" %}
       <span class="govuk-caption-s govuk-!-margin-bottom-4">Daily Air Quality Index (DAQI)</span>
     {% else %}
@@ -109,6 +111,7 @@
   {% set day3Label = 2 | addDaysToTodayAbrev %}
   {% set day3TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day3.value | default(0) | string) %}
   {% set day3Panel %}
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ day3Label }}</h2>
     {% if lang == "en" %}
       <span class="govuk-caption-s govuk-!-margin-bottom-4">Daily Air Quality Index (DAQI)</span>
     {% else %}
@@ -150,6 +153,7 @@
   {% set day4Label = 3 | addDaysToTodayAbrev %}
   {% set day4TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day4.value | default(0) | string) %}
   {% set day4Panel %}
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ day4Label }}</h2>
     {% if lang == "en" %}
       <span class="govuk-caption-s govuk-!-margin-bottom-4">Daily Air Quality Index (DAQI)</span>
     {% else %}
@@ -191,6 +195,7 @@
   {% set day5Label = 4 | addDaysToTodayAbrev %}
   {% set day5TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day5.value | default(0) | string) %}
   {% set day5Panel %}
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ day5Label }}</h2>
     {% if lang == "en" %}
       <span class="govuk-caption-s govuk-!-margin-bottom-4">Daily Air Quality Index (DAQI)</span>
     {% else %}
@@ -228,7 +233,7 @@
   }) %}
 {% endif %}
 
-{{ govukTabs({ classes: 'defra-aq-tabs', items: items }) }}
+{{ govukTabs({ classes: 'defra-aq-tabs daqi-tabs', items: items }) }}
 {% else %}
 {# '' No airQuality available; skip rendering to avoid runtime errors #}
 {% endif %}
