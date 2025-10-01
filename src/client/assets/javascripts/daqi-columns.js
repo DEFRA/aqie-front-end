@@ -244,11 +244,27 @@ function setDaqiColumns() {
 
   // Default behaviour: restore original desktop layout for wide viewports
   if (viewportWidth > GROUPING_THRESHOLD && segments.length === 10) {
-    // '' Desktop: use fixed layout - remove CSS variables to let CSS defaults apply
+    // '' Desktop: use fixed layout - remove CSS columns but set proper divider positions
     container.style.removeProperty('--daqi-columns')
-    container.style.removeProperty('--daqi-divider-1')
-    container.style.removeProperty('--daqi-divider-2')
-    container.style.removeProperty('--daqi-divider-3')
+    
+    // Calculate desktop divider positions by measuring actual segments
+    const GAP = 3
+    const segmentWidths = Array.from(segments).map(seg => {
+      const rect = seg.getBoundingClientRect()
+      return Math.round(rect.width)
+    })
+    
+    // Calculate divider positions after segments 3, 6, and 9
+    const dividerPositions = []
+    for (const n of [3, 6, 9]) {
+      const sum = segmentWidths.slice(0, n).reduce((s, v) => s + v, 0)
+      const gaps = GAP * (n - 1)
+      dividerPositions.push(sum + gaps)
+    }
+    
+    container.style.setProperty('--daqi-divider-1', Math.round(dividerPositions[0]) + 'px')
+    container.style.setProperty('--daqi-divider-2', Math.round(dividerPositions[1]) + 'px')
+    container.style.setProperty('--daqi-divider-3', Math.round(dividerPositions[2]) + 'px')
     return
   }
 

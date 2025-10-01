@@ -99,14 +99,14 @@ describe('daqi-columns module', () => {
     expect(cssValue).toBe('45px 44px 43px 44px 43px 43px 44px 43px 43px 131px')
   })
 
-  it('removes CSS variables for desktop viewports (>940px)', () => {
+  it('removes CSS columns but sets divider positions for desktop viewports (>940px)', () => {
     // Mock viewport width to be desktop
     Object.defineProperty(window, 'innerWidth', {
       value: 1200, // Above GROUPING_THRESHOLD (940)
       configurable: true
     })
 
-    // Set initial CSS variables to verify they get removed
+    // Set initial CSS variables to verify columns are removed but dividers are set
     container.style.setProperty('--daqi-columns', 'initial value')
     container.style.setProperty('--daqi-divider-1', '100px')
     container.style.setProperty('--daqi-divider-2', '200px')
@@ -121,10 +121,12 @@ describe('daqi-columns module', () => {
     // Call the function under test
     daqiColumnsModule.setDaqiColumns()
 
-    // Verify CSS variables are removed (empty string means property was removed)
+    // Verify --daqi-columns is removed (empty string means property was removed)
     expect(container.style.getPropertyValue('--daqi-columns')).toBe('')
-    expect(container.style.getPropertyValue('--daqi-divider-1')).toBe('')
-    expect(container.style.getPropertyValue('--daqi-divider-2')).toBe('')
-    expect(container.style.getPropertyValue('--daqi-divider-3')).toBe('')
+    
+    // Verify divider CSS variables are set with calculated desktop positions
+    expect(container.style.getPropertyValue('--daqi-divider-1')).toBe('156px') // 50*3 + 3*2 = 156
+    expect(container.style.getPropertyValue('--daqi-divider-2')).toBe('315px') // 50*6 + 3*5 = 315
+    expect(container.style.getPropertyValue('--daqi-divider-3')).toBe('474px') // 50*9 + 3*8 = 474
   })
 })

@@ -293,7 +293,7 @@ svg|foreignObject {
 
         // '' Extend responsive divider behavior to larger mobile and tablet viewports
     @include govuk-media-query($from: tablet) {
-      // Only show dividers when in grouped/mobile layout mode (when JS applies grouped columns)
+      // Show dividers for tablet viewports (JS will set appropriate positions)
       @media (max-width: 940px) {
         &::before {
           content: '';
@@ -307,6 +307,27 @@ svg|foreignObject {
             linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
             linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
           background-position: calc(var(--daqi-divider-1, 102px) * 100% / 375px) 0, calc(var(--daqi-divider-2, 206px) * 100% / 375px) 0, calc(var(--daqi-divider-3, 309px) * 100% / 375px) 0;
+          background-repeat: no-repeat;
+          background-size: 3px 100%, 3px 100%, 3px 100%;
+          pointer-events: none;
+          z-index: 1;
+        }
+      }
+      
+      // Show dividers for desktop viewports too (JS will set proper positions)
+      @media (min-width: 941px) {
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 24px;
+          background-image:
+            linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+            linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+            linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
+          background-position: var(--daqi-divider-1, 196px) 0, var(--daqi-divider-2, 392px) 0, var(--daqi-divider-3, 588px) 0;
           background-repeat: no-repeat;
           background-size: 3px 100%, 3px 100%, 3px 100%;
           pointer-events: none;
