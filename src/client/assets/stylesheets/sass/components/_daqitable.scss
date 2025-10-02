@@ -108,91 +108,95 @@ svg|foreignObject {
     
     // '' Mobile: cells scale dynamically with container while maintaining proportions
     @media (max-width: 639px) {
-      display: flex !important;
+      display: flex;
       width: 100%;
       margin: 0;
       gap: 1px;
-      
-      .daqi-bar-segment {
-        // '' Dynamic scaling maintaining desktop proportional relationships
-        // '' Desktop: cells 1-9 are 51px each, cell 10 is 100px (ratio 51:100)
-        &:nth-child(1),
-        &:nth-child(2),
-        &:nth-child(3),
-        &:nth-child(4),
-        &:nth-child(5),
-        &:nth-child(6),
-        &:nth-child(7),
-        &:nth-child(8),
-        &:nth-child(9) {
-          flex: 51; // '' Proportional scaling based on desktop 51px
-        }
-        
-        &:nth-child(10) {
-          flex: 100; // '' Proportional scaling based on desktop 100px
-        }
-        
-        // '' Very narrow viewports: no dividers for now
-        @media (max-width: 340px) {
-          // '' Will implement proper group separators
-        }
-      }
     }
     
     // '' Small tablet (640-768px): flexbox with proportional scaling
     @media (min-width: 640px) and (max-width: 767px) {
-      display: flex !important;
+      display: flex;
       width: 100%;
       margin: 0;
       gap: 2px; // '' Smaller gap for small tablets
-      
-      .daqi-bar-segment {
-        // '' Dynamic scaling maintaining desktop proportional relationships
-        &:nth-child(1),
-        &:nth-child(2),
-        &:nth-child(3),
-        &:nth-child(4),
-        &:nth-child(5),
-        &:nth-child(6),
-        &:nth-child(7),
-        &:nth-child(8),
-        &:nth-child(9) {
-          flex: 51; // '' Proportional scaling based on desktop 51px
-        }
-        
-        &:nth-child(10) {
-          flex: 100; // '' Proportional scaling based on desktop 100px
-        }
-      }
     }
     
     // '' Large tablet (768-1020px): flexbox with proportional scaling
     @media (min-width: 768px) and (max-width: 1019px) {
-      display: flex !important;
+      display: flex;
       width: 100%;
       margin: 0;
       gap: 3px; // '' Standard gap for large tablets
-      
-      .daqi-bar-segment {
-        // '' Dynamic scaling maintaining desktop proportional relationships
-        &:nth-child(1),
-        &:nth-child(2),
-        &:nth-child(3),
-        &:nth-child(4),
-        &:nth-child(5),
-        &:nth-child(6),
-        &:nth-child(7),
-        &:nth-child(8),
-        &:nth-child(9) {
-          flex: 51; // '' Proportional scaling based on desktop 51px
-        }
-        
-        &:nth-child(10) {
-          flex: 100; // '' Proportional scaling based on desktop 100px
-        }
-      }
     }
   }
+
+// '' Mobile segment styling
+@media (max-width: 639px) {
+  .daqi-bar-segment {
+    // '' Dynamic scaling maintaining desktop proportional relationships
+    // '' Desktop: cells 1-9 are 51px each, cell 10 is 100px (ratio 51:100)
+    &:nth-child(1),
+    &:nth-child(2),
+    &:nth-child(3),
+    &:nth-child(4),
+    &:nth-child(5),
+    &:nth-child(6),
+    &:nth-child(7),
+    &:nth-child(8),
+    &:nth-child(9) {
+      flex: 51; // '' Proportional scaling based on desktop 51px
+    }
+    
+    &:nth-child(10) {
+      flex: 100; // '' Proportional scaling based on desktop 100px
+    }
+  }
+}
+
+// '' Small tablet segment styling
+@media (min-width: 640px) and (max-width: 767px) {
+  .daqi-bar-segment {
+    // '' Dynamic scaling maintaining desktop proportional relationships
+    &:nth-child(1),
+    &:nth-child(2),
+    &:nth-child(3),
+    &:nth-child(4),
+    &:nth-child(5),
+    &:nth-child(6),
+    &:nth-child(7),
+    &:nth-child(8),
+    &:nth-child(9) {
+      flex: 51; // '' Proportional scaling based on desktop 51px
+    }
+    
+    &:nth-child(10) {
+      flex: 100; // '' Proportional scaling based on desktop 100px
+    }
+  }
+}
+
+// '' Large tablet segment styling
+@media (min-width: 768px) and (max-width: 1019px) {
+  .daqi-bar-segment {
+    // '' Dynamic scaling maintaining desktop proportional relationships
+    &:nth-child(1),
+    &:nth-child(2),
+    &:nth-child(3),
+    &:nth-child(4),
+    &:nth-child(5),
+    &:nth-child(6),
+    &:nth-child(7),
+    &:nth-child(8),
+    &:nth-child(9) {
+      flex: 51; // '' Proportional scaling based on desktop 51px
+    }
+    
+    &:nth-child(10) {
+      flex: 100; // '' Proportional scaling based on desktop 100px
+    }
+  }
+}
 
   .daqi-bar-segment {
     height: 100%;
@@ -302,44 +306,6 @@ svg|foreignObject {
       margin: 5px 0 0;
       justify-content: space-around;
       position: relative;
-      
-      // Add responsive dividers between groups for mobile (using original working approach)
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 24px;
-        background-image:
-          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
-        background-position: calc(var(--daqi-divider-1, 102px) * 100% / 375px) 0, calc(var(--daqi-divider-2, 206px) * 100% / 375px) 0, calc(var(--daqi-divider-3, 309px) * 100% / 375px) 0;
-        background-repeat: no-repeat;
-        background-size: 3px 100%, 3px 100%, 3px 100%;
-        pointer-events: none;
-        z-index: 1;
-      }
-      
-      .daqi-band {
-        text-align: center;
-        flex: 1;
-        position: relative;
-        z-index: 2;
-        
-        @include govuk-font($size: 14, $weight: regular);
-        white-space: nowrap;
-        overflow: hidden;
-        
-        // Reset grid positioning for mobile
-        grid-column: unset;
-        justify-self: unset;
-        left: unset;
-        transform: unset;
-        width: auto;
-        max-width: 100%;
-      }
     }
     
     // '' Small tablet (640-768px): flexbox layout like mobile
@@ -349,44 +315,6 @@ svg|foreignObject {
       margin: 5px 0 0;
       justify-content: space-around;
       position: relative;
-      
-      // Add responsive dividers between groups for small tablets
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 24px;
-        background-image:
-          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
-        background-position: var(--daqi-divider-1, 130px) 0, var(--daqi-divider-2, 260px) 0, var(--daqi-divider-3, 390px) 0;
-        background-repeat: no-repeat;
-        background-size: 3px 100%, 3px 100%, 3px 100%;
-        pointer-events: none;
-        z-index: 1;
-      }
-      
-      .daqi-band {
-        text-align: center;
-        flex: 1;
-        position: relative;
-        z-index: 2;
-        
-        @include govuk-font($size: 14, $weight: regular); // Valid GOV.UK font size for small tablets
-        white-space: nowrap;
-        overflow: hidden;
-        
-        // Reset grid positioning
-        grid-column: unset;
-        justify-self: unset;
-        left: unset;
-        transform: unset;
-        width: auto;
-        max-width: 100%;
-      }
     }
     
     // '' Large tablet (768-1020px): flexbox layout like mobile
@@ -396,110 +324,155 @@ svg|foreignObject {
       margin: 5px 0 0;
       justify-content: space-around;
       position: relative;
-      
-      // Add responsive dividers between groups for large tablets
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 24px;
-        background-image:
-          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
-        background-position: var(--daqi-divider-1, 148px) 0, var(--daqi-divider-2, 296px) 0, var(--daqi-divider-3, 444px) 0;
-        background-repeat: no-repeat;
-        background-size: 3px 100%, 3px 100%, 3px 100%;
-        pointer-events: none;
-        z-index: 1;
-      }
-      
-      .daqi-band {
-        text-align: center;
-        flex: 1;
-        position: relative;
-        z-index: 2;
-        
-        @include govuk-font($size: 16, $weight: regular); // Same as desktop for large tablets
-        white-space: nowrap;
-        overflow: hidden;
-        
-        // Reset grid positioning
-        grid-column: unset;
-        justify-self: unset;
-        left: unset;
-        transform: unset;
-        width: auto;
-        max-width: 100%;
-      }
     }
-    
-    // '' Extend responsive divider behavior to tablet viewports  
-    // Small tablet (640-768px): show dividers with tighter positioning
-    @media (min-width: 640px) and (max-width: 767px) {
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 24px;
-        background-image:
-          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
-        background-position: var(--daqi-divider-1, 130px) 0, var(--daqi-divider-2, 260px) 0, var(--daqi-divider-3, 390px) 0;
-        background-repeat: no-repeat;
-        background-size: 2px 100%, 2px 100%, 2px 100%; // Thinner lines for small tablets
-        pointer-events: none;
-        z-index: 1;
-      }
-    }
-    
-    // Large tablet (768-1020px): show dividers with standard positioning
-    @media (min-width: 768px) and (max-width: 1019px) {
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 24px;
-        background-image:
-          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
-        background-position: var(--daqi-divider-1, 148px) 0, var(--daqi-divider-2, 296px) 0, var(--daqi-divider-3, 444px) 0;
-        background-repeat: no-repeat;
-        background-size: 3px 100%, 3px 100%, 3px 100%;
-        pointer-events: none;
-        z-index: 1;
-      }
-    }
-      
-    // Show dividers for desktop viewports too (JS will set proper positions)
-    @media (min-width: 1020px) {
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 24px;
-        background-image:
-          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
-        background-position: var(--daqi-divider-1, 196px) 0, var(--daqi-divider-2, 392px) 0, var(--daqi-divider-3, 588px) 0;
-        background-repeat: no-repeat;
-        background-size: 3px 100%, 3px 100%, 3px 100%;
-        pointer-events: none;
-        z-index: 1;
-      }
     }
   } // Close .daqi-labels
+
+// '' Divider pseudo-elements as separate rules to avoid nesting depth issues
+@media (max-width: 639px) {
+  .daqi-labels::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background-image:
+      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
+    background-position: var(--daqi-divider-1, 0) 0, var(--daqi-divider-2, 0) 0, var(--daqi-divider-3, 0) 0;
+    background-repeat: no-repeat;
+    background-size: 3px 100%, 3px 100%, 3px 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 767px) {
+  .daqi-labels::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background-image:
+      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
+    background-position: var(--daqi-divider-1, 130px) 0, var(--daqi-divider-2, 260px) 0, var(--daqi-divider-3, 390px) 0;
+    background-repeat: no-repeat;
+    background-size: 2px 100%, 2px 100%, 2px 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1019px) {
+  .daqi-labels::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background-image:
+      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
+    background-position: var(--daqi-divider-1, 148px) 0, var(--daqi-divider-2, 296px) 0, var(--daqi-divider-3, 444px) 0;
+    background-repeat: no-repeat;
+    background-size: 3px 100%, 3px 100%, 3px 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+@media (min-width: 1020px) {
+  .daqi-labels::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background-image:
+      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
+    background-position: var(--daqi-divider-1, 196px) 0, var(--daqi-divider-2, 392px) 0, var(--daqi-divider-3, 588px) 0;
+    background-repeat: no-repeat;
+    background-size: 3px 100%, 3px 100%, 3px 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+// '' Mobile label styling
+@media (max-width: 639px) {
+  .daqi-labels .daqi-band {
+    text-align: center;
+    flex: 1;
+    position: relative;
+    z-index: 2;
+    
+    @include govuk-font($size: 14, $weight: regular);
+    white-space: nowrap;
+    overflow: hidden;
+    
+    // Reset grid positioning for mobile
+    grid-column: unset;
+    justify-self: unset;
+    left: unset;
+    transform: unset;
+    width: auto;
+    max-width: 100%;
+  }
+}
+
+// '' Small tablet label styling
+@media (min-width: 640px) and (max-width: 767px) {
+  .daqi-labels .daqi-band {
+    text-align: center;
+    flex: 1;
+    position: relative;
+    z-index: 2;
+    
+    @include govuk-font($size: 14, $weight: regular); // Valid GOV.UK font size for small tablets
+    white-space: nowrap;
+    overflow: hidden;
+    
+    // Reset grid positioning
+    grid-column: unset;
+    justify-self: unset;
+    left: unset;
+    transform: unset;
+    width: auto;
+    max-width: 100%;
+  }
+}
+
+// '' Large tablet label styling
+@media (min-width: 768px) and (max-width: 1019px) {
+  .daqi-labels .daqi-band {
+    text-align: center;
+    flex: 1;
+    position: relative;
+    z-index: 2;
+    
+    @include govuk-font($size: 16, $weight: regular); // Same as desktop for large tablets
+    white-space: nowrap;
+    overflow: hidden;
+    
+    // Reset grid positioning
+    grid-column: unset;
+    justify-self: unset;
+    left: unset;
+    transform: unset;
+    width: auto;
+    max-width: 100%;
+  }
 }
 
 .daqi-number {

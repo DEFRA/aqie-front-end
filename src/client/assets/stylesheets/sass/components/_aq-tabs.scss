@@ -32,7 +32,7 @@
     
     // Hide headings on tablet+ since tabs provide navigation
     @include govuk-media-query($from: tablet) {
-        .govuk-tabs__panel h2.govuk-heading-m {
+        .govuk-tabs__panel .govuk-heading-m {
             display: none;
         }
     }
@@ -44,7 +44,7 @@
             margin-bottom: govuk-spacing(4);
             padding: govuk-spacing(4) govuk-spacing(3); // Add padding inside panels on mobile
             
-            h2.govuk-heading-m {
+            .govuk-heading-m {
                 border-bottom: 2px solid $govuk-link-colour; // Blue horizontal line for heading
                 padding-bottom: govuk-spacing(2);
                 margin-bottom: govuk-spacing(4);

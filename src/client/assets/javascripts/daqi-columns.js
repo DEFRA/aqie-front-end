@@ -30,39 +30,24 @@ function debounce(fn, wait = 100) {
 }
 
 function setDaqiColumns() {
-  // Only measure the DAQI bar in the currently visible tab panel
-  const panels = document.querySelectorAll('.govuk-tabs__panel')
-  let container = null
-  for (const panel of panels) {
-    if (window.getComputedStyle(panel).display !== 'none') {
-      container = panel.querySelector('.daqi-numbered')
-      if (container) break
-    }
-  }
-  if (!container) return
-  // Always re-measure after a tab switch (when a tab panel becomes visible)
-  // (Handled above in DOM event listeners)
-  // ...existing code...
+  // Find all DAQI containers and process each one
+  const containers = document.querySelectorAll('.daqi-numbered')
+  if (!containers || containers.length === 0) return
 
-  // If the container is hidden (for example when the tab panel is not
-  // visible) measurements will be unreliable (zero widths) and we should
-  // avoid updating the CSS variables. This prevents layout 'breaks' when
-  // switching tabs where observers/fire events may fire while panels are
-  // display:none.
-  try {
-    const cs = window.getComputedStyle(container)
-    // Only bail out if the container is explicitly hidden. Avoid checks
-    // like `offsetParent` which are unreliable in JSDOM (often null).
-    if (cs.display === 'none' || cs.visibility === 'hidden') {
-      return
+  containers.forEach(container => {
+    // Skip if container is explicitly hidden
+    try {
+      const cs = window.getComputedStyle(container)
+      if (cs.display === 'none' || cs.visibility === 'hidden') {
+        return // Skip this container but continue with others
+      }
+    } catch (e) {
+      // In some test environments window may be undefined or getComputedStyle
+      // may throw. Fail safe by continuing in that case.
     }
-  } catch (e) {
-    // In some test environments window may be undefined or getComputedStyle
-    // may throw. Fail safe by continuing in that case.
-  }
 
-  const segments = container.querySelectorAll('.daqi-bar-segment')
-  if (!segments || segments.length === 0) return
+    const segments = container.querySelectorAll('.daqi-bar-segment')
+    if (!segments || segments.length === 0) return
 
   // Responsive behaviour: when the container is narrow (mobile/tablet),
   // collapse the visual grouping so bands 1-3, 4-6, 7-9 take the same
@@ -256,6 +241,7 @@ function setDaqiColumns() {
   }
 
   container.style.setProperty('--daqi-columns', cssValue)
+  }) // Close the forEach loop
 }
 
 const debounced = debounce(setDaqiColumns, 120)

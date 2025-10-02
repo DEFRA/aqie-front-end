@@ -216,11 +216,11 @@ describe('daqi-columns module', () => {
     const daqiColumnsModule = await import('../src/client/assets/javascripts/daqi-columns.js')
     daqiColumnsModule.setDaqiColumns()
 
-    // '' Small tablet viewports (640-768px) now use flexbox, so CSS variables should be cleared
+    // '' Small tablet viewports (640-768px) now calculate divider positions consistently
     expect(container.style.getPropertyValue('--daqi-columns')).toBe('')
-    expect(container.style.getPropertyValue('--daqi-divider-1')).toBe('')
-    expect(container.style.getPropertyValue('--daqi-divider-2')).toBe('')
-    expect(container.style.getPropertyValue('--daqi-divider-3')).toBe('')
+    expect(container.style.getPropertyValue('--daqi-divider-1')).toBe('154px')
+    expect(container.style.getPropertyValue('--daqi-divider-2')).toBe('310px')
+    expect(container.style.getPropertyValue('--daqi-divider-3')).toBe('466px')
 
     // '' Clean up
     document.body.removeChild(panel)
