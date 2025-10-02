@@ -49,41 +49,21 @@ svg|foreignObject {
   max-width: 100%; // '' Prevent overflow in narrow containers
   overflow: hidden; // '' Prevent any scrolling - container must fit within bounds
 
-  // '' Mobile: container scales with viewport while maintaining consistent padding
+  // '' Mobile: use same width approach as desktop for consistent margins
   @media (max-width: 639px) {
-    width: calc(100% - 2rem); // '' Dynamic width based on viewport
-    max-width: calc(100vw - 2rem); // '' Ensure we never exceed viewport width
-    margin: 0 auto; // '' Center the container
-    padding: 0 govuk-spacing(2); // '' Consistent padding
-    box-sizing: border-box;
+    width: min(590px, 100%); // '' Same as desktop - no extra padding
+    max-width: 100%; // '' Same as desktop
     overflow: hidden; // '' Prevent scrolling on mobile
     
-    @media (max-width: 480px) {
-      width: calc(100% - 1rem); // '' Minimal margins for very narrow screens  
-      max-width: calc(100vw - 1rem);
-      padding: 0 0.5rem; // '' Minimal padding
-    }
-    
-    // '' Extra narrow viewports: maximize available space
-    @media (max-width: 340px) {
-      width: calc(100% - 0.5rem); // '' Almost full width
-      max-width: calc(100vw - 0.5rem);
-      padding: 0 0.25rem; // '' Very minimal padding
-      margin: 0 auto;
-    }
-    
     .daqi-bar {
-      width: 100%; // '' DAQI bar fills the dynamic container
+      width: 100%; // '' DAQI bar fills the container
     }
   }
   
-  // '' Small tablet (640-768px): dynamic responsive sizing
+  // '' Small tablet (640-768px): use same width approach as desktop
   @media (min-width: 640px) and (max-width: 767px) {
-    width: calc(100% - 2rem); // '' Dynamic width based on viewport
-    max-width: calc(100vw - 2rem); // '' Ensure we never exceed viewport
-    margin: 0 auto;
-    padding: 0 govuk-spacing(2);
-    box-sizing: border-box;
+    width: min(590px, 100%); // '' Same as desktop
+    max-width: 100%;
     overflow: hidden; // '' Prevent scrolling
     
     .daqi-bar {
@@ -91,13 +71,10 @@ svg|foreignObject {
     }
   }
   
-  // '' Large tablet (768-1020px): dynamic responsive sizing
+  // '' Large tablet (768-1020px): use same width approach as desktop
   @media (min-width: 768px) and (max-width: 1019px) {
-    width: calc(100% - 2rem); // '' Dynamic width based on viewport
-    max-width: calc(100vw - 2rem); // '' Ensure we never exceed viewport
-    margin: 0 auto;
-    padding: 0 govuk-spacing(2);
-    box-sizing: border-box;
+    width: min(590px, 100%); // '' Same as desktop
+    max-width: 100%;
     overflow: hidden; // '' Prevent scrolling
     
     .daqi-bar {
@@ -105,10 +82,10 @@ svg|foreignObject {
     }
   }
 
-  // '' Desktop: full 590px width when space allows
+  // '' Desktop: use same width approach for consistency
   @media (min-width: 1020px) {
-    width: 590px;
-    max-width: calc(100vw - 2rem); // '' Ensure we never exceed viewport
+    width: min(590px, 100%); // '' Consistent with other breakpoints
+    max-width: 100%;
     overflow: hidden; // '' Prevent scrolling
   }
 
