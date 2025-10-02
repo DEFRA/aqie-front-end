@@ -12,6 +12,7 @@ In the mobile version, the day headings (Today, Tomorrow, etc.) were appearing a
 ## ✅ **Solution Implemented**
 
 ### **Mobile Layout Strategy**
+
 Changed from **tab navigation** to **integrated section headings** on mobile:
 
 - **Before**: Separate tab buttons + hidden content panels
@@ -20,45 +21,47 @@ Changed from **tab navigation** to **integrated section headings** on mobile:
 ### **Key Changes**
 
 #### **1. CSS Updates (`_aq-tabs.scss`)**
+
 ```scss
 // Hide tab navigation on mobile
 .govuk-tabs__list {
-    @include govuk-media-query($until: tablet) {
-        display: none; // Show content sections instead
-    }
+  @include govuk-media-query($until: tablet) {
+    display: none; // Show content sections instead
+  }
 }
 
 // Show all panels as stacked sections with integrated headings
 .defra-aq-tabs {
-    @include govuk-media-query($until: tablet) {
-        .govuk-tabs__panel {
-            display: block !important; // Show all panels
-            margin-bottom: govuk-spacing(6);
-            padding: govuk-spacing(4);
-            border: 1px solid $govuk-border-colour;
-            border-radius: 4px;
-            
-            // Add mobile heading before each panel
-            &::before {
-                content: attr(data-day-label);
-                display: block;
-                @include govuk-font($size: 24, $weight: bold);
-                color: govuk-colour("blue");
-                margin-bottom: govuk-spacing(3);
-                padding-bottom: govuk-spacing(2);
-                border-bottom: 2px solid govuk-colour("blue");
-            }
-        }
+  @include govuk-media-query($until: tablet) {
+    .govuk-tabs__panel {
+      display: block !important; // Show all panels
+      margin-bottom: govuk-spacing(6);
+      padding: govuk-spacing(4);
+      border: 1px solid $govuk-border-colour;
+      border-radius: 4px;
+
+      // Add mobile heading before each panel
+      &::before {
+        content: attr(data-day-label);
+        display: block;
+        @include govuk-font($size: 24, $weight: bold);
+        color: govuk-colour('blue');
+        margin-bottom: govuk-spacing(3);
+        padding-bottom: govuk-spacing(2);
+        border-bottom: 2px solid govuk-colour('blue');
+      }
     }
+  }
 }
 ```
 
 #### **2. Template Updates (`daqi-numbered.njk`)**
+
 Added `data-day-label` attributes to each panel:
 
 ```nunjucks
 // Example for "Today" panel
-panel: { 
+panel: {
   html: todayPanel,
   attributes: {
     'data-day-label': todayAbbrev  // "Today"
@@ -67,13 +70,15 @@ panel: {
 ```
 
 Applied to all forecast days:
+
 - **Today** → `data-day-label="Today"`
-- **Tomorrow** → `data-day-label="Tomorrow"`  
+- **Tomorrow** → `data-day-label="Tomorrow"`
 - **Day 3-5** → `data-day-label="Wednesday"` etc.
 
 ## 📱 **Mobile User Experience Now**
 
 ### **Visual Layout**
+
 ```
 ┌─────────────────────────────┐
 │ ▼ Today                     │ ← Integrated heading
@@ -83,7 +88,7 @@ Applied to all forecast days:
 │ Daily summary content...    │
 └─────────────────────────────┘
 
-┌─────────────────────────────┐  
+┌─────────────────────────────┐
 │ ▼ Tomorrow                  │ ← Integrated heading
 │ ═════════                   │
 │                             │
@@ -95,6 +100,7 @@ Applied to all forecast days:
 ```
 
 ### **Benefits**
+
 - ✅ **Clear visual hierarchy** - each day heading is directly connected to its content
 - ✅ **No isolated buttons** - headings are part of their sections
 - ✅ **All sections visible** - users can see all forecast days at once
@@ -105,11 +111,13 @@ Applied to all forecast days:
 ## 🔄 **Responsive Behavior**
 
 ### **Mobile (< tablet)**
+
 - Tab navigation: **Hidden**
 - Content display: **All sections stacked with integrated headings**
 - Interaction: **Scroll to view different days**
 
-### **Tablet+ (≥ tablet)**  
+### **Tablet+ (≥ tablet)**
+
 - Tab navigation: **Visible and functional**
 - Content display: **Traditional tab panels (only selected visible)**
 - Interaction: **Click tabs to switch between days**
@@ -117,26 +125,30 @@ Applied to all forecast days:
 ## 🎯 **Technical Implementation**
 
 ### **CSS Pseudo-element Headings**
+
 - Uses `::before` pseudo-element for mobile headings
 - Content comes from `data-day-label` attribute
 - Styled as proper headings with blue color and underline
 - Automatically integrated with each content section
 
 ### **Responsive Display Logic**
+
 - `display: none` for tabs on mobile
-- `display: block !important` for all panels on mobile  
+- `display: block !important` for all panels on mobile
 - Maintains existing tablet+ tab functionality
 - No JavaScript changes required
 
 ## 🧪 **Testing**
 
 ### **Mobile Testing** (< 768px)
+
 - ✅ All day sections visible and properly spaced
 - ✅ Each section has clear, integrated heading
 - ✅ Content flows naturally from heading to DAQI data
 - ✅ No isolated or disconnected elements
 
 ### **Tablet+ Testing** (≥ 768px)
+
 - ✅ Traditional tab navigation preserved
 - ✅ Click tabs to switch between days
 - ✅ Only selected panel visible

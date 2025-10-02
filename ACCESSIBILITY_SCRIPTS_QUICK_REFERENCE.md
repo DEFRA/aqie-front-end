@@ -7,6 +7,7 @@ The accessibility testing functions are split across different scripts. You need
 ### **Script Loading Order:**
 
 #### 1. **For DAQI Basic Testing** - Load `test-real-daqi.js`:
+
 ```javascript
 // Copy and paste test-real-daqi.js into console first, then run:
 testRealDAQI()
@@ -16,9 +17,10 @@ simulateDAQIValue(5)
 ```
 
 #### 2. **For High Contrast Testing** - Load `test-high-contrast-accessibility.js`:
+
 ```javascript
 // Copy and paste test-high-contrast-accessibility.js into console first, then run:
-showHighContrastTestingGuide()     // ← This function is in this script
+showHighContrastTestingGuide() // ← This function is in this script
 simulateHighContrastMode()
 testDAQIHighContrastVisibility()
 testFocusVisibility()
@@ -27,6 +29,7 @@ removeHighContrastSimulation()
 ```
 
 #### 3. **For Screen Reader Demo** - Load `daqi-screenreader-demo.js`:
+
 ```javascript
 // Copy and paste daqi-screenreader-demo.js into console first, then run:
 demoScreenReaderExperience()
@@ -37,6 +40,7 @@ testDAQIValueAnnouncements()
 ## 🔧 **Function Reference by Script**
 
 ### **test-real-daqi.js** Functions:
+
 - `testRealDAQI()`
 - `testScreenReaderSupport()`
 - `testTabAnnouncements(tabIndex)`
@@ -44,6 +48,7 @@ testDAQIValueAnnouncements()
 - `testAllDAQIValues()`
 
 ### **test-high-contrast-accessibility.js** Functions:
+
 - `showHighContrastTestingGuide()` ← **YOU NEED THIS SCRIPT**
 - `simulateHighContrastMode()`
 - `removeHighContrastSimulation()`
@@ -52,6 +57,7 @@ testDAQIValueAnnouncements()
 - `testHighContrastMode()`
 
 ### **daqi-screenreader-demo.js** Functions:
+
 - `demoScreenReaderExperience()`
 - `showScreenReaderTestingGuide()`
 - `testDAQIValueAnnouncements()`
@@ -61,6 +67,7 @@ testDAQIValueAnnouncements()
 You tried to run `showHighContrastTestingGuide()` but haven't loaded the high contrast script yet.
 
 **Solution:**
+
 1. Copy the entire contents of `test-high-contrast-accessibility.js`
 2. Paste it into the browser console
 3. Press Enter to load the script
@@ -78,7 +85,7 @@ testRealDAQI()
 showHighContrastTestingGuide()
 simulateHighContrastMode()
 
-// Step 3: Load and test screen reader demo  
+// Step 3: Load and test screen reader demo
 // Copy daqi-screenreader-demo.js → Paste → Enter, then:
 demoScreenReaderExperience()
 ```
@@ -93,6 +100,7 @@ demoScreenReaderExperience()
 ## 💡 **Pro Tip**
 
 Each script includes a loading message when pasted. Look for:
+
 - "🧪 DAQI Real Functionality Test Script Loading..."
 - "🎨 High Contrast Accessibility Testing Script Loading..." ← **For your function**
 - "🔊 DAQI Screen Reader Demo Loading..."

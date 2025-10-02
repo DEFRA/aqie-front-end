@@ -98,9 +98,11 @@ describe('daqi-columns module', () => {
       .querySelector('.daqi-numbered')
       .style.getPropertyValue('--daqi-columns')
     expect(cssValue).toBe('') // Flexbox clears grid variables
-    
+
     // Divider variables should be calculated and set for flexbox layout
-    const divider1 = document.querySelector('.daqi-numbered').style.getPropertyValue('--daqi-divider-1')
+    const divider1 = document
+      .querySelector('.daqi-numbered')
+      .style.getPropertyValue('--daqi-divider-1')
     expect(divider1).toMatch(/\d+px$/) // Should be set to calculated pixel value
   })
 
@@ -132,7 +134,7 @@ describe('daqi-columns module', () => {
       configurable: true
     })
 
-    // Mock getBoundingClientRect for segments  
+    // Mock getBoundingClientRect for segments
     const segments = document.querySelectorAll('.daqi-bar-segment')
     segments.forEach((seg, i) => {
       seg.getBoundingClientRect = () => ({ width: i === 9 ? 100 : 51 })
@@ -145,7 +147,7 @@ describe('daqi-columns module', () => {
     const divider1 = container.style.getPropertyValue('--daqi-divider-1')
     const divider2 = container.style.getPropertyValue('--daqi-divider-2')
     const divider3 = container.style.getPropertyValue('--daqi-divider-3')
-    
+
     // Desktop should remove columns but set calculated divider positions
     expect(cssValue).toBe('')
     expect(divider1).toBe('159px') // 3 * 51 + 2 * 3px gaps = 159px
@@ -164,7 +166,7 @@ describe('daqi-columns module', () => {
     // '' Create mock DOM for testing with proper tab structure
     const panel = document.createElement('div')
     panel.className = 'govuk-tabs__panel'
-    
+
     const container = document.createElement('div')
     container.className = 'daqi-numbered'
     container.innerHTML = `
@@ -184,14 +186,14 @@ describe('daqi-columns module', () => {
         <div class="daqi-bar-segment"></div>
       </div>
     `
-    
+
     panel.appendChild(container)
     document.body.appendChild(panel)
 
     // '' Mock getBoundingClientRect for labels and container
     const lastLabel = container.querySelector('.daqi-labels .daqi-band')
     lastLabel.getBoundingClientRect = () => ({ width: 50 })
-    
+
     container.getBoundingClientRect = () => ({ width: 520 }) // Small tablet container width
     Object.defineProperty(container, 'clientWidth', {
       value: 520,
@@ -213,7 +215,9 @@ describe('daqi-columns module', () => {
     }
 
     // '' Call the function
-    const daqiColumnsModule = await import('../src/client/assets/javascripts/daqi-columns.js')
+    const daqiColumnsModule = await import(
+      '../src/client/assets/javascripts/daqi-columns.js'
+    )
     daqiColumnsModule.setDaqiColumns()
 
     // '' Small tablet viewports (640-768px) now calculate divider positions consistently
