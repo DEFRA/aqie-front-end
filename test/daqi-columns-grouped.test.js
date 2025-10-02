@@ -102,7 +102,7 @@ describe('daqi-columns grouped behaviour', () => {
     // In tablet range (768-1020px), variables are cleared for flexbox layout
     expect(cssValue).toBe('')
 
-    // Also assert divider offsets are cleared for flexbox layout
+    // Also assert divider offsets are calculated for flexbox layout
     const d1 = document
       .querySelector('.daqi-numbered')
       .style.getPropertyValue('--daqi-divider-1')
@@ -113,8 +113,8 @@ describe('daqi-columns grouped behaviour', () => {
       .querySelector('.daqi-numbered')
       .style.getPropertyValue('--daqi-divider-3')
 
-    expect(d1).toBe('')
-    expect(d2).toBe('')
-    expect(d3).toBe('')
+    expect(d1).toMatch(/\d+px$/)
+    expect(d2).toMatch(/\d+px$/)
+    expect(d3).toMatch(/\d+px$/)
   })
 })

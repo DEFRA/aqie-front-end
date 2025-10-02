@@ -289,18 +289,17 @@ svg|foreignObject {
       // stylelint-disable-next-line declaration-no-important
       padding: 0 !important;
       overflow: hidden; // '' Prevent text overflow
-      text-overflow: ellipsis; // '' Show ellipsis for long text
       
       // Low - spans cells 1,2,3 (3 tracks)
       &:nth-child(1) {
         grid-column: 1 / 4;
       }
       
-      // Moderate - center under cell 5, shift 10px left
+      // Moderate - center around cells 4-6 to give more space for the text
       &:nth-child(2) {
-        grid-column: 5 / 6;
-        position: relative;
-        left: -10px;
+        grid-column: 4 / 7;
+        justify-self: center;
+        width: max-content;
       }
       
       // High - span cells 7–9 (center aligns to cell 8)
@@ -355,7 +354,6 @@ svg|foreignObject {
         @include govuk-font($size: 14, $weight: regular);
         white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis;
         
         // Reset grid positioning for mobile
         grid-column: unset;
@@ -375,15 +373,34 @@ svg|foreignObject {
       justify-content: space-around;
       position: relative;
       
+      // Add responsive dividers between groups for small tablets
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 24px;
+        background-image:
+          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
+        background-position: var(--daqi-divider-1, 130px) 0, var(--daqi-divider-2, 260px) 0, var(--daqi-divider-3, 390px) 0;
+        background-repeat: no-repeat;
+        background-size: 3px 100%, 3px 100%, 3px 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+      
       .daqi-band {
         text-align: center;
         flex: 1;
         position: relative;
+        z-index: 2;
         
         @include govuk-font($size: 14, $weight: regular); // Valid GOV.UK font size for small tablets
         white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis;
         
         // Reset grid positioning
         grid-column: unset;
@@ -403,15 +420,34 @@ svg|foreignObject {
       justify-content: space-around;
       position: relative;
       
+      // Add responsive dividers between groups for large tablets
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 24px;
+        background-image:
+          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
+          linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
+        background-position: var(--daqi-divider-1, 148px) 0, var(--daqi-divider-2, 296px) 0, var(--daqi-divider-3, 444px) 0;
+        background-repeat: no-repeat;
+        background-size: 3px 100%, 3px 100%, 3px 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+      
       .daqi-band {
         text-align: center;
         flex: 1;
         position: relative;
+        z-index: 2;
         
         @include govuk-font($size: 16, $weight: regular); // Same as desktop for large tablets
         white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis;
         
         // Reset grid positioning
         grid-column: unset;

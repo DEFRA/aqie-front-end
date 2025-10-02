@@ -88,7 +88,7 @@ describe('DAQI Simulation Tests', () => {
       console.log('✓ DAQI 4 (Moderate-Low):', {
         value: airQuality.value,
         band: airQuality.band,
-        advice: airQuality.advice.substring(0, 50) + '...'
+        advice: airQuality.advice
       })
     })
 
@@ -105,8 +105,8 @@ describe('DAQI Simulation Tests', () => {
         value: airQuality.value,
         band: airQuality.band,
         atRiskAdvice: {
-          adults: airQuality.atrisk.adults.substring(0, 40) + '...',
-          asthma: airQuality.atrisk.asthma.substring(0, 40) + '...'
+          adults: airQuality.atrisk.adults,
+          asthma: airQuality.atrisk.asthma
         }
       })
     })
@@ -204,7 +204,7 @@ describe('DAQI Simulation Tests', () => {
         value: airQuality.value,
         band: airQuality.band,
         oldPeopleAdvice: airQuality.atrisk.oldPeople,
-        outlook: airQuality.outlook.substring(0, 50) + '...'
+        outlook: airQuality.outlook
       })
     })
 
@@ -297,9 +297,9 @@ describe('DAQI Simulation Tests', () => {
       expect(veryHigh.atrisk.adults).toContain('avoid strenuous')
       
       console.log('✓ Escalating severity comparison:')
-      console.log('  Moderate (5):', moderate.atrisk.adults.substring(0, 40) + '...')
-      console.log('  High (8):', high.atrisk.adults.substring(0, 40) + '...')
-      console.log('  Very High (10):', veryHigh.atrisk.adults.substring(0, 40) + '...')
+      console.log('  Moderate (5):', moderate.atrisk.adults)
+      console.log('  High (8):', high.atrisk.adults)
+      console.log('  Very High (10):', veryHigh.atrisk.adults)
     })
 
     it('should test responsive divider positioning across all ranges', () => {

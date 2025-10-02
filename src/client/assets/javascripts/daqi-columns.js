@@ -102,7 +102,7 @@ function setDaqiColumns() {
     )
   }
 
-  // Stage 1: Small tablet (640-768px) - use flexbox like mobile
+  // Stage 1: Small tablet (640-768px) - use flexbox with calculated dividers like mobile
   if (
     viewportWidth > 0 &&
     viewportWidth >= TABLET_SMALL_THRESHOLD &&
@@ -111,13 +111,30 @@ function setDaqiColumns() {
   ) {
     // '' Remove grid column CSS variables on small tablets to allow flexbox
     container.style.removeProperty('--daqi-columns')
-    container.style.removeProperty('--daqi-divider-1')
-    container.style.removeProperty('--daqi-divider-2')
-    container.style.removeProperty('--daqi-divider-3')
+    
+    // '' Apply mobile-style divider positioning for tablets
+    // Calculate divider positions by measuring actual flexbox segments
+    const GAP = 2 // Small tablet gap from CSS
+    const segmentWidths = Array.from(segments).map(seg => {
+      const rect = seg.getBoundingClientRect()
+      return Math.round(rect.width)
+    })
+    
+    // Calculate divider positions after segments 3, 6, and 9
+    const dividerPositions = []
+    for (const n of [3, 6, 9]) {
+      const sum = segmentWidths.slice(0, n).reduce((s, v) => s + v, 0)
+      const gaps = GAP * (n - 1)
+      dividerPositions.push(sum + gaps)
+    }
+    
+    container.style.setProperty('--daqi-divider-1', Math.round(dividerPositions[0]) + 'px')
+    container.style.setProperty('--daqi-divider-2', Math.round(dividerPositions[1]) + 'px')
+    container.style.setProperty('--daqi-divider-3', Math.round(dividerPositions[2]) + 'px')
     return
   }
 
-  // Stage 2: Large tablet (768-1020px) - use flexbox like mobile
+  // Stage 2: Large tablet (768-1020px) - use flexbox with calculated dividers like mobile
   if (
     viewportWidth > 0 &&
     viewportWidth >= TABLET_LARGE_THRESHOLD &&
@@ -126,13 +143,30 @@ function setDaqiColumns() {
   ) {
     // '' Remove grid column CSS variables on large tablets to allow flexbox
     container.style.removeProperty('--daqi-columns')
-    container.style.removeProperty('--daqi-divider-1')
-    container.style.removeProperty('--daqi-divider-2')
-    container.style.removeProperty('--daqi-divider-3')
+    
+    // '' Apply mobile-style divider positioning for tablets
+    // Calculate divider positions by measuring actual flexbox segments
+    const GAP = 3 // Large tablet gap from CSS
+    const segmentWidths = Array.from(segments).map(seg => {
+      const rect = seg.getBoundingClientRect()
+      return Math.round(rect.width)
+    })
+    
+    // Calculate divider positions after segments 3, 6, and 9
+    const dividerPositions = []
+    for (const n of [3, 6, 9]) {
+      const sum = segmentWidths.slice(0, n).reduce((s, v) => s + v, 0)
+      const gaps = GAP * (n - 1)
+      dividerPositions.push(sum + gaps)
+    }
+    
+    container.style.setProperty('--daqi-divider-1', Math.round(dividerPositions[0]) + 'px')
+    container.style.setProperty('--daqi-divider-2', Math.round(dividerPositions[1]) + 'px')
+    container.style.setProperty('--daqi-divider-3', Math.round(dividerPositions[2]) + 'px')
     return
   }
   
-  // '' Mobile case: clear any existing grid columns to let flexbox handle layout
+  // '' Mobile case: use flexbox with calculated dividers
   if (
     viewportWidth > 0 &&
     viewportWidth < TABLET_SMALL_THRESHOLD &&
@@ -140,9 +174,26 @@ function setDaqiColumns() {
   ) {
     // '' Remove grid column CSS variables on mobile to allow flexbox
     container.style.removeProperty('--daqi-columns')
-    container.style.removeProperty('--daqi-divider-1')
-    container.style.removeProperty('--daqi-divider-2')
-    container.style.removeProperty('--daqi-divider-3')
+    
+    // '' Apply mobile-style divider positioning 
+    // Calculate divider positions by measuring actual flexbox segments
+    const GAP = 1 // Mobile gap from CSS
+    const segmentWidths = Array.from(segments).map(seg => {
+      const rect = seg.getBoundingClientRect()
+      return Math.round(rect.width)
+    })
+    
+    // Calculate divider positions after segments 3, 6, and 9
+    const dividerPositions = []
+    for (const n of [3, 6, 9]) {
+      const sum = segmentWidths.slice(0, n).reduce((s, v) => s + v, 0)
+      const gaps = GAP * (n - 1)
+      dividerPositions.push(sum + gaps)
+    }
+    
+    container.style.setProperty('--daqi-divider-1', Math.round(dividerPositions[0]) + 'px')
+    container.style.setProperty('--daqi-divider-2', Math.round(dividerPositions[1]) + 'px')
+    container.style.setProperty('--daqi-divider-3', Math.round(dividerPositions[2]) + 'px')
     return
   }
 

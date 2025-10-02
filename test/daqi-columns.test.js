@@ -99,9 +99,9 @@ describe('daqi-columns module', () => {
       .style.getPropertyValue('--daqi-columns')
     expect(cssValue).toBe('') // Flexbox clears grid variables
     
-    // Divider variables should also be cleared for flexbox
+    // Divider variables should be calculated and set for flexbox layout
     const divider1 = document.querySelector('.daqi-numbered').style.getPropertyValue('--daqi-divider-1')
-    expect(divider1).toBe('')
+    expect(divider1).toMatch(/\d+px$/) // Should be set to calculated pixel value
   })
 
   it('removes CSS variables for mobile viewports below 640px', () => {
@@ -120,8 +120,9 @@ describe('daqi-columns module', () => {
 
     const cssValue = container.style.getPropertyValue('--daqi-columns')
     const divider1 = container.style.getPropertyValue('--daqi-divider-1')
+    // Mobile should clear columns but calculate divider positions
     expect(cssValue).toBe('')
-    expect(divider1).toBe('')
+    expect(divider1).toMatch(/\d+px$/) // Should be set to calculated pixel value
   })
 
   it('calculates divider positions for desktop viewports', () => {
