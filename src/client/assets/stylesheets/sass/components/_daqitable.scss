@@ -41,51 +41,35 @@ svg|foreignObject {
   margin-right: 0;
 }
 
-// '' DAQI numbered bar styling to match design image exactly
+// '' DAQI numbered bar styling with smart responsive behavior
 .daqi-numbered {
   position: relative;
-  // '' Responsive width: use 590px when space allows, scale down when needed
+  
+  // '' Smart responsive width strategy:
+  // - Above 590px available space: maintain 590px width (parent's empty space shrinks first)
+  // - Below 590px available space: shrink component to fit available space
   width: min(590px, 100%);
-  max-width: 100%; // '' Prevent overflow in narrow containers
+  max-width: 590px; // '' Never exceed design width
+  min-width: 300px; // '' Minimum usable width for 10 cells
   overflow: hidden; // '' Prevent any scrolling - container must fit within bounds
+  
+  
+  // '' The component maintains its natural width until the parent container
+  // '' has been squeezed to the point where it needs to shrink the component itself
 
-  // '' Mobile: use same width approach as desktop for consistent margins
-  @media (max-width: 639px) {
-    width: min(590px, 100%); // '' Same as desktop - no extra padding
-    max-width: 100%; // '' Same as desktop
-    overflow: hidden; // '' Prevent scrolling on mobile
+  // '' Extra small mobile optimization only
+  @media (max-width: 320px) {
+    min-width: 300px; // '' Ensure minimum usable width
     
     .daqi-bar {
       width: 100%; // '' DAQI bar fills the container
     }
   }
-  
-  // '' Small tablet (640-768px): use same width approach as desktop
-  @media (min-width: 640px) and (max-width: 767px) {
-    width: min(590px, 100%); // '' Same as desktop
-    max-width: 100%;
-    overflow: hidden; // '' Prevent scrolling
-    
-    .daqi-bar {
-      width: 100%;
-    }
-  }
-  
-  // '' Large tablet (768-1020px): use same width approach as desktop
-  @media (min-width: 768px) and (max-width: 1019px) {
-    width: min(590px, 100%); // '' Same as desktop
-    max-width: 100%;
-    overflow: hidden; // '' Prevent scrolling
-    
-    .daqi-bar {
-      width: 100%;
-    }
-  }
 
-  // '' Desktop: use same width approach for consistency
-  @media (min-width: 1020px) {
-    width: min(590px, 100%); // '' Consistent with other breakpoints
-    max-width: 100%;
+  // '' Desktop: ensure proper width for larger screens
+  @media (min-width: 641px) {
+    width: min(590px, 100%); // '' Consistent with smart responsive strategy
+    max-width: 590px;
     overflow: hidden; // '' Prevent scrolling
   }
 
@@ -107,93 +91,69 @@ svg|foreignObject {
     overflow: hidden; // '' Prevent bar content from causing scrolling
     
     // '' Mobile: cells scale dynamically with container while maintaining proportions
-    @media (max-width: 639px) {
+    @media (max-width: 320px) {
+      // Switch to flexbox on extra small mobile for tighter control
+      display: flex;
+      flex-direction: row;
+      margin-left: 1px; // Reduced space for borders on 320px
+      margin-right: 1px; // Reduced space for borders on 320px
+      gap: 1px; // Smaller gap for very small screens
+    }
+
+    @media (min-width: 321px) and (max-width: 639px) {
       display: flex;
       width: 100%;
       margin: 0;
       gap: 1px;
     }
     
-    // '' Small tablet (640-768px): flexbox with proportional scaling
-    @media (min-width: 640px) and (max-width: 767px) {
+    // '' Mobile and small tablet (640px and below): flexbox with proportional scaling
+    @media (max-width: 640px) {
       display: flex;
       width: 100%;
       margin: 0;
-      gap: 2px; // '' Smaller gap for small tablets
-    }
-    
-    // '' Large tablet (768-1020px): flexbox with proportional scaling
-    @media (min-width: 768px) and (max-width: 1019px) {
-      display: flex;
-      width: 100%;
-      margin: 0;
-      gap: 3px; // '' Standard gap for large tablets
+      gap: 3px; // '' Standard gap for mobile
     }
   }
 
-// '' Mobile segment styling
-@media (max-width: 639px) {
+// '' Extra small mobile segment styling (320px and below)
+@media (max-width: 320px) {
   .daqi-bar-segment {
-    // '' Dynamic scaling maintaining desktop proportional relationships
-    // '' Desktop: cells 1-9 are 51px each, cell 10 is 100px (ratio 51:100)
-    &:nth-child(1),
-    &:nth-child(2),
-    &:nth-child(3),
-    &:nth-child(4),
-    &:nth-child(5),
-    &:nth-child(6),
-    &:nth-child(7),
-    &:nth-child(8),
-    &:nth-child(9) {
-      flex: 51; // '' Proportional scaling based on desktop 51px
-    }
+    flex: 1; // Equal width for cells 1-9 on 320px
+    border: 1px solid; // Thinner borders for space efficiency
+    border-radius: 0;
+    text-align: center;
+    font-size: 14px; // Use standard GOV.UK font size
+    min-height: 30px; // Reduced height for very small screens
     
     &:nth-child(10) {
-      flex: 100; // '' Proportional scaling based on desktop 100px
+      flex: 3; // Triple width for cell 10 to accommodate "Very high" label
+    }
+    
+    &:not(:first-child) {
+      border-left: 0;
     }
   }
 }
 
-// '' Small tablet segment styling
-@media (min-width: 640px) and (max-width: 767px) {
+// '' Mobile segment styling (321px-639px) - wider cell 10 for "Very high" label
+@media (min-width: 321px) and (max-width: 639px) {
   .daqi-bar-segment {
-    // '' Dynamic scaling maintaining desktop proportional relationships
-    &:nth-child(1),
-    &:nth-child(2),
-    &:nth-child(3),
-    &:nth-child(4),
-    &:nth-child(5),
-    &:nth-child(6),
-    &:nth-child(7),
-    &:nth-child(8),
-    &:nth-child(9) {
-      flex: 51; // '' Proportional scaling based on desktop 51px
-    }
+    flex: 1; // Equal width for cells 1-9
     
     &:nth-child(10) {
-      flex: 100; // '' Proportional scaling based on desktop 100px
+      flex: 3; // Triple width for cell 10 to accommodate "Very high" label
     }
   }
 }
 
-// '' Large tablet segment styling
-@media (min-width: 768px) and (max-width: 1019px) {
+// '' Mobile and tablet segment styling (640px and below) - wider cell 10 for consistent layout
+@media (max-width: 640px) {
   .daqi-bar-segment {
-    // '' Dynamic scaling maintaining desktop proportional relationships
-    &:nth-child(1),
-    &:nth-child(2),
-    &:nth-child(3),
-    &:nth-child(4),
-    &:nth-child(5),
-    &:nth-child(6),
-    &:nth-child(7),
-    &:nth-child(8),
-    &:nth-child(9) {
-      flex: 51; // '' Proportional scaling based on desktop 51px
-    }
+    flex: 1; // Equal width for cells 1-9
     
     &:nth-child(10) {
-      flex: 100; // '' Proportional scaling based on desktop 100px
+      flex: 3; // Triple width for cell 10 to accommodate "Very high" label
     }
   }
 }
@@ -307,61 +267,66 @@ svg|foreignObject {
       justify-content: space-around;
       position: relative;
     }
-    
-    // '' Small tablet (640-768px): flexbox layout like mobile
-    @media (min-width: 640px) and (max-width: 767px) {
+
+    // '' Mobile and tablet (320px-640px): position labels below specific cells
+    @media (max-width: 640px) {
       display: flex;
-      width: 100%;
-      margin: 5px 0 0;
-      justify-content: space-around;
       position: relative;
-    }
-    
-    // '' Large tablet (768-1020px): flexbox layout like mobile
-    @media (min-width: 768px) and (max-width: 1019px) {
-      display: flex;
       width: 100%;
-      margin: 5px 0 0;
-      justify-content: space-around;
-      position: relative;
+      height: 15px; // Reduced height for proper divider sizing
+      margin-top: 2px; // Further reduced margin
+      justify-content: flex-start; // Start from left edge
+
+      // stylelint-disable max-nesting-depth, declaration-no-important
+      .daqi-band {
+        position: absolute;
+        top: 0;
+        text-align: center;
+        white-space: nowrap; // Prevent text wrapping
+        @include govuk-font($size: 14, $weight: regular); // Use valid GOV.UK font scale
+        line-height: 1.0; // Very tight line height for compact display
+        z-index: 10; // Ensure labels appear above other elements
+      }
+
+      // Use more specific selectors to override conflicting rules
+      .daqi-band.daqi-band-low {
+        left: 12.5% !important; // Center of cells 1,2,3 group (adjusted for new flex ratios)
+        transform: translateX(-50%) !important; // Center the label on this position
+      }
+
+      .daqi-band.daqi-band-moderate {
+        left: 38% !important; // Center of cells 4,5,6 group (fine-tuned positioning)
+        transform: translateX(-50%) !important; // Center the label on this position
+      }
+
+      .daqi-band.daqi-band-high {
+        left: 63.5% !important; // Center of cells 7,8,9 group (fine-tuned positioning)
+        transform: translateX(-50%) !important; // Center the label on this position
+      }
+
+      .daqi-band.daqi-band-very-high {
+        left: 87.5% !important; // Center of wider cell 10 (adjusted for new flex ratios)
+        transform: translateX(-50%) !important; // Center the label on this position
+      }
+      // stylelint-enable
     }
-    }
+    } // Close mobile condition
   } // Close .daqi-labels
 
-// '' Divider pseudo-elements as separate rules to avoid nesting depth issues
-@media (max-width: 639px) {
+// '' Divider pseudo-elements for mobile and tablet ranges (up to 640px)
+@media (max-width: 640px) {
   .daqi-labels::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 24px;
+    height: 15px; // Match container height
     background-image:
       linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
       linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
       linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
-    background-position: var(--daqi-divider-1, 0) 0, var(--daqi-divider-2, 0) 0, var(--daqi-divider-3, 0) 0;
-    background-repeat: no-repeat;
-    background-size: 3px 100%, 3px 100%, 3px 100%;
-    pointer-events: none;
-    z-index: 1;
-  }
-}
-
-@media (min-width: 640px) and (max-width: 767px) {
-  .daqi-labels::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 24px;
-    background-image:
-      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
-    background-position: var(--daqi-divider-1, 130px) 0, var(--daqi-divider-2, 260px) 0, var(--daqi-divider-3, 390px) 0;
+    background-position: var(--daqi-divider-1, 75px) 0, var(--daqi-divider-2, 150px) 0, var(--daqi-divider-3, 225px) 0;
     background-repeat: no-repeat;
     background-size: 2px 100%, 2px 100%, 2px 100%;
     pointer-events: none;
@@ -369,25 +334,27 @@ svg|foreignObject {
   }
 }
 
-@media (min-width: 768px) and (max-width: 1019px) {
+// '' Divider pseudo-elements for tablet/intermediate range (641px-1019px)
+@media (min-width: 641px) and (max-width: 1019px) {
   .daqi-labels::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 24px;
+    height: 20px; // Intermediate height between mobile (15px) and desktop (24px)
     background-image:
       linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
       linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
       linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
-    background-position: var(--daqi-divider-1, 148px) 0, var(--daqi-divider-2, 296px) 0, var(--daqi-divider-3, 444px) 0;
+    background-position: var(--daqi-divider-1, 130px) 0, var(--daqi-divider-2, 260px) 0, var(--daqi-divider-3, 390px) 0;
     background-repeat: no-repeat;
-    background-size: 3px 100%, 3px 100%, 3px 100%;
+    background-size: 2px 100%, 2px 100%, 2px 100%; // Same as mobile size
     pointer-events: none;
     z-index: 1;
   }
 }
+
 
 @media (min-width: 1020px) {
   .daqi-labels::before {
@@ -409,8 +376,41 @@ svg|foreignObject {
   }
 }
 
-// '' Mobile label styling
-@media (max-width: 639px) {
+// '' Extra small mobile label styling (320px and below)
+@media (max-width: 320px) {
+  .daqi-labels .daqi-band {
+    // Position is set in parent container - remove conflicting properties
+    // stylelint-disable declaration-no-important
+    position: absolute !important; // Override any flex positioning
+    // stylelint-enable
+    flex: none; // Remove flex sizing
+    width: auto; // Let content determine width
+    text-align: center;
+    z-index: 2;
+    
+    // Use smaller font size for 320px to fit better
+    @include govuk-font($size: 14, $weight: regular);
+    white-space: nowrap;
+    overflow: visible; // Allow text to show fully
+    
+    // Reset grid and flex positioning
+    grid-column: unset;
+    justify-self: unset;
+    // stylelint-disable declaration-no-important
+    left: unset !important; // Will be overridden by parent positioning
+    transform: unset !important; // Will be overridden by parent positioning
+    // stylelint-enable
+    max-width: none; // Allow labels to size naturally
+    
+    // Minimal padding for 320px
+    padding: 0;
+    margin: 0;
+    line-height: 1.1;
+  }
+}
+
+// '' Mobile label styling (321px-639px)
+@media (min-width: 321px) and (max-width: 639px) {
   .daqi-labels .daqi-band {
     text-align: center;
     flex: 1;
@@ -422,50 +422,6 @@ svg|foreignObject {
     overflow: hidden;
     
     // Reset grid positioning for mobile
-    grid-column: unset;
-    justify-self: unset;
-    left: unset;
-    transform: unset;
-    width: auto;
-    max-width: 100%;
-  }
-}
-
-// '' Small tablet label styling
-@media (min-width: 640px) and (max-width: 767px) {
-  .daqi-labels .daqi-band {
-    text-align: center;
-    flex: 1;
-    position: relative;
-    z-index: 2;
-    
-    @include govuk-font($size: 14, $weight: regular); // Valid GOV.UK font size for small tablets
-    white-space: nowrap;
-    overflow: hidden;
-    
-    // Reset grid positioning
-    grid-column: unset;
-    justify-self: unset;
-    left: unset;
-    transform: unset;
-    width: auto;
-    max-width: 100%;
-  }
-}
-
-// '' Large tablet label styling
-@media (min-width: 768px) and (max-width: 1019px) {
-  .daqi-labels .daqi-band {
-    text-align: center;
-    flex: 1;
-    position: relative;
-    z-index: 2;
-    
-    @include govuk-font($size: 16, $weight: regular); // Same as desktop for large tablets
-    white-space: nowrap;
-    overflow: hidden;
-    
-    // Reset grid positioning
     grid-column: unset;
     justify-self: unset;
     left: unset;

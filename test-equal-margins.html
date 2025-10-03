@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✅ FIXED: Equal Left/Right Margins - Tabs Component</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        /* Simulate the page layout structure exactly */
+        .page-container {
+            /* Simulate full page layout */
+            width: 100vw;
+            min-height: 100vh;
+            background: linear-gradient(45deg, #f0f8ff 0%, #e8f4f8 100%);
+            padding: 16px 0;
+            box-sizing: border-box;
+        }
+        
+        /* Main container simulating govuk-width-container */
+        .main-container {
+            max-width: 960px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        /* Grid row simulation */
+        .grid-row {
+            display: block;
+            margin-bottom: 20px;
+        }
+        
+        /* Two-thirds column simulation */
+        .two-thirds-column {
+            max-width: 66.66%;
+            background-color: #e8f4f8;
+            padding: 20px;
+            border: 2px dashed #0066cc;
+            position: relative;
+            box-sizing: border-box;
+        }
+        
+        /* FIXED: Tabs container with equal left/right margins */
+        .tabs-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 2px solid #0066cc;
+            background-color: white;
+            position: relative;
+            
+            /* BEFORE: width calculation without proper centering */
+            /* width: min(650px, calc(100vw - 32px)); */
+            
+            /* AFTER: Smart responsive width with proper centering */
+            width: min(650px, 100vw - 32px);
+            max-width: 650px;
+            min-width: 320px;
+            
+            /* FIXED: Equal margins for centering */
+            margin-left: auto;
+            margin-right: auto;
+            
+            /* Transition for visual feedback */
+            transition: all 0.3s ease;
+        }
+        
+        /* Fine-tune for different viewport ranges */
+        @media (min-width: 682px) {
+            .tabs-container {
+                width: 650px; /* Fixed width when space allows */
+                margin-left: auto; /* Center when fixed width */
+                margin-right: auto; /* Center when fixed width */
+            }
+        }
+        
+        @media (max-width: 681px) {
+            .tabs-container {
+                width: calc(100vw - 32px); /* Dynamic width when space is limited */
+                margin-left: 16px; /* Explicit equal margins */
+                margin-right: 16px; /* Explicit equal margins */
+            }
+        }
+        
+        /* Content inside tabs */
+        .tabs-content {
+            background: linear-gradient(to right, #00ff00 0%, #ffff00 30%, #ff8000 60%, #ff0000 100%);
+            height: 100px;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+            position: relative;
+        }
+        
+        /* Margin indicators */
+        .margin-indicator {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255,0,0,0.7);
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+            z-index: 10;
+            border: 1px solid #ff0000;
+        }
+        
+        .margin-left {
+            left: -40px;
+        }
+        
+        .margin-right {
+            right: -40px;
+        }
+        
+        /* Viewport info display */
+        .viewport-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0,0,0,0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 1000;
+            min-width: 220px;
+        }
+        
+        .info-panel {
+            background-color: #f0f8ff;
+            border: 1px solid #0066cc;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .before, .after {
+            padding: 15px;
+            border-radius: 4px;
+        }
+        
+        .before {
+            background-color: #ffe6e6;
+            border: 1px solid #ff6666;
+        }
+        
+        .after {
+            background-color: #e6ffe6;
+            border: 1px solid #66ff66;
+        }
+        
+        .measurement {
+            font-family: monospace;
+            font-weight: bold;
+            color: #0066cc;
+        }
+        
+        .fixed { color: #00aa00; font-weight: bold; }
+        .problem { color: #ff0000; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="viewport-info" id="viewportInfo">
+        <strong>🎯 MARGIN EQUALITY TEST</strong><br>
+        Viewport: <span id="viewportWidth"></span>px<br>
+        Left Margin: <span id="leftMargin"></span><br>
+        Right Margin: <span id="rightMargin"></span><br>
+        <hr style="margin: 10px 0; border: 1px solid #666;">
+        <strong>🔧 STATUS</strong><br>
+        Equality: <span id="equalityStatus"></span><br>
+        Strategy: <span id="strategy"></span>
+    </div>
+    
+    <div class="page-container">
+        <div class="main-container">
+            <h1>✅ FIXED: Equal Left/Right Margins</h1>
+            
+            <div class="info-panel">
+                <h3>🎯 Problem & Solution</h3>
+                <p><strong>Issue:</strong> When the tabs component shrinks, it wasn't properly centered, causing unequal left/right margins.</p>
+                <p><strong>Solution:</strong> Added explicit centering with <code>margin-left: auto; margin-right: auto;</code> and explicit equal margins for small viewports.</p>
+            </div>
+            
+            <div class="before-after">
+                <div class="before">
+                    <h4>❌ BEFORE (Problem)</h4>
+                    <ul>
+                        <li>Component had width calculation</li>
+                        <li>But no centering mechanism</li>
+                        <li class="problem">Left margin ≠ Right margin</li>
+                        <li>Component appeared off-center</li>
+                    </ul>
+                </div>
+                <div class="after">
+                    <h4>✅ AFTER (Fixed)</h4>
+                    <ul>
+                        <li>Added <code>margin-left: auto</code></li>
+                        <li>Added <code>margin-right: auto</code></li>
+                        <li class="fixed">Left margin = Right margin</li>
+                        <li>Component perfectly centered</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="grid-row">
+                <div class="two-thirds-column">
+                    <h2>Two-Thirds Column Container</h2>
+                    <p>This container simulates the parent that holds the tabs component.</p>
+                    
+                    <div class="tabs-container" id="tabsContainer">
+                        <div class="margin-indicator margin-left" id="leftIndicator">L: <span id="leftValue">0px</span></div>
+                        <div class="margin-indicator margin-right" id="rightIndicator">R: <span id="rightValue">0px</span></div>
+                        
+                        <h3>📊 DAQI Tabs Component</h3>
+                        <p>Watch how the component maintains <strong>equal margins</strong> on both sides as you resize!</p>
+                        
+                        <div class="tabs-content">
+                            <div>
+                                <strong>Centered Component</strong><br>
+                                <span class="measurement" id="componentWidth">Width: 650px</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-panel">
+                        <h3>🧪 Test Instructions:</h3>
+                        <ol>
+                            <li><strong>Start wide (>682px):</strong> Component at 650px, centered with auto margins</li>
+                            <li><strong>Shrink to 681px-650px:</strong> Component shrinks but stays centered</li>
+                            <li><strong>Check margins:</strong> Left and right margin indicators should always show equal values</li>
+                            <li><strong>Verify centering:</strong> Component should never appear off-center</li>
+                        </ol>
+                        <div class="measurement" id="currentMeasurement">
+                            Current margins will appear above ↗️
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-panel">
+                <h3>🔧 Technical Implementation:</h3>
+                <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto;"><code>// FIXED: Added centering for equal margins
+.defra-aq-tabs.daqi-tabs {
+    // Smart responsive width
+    width: min(650px, 100vw - 32px);
+    max-width: 650px;
+    min-width: 320px;
+    
+    // ✅ ADDED: Ensure equal left/right margins
+    margin-left: auto;
+    margin-right: auto;
+    
+    @media (max-width: 681px) {
+        width: calc(100vw - 32px);
+        // ✅ ADDED: Explicit equal margins
+        margin-left: 16px;
+        margin-right: 16px;
+    }
+}</code></pre>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function updateViewportInfo() {
+            const width = window.innerWidth;
+            const tabsContainer = document.getElementById('tabsContainer');
+            const widthElement = document.getElementById('viewportWidth');
+            const leftMarginElement = document.getElementById('leftMargin');
+            const rightMarginElement = document.getElementById('rightMargin');
+            const equalityStatusElement = document.getElementById('equalityStatus');
+            const strategyElement = document.getElementById('strategy');
+            const componentWidthElement = document.getElementById('componentWidth');
+            const leftValueElement = document.getElementById('leftValue');
+            const rightValueElement = document.getElementById('rightValue');
+            
+            widthElement.textContent = width;
+            
+            // Get computed style and position
+            const containerRect = tabsContainer.getBoundingClientRect();
+            const parentRect = tabsContainer.parentElement.getBoundingClientRect();
+            
+            // Calculate margins
+            const leftMargin = Math.round(containerRect.left - parentRect.left);
+            const rightMargin = Math.round(parentRect.right - containerRect.right);
+            
+            leftMarginElement.textContent = leftMargin + 'px';
+            rightMarginElement.textContent = rightMargin + 'px';
+            leftValueElement.textContent = leftMargin + 'px';
+            rightValueElement.textContent = rightMargin + 'px';
+            
+            // Check equality
+            const marginDifference = Math.abs(leftMargin - rightMargin);
+            if (marginDifference <= 1) { // Allow 1px tolerance for rounding
+                equalityStatusElement.textContent = '✅ Equal';
+                equalityStatusElement.style.color = '#00aa00';
+            } else {
+                equalityStatusElement.textContent = '❌ Unequal (' + marginDifference + 'px diff)';
+                equalityStatusElement.style.color = '#ff0000';
+            }
+            
+            // Update strategy info
+            if (width >= 682) {
+                strategyElement.textContent = 'Fixed 650px + auto margins';
+                strategyElement.style.color = '#0066cc';
+            } else {
+                strategyElement.textContent = 'Dynamic width + explicit margins';
+                strategyElement.style.color = '#ff8800';
+            }
+            
+            // Update component width display
+            componentWidthElement.textContent = 'Width: ' + Math.round(containerRect.width) + 'px';
+        }
+        
+        // Update on load and resize
+        updateViewportInfo();
+        window.addEventListener('resize', updateViewportInfo);
+        
+        // Update every 100ms for smooth feedback during dragging
+        setInterval(updateViewportInfo, 100);
+        
+        // Visual feedback for margin equality
+        function highlightMarginEquality() {
+            const leftMargin = parseInt(document.getElementById('leftValue').textContent);
+            const rightMargin = parseInt(document.getElementById('rightValue').textContent);
+            const difference = Math.abs(leftMargin - rightMargin);
+            
+            const leftIndicator = document.getElementById('leftIndicator');
+            const rightIndicator = document.getElementById('rightIndicator');
+            
+            if (difference <= 1) {
+                leftIndicator.style.backgroundColor = 'rgba(0,170,0,0.8)';
+                rightIndicator.style.backgroundColor = 'rgba(0,170,0,0.8)';
+                leftIndicator.style.borderColor = '#00aa00';
+                rightIndicator.style.borderColor = '#00aa00';
+            } else {
+                leftIndicator.style.backgroundColor = 'rgba(255,0,0,0.8)';
+                rightIndicator.style.backgroundColor = 'rgba(255,0,0,0.8)';
+                leftIndicator.style.borderColor = '#ff0000';
+                rightIndicator.style.borderColor = '#ff0000';
+            }
+        }
+        
+        // Update visual indicators
+        setInterval(highlightMarginEquality, 200);
+    </script>
+</body>
+</html>

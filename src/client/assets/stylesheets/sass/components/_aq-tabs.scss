@@ -27,8 +27,71 @@
     padding: 0; // '' container has no frame; borders are provided by list (top) and panel (sides/bottom)
     border: 0; // '' no outer frame here
     background-color: govuk-colour("white");
-    width: 650px; // '' Set the overall tab component width to 650px
-    max-width: 100%; // '' Ensure it doesn't overflow on smaller screens
+    
+    // '' Smart responsive width: maintain natural width until viewport forces shrinking
+    // Above 650px viewport: maintain 650px width (empty space shrinks first)
+    // Below 650px viewport: shrink component to fit viewport
+    width: min(650px, 100vw - 15px); // '' Only account for right margin (container provides left)
+    max-width: 650px; // '' Never exceed design width
+    min-width: 320px; // '' Minimum usable width
+    
+    // '' FIXED: Respect container structure - container provides left spacing
+    margin-left: 0; // '' No left margin (container/grid-column provides left spacing)
+    margin-right: 15px; // '' Only right margin to balance container's left spacing
+    
+    // '' Desktop: fixed width respecting container structure
+    @media (min-width: 665px) {
+        width: 650px; // '' Fixed width when space allows (650px + 15px right margin = 665px)
+        margin-left: 0; // '' No left margin (container provides left spacing)
+        margin-right: 15px; // '' Only right margin for balance
+    }
+    
+    // '' Progressive breakpoints: respect container structure + internal padding
+    @media (max-width: 664px) and (min-width: 655px) {
+        width: calc(100vw - 15px); // '' Full width minus right margin only
+        max-width: 650px;
+        margin-left: 0; // '' No left margin (container provides left spacing)
+        margin-right: 15px; // '' Only right margin for balance
+        // '' Internal padding for content breathing room
+        padding-left: govuk-spacing(2); // '' 8px internal padding
+        padding-right: govuk-spacing(2); // '' 8px internal padding
+        box-sizing: border-box;
+    }
+    
+    @media (max-width: 654px) and (min-width: 645px) {
+        width: calc(100vw - 15px); // '' Full width minus right margin only
+        max-width: 650px;
+        margin-left: 0; // '' No left margin (container provides left spacing)
+        margin-right: 15px; // '' Only right margin for balance
+        // '' Internal padding for content breathing room
+        padding-left: govuk-spacing(2); // '' 8px internal padding
+        padding-right: govuk-spacing(2); // '' 8px internal padding
+        box-sizing: border-box;
+    }
+    
+    @media (max-width: 644px) and (min-width: 641px) {
+        width: calc(100vw - 15px); // '' Full width minus right margin only
+        max-width: 650px;
+        margin-left: 0; // '' No left margin (container provides left spacing)
+        margin-right: 15px; // '' Only right margin for balance
+        // '' Internal padding for content breathing room
+        padding-left: govuk-spacing(2); // '' 8px internal padding
+        padding-right: govuk-spacing(2); // '' 8px internal padding
+        box-sizing: border-box;
+    }
+    
+    // '' Mobile: respect container structure + right padding only
+    @media (max-width: 640px) {
+        width: calc(100vw - 15px); // '' Full width minus right margin only
+        max-width: 650px;
+        // '' Respect container structure
+        margin-left: 0; // '' No left margin (container provides left spacing)
+        margin-right: 15px; // '' Only right margin for balance
+        
+        // '' Only right padding for mobile content comfort
+        padding-right: govuk-spacing(3); // '' 12px right internal padding
+        box-sizing: border-box;
+    }
     
     // Hide headings on tablet+ since tabs provide navigation
     @include govuk-media-query($from: tablet) {

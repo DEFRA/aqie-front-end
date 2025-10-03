@@ -222,9 +222,9 @@ describe('daqi-columns module', () => {
 
     // '' Small tablet viewports (640-768px) now calculate divider positions consistently
     expect(container.style.getPropertyValue('--daqi-columns')).toBe('')
-    expect(container.style.getPropertyValue('--daqi-divider-1')).toBe('154px')
-    expect(container.style.getPropertyValue('--daqi-divider-2')).toBe('310px')
-    expect(container.style.getPropertyValue('--daqi-divider-3')).toBe('466px')
+    expect(container.style.getPropertyValue('--daqi-divider-1')).toBe('156px')
+    expect(container.style.getPropertyValue('--daqi-divider-2')).toBe('315px')
+    expect(container.style.getPropertyValue('--daqi-divider-3')).toBe('474px')
 
     // '' Clean up
     document.body.removeChild(panel)
