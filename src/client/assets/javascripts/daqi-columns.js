@@ -12,7 +12,18 @@ if (typeof document !== 'undefined' && typeof window !== 'undefined') {
   document.addEventListener('DOMContentLoaded', () => {
     setDaqiColumns()
     setTimeout(setDaqiColumns, 0)
+
+    // Initialize accessibility features after DAQI columns are set
+    setTimeout(() => {
+      if (
+        window.daqiAccessibility &&
+        window.daqiAccessibility.enhanceDaqiBarAccessibility
+      ) {
+        window.daqiAccessibility.enhanceDaqiBarAccessibility()
+      }
+    }, 100)
   })
+
   // Listen for tab switches and force recalculation - only for DAQI tabs
   document.addEventListener('click', (e) => {
     if (
@@ -22,6 +33,16 @@ if (typeof document !== 'undefined' && typeof window !== 'undefined') {
       e.target.closest('.daqi-tabs') // Only apply to DAQI tabs component
     ) {
       setTimeout(setDaqiColumns, 40)
+
+      // Re-enhance accessibility after tab change
+      setTimeout(() => {
+        if (
+          window.daqiAccessibility &&
+          window.daqiAccessibility.enhanceDaqiBarAccessibility
+        ) {
+          window.daqiAccessibility.enhanceDaqiBarAccessibility()
+        }
+      }, 100)
     }
   })
 

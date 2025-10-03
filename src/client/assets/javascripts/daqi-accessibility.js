@@ -52,10 +52,11 @@ if (typeof document !== 'undefined' && typeof window !== 'undefined') {
     const daqiValue = tab.getAttribute('data-daqi-value') || '0'
     const daqiBand = tab.getAttribute('data-daqi-band') || 'unknown level'
     const tabText = tab.textContent.trim()
+    const tabIndex = getTabIndex(tab)
 
-    // Create meaningful announcement
+    // Create meaningful announcement with index - "number 2 Low"
     const levelText = getDaqiLevelText(parseInt(daqiValue))
-    const announcement = `${tabText} selected. Daily Air Quality Index ${daqiValue} out of 10, ${levelText} pollution level.`
+    const announcement = `${tabText} selected. Tab ${tabIndex} of ${getTotalTabCount()}. Daily Air Quality Index number ${daqiValue}, ${levelText} pollution level.`
 
     // Clear and set new announcement
     liveRegion.textContent = ''
@@ -75,7 +76,7 @@ if (typeof document !== 'undefined' && typeof window !== 'undefined') {
   function enhanceTabInteractions() {
     const tabs = document.querySelectorAll('.govuk-tabs__tab[data-daqi-value]')
 
-    tabs.forEach((tab) => {
+    tabs.forEach((tab, index) => {
       // Add click handler for announcements
       tab.addEventListener('click', (event) => {
         // Delay announcement slightly to allow tab switching to complete
@@ -84,17 +85,23 @@ if (typeof document !== 'undefined' && typeof window !== 'undefined') {
         }, 150)
       })
 
-      // Enhance ARIA label with more context
+      // Enhance ARIA label with more context including index
       const currentAriaLabel = tab.getAttribute('aria-label')
       if (!currentAriaLabel || currentAriaLabel.length < 10) {
         const daqiValue = tab.getAttribute('data-daqi-value') || '0'
         const daqiBand = tab.getAttribute('data-daqi-band') || 'unknown level'
         const tabText = tab.textContent.trim()
         const levelText = getDaqiLevelText(parseInt(daqiValue))
+        const tabIndex = index + 1
+        const totalTabs = tabs.length
 
-        const enhancedLabel = `${tabText}, DAQI ${daqiValue}, ${levelText} air pollution`
+        const enhancedLabel = `${tabText}, tab ${tabIndex} of ${totalTabs}, DAQI number ${daqiValue}, ${levelText} air pollution`
         tab.setAttribute('aria-label', enhancedLabel)
         tab.setAttribute('title', enhancedLabel)
+
+        // Add position information
+        tab.setAttribute('aria-posinset', tabIndex)
+        tab.setAttribute('aria-setsize', totalTabs)
       }
     })
   }
@@ -103,10 +110,33 @@ if (typeof document !== 'undefined' && typeof window !== 'undefined') {
     const tabContainer = document.querySelector('.daqi-tabs') // Only target DAQI tabs
     if (!tabContainer) return
 
-    // Add roving tabindex behavior
+    // Add roving tabindex behavior for proper keyboard navigation
     const tabs = tabContainer.querySelectorAll('.govuk-tabs__tab')
 
+    // Set initial tabindex states - only first tab should be tabbable
     tabs.forEach((tab, index) => {
+      if (index === 0) {
+        tab.setAttribute('tabindex', '0')
+      } else {
+        tab.setAttribute('tabindex', '-1')
+      }
+    })
+
+    tabs.forEach((tab, index) => {
+      // Handle focus events
+      tab.addEventListener('focus', (event) => {
+        // Announce current tab when focused
+        setTimeout(() => {
+          const daqiValue = tab.getAttribute('data-daqi-value') || '0'
+          const levelText = getDaqiLevelText(parseInt(daqiValue))
+          const tabIndex = index + 1
+          const announcement = `Tab ${tabIndex}, DAQI number ${daqiValue}, ${levelText}`
+
+          // Use a temporary live region for focus announcements
+          announceFocus(announcement)
+        }, 100)
+      })
+
       tab.addEventListener('keydown', (event) => {
         const currentIndex = Array.from(tabs).indexOf(tab)
         let nextIndex = currentIndex
@@ -134,18 +164,31 @@ if (typeof document !== 'undefined' && typeof window !== 'undefined') {
             nextIndex = tabs.length - 1
             break
 
+          case 'Enter':
+          case ' ':
+            event.preventDefault()
+            tab.click()
+            return
+
           default:
             return
         }
 
-        // Move focus and activate tab
+        // Update tabindex for roving behavior
+        tabs.forEach((t, i) => {
+          t.setAttribute('tabindex', i === nextIndex ? '0' : '-1')
+        })
+
+        // Move focus to next tab
         const nextTab = tabs[nextIndex]
         if (nextTab) {
           nextTab.focus()
-          nextTab.click()
         }
       })
     })
+
+    // Enhance DAQI bar segments accessibility
+    enhanceDaqiBarAccessibility()
   }
 
   // Utility function to get DAQI color information for announcements
@@ -158,13 +201,98 @@ if (typeof document !== 'undefined' && typeof window !== 'undefined') {
     return { color: 'grey', level: 'Unknown' }
   }
 
+  // Helper functions for accessibility
+  function getTabIndex(tab) {
+    const tabs = document.querySelectorAll('.govuk-tabs__tab[data-daqi-value]')
+    return Array.from(tabs).indexOf(tab) + 1
+  }
+
+  function getTotalTabCount() {
+    const tabs = document.querySelectorAll('.govuk-tabs__tab[data-daqi-value]')
+    return tabs.length
+  }
+
+  function announceFocus(message) {
+    // Create temporary live region for focus announcements
+    let focusRegion = document.getElementById('daqi-focus-region')
+    if (!focusRegion) {
+      focusRegion = document.createElement('div')
+      focusRegion.id = 'daqi-focus-region'
+      focusRegion.setAttribute('aria-live', 'assertive')
+      focusRegion.setAttribute('aria-atomic', 'true')
+      focusRegion.className = 'govuk-visually-hidden'
+      document.body.appendChild(focusRegion)
+    }
+
+    focusRegion.textContent = ''
+    setTimeout(() => {
+      focusRegion.textContent = message
+    }, 50)
+  }
+
+  function enhanceDaqiBarAccessibility() {
+    const daqiContainers = document.querySelectorAll('.daqi-numbered')
+
+    daqiContainers.forEach((container) => {
+      const segments = container.querySelectorAll('.daqi-bar-segment')
+
+      segments.forEach((segment, index) => {
+        const segmentNumber = index + 1
+        const number = segment.querySelector('.daqi-number')
+        const isActive =
+          segment.classList.contains('daqi-1') ||
+          segment.classList.contains('daqi-2') ||
+          segment.classList.contains('daqi-3') ||
+          segment.classList.contains('daqi-4') ||
+          segment.classList.contains('daqi-5') ||
+          segment.classList.contains('daqi-6') ||
+          segment.classList.contains('daqi-7') ||
+          segment.classList.contains('daqi-8') ||
+          segment.classList.contains('daqi-9') ||
+          segment.classList.contains('daqi-10')
+
+        // Add ARIA attributes for screen readers
+        segment.setAttribute('role', 'img')
+        const levelText = getDaqiLevelText(segmentNumber)
+        const status = isActive ? 'active' : 'inactive'
+        segment.setAttribute(
+          'aria-label',
+          `DAQI segment ${segmentNumber}, ${levelText} level, ${status}`
+        )
+
+        // Make segments focusable for keyboard users who want to explore
+        segment.setAttribute('tabindex', '0')
+
+        // Add keyboard support for segments
+        segment.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault()
+            const announcement = `DAQI number ${segmentNumber}, ${levelText} pollution level, currently ${status}`
+            announceFocus(announcement)
+          }
+        })
+
+        // Add focus handler
+        segment.addEventListener('focus', () => {
+          const announcement = `DAQI segment ${segmentNumber}, ${levelText}`
+          announceFocus(announcement)
+        })
+      })
+    })
+  }
+
   // Export for testing
   if (typeof window !== 'undefined') {
     window.daqiAccessibility = {
       announceTabChange,
       getDaqiLevelText,
       getDaqiColorInfo,
-      addLiveRegion
+      addLiveRegion,
+      getTabIndex,
+      getTotalTabCount,
+      announceFocus,
+      enhanceDaqiBarAccessibility,
+      initDAQIAccessibility // Export initialization function for tests
     }
   }
 }
