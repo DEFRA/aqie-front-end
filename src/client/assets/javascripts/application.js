@@ -101,6 +101,9 @@ createAll(Tabs)
 
 // DAQI label/bar alignment: measure columns and set CSS variable so labels and bar stay aligned
 import daqiColumns from './daqi-columns.js'
+// DAQI accessibility enhancements: improve screen reader support and keyboard navigation
+import daqiAccessibility from './daqi-accessibility.js'
+
 if (daqiColumns && typeof daqiColumns.init === 'function') {
   if (
     document.readyState === 'complete' ||
@@ -109,5 +112,22 @@ if (daqiColumns && typeof daqiColumns.init === 'function') {
     daqiColumns.init()
   } else {
     window.addEventListener('DOMContentLoaded', () => daqiColumns.init())
+  }
+}
+
+// Initialize DAQI accessibility enhancements
+if (
+  daqiAccessibility &&
+  typeof daqiAccessibility.initDAQIAccessibility === 'function'
+) {
+  if (
+    document.readyState === 'complete' ||
+    document.readyState === 'interactive'
+  ) {
+    daqiAccessibility.initDAQIAccessibility()
+  } else {
+    window.addEventListener('DOMContentLoaded', () =>
+      daqiAccessibility.initDAQIAccessibility()
+    )
   }
 }
