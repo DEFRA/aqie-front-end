@@ -9,13 +9,7 @@ svg|foreignObject {
   forced-color-adjust: auto; 
 }
 
-.daqi-labels {
-  display: flex;
-  white-space: nowrap;
-  justify-content: space-between; 
-  position: relative;
-  margin-top: govuk-spacing(2);
-}
+// '' Removed duplicate .daqi-labels - consolidated below with unified flexbox version
 
 .daqi-bar {
   display: flex;
@@ -50,19 +44,42 @@ svg|foreignObject {
   // - Below 590px available space: shrink component to fit available space
   width: min(590px, 100%);
   max-width: 590px; // '' Never exceed design width
-  min-width: 300px; // '' Minimum usable width for 10 cells
+  min-width: 280px; // '' Reduced minimum width to prevent bleeding on small viewports
   overflow: hidden; // '' Prevent any scrolling - container must fit within bounds
   
   
   // '' The component maintains its natural width until the parent container
   // '' has been squeezed to the point where it needs to shrink the component itself
 
-  // '' Extra small mobile optimization only
-  @media (max-width: 320px) {
-    min-width: 300px; // '' Ensure minimum usable width
+  // '' Extra small mobile optimization for very narrow viewports
+  @media (max-width: 360px) {
+    min-width: 280px; // '' Reduced minimum to fit in narrow viewports
+    width: 100%; // '' Fill available space completely
     
     .daqi-bar {
       width: 100%; // '' DAQI bar fills the container
+      min-width: 0; // '' Allow shrinking below default minimums
+    }
+  }
+
+  // '' Responsive margin strategy to match container structure
+  // '' Mobile (640px and below): no margins since container has no left margin
+  @media (max-width: 640px) {
+    max-width: calc(100vw - 16px); // '' Prevent horizontal overflow with minimal margins
+    margin-right: 0; // '' No right margin since container has no left margin
+    
+    .daqi-bar {
+      max-width: 100%; // '' Ensure bar doesn't exceed container
+    }
+  }
+
+  // '' Tablet and larger mobile (641px to 1019px): balance the 15px left margin from main container
+  @media (min-width: 641px) and (max-width: 1019px) {
+    max-width: calc(100vw - 32px); // '' Prevent horizontal overflow with 16px margins
+    margin-right: 15px; // '' Add 15px right margin to balance the 15px left margin from main container
+    
+    .daqi-bar {
+      max-width: 100%; // '' Ensure bar doesn't exceed container
     }
   }
 
@@ -74,103 +91,75 @@ svg|foreignObject {
   }
 
   .daqi-bar {
-    display: grid;
+    display: flex; // '' Use flexbox for truly responsive layout
     // Set to 40px for better visual balance and consistency
     height: 40px;
     margin-bottom: govuk-spacing(2);
     border: none;
     position: relative;
-    // Use shared column sizing so labels and bar remain aligned
-    grid-template-columns: var(--daqi-columns, repeat(9, 51px) 100px);
-    gap: 3px;
-    // '' separators moved to label level to avoid duplication with design
-    background-image: none;
-    width: 100%; // '' Ensure bar fills container
-    max-width: 100%; // '' Prevent bar from exceeding container
+    // '' Use flexible sizing that responds to container width automatically
+    width: 100%; // '' Always fill parent container
+    max-width: 100%; // '' Never exceed container
     box-sizing: border-box; // '' Include padding/border in width calculation
-    overflow: hidden; // '' Prevent bar content from causing scrolling
+    overflow: hidden; // '' Prevent content from causing scrolling
+    gap: 3px; // '' Standard gap between cells
     
-    // '' Mobile: cells scale dynamically with container while maintaining proportions
-    @media (max-width: 320px) {
-      // Switch to flexbox on extra small mobile for tighter control
-      display: flex;
-      flex-direction: row;
-      margin-left: 1px; // Reduced space for borders on 320px
-      margin-right: 1px; // Reduced space for borders on 320px
-      gap: 1px; // Smaller gap for very small screens
-    }
-
-    @media (min-width: 321px) and (max-width: 639px) {
-      display: flex;
-      width: 100%;
-      margin: 0;
-      gap: 1px;
+    // '' Responsive gap based on container width
+    @media (max-width: 360px) {
+      gap: 1px; // '' Smaller gap for very narrow containers
     }
     
-    // '' Mobile and small tablet (640px and below): flexbox with proportional scaling
-    @media (max-width: 640px) {
-      display: flex;
-      width: 100%;
-      margin: 0;
-      gap: 3px; // '' Standard gap for mobile
+    @media (min-width: 361px) and (max-width: 430px) {
+      gap: 2px; // '' Medium gap for narrow containers
     }
+    
+    // '' Remove all JavaScript-dependent grid styling
+    // '' Let flexbox handle responsive sizing automatically
   }
 
-// '' Extra small mobile segment styling (320px and below)
-@media (max-width: 320px) {
-  .daqi-bar-segment {
-    flex: 1; // Equal width for cells 1-9 on 320px
-    border: 1px solid; // Thinner borders for space efficiency
-    border-radius: 0;
-    text-align: center;
-    font-size: 14px; // Use standard GOV.UK font size
-    min-height: 30px; // Reduced height for very small screens
-    
-    &:nth-child(10) {
-      flex: 3; // Triple width for cell 10 to accommodate "Very high" label
-    }
-    
-    &:not(:first-child) {
-      border-left: 0;
-    }
+// '' Unified responsive segment styling using flexbox with EXACT original proportions
+.daqi-bar-segment {
+  // '' Preserve exact original grid proportions: 51px for segments 1-9, 100px for segment 10
+  flex: 51; // '' Default: 51 flex units for segments 1-9 (matches original 51px)
+  height: 100%;
+  border: none;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: govuk-colour("light-grey");
+  box-sizing: border-box;
+  letter-spacing: 0;
+  margin-right: 0;
+  width: auto;
+  min-width: 0; // '' Allow shrinking below content width
+  overflow: hidden; // '' Prevent content overflow
+  font-size: 14px; // '' Responsive font size
+  text-align: center;
+  
+  // '' Special sizing for segment 10 ("Very high") - exact original proportion
+  &:nth-child(10) {
+    flex: 100; // '' 100 flex units to match original 100px width
+    font-weight: bold; // '' Emphasize the highest level
   }
-}
-
-// '' Mobile segment styling (321px-639px) - wider cell 10 for "Very high" label
-@media (min-width: 321px) and (max-width: 639px) {
-  .daqi-bar-segment {
-    flex: 1; // Equal width for cells 1-9
-    
-    &:nth-child(10) {
-      flex: 3; // Triple width for cell 10 to accommodate "Very high" label
-    }
+  
+  // '' Keep same flex ratios across all screen sizes to maintain mobile label alignment
+  @media (max-width: 360px) {
+    font-size: 12px; // '' Smaller font for very narrow containers
+    padding: 1px; // '' Minimal padding
+    // '' Keep same flex ratios - don't change proportions
   }
-}
-
-// '' Mobile and tablet segment styling (640px and below) - wider cell 10 for consistent layout
-@media (max-width: 640px) {
-  .daqi-bar-segment {
-    flex: 1; // Equal width for cells 1-9
-    
-    &:nth-child(10) {
-      flex: 3; // Triple width for cell 10 to accommodate "Very high" label
-    }
+  
+  @media (min-width: 361px) and (max-width: 500px) {
+    font-size: 13px; // '' Medium font for narrow containers
+    // '' Keep same flex ratios - don't change proportions
+  }
+  
+  @media (min-width: 501px) {
+    font-size: 14px; // '' Standard font for wider containers
+    // '' Keep same flex ratios - don't change proportions
   }
 }
-
-  .daqi-bar-segment {
-    height: 100%;
-    border: none;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: govuk-colour("light-grey");
-    box-sizing: border-box; // '' include border in width for exact alignment
-    letter-spacing: 0; // '' avoid text width affecting perceived centering
-  margin-right: 0; // remove generic 2px margin-right to rely solely on gap:3px
-    // Let the grid column control width; keep segment content centered
-    width: auto;
     
     &.daqi-1, &.daqi-2, &.daqi-3, &.daqi-4, &.daqi-5, 
     &.daqi-6, &.daqi-7, &.daqi-8, &.daqi-9, &.daqi-10 {
@@ -182,136 +171,84 @@ svg|foreignObject {
   }
 
   // '' Use exact design green for selected value when in Low band (1–3)
-  // '' This intentionally overrides the generic $daqi-colour-* palette only for the numbered bar
-  .daqi-bar-segment.daqi-1,
-  .daqi-bar-segment.daqi-2,
-  .daqi-bar-segment.daqi-3 {
-    background-color: #31cf00; // '' slightly darker lime closer to reference image
-  }
+  // '' Removed duplicate daqi-1,2,3 selectors - consolidated with unified active segment styling below
 
-  // '' Ensure numbers remain black on bright green within numbered bar only
-  .daqi-bar-segment.daqi-1 .daqi-number,
-  .daqi-bar-segment.daqi-2 .daqi-number,
-  .daqi-bar-segment.daqi-3 .daqi-number {
-    color: govuk-colour("black");
-  }
-
-  .daqi-labels {
-  display: grid;
-  // Use the same columns as the bar so labels keep their alignment during resize
-  grid-template-columns: var(--daqi-columns, repeat(9, 51px) 100px);
-  column-gap: 3px; // '' match the bar's inter-cell gap so label centers align
+// '' UNIFIED ROBUST FLEXBOX LABELS - consistent across ALL viewports
+.daqi-labels {
+  display: flex; // '' Always use flexbox for consistent alignment with bar
+  position: relative;
+  margin-top: govuk-spacing(2);
+  white-space: nowrap;
+  width: 100%;
+  height: auto;
+  // '' Use the EXACT same flex ratios as the DAQI bar for perfect alignment
+  gap: 3px; // '' Match the bar's gap exactly
+  
+  .daqi-band {
+    font-weight: 500;
+    box-sizing: border-box;
+    text-align: center;
+    display: flex;
     align-items: center;
-    margin-top: govuk-spacing(2);
-    position: relative;
-    justify-items: stretch; // '' make grid items occupy full column span
-    justify-content: start; // '' prevent space-between from generic .daqi-labels rule
-    align-content: start;
-  // padding removed to keep grid perfectly aligned with bar geometry
-    width: 100%; // '' Ensure labels container fills parent
-    max-width: 100%; // '' Prevent labels from exceeding container
-    box-sizing: border-box; // '' Include padding/border in width calculation
-    overflow: hidden; // '' Prevent label overflow from causing scrolling
-
-    // '' Desktop default: grid-based layout
-    .daqi-band {
-      @include govuk-font($size: 16, $weight: regular);
-      // stylelint-disable-next-line declaration-no-important
-      text-align: center !important; // '' override generic .daqi-band alignment
-      position: relative;
-      display: block;
-      justify-self: stretch;
-      white-space: nowrap; // '' prevent labels from wrapping onto two lines
-      // stylelint-disable-next-line declaration-no-important
-      width: auto !important; // '' override generic width rules
-      max-width: 100%;
-      // stylelint-disable-next-line declaration-no-important
-      border: 0 !important; // '' remove any generic borders
-      // stylelint-disable-next-line declaration-no-important
-      padding: 0 !important;
-      overflow: hidden; // '' Prevent text overflow
-      
-      // Low - spans cells 1,2,3 (3 tracks)
-      &:nth-child(1) {
-        grid-column: 1 / 4;
-      }
-      
-      // Moderate - center around cells 4-6 to give more space for the text
-      &:nth-child(2) {
-        grid-column: 4 / 7;
-        justify-self: center;
-        width: max-content;
-      }
-      
-      // High - span cells 7–9 (center aligns to cell 8)
-      &:nth-child(3) {
-        grid-column: 8 / 9;
-        justify-self: center;
-        width: max-content;
-        transform: none;
-      }
-      
-      // Very high - center under cell 10 (100px wide track)
-      &:nth-child(4) {
-        grid-column: 10 / 11;
-        justify-self: center;
-        width: max-content;
-      }
+    justify-content: center;
+    @include govuk-font($size: 14, $weight: regular);
+    line-height: 1.0;
+    
+    // '' Each label area matches its corresponding segment group's total flex ratio
+    // '' "Low" spans segments 1-3 (each segment = flex: 51)
+    &.daqi-band-low {
+      flex: 153; // '' 3 segments × 51 flex each = 153 total
+      order: 1;
     }
-
-    // '' Mobile: flexbox-based layout with precise GROUP center alignment
-    @include govuk-media-query($until: tablet) {
-      display: flex;
-      width: 100%;
-      margin: 5px 0 0;
-      justify-content: space-around;
-      position: relative;
+    
+    // '' "Moderate" spans segments 4-6 (each segment = flex: 51)
+    &.daqi-band-moderate {
+      flex: 153; // '' 3 segments × 51 flex each = 153 total
+      order: 2;
     }
-
-    // '' Mobile and tablet (320px-640px): position labels below specific cells
-    @media (max-width: 640px) {
-      display: flex;
-      position: relative;
-      width: 100%;
-      height: 15px; // Reduced height for proper divider sizing
-      margin-top: govuk-spacing(2); // Match desktop margin for consistent spacing
-      justify-content: flex-start; // Start from left edge
-
-      // stylelint-disable max-nesting-depth, declaration-no-important
-      .daqi-band {
-        position: absolute;
-        top: 0;
-        text-align: center;
-        white-space: nowrap; // Prevent text wrapping
-        @include govuk-font($size: 14, $weight: regular); // Use valid GOV.UK font scale
-        line-height: 1.0; // Very tight line height for compact display
-        z-index: 10; // Ensure labels appear above other elements
-      }
-
-      // Use more specific selectors to override conflicting rules
-      .daqi-band.daqi-band-low {
-        left: 12.5% !important; // Center of cells 1,2,3 group (adjusted for new flex ratios)
-        transform: translateX(-50%) !important; // Center the label on this position
-      }
-
-      .daqi-band.daqi-band-moderate {
-        left: 38% !important; // Center of cells 4,5,6 group (fine-tuned positioning)
-        transform: translateX(-50%) !important; // Center the label on this position
-      }
-
-      .daqi-band.daqi-band-high {
-        left: 63.5% !important; // Center of cells 7,8,9 group (fine-tuned positioning)
-        transform: translateX(-50%) !important; // Center the label on this position
-      }
-
-      .daqi-band.daqi-band-very-high {
-        left: 87.5% !important; // Center of wider cell 10 (adjusted for new flex ratios)
-        transform: translateX(-50%) !important; // Center the label on this position
-      }
-      // stylelint-enable
+    
+    // '' "High" spans segments 7-9 (each segment = flex: 51)
+    &.daqi-band-high {
+      flex: 153; // '' 3 segments × 51 flex each = 153 total
+      order: 3;
     }
-    } // Close mobile condition
-  } // Close .daqi-labels
+    
+    // '' "Very high" matches segment 10 exactly
+    &.daqi-band-very-high {
+      flex: 100; // '' Exactly matches segment 10's flex ratio
+      order: 4;
+    }
+  }
+
+  // '' Responsive adjustments that maintain alignment with bar
+  @media (max-width: 360px) {
+    gap: 1px; // '' Match bar's responsive gap exactly
+  }
+  
+  @media (min-width: 361px) and (max-width: 430px) {
+    gap: 2px; // '' Match bar's responsive gap exactly
+  }
+}
+
+// '' Responsive font sizing for labels
+@media (max-width: 430px) {
+  .daqi-labels .daqi-band {
+    @include govuk-font($size: 14, $weight: regular); // '' Use valid GOV.UK font size
+    
+    // '' Keep proportions regardless of gap size
+    &.daqi-band-low,
+    &.daqi-band-moderate,
+    &.daqi-band-high {
+      flex: 153;
+    }
+  }
+}
+
+@media (min-width: 431px) {
+  .daqi-labels .daqi-band {
+    @include govuk-font($size: 14, $weight: regular);
+  }
+}
 
 // '' Divider pseudo-elements for mobile and tablet ranges (up to 640px)
 @media (max-width: 640px) {
@@ -352,6 +289,16 @@ svg|foreignObject {
     background-size: 2px 100%, 2px 100%, 2px 100%; // Same as mobile size
     pointer-events: none;
     z-index: 1;
+  }
+  
+  // '' Special handling for zoom-related rendering issues
+  .daqi-numbered.daqi-zoom-fix .daqi-labels::before {
+    // Use wider dividers and more aggressive positioning for zoom stability
+    background-size: 3px 100%, 3px 100%, 3px 100%; // Slightly wider dividers
+    // Ensure crisp rendering at different zoom levels
+    image-rendering: crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: pixelated;
   }
 }
 
