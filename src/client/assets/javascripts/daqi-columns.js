@@ -232,17 +232,27 @@ function setDaqiColumns() {
       }
 
       // Apply user's requested adjustments only for mobile viewports (640px and below)
-      const divider1Value = needsAdjustments
-        ? Math.round(baseDividerPositions[0]) + 2 + 'px' // +2px adjustment for mobile
-        : Math.round(baseDividerPositions[0]) + 'px' // Desktop: no adjustment
+      // Move dividers left for better mobile positioning
+      let divider1Adjustment, divider2Adjustment, divider3Adjustment
 
-      const divider2Value = needsAdjustments
-        ? Math.round(baseDividerPositions[1]) + 3 + 'px' // +3px adjustment for mobile
-        : Math.round(baseDividerPositions[1]) + 'px' // Desktop: no adjustment
+      if (needsAdjustments) {
+        // Mobile viewports: move dividers left for better alignment
+        divider1Adjustment = -1 // Move 1px left
+        divider2Adjustment = -1 // Move 1px left
+        divider3Adjustment = -2 // Move 2px left
+      } else {
+        // Desktop: no adjustments
+        divider1Adjustment = 0
+        divider2Adjustment = 0
+        divider3Adjustment = 0
+      }
 
-      const divider3Value = needsAdjustments
-        ? Math.round(baseDividerPositions[2]) + 5 + 'px' // +5px adjustment for mobile
-        : Math.round(baseDividerPositions[2]) + 'px' // Desktop: no adjustment
+      const divider1Value =
+        Math.round(baseDividerPositions[0]) + divider1Adjustment + 'px'
+      const divider2Value =
+        Math.round(baseDividerPositions[1]) + divider2Adjustment + 'px'
+      const divider3Value =
+        Math.round(baseDividerPositions[2]) + divider3Adjustment + 'px'
 
       container.style.setProperty('--daqi-divider-1', divider1Value)
       container.style.setProperty('--daqi-divider-2', divider2Value)
@@ -251,10 +261,21 @@ function setDaqiColumns() {
       // Clear --daqi-columns for mobile viewports (≤640px), maintain for desktop
       if (needsAdjustments) {
         container.style.removeProperty('--daqi-columns') // Clear for mobile flexbox layout
-        console.log('🎯 DAQI: Mobile layout adjustments applied:', {
-          basePositions: baseDividerPositions.map((p) => Math.round(p) + 'px'),
-          adjustedPositions: { divider1Value, divider2Value, divider3Value }
-        })
+        console.log(
+          '🎯 DAQI: Mobile layout adjustments applied (left positioning):',
+          {
+            viewport: viewportWidth + 'px',
+            basePositions: baseDividerPositions.map(
+              (p) => Math.round(p) + 'px'
+            ),
+            adjustments: [
+              divider1Adjustment,
+              divider2Adjustment,
+              divider3Adjustment
+            ],
+            adjustedPositions: { divider1Value, divider2Value, divider3Value }
+          }
+        )
       } else {
         console.log('🎯 DAQI: Desktop layout maintained (no adjustments)')
       }

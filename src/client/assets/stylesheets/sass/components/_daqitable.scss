@@ -274,7 +274,7 @@ svg|foreignObject {
       position: relative;
       width: 100%;
       height: 15px; // Reduced height for proper divider sizing
-      margin-top: 2px; // Further reduced margin
+      margin-top: govuk-spacing(2); // Match desktop margin for consistent spacing
       justify-content: flex-start; // Start from left edge
 
       // stylelint-disable max-nesting-depth, declaration-no-important
