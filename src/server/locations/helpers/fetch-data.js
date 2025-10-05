@@ -84,6 +84,7 @@ const handleUKLocationData = async (
   ].join('+')
   const osNamesApiUrl = config.get('osNamesApiUrl')
   const osNamesApiKey = config.get('osNamesApiKey')
+  const hasOsKey = Boolean(osNamesApiKey && String(osNamesApiKey).trim() !== '')
 
   if (
     !isValidFullPostcodeUK(userLocation.toUpperCase()) &&
@@ -92,6 +93,14 @@ const handleUKLocationData = async (
     secondSearchTerm !== 'UNDEFINED'
   ) {
     userLocation = `${searchTerms} ${secondSearchTerm}`
+  }
+
+  // '' If no OS_NAMES_API_KEY is configured, skip the API call and return no results
+  if (!hasOsKey) {
+    logger.warn(
+      'OS_NAMES_API_KEY not set; skipping OS Names API call and returning empty results.'
+    )
+    return { results: [] }
   }
 
   const osNamesApiUrlFull = `${osNamesApiUrl}${encodeURIComponent(
@@ -109,7 +118,17 @@ const handleUKLocationData = async (
   )
 
   if (statusCodeOSPlace !== HTTP_STATUS_OK) {
-    logger.error(`Error fetching statusCodeOSPlace data: ${statusCodeOSPlace}`)
+    if (statusCodeOSPlace === 401) {
+      logger.warn(
+        `OS Names API returned 401 (unauthorized). Check OS_NAMES_API_KEY. URL was suppressed in logs.`
+      )
+      // Return empty results to allow graceful error handling upstream
+      return { results: [] }
+    } else {
+      logger.error(
+        `Error fetching statusCodeOSPlace data: ${statusCodeOSPlace}`
+      )
+    }
   } else {
     logger.info(`getOSPlaces data fetched:`)
   }

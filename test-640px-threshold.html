@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✅ UPDATED: 640px Mobile Threshold - Desktop Cell Widths Until 640px</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .main-container {
+            max-width: 960px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .grid-row {
+            display: block;
+            margin-bottom: 20px;
+        }
+        
+        .two-thirds-column {
+            max-width: 66.66%;
+            background-color: #e8f4f8;
+            padding: 20px;
+            border: 2px dashed #0066cc;
+            position: relative;
+        }
+        
+        /* UPDATED: Smart responsive tabs container with 640px threshold */
+        .smart-tabs-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 2px solid #0066cc;
+            background-color: white;
+            position: relative;
+            
+            /* Smart responsive width strategy */
+            width: min(650px, 100vw - 32px);
+            max-width: 650px;
+            min-width: 320px;
+            
+            /* Transition for visual feedback */
+            transition: width 0.2s ease;
+        }
+        
+        /* Fine-tune for different viewport ranges - updated thresholds */
+        @media (min-width: 682px) {
+            .smart-tabs-container {
+                width: 650px; /* Fixed width when space allows */
+            }
+        }
+        
+        @media (max-width: 681px) {
+            .smart-tabs-container {
+                width: calc(100vw - 64px); /* Dynamic width when space is limited */
+                max-width: 650px;
+            }
+        }
+        
+        /* DAQI component inside - UPDATED: Desktop behavior until 640px */
+        .daqi-component {
+            /* Desktop cell widths until 640px */
+            width: min(590px, 100%);
+            max-width: 590px;
+            min-width: 300px;
+            height: 120px;
+            background: linear-gradient(to right, #00ff00 0%, #ffff00 30%, #ff8000 60%, #ff0000 100%);
+            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        /* UPDATED: Mobile layout only below 640px */
+        @media (max-width: 640px) {
+            .daqi-component {
+                background: linear-gradient(to right, #ffaaaa 0%, #aaffaa 50%, #aaaaff 100%);
+                border: 2px solid #ff6600;
+            }
+            
+            .daqi-component::after {
+                content: "📱 MOBILE LAYOUT";
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                background-color: #ff6600;
+                color: white;
+                padding: 2px 6px;
+                font-size: 10px;
+                border-radius: 3px;
+            }
+        }
+        
+        /* Desktop layout indication */
+        @media (min-width: 641px) {
+            .daqi-component::after {
+                content: "🖥️ DESKTOP LAYOUT";
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                background-color: #0066cc;
+                color: white;
+                padding: 2px 6px;
+                font-size: 10px;
+                border-radius: 3px;
+            }
+        }
+        
+        /* Cell simulation */
+        .cell-simulation {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr) 2fr;
+            gap: 3px;
+            margin-top: 10px;
+            height: 30px;
+        }
+        
+        @media (max-width: 640px) {
+            .cell-simulation {
+                display: flex;
+                flex-direction: row;
+            }
+        }
+        
+        .cell {
+            background-color: rgba(0,100,200,0.3);
+            border: 1px solid #0066cc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 640px) {
+            .cell {
+                flex: 1;
+                background-color: rgba(255,100,0,0.3);
+                border-color: #ff6600;
+            }
+            
+            .cell:nth-child(10) {
+                flex: 3;
+            }
+        }
+        
+        /* Status indicators */
+        .status-indicator {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            padding: 5px 10px;
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-desktop { background-color: #0066cc; }
+        .status-mobile { background-color: #ff6600; }
+        
+        .info-panel {
+            background-color: #f0f8ff;
+            border: 1px solid #0066cc;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .viewport-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0,0,0,0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 1000;
+            min-width: 200px;
+        }
+        
+        .content-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .comparison-table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        
+        .desktop { color: #0066cc; font-weight: bold; }
+        .mobile { color: #ff6600; font-weight: bold; }
+        .changed { color: #ff0000; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="viewport-info" id="viewportInfo">
+        <strong>🎯 UPDATED THRESHOLD</strong><br>
+        Viewport: <span id="viewportWidth"></span>px<br>
+        Layout: <span id="layoutType"></span><br>
+        <hr style="margin: 10px 0; border: 1px solid #666;">
+        <strong>🔧 JAVASCRIPT STATUS</strong><br>
+        Adjustments: <span id="adjustments"></span><br>
+        Threshold: <span id="threshold"></span>
+    </div>
+    
+    <div class="main-container">
+        <h1>✅ UPDATED: 640px Mobile Threshold</h1>
+        
+        <div class="info-panel">
+            <h3>🎯 Key Changes Made!</h3>
+            <p><strong>OLD Behavior:</strong> Mobile layout started at 1019px, causing unnecessary changes</p>
+            <p><strong>NEW Behavior:</strong> Desktop cell widths maintained until 640px threshold</p>
+            
+            <h4>✅ Changes Implemented:</h4>
+            <ul>
+                <li><strong>JavaScript:</strong> Mobile threshold changed from 768px-1019px range to ≤640px</li>
+                <li><strong>CSS:</strong> All tablet breakpoints (768px-1019px) removed - now use desktop layout</li>
+                <li><strong>Cell Layout:</strong> Desktop grid layout until 640px, then mobile flexbox</li>
+                <li><strong>Pixel Adjustments:</strong> Only applied for mobile viewports (≤640px)</li>
+            </ul>
+        </div>
+        
+        <div class="grid-row">
+            <div class="two-thirds-column">
+                <h2>Two-Thirds Column Container</h2>
+                
+                <div class="smart-tabs-container" id="tabsContainer">
+                    <div class="status-indicator" id="tabsStatus">Desktop</div>
+                    <h3>📊 DAQI Component with Updated Threshold</h3>
+                    
+                    <div class="daqi-component" id="daqiComponent">
+                        <div>DAQI Cell Simulation</div>
+                        <div style="font-size: 12px; margin-top: 5px;">
+                            <span id="cellBehavior">Desktop grid layout</span>
+                        </div>
+                        
+                        <div class="cell-simulation">
+                            <div class="cell">1</div>
+                            <div class="cell">2</div>
+                            <div class="cell">3</div>
+                            <div class="cell">4</div>
+                            <div class="cell">5</div>
+                            <div class="cell">6</div>
+                            <div class="cell">7</div>
+                            <div class="cell">8</div>
+                            <div class="cell">9</div>
+                            <div class="cell">10</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <h3>📊 Threshold Comparison</h3>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Viewport Range</th>
+                                <th>OLD Behavior (1019px threshold)</th>
+                                <th>NEW Behavior (640px threshold)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1020px+</td>
+                                <td class="desktop">Desktop cell widths</td>
+                                <td class="desktop">Desktop cell widths</td>
+                            </tr>
+                            <tr>
+                                <td>768px → 1019px</td>
+                                <td class="mobile">Mobile layout + adjustments</td>
+                                <td class="desktop">Desktop cell widths (FIXED!)</td>
+                            </tr>
+                            <tr>
+                                <td>641px → 767px</td>
+                                <td class="mobile">Mobile layout</td>
+                                <td class="desktop">Desktop cell widths (FIXED!)</td>
+                            </tr>
+                            <tr>
+                                <td>≤640px</td>
+                                <td class="mobile">Mobile layout</td>
+                                <td class="mobile">Mobile layout + adjustments</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="content-section">
+                    <h3>Health Advice Section</h3>
+                    <p>Additional content that would appear below the tabs...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <h3>🧪 Test Instructions:</h3>
+            <ol>
+                <li><strong>Resize from 1200px to 641px:</strong> Desktop cell widths maintained!</li>
+                <li><strong>Cross 640px threshold:</strong> Watch layout switch to mobile flexbox</li>
+                <li><strong>Below 640px:</strong> Mobile behavior with pixel adjustments (+2px, +3px, +5px)</li>
+                <li><strong>Key Success:</strong> No more unnecessary layout changes at 768px or 1019px!</li>
+            </ol>
+            <p><strong>🎯 Result:</strong> Clean threshold at 640px - desktop until truly mobile!</p>
+        </div>
+    </div>
+    
+    <script>
+        function updateViewportInfo() {
+            const width = window.innerWidth;
+            const widthElement = document.getElementById('viewportWidth');
+            const layoutTypeElement = document.getElementById('layoutType');
+            const adjustmentsElement = document.getElementById('adjustments');
+            const thresholdElement = document.getElementById('threshold');
+            const tabsStatus = document.getElementById('tabsStatus');
+            const cellBehavior = document.getElementById('cellBehavior');
+            
+            widthElement.textContent = width;
+            
+            // Update based on new 640px threshold
+            if (width > 640) {
+                layoutTypeElement.textContent = 'Desktop';
+                layoutTypeElement.style.color = '#0066cc';
+                tabsStatus.textContent = 'Desktop';
+                tabsStatus.className = 'status-indicator status-desktop';
+                cellBehavior.textContent = 'Desktop grid layout (9 equal + 1 wide)';
+                adjustmentsElement.textContent = 'None (desktop)';
+                adjustmentsElement.style.color = '#0066cc';
+            } else {
+                layoutTypeElement.textContent = 'Mobile';
+                layoutTypeElement.style.color = '#ff6600';
+                tabsStatus.textContent = 'Mobile';
+                tabsStatus.className = 'status-indicator status-mobile';
+                cellBehavior.textContent = 'Mobile flexbox layout (9 equal + 3x wide)';
+                adjustmentsElement.textContent = 'Active (+2px, +3px, +5px)';
+                adjustmentsElement.style.color = '#ff6600';
+            }
+            
+            thresholdElement.textContent = '640px (NEW)';
+            thresholdElement.style.color = '#00aa00';
+        }
+        
+        // Update on load and resize
+        updateViewportInfo();
+        window.addEventListener('resize', updateViewportInfo);
+        
+        // Update every 100ms for smooth feedback during dragging
+        setInterval(updateViewportInfo, 100);
+        
+        // Add visual feedback for the 640px threshold
+        function highlightThresholdCrossing() {
+            const width = window.innerWidth;
+            const body = document.body;
+            
+            if (width >= 635 && width <= 645) {
+                body.style.background = 'linear-gradient(45deg, #ccccff, #ffcccc)';
+                setTimeout(() => {
+                    body.style.background = '#f8f9fa';
+                }, 1000);
+            }
+        }
+        
+        window.addEventListener('resize', highlightThresholdCrossing);
+    </script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url'
-import path from 'node:path'
+import { dirname } from 'node:path'
 export const REFERER_PATH_INDEX = 3
 export const FORECAST_DAY_SLICE_LENGTH = 3
 export const LANG_SLICE_LENGTH = 2
@@ -92,4 +92,4 @@ export const MINUS_NINETY_NINE = -99
 export const ROUND_OF_SIX = 6
 
 // '' - Constant for the server directory name
-export const SERVER_DIRNAME = path.dirname(fileURLToPath(import.meta.url))
+export const SERVER_DIRNAME = dirname(fileURLToPath(import.meta.url))

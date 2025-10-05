@@ -25,7 +25,8 @@ export default defineConfig({
         'stylelint.config.js',
         GOVUK_SRC_EXCLUDE, // Ignore files inside src/src/govuk from testing
         'src/server/common/**/*', // Ignore files inside src/server/common from testing
-        'src/client/**'
+        'src/client/**',
+        'src/config/nunjucks/filters/format-currency.js' // Exclude problematic file causing V8 coverage issues
       ] // Exclude src/src/govuk from coverage
     }
   }

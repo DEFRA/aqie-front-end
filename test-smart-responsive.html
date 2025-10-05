@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Responsive Layout Test - DAQI Tabs</title>
+    <style>
+        /* Simulate the page layout structure */
+        body {
+            margin: 0;
+            padding: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        /* Main container simulating govuk-width-container */
+        .main-container {
+            max-width: 960px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Grid row simulation */
+        .grid-row {
+            display: block;
+            margin-bottom: 20px;
+        }
+        
+        /* Two-thirds column simulation */
+        .two-thirds-column {
+            max-width: 66.66%;
+            background-color: #e8f4f8;
+            padding: 20px;
+            border: 2px dashed #0066cc;
+            position: relative;
+        }
+        
+        /* Smart responsive tabs container */
+        .smart-tabs-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 2px solid #0066cc;
+            background-color: white;
+            
+            /* Smart responsive width strategy */
+            width: min(650px, 100vw - 32px);
+            max-width: 650px;
+            min-width: 320px;
+        }
+        
+        /* Fine-tune for different viewport ranges */
+        @media (min-width: 682px) {
+            .smart-tabs-container {
+                width: 650px; /* Fixed width when space allows (650px + 32px margins = 682px) */
+            }
+        }
+        
+        @media (max-width: 681px) {
+            .smart-tabs-container {
+                width: calc(100vw - 64px); /* Dynamic width when space is limited */
+                max-width: 650px;
+            }
+        }
+        
+        /* DAQI component inside */
+        .daqi-component {
+            width: min(590px, 100%);
+            max-width: 590px;
+            min-width: 300px;
+            height: 80px;
+            background: linear-gradient(to right, #00ff00 0%, #ffff00 30%, #ff8000 60%, #ff0000 100%);
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        }
+        
+        /* Demonstration info */
+        .info-panel {
+            background-color: #f0f8ff;
+            border: 1px solid #0066cc;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .viewport-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 1000;
+        }
+        
+        /* Additional content simulation */
+        .content-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="viewport-info" id="viewportInfo">
+        Viewport: <span id="viewportWidth"></span>px<br>
+        Strategy: <span id="strategy"></span>
+    </div>
+    
+    <div class="main-container">
+        <h1>Smart Responsive Layout Test</h1>
+        
+        <div class="info-panel">
+            <h3>🧪 Test Instructions:</h3>
+            <ol>
+                <li><strong>Start with a wide window (>682px)</strong>: The tabs container maintains 650px width, empty space shows to the right</li>
+                <li><strong>Gradually resize smaller (682px → 650px)</strong>: Empty space shrinks first, tabs container stays 650px</li>
+                <li><strong>Continue shrinking (650px → 590px)</strong>: Tabs container starts shrinking, DAQI component stays 590px</li>
+                <li><strong>Further shrinking (<590px)</strong>: Both containers shrink proportionally</li>
+            </ol>
+            <p><strong>Key Benefit:</strong> Components maintain their optimal size as long as possible, only shrinking when absolutely necessary!</p>
+        </div>
+        
+        <div class="grid-row">
+            <div class="two-thirds-column">
+                <h2>Two-Thirds Column Container</h2>
+                <p>This blue dashed container represents the <code>govuk-grid-column-two-thirds-from-desktop</code> that contains the tabs.</p>
+                
+                <div class="smart-tabs-container">
+                    <h3>📊 Smart Responsive Tabs Container (650px max)</h3>
+                    <p>This container now uses smart responsive behavior:</p>
+                    <ul>
+                        <li>Above 682px viewport: Fixed 650px width</li>
+                        <li>Below 682px viewport: Shrinks with available space</li>
+                        <li>Minimum width: 320px</li>
+                    </ul>
+                    
+                    <div class="daqi-component">
+                        DAQI Component (590px max)
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <h3>Health Advice Section</h3>
+                    <p>Additional content that would appear below the tabs...</p>
+                </div>
+                
+                <div class="content-section">
+                    <h3>Pollutants Information</h3>
+                    <p>More content sections...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <h3>🎯 Layout Strategy Explanation:</h3>
+            <p><strong>Previous behavior:</strong> Components shrunk immediately when viewport got smaller, creating unnecessary compression.</p>
+            <p><strong>New smart behavior:</strong> Empty space shrinks first, components only shrink when they actually need to fit.</p>
+            <p><strong>Result:</strong> Much better user experience during window resizing - content stays readable longer!</p>
+        </div>
+    </div>
+    
+    <script>
+        function updateViewportInfo() {
+            const width = window.innerWidth;
+            const widthElement = document.getElementById('viewportWidth');
+            const strategyElement = document.getElementById('strategy');
+            
+            widthElement.textContent = width;
+            
+            if (width >= 682) {
+                strategyElement.textContent = 'Fixed 650px (empty space shrinks)';
+                strategyElement.style.color = '#00ff00';
+            } else if (width >= 650) {
+                strategyElement.textContent = 'Tabs container starts shrinking';
+                strategyElement.style.color = '#ffaa00';
+            } else if (width >= 590) {
+                strategyElement.textContent = 'Tabs shrinking, DAQI fixed';
+                strategyElement.style.color = '#ff8800';
+            } else {
+                strategyElement.textContent = 'Both components shrinking';
+                strategyElement.style.color = '#ff0000';
+            }
+        }
+        
+        // Update on load and resize
+        updateViewportInfo();
+        window.addEventListener('resize', updateViewportInfo);
+        
+        // Update every 100ms for smooth feedback during dragging
+        setInterval(updateViewportInfo, 100);
+    </script>
+</body>
+</html>

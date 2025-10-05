@@ -1,0 +1,11 @@
+{# Single-day forecast block used inside DAQI tab panels
+   Expects these values in the template context: label, readableBand, value, summary #}
+<div class="aq-uk-forecast">
+  {# Heading intentionally removed — no top-level forecast title required #}
+
+  {% if summary %}
+    <p class="aq-uk-forecast__summary">{{ summary }}</p>
+  {% else %}
+    <p class="aq-uk-forecast__summary">{{ readableBand | default('') }}{% if value is defined %} ({{ value }}){% endif %}</p>
+  {% endif %}
+</div>

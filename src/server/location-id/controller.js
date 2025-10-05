@@ -201,6 +201,8 @@ const getLocationDetailsController = {
         'useNewRicardoMeasurementsEnabled'
       )
       const currentUrl = request.url.href
+      // ''
+      const lang = query?.lang ?? LANG_EN
 
       // Handle Welsh redirect
       const welshRedirect = handleWelshRedirect(query, locationId, h)
@@ -221,19 +223,42 @@ const getLocationDetailsController = {
       }
 
       request.yar.clear('searchTermsSaved')
-
-      const lang = query?.lang ?? LANG_EN
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')
       const getMonth = calendarEnglish.findIndex(
         (item) => item.indexOf(formattedDate[1]) !== -1
       )
       const metaSiteUrl = getAirQualitySiteUrl(request)
-      const locationData = request.yar.get('locationData') || []
+      // Prefer an object over an array as the default to avoid accidental truthiness with missing properties
+      const locationData = request.yar.get('locationData') || {}
+      // If essential session data is missing, redirect back to search to rebuild context
+      if (
+        !Array.isArray(locationData?.results) ||
+        !locationData?.getForecasts
+      ) {
+        const { searchTerms, secondSearchTerm, searchTermsLocationType } =
+          getSearchTermsFromUrl(currentUrl)
+        request.yar.clear('locationData')
+        // ''
+        const safeSearchTerms = searchTerms || ''
+        const safeSecondSearchTerm = secondSearchTerm || ''
+        const safeSearchTermsLocationType = searchTermsLocationType || ''
+        const searchParams =
+          safeSearchTerms || safeSecondSearchTerm || safeSearchTermsLocationType
+            ? `&searchTerms=${encodeURIComponent(safeSearchTerms)}&secondSearchTerm=${encodeURIComponent(safeSecondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(safeSearchTermsLocationType)}`
+            : ''
+        return h
+          .redirect(`/location?lang=${encodeURIComponent(lang)}${searchParams}`)
+          .code(REDIRECT_STATUS_CODE)
+          .takeover()
+      }
       const { getForecasts } = locationData
+      // Default to UK if locationType is unknown or missing
       const locationType =
-        locationData.locationType === LOCATION_TYPE_UK
+        locationData?.locationType === LOCATION_TYPE_UK
           ? LOCATION_TYPE_UK
-          : LOCATION_TYPE_NI
+          : locationData?.locationType === LOCATION_TYPE_NI
+            ? LOCATION_TYPE_NI
+            : LOCATION_TYPE_UK
 
       // Get nearest location and related data
       const {

@@ -4,6 +4,12 @@ export const welsh = {
   home: {
     pageTitle: 'Gwirio ansawdd aer - GOV.UK',
     heading: `${WELSH_TITLE}`,
+    caption:
+      "Mae'r mynegai ansawdd aer dyddiol(DAQI) yn dweud wrthoch chi am lefelau llygredd aer. Mae'n darparu cyngor iechyd ar gyfer y lefelau presennol.",
+    summaryText:
+      'Sut y gall lefelau gwahanol o lygredd aer effeithio ar iechyd',
+    predictionLinkText: 'Darganfyddwch',
+    predictionLink: "sut mae llygredd aer yn cael ei ragweld a'i fesur",
     page: `${WELSH_TITLE}`,
     paragraphs: {
       a: 'Defnyddiwch y gwasanaeth yma:',
@@ -150,11 +156,6 @@ export const welsh = {
     }
   },
   daqi: {
-    paragraphs: {
-      a: 'Y rhagolwg llygredd aer heddiw yw',
-      b: 'ar raddfa o isel i uchel iawn',
-      c: 'allan o 10'
-    },
     description: {
       a: 'Gwiriwch ansawdd aer',
       b: '. Mynnwch gyngor ar iechyd, gwybodaeth am lygryddion a chanllawiau ar sut i leihau’ch amlygiad i lygrydd aer.'
@@ -180,6 +181,9 @@ export const welsh = {
       c: 'Sut y gall llygryddion aer effeithio ar eich iechyd',
       d: 'Llygryddion aer sy’n cael eu monitro gerllaw',
       e: 'Rhagolwg y DU'
+    },
+    tabs: {
+      today: 'Heddiw'
     },
     pollutantText: {
       a: 'Mater gronynnol (PM)',

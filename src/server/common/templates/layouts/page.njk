@@ -168,23 +168,7 @@
 {% endblock %}
 
 {% block content %}
-  {{ govukTabs({
-    id: "example-tabs",
-    items: [
-      {
-        label: "Tab 1",
-        panel: {
-          html: "<p>Content for Tab 1</p>"
-        }
-      },
-      {
-        label: "Tab 2",
-        panel: {
-          html: "<p>Content for Tab 2</p>"
-        }
-      }
-    ]
-  }) }}
+  {# Layout: no global example tabs here — pages supply their own tabs. #}
 {% endblock %}
 
 {% block footer %}

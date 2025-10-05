@@ -1,4 +1,4 @@
-import path from 'path'
+import path, { dirname } from 'node:path'
 import nunjucks from 'nunjucks'
 import hapiVision from '@hapi/vision'
 import { fileURLToPath } from 'node:url'
@@ -16,29 +16,32 @@ import { addToSentenceCase } from './filters/format-sentence.js'
 
 const logger = createLogger('nunjucks')
 
-const dirname = path.dirname(fileURLToPath(import.meta.url))
+const __dirname = dirname(fileURLToPath(import.meta.url))
 const nunjucksEnvironment = nunjucks.configure(
   [
     'node_modules/govuk-frontend/dist/',
-    path.resolve(dirname, '../../node_modules/govuk-frontend/dist/'),
-    path.resolve(dirname, '../../server/common/templates'),
-    path.resolve(dirname, '../../server/common/components'),
-    path.resolve(dirname, '../../server/common/components/footer'),
-    path.resolve(dirname, '../../server/common/templates/partials'),
-    path.resolve(dirname, '../../server/common/templates/macros'),
-    path.resolve(dirname, '../../server/home/partials'),
-    path.resolve(dirname, '../../server/home'),
-    path.resolve(dirname, '../../server/check-local-air-quality/partials'),
-    path.resolve(dirname, '../../server/common/templates/partials'),
-    path.resolve(dirname, '../../server/common/templates/partials/daqi'),
-    path.resolve(dirname, '../../server/common/templates/macros/attributes'),
-    path.resolve(dirname, '../../server/common/templates/macros/logo'),
-    path.resolve(dirname, '../../server/cookies/partials'),
-    path.resolve(dirname, '../../server/accessibility/partials'),
-    path.resolve(dirname, '../../server/common/templates/partials/pollutants'),
-    path.resolve(dirname, '../../server/error/partials'),
+    path.resolve(__dirname, '../../node_modules/govuk-frontend/dist/'),
+    path.resolve(__dirname, '../../server/common/templates'),
+    path.resolve(__dirname, '../../server/common/components'),
+    path.resolve(__dirname, '../../server/common/components/footer'),
+    path.resolve(__dirname, '../../server/common/templates/partials'),
+    path.resolve(__dirname, '../../server/common/templates/macros'),
+    path.resolve(__dirname, '../../server/home/partials'),
+    path.resolve(__dirname, '../../server/home'),
+    path.resolve(__dirname, '../../server/check-local-air-quality/partials'),
+    path.resolve(__dirname, '../../server/common/templates/partials'),
+    path.resolve(__dirname, '../../server/common/templates/partials/daqi'),
+    path.resolve(__dirname, '../../server/common/templates/macros/attributes'),
+    path.resolve(__dirname, '../../server/common/templates/macros/logo'),
+    path.resolve(__dirname, '../../server/cookies/partials'),
+    path.resolve(__dirname, '../../server/accessibility/partials'),
     path.resolve(
-      dirname,
+      __dirname,
+      '../../server/common/templates/partials/pollutants'
+    ),
+    path.resolve(__dirname, '../../server/error/partials'),
+    path.resolve(
+      __dirname,
       '../../node_modules/govuk-frontend/dist/govuk/components/cookie-banner/'
     )
   ],
@@ -66,7 +69,7 @@ export const nunjucksConfig = {
     compileOptions: {
       environment: nunjucksEnvironment
     },
-    relativeTo: path.resolve(dirname, '../..'),
+    relativeTo: path.resolve(__dirname, '../..'),
     path: 'server',
     isCached: config.get('isProduction'),
     context

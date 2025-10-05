@@ -15,6 +15,13 @@ async function startServer() {
       `Access your frontend on http://localhost:${config.get('port')}`
     )
 
+    // '' Warn early if OS Names key is missing, as UK searches will fail locally
+    if (!config.get('osNamesApiKey')) {
+      server.logger.warn(
+        'OS_NAMES_API_KEY is not set. UK postcode/name searches will return "Page not found" locally. Add it to .env and restart.'
+      )
+    }
+
     process.on('SIGTERM', async () => {
       try {
         server.logger.info('Received SIGTERM, shutting down gracefully...')

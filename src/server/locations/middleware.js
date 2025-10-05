@@ -35,7 +35,24 @@ const handleLocationDataNotFound = (
   request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
   if (searchTerms) {
     request.yar.clear('searchTermsSaved')
-    return h.redirect('error/index').takeover()
+    // '' Render error view directly to avoid redirect
+    return h
+      .view('error/index', {
+        pageTitle: english.notFoundUrl.nonService.pageTitle,
+        heading: 'Page not found',
+        statusCode: 404,
+        message: 'Page not found',
+        url: request.path,
+        notFoundUrl: english.notFoundUrl,
+        displayBacklink: false,
+        phaseBanner: english.phaseBanner,
+        footerTxt: english.footerTxt,
+        cookieBanner: english.cookieBanner,
+        serviceName: english.multipleLocations.serviceName,
+        lang
+      })
+      .code(404)
+      .takeover()
   }
   return h.redirect('location-not-found').takeover()
 }
