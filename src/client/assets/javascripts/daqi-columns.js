@@ -1,5 +1,9 @@
-''
 // DAQI Columns Responsive Layout Handler
+//
+// SOLUTION IMPLEMENTED: Dividers now use CSS-only flexbox positioning in _daqitable.scss
+// - Both labels and dividers use the same flex ratios for perfect alignment
+// - No JavaScript delays when resizing browser window
+// - This JavaScript remains for backwards compatibility and advanced testing
 //
 // Development Mode: To manually test CSS custom properties in dev tools,
 // add 'data-manual-dividers' attribute to the .daqi-numbered container:
