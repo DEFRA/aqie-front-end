@@ -269,15 +269,23 @@ svg|foreignObject {
       pointer-events: none;
       z-index: 1;
       
+      // Ensure crispy, pixel-perfect rendering
+      image-rendering: crisp-edges;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: pixelated;
+      backface-visibility: hidden;
+      transform: translateZ(0); // Force hardware acceleration
+      
       // Create flexbox-aligned dividers using exact flex ratios
       // Total flex: Low(153) + Moderate(153) + High(153) + VeryHigh(100) = 559
+      // Crispy 1px dividers moved 1px left for perfect alignment
       background: 
-        // Divider after "Low" - 153/559 = 27.37%
-        linear-gradient(90deg, transparent calc(27.37% + 1.5px), $govuk-border-colour calc(27.37% + 1.5px) calc(27.37% + 3.5px), transparent calc(27.37% + 3.5px)),
-        // Divider after "Moderate" - (153+153)/559 = 54.74%
-        linear-gradient(90deg, transparent calc(54.74% + 3px), $govuk-border-colour calc(54.74% + 3px) calc(54.74% + 5px), transparent calc(54.74% + 5px)),
-        // Divider after "High" - (153+153+153)/559 = 82.11%
-        linear-gradient(90deg, transparent calc(82.11% + 4.5px), $govuk-border-colour calc(82.11% + 4.5px) calc(82.11% + 6.5px), transparent calc(82.11% + 6.5px));
+        // Divider after "Low" - 153/559 = 27.37% (moved 1px left)
+        linear-gradient(90deg, transparent calc(27.37% + 0.5px), $govuk-border-colour calc(27.37% + 0.5px) calc(27.37% + 1.5px), transparent calc(27.37% + 1.5px)),
+        // Divider after "Moderate" - (153+153)/559 = 54.74% (moved 1px left)
+        linear-gradient(90deg, transparent calc(54.74% + 2px), $govuk-border-colour calc(54.74% + 2px) calc(54.74% + 3px), transparent calc(54.74% + 3px)),
+        // Divider after "High" - (153+153+153)/559 = 82.11% (moved 1px left)
+        linear-gradient(90deg, transparent calc(82.11% + 3.5px), $govuk-border-colour calc(82.11% + 3.5px) calc(82.11% + 4.5px), transparent calc(82.11% + 4.5px));
     }
   }
 }
@@ -295,15 +303,23 @@ svg|foreignObject {
       pointer-events: none;
       z-index: 1;
       
+      // Ensure crispy, pixel-perfect rendering
+      image-rendering: crisp-edges;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: pixelated;
+      backface-visibility: hidden;
+      transform: translateZ(0); // Force hardware acceleration
+      
       // Create flexbox-aligned dividers using exact flex ratios
       // Total flex: Low(153) + Moderate(153) + High(153) + VeryHigh(100) = 559
+      // Crispy 1px dividers moved 1px left for perfect alignment
       background: 
-        // Divider after "Low" - 153/559 = 27.37%
-        linear-gradient(90deg, transparent calc(27.37% + 2px), $govuk-border-colour calc(27.37% + 2px) calc(27.37% + 4px), transparent calc(27.37% + 4px)),
-        // Divider after "Moderate" - (153+153)/559 = 54.74%
-        linear-gradient(90deg, transparent calc(54.74% + 4px), $govuk-border-colour calc(54.74% + 4px) calc(54.74% + 6px), transparent calc(54.74% + 6px)),
-        // Divider after "High" - (153+153+153)/559 = 82.11%
-        linear-gradient(90deg, transparent calc(82.11% + 6px), $govuk-border-colour calc(82.11% + 6px) calc(82.11% + 8px), transparent calc(82.11% + 8px));
+        // Divider after "Low" - 153/559 = 27.37% (moved 1px left)
+        linear-gradient(90deg, transparent calc(27.37% + 1px), $govuk-border-colour calc(27.37% + 1px) calc(27.37% + 2px), transparent calc(27.37% + 2px)),
+        // Divider after "Moderate" - (153+153)/559 = 54.74% (moved 1px left)
+        linear-gradient(90deg, transparent calc(54.74% + 3px), $govuk-border-colour calc(54.74% + 3px) calc(54.74% + 4px), transparent calc(54.74% + 4px)),
+        // Divider after "High" - (153+153+153)/559 = 82.11% (moved 1px left)
+        linear-gradient(90deg, transparent calc(82.11% + 5px), $govuk-border-colour calc(82.11% + 5px) calc(82.11% + 6px), transparent calc(82.11% + 6px));
     }
   }
 }
@@ -322,15 +338,23 @@ svg|foreignObject {
       pointer-events: none;
       z-index: 1;
       
+      // Ensure crispy, pixel-perfect rendering
+      image-rendering: crisp-edges;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: pixelated;
+      backface-visibility: hidden;
+      transform: translateZ(0); // Force hardware acceleration
+      
       // Create flexbox-aligned dividers using exact flex ratios
       // Total flex: Low(153) + Moderate(153) + High(153) + VeryHigh(100) = 559
+      // Crispy 1px dividers moved 1px left for perfect alignment
       background: 
-        // Divider after "Low" - 153/559 = 27.37%
-        linear-gradient(90deg, transparent calc(27.37% + 2.5px), $govuk-border-colour calc(27.37% + 2.5px) calc(27.37% + 5.5px), transparent calc(27.37% + 5.5px)),
-        // Divider after "Moderate" - (153+153)/559 = 54.74%
-        linear-gradient(90deg, transparent calc(54.74% + 5px), $govuk-border-colour calc(54.74% + 5px) calc(54.74% + 8px), transparent calc(54.74% + 8px)),
-        // Divider after "High" - (153+153+153)/559 = 82.11%
-        linear-gradient(90deg, transparent calc(82.11% + 7.5px), $govuk-border-colour calc(82.11% + 7.5px) calc(82.11% + 10.5px), transparent calc(82.11% + 10.5px));
+        // Divider after "Low" - 153/559 = 27.37% (moved 1px left)
+        linear-gradient(90deg, transparent calc(27.37% + 1.5px), $govuk-border-colour calc(27.37% + 1.5px) calc(27.37% + 2.5px), transparent calc(27.37% + 2.5px)),
+        // Divider after "Moderate" - (153+153)/559 = 54.74% (moved 1px left)
+        linear-gradient(90deg, transparent calc(54.74% + 4px), $govuk-border-colour calc(54.74% + 4px) calc(54.74% + 5px), transparent calc(54.74% + 5px)),
+        // Divider after "High" - (153+153+153)/559 = 82.11% (moved 1px left)
+        linear-gradient(90deg, transparent calc(82.11% + 6.5px), $govuk-border-colour calc(82.11% + 6.5px) calc(82.11% + 7.5px), transparent calc(82.11% + 7.5px));
     }
   }
 }
