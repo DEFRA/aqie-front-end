@@ -173,7 +173,12 @@ svg|foreignObject {
   // '' Use exact design green for selected value when in Low band (1–3)
   // '' Removed duplicate daqi-1,2,3 selectors - consolidated with unified active segment styling below
 
-// '' UNIFIED ROBUST FLEXBOX LABELS - consistent across ALL viewports
+// '' UNIFIED ROBUST FLEXBOX LABELS AND DIVIDERS - consistent across ALL viewports
+// '' SOLUTION: Both labels and dividers now use flexbox-based positioning for perfect alignment
+// '' - Labels use flex ratios that match the DAQI bar segments exactly
+// '' - Dividers use CSS calc() with percentages derived from same flex ratios
+// '' - No JavaScript delays or CSS custom properties needed for dividers
+// '' - Both update immediately when browser window is resized, eliminating lag
 .daqi-labels {
   display: flex; // '' Always use flexbox for consistent alignment with bar
   position: relative;
@@ -250,76 +255,107 @@ svg|foreignObject {
   }
 }
 
-// '' Divider pseudo-elements for mobile and tablet ranges (up to 640px)
+// '' Flexbox-based dividers for mobile and tablet ranges (up to 640px) - no JavaScript needed
 @media (max-width: 640px) {
-  .daqi-labels::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 15px; // Match container height
-    background-image:
-      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
-    background-position: var(--daqi-divider-1, 75px) 0, var(--daqi-divider-2, 150px) 0, var(--daqi-divider-3, 225px) 0;
-    background-repeat: no-repeat;
-    background-size: 2px 100%, 2px 100%, 2px 100%;
-    pointer-events: none;
-    z-index: 1;
+  .daqi-labels {
+    // Use flexbox-positioned dividers instead of CSS custom properties
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 15px; // Match container height
+      pointer-events: none;
+      z-index: 1;
+      
+      // Ensure crispy, pixel-perfect rendering
+      image-rendering: crisp-edges;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: pixelated;
+      backface-visibility: hidden;
+      transform: translateZ(0); // Force hardware acceleration
+      
+      // Create flexbox-aligned dividers using exact flex ratios
+      // Total flex: Low(153) + Moderate(153) + High(153) + VeryHigh(100) = 559
+      // Crispy 1px dividers moved 1px left for perfect alignment
+      background: 
+        // Divider after "Low" - 153/559 = 27.37% (moved 1px left)
+        linear-gradient(90deg, transparent calc(27.37% + 0.5px), $govuk-border-colour calc(27.37% + 0.5px) calc(27.37% + 1.5px), transparent calc(27.37% + 1.5px)),
+        // Divider after "Moderate" - (153+153)/559 = 54.74% (moved 1px left)
+        linear-gradient(90deg, transparent calc(54.74% + 2px), $govuk-border-colour calc(54.74% + 2px) calc(54.74% + 3px), transparent calc(54.74% + 3px)),
+        // Divider after "High" - (153+153+153)/559 = 82.11% (moved 1px left)
+        linear-gradient(90deg, transparent calc(82.11% + 3.5px), $govuk-border-colour calc(82.11% + 3.5px) calc(82.11% + 4.5px), transparent calc(82.11% + 4.5px));
+    }
   }
 }
 
-// '' Divider pseudo-elements for tablet/intermediate range (641px-1019px)
+// '' Flexbox-based dividers for tablet/intermediate range (641px-1019px) - no JavaScript needed
 @media (min-width: 641px) and (max-width: 1019px) {
-  .daqi-labels::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 20px; // Intermediate height between mobile (15px) and desktop (24px)
-    background-image:
-      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
-    background-position: var(--daqi-divider-1, 130px) 0, var(--daqi-divider-2, 260px) 0, var(--daqi-divider-3, 390px) 0;
-    background-repeat: no-repeat;
-    background-size: 2px 100%, 2px 100%, 2px 100%; // Same as mobile size
-    pointer-events: none;
-    z-index: 1;
-  }
-  
-  // '' Special handling for zoom-related rendering issues
-  .daqi-numbered.daqi-zoom-fix .daqi-labels::before {
-    // Use wider dividers and more aggressive positioning for zoom stability
-    background-size: 3px 100%, 3px 100%, 3px 100%; // Slightly wider dividers
-    // Ensure crisp rendering at different zoom levels
-    image-rendering: crisp-edges;
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: pixelated;
+  .daqi-labels {
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 20px; // Intermediate height between mobile (15px) and desktop (24px)
+      pointer-events: none;
+      z-index: 1;
+      
+      // Ensure crispy, pixel-perfect rendering
+      image-rendering: crisp-edges;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: pixelated;
+      backface-visibility: hidden;
+      transform: translateZ(0); // Force hardware acceleration
+      
+      // Create flexbox-aligned dividers using exact flex ratios
+      // Total flex: Low(153) + Moderate(153) + High(153) + VeryHigh(100) = 559
+      // Crispy 1px dividers moved 1px left for perfect alignment
+      background: 
+        // Divider after "Low" - 153/559 = 27.37% (moved 1px left)
+        linear-gradient(90deg, transparent calc(27.37% + 1px), $govuk-border-colour calc(27.37% + 1px) calc(27.37% + 2px), transparent calc(27.37% + 2px)),
+        // Divider after "Moderate" - (153+153)/559 = 54.74% (moved 1px left)
+        linear-gradient(90deg, transparent calc(54.74% + 3px), $govuk-border-colour calc(54.74% + 3px) calc(54.74% + 4px), transparent calc(54.74% + 4px)),
+        // Divider after "High" - (153+153+153)/559 = 82.11% (moved 1px left)
+        linear-gradient(90deg, transparent calc(82.11% + 5px), $govuk-border-colour calc(82.11% + 5px) calc(82.11% + 6px), transparent calc(82.11% + 6px));
+    }
   }
 }
 
 
+// '' Flexbox-based dividers for desktop range (1020px+) - no JavaScript needed
 @media (min-width: 1020px) {
-  .daqi-labels::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 24px;
-    background-image:
-      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px),
-      linear-gradient(90deg, transparent 1px, $govuk-border-colour 1px 2px, transparent 2px);
-    background-position: var(--daqi-divider-1, 196px) 0, var(--daqi-divider-2, 392px) 0, var(--daqi-divider-3, 588px) 0;
-    background-repeat: no-repeat;
-    background-size: 3px 100%, 3px 100%, 3px 100%;
-    pointer-events: none;
-    z-index: 1;
+  .daqi-labels {
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 24px;
+      pointer-events: none;
+      z-index: 1;
+      
+      // Ensure crispy, pixel-perfect rendering
+      image-rendering: crisp-edges;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: pixelated;
+      backface-visibility: hidden;
+      transform: translateZ(0); // Force hardware acceleration
+      
+      // Create flexbox-aligned dividers using exact flex ratios
+      // Total flex: Low(153) + Moderate(153) + High(153) + VeryHigh(100) = 559
+      // Crispy 1px dividers moved 1px left for perfect alignment
+      background: 
+        // Divider after "Low" - 153/559 = 27.37% (moved 1px left)
+        linear-gradient(90deg, transparent calc(27.37% + 1.5px), $govuk-border-colour calc(27.37% + 1.5px) calc(27.37% + 2.5px), transparent calc(27.37% + 2.5px)),
+        // Divider after "Moderate" - (153+153)/559 = 54.74% (moved 1px left)
+        linear-gradient(90deg, transparent calc(54.74% + 4px), $govuk-border-colour calc(54.74% + 4px) calc(54.74% + 5px), transparent calc(54.74% + 5px)),
+        // Divider after "High" - (153+153+153)/559 = 82.11% (moved 1px left)
+        linear-gradient(90deg, transparent calc(82.11% + 6.5px), $govuk-border-colour calc(82.11% + 6.5px) calc(82.11% + 7.5px), transparent calc(82.11% + 7.5px));
+    }
   }
 }
 
