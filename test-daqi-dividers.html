@@ -194,29 +194,23 @@
         }
 
         function setDaqiColumns() {
-          console.log('🔧 DAQI: setDaqiColumns() called')
           
           // Find all DAQI containers and process each one
           const containers = document.querySelectorAll('.daqi-numbered')
-          console.log('🔧 DAQI: Found containers:', containers.length)
           if (!containers || containers.length === 0) return
 
           containers.forEach((container) => {
-            console.log('🔧 DAQI: Processing container:', container)
             
             // Skip if container is explicitly hidden
             try {
               const cs = window.getComputedStyle(container)
               if (cs.display === 'none' || cs.visibility === 'hidden') {
-                console.log('🔧 DAQI: Skipping hidden container')
                 return // Skip this container but continue with others
               }
             } catch (e) {
-              console.log('🔧 DAQI: Error getting computed style:', e)
             }
 
             const segments = container.querySelectorAll('.daqi-bar-segment')
-            console.log('🔧 DAQI: Found segments:', segments.length)
             if (!segments || segments.length === 0) return
 
             const viewportWidth =
@@ -250,18 +244,10 @@
 
             // Development mode: Add 'data-manual-dividers' attribute to container to disable automatic updates
             if (container.hasAttribute('data-manual-dividers')) {
-              console.log('DAQI: Manual divider mode enabled - skipping automatic positioning')
               return
             }
             
             // Debug viewport detection
-            console.log('🔧 DAQI Debug - Viewport Width:', viewportWidth, 'Thresholds:', {
-              DESKTOP: DESKTOP_THRESHOLD,
-              TABLET_LARGE: TABLET_LARGE_THRESHOLD, 
-              TABLET_SMALL: TABLET_SMALL_THRESHOLD,
-              MOBILE: MOBILE_THRESHOLD,
-              MOBILE_SMALL: MOBILE_SMALL_THRESHOLD
-            })
             
             // Determine which range we're in
             let rangeDetected = 'UNKNOWN'
@@ -276,8 +262,7 @@
             } else if (viewportWidth <= MOBILE_SMALL_THRESHOLD) {
               rangeDetected = 'MOBILE_SMALL (≤320px)'
             }
-            
-            console.log('🔧 DAQI: Detected Range:', rangeDetected)
+
 
             // Stage 2: Large tablet (768-1020px) - use consistent divider positioning like mobile
             if (
@@ -286,7 +271,6 @@
               viewportWidth < DESKTOP_THRESHOLD &&
               segments.length === 10
             ) {
-              console.log('🎯 DAQI: Entering TABLET_LARGE range (768-1020px)')
               
               // Remove grid column CSS variables on large tablets to allow flexbox
               container.style.removeProperty('--daqi-columns')
@@ -334,12 +318,6 @@
                   '--daqi-divider-3',
                   Math.round(divider3Position) + 10 + 'px' // Move third divider 10px to the right
                 )
-                
-                console.log('🎯 DAQI: TABLET_LARGE adjustments applied:', {
-                  divider1: Math.round(divider1Position) + 2 + 'px',
-                  divider2: Math.round(divider2Position) + 5 + 'px', 
-                  divider3: Math.round(divider3Position) + 10 + 'px'
-                })
                 
                 // Update debug info
                 updateDebugInfo(rangeDetected, {
