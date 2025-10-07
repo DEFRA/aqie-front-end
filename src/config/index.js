@@ -159,7 +159,7 @@ export const config = convict({
     doc: 'OS Name Places key',
     format: '*',
     sensitive: true,
-    default: 'bADdJQKoGCXmXlvtoAjj2P27hNoTDqKH',
+    default: '',
     env: 'OS_NAMES_API_KEY'
   },
   osNamesApiUrl: {
