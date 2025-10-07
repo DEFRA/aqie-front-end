@@ -339,18 +339,13 @@ function initDAQIAccessibility() {
     return
   }
 
-  console.log('🔧 Initializing DAQI accessibility enhancements...')
-
   // Add live region for screen reader announcements
   addLiveRegion()
 
   // Enhance tab interactions
   enhanceTabInteractions()
 
-  // Add keyboard navigation improvements
-  enhanceKeyboardNavigation()
-
-  console.log('✅ DAQI accessibility enhancements initialized')
+  // Add keyboard navigation improvements\n  enhanceKeyboardNavigation()\n}
 }
 
 // Auto-initialize when DOM is ready (for backward compatibility)

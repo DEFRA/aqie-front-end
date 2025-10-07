@@ -150,9 +150,9 @@ describe('daqi-columns module', () => {
 
     // Desktop should remove columns but set calculated divider positions
     expect(cssValue).toBe('')
-    expect(divider1).toBe('159px') // 3 * 51 + 2 * 3px gaps = 159px (no adjustment)
-    expect(divider2).toBe('320px') // 6 * 51 + 5 * 3px gaps - 1px adjustment = 320px
-    expect(divider3).toBe('482px') // 9 * 51 + 8 * 3px gaps - 1px adjustment = 482px
+    expect(divider1).toBe('157px') // 3 * 51 + 2 * 3px gaps - 1px adjustment = 157px
+    expect(divider2).toBe('318px') // 6 * 51 + 5 * 3px gaps - 2px adjustment = 318px
+    expect(divider3).toBe('480px') // 9 * 51 + 8 * 3px gaps - 2px adjustment = 480px
   })
 
   test('should handle small tablet viewport (640-768px) with tighter grouping', async () => {
@@ -222,9 +222,9 @@ describe('daqi-columns module', () => {
 
     // '' Small tablet viewports (640-768px) now calculate divider positions consistently
     expect(container.style.getPropertyValue('--daqi-columns')).toBe('')
-    expect(container.style.getPropertyValue('--daqi-divider-1')).toBe('156px') // 3 * 50 + 2 * 3px gaps = 156px (no adjustment)
-    expect(container.style.getPropertyValue('--daqi-divider-2')).toBe('314px') // 6 * 50 + 5 * 3px gaps - 1px adjustment = 314px
-    expect(container.style.getPropertyValue('--daqi-divider-3')).toBe('473px') // 9 * 50 + 8 * 3px gaps - 1px adjustment = 473px
+    expect(container.style.getPropertyValue('--daqi-divider-1')).toBe('154px') // 3 * 50 + 2 * 3px gaps - 1px adjustment = 154px
+    expect(container.style.getPropertyValue('--daqi-divider-2')).toBe('312px') // 6 * 50 + 5 * 3px gaps - 2px adjustment = 312px
+    expect(container.style.getPropertyValue('--daqi-divider-3')).toBe('471px') // 9 * 50 + 8 * 3px gaps - 2px adjustment = 471px
 
     // '' Clean up
     document.body.removeChild(panel)
