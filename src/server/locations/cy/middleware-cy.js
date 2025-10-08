@@ -472,24 +472,6 @@ const searchMiddlewareCy = async (request, h) => {
       home,
       REDIRECT_STATUS_CODE
     })
-  } else if (locationType === LOCATION_TYPE_NI) {
-    return processNILocation(request, h, {
-      locationNameOrPostcode,
-      lang,
-      userLocation,
-      searchTerms,
-      secondSearchTerm,
-      locationType,
-      getDailySummary,
-      transformedDailySummary,
-      englishDate,
-      welshDate,
-      month,
-      multipleLocations,
-      getForecasts,
-      home,
-      REDIRECT_STATUS_CODE
-    })
   } else {
     // '' Handle other location types
     return handleLocationNotFound(request, h, locationNameOrPostcode, lang)
