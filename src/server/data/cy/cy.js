@@ -177,7 +177,6 @@ export const welsh = {
       'Mae’r mynegai ansawdd aer dyddiol(DAQI) yn dweud wrthoch chi am lefelau llygredd aer.Mae’n darparu cyngor iechyd ar gyfer y lefelau presennol.',
     summaryText:
       'Sut y gall lefelau gwahanol o lygredd aer effeithio ar iechyd',
-    heading: 'Mynegai Ansawdd Aer Dyddiol (DAQI)',
     predictionLinkText: 'Gwybodaeth am',
     predictionLink: 'sut mae llygredd aer yn cael ei rag-weld a’i fesur.',
     headText: {
@@ -197,7 +196,10 @@ export const welsh = {
       c: 'Sut y gall llygryddion aer effeithio ar eich iechyd',
       d: 'Llygryddion aer sy’n cael eu monitro gerllaw'
     },
-    predictedLevelsHeading: 'Lefelau llygredd aer a ragwelir',
+    headings: {
+      main: 'Mynegai Ansawdd Aer Dyddiol (DAQI)',
+      predictedLevels: 'Lefelau llygredd aer a ragwelir'
+    },
     tabs: {
       today: 'Heddiw'
     },
