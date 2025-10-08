@@ -195,9 +195,11 @@ export const english = {
       d: 'Air pollutants monitored near by',
       e: ''
     },
+    predictedLevelsHeading: 'Predicted air pollution levels',
     tabs: {
       today: 'Today'
     },
+    heading: 'Daily Air Quality Index (DAQI)',
     pollutantText: {
       a: 'Particulate matter (PM)',
       b: 'Particulate matter are tiny pieces of solid or liquid particles suspended in the air. They come from sources like car tyres, brakes, exhausts, dust, wood burning and pollen.',
@@ -384,7 +386,6 @@ export const english = {
   },
   dailySummaryTexts: {
     paragraphs: {
-      a: 'UK air pollution summary',
       b: 'Today',
       c: 'Tomorrow',
       d: 'Outlook'

@@ -1,15 +1,28 @@
 import { WELSH_TITLE } from '../constants.js'
+// Welsh month names for calendar use
+export const calendarWelsh = [
+  'Ionawr',
+  'Chwefror',
+  'Mawrth',
+  'Ebrill',
+  'Mai',
+  'Mehefin',
+  'Gorffennaf',
+  'Awst',
+  'Medi',
+  'Hydref',
+  'Tachwedd',
+  'Rhagfyr'
+]
 
 export const welsh = {
   home: {
     pageTitle: 'Gwirio ansawdd aer - GOV.UK',
     heading: `${WELSH_TITLE}`,
     caption:
-      "Mae'r mynegai ansawdd aer dyddiol(DAQI) yn dweud wrthoch chi am lefelau llygredd aer. Mae'n darparu cyngor iechyd ar gyfer y lefelau presennol.",
+      'Mae’r mynegai ansawdd aer dyddiol(DAQI) yn dweud wrthoch chi am lefelau llygredd aer. Mae’n darparu cyngor iechyd ar gyfer y lefelau presennol.',
     summaryText:
       'Sut y gall lefelau gwahanol o lygredd aer effeithio ar iechyd',
-    predictionLinkText: 'Darganfyddwch',
-    predictionLink: "sut mae llygredd aer yn cael ei ragweld a'i fesur",
     page: `${WELSH_TITLE}`,
     paragraphs: {
       a: 'Defnyddiwch y gwasanaeth yma:',
@@ -164,6 +177,9 @@ export const welsh = {
       'Mae’r mynegai ansawdd aer dyddiol(DAQI) yn dweud wrthoch chi am lefelau llygredd aer.Mae’n darparu cyngor iechyd ar gyfer y lefelau presennol.',
     summaryText:
       'Sut y gall lefelau gwahanol o lygredd aer effeithio ar iechyd',
+    heading: 'Mynegai Ansawdd Aer Dyddiol (DAQI)',
+    predictionLinkText: 'Gwybodaeth am',
+    predictionLink: 'sut mae llygredd aer yn cael ei rag-weld a’i fesur.',
     headText: {
       a: 'Lefel',
       b: 'Mynegai',
@@ -177,11 +193,11 @@ export const welsh = {
     },
     pageTexts: {
       a: 'Crynodeb o lygredd aer y UK',
-      b: 'Y diweddaraf am 5am ymlaen',
+      b: 'Y diweddariad diwethaf ddoe am 5am',
       c: 'Sut y gall llygryddion aer effeithio ar eich iechyd',
-      d: 'Llygryddion aer sy’n cael eu monitro gerllaw',
-      e: 'Rhagolwg y DU'
+      d: 'Llygryddion aer sy’n cael eu monitro gerllaw'
     },
+    predictedLevelsHeading: 'Lefelau llygredd aer a ragwelir',
     tabs: {
       today: 'Heddiw'
     },
@@ -371,7 +387,6 @@ export const welsh = {
   },
   dailySummaryTexts: {
     paragraphs: {
-      a: 'Rhagolwg y DU',
       b: 'Heddiw',
       c: 'Yfory',
       d: 'Rhagolwg'
@@ -547,17 +562,13 @@ export const welsh = {
   }
 }
 
-export const calendarWelsh = [
-  'Ionawr',
-  'Chwefror',
-  'Mawrth',
-  'Ebrill',
-  'Mai',
-  'Mehefin',
-  'Gorffennaf',
-  'Awst',
-  'Medi',
-  'Hydref',
-  'Tachwedd',
-  'Rhagfyr'
+// Welsh days of the week abbreviations for dynamic tab labels
+export const calendarWelshDays = [
+  'Sul', // Sunday
+  'Llun', // Monday
+  'Maw', // Tuesday
+  'Mer', // Wednesday
+  'Iau', // Thursday
+  'Gwe', // Friday
+  'Sad' // Saturday
 ]
