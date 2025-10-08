@@ -1,15 +1,16 @@
+import { PAGE_NOT_FOUND_CY } from '../../data/cy/cy.js'
 import { english } from '../../data/en/en.js'
 import { welsh } from '../../data/cy/cy.js'
 import { createLogger } from './logging/logger.js'
-import { LANG_CY, LANG_EN } from '../../data/constants.js'
+import { LANG_CY, LANG_EN, STATUS_NOT_FOUND } from '../../data/constants.js'
 
 const logger = createLogger()
 
 function statusCodeMessage(statusCode, lang) {
   switch (true) {
-    case statusCode === 404:
+    case statusCode === STATUS_NOT_FOUND:
       if (lang.slice(0, 2) === LANG_CY) {
-        return 'Tudalen heb ei chanfod'
+        return PAGE_NOT_FOUND_CY
       }
       return 'Page not found'
     case statusCode === 403:

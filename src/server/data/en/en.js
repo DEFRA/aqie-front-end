@@ -1,6 +1,8 @@
+const SERVICE_NAME = 'Check air quality'
+
 export const english = {
   login: {
-    pageTitle: 'Sign in - Check air quality - GOV.UK',
+    pageTitle: `Sign in - ${SERVICE_NAME} - GOV.UK`,
     heading: 'This is a private beta',
     texts: {
       a: 'You should only continue if you have been invited to.',
@@ -9,9 +11,9 @@ export const english = {
     }
   },
   home: {
-    pageTitle: 'Check air quality - GOV.UK',
-    heading: 'Check air quality',
-    page: 'Check air quality',
+    pageTitle: `${SERVICE_NAME} - GOV.UK`,
+    heading: SERVICE_NAME,
+    page: SERVICE_NAME,
     paragraphs: {
       a: 'Use this service to:',
       b: 'check air quality in a local area',
@@ -19,14 +21,13 @@ export const english = {
       d: 'find health information and guidance'
     },
     button: 'Start now',
-    description:
-      'Check air quality in your local area and the air pollution forecast for the next 5 days. Also, get health advice to reduce your exposure to pollutants'
+    description: `${SERVICE_NAME} in your local area and the air pollution forecast for the next 5 days. Also, get health advice to reduce your exposure to pollutants`
   },
   searchLocation: {
-    pageTitle: 'Where do you want to check? - Check air quality - GOV.UK',
-    heading: 'Check air quality',
+    pageTitle: `Where do you want to check? - ${SERVICE_NAME} - GOV.UK`,
+    heading: SERVICE_NAME,
     page: 'search-location',
-    serviceName: 'Check air quality',
+    serviceName: SERVICE_NAME,
     searchParams: {
       label: {
         text: 'Where do you want to check?'
@@ -69,7 +70,7 @@ export const english = {
       'Search the air quality in any local area. Also, get health advice about air pollution and how to reduce your exposure.'
   },
   notFoundLocation: {
-    heading: 'Check air quality',
+    heading: SERVICE_NAME,
     paragraphs: {
       a: 'We could not find',
       b: 'If you searched for a place in England, Scotland or Wales, you should:',
@@ -91,8 +92,7 @@ export const english = {
       }
     },
     serviceAPI: {
-      pageTitle:
-        'Sorry, there is a problem with the service - Check air quality - GOV.UK',
+      pageTitle: `Sorry, there is a problem with the service - ${SERVICE_NAME} - GOV.UK`,
       heading: 'Sorry, there is a problem with the service',
       paragraphs: {
         a: 'Try again later',
@@ -102,7 +102,7 @@ export const english = {
       }
     },
     nonService: {
-      pageTitle: 'Page not found - Check air quality - GOV.UK',
+      pageTitle: `Page not found - ${SERVICE_NAME} - GOV.UK`,
       heading: 'Page not found',
       paragraphs: {
         a: 'If you typed the web address, check it is correct.',
@@ -115,16 +115,15 @@ export const english = {
   },
   multipleLocations: {
     titlePrefix: 'Air quality in',
-    pageTitle: 'Check air quality - GOV.UK',
+    pageTitle: `${SERVICE_NAME} - GOV.UK`,
     title: 'Locations matching',
-    serviceName: 'Check air quality',
+    serviceName: SERVICE_NAME,
     paragraphs: {
       a: 'More than one match was found for your location. Choose the correct location from the following options:',
       b: 'Alternatively,',
       c: 'try searching again'
     },
-    description:
-      'Check air quality in your local area and the air pollution forecast for the next 5 days. Also, get health advice to reduce your exposure to pollutants.'
+    description: `${SERVICE_NAME} in your local area and the air pollution forecast for the next 5 days. Also, get health advice to reduce your exposure to pollutants.`
   },
   phaseBanner: {
     paragraphs: {
@@ -138,7 +137,7 @@ export const english = {
     text: 'Change location'
   },
   cookieBanner: {
-    title: 'Cookies on Check air quality',
+    title: `Cookies on ${SERVICE_NAME}`,
     paragraphs: {
       a: 'We use some essential cookies to make this service work.',
       b: "We'd also like to use analytics cookies so we can understand how you use the service and make improvements."
@@ -169,7 +168,7 @@ export const english = {
   },
   daqi: {
     description: {
-      a: 'Check air quality for',
+      a: `${SERVICE_NAME} for`,
       b: '. Get health advice, pollutant information and guidance on how to reduce your exposure to air pollution.'
     },
     caption:
@@ -241,8 +240,8 @@ export const english = {
   pollutants: {
     ozone: {
       title: 'Ozone (O₃)',
-      pageTitle: 'Ozone(O₃) – Check air quality – GOV.UK',
-      headerText: 'Check air quality',
+      pageTitle: `Ozone(O₃) – ${SERVICE_NAME} – GOV.UK`,
+      headerText: `${SERVICE_NAME}`,
       headings: {
         a: 'Sources of ozone',
         b: 'Health effects'
@@ -266,8 +265,8 @@ export const english = {
     },
     nitrogenDioxide: {
       title: 'Nitrogen dioxide (NO₂)',
-      pageTitle: 'Nitrogen dioxide (NO₂) – Check air quality – GOV.UK',
-      headerText: 'Check air quality',
+      pageTitle: `Nitrogen dioxide (NO₂) – ${SERVICE_NAME} – GOV.UK`,
+      headerText: `${SERVICE_NAME}`,
       headings: {
         a: 'Sources of nitrogen dioxide',
         b: 'Health effects'
@@ -293,8 +292,8 @@ export const english = {
     },
     sulphurDioxide: {
       title: 'Sulphur dioxide (SO₂)',
-      pageTitle: 'Sulphur dioxide (SO₂) – Check air quality – GOV.UK',
-      headerText: 'Check air quality',
+      pageTitle: `Sulphur dioxide (SO₂) – ${SERVICE_NAME} – GOV.UK`,
+      headerText: `${SERVICE_NAME}`,
       headings: {
         a: 'Sources of sulphur dioxide',
         b: 'Health effects'
@@ -320,8 +319,8 @@ export const english = {
     },
     particulateMatter10: {
       title: 'Particulate matter (PM10)',
-      pageTitle: 'Particulate matter (PM10) – Check air quality – GOV.UK',
-      headerText: 'Check air quality',
+      pageTitle: `Particulate matter (PM10) – ${SERVICE_NAME} – GOV.UK`,
+      headerText: `${SERVICE_NAME}`,
       headings: {
         a: 'Sources of PM10',
         b: 'Health effects'
@@ -353,8 +352,8 @@ export const english = {
     },
     particulateMatter25: {
       title: 'Particulate matter (PM2.5)',
-      pageTitle: 'Particulate matter (PM2.5) – Check air quality – GOV.UK',
-      headerText: 'Check air quality',
+      pageTitle: `Particulate matter (PM2.5) – ${SERVICE_NAME} – GOV.UK`,
+      headerText: `${SERVICE_NAME}`,
       headings: {
         a: 'Sources of PM2.5',
         b: 'Health effects'
@@ -395,9 +394,9 @@ export const english = {
   },
   footer: {
     privacy: {
-      pageTitle: 'Privacy - Check air quality - GOV.UK',
-      title: 'Check air quality privacy notice',
-      heading: 'Check air quality',
+      pageTitle: `Privacy - ${SERVICE_NAME} - GOV.UK`,
+      title: `${SERVICE_NAME} privacy notice`,
+      heading: SERVICE_NAME,
       headings: {
         a: 'Who collects your personal data',
         b: 'What personal data we collect and how it is used',
@@ -413,7 +412,7 @@ export const english = {
         l: 'Personal information charter'
       },
       paragraphs: {
-        a: 'This privacy notice explains how the Check air quality service processes and shares your personal data. If you have any queries about the content of this privacy notice, please email',
+        a: `This privacy notice explains how the ${SERVICE_NAME} service processes and shares your personal data. If you have any queries about the content of this privacy notice, please email`,
         b: 'Department for Environment, Food and Rural Affairs (Defra) is the controller for the personal data we collect:',
         c: 'Department for Environment, Food and Rural Affairs',
         d: 'Seacole Building',
@@ -427,8 +426,8 @@ export const english = {
         k: 'If you accept the Google analytical cookies, then we will collect:',
         l: 'your IP address so that we can collect location information of users to our service. This will help us see what geographical locations are using our service. ',
         m: 'your device and operating system to enable us to improve our service',
-        n: "the search term you used to find 'Check air quality' to enable us to improve our service",
-        o: "the pages you interact with in 'Check air quality' to enable us to improve our service",
+        n: `the search term you used to find ${SERVICE_NAME} to enable us to improve our service`,
+        o: `the pages you interact with in ${SERVICE_NAME} to enable us to improve our service`,
         q: 'The legal basis for processing your personal data to conduct research on the effectiveness of the service is consent. You do not have to provide your consent and you can withdraw your consent at any time.',
         r: 'The processing of your personal data is based on consent. We do not collect any information that could be personally linked to an individual; however, the IP address will be recorded for functionality of the service.',
         r2: 'If you have consented to accepting cookies, any information that we collect during this process cannot be removed as we will be unable to identify that information to a specific individual.',
@@ -465,12 +464,11 @@ export const english = {
         a23: 'You can',
         a24: 'opt in and out of cookie acceptance.'
       },
-      description:
-        'Check air quality takes your privacy seriously. Read this Privacy Policy to learn how we treat your personal data.'
+      description: `${SERVICE_NAME} takes your privacy seriously. Read this Privacy Policy to learn how we treat your personal data.`
     },
     cookies: {
       title: 'Cookies',
-      pageTitle: 'Cookies - Check air quality - GOV.UK',
+      pageTitle: `Cookies - ${SERVICE_NAME} - GOV.UK`,
       headings: {
         a: 'Essential cookies (strictly necessary)',
         b: 'Analytics cookies (optional)',
@@ -490,12 +488,10 @@ export const english = {
         text1: 'Name',
         text2: 'Purpose',
         text3: 'Expires',
-        text4:
-          'Helps us count how many people visit the Check air quality by telling us if you’ve visited before.',
+        text4: `Helps us count how many people visit the ${SERVICE_NAME} by telling us if you’ve visited before.`,
         text5: '2 years',
         text6: '_gid',
-        text7:
-          'Helps us count how many people visit the Check air quality by telling us if you’ve visited before.',
+        text7: `Helps us count how many people visit the ${SERVICE_NAME} by telling us if you’ve visited before.`,
         text8: '24 hours',
         text9: 'Used to reduce the number of requests.',
         text10: '1 minute',
@@ -505,15 +501,15 @@ export const english = {
       },
       paragraphs: {
         w: '',
-        a: 'Check air quality',
+        a: `${SERVICE_NAME}`,
         b: 'puts small files (known as ‘cookies’) on your computer.',
-        c: 'These cookies are used across the Check air quality website.',
+        c: `These cookies are used across the ${SERVICE_NAME} website.`,
         d: 'We only set cookies when JavaScript is running in your browser and you’ve accepted them. If you choose not to run Javascript, the information on this page will not apply to you.',
         e: 'Find out',
         f: 'how to manage cookies',
         g: 'from the Information Commissioner‘s Office.',
         h: 'We use an essential cookie to remember when you accept or reject cookies on our website.',
-        i: 'We use Google Analytics software to understand how people use the Check air quality. We do this to help make sure the site is meeting the needs of its users and to help us make improvements.',
+        i: `We use Google Analytics software to understand how people use the ${SERVICE_NAME}. We do this to help make sure the site is meeting the needs of its users and to help us make improvements.`,
         j: 'We do not collect or store your personal information (for example your name or address) so this information cannot be used to identify who you are.',
         k: 'We do not allow Google to use or share our analytics data.',
         l: 'Google Analytics stores information about:',
@@ -531,12 +527,11 @@ export const english = {
         ga4: 'and',
         ga5: 'will only be active if you accept the cookies. However, if you do not accept cookies, they may still appear in your cookie session, but they will not be active.'
       },
-      description:
-        'Check air quality uses cookies. By using this service you agree to our use of cookies.'
+      description: `${SERVICE_NAME} uses cookies. By using this service you agree to our use of cookies.`
     },
     accessibility: {
       title: 'Accessibility Statement',
-      pageTitle: 'Accessibility Statement - Check air quality - GOV.UK',
+      pageTitle: `Accessibility Statement - ${SERVICE_NAME} - GOV.UK`,
       headings: {
         a: 'Compliance status',
         b: 'Preparation of this accessibility statement',
@@ -554,8 +549,7 @@ export const english = {
         h: 'The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’).',
         i: 'If you’re not happy with how we respond to your complaint, contact the Equality Advisory and Support Service (EASS).'
       },
-      description:
-        'Check air quality is committed to improving accessibility for all web, mobile, and app users, guided by the latest Web Content Accessibility Guidelines (WCAG).'
+      description: `${SERVICE_NAME} is committed to improving accessibility for all web, mobile, and app users, guided by the latest Web Content Accessibility Guidelines (WCAG).`
     }
   }
 }

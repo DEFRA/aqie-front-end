@@ -1,5 +1,6 @@
 import { proxyFetch } from '../../../server/common/helpers/proxy.js'
 import { createLogger } from '../../../server/common/helpers/logging/logger.js'
+import { WRONG_POSTCODE } from '../../data/constants.js'
 const logger = createLogger()
 
 async function catchProxyFetchError(url, options, shouldCallApi) {
@@ -28,7 +29,7 @@ async function catchProxyFetchError(url, options, shouldCallApi) {
       return [error]
     }
   }
-  return [statusCode, 'wrong postcode']
+  return [statusCode, WRONG_POSTCODE]
 }
 
 export { catchProxyFetchError }

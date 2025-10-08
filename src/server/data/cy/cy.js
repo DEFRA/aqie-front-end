@@ -15,6 +15,8 @@ export const calendarWelsh = [
   'Rhagfyr'
 ]
 
+// Welsh page not found constant
+export const PAGE_NOT_FOUND_CY = 'Tudalen heb ei chanfod'
 export const welsh = {
   home: {
     pageTitle: 'Gwirio ansawdd aer - GOV.UK',
@@ -90,7 +92,7 @@ export const welsh = {
       e: 'rhoi cod post cywir',
       f: 'Os buoch chi’n chwilio am le yng Ngogledd Iwerddon, Gwirio eich bod wedi rhoi’r cod post cywir.',
       g: 'Ewch yn ôl i chwilio am leoliad',
-      h: 'Tudalen heb ei chanfod'
+      h: PAGE_NOT_FOUND_CY
     }
   },
   notFoundUrl: {
