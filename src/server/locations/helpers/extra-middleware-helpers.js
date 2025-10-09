@@ -4,8 +4,13 @@ import { handleSingleMatchHelper } from './handle-single-match-helper.js'
 import { handleMultipleMatchesHelper } from './handle-multiple-match-helper.js'
 import { createLogger } from '../../common/helpers/logging/logger.js'
 import { english } from '../../data/en/en.js'
+import {
+  STATUS_NOT_FOUND,
+  PAGE_NOT_FOUND_MESSAGE
+} from '../../data/constants.js'
 
 const logger = createLogger()
+
 // Helper function to handle redirection for invalid input
 const handleErrorInputAndRedirect = (
   request,
@@ -78,10 +83,10 @@ const handleUKLocationType = async (request, h, params) => {
     // '' Render error view directly to avoid redirect to catchAll
     return h
       .view('error/index', {
-        pageTitle: 'Page not found',
-        heading: 'Page not found',
-        statusCode: 404,
-        message: 'Page not found',
+        pageTitle: PAGE_NOT_FOUND_MESSAGE,
+        heading: PAGE_NOT_FOUND_MESSAGE,
+        statusCode: STATUS_NOT_FOUND,
+        message: PAGE_NOT_FOUND_MESSAGE,
         url: request.path,
         notFoundUrl: english.notFoundUrl,
         displayBacklink: false,
@@ -91,7 +96,7 @@ const handleUKLocationType = async (request, h, params) => {
         serviceName: english.multipleLocations.serviceName,
         lang
       })
-      .code(404)
+      .code(STATUS_NOT_FOUND)
       .takeover()
   }
   return h.redirect('/location-not-found').takeover()

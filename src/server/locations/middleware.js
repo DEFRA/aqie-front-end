@@ -12,6 +12,7 @@ import {
   LOCATION_TYPE_NI,
   LOCATION_NOT_FOUND_URL,
   WRONG_POSTCODE,
+  STATUS_NOT_FOUND,
   REDIRECT_STATUS_CODE
 } from '../data/constants.js'
 import { handleUKLocationType } from './helpers/extra-middleware-helpers.js'
@@ -40,7 +41,7 @@ const handleLocationDataNotFound = (
       .view('error/index', {
         pageTitle: english.notFoundUrl.nonService.pageTitle,
         heading: 'Page not found',
-        statusCode: 404,
+        statusCode: STATUS_NOT_FOUND,
         message: 'Page not found',
         url: request.path,
         notFoundUrl: english.notFoundUrl,
@@ -51,7 +52,7 @@ const handleLocationDataNotFound = (
         serviceName: english.multipleLocations.serviceName,
         lang
       })
-      .code(404)
+      .code(STATUS_NOT_FOUND)
       .takeover()
   }
   return h.redirect('location-not-found').takeover()

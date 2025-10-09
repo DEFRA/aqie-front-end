@@ -26,6 +26,9 @@ const filters = require('../src/config/nunjucks/filters/index.js')
 if (filters && filters.addDaysToTodayAbrev) {
   filters.addDaysToTodayAbrev(env)
 }
+if (filters && filters.addDaysToTodayAbrevWelsh) {
+  filters.addDaysToTodayAbrevWelsh(env)
+}
 
 describe('forecast partial in DAQI tabs', () => {
   it('renders DAQI numbered block and tabs structure', () => {

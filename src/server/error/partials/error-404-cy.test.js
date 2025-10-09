@@ -1,5 +1,6 @@
 import nunjucks from 'nunjucks'
 import path from 'path'
+import { PAGE_NOT_FOUND_CY } from '../../data/cy/cy.js'
 
 describe('Nunjucks Template', () => {
   let env
@@ -47,7 +48,7 @@ describe('Nunjucks Template', () => {
     const context = {
       notFoundUrl: {
         nonService: {
-          heading: 'Tudalen heb ei chanfod',
+          heading: PAGE_NOT_FOUND_CY,
           paragraphs: {
             a: 'Mae’n ddrwg gennym, ni allwn ddod o hyd i’r dudalen rydych yn chwilio amdani.',
             b: 'Gwiriwch y cyfeiriad URL a rhowch gynnig arall arni.',
@@ -62,7 +63,7 @@ describe('Nunjucks Template', () => {
     const result = env.render('error-404-cy.njk', context)
     const html = result.replace(/\s+/g, ' ')
     expect(html).toContain(
-      '<h1 class="govuk-heading-xl">Tudalen heb ei chanfod 404</h1>'
+      `<h1 class="govuk-heading-xl">${PAGE_NOT_FOUND_CY} 404</h1>`
     )
     expect(html).toContain(
       '<p class="govuk-body">Mae’n ddrwg gennym, ni allwn ddod o hyd i’r dudalen rydych yn chwilio amdani.</p>'

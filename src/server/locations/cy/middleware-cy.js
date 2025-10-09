@@ -1,38 +1,15 @@
-import * as airQualityData from '../../data/cy/air-quality.js'
-import { fetchData } from '../helpers/fetch-data.js'
-import { welsh, calendarWelsh } from '../../data/cy/cy.js'
-import { calendarEnglish } from '../../data/en/en.js'
-import {
-  siteTypeDescriptions,
-  pollutantTypes
-} from '../../data/cy/monitoring-sites.js'
-import { handleErrorInputAndRedirect } from '../helpers/error-input-and-redirect.js'
-import {
-  handleSingleMatch,
-  handleMultipleMatches,
-  processMatches,
-  getTitleAndHeaderTitle,
-  getLanguageDates,
-  getFormattedDateSummary
-} from '../helpers/middleware-helpers.js'
-import {
-  LANG_CY,
-  LOCATION_TYPE_UK,
-  LOCATION_TYPE_NI,
-  REDIRECT_STATUS_CODE
-} from '../../data/constants.js'
+import { welsh } from '../../data/cy/cy.js'
+import { LANG_CY, REDIRECT_STATUS_CODE } from '../../data/constants.js'
 import { getMonth } from '../helpers/location-type-util.js'
 import {
-  convertStringToHyphenatedLowercaseWords,
-  isValidFullPostcodeUK,
-  isValidFullPostcodeNI,
-  isValidPartialPostcodeUK,
-  isValidPartialPostcodeNI,
-  isOnlyWords
-} from '../helpers/convert-string.js'
-import { sentenceCase } from '../../common/helpers/sentence-case.js'
-import { convertFirstLetterIntoUppercase } from '../helpers/convert-first-letter-into-upper-case.js'
-import { transformKeys } from '../helpers/transform-summary-keys.js'
+  validateInputAndHandleErrors,
+  fetchAndProcessData,
+  setSessionData,
+  processLocationByType
+} from './helpers/cy-middleware-utils.js'
+import { handleLocationNotFound } from './helpers/cy-validation-helpers.js'
+
+// '' Main Welsh middleware function for location search
 
 const searchMiddlewareCy = async (request, h) => {
   const { query, payload } = request
@@ -46,330 +23,105 @@ const searchMiddlewareCy = async (request, h) => {
     cookieBanner,
     multipleLocations
   } = welsh
+
   let locationType = request?.payload?.locationType
   const searchTerms = query?.searchTerms?.toUpperCase()
   const secondSearchTerm = query?.secondSearchTerm?.toUpperCase()
   const searchTermsLocationType = query?.searchTermsLocationType
-  const redirectError = handleErrorInputAndRedirect(
+
+  // '' Validate input and handle errors
+  const validationResult = await validateInputAndHandleErrors(
     request,
     h,
     lang,
     payload,
-    searchTerms
-  )
-  if (!redirectError.locationType) {
-    return redirectError
-  }
-  let { userLocation, locationNameOrPostcode } = redirectError
-  if (searchTerms) {
-    userLocation = searchTerms
-    locationType = searchTermsLocationType
-  }
-  if (locationType === 'Invalid Postcode') {
-    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-    request.yar.clear('searchTermsSaved')
-    // '' Render error view directly
-    return h
-      .view('error/index', {
-        pageTitle: welsh.notFoundUrl.nonService.pageTitle,
-        heading: 'Tudalen heb ei chanfod',
-        statusCode: 404,
-        message: 'Tudalen heb ei chanfod',
-        url: request.path,
-        notFoundUrl: welsh.notFoundUrl,
-        displayBacklink: false,
-        phaseBanner: welsh.phaseBanner,
-        footerTxt: welsh.footerTxt,
-        cookieBanner: welsh.cookieBanner,
-        serviceName: welsh.multipleLocations.serviceName,
-        lang
-      })
-      .code(404)
-      .takeover()
-  }
-  let isLocationValidPostcode
-  if (redirectError.locationType === 'uk-location') {
-    isLocationValidPostcode = isValidFullPostcodeUK(userLocation)
-  } else if (redirectError.locationType === 'ni-location') {
-    isLocationValidPostcode = isValidFullPostcodeNI(userLocation)
-  } else {
-    isLocationValidPostcode = false
-  }
-  const wordsOnly = isOnlyWords(userLocation)
-  if (!isLocationValidPostcode && !wordsOnly) {
-    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-    request.yar.clear('searchTermsSaved')
-    if (searchTerms) {
-      return h
-        .view('error/index', {
-          pageTitle: welsh.notFoundUrl.nonService.pageTitle,
-          heading: 'Tudalen heb ei chanfod',
-          statusCode: 404,
-          message: 'Tudalen heb ei chanfod',
-          url: request.path,
-          notFoundUrl: welsh.notFoundUrl,
-          displayBacklink: false,
-          phaseBanner: welsh.phaseBanner,
-          footerTxt: welsh.footerTxt,
-          cookieBanner: welsh.cookieBanner,
-          serviceName: welsh.multipleLocations.serviceName,
-          lang
-        })
-        .code(404)
-        .takeover()
-    }
-    return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
-  }
-  const { getDailySummary, getForecasts, getOSPlaces } = await fetchData(
-    request,
     {
-      locationType,
-      userLocation,
-      locationNameOrPostcode,
-      lang,
       searchTerms,
-      secondSearchTerm
-    }
+      searchTermsLocationType,
+      initialLocationType: locationType
+    },
+    welsh
   )
-  if (!getDailySummary) {
-    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-    request.yar.clear('searchTermsSaved')
-    return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
+  if (validationResult.error) {
+    return validationResult.error
   }
-  const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
-    getDailySummary?.issue_date,
-    calendarEnglish,
-    calendarWelsh,
-    lang
+
+  const {
+    userLocation,
+    locationNameOrPostcode,
+    locationType: validatedLocationType
+  } = validationResult
+  locationType = validatedLocationType
+
+  // '' Fetch and process data
+  const dataResult = await fetchAndProcessData(
+    request,
+    locationType,
+    userLocation,
+    locationNameOrPostcode,
+    lang,
+    searchTerms,
+    secondSearchTerm
   )
-  const { transformedDailySummary } = transformKeys(getDailySummary, lang)
-  const { englishDate, welshDate } = getLanguageDates(
-    formattedDateSummary,
-    getMonthSummary,
-    calendarEnglish,
-    calendarWelsh
-  )
-  request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-  request.yar.set('searchTermsSaved', searchTerms)
+  if (dataResult.error) {
+    return handleLocationNotFound(request, h, locationNameOrPostcode, lang)
+  }
 
-  if (locationType === LOCATION_TYPE_UK) {
-    let { results } = getOSPlaces
+  const {
+    getDailySummary,
+    getForecasts,
+    getOSPlaces,
+    transformedDailySummary,
+    englishDate,
+    welshDate
+  } = dataResult
 
-    let isPartialPostcode = isValidPartialPostcodeUK(searchTerms)
-    const isFullPostcode = isValidFullPostcodeUK(searchTerms)
-    const wordsOnly = isOnlyWords(searchTerms)
-    if (searchTerms && !wordsOnly && !isPartialPostcode && !isFullPostcode) {
-      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-      request.yar.clear('searchTermsSaved')
-      return h
-        .view('error/index', {
-          pageTitle: welsh.notFoundUrl.nonService.pageTitle,
-          heading: 'Tudalen heb ei chanfod',
-          statusCode: 404,
-          message: 'Tudalen heb ei chanfod',
-          url: request.path,
-          notFoundUrl: welsh.notFoundUrl,
-          displayBacklink: false,
-          phaseBanner: welsh.phaseBanner,
-          footerTxt: welsh.footerTxt,
-          cookieBanner: welsh.cookieBanner,
-          serviceName: welsh.multipleLocations.serviceName,
-          lang
-        })
-        .code(404)
-        .takeover()
-    }
-    if (
-      (!results || results.length === 0 || getOSPlaces === 'wrong postcode') &&
-      !searchTerms
-    ) {
-      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-      request.yar.clear('searchTermsSaved')
-      return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
-    }
-    if (!results && searchTerms) {
-      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-      request.yar.clear('searchTermsSaved')
-      return h
-        .view('error/index', {
-          pageTitle: welsh.notFoundUrl.nonService.pageTitle,
-          heading: 'Tudalen heb ei chanfod',
-          statusCode: 404,
-          message: 'Tudalen heb ei chanfod',
-          url: request.path,
-          notFoundUrl: welsh.notFoundUrl,
-          displayBacklink: false,
-          phaseBanner: welsh.phaseBanner,
-          footerTxt: welsh.footerTxt,
-          cookieBanner: welsh.cookieBanner,
-          serviceName: welsh.multipleLocations.serviceName,
-          lang
-        })
-        .code(404)
-        .takeover()
-    }
-    // Remove duplicates from the results array
-    results = Array.from(
-      new Set(results.map((item) => JSON.stringify(item)))
-    ).map((item) => JSON.parse(item))
+  // '' Set session data
+  setSessionData(request, locationNameOrPostcode, lang, searchTerms)
 
-    const { selectedMatches, exactWordFirstTerm, exactWordSecondTerm } =
-      processMatches(
-        results,
-        userLocation,
-        locationNameOrPostcode,
-        searchTerms,
-        secondSearchTerm
-      )
-    if (
-      searchTerms !== undefined &&
-      selectedMatches.length === 0 &&
-      (!exactWordFirstTerm || !exactWordSecondTerm)
-    ) {
-      request.yar.clear('searchTermsSaved')
-      return h
-        .redirect(
-          `error/index?from=${encodeURIComponent(request.url.pathname)}`
-        )
-        .takeover()
-    }
-    if (selectedMatches.length === 0) {
-      request.yar.clear('searchTermsSaved')
-      return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
-    }
-    userLocation = userLocation.toLowerCase()
-    userLocation = userLocation.charAt(0).toUpperCase() + userLocation.slice(1)
-    const { title, headerTitle, urlRoute } = getTitleAndHeaderTitle(
-      selectedMatches,
-      locationNameOrPostcode
-    )
-    const headerTitleRoute = convertStringToHyphenatedLowercaseWords(
-      String(urlRoute)
-    )
-    const titleRoute = convertStringToHyphenatedLowercaseWords(String(title))
-    isPartialPostcode = isValidPartialPostcodeUK(locationNameOrPostcode)
-    if (selectedMatches.length === 1) {
-      return handleSingleMatch(h, request, {
-        searchTerms,
-        selectedMatches,
-        getForecasts,
-        getDailySummary,
-        transformedDailySummary,
-        englishDate,
-        welshDate,
-        month,
-        headerTitle,
-        titleRoute,
-        headerTitleRoute,
-        title,
-        urlRoute,
-        locationType,
-        lang
-      })
-    } else if (
-      (selectedMatches.length > 1 &&
-        locationNameOrPostcode.length >= 2 &&
-        isPartialPostcode) ||
-      (selectedMatches.length > 1 &&
-        locationNameOrPostcode.length >= 3 &&
-        !isPartialPostcode)
-    ) {
-      return handleMultipleMatches(h, request, {
-        selectedMatches,
-        headerTitleRoute,
-        titleRoute,
-        locationNameOrPostcode,
-        userLocation,
-        getForecasts,
-        multipleLocations,
-        airQualityData,
-        siteTypeDescriptions,
-        pollutantTypes,
-        getDailySummary,
-        transformedDailySummary,
-        footerTxt,
-        phaseBanner,
-        backlink,
-        cookieBanner,
-        calendarWelsh,
-        headerTitle,
-        title,
-        month,
-        welshDate,
-        englishDate,
-        locationType,
-        lang
-      })
-    } else {
-      request.yar.clear('searchTermsSaved')
-      return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
-    }
-  } else if (locationType === LOCATION_TYPE_NI) {
-    const isPartialPostcode = isValidPartialPostcodeNI(locationNameOrPostcode)
-    if (isPartialPostcode) {
-      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-      request.yar.clear('searchTermsSaved')
-      return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
-    }
-    const { getNIPlaces } = await fetchData(request, {
-      locationType,
+  // '' Process based on location type
+  return processLocationByType(request, h, locationType, {
+    locationNameOrPostcode,
+    lang,
+    ukParams: {
+      getOSPlaces,
+      searchTerms,
+      secondSearchTerm,
       userLocation,
       locationNameOrPostcode,
       lang,
-      searchTerms,
-      secondSearchTerm
-    })
-    if (
-      !getNIPlaces?.results ||
-      getNIPlaces?.results.length === 0 ||
-      getNIPlaces === 'wrong postcode'
-    ) {
-      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-      request.yar.clear('searchTermsSaved')
-      return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
-    }
-    if (
-      !getNIPlaces?.results ||
-      getNIPlaces?.results.length === 0 ||
-      getNIPlaces === 'wrong postcode'
-    ) {
-      request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-      request.yar.clear('searchTermsSaved')
-      return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
-    }
-    let title = ''
-    let headerTitle = ''
-    let urlRoute = ''
-    title = `${getNIPlaces?.results[0].postcode}, ${sentenceCase(getNIPlaces?.results[0].town)} - ${home.pageTitle}`
-    headerTitle = `${getNIPlaces?.results[0].postcode}, ${sentenceCase(getNIPlaces?.results[0].town)}`
-    urlRoute = `${getNIPlaces?.results[0].postcode.toLowerCase()}`
-    title = convertFirstLetterIntoUppercase(title)
-    headerTitle = convertFirstLetterIntoUppercase(headerTitle)
-    urlRoute = urlRoute.replace(/\s+/g, '')
-    request.yar.clear('locationData')
-    request.yar.set('locationData', {
-      results: getNIPlaces?.results,
-      urlRoute,
-      locationType,
+      welsh,
+      getForecasts,
+      getDailySummary,
       transformedDailySummary,
       englishDate,
-      dailySummary: getDailySummary,
       welshDate,
-      getMonth: month,
-      title: `${multipleLocations.titlePrefix} ${headerTitle}`,
-      pageTitle: `${multipleLocations.titlePrefix} ${title}`,
-      getForecasts: getForecasts?.forecasts,
-      lang
-    })
-    return h
-      .redirect(`/lleoliad/${urlRoute}?lang=cy`)
-      .code(REDIRECT_STATUS_CODE)
-      .takeover()
-  } else {
-    // handle other location types
-    request.yar.clear('searchTermsSaved')
-    return h.redirect('/lleoliad-heb-ei-ganfod/cy').takeover()
-  }
+      month,
+      locationType,
+      multipleLocations,
+      footerTxt,
+      phaseBanner,
+      backlink,
+      cookieBanner
+    },
+    niParams: {
+      locationNameOrPostcode,
+      lang,
+      userLocation,
+      searchTerms,
+      secondSearchTerm,
+      locationType,
+      getDailySummary,
+      transformedDailySummary,
+      englishDate,
+      welshDate,
+      month,
+      multipleLocations,
+      getForecasts,
+      home,
+      redirectStatusCode: REDIRECT_STATUS_CODE
+    }
+  })
 }
 
 export { searchMiddlewareCy }

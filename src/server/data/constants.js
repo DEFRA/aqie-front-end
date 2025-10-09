@@ -3,8 +3,12 @@ import { dirname } from 'node:path'
 export const REFERER_PATH_INDEX = 3
 export const FORECAST_DAY_SLICE_LENGTH = 3
 export const LANG_SLICE_LENGTH = 2
+export const MIN_LOCATION_NAME_LENGTH = 3
 
 export const WELSH_TITLE = 'Gwirio ansawdd aer'
+export const PAGE_NOT_FOUND_MESSAGE = 'Page not found'
+export const LOCATION_NOT_FOUND_PATH_CY = '/lleoliad-heb-ei-ganfod/cy'
+export const ERROR_INDEX_PATH = 'error/index'
 export const LOCATION_TYPE_UK = 'uk-location'
 export const LOCATION_TYPE_NI = 'ni-location'
 export const SEARCH_LOCATION_PATH_EN = '/search-location'
@@ -16,6 +20,7 @@ export const SEARCH_LOCATION_ROUTE_CY = '/chwilio-lleoliad/cy?lang=cy'
 export const MULTIPLE_LOCATIONS_ROUTE_EN = '/multiple-results?lang=en'
 export const MULTIPLE_LOCATIONS_ROUTE_CY = '/canlyniadau-lluosog/cy?lang=cy'
 export const STATUS_UNAUTHORIZED = 401
+export const STATUS_NOT_FOUND = 404
 export const STATUS_INTERNAL_SERVER_ERROR = 500
 export const REDIRECT_PATH_EN = '/search-location?lang=en'
 export const REDIRECT_PATH_CY = 'chwilio-lleoliad/cy?lang=cy'

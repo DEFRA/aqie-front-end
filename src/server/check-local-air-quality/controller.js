@@ -16,6 +16,7 @@ const handleHomeRequest = (request, h, content = english) => {
     description: home.description,
     metaSiteUrl,
     heading: home.heading,
+    predictedLevelsHeading: content.predictedLevelsHeading,
     page: home.page,
     paragraphs: home.paragraphs,
     label: home.button,
