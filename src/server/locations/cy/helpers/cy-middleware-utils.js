@@ -24,11 +24,12 @@ export const validateInputAndHandleErrors = async (
   h,
   lang,
   payload,
-  searchTerms,
-  searchTermsLocationType,
-  initialLocationType,
+  searchOptions,
   welsh
 ) => {
+  const { searchTerms, searchTermsLocationType, initialLocationType } =
+    searchOptions
+
   // '' Handle error input and redirection
   const redirectError = handleErrorInputAndRedirect(
     request,

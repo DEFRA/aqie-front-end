@@ -35,9 +35,11 @@ const searchMiddlewareCy = async (request, h) => {
     h,
     lang,
     payload,
-    searchTerms,
-    searchTermsLocationType,
-    locationType,
+    {
+      searchTerms,
+      searchTermsLocationType,
+      initialLocationType: locationType
+    },
     welsh
   )
   if (validationResult.error) {

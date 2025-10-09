@@ -28,14 +28,11 @@ import {
   handleLocationNotFound
 } from './cy-validation-helpers.js'
 
-// '' Helper function to handle matched locations
-export const handleMatchedLocations = (
+// '' Helper function to prepare location data
+const prepareLocationData = (
   selectedMatches,
   locationNameOrPostcode,
-  userLocation,
-  h,
-  request,
-  params
+  userLocation
 ) => {
   const normalizedUserLocation =
     userLocation.toLowerCase().charAt(0).toUpperCase() + userLocation.slice(1)
@@ -51,6 +48,21 @@ export const handleMatchedLocations = (
     locationNameOrPostcode
   )
 
+  return {
+    normalizedUserLocation,
+    title,
+    headerTitle,
+    urlRoute,
+    headerTitleRoute,
+    titleRoute,
+    isCurrentPartialPostcode
+  }
+}
+
+// '' Helper function to build common parameters
+const buildCommonParams = (selectedMatches, locationData, params) => {
+  const { title, headerTitle, urlRoute, headerTitleRoute, titleRoute } =
+    locationData
   const {
     getForecasts,
     getDailySummary,
@@ -64,11 +76,10 @@ export const handleMatchedLocations = (
     phaseBanner,
     backlink,
     cookieBanner,
-    lang,
-    searchTerms
+    lang
   } = params
 
-  const commonParams = {
+  return {
     selectedMatches,
     headerTitle,
     titleRoute,
@@ -93,7 +104,20 @@ export const handleMatchedLocations = (
     calendarWelsh,
     lang
   }
+}
 
+// '' Helper function to route based on match count and criteria
+const routeBasedOnMatches = (
+  selectedMatches,
+  locationNameOrPostcode,
+  isCurrentPartialPostcode,
+  h,
+  request,
+  commonParams,
+  searchTerms,
+  normalizedUserLocation,
+  lang
+) => {
   if (selectedMatches.length === 1) {
     return handleSingleMatch(h, request, {
       ...commonParams,
@@ -115,6 +139,39 @@ export const handleMatchedLocations = (
   } else {
     return handleLocationNotFound(request, h, locationNameOrPostcode, lang)
   }
+}
+
+// '' Helper function to handle matched locations
+export const handleMatchedLocations = (
+  selectedMatches,
+  locationNameOrPostcode,
+  userLocation,
+  h,
+  request,
+  params
+) => {
+  // '' Prepare location data
+  const locationData = prepareLocationData(
+    selectedMatches,
+    locationNameOrPostcode,
+    userLocation
+  )
+
+  // '' Build common parameters
+  const commonParams = buildCommonParams(selectedMatches, locationData, params)
+
+  // '' Route based on matches
+  return routeBasedOnMatches(
+    selectedMatches,
+    locationNameOrPostcode,
+    locationData.isCurrentPartialPostcode,
+    h,
+    request,
+    commonParams,
+    params.searchTerms,
+    locationData.normalizedUserLocation,
+    params.lang
+  )
 }
 
 // '' Helper function to process UK locations
@@ -145,14 +202,20 @@ export const processUKLocation = async (request, h, params) => {
   // '' Validate and process results
   const resultsValidation = validateAndProcessResults(
     getOSPlaces,
-    searchTerms,
-    request,
-    h,
-    locationNameOrPostcode,
-    lang,
-    welsh,
-    userLocation,
-    secondSearchTerm
+    {
+      searchTerms,
+      userLocation,
+      secondSearchTerm
+    },
+    {
+      request,
+      h
+    },
+    {
+      locationNameOrPostcode,
+      lang
+    },
+    welsh
   )
   if (!resultsValidation.isValid) {
     return resultsValidation.response
@@ -213,7 +276,7 @@ export const processNILocation = async (request, h, params) => {
   const result = getNIPlaces.results[0]
   let title = `${result.postcode}, ${sentenceCase(result.town)} - ${home.pageTitle}`
   let headerTitle = `${result.postcode}, ${sentenceCase(result.town)}`
-  const urlRoute = result.postcode.toLowerCase().replace(/\s+/g, '')
+  const urlRoute = result.postcode.toLowerCase().replaceAll(/\s+/g, '')
 
   title = convertFirstLetterIntoUppercase(title)
   headerTitle = convertFirstLetterIntoUppercase(headerTitle)

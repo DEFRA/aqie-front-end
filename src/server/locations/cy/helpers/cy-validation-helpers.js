@@ -104,80 +104,192 @@ export const validateUKSearchTerms = (
   }
 }
 
-// '' Helper function to validate and process results
-export const validateAndProcessResults = (
+// '' Helper function to check if results are empty or invalid
+const isResultsEmpty = (results, getOSPlaces) => {
+  return !results || results.length === 0 || getOSPlaces === WRONG_POSTCODE
+}
+
+// '' Helper function to handle no results without search terms
+const handleNoResultsWithoutSearch = (
+  request,
+  h,
+  locationNameOrPostcode,
+  lang
+) => {
+  return {
+    isValid: false,
+    response: handleLocationNotFound(request, h, locationNameOrPostcode, lang)
+  }
+}
+
+// '' Helper function to handle no results with search terms
+const handleNoResultsWithSearch = (
+  request,
+  h,
+  locationNameOrPostcode,
+  lang,
+  welshContent
+) => {
+  return {
+    isValid: false,
+    response: handleLocationNotFound(
+      request,
+      h,
+      locationNameOrPostcode,
+      lang,
+      true,
+      welshContent
+    )
+  }
+}
+
+// '' Helper function to check if results are valid
+const checkResultsExist = (
   getOSPlaces,
   searchTerms,
   request,
   h,
   locationNameOrPostcode,
   lang,
-  welshContent,
-  userLocation,
-  secondSearchTerm
+  welshContent
 ) => {
-  let { results } = getOSPlaces
+  const { results } = getOSPlaces
 
-  // '' Check if results exist
+  // '' Check if results are empty or invalid
+  const resultsEmpty = isResultsEmpty(results, getOSPlaces)
+
+  // '' Handle case without search terms
+  if (resultsEmpty && !searchTerms) {
+    return handleNoResultsWithoutSearch(
+      request,
+      h,
+      locationNameOrPostcode,
+      lang
+    )
+  }
+
+  // '' Handle case with search terms but no results
+  if (!results && searchTerms) {
+    return handleNoResultsWithSearch(
+      request,
+      h,
+      locationNameOrPostcode,
+      lang,
+      welshContent
+    )
+  }
+
+  return { isValid: true, results }
+}
+
+// '' Helper function to remove duplicate results
+const removeDuplicateResults = (results) => {
+  return Array.from(new Set(results.map((item) => JSON.stringify(item)))).map(
+    (item) => JSON.parse(item)
+  )
+}
+
+// '' Helper function to check if search terms have exact word matches
+const hasExactWordMatches = (exactWordFirstTerm, exactWordSecondTerm) => {
+  return exactWordFirstTerm && exactWordSecondTerm
+}
+
+// '' Helper function to handle search terms with no matches
+const handleSearchTermsNoMatches = (request, h) => {
+  request.yar.clear('searchTermsSaved')
+  return {
+    isValid: false,
+    response: h
+      .redirect(
+        `${ERROR_INDEX_PATH}?from=${encodeURIComponent(request.url.pathname)}`
+      )
+      .takeover()
+  }
+}
+
+// '' Helper function to validate matches
+const validateMatches = (
+  selectedMatches,
+  searchTerms,
+  exactWordFirstTerm,
+  exactWordSecondTerm,
+  request,
+  h,
+  locationNameOrPostcode,
+  lang
+) => {
+  // '' Handle search terms with no matches and no exact word matches
   if (
-    (!results || results.length === 0 || getOSPlaces === WRONG_POSTCODE) &&
-    !searchTerms
+    searchTerms !== undefined &&
+    selectedMatches.length === 0 &&
+    !hasExactWordMatches(exactWordFirstTerm, exactWordSecondTerm)
   ) {
+    return handleSearchTermsNoMatches(request, h)
+  }
+
+  // '' Handle no matches found
+  if (selectedMatches.length === 0) {
     return {
       isValid: false,
       response: handleLocationNotFound(request, h, locationNameOrPostcode, lang)
     }
   }
 
-  if (!results && searchTerms) {
-    return {
-      isValid: false,
-      response: handleLocationNotFound(
-        request,
-        h,
-        locationNameOrPostcode,
-        lang,
-        true,
-        welshContent
-      )
-    }
+  return { isValid: true }
+}
+
+// '' Helper function to validate and process results
+export const validateAndProcessResults = (
+  getOSPlaces,
+  searchParams,
+  requestContext,
+  locationParams,
+  welshContent
+) => {
+  const { searchTerms, userLocation, secondSearchTerm } = searchParams
+  const { request, h } = requestContext
+  const { locationNameOrPostcode, lang } = locationParams
+
+  // '' Check if results exist
+  const resultsCheck = checkResultsExist(
+    getOSPlaces,
+    searchTerms,
+    request,
+    h,
+    locationNameOrPostcode,
+    lang,
+    welshContent
+  )
+  if (!resultsCheck.isValid) {
+    return resultsCheck
   }
 
   // '' Remove duplicates from results
-  results = Array.from(
-    new Set(results.map((item) => JSON.stringify(item)))
-  ).map((item) => JSON.parse(item))
+  const cleanResults = removeDuplicateResults(resultsCheck.results)
 
+  // '' Process matches
   const { selectedMatches, exactWordFirstTerm, exactWordSecondTerm } =
     processMatches(
-      results,
+      cleanResults,
       userLocation,
       locationNameOrPostcode,
       searchTerms,
       secondSearchTerm
     )
 
-  if (
-    searchTerms !== undefined &&
-    selectedMatches.length === 0 &&
-    (!exactWordFirstTerm || !exactWordSecondTerm)
-  ) {
-    request.yar.clear('searchTermsSaved')
-    return {
-      isValid: false,
-      response: h
-        .redirect(
-          `${ERROR_INDEX_PATH}?from=${encodeURIComponent(request.url.pathname)}`
-        )
-        .takeover()
-    }
-  }
-
-  if (selectedMatches.length === 0) {
-    return {
-      isValid: false,
-      response: handleLocationNotFound(request, h, locationNameOrPostcode, lang)
-    }
+  // '' Validate matches
+  const matchValidation = validateMatches(
+    selectedMatches,
+    searchTerms,
+    exactWordFirstTerm,
+    exactWordSecondTerm,
+    request,
+    h,
+    locationNameOrPostcode,
+    lang
+  )
+  if (!matchValidation.isValid) {
+    return matchValidation
   }
 
   return {
