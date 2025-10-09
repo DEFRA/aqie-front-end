@@ -109,15 +109,20 @@ const buildCommonParams = (selectedMatches, locationData, params) => {
 // '' Helper function to route based on match count and criteria
 const routeBasedOnMatches = (
   selectedMatches,
-  locationNameOrPostcode,
-  isCurrentPartialPostcode,
-  h,
-  request,
+  requestContext,
+  locationContext,
   commonParams,
-  searchTerms,
-  normalizedUserLocation,
-  lang
+  routingParams
 ) => {
+  const { h, request } = requestContext
+  const {
+    locationNameOrPostcode,
+    isCurrentPartialPostcode,
+    normalizedUserLocation,
+    lang
+  } = locationContext
+  const { searchTerms } = routingParams
+
   if (selectedMatches.length === 1) {
     return handleSingleMatch(h, request, {
       ...commonParams,
@@ -163,14 +168,20 @@ export const handleMatchedLocations = (
   // '' Route based on matches
   return routeBasedOnMatches(
     selectedMatches,
-    locationNameOrPostcode,
-    locationData.isCurrentPartialPostcode,
-    h,
-    request,
+    {
+      h,
+      request
+    },
+    {
+      locationNameOrPostcode,
+      isCurrentPartialPostcode: locationData.isCurrentPartialPostcode,
+      normalizedUserLocation: locationData.normalizedUserLocation,
+      lang: params.lang
+    },
     commonParams,
-    params.searchTerms,
-    locationData.normalizedUserLocation,
-    params.lang
+    {
+      searchTerms: params.searchTerms
+    }
   )
 }
 

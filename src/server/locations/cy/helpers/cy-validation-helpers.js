@@ -208,16 +208,16 @@ const handleSearchTermsNoMatches = (request, h) => {
 }
 
 // '' Helper function to validate matches
-const validateMatches = (
-  selectedMatches,
-  searchTerms,
-  exactWordFirstTerm,
-  exactWordSecondTerm,
-  request,
-  h,
-  locationNameOrPostcode,
-  lang
-) => {
+const validateMatches = (matchData, requestContext, locationContext) => {
+  const {
+    selectedMatches,
+    searchTerms,
+    exactWordFirstTerm,
+    exactWordSecondTerm
+  } = matchData
+  const { request, h } = requestContext
+  const { locationNameOrPostcode, lang } = locationContext
+
   // '' Handle search terms with no matches and no exact word matches
   if (
     searchTerms !== undefined &&
@@ -279,14 +279,20 @@ export const validateAndProcessResults = (
 
   // '' Validate matches
   const matchValidation = validateMatches(
-    selectedMatches,
-    searchTerms,
-    exactWordFirstTerm,
-    exactWordSecondTerm,
-    request,
-    h,
-    locationNameOrPostcode,
-    lang
+    {
+      selectedMatches,
+      searchTerms,
+      exactWordFirstTerm,
+      exactWordSecondTerm
+    },
+    {
+      request,
+      h
+    },
+    {
+      locationNameOrPostcode,
+      lang
+    }
   )
   if (!matchValidation.isValid) {
     return matchValidation
