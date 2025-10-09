@@ -1,6 +1,6 @@
 import * as airQualityData from '../../data/cy/air-quality.js'
 import { fetchData } from '../helpers/fetch-data.js'
-import { welsh, calendarWelsh, PAGE_NOT_FOUND_CY } from '../../data/cy/cy.js'
+import { welsh, PAGE_NOT_FOUND_CY, calendarWelsh } from '../../data/cy/cy.js'
 import { calendarEnglish } from '../../data/en/en.js'
 import {
   siteTypeDescriptions,
@@ -45,25 +45,32 @@ const validateLocationPostcode = (userLocation, locationType) => {
     return isValidFullPostcodeUK(userLocation)
   } else if (locationType === 'ni-location') {
     return isValidFullPostcodeNI(userLocation)
+  } else {
+    // '' Handle other location types
+    return false
   }
-  return false
 }
 
 // '' Helper function to create error response
-const createErrorResponse = (h, welsh, lang, statusCode = STATUS_NOT_FOUND) => {
+const createErrorResponse = (
+  h,
+  welshTranslations,
+  lang,
+  statusCode = STATUS_NOT_FOUND
+) => {
   return h
     .view(ERROR_INDEX_PATH, {
-      pageTitle: welsh.notFoundUrl.nonService.pageTitle,
+      pageTitle: welshTranslations.notFoundUrl.nonService.pageTitle,
       heading: PAGE_NOT_FOUND_CY,
       statusCode,
       message: PAGE_NOT_FOUND_CY,
       url: '',
-      notFoundUrl: welsh.notFoundUrl,
+      notFoundUrl: welshTranslations.notFoundUrl,
       displayBacklink: false,
-      phaseBanner: welsh.phaseBanner,
-      footerTxt: welsh.footerTxt,
-      cookieBanner: welsh.cookieBanner,
-      serviceName: welsh.multipleLocations.serviceName,
+      phaseBanner: welshTranslations.phaseBanner,
+      footerTxt: welshTranslations.footerTxt,
+      cookieBanner: welshTranslations.cookieBanner,
+      serviceName: welshTranslations.multipleLocations.serviceName,
       lang
     })
     .code(statusCode)
@@ -77,79 +84,89 @@ const handleLocationNotFound = (
   locationNameOrPostcode,
   lang,
   isSearch = false,
-  welsh = null
+  welshLocale = null
 ) => {
   request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
   request.yar.clear('searchTermsSaved')
 
-  if (isSearch && welsh) {
-    return createErrorResponse(h, welsh, lang)
+  if (isSearch && welshLocale) {
+    return createErrorResponse(h, welshLocale, lang)
   }
   return h.redirect(LOCATION_NOT_FOUND_PATH_CY).takeover()
 }
 
-// '' Helper function to process UK locations
-const processUKLocation = async (request, h, params) => {
-  const {
-    getOSPlaces,
-    searchTerms,
-    secondSearchTerm,
-    userLocation,
-    locationNameOrPostcode,
-    lang,
-    welsh,
-    getForecasts,
-    getDailySummary,
-    transformedDailySummary,
-    englishDate,
-    welshDate,
-    month,
-    locationType,
-    multipleLocations,
-    airQualityData,
-    siteTypeDescriptions,
-    pollutantTypes,
-    footerTxt,
-    phaseBanner,
-    backlink,
-    cookieBanner,
-    calendarWelsh
-  } = params
-
-  let { results } = getOSPlaces
+// '' Helper function to validate UK search terms
+const validateUKSearchTerms = (
+  searchTerms,
+  request,
+  h,
+  locationNameOrPostcode,
+  lang,
+  welshData
+) => {
   const isPartialPostcode = isValidPartialPostcodeUK(searchTerms)
   const isFullPostcode = isValidFullPostcodeUK(searchTerms)
   const wordsOnly = isOnlyWords(searchTerms)
 
-  // '' Validate search terms
   if (searchTerms && !wordsOnly && !isPartialPostcode && !isFullPostcode) {
-    return handleLocationNotFound(
-      request,
-      h,
-      locationNameOrPostcode,
-      lang,
-      true,
-      welsh
-    )
+    return {
+      isValid: false,
+      response: handleLocationNotFound(
+        request,
+        h,
+        locationNameOrPostcode,
+        lang,
+        true,
+        welshData
+      )
+    }
   }
+
+  return {
+    isValid: true,
+    isPartialPostcode,
+    isFullPostcode,
+    wordsOnly
+  }
+}
+
+// '' Helper function to validate and process results
+const validateAndProcessResults = (
+  getOSPlaces,
+  searchTerms,
+  request,
+  h,
+  locationNameOrPostcode,
+  lang,
+  welshContent,
+  userLocation,
+  secondSearchTerm
+) => {
+  let { results } = getOSPlaces
 
   // '' Check if results exist
   if (
     (!results || results.length === 0 || getOSPlaces === WRONG_POSTCODE) &&
     !searchTerms
   ) {
-    return handleLocationNotFound(request, h, locationNameOrPostcode, lang)
+    return {
+      isValid: false,
+      response: handleLocationNotFound(request, h, locationNameOrPostcode, lang)
+    }
   }
 
   if (!results && searchTerms) {
-    return handleLocationNotFound(
-      request,
-      h,
-      locationNameOrPostcode,
-      lang,
-      true,
-      welsh
-    )
+    return {
+      isValid: false,
+      response: handleLocationNotFound(
+        request,
+        h,
+        locationNameOrPostcode,
+        lang,
+        true,
+        welshContent
+      )
+    }
   }
 
   // '' Remove duplicates from results
@@ -172,17 +189,38 @@ const processUKLocation = async (request, h, params) => {
     (!exactWordFirstTerm || !exactWordSecondTerm)
   ) {
     request.yar.clear('searchTermsSaved')
-    return h
-      .redirect(
-        `${ERROR_INDEX_PATH}?from=${encodeURIComponent(request.url.pathname)}`
-      )
-      .takeover()
+    return {
+      isValid: false,
+      response: h
+        .redirect(
+          `${ERROR_INDEX_PATH}?from=${encodeURIComponent(request.url.pathname)}`
+        )
+        .takeover()
+    }
   }
 
   if (selectedMatches.length === 0) {
-    return handleLocationNotFound(request, h, locationNameOrPostcode, lang)
+    return {
+      isValid: false,
+      response: handleLocationNotFound(request, h, locationNameOrPostcode, lang)
+    }
   }
 
+  return {
+    isValid: true,
+    selectedMatches
+  }
+}
+
+// '' Helper function to handle matched locations
+const handleMatchedLocations = (
+  selectedMatches,
+  locationNameOrPostcode,
+  userLocation,
+  h,
+  request,
+  params
+) => {
   const normalizedUserLocation =
     userLocation.toLowerCase().charAt(0).toUpperCase() + userLocation.slice(1)
   const { title, headerTitle, urlRoute } = getTitleAndHeaderTitle(
@@ -197,23 +235,53 @@ const processUKLocation = async (request, h, params) => {
     locationNameOrPostcode
   )
 
+  const {
+    getForecasts,
+    getDailySummary,
+    transformedDailySummary,
+    englishDate,
+    welshDate,
+    month,
+    locationType,
+    multipleLocations,
+    footerTxt,
+    phaseBanner,
+    backlink,
+    cookieBanner,
+    lang,
+    searchTerms
+  } = params
+
+  const commonParams = {
+    selectedMatches,
+    headerTitle,
+    titleRoute,
+    headerTitleRoute,
+    title,
+    urlRoute,
+    getForecasts,
+    getDailySummary,
+    transformedDailySummary,
+    englishDate,
+    welshDate,
+    month,
+    locationType,
+    multipleLocations,
+    airQualityData, // Use the imported namespace
+    siteTypeDescriptions,
+    pollutantTypes,
+    footerTxt,
+    phaseBanner,
+    backlink,
+    cookieBanner,
+    calendarWelsh,
+    lang
+  }
+
   if (selectedMatches.length === 1) {
     return handleSingleMatch(h, request, {
-      searchTerms,
-      selectedMatches,
-      getForecasts,
-      getDailySummary,
-      transformedDailySummary,
-      englishDate,
-      welshDate,
-      month,
-      headerTitle,
-      titleRoute,
-      headerTitleRoute,
-      title,
-      urlRoute,
-      locationType,
-      lang
+      ...commonParams,
+      searchTerms
     })
   } else if (
     (selectedMatches.length > 1 &&
@@ -224,34 +292,64 @@ const processUKLocation = async (request, h, params) => {
       !isCurrentPartialPostcode)
   ) {
     return handleMultipleMatches(h, request, {
-      selectedMatches,
-      headerTitleRoute,
-      titleRoute,
+      ...commonParams,
       locationNameOrPostcode,
-      userLocation: normalizedUserLocation,
-      getForecasts,
-      multipleLocations,
-      airQualityData,
-      siteTypeDescriptions,
-      pollutantTypes,
-      getDailySummary,
-      transformedDailySummary,
-      footerTxt,
-      phaseBanner,
-      backlink,
-      cookieBanner,
-      calendarWelsh,
-      headerTitle,
-      title,
-      month,
-      welshDate,
-      englishDate,
-      locationType,
-      lang
+      userLocation: normalizedUserLocation
     })
   } else {
     return handleLocationNotFound(request, h, locationNameOrPostcode, lang)
   }
+}
+
+// '' Helper function to process UK locations
+const processUKLocation = async (request, h, params) => {
+  const {
+    searchTerms,
+    locationNameOrPostcode,
+    lang,
+    getOSPlaces,
+    userLocation,
+    secondSearchTerm
+  } = params
+
+  // '' Validate search terms
+  const searchValidation = validateUKSearchTerms(
+    searchTerms,
+    request,
+    h,
+    locationNameOrPostcode,
+    lang,
+    welsh
+  )
+  if (!searchValidation.isValid) {
+    return searchValidation.response
+  }
+
+  // '' Validate and process results
+  const resultsValidation = validateAndProcessResults(
+    getOSPlaces,
+    searchTerms,
+    request,
+    h,
+    locationNameOrPostcode,
+    lang,
+    welsh,
+    userLocation,
+    secondSearchTerm
+  )
+  if (!resultsValidation.isValid) {
+    return resultsValidation.response
+  }
+
+  // '' Handle matched locations
+  return handleMatchedLocations(
+    resultsValidation.selectedMatches,
+    locationNameOrPostcode,
+    userLocation,
+    h,
+    request,
+    params
+  )
 }
 
 // '' Helper function to process NI locations
@@ -270,8 +368,7 @@ const processNILocation = async (request, h, params) => {
     month,
     multipleLocations,
     getForecasts,
-    home,
-    REDIRECT_STATUS_CODE
+    home
   } = params
 
   const isPartialPostcode = isValidPartialPostcodeNI(locationNameOrPostcode)
@@ -326,6 +423,147 @@ const processNILocation = async (request, h, params) => {
     .takeover()
 }
 
+// '' Helper function to validate input and handle initial errors
+const validateInputAndHandleErrors = async (
+  request,
+  h,
+  lang,
+  payload,
+  searchTerms,
+  searchTermsLocationType,
+  initialLocationType
+) => {
+  // '' Handle error input and redirection
+  const redirectError = handleErrorInputAndRedirect(
+    request,
+    h,
+    lang,
+    payload,
+    searchTerms
+  )
+  if (!redirectError.locationType) {
+    return { error: redirectError }
+  }
+
+  let { userLocation, locationNameOrPostcode } = redirectError
+  let locationType = initialLocationType
+  if (searchTerms) {
+    userLocation = searchTerms
+    locationType = searchTermsLocationType
+  }
+
+  // '' Handle invalid postcode
+  if (locationType === 'Invalid Postcode') {
+    return {
+      error: handleLocationNotFound(
+        request,
+        h,
+        locationNameOrPostcode,
+        lang,
+        true,
+        welsh
+      )
+    }
+  }
+
+  // '' Validate location input
+  const isLocationValidPostcode = validateLocationPostcode(
+    userLocation,
+    redirectError.locationType
+  )
+  const userLocationWordsOnly = isOnlyWords(userLocation)
+
+  if (!isLocationValidPostcode && !userLocationWordsOnly) {
+    return {
+      error: handleLocationNotFound(
+        request,
+        h,
+        locationNameOrPostcode,
+        lang,
+        Boolean(searchTerms),
+        welsh
+      )
+    }
+  }
+
+  return { userLocation, locationNameOrPostcode, locationType }
+}
+
+// '' Helper function to fetch and process data
+const fetchAndProcessData = async (
+  request,
+  locationType,
+  userLocation,
+  locationNameOrPostcode,
+  lang,
+  searchTerms,
+  secondSearchTerm
+) => {
+  // '' Fetch location data
+  const { getDailySummary, getForecasts, getOSPlaces } = await fetchData(
+    request,
+    {
+      locationType,
+      userLocation,
+      locationNameOrPostcode,
+      lang,
+      searchTerms,
+      secondSearchTerm
+    }
+  )
+
+  if (!getDailySummary) {
+    return { error: 'NO_DAILY_SUMMARY' }
+  }
+
+  // '' Process date and summary data
+  const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
+    getDailySummary?.issue_date,
+    calendarEnglish,
+    calendarWelsh,
+    lang
+  )
+  const { transformedDailySummary } = transformKeys(getDailySummary, lang)
+  const { englishDate, welshDate } = getLanguageDates(
+    formattedDateSummary,
+    getMonthSummary,
+    calendarEnglish,
+    calendarWelsh
+  )
+
+  return {
+    getDailySummary,
+    getForecasts,
+    getOSPlaces,
+    transformedDailySummary,
+    englishDate,
+    welshDate
+  }
+}
+
+// '' Helper function to set session data
+const setSessionData = (request, locationNameOrPostcode, lang, searchTerms) => {
+  request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+  request.yar.set('searchTermsSaved', searchTerms)
+}
+
+// '' Helper function to process location based on type
+const processLocationByType = (request, h, locationType, processParams) => {
+  if (locationType === LOCATION_TYPE_UK) {
+    return processUKLocation(request, h, processParams.ukParams)
+  } else if (locationType === LOCATION_TYPE_NI) {
+    return processNILocation(request, h, processParams.niParams)
+  } else {
+    // '' Handle other location types
+    return handleLocationNotFound(
+      request,
+      h,
+      processParams.locationNameOrPostcode,
+      processParams.lang
+    )
+  }
+}
+
 const searchMiddlewareCy = async (request, h) => {
   const { query, payload } = request
   const lang = LANG_CY
@@ -344,92 +582,58 @@ const searchMiddlewareCy = async (request, h) => {
   const secondSearchTerm = query?.secondSearchTerm?.toUpperCase()
   const searchTermsLocationType = query?.searchTermsLocationType
 
-  // '' Handle error input and redirection
-  const redirectError = handleErrorInputAndRedirect(
+  // '' Validate input and handle errors
+  const validationResult = await validateInputAndHandleErrors(
     request,
     h,
     lang,
     payload,
-    searchTerms
+    searchTerms,
+    searchTermsLocationType,
+    locationType
   )
-  if (!redirectError.locationType) {
-    return redirectError
+  if (validationResult.error) {
+    return validationResult.error
   }
 
-  let { userLocation, locationNameOrPostcode } = redirectError
-  if (searchTerms) {
-    userLocation = searchTerms
-    locationType = searchTermsLocationType
-  }
-
-  // '' Handle invalid postcode
-  if (locationType === 'Invalid Postcode') {
-    return handleLocationNotFound(
-      request,
-      h,
-      locationNameOrPostcode,
-      lang,
-      true,
-      welsh
-    )
-  }
-
-  // '' Validate location input
-  const isLocationValidPostcode = validateLocationPostcode(
+  const {
     userLocation,
-    redirectError.locationType
-  )
-  const userLocationWordsOnly = isOnlyWords(userLocation)
+    locationNameOrPostcode,
+    locationType: validatedLocationType
+  } = validationResult
+  locationType = validatedLocationType
 
-  if (!isLocationValidPostcode && !userLocationWordsOnly) {
-    return handleLocationNotFound(
-      request,
-      h,
-      locationNameOrPostcode,
-      lang,
-      Boolean(searchTerms),
-      welsh
-    )
-  }
-  // '' Fetch location data
-  const { getDailySummary, getForecasts, getOSPlaces } = await fetchData(
+  // '' Fetch and process data
+  const dataResult = await fetchAndProcessData(
     request,
-    {
-      locationType,
-      userLocation,
-      locationNameOrPostcode,
-      lang,
-      searchTerms,
-      secondSearchTerm
-    }
+    locationType,
+    userLocation,
+    locationNameOrPostcode,
+    lang,
+    searchTerms,
+    secondSearchTerm
   )
-
-  if (!getDailySummary) {
+  if (dataResult.error) {
     return handleLocationNotFound(request, h, locationNameOrPostcode, lang)
   }
 
-  // '' Process date and summary data
-  const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
-    getDailySummary?.issue_date,
-    calendarEnglish,
-    calendarWelsh,
-    lang
-  )
-  const { transformedDailySummary } = transformKeys(getDailySummary, lang)
-  const { englishDate, welshDate } = getLanguageDates(
-    formattedDateSummary,
-    getMonthSummary,
-    calendarEnglish,
-    calendarWelsh
-  )
+  const {
+    getDailySummary,
+    getForecasts,
+    getOSPlaces,
+    transformedDailySummary,
+    englishDate,
+    welshDate
+  } = dataResult
 
   // '' Set session data
-  request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-  request.yar.set('searchTermsSaved', searchTerms)
+  setSessionData(request, locationNameOrPostcode, lang, searchTerms)
 
   // '' Process based on location type
-  if (locationType === LOCATION_TYPE_UK) {
-    return processUKLocation(request, h, {
+  return processLocationByType(request, h, locationType, {
+    locationNameOrPostcode,
+    lang,
+    ukParams: {
       getOSPlaces,
       searchTerms,
       secondSearchTerm,
@@ -453,9 +657,8 @@ const searchMiddlewareCy = async (request, h) => {
       backlink,
       cookieBanner,
       calendarWelsh
-    })
-  } else if (locationType === LOCATION_TYPE_NI) {
-    return processNILocation(request, h, {
+    },
+    niParams: {
       locationNameOrPostcode,
       lang,
       userLocation,
@@ -470,12 +673,9 @@ const searchMiddlewareCy = async (request, h) => {
       multipleLocations,
       getForecasts,
       home,
-      REDIRECT_STATUS_CODE
-    })
-  } else {
-    // '' Handle other location types
-    return handleLocationNotFound(request, h, locationNameOrPostcode, lang)
-  }
+      redirectStatusCode: REDIRECT_STATUS_CODE
+    }
+  })
 }
 
 export { searchMiddlewareCy }

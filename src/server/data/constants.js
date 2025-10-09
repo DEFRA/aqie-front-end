@@ -6,6 +6,7 @@ export const LANG_SLICE_LENGTH = 2
 export const MIN_LOCATION_NAME_LENGTH = 3
 
 export const WELSH_TITLE = 'Gwirio ansawdd aer'
+export const PAGE_NOT_FOUND_MESSAGE = 'Page not found'
 export const LOCATION_NOT_FOUND_PATH_CY = '/lleoliad-heb-ei-ganfod/cy'
 export const ERROR_INDEX_PATH = 'error/index'
 export const LOCATION_TYPE_UK = 'uk-location'
