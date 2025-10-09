@@ -237,6 +237,7 @@ export const english = {
         ' stands for micrograms (one millionth of a gram) per cubic metre of air.'
     }
   },
+  // sonar-disable-next-line javascript:S1192
   pollutants: {
     ozone: {
       title: 'Ozone (O₃)',

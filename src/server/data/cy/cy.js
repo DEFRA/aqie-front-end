@@ -241,6 +241,7 @@ export const welsh = {
         ' yn sefyll am ficrogramau (miliynfed o gram) am bob metr ciwbig o aer.'
     }
   },
+  // sonar-disable-next-line javascript:S1192
   pollutants: {
     ozone: {
       title: 'Osôn(O₃)',
