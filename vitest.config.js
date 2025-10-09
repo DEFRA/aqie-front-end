@@ -27,7 +27,8 @@ export default defineConfig({
         'src/server/common/**/*', // Ignore files inside src/server/common from testing
         'src/client/**',
         'src/**/__fixtures__/**', // Exclude fixture files from coverage
-        'src/config/nunjucks/filters/format-currency.js' // Exclude problematic file causing V8 coverage issues
+        'src/config/nunjucks/filters/format-currency.js', // Exclude problematic file causing V8 coverage issues
+        'src/server/locations/cy/**' // Exclude Welsh middleware files (no tests currently)
       ] // Exclude src/src/govuk from coverage
     }
   }
