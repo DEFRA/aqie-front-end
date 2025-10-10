@@ -1,0 +1,26 @@
+# Ignore client-side code that contains console.log statements
+src/client/**/*
+**/assets/**/*
+**/javascripts/**/*
+**/stylesheets/**/*
+**/fonts/**/*
+**/images/**/*
+
+# Ignore test files
+**/*.test.js
+**/test/**/*
+**/tests/**/*
+
+# Ignore build and coverage files
+coverage/**/*
+node_modules/**/*
+dist/**/*
+build/**/*
+
+# Ignore configuration files that might contain debugging code
+webpack.config.js
+babel.config.cjs
+postcss.config.js
+stylelint.config.js
+eslint.config.js
+vitest.config.js
