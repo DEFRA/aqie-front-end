@@ -191,7 +191,69 @@ async function getNearestLocationData(
   }
 }
 
+// Helper to validate and process session data
+function validateAndProcessSessionData(
+  locationData,
+  currentUrl,
+  lang,
+  h,
+  request
+) {
+  if (!Array.isArray(locationData?.results) || !locationData?.getForecasts) {
+    const { searchTerms, secondSearchTerm, searchTermsLocationType } =
+      getSearchTermsFromUrl(currentUrl)
+    request.yar.clear('locationData')
+
+    const safeSearchTerms = searchTerms || ''
+    const safeSecondSearchTerm = secondSearchTerm || ''
+    const safeSearchTermsLocationType = searchTermsLocationType || ''
+    const searchParams =
+      safeSearchTerms || safeSecondSearchTerm || safeSearchTermsLocationType
+        ? `&searchTerms=${encodeURIComponent(safeSearchTerms)}&secondSearchTerm=${encodeURIComponent(safeSecondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(safeSearchTermsLocationType)}`
+        : ''
+    return h
+      .redirect(`/location?lang=${encodeURIComponent(lang)}${searchParams}`)
+      .code(REDIRECT_STATUS_CODE)
+      .takeover()
+  }
+  return null
+}
+
+// Helper to determine location type
+function determineLocationType(locationData) {
+  return locationData?.locationType === LOCATION_TYPE_UK
+    ? LOCATION_TYPE_UK
+    : locationData?.locationType === LOCATION_TYPE_NI
+      ? LOCATION_TYPE_NI
+      : LOCATION_TYPE_UK
+}
+
+// Helper to process successful location result
+function processLocationResult(
+  request,
+  locationData,
+  nearestLocation,
+  nearestLocationsRange,
+  h,
+  viewData
+) {
+  logger.info(
+    `Before Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
+  )
+  updateSessionWithNearest(
+    request,
+    locationData,
+    nearestLocation,
+    nearestLocationsRange
+  )
+  logger.info(
+    `After Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
+  )
+  return h.view('locations/location', viewData)
+}
+
 const getLocationDetailsController = {
+  // sonar-disable-next-line javascript:S3776
   handler: async (request, h) => {
     try {
       const { query, headers } = request
@@ -201,14 +263,11 @@ const getLocationDetailsController = {
         'useNewRicardoMeasurementsEnabled'
       )
       const currentUrl = request.url.href
-      // ''
       const lang = query?.lang ?? LANG_EN
 
       // Handle Welsh redirect
       const welshRedirect = handleWelshRedirect(query, locationId, h)
-      if (welshRedirect) {
-        return welshRedirect
-      }
+      if (welshRedirect) return welshRedirect
 
       // Handle search terms redirect
       const searchTermsRedirect = handleSearchTermsRedirect(
@@ -218,47 +277,30 @@ const getLocationDetailsController = {
         request,
         h
       )
-      if (searchTermsRedirect) {
-        return searchTermsRedirect
-      }
+      if (searchTermsRedirect) return searchTermsRedirect
 
+      // Initialize common variables
       request.yar.clear('searchTermsSaved')
       const formattedDate = moment().format('DD MMMM YYYY').split(' ')
       const getMonth = calendarEnglish.findIndex(
         (item) => item.indexOf(formattedDate[1]) !== -1
       )
       const metaSiteUrl = getAirQualitySiteUrl(request)
-      // Prefer an object over an array as the default to avoid accidental truthiness with missing properties
       const locationData = request.yar.get('locationData') || {}
-      // If essential session data is missing, redirect back to search to rebuild context
-      if (
-        !Array.isArray(locationData?.results) ||
-        !locationData?.getForecasts
-      ) {
-        const { searchTerms, secondSearchTerm, searchTermsLocationType } =
-          getSearchTermsFromUrl(currentUrl)
-        request.yar.clear('locationData')
-        // ''
-        const safeSearchTerms = searchTerms || ''
-        const safeSecondSearchTerm = secondSearchTerm || ''
-        const safeSearchTermsLocationType = searchTermsLocationType || ''
-        const searchParams =
-          safeSearchTerms || safeSecondSearchTerm || safeSearchTermsLocationType
-            ? `&searchTerms=${encodeURIComponent(safeSearchTerms)}&secondSearchTerm=${encodeURIComponent(safeSecondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(safeSearchTermsLocationType)}`
-            : ''
-        return h
-          .redirect(`/location?lang=${encodeURIComponent(lang)}${searchParams}`)
-          .code(REDIRECT_STATUS_CODE)
-          .takeover()
-      }
+
+      // Validate session data
+      const sessionValidationResult = validateAndProcessSessionData(
+        locationData,
+        currentUrl,
+        lang,
+        h,
+        request
+      )
+      if (sessionValidationResult) return sessionValidationResult
+
+      // Process location data
       const { getForecasts } = locationData
-      // Default to UK if locationType is unknown or missing
-      const locationType =
-        locationData?.locationType === LOCATION_TYPE_UK
-          ? LOCATION_TYPE_UK
-          : locationData?.locationType === LOCATION_TYPE_NI
-            ? LOCATION_TYPE_NI
-            : LOCATION_TYPE_UK
+      const locationType = determineLocationType(locationData)
 
       // Get nearest location and related data
       const {
@@ -275,30 +317,24 @@ const getLocationDetailsController = {
         useNewRicardoMeasurementsEnabled
       )
 
+      // Process result
       if (locationDetails) {
-        logger.info(
-          `Before Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
-        )
-        updateSessionWithNearest(
+        const viewData = buildLocationViewData({
+          locationDetails,
+          nearestLocationsRange,
+          locationData,
+          forecastNum,
+          lang,
+          getMonth,
+          metaSiteUrl
+        })
+        return processLocationResult(
           request,
           locationData,
           nearestLocation,
-          nearestLocationsRange
-        )
-        logger.info(
-          `After Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
-        )
-        return h.view(
-          'locations/location',
-          buildLocationViewData({
-            locationDetails,
-            nearestLocationsRange,
-            locationData,
-            forecastNum,
-            lang,
-            getMonth,
-            metaSiteUrl
-          })
+          nearestLocationsRange,
+          h,
+          viewData
         )
       } else {
         return h.view(LOCATION_NOT_FOUND, buildNotFoundViewData(lang))
