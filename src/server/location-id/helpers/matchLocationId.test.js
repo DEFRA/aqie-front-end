@@ -1,25 +1,66 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
+import matchLocationId from './matchLocationId.js'
+import { getIdMatch } from '../../locations/helpers/get-id-match.js'
 
-describe('Match Location ID Tests', () => {
-  it('should match location ID correctly', () => {
-    const matchLocationId = (id, locations) =>
-      locations.find((location) => location.id === id)
-    const locations = [
-      { id: 1, name: 'Cardiff' },
-      { id: 2, name: 'Swansea' }
-    ]
-    const result = matchLocationId(1, locations)
-    expect(result).toEqual({ id: 1, name: 'Cardiff' })
+// '' Mock the getIdMatch dependency
+vi.mock('../../locations/helpers/get-id-match.js', () => ({
+  getIdMatch: vi.fn()
+}))
+
+describe('matchLocationId', () => {
+  const mockGetIdMatch = vi.mocked(getIdMatch)
+
+  beforeEach(() => {
+    mockGetIdMatch.mockClear()
   })
 
-  it('should return undefined for non-existent ID', () => {
-    const matchLocationId = (id, locations) =>
-      locations.find((location) => location.id === id)
-    const locations = [
-      { id: 1, name: 'Cardiff' },
-      { id: 2, name: 'Swansea' }
-    ]
-    const result = matchLocationId(3, locations)
-    expect(result).toBeUndefined()
+  it('should call getIdMatch with correct parameters', () => {
+    const locationId = '12345'
+    const locationData = { results: [{ id: '12345', name: 'Cardiff' }] }
+    const resultNI = { data: [] }
+    const locationType = 'UK'
+    const indexNI = 0
+
+    const expectedResult = { id: '12345', name: 'Cardiff', match: true }
+    mockGetIdMatch.mockReturnValue(expectedResult)
+
+    const result = matchLocationId(
+      locationId,
+      locationData,
+      resultNI,
+      locationType,
+      indexNI
+    )
+
+    expect(mockGetIdMatch).toHaveBeenCalledWith(
+      locationId,
+      locationData,
+      resultNI,
+      locationType,
+      indexNI
+    )
+    expect(result).toBe(expectedResult)
+  })
+
+  it('should handle null/undefined parameters', () => {
+    const locationId = null
+    const locationData = undefined
+    const resultNI = null
+    const locationType = ''
+    const indexNI = -1
+
+    const expectedResult = null
+    mockGetIdMatch.mockReturnValue(expectedResult)
+
+    const result = matchLocationId(
+      locationId,
+      locationData,
+      resultNI,
+      locationType,
+      indexNI
+    )
+
+    expect(mockGetIdMatch).toHaveBeenCalledWith(null, undefined, null, '', -1)
+    expect(result).toBe(expectedResult)
   })
 })

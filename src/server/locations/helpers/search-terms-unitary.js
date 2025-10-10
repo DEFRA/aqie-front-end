@@ -11,14 +11,14 @@ function searchTermsAndUnitary(
   if (name2) {
     if (secondSearchTerm === 'UNDEFINED' || secondSearchTerm === '') {
       return (
-        name2?.includes(normalizeString(searchTerms)) &&
-        normalizeString(searchTerms).includes(name2)
+        normalizeString(name2)?.includes(normalizeString(searchTerms)) &&
+        normalizeString(searchTerms).includes(normalizeString(name2))
       )
     }
     if (secondSearchTerm !== 'UNDEFINED') {
       return (
-        name2?.includes(normalizeString(searchTerms)) &&
-        normalizeString(searchTerms).includes(name2) &&
+        normalizeString(name2)?.includes(normalizeString(searchTerms)) &&
+        normalizeString(searchTerms).includes(normalizeString(name2)) &&
         normalizeString(secondSearchTerm).includes(normalizeString(unitary)) &&
         normalizeString(unitary)?.includes(normalizeString(secondSearchTerm))
       )
@@ -26,8 +26,8 @@ function searchTermsAndUnitary(
   }
   if (secondSearchTerm === 'UNDEFINED' || secondSearchTerm === '') {
     return (
-      name1?.includes(normalizeString(searchTerms)) &&
-      normalizeString(searchTerms).includes(name1)
+      normalizeString(name1)?.includes(normalizeString(searchTerms)) &&
+      normalizeString(searchTerms).includes(normalizeString(name1))
     )
   }
   if (!exactWordFirstTerm) {
@@ -37,8 +37,8 @@ function searchTermsAndUnitary(
     return false
   }
   return (
-    (name1?.includes(normalizeString(searchTerms)) ||
-      normalizeString(searchTerms).includes(name1)) &&
+    (normalizeString(name1)?.includes(normalizeString(searchTerms)) ||
+      normalizeString(searchTerms).includes(normalizeString(name1))) &&
     (normalizeString(secondSearchTerm).includes(normalizeString(unitary)) ||
       normalizeString(unitary)?.includes(normalizeString(secondSearchTerm))) &&
     exactWordFirstTerm &&

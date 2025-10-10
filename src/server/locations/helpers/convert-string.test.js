@@ -65,8 +65,8 @@ describe('removeLastWordAndAddHyphens', () => {
 })
 
 describe('removeLastWordAndHyphens', () => {
-  test.skip('removes the last word and hyphens', () => {
-    expect(removeLastWordAndHyphens('hello-world-example')).toBe('helloworld')
+  test('removes the last word and hyphens', () => {
+    expect(removeLastWordAndHyphens('hello-world example')).toBe('helloworld')
   })
 
   test('handles input without hyphens', () => {

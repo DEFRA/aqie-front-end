@@ -1,32 +1,77 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
+import determineNearestLocation from './determineNearestLocation.js'
+import { getNearestLocation } from '../../locations/helpers/get-nearest-location.js'
 
-describe('Determine Nearest Location Tests', () => {
-  it('should determine the nearest location correctly', () => {
-    // '' Helper function to get the minimum distance from the locations array
-    const getMinimumDistance = (locations) => {
-      return Math.min(...locations.map((loc) => loc.distance))
-    }
+// '' Mock the getNearestLocation dependency
+vi.mock('../../locations/helpers/get-nearest-location.js', () => ({
+  getNearestLocation: vi.fn()
+}))
 
-    // '' Determines the nearest location based on the minimum distance
-    const determineNearestLocation = (locations, currentLocation) => {
-      const minDistance = getMinimumDistance(locations)
-      return locations.find((location) => location.distance === minDistance)
-    }
+describe('determineNearestLocation', () => {
+  const mockGetNearestLocation = vi.mocked(getNearestLocation)
 
-    const locations = [
-      { name: 'Cardiff', distance: 10 },
-      { name: 'Swansea', distance: 5 },
-      { name: 'Newport', distance: 15 }
-    ]
-    const result = determineNearestLocation(locations)
-    expect(result).toEqual({ name: 'Swansea', distance: 5 })
+  beforeEach(() => {
+    mockGetNearestLocation.mockClear()
   })
 
-  it('should return undefined for empty locations array', () => {
-    const determineNearestLocation = (locations) => {
-      return locations.length ? locations[0] : undefined
+  it('should call getNearestLocation with correct parameters', () => {
+    const locationData = {
+      results: [
+        { id: '1', name: 'Cardiff', distance: 10 },
+        { id: '2', name: 'Swansea', distance: 5 }
+      ]
     }
-    const result = determineNearestLocation([])
-    expect(result).toBeUndefined()
+    const getForecasts = vi.fn()
+    const locationType = 'UK'
+    const index = 0
+    const lang = 'en'
+
+    const expectedResult = { id: '2', name: 'Swansea', distance: 5 }
+    mockGetNearestLocation.mockReturnValue(expectedResult)
+
+    const result = determineNearestLocation(
+      locationData,
+      getForecasts,
+      locationType,
+      index,
+      lang
+    )
+
+    expect(mockGetNearestLocation).toHaveBeenCalledWith(
+      locationData.results,
+      getForecasts,
+      locationType,
+      index,
+      lang
+    )
+    expect(result).toBe(expectedResult)
+  })
+
+  it('should handle locationData with undefined results', () => {
+    const locationData = { results: undefined }
+    const getForecasts = vi.fn()
+    const locationType = 'NI'
+    const index = 1
+    const lang = 'cy'
+
+    const expectedResult = null
+    mockGetNearestLocation.mockReturnValue(expectedResult)
+
+    const result = determineNearestLocation(
+      locationData,
+      getForecasts,
+      locationType,
+      index,
+      lang
+    )
+
+    expect(mockGetNearestLocation).toHaveBeenCalledWith(
+      undefined,
+      getForecasts,
+      locationType,
+      index,
+      lang
+    )
+    expect(result).toBe(expectedResult)
   })
 })

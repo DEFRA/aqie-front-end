@@ -1,22 +1,27 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
+import { handleSingleMatchTest } from './handle-single-match-helper.js'
 
-describe('Handle Single Match Helper Tests', () => {
-  it('should handle single match correctly', () => {
-    const handleSingleMatch = (matches) =>
-      matches.length === 1 ? matches[0] : null
-    const matches = [{ id: 1, name: 'Cardiff' }]
-    const result = handleSingleMatch(matches)
-    expect(result).toEqual({ id: 1, name: 'Cardiff' })
-  })
+// Mock the middleware-helpers
+vi.mock('./middleware-helpers.js', () => ({
+  handleSingleMatch: vi.fn()
+}))
 
-  it('should return null for multiple matches', () => {
-    const handleSingleMatch = (matches) =>
-      matches.length === 1 ? matches[0] : null
-    const matches = [
-      { id: 1, name: 'Cardiff' },
-      { id: 2, name: 'Swansea' }
-    ]
-    const result = handleSingleMatch(matches)
-    expect(result).toBeNull()
+describe('handle-single-match-helper', () => {
+  describe('handleSingleMatchTest', () => {
+    it('should return match when match is provided', () => {
+      const match = { id: 1, name: 'Test Match' }
+      const result = handleSingleMatchTest(match)
+      expect(result).toEqual(match)
+    })
+
+    it('should return null when match is null', () => {
+      const result = handleSingleMatchTest(null)
+      expect(result).toBeNull()
+    })
+
+    it('should return null when match is undefined', () => {
+      const result = handleSingleMatchTest(undefined)
+      expect(result).toBeNull()
+    })
   })
 })

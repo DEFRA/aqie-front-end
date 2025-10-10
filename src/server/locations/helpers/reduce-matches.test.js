@@ -83,7 +83,7 @@ describe('reduceMatches', () => {
     expect(result).toEqual([])
   })
 
-  test.skip('handles null input for locationNameOrPostcode', () => {
+  test('handles null input for locationNameOrPostcode', () => {
     const selectedMatches = [{ id: 1 }, { id: 2 }]
     const options = {
       searchTerms: 'search',
