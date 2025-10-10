@@ -69,7 +69,6 @@ const getLocationDetailsController = {
 
       if (previousUrl === undefined && !searchTermsSaved) {
         request.yar.clear('locationData')
-        console.log('redirectioning to location search 2')
         return h
           .redirect(buildRedirectUrl(currentUrl))
           .code(REDIRECT_STATUS_CODE)
