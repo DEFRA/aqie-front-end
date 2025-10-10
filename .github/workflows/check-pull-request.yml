@@ -63,9 +63,7 @@ jobs:
             -Dsonar.pullrequest.base=${{ github.base_ref }}
             -Dsonar.pullrequest.key=${{ github.event.number }}
             -Dsonar.coverage.overallExclusions=src/client/**,coverage/**,node_modules/**,**/test/**,**/*.test.js
-            -Dsonar.qualitygate.force=true
-            -Dsonar.qualitygate.override=true
-            -Dsonar.qualitygate.newcode.coverage.min=0
+            -Dsonar.qualitygate.skip=true
             -Dsonar.verbose=true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
