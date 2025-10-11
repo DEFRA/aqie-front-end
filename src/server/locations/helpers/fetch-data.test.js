@@ -51,7 +51,8 @@ vi.mock('../../data/constants.js', () => ({
   LOCATION_TYPE_UK: 'UK',
   SYMBOLS_ARRAY: ['!', '@', '#', '$', '%'],
   HTTP_STATUS_OK: 200,
-  ROUND_OF_SIX: 6
+  ROUND_OF_SIX: 6,
+  STATUS_UNAUTHORIZED: 401
 }))
 
 vi.mock('./convert-string.js', () => ({

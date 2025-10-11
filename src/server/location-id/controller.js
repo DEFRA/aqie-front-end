@@ -221,11 +221,13 @@ function validateAndProcessSessionData(
 
 // Helper to determine location type
 function determineLocationType(locationData) {
-  return locationData?.locationType === LOCATION_TYPE_UK
-    ? LOCATION_TYPE_UK
-    : locationData?.locationType === LOCATION_TYPE_NI
-      ? LOCATION_TYPE_NI
-      : LOCATION_TYPE_UK
+  if (locationData?.locationType === LOCATION_TYPE_UK) {
+    return LOCATION_TYPE_UK
+  }
+  if (locationData?.locationType === LOCATION_TYPE_NI) {
+    return LOCATION_TYPE_NI
+  }
+  return LOCATION_TYPE_UK
 }
 
 // Helper to process successful location result

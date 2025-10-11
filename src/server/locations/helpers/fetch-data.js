@@ -7,7 +7,8 @@ import {
   SYMBOLS_ARRAY,
   HTTP_STATUS_OK,
   LOCATION_TYPE_UK,
-  ROUND_OF_SIX
+  ROUND_OF_SIX,
+  STATUS_UNAUTHORIZED
 } from '../../data/constants.js'
 import {
   isValidFullPostcodeUK,
@@ -118,7 +119,7 @@ const handleUKLocationData = async (
   )
 
   if (statusCodeOSPlace !== HTTP_STATUS_OK) {
-    if (statusCodeOSPlace === 401) {
+    if (statusCodeOSPlace === STATUS_UNAUTHORIZED) {
       logger.warn(
         `OS Names API returned 401 (unauthorized). Check OS_NAMES_API_KEY. URL was suppressed in logs.`
       )
