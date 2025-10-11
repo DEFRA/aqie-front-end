@@ -1,5 +1,5 @@
 /* global vi */
-import { accessibilityController } from './controller.js'
+import { accessibilityController, accessibilityHandler } from './controller.js'
 import { english } from '../data/en/en.js'
 import { welsh } from '../data/cy/cy.js'
 import { LANG_CY, LANG_EN } from '../data/constants.js'
@@ -155,5 +155,11 @@ describe('Accessibility Handler', () => {
       cookieBanner: mockContentCy.cookieBanner,
       lang: 'fr'
     })
+  })
+
+  it('should test accessibilityHandler function directly', () => {
+    // ''
+    const result = accessibilityHandler(mockRequest, mockH, mockContent)
+    expect(result).toBe('view rendered')
   })
 })

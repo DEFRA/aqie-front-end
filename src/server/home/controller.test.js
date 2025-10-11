@@ -21,7 +21,10 @@ describe('Home Controller', () => {
   beforeEach(() => {
     mockRequest = {
       query: {},
-      path: '/'
+      path: '/',
+      yar: {
+        set: vi.fn()
+      }
     }
     vi.mock('../../common/helpers/get-site-url.js', () => ({
       getAirQualitySiteUrl: vi.fn((request) => {
@@ -120,5 +123,12 @@ describe('Home Controller', () => {
     // Verify yar.set was called
     expect(requestWithYar.yar.set).toHaveBeenCalledWith('locationType', '')
     expect(result).toBe('view rendered')
+  })
+
+  it('should test handleHomeRequest function directly', () => {
+    // ''
+    const result = handleHomeRequest(mockRequest, mockH, mockContent)
+    expect(result).toBe('view rendered')
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('locationType', '')
   })
 })

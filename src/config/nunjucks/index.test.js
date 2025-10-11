@@ -109,4 +109,23 @@ describe('Nunjucks Configuration', () => {
     expect(module.nunjucksConfig.options.context).toBeDefined()
     expect(typeof module.nunjucksConfig.options.context).toBe('function')
   })
+
+  test('should have compile function that returns a function', async () => {
+    // ''
+    const module = await import('./index.js')
+    const nunjucksMock = await import('nunjucks')
+
+    const compileFn = module.nunjucksConfig.options.engines.njk.compile
+    expect(compileFn).toBeInstanceOf(Function)
+
+    // Mock compile to return a mock template
+    nunjucksMock.default.compile = vi.fn(() => ({
+      render: vi.fn((ctx) => `rendered: ${JSON.stringify(ctx)}`)
+    }))
+
+    const result = compileFn('test template', {
+      environment: nunjucksMock.default.configure()
+    })
+    expect(result).toBeInstanceOf(Function)
+  })
 })

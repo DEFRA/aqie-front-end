@@ -12,4 +12,14 @@ describe('Route Configuration', () => {
       }
     ])
   })
+
+  it('should test configureRoutes function directly', () => {
+    // ''
+    const mockController = { handler: () => {} }
+    const result = configureRoutes(mockController)
+    expect(result).toHaveLength(1)
+    expect(result[0].method).toBe('GET')
+    expect(result[0].path).toBe('/cy')
+    expect(result[0].handler).toBe(mockController.handler)
+  })
 })

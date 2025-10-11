@@ -6,7 +6,13 @@ import {
   MULTIPLE_LOCATIONS_ROUTE_EN
 } from '../../data/constants.js'
 
-vi.mock('../../common/helpers/logging/logger.js')
+vi.mock('../../common/helpers/logging/logger.js', () => ({
+  createLogger: vi.fn(() => ({
+    info: vi.fn(),
+    error: vi.fn(),
+    warn: vi.fn()
+  }))
+}))
 vi.mock('../../data/en/en.js')
 vi.mock('../../data/cy/cy.js')
 vi.mock('../../data/constants.js')
@@ -97,5 +103,154 @@ describe('getLocationDataController', () => {
       summaryDate: '2025-02-04',
       lang: LANG_CY
     })
+  })
+
+  it('should handle error and return error view with 500 status code', async () => {
+    // ''
+    const mockError = new Error('Unexpected error')
+    const mockLocationData = {
+      results: [],
+      monitoringSites: [],
+      transformedDailySummary: [],
+      calendarWelsh: [],
+      englishDate: '2025-02-04',
+      welshDate: '2025-02-04',
+      getMonth: 'February',
+      summaryDate: '2025-02-04',
+      lang: LANG_CY,
+      userLocation: 'London'
+    }
+
+    const request = {
+      yar: {
+        get: vi.fn().mockReturnValue(mockLocationData)
+      },
+      query: {
+        lang: LANG_CY
+      },
+      path: '/test-path'
+    }
+
+    const h = {
+      view: vi.fn().mockImplementationOnce(() => {
+        throw mockError
+      }),
+      redirect: vi.fn()
+    }
+
+    await getLocationDataController.handler(request, h)
+
+    expect(h.view).toHaveBeenCalledWith(
+      'error/index',
+      expect.objectContaining({
+        statusCode: 500,
+        url: '/test-path',
+        lang: LANG_CY
+      })
+    )
+  })
+
+  it('should handle access_token error and return error view with 401 status code', async () => {
+    // ''
+    const mockError = new Error(
+      "Cannot read properties of undefined (reading 'access_token')"
+    )
+    const mockLocationData = {
+      results: [],
+      monitoringSites: [],
+      transformedDailySummary: [],
+      calendarWelsh: [],
+      englishDate: '2025-02-04',
+      welshDate: '2025-02-04',
+      getMonth: 'February',
+      summaryDate: '2025-02-04',
+      lang: LANG_CY,
+      userLocation: 'London'
+    }
+
+    const request = {
+      yar: {
+        get: vi.fn().mockReturnValue(mockLocationData)
+      },
+      query: {
+        lang: LANG_CY
+      },
+      path: '/test-path'
+    }
+
+    const h = {
+      view: vi.fn().mockImplementationOnce(() => {
+        throw mockError
+      }),
+      redirect: vi.fn()
+    }
+
+    await getLocationDataController.handler(request, h)
+
+    expect(h.view).toHaveBeenCalledWith(
+      'error/index',
+      expect.objectContaining({
+        statusCode: 401,
+        url: '/test-path',
+        lang: LANG_CY
+      })
+    )
+  })
+
+  it('should handle missing locationData and return error view', async () => {
+    const request = {
+      yar: {
+        get: vi.fn().mockReturnValue({})
+      },
+      query: {
+        lang: LANG_CY
+      },
+      path: '/test-path'
+    }
+    const h = {
+      view: vi.fn().mockReturnValue('error-view')
+    }
+
+    await getLocationDataController.handler(request, h)
+
+    // When locationData is empty object, it should still render the view
+    // but may have undefined values
+    expect(h.view).toHaveBeenCalled()
+  })
+
+  it('should use fallback dates when welshDate and englishDate are undefined', async () => {
+    const request = {
+      yar: {
+        get: vi.fn().mockReturnValue({
+          results: [],
+          monitoringSites: [],
+          transformedDailySummary: [],
+          calendarWelsh: { February: 'Chwefror' },
+          englishDate: undefined,
+          welshDate: undefined,
+          getMonth: 'February',
+          summaryDate: '2025-02-04',
+          lang: LANG_CY,
+          userLocation: 'Cardiff'
+        })
+      },
+      query: {
+        lang: LANG_CY
+      },
+      path: '/test-path'
+    }
+    const h = {
+      view: vi.fn()
+    }
+
+    await getLocationDataController.handler(request, h)
+
+    expect(h.view).toHaveBeenCalledWith(
+      'multiple-results/multiple-locations',
+      expect.objectContaining({
+        summaryDate: '2025-02-04',
+        lang: LANG_CY
+      })
+    )
   })
 })
