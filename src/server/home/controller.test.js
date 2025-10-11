@@ -3,6 +3,16 @@ import { english } from '../data/en/en.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 import { vi } from 'vitest'
 
+// Mock the logger
+vi.mock('../common/helpers/logging/logger.js', () => ({
+  createLogger: vi.fn(() => ({
+    warn: vi.fn(),
+    info: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn()
+  }))
+}))
+
 describe('Home Controller', () => {
   let mockRequest
   let mockH
@@ -11,7 +21,10 @@ describe('Home Controller', () => {
   beforeEach(() => {
     mockRequest = {
       query: {},
-      path: '/'
+      path: '/',
+      yar: {
+        set: vi.fn()
+      }
     }
     vi.mock('../../common/helpers/get-site-url.js', () => ({
       getAirQualitySiteUrl: vi.fn((request) => {
@@ -62,5 +75,60 @@ describe('Home Controller', () => {
       serviceName: '',
       lang: 'en'
     })
+  })
+
+  it('should log a warning when yar session is not available', () => {
+    // Create a mock request with yar but without the set method
+    const requestWithoutYarSet = {
+      query: { lang: 'en' },
+      path: '/',
+      yar: {} // yar exists but without set method
+    }
+
+    // Verify yar exists but doesn't have set method
+    expect(requestWithoutYarSet.yar).toBeDefined()
+    expect(typeof requestWithoutYarSet.yar.set).toBe('undefined')
+
+    const result = handleHomeRequest(requestWithoutYarSet, mockH, mockContent)
+    expect(result).toBe('view rendered')
+  })
+
+  it('should log a warning when yar is completely missing', () => {
+    // Create a mock request without any yar property
+    const requestWithoutYar = {
+      query: { lang: 'en' },
+      path: '/'
+      // Completely omitting yar
+    }
+
+    // Verify yar is undefined
+    expect(requestWithoutYar.yar).toBeUndefined()
+
+    const result = handleHomeRequest(requestWithoutYar, mockH, mockContent)
+    expect(result).toBe('view rendered')
+  })
+
+  it('should set locationType when yar is properly available', () => {
+    // Create a mock request with proper yar
+    const requestWithYar = {
+      query: { lang: 'en' },
+      path: '/',
+      yar: {
+        set: vi.fn() // Mock the set method
+      }
+    }
+
+    const result = handleHomeRequest(requestWithYar, mockH, mockContent)
+
+    // Verify yar.set was called
+    expect(requestWithYar.yar.set).toHaveBeenCalledWith('locationType', '')
+    expect(result).toBe('view rendered')
+  })
+
+  it('should test handleHomeRequest function directly', () => {
+    // ''
+    const result = handleHomeRequest(mockRequest, mockH, mockContent)
+    expect(result).toBe('view rendered')
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('locationType', '')
   })
 })

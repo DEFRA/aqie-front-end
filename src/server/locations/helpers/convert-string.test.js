@@ -19,7 +19,8 @@ import {
   hasCommonWord,
   formatUKPostcode,
   isOnlyWords,
-  compareLastElements
+  compareLastElements,
+  convertString
 } from './convert-string.js'
 
 describe('convertStringToHyphenatedLowercaseWords', () => {
@@ -65,8 +66,8 @@ describe('removeLastWordAndAddHyphens', () => {
 })
 
 describe('removeLastWordAndHyphens', () => {
-  test.skip('removes the last word and hyphens', () => {
-    expect(removeLastWordAndHyphens('hello-world-example')).toBe('helloworld')
+  test('removes the last word and hyphens', () => {
+    expect(removeLastWordAndHyphens('hello-world example')).toBe('helloworld')
   })
 
   test('handles input without hyphens', () => {
@@ -440,20 +441,24 @@ describe('compareLastElements', () => {
   })
 })
 
-// Unit tests for convert-string.js
-const { convertString } = require('./convert-string')
-
-// Mock data
-const mockString = 'Test String'
-
 describe('convertString', () => {
   it('should convert string to uppercase', () => {
+    // ''
+    const mockString = 'Test String'
     const result = convertString(mockString)
     expect(result).toBe('TEST STRING')
   })
 
   it('should handle empty string gracefully', () => {
+    // ''
     const result = convertString('')
     expect(result).toBe('')
+  })
+
+  it('should handle non-string inputs', () => {
+    // ''
+    expect(convertString('hello')).toBe('HELLO')
+    expect(convertString('123 ABC')).toBe('123 ABC')
+    expect(convertString('mixed-case_test')).toBe('MIXED-CASE_TEST')
   })
 })

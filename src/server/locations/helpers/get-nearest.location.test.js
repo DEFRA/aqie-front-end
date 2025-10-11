@@ -57,7 +57,7 @@ describe.skip('getNearestLocation', () => {
     pointsInRange.mockReturnValue(true)
   })
 
-  it.skip('should return nearest location data for English language', () => {
+  it('should return nearest location data for English language', () => {
     const result = getNearestLocation(
       matches,
       forecasts,
@@ -72,7 +72,7 @@ describe.skip('getNearestLocation', () => {
     expect(result).toHaveProperty('latlon')
   })
 
-  it.skip('should return nearest location data for Welsh language', () => {
+  it('should return nearest location data for Welsh language', () => {
     lang = LANG_CY
     const result = getNearestLocation(
       matches,

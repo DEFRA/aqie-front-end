@@ -8,8 +8,8 @@ vi.mock('../../common/helpers/sentence-case.js', () => ({
 
 describe('getNIData', () => {
   beforeEach(() => {
-    sentenceCase.mockImplementation(
-      (str) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+    sentenceCase.mockImplementation((str) =>
+      str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : undefined
     )
   })
 
@@ -45,7 +45,7 @@ describe('getNIData', () => {
     expect(result.resultNI).toEqual([])
   })
 
-  test.skip('handles missing locationData properties', () => {
+  test('handles missing locationData properties', () => {
     const locationData = { results: [{}] }
     const distance = { latlon: { lon: -5.9301, lat: 54.597 } }
     const locationType = LOCATION_TYPE_NI

@@ -4,37 +4,37 @@ import {
   prepareViewData
 } from './controller.js'
 
-/* global vi */
+/* global vi, describe, it, expect, beforeEach */
 
-vi.mock('./controller.js', () => ({
-  getLocationDataController: {
-    handler: vi.fn(),
-    options: {}
-  },
-  determineLanguage: vi.fn((queryLang, path, referer) => {
-    const lang = queryLang?.slice(0, 2)
-    if (lang === 'cy') {
-      return 'cy'
+// Mock dependencies
+vi.mock('../data/en/en.js', () => ({
+  english: {
+    searchLocation: {
+      serviceName: 'Check local air quality'
+    },
+    notFoundLocation: {
+      paragraphs: {
+        a: 'Location not found'
+      }
+    },
+    footerTxt: {
+      text: 'Footer text'
+    },
+    phaseBanner: {
+      tag: 'alpha'
+    },
+    backlink: {
+      href: '/back'
+    },
+    home: {
+      pageTitle: 'Air Quality Index'
+    },
+    cookieBanner: {
+      text: 'Cookie banner'
     }
-    if (lang === 'en') {
-      return 'en'
-    }
-    if (path === '/location') {
-      return 'en'
-    }
-    if (referer?.includes('search-location')) {
-      return 'en'
-    }
-    return 'cy'
-  }),
-  prepareViewData: vi.fn(() => ({
-    lang: 'en',
-    pageTitle: 'Default Page Title - ',
-    userLocation: ''
-  }))
+  }
 }))
 
-// Add logger mock to capture logs during test execution
 vi.mock('../common/helpers/logging/logger.js', () => ({
   createLogger: () => ({
     info: vi.fn(),
@@ -42,58 +42,213 @@ vi.mock('../common/helpers/logging/logger.js', () => ({
   })
 }))
 
-afterEach(() => {
-  vi.clearAllMocks() // Clear mock call history
-})
-
-describe('controller.js exports', () => {
-  it('should export getLocationDataController', () => {
-    expect(typeof getLocationDataController.handler).toBe('function')
+describe('locations controller', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
-  it('should export determineLanguage', () => {
-    expect(typeof determineLanguage).toBe('function')
+  describe('determineLanguage', () => {
+    it('should return "cy" when queryLang starts with "cy"', () => {
+      expect(determineLanguage('cy-GB')).toBe('cy')
+      expect(determineLanguage('cy')).toBe('cy')
+    })
+
+    it('should return "en" when queryLang starts with "en"', () => {
+      expect(determineLanguage('en-GB')).toBe('en')
+      expect(determineLanguage('en')).toBe('en')
+    })
+
+    it('should return "en" when path is "/location"', () => {
+      expect(determineLanguage(null, '/location')).toBe('en')
+    })
+
+    it('should return "en" when referer includes "search-location"', () => {
+      expect(
+        determineLanguage(null, null, 'https://example.com/search-location')
+      ).toBe('en')
+    })
+
+    it('should return "cy" as default when no conditions are met', () => {
+      expect(
+        determineLanguage(null, '/other-path', 'https://example.com/other')
+      ).toBe('cy')
+      expect(determineLanguage(undefined, undefined, undefined)).toBe('cy')
+    })
+
+    it('should handle invalid queryLang gracefully', () => {
+      expect(determineLanguage('invalid', '/other-path')).toBe('cy')
+      expect(determineLanguage('fr', '/other-path')).toBe('cy')
+    })
   })
 
-  it('should export prepareViewData', () => {
-    expect(typeof prepareViewData).toBe('function')
-  })
-})
+  describe('prepareViewData', () => {
+    it('should prepare view data with default English language', () => {
+      const result = prepareViewData()
 
-describe('determineLanguage', () => {
-  it('should return "cy" when queryLang is "cy"', () => {
-    // Test for Welsh language
-    expect(determineLanguage('cy')).toBe('cy')
+      expect(result).toEqual({
+        userLocation: '',
+        pageTitle: 'Location not found - Air Quality Index',
+        paragraph: { a: 'Location not found' },
+        footerTxt: { text: 'Footer text' },
+        serviceName: 'Check local air quality',
+        phaseBanner: { tag: 'alpha' },
+        backlink: { href: '/back' },
+        cookieBanner: { text: 'Cookie banner' },
+        lang: 'en'
+      })
+    })
+
+    it('should prepare view data with specified language', () => {
+      const result = prepareViewData('cy')
+
+      expect(result.lang).toBe('cy')
+      expect(result.pageTitle).toBe('Location not found - Air Quality Index')
+    })
+
+    it('should default to English when language is null', () => {
+      const result = prepareViewData(null)
+
+      expect(result.lang).toBe('en')
+    })
+
+    it('should default to English when language is undefined', () => {
+      const result = prepareViewData(undefined)
+
+      expect(result.lang).toBe('en')
+    })
   })
 
-  it('should return "en" when queryLang is "en"', () => {
-    // Test for English language
-    expect(determineLanguage('en')).toBe('en')
-  })
+  describe('getLocationDataController', () => {
+    let mockRequest
+    let mockH
 
-  it('should return "en" when path is "/location"', () => {
-    // Test for default English language based on path
-    expect(determineLanguage(null, '/location')).toBe('en')
-  })
+    beforeEach(() => {
+      mockH = {
+        view: vi.fn().mockReturnValue('mocked-view-response')
+      }
 
-  it('should return "en" when referer includes "search-location"', () => {
-    // Test for English language based on referer
-    expect(determineLanguage(null, null, 'search-location')).toBe('en')
-  })
+      mockRequest = {
+        query: {},
+        path: '/location',
+        headers: {}
+      }
+    })
 
-  it('should return "cy" as the default when no conditions are met', () => {
-    // Test for default Welsh language
-    expect(determineLanguage(null, '/some-path', 'some-other-referer')).toBe(
-      'cy'
-    )
-  })
-})
+    it('should handle request with English query parameter', async () => {
+      mockRequest.query = { lang: 'en' }
 
-describe('prepareViewData', () => {
-  it('should return view data with default language when no language is provided', () => {
-    const viewData = prepareViewData() // Call without arguments
-    expect(viewData.lang).toBe('en') // Default to LANG_EN
-    expect(viewData.pageTitle).toContain(' - ')
-    expect(viewData.userLocation).toBe('')
+      const result = await getLocationDataController.handler(mockRequest, mockH)
+
+      expect(mockH.view).toHaveBeenCalledWith(
+        'location-not-found/index',
+        expect.objectContaining({
+          lang: 'en',
+          pageTitle: 'Location not found - Air Quality Index'
+        })
+      )
+      expect(result).toBe('mocked-view-response')
+    })
+
+    it('should handle request with Welsh query parameter', async () => {
+      mockRequest.query = { lang: 'cy' }
+
+      const result = await getLocationDataController.handler(mockRequest, mockH)
+
+      expect(mockH.view).toHaveBeenCalledWith(
+        'location-not-found/index',
+        expect.objectContaining({
+          lang: 'cy'
+        })
+      )
+      expect(result).toBe('mocked-view-response')
+    })
+
+    it('should handle request with /location path', async () => {
+      mockRequest.path = '/location'
+
+      const result = await getLocationDataController.handler(mockRequest, mockH)
+
+      expect(mockH.view).toHaveBeenCalledWith(
+        'location-not-found/index',
+        expect.objectContaining({
+          lang: 'en'
+        })
+      )
+      expect(result).toBe('mocked-view-response')
+    })
+
+    it('should handle request with search-location referer', async () => {
+      mockRequest.headers.referer = 'https://example.com/search-location'
+
+      const result = await getLocationDataController.handler(mockRequest, mockH)
+
+      expect(mockH.view).toHaveBeenCalledWith(
+        'location-not-found/index',
+        expect.objectContaining({
+          lang: 'en'
+        })
+      )
+      expect(result).toBe('mocked-view-response')
+    })
+
+    it('should default to Welsh when no specific conditions are met', async () => {
+      mockRequest.path = '/other-path'
+      mockRequest.headers.referer = 'https://example.com/other'
+
+      const result = await getLocationDataController.handler(mockRequest, mockH)
+
+      expect(mockH.view).toHaveBeenCalledWith(
+        'location-not-found/index',
+        expect.objectContaining({
+          lang: 'cy'
+        })
+      )
+      expect(result).toBe('mocked-view-response')
+    })
+
+    it('should handle request without headers', async () => {
+      delete mockRequest.headers
+
+      const result = await getLocationDataController.handler(mockRequest, mockH)
+
+      expect(mockH.view).toHaveBeenCalledWith(
+        'location-not-found/index',
+        expect.objectContaining({
+          lang: 'en'
+        })
+      )
+      expect(result).toBe('mocked-view-response')
+    })
+
+    it('should handle request without query', async () => {
+      delete mockRequest.query
+
+      const result = await getLocationDataController.handler(mockRequest, mockH)
+
+      expect(mockH.view).toHaveBeenCalledWith(
+        'location-not-found/index',
+        expect.objectContaining({
+          lang: 'en'
+        })
+      )
+      expect(result).toBe('mocked-view-response')
+    })
+
+    it('should handle errors and re-throw them', async () => {
+      mockH.view.mockImplementation(() => {
+        throw new Error('View rendering failed')
+      })
+
+      await expect(
+        getLocationDataController.handler(mockRequest, mockH)
+      ).rejects.toThrow('View rendering failed')
+    })
+
+    it('should log request details and process flow', async () => {
+      await getLocationDataController.handler(mockRequest, mockH)
+
+      // The logger calls are checked implicitly by ensuring the handler completes successfully
+      expect(mockH.view).toHaveBeenCalledTimes(1)
+    })
   })
 })

@@ -1,7 +1,7 @@
 import { searchTermsAndUnitary } from './search-terms-unitary.js'
 
 describe('searchTermsAndUnitary', () => {
-  test.skip('returns true when name2 matches searchTerms and secondSearchTerm is UNDEFINED', () => {
+  test('returns true when name2 matches searchTerms and secondSearchTerm is UNDEFINED', () => {
     expect(
       searchTermsAndUnitary(
         'hello world',

@@ -238,32 +238,61 @@ describe('Server Index', () => {
       expect(typeof server.ext).toBe('function')
     })
 
-    it('should handle server creation errors gracefully', async () => {
-      // Test that errors are properly logged and handled
-      const mockLoggerWithError = {
+    it('should handle plugin registration with unnamed plugins', async () => {
+      const { createLogger } = await import(
+        './common/helpers/logging/logger.js'
+      )
+      const mockLogger = {
         info: vi.fn(),
         error: vi.fn(),
         warn: vi.fn(),
         debug: vi.fn()
       }
+      createLogger.mockReturnValue(mockLogger)
 
+      // This test covers the fallback plugin name logic on line 83
+      server = await createServer()
+
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        expect.stringContaining('Registering plugin 1:')
+      )
+    })
+
+    it('should handle errors during server setup', async () => {
       const { createLogger } = await import(
         './common/helpers/logging/logger.js'
       )
-      createLogger.mockReturnValue(mockLoggerWithError)
-
-      try {
-        await createServer()
-        // If we get here, the server was created successfully
-        expect(createLogger).toHaveBeenCalled()
-      } catch (error) {
-        // If an error occurs, verify it's properly handled
-        expect(mockLoggerWithError.error).toHaveBeenCalled()
-        expect(error).toBeDefined()
+      const mockLogger = {
+        info: vi.fn(),
+        error: vi.fn(),
+        warn: vi.fn(),
+        debug: vi.fn()
       }
+      createLogger.mockReturnValue(mockLogger)
+
+      // Mock setupProxy to throw an error
+      const { setupProxy } = await import(
+        './common/helpers/proxy/setup-proxy.js'
+      )
+      setupProxy.mockImplementation(() => {
+        throw new Error('Proxy setup failed')
+      })
+
+      await expect(createServer()).rejects.toThrow('Proxy setup failed')
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Error during server setup',
+        expect.any(Error)
+      )
     })
 
     it('should create logger and log initialization steps', async () => {
+      // Reset setupProxy mock to avoid interference from previous tests
+      const { setupProxy } = await import(
+        './common/helpers/proxy/setup-proxy.js'
+      )
+      setupProxy.mockReset()
+      setupProxy.mockResolvedValue()
+
       const { createLogger } = await import(
         './common/helpers/logging/logger.js'
       )
@@ -292,6 +321,13 @@ describe('Server Index', () => {
 
   describe('Server Lifecycle', () => {
     beforeEach(async () => {
+      // Reset setupProxy mock to avoid interference from previous tests
+      const { setupProxy } = await import(
+        './common/helpers/proxy/setup-proxy.js'
+      )
+      setupProxy.mockReset()
+      setupProxy.mockResolvedValue()
+
       server = await createServer()
     })
 

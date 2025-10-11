@@ -14,7 +14,7 @@ describe('searchTermsAndBorough', () => {
     ).toBe(false)
   })
 
-  test.skip('returns true when name1 matches searchTerms and secondSearchTerm is UNDEFINED', () => {
+  test('returns true when name1 matches searchTerms and secondSearchTerm is UNDEFINED', () => {
     expect(
       searchTermsAndBorough(
         'hello world',

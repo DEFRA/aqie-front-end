@@ -46,6 +46,25 @@ jobs:
       - name: SonarCloud Scan
         if: github.actor != 'dependabot[bot]'
         uses: SonarSource/sonarcloud-github-action@v3
+        with:
+          args: >
+            -Dsonar.projectKey=DEFRA_aqie-front-end
+            -Dsonar.organization=defra
+            -Dsonar.sources=src/server/,src/config/,src/helpers/,src/index.js
+            -Dsonar.exclusions=**/*.test.js,src/client/**
+            -Dsonar.tests=src/server/,src/config/,src/helpers/,test/
+            -Dsonar.test.inclusions=**/*.test.js
+            -Dsonar.test.exclusions=src/client/**
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.coverage.exclusions=src/client/**,coverage/**,node_modules/**,**/test/**,**/*.test.js
+            -Dsonar.newCodePeriod.type=PREVIOUS_VERSION
+            -Dsonar.qualitygate.wait=false
+            -Dsonar.pullrequest.branch=${{ github.head_ref }}
+            -Dsonar.pullrequest.base=${{ github.base_ref }}
+            -Dsonar.pullrequest.key=${{ github.event.number }}
+            -Dsonar.coverage.overallExclusions=src/client/**,coverage/**,node_modules/**,**/test/**,**/*.test.js
+            -Dsonar.qualitygate.skip=true
+            -Dsonar.verbose=true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

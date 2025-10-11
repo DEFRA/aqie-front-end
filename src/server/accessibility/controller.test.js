@@ -1,6 +1,7 @@
 /* global vi */
-import { accessibilityController } from './controller.js'
+import { accessibilityController, accessibilityHandler } from './controller.js'
 import { english } from '../data/en/en.js'
+import { welsh } from '../data/cy/cy.js'
 import { LANG_CY, LANG_EN } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
@@ -10,6 +11,7 @@ describe('Accessibility Handler', () => {
     path: '/accessibility'
   }
   const mockContent = english
+  const mockContentCy = welsh
   vi.mock('../../common/helpers/get-site-url.js', () => ({
     getAirQualitySiteUrl: vi.fn((request) => {
       return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
@@ -117,5 +119,47 @@ describe('Accessibility Handler', () => {
       cookieBanner: mockContent.cookieBanner,
       lang: LANG_EN
     })
+  })
+
+  it('should use Welsh content when lang is neither en nor cy', () => {
+    mockRequest = {
+      query: {
+        lang: 'fr' // This will be 'fr' after slice, not 'en' or 'cy'
+      },
+      path: '/some-other-path' // Not '/accessibility'
+    }
+    const expectedUrl =
+      'https://check-air-quality.service.gov.uk/some-other-path?lang=fr'
+    const actualUrl = getAirQualitySiteUrl(mockRequest)
+    expect(actualUrl).toBe(expectedUrl)
+
+    const result = accessibilityController.handler(
+      mockRequest,
+      mockH,
+      mockContent // Pass English content to test that it gets replaced with Welsh
+    )
+    expect(result).toBe('view rendered')
+    // When lang is not 'en' (lines 27-28), the controller uses Welsh content
+    expect(mockH.view).toHaveBeenCalledWith('accessibility/index', {
+      pageTitle: mockContentCy.footer.accessibility.pageTitle,
+      title: mockContentCy.footer.accessibility.title,
+      description: mockContentCy.footer.accessibility.description,
+      metaSiteUrl: actualUrl,
+      heading: mockContentCy.footer.accessibility.heading,
+      headings: mockContentCy.footer.accessibility.headings,
+      paragraphs: mockContentCy.footer.accessibility.paragraphs,
+      displayBacklink: false,
+      phaseBanner: mockContentCy.phaseBanner,
+      footerTxt: mockContentCy.footerTxt,
+      serviceName: mockContentCy.multipleLocations.serviceName,
+      cookieBanner: mockContentCy.cookieBanner,
+      lang: 'fr'
+    })
+  })
+
+  it('should test accessibilityHandler function directly', () => {
+    // ''
+    const result = accessibilityHandler(mockRequest, mockH, mockContent)
+    expect(result).toBe('view rendered')
   })
 })

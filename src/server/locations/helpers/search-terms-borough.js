@@ -12,8 +12,8 @@ function searchTermsAndBorough(
   }
   if (secondSearchTerm === 'UNDEFINED' || secondSearchTerm === '') {
     return (
-      name1?.includes(normalizeString(searchTerms)) &&
-      normalizeString(searchTerms).includes(name1) &&
+      normalizeString(name1)?.includes(normalizeString(searchTerms)) &&
+      normalizeString(searchTerms).includes(normalizeString(name1)) &&
       exactWordFirstTerm
     )
   }
@@ -22,7 +22,7 @@ function searchTermsAndBorough(
     return false
   }
   return (
-    name1?.includes(normalizeString(searchTerms)) &&
+    normalizeString(name1)?.includes(normalizeString(searchTerms)) &&
     normalizeString(secondSearchTerm).includes(normalizeString(borough)) &&
     normalizeString(borough).includes(normalizeString(secondSearchTerm)) &&
     exactWordFirstTerm &&
