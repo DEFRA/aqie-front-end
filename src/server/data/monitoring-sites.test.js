@@ -74,7 +74,7 @@ describe('monitoring-sites data module', () => {
         expect(typeof pollutant.href).toBe('string')
         expect(typeof pollutant.low_range).toBe('string')
         expect(pollutant.href).toMatch(/^\/pollutants\//)
-        expect(pollutant.low_range).toMatch(/^\d+ to \d+$/)
+        expect(pollutant.low_range).toMatch(/^\d{1,6} to \d{1,6}$/)
       })
     })
   })
@@ -179,7 +179,7 @@ describe('monitoring-sites data module', () => {
 
     it('should have valid low_range formats', () => {
       Object.values(pollutantTypes).forEach((pollutant) => {
-        expect(pollutant.low_range).toMatch(/^\d+ to \d+$/)
+        expect(pollutant.low_range).toMatch(/^\d{1,6} to \d{1,6}$/)
         const [start, , end] = pollutant.low_range.split(' ')
         expect(parseInt(start)).toBeLessThan(parseInt(end))
       })

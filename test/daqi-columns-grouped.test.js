@@ -113,11 +113,10 @@ describe('daqi-columns grouped behaviour', () => {
       .querySelector('.daqi-numbered')
       .style.getPropertyValue('--daqi-divider-3')
 
-    // Security: /\d+px$/ pattern is safe from ReDoS attacks
-    // The \d+ quantifier matches digits linearly without backtracking
-    // Pattern validates CSS pixel values (e.g., "123px", "45px")
-    expect(d1).toMatch(/\d+px$/)
-    expect(d2).toMatch(/\d+px$/)
-    expect(d3).toMatch(/\d+px$/)
+    // Security: Using bounded quantifier {1,10} to prevent ReDoS attacks with malicious input
+    // Pattern validates CSS pixel values (e.g., "123px", "45px") with ReDoS protection
+    expect(d1).toMatch(/\d{1,10}px$/)
+    expect(d2).toMatch(/\d{1,10}px$/)
+    expect(d3).toMatch(/\d{1,10}px$/)
   })
 })
