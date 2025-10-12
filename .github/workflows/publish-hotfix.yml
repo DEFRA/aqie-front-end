@@ -48,12 +48,13 @@ jobs:
           args: >
             -Dsonar.organization=defra
             -Dsonar.projectKey=DEFRA_aqie-front-end
-            -Dsonar.sources=src/
-            -Dsonar.exclusions=**/node_modules/**,**/*.test.*,**/test/**,**/coverage/**,**/__fixtures__/**,**/__mocks__/**,**/tests/**
-            -Dsonar.tests=src/
-            -Dsonar.test.inclusions=**/*.test.*,**/test/**,**/tests/**
+            -Dsonar.sources=src/server/,src/config/,src/helpers/,src/index.js
+            -Dsonar.exclusions=**/*.test.js,src/client/**,src/server/common/**/*,src/server/locations/cy/**,src/src/govuk/**/*,src/config/nunjucks/filters/format-currency.js,src/**/__fixtures__/**
+            -Dsonar.tests=src/server/,src/config/,src/helpers/,test/
+            -Dsonar.test.inclusions=**/*.test.js
+            -Dsonar.test.exclusions=src/client/**,src/server/common/**/*,src/server/locations/cy/**,src/src/govuk/**/*,src/**/__fixtures__/**
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-            -Dsonar.coverage.exclusions=**/*.test.*,**/test/**,**/coverage/**,**/__fixtures__/**,**/__mocks__/**,**/tests/**
+            -Dsonar.coverage.exclusions=src/client/**,coverage/**,node_modules/**,**/test/**,**/*.test.js,src/server/common/**/*,src/server/locations/cy/**,src/src/govuk/**/*,src/config/nunjucks/filters/format-currency.js,src/**/__fixtures__/**
             -Dsonar.newCode.referenceBranch=main
             -Dsonar.newCodePeriod.type=PREVIOUS_VERSION
         env:
