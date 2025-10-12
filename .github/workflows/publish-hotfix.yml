@@ -35,11 +35,9 @@ jobs:
           npm test
 
       - name: Publish Hot Fix
-        # '' Replaced with a valid GitHub Action for demonstration; update as needed for your workflow
-        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1 - Security: pinned to commit SHA
+        uses: DEFRA/cdp-build-action/build-hotfix@6bc276d9c3a038ccb04307247623de821361eca3 # main - Security: pinned to commit SHA
         with:
-          name: hotfix-artifact
-          path: build/
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Fetch main branch for SonarCloud PR analysis
         run: git fetch --no-tags --prune origin +refs/heads/main:refs/remotes/origin/main
