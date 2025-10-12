@@ -46,13 +46,14 @@ jobs:
             -Dsonar.projectKey=DEFRA_aqie-front-end
             -Dsonar.organization=defra
             -Dsonar.sources=src/server/,src/config/,src/helpers/,src/index.js
-            -Dsonar.exclusions=**/*.test.js,src/client/**
+            -Dsonar.exclusions=**/node_modules/**,**/*.test.*,**/test/**,**/coverage/**,**/__fixtures__/**,**/__mocks__/**,**/tests/**,**/*.py,**/get-pip.py
             -Dsonar.tests=src/server/,src/config/,src/helpers/,test/
             -Dsonar.test.inclusions=**/*.test.js
             -Dsonar.test.exclusions=src/client/**
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.coverage.exclusions=src/client/**,coverage/**,node_modules/**,**/test/**,**/*.test.js
             -Dsonar.newCodePeriod.type=PREVIOUS_VERSION
+            -Dsonar.python.version=
             -Dsonar.qualitygate.wait=true
             -Dsonar.verbose=true
         env:
