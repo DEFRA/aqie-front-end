@@ -28,6 +28,9 @@ import { getNIData } from '../../locations/helpers/get-ni-single-data.js'
 import sizeof from 'object-sizeof'
 import { config } from '../../../config/index.js'
 
+// Constants to avoid magic numbers
+const BYTES_TO_MB = 1024 * 1024
+
 const logger = createLogger()
 
 function shouldRedirectToEnglish(query) {
@@ -134,7 +137,7 @@ const getLocationDetailsController = {
         const { airQuality } = airQualityValues(forecastNum, lang)
 
         logger.info(
-          `Before Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
+          `Before Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / BYTES_TO_MB).toFixed(2)} MB`
         )
         // Replace the large getForecasts with a single-record version
         locationData.getForecasts = nearestLocation
@@ -143,7 +146,7 @@ const getLocationDetailsController = {
         // Save the updated locationData back into session
         request.yar.set('locationData', locationData)
         logger.info(
-          `After Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
+          `After Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / BYTES_TO_MB).toFixed(2)} MB`
         )
 
         return h.view('locations/location', {

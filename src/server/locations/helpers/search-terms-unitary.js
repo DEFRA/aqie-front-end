@@ -8,41 +8,95 @@ function searchTermsAndUnitary(
   exactWordSecondTerm
 ) {
   const normalizeString = (str) => str?.toUpperCase().replace(/\s+/g, '')
+
+  // Handle name2 cases first
   if (name2) {
-    if (secondSearchTerm === 'UNDEFINED' || secondSearchTerm === '') {
-      return (
-        normalizeString(name2)?.includes(normalizeString(searchTerms)) &&
-        normalizeString(searchTerms).includes(normalizeString(name2))
-      )
-    }
-    if (secondSearchTerm !== 'UNDEFINED') {
-      return (
-        normalizeString(name2)?.includes(normalizeString(searchTerms)) &&
-        normalizeString(searchTerms).includes(normalizeString(name2)) &&
-        normalizeString(secondSearchTerm).includes(normalizeString(unitary)) &&
-        normalizeString(unitary)?.includes(normalizeString(secondSearchTerm))
-      )
-    }
+    return handleName2Cases(
+      searchTerms,
+      name2,
+      secondSearchTerm,
+      unitary,
+      normalizeString
+    )
   }
-  if (secondSearchTerm === 'UNDEFINED' || secondSearchTerm === '') {
+
+  // Handle name1 cases
+  return handleName1Cases(
+    searchTerms,
+    name1,
+    secondSearchTerm,
+    unitary,
+    exactWordFirstTerm,
+    exactWordSecondTerm,
+    normalizeString
+  )
+}
+
+function handleName2Cases(
+  searchTerms,
+  name2,
+  secondSearchTerm,
+  unitary,
+  normalizeString
+) {
+  const isSecondTermEmpty =
+    secondSearchTerm === 'UNDEFINED' ||
+    secondSearchTerm === '' ||
+    !secondSearchTerm
+  const searchTermsMatch =
+    normalizeString(name2)?.includes(normalizeString(searchTerms)) &&
+    normalizeString(searchTerms).includes(normalizeString(name2))
+
+  if (isSecondTermEmpty) {
+    return searchTermsMatch
+  }
+
+  if (secondSearchTerm !== 'UNDEFINED') {
+    const unitaryMatch =
+      normalizeString(secondSearchTerm)?.includes(normalizeString(unitary)) &&
+      normalizeString(unitary)?.includes(normalizeString(secondSearchTerm))
+    return searchTermsMatch && unitaryMatch
+  }
+
+  return false
+}
+
+function handleName1Cases(
+  searchTerms,
+  name1,
+  secondSearchTerm,
+  unitary,
+  exactWordFirstTerm,
+  exactWordSecondTerm,
+  normalizeString
+) {
+  const isSecondTermEmpty =
+    secondSearchTerm === 'UNDEFINED' ||
+    secondSearchTerm === '' ||
+    !secondSearchTerm
+
+  if (isSecondTermEmpty) {
     return (
       normalizeString(name1)?.includes(normalizeString(searchTerms)) &&
       normalizeString(searchTerms).includes(normalizeString(name1))
     )
   }
-  if (!exactWordFirstTerm) {
+
+  // Early returns for missing exact matches
+  if (!exactWordFirstTerm || !exactWordSecondTerm) {
     return false
   }
-  if (!exactWordSecondTerm) {
-    return false
-  }
+
+  const searchMatch =
+    normalizeString(name1)?.includes(normalizeString(searchTerms)) ||
+    normalizeString(searchTerms).includes(normalizeString(name1))
+
+  const unitaryMatch =
+    normalizeString(secondSearchTerm)?.includes(normalizeString(unitary)) ||
+    normalizeString(unitary)?.includes(normalizeString(secondSearchTerm))
+
   return (
-    (normalizeString(name1)?.includes(normalizeString(searchTerms)) ||
-      normalizeString(searchTerms).includes(normalizeString(name1))) &&
-    (normalizeString(secondSearchTerm).includes(normalizeString(unitary)) ||
-      normalizeString(unitary)?.includes(normalizeString(secondSearchTerm))) &&
-    exactWordFirstTerm &&
-    exactWordSecondTerm
+    searchMatch && unitaryMatch && exactWordFirstTerm && exactWordSecondTerm
   )
 }
 
