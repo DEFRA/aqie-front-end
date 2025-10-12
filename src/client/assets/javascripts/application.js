@@ -37,11 +37,15 @@ async function initializeComponent(Component, element) {
 }
 
 // Initialise cookie banner
-console.log('Initializing CookieBanner...')
+if (process.env.NODE_ENV === 'development') {
+  console.log('Initializing CookieBanner...') // eslint-disable-line no-console
+}
 const $cookieBanner = document.querySelector(COOKIE_BANNER_SELECTOR)
 if ($cookieBanner) {
   initializeComponent(CookieBanner, $cookieBanner)
-  console.log('CookieBanner initialized successfully')
+  if (process.env.NODE_ENV === 'development') {
+    console.log('CookieBanner initialized successfully') // eslint-disable-line no-console
+  }
 } else {
   console.warn('Cookie banner element not found') // eslint-disable-line no-console
 }
@@ -65,16 +69,24 @@ function initializeAnalytics() {
 }
 
 // Call the analytics initialization function
-console.log('Initializing Analytics...')
+if (process.env.NODE_ENV === 'development') {
+  console.log('Initializing Analytics...') // eslint-disable-line no-console
+}
 initializeAnalytics()
-console.log('Analytics initialized successfully')
+if (process.env.NODE_ENV === 'development') {
+  console.log('Analytics initialized successfully') // eslint-disable-line no-console
+}
 
 // Initialise cookie page
-console.log('Initializing CookiesPage...')
+if (process.env.NODE_ENV === 'development') {
+  console.log('Initializing CookiesPage...') // eslint-disable-line no-console
+}
 const $cookiesPage = document.querySelector(COOKIES_PAGE_SELECTOR)
 if ($cookiesPage) {
   initializeComponent(CookiesPage, $cookiesPage)
-  console.log('CookiesPage initialized successfully')
+  if (process.env.NODE_ENV === 'development') {
+    console.log('CookiesPage initialized successfully') // eslint-disable-line no-console
+  }
 } else {
   console.warn('Cookies page element not found') // eslint-disable-line no-console
 }
