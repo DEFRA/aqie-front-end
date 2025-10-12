@@ -537,7 +537,7 @@ class DaqiContrastTester {
   getColorLightness(colorString) {
     // Simple lightness calculation from RGB values
     if (colorString.includes('rgb')) {
-      const matches = colorString.match(/\d+/g)
+      const matches = colorString.match(/\d{1,3}/g) // RGB values are 0-255, bounded for ReDoS protection
       if (matches && matches.length >= 3) {
         const [r, g, b] = matches.map(Number)
         return (0.299 * r + 0.587 * g + 0.114 * b) / 255
