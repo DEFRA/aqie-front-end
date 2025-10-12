@@ -269,7 +269,9 @@ const getLocationDetailsController = {
 
       // Handle Welsh redirect
       const welshRedirect = handleWelshRedirect(query, locationId, h)
-      if (welshRedirect) return welshRedirect
+      if (welshRedirect) {
+        return welshRedirect
+      }
 
       // Handle search terms redirect
       const searchTermsRedirect = handleSearchTermsRedirect(
@@ -279,7 +281,9 @@ const getLocationDetailsController = {
         request,
         h
       )
-      if (searchTermsRedirect) return searchTermsRedirect
+      if (searchTermsRedirect) {
+        return searchTermsRedirect
+      }
 
       // Initialize common variables
       request.yar.clear('searchTermsSaved')
@@ -298,7 +302,9 @@ const getLocationDetailsController = {
         h,
         request
       )
-      if (sessionValidationResult) return sessionValidationResult
+      if (sessionValidationResult) {
+        return sessionValidationResult
+      }
 
       // Process location data
       const { getForecasts } = locationData
