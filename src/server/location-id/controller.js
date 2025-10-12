@@ -29,6 +29,9 @@ import { compareLastElements } from '../locations/helpers/convert-string.js'
 import sizeof from 'object-sizeof'
 import { config } from '../../config/index.js'
 
+// Constants to avoid magic numbers
+const BYTES_TO_MB = 1024 * 1024
+
 const logger = createLogger()
 
 // Helper to handle redirection for Welsh language
@@ -240,7 +243,7 @@ function processLocationResult(
   viewData
 ) {
   logger.info(
-    `Before Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
+    `Before Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / BYTES_TO_MB).toFixed(2)} MB`
   )
   updateSessionWithNearest(
     request,
@@ -249,7 +252,7 @@ function processLocationResult(
     nearestLocationsRange
   )
   logger.info(
-    `After Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
+    `After Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / BYTES_TO_MB).toFixed(2)} MB`
   )
   return h.view('locations/location', viewData)
 }
