@@ -375,7 +375,7 @@ if (isDevelopment) {
       config.loadFile(localConfigPath)
     } catch (err) {
       // Ignore malformed local configs but log for awareness
-      console.warn(`Failed to load local config: ${localConfigPath}`, err) // eslint-disable-line no-console
+      console.warn(`Failed to load local config: ${localConfigPath}`, err)
     }
   }
 }

@@ -23,14 +23,14 @@ function handleName2Match(searchTerms, name2, secondSearchTerm, unitary) {
   if (isSearchTermEmpty(secondSearchTerm)) {
     return checkBidirectionalMatch(name2, searchTerms)
   }
-  
+
   if (secondSearchTerm !== 'UNDEFINED') {
     return (
       checkBidirectionalMatch(name2, searchTerms) &&
       checkBidirectionalMatch(secondSearchTerm, unitary)
     )
   }
-  
+
   return false
 }
 
@@ -46,11 +46,11 @@ function handleName1Match(
   if (isSearchTermEmpty(secondSearchTerm)) {
     return checkBidirectionalMatch(name1, searchTerms)
   }
-  
+
   if (!exactWordFirstTerm || !exactWordSecondTerm) {
     return false
   }
-  
+
   return (
     checkUnidirectionalMatch(name1, searchTerms) &&
     checkUnidirectionalMatch(secondSearchTerm, unitary)
@@ -70,7 +70,7 @@ function searchTermsAndUnitary(
   if (name2) {
     return handleName2Match(searchTerms, name2, secondSearchTerm, unitary)
   }
-  
+
   // '' Handle name1 scenarios
   return handleName1Match(
     searchTerms,

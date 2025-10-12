@@ -29,7 +29,7 @@ describe('searchTermsAndUnitary', () => {
     ).toBe(false)
   })
 
-  test.skip('returns true when name2 matches searchTerms and secondSearchTerm matches unitary', () => {
+  test('returns true when name2 matches searchTerms and secondSearchTerm matches unitary', () => {
     expect(
       searchTermsAndUnitary(
         'hello world',
@@ -57,12 +57,12 @@ describe('searchTermsAndUnitary', () => {
     ).toBe(false)
   })
 
-  test.skip('returns true when name1 matches searchTerms and secondSearchTerm is UNDEFINED', () => {
+  test('returns true when name1 matches searchTerms and secondSearchTerm is UNDEFINED', () => {
     expect(
       searchTermsAndUnitary(
         'hello world',
         'HELLO WORLD',
-        'name2',
+        null, // No name2, so it will use name1 path
         'UNDEFINED',
         'unitary',
         true,
@@ -113,12 +113,12 @@ describe('searchTermsAndUnitary', () => {
     ).toBe(false)
   })
 
-  test.skip('returns true when name1 matches searchTerms and secondSearchTerm matches unitary', () => {
+  test('returns true when name1 matches searchTerms and secondSearchTerm matches unitary', () => {
     expect(
       searchTermsAndUnitary(
         'hello world',
         'HELLO WORLD',
-        'name2',
+        null, // No name2, so it will use name1 path
         'UNITARY',
         'UNITARY',
         true,
