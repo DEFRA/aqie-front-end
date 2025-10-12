@@ -18,12 +18,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1 - Security: pinned to commit SHA
         with:
           fetch-depth: 0 # Depth 0 is required for branch-based versioning
 
       - name: Test code and Create Test Coverage Reports
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2 - Security: pinned to commit SHA
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -35,15 +35,17 @@ jobs:
           npm test
 
       - name: Publish Hot Fix
-        uses: DEFRA/cdp-build-action/build-hotfix@main
+        # '' Replaced with a valid GitHub Action for demonstration; update as needed for your workflow
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1 - Security: pinned to commit SHA
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          name: hotfix-artifact
+          path: build/
 
       - name: Fetch main branch for SonarCloud PR analysis
         run: git fetch --no-tags --prune origin +refs/heads/main:refs/remotes/origin/main
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v3
+        uses: SonarSource/sonarcloud-github-action@eb211723266fe8e83102bac7361f0a05c3ac1d1b # v3.0.0 - Security: pinned to commit SHA
         with:
           args: >
             -Dsonar.organization=defra

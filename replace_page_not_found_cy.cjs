@@ -5,8 +5,9 @@ const cyFilePath = 'src/server/data/cy/cy.js'
 let cyContent = fs.readFileSync(cyFilePath, 'utf8')
 
 // Add the constant after the calendar array
+// Security: Use bounded quantifiers {0,10} instead of * to prevent ReDoS attacks
 cyContent = cyContent.replace(
-  /(\s*'Rhagfyr'\s*\]\s*)/,
+  /(\s{0,10}'Rhagfyr'\s{0,10}\]\s{0,10})/,
   "$1\n// Welsh page not found constant\nexport const PAGE_NOT_FOUND_CY = 'Tudalen heb ei chanfod'\n"
 )
 

@@ -405,14 +405,14 @@ describe('compareLastElements', () => {
   test('compares the last elements of two URLs', () => {
     expect(
       compareLastElements(
-        'http://example.com/page1',
-        'http://example.com/page1'
+        'https://example.com/page1',
+        'https://example.com/page1'
       )
     ).toBe(true)
     expect(
       compareLastElements(
-        'http://example.com/page1',
-        'http://example.com/page2'
+        'https://example.com/page1',
+        'https://example.com/page2'
       )
     ).toBe(false)
   })
@@ -420,8 +420,8 @@ describe('compareLastElements', () => {
   test('handles input with query parameters', () => {
     expect(
       compareLastElements(
-        'http://example.com/page1?query=123',
-        'http://example.com/page1'
+        'https://example.com/page1?query=123',
+        'https://example.com/page1'
       )
     ).toBe(true)
   })
@@ -429,15 +429,15 @@ describe('compareLastElements', () => {
   test('handles input with different domains', () => {
     expect(
       compareLastElements(
-        'http://example1.com/page1',
-        'http://example2.com/page1'
+        'https://example1.com/page1',
+        'https://example2.com/page1'
       )
     ).toBe(false)
   })
 
   test('handles empty string input', () => {
-    expect(compareLastElements('', 'http://example.com/page1')).toBe(false)
-    expect(compareLastElements('http://example.com/page1', '')).toBe(false)
+    expect(compareLastElements('', 'https://example.com/page1')).toBe(false)
+    expect(compareLastElements('https://example.com/page1', '')).toBe(false)
   })
 })
 
