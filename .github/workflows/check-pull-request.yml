@@ -51,7 +51,7 @@ jobs:
             -Dsonar.projectKey=DEFRA_aqie-front-end
             -Dsonar.organization=defra
             -Dsonar.sources=src/server/,src/config/,src/helpers/,src/index.js
-            -Dsonar.exclusions=**/*.test.js,src/client/**,**/*.py,**/get-pip.py
+            -Dsonar.exclusions=**/*.test.js,src/client/**
             -Dsonar.tests=src/server/,src/config/,src/helpers/,test/
             -Dsonar.test.inclusions=**/*.test.js
             -Dsonar.test.exclusions=src/client/**
@@ -65,7 +65,6 @@ jobs:
             -Dsonar.coverage.overallExclusions=src/client/**,coverage/**,node_modules/**,**/test/**,**/*.test.js
             -Dsonar.qualitygate.skip=true
             -Dsonar.verbose=true
-            -Dsonar.python.version=
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

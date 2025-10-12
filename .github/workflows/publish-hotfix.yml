@@ -49,14 +49,13 @@ jobs:
             -Dsonar.organization=defra
             -Dsonar.projectKey=DEFRA_aqie-front-end
             -Dsonar.sources=src/
-            -Dsonar.exclusions=**/node_modules/**,**/*.test.*,**/test/**,**/coverage/**,**/__fixtures__/**,**/__mocks__/**,**/tests/**,**/*.py,**/get-pip.py
+            -Dsonar.exclusions=**/node_modules/**,**/*.test.*,**/test/**,**/coverage/**,**/__fixtures__/**,**/__mocks__/**,**/tests/**
             -Dsonar.tests=src/
             -Dsonar.test.inclusions=**/*.test.*,**/test/**,**/tests/**
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.coverage.exclusions=**/*.test.*,**/test/**,**/coverage/**,**/__fixtures__/**,**/__mocks__/**,**/tests/**
             -Dsonar.newCode.referenceBranch=main
             -Dsonar.newCodePeriod.type=PREVIOUS_VERSION
-            -Dsonar.python.version=
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # NOSONAR - This is a GitHub Actions secret reference
