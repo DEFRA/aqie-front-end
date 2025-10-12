@@ -2,7 +2,14 @@
  * DAQI Current Implementation Tester
  *
  * This function tests the DAQI levels directly on your current implementation
- * by interacting with the actual DOM structure and CSS classes used in production.
+ * by interacting with the actual       if (process.env.NODE_ENV === 'development') {
+        console.log(`\n⏰ Auto-reverting in 3 seconds...`) // eslint-disable-line no-console
+      }
+      setTimeout(() => {
+        this.revertToOriginal()
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🔄 Reverted to original state') // eslint-disable-line no-console
+        }structure and CSS classes used in production.
  *
  * Compatible with the current structure:
  * - .daqi-numbered containers
@@ -33,17 +40,22 @@ class DAQICurrentImplementationTester {
 
     if (!this.container) {
       console.error('❌ No .daqi-numbered container found in current page')
-      console.log(
-        "💡 Make sure you're on a page with DAQI data (air quality page)"
-      )
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          // eslint-disable-line no-console
+          "💡 Make sure you're on a page with DAQI data (air quality page)"
+        )
+      }
       return false
     }
 
     // Store original state
     this.storeOriginalState()
 
-    console.log('✅ DAQI Current Implementation Tester initialized')
-    console.log('📍 Found container:', this.container)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ DAQI Current Implementation Tester initialized') // eslint-disable-line no-console
+      console.log('📍 Found container:', this.container) // eslint-disable-line no-console
+    }
     return true
   }
 
@@ -77,8 +89,10 @@ class DAQICurrentImplementationTester {
       return
     }
 
-    console.log(`\n🧪 Testing DAQI Level ${level} on Current Implementation`)
-    console.log('═'.repeat(60))
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`\n🧪 Testing DAQI Level ${level} on Current Implementation`) // eslint-disable-line no-console
+      console.log('═'.repeat(60)) // eslint-disable-line no-console
+    }
 
     // Get the segments
     const segments = this.container.querySelectorAll('.daqi-bar-segment')
@@ -102,9 +116,12 @@ class DAQICurrentImplementationTester {
         // This is the active segment
         segment.classList.add(`daqi-${level}`)
         segment.classList.add('daqi-selected')
-        console.log(
-          `✅ Applied daqi-${level} class to segment ${segmentNumber}`
-        )
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            // eslint-disable-line no-console
+            `🔧 Applying DAQI-${level} classes to segment ${i + 1}`
+          )
+        }
       } else {
         // This is an inactive segment
         segment.classList.add('daqi-0')
@@ -126,14 +143,16 @@ class DAQICurrentImplementationTester {
       containerWidth: this.container.offsetWidth
     }
 
-    console.log('📊 Current Implementation Test Results:')
-    console.log(`   Level: ${testResult.level}`)
-    console.log(`   Background: ${testResult.backgroundColor}`)
-    console.log(`   Text Color: ${testResult.color}`)
-    console.log(`   Font Weight: ${testResult.fontWeight}`)
-    console.log(`   CSS Classes: ${testResult.classes}`)
-    console.log(`   Segment Width: ${testResult.segmentWidth}`)
-    console.log(`   Container Width: ${testResult.containerWidth}px`)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('📊 Current Implementation Test Results:') // eslint-disable-line no-console
+      console.log(`   Level: ${testResult.level}`) // eslint-disable-line no-console
+      console.log(`   Background: ${testResult.backgroundColor}`) // eslint-disable-line no-console
+      console.log(`   Text Color: ${testResult.color}`) // eslint-disable-line no-console
+      console.log(`   Font Weight: ${testResult.fontWeight}`) // eslint-disable-line no-console
+      console.log(`   CSS Classes: ${testResult.classes}`) // eslint-disable-line no-console
+      console.log(`   Segment Width: ${testResult.segmentWidth}`) // eslint-disable-line no-console
+      console.log(`   Container Width: ${testResult.containerWidth}px`) // eslint-disable-line no-console
+    }
 
     // Test the band labels
     this.testBandLabels(level)
@@ -146,10 +165,14 @@ class DAQICurrentImplementationTester {
 
     // Auto-revert if temporary
     if (temporary) {
-      console.log(`\n⏰ Auto-reverting in 3 seconds...`)
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`\n⏰ Auto-reverting in 3 seconds...`) // eslint-disable-line no-console
+      }
       setTimeout(() => {
         this.restoreOriginal()
-        console.log('🔄 Reverted to original state')
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🔄 Reverted to original state') // eslint-disable-line no-console
+        }
       }, 3000)
     }
 
@@ -173,17 +196,20 @@ class DAQICurrentImplementationTester {
       veryHigh: labelsContainer.querySelector('.daqi-band-very-high')
     }
 
-    console.log('\n🏷️ Band Labels Test:')
-    Object.entries(bands).forEach(([bandName, element]) => {
-      if (element) {
-        const rect = element.getBoundingClientRect()
-        console.log(
-          `   ${bandName}: "${element.textContent.trim()}" (${rect.width.toFixed(1)}px wide)`
-        )
-      } else {
-        console.warn(`   ⚠️ Missing band: ${bandName}`)
-      }
-    })
+    if (process.env.NODE_ENV === 'development') {
+      console.log('\n🏷️ Band Labels Test:') // eslint-disable-line no-console
+      Object.entries(bands).forEach(([bandName, element]) => {
+        if (element) {
+          const rect = element.getBoundingClientRect()
+          console.log(
+            // eslint-disable-line no-console
+            `   ${bandName}: "${element.textContent.trim()}" (${rect.width.toFixed(1)}px wide)`
+          )
+        } else {
+          console.warn(`   ⚠️ Missing band: ${bandName}`) // eslint-disable-line no-console
+        }
+      })
+    }
 
     // Determine which band this level belongs to
     let expectedBand = 'low'
@@ -191,7 +217,9 @@ class DAQICurrentImplementationTester {
     else if (level >= 7 && level <= 9) expectedBand = 'high'
     else if (level === 10) expectedBand = 'veryHigh'
 
-    console.log(`   📍 Level ${level} should be in: ${expectedBand}`)
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`   📍 Level ${level} should be in: ${expectedBand}`) // eslint-disable-line no-console
+    }
   }
 
   /**
