@@ -1,4 +1,6 @@
 /* eslint-disable no-template-curly-in-string */
+// Security: All regex patterns use bounded quantifiers {0,200} to prevent ReDoS attacks
+// This limits backtracking and ensures linear time complexity even with malicious input
 const fs = require('fs')
 
 const filePath = 'src/server/data/cy/cy.js'
@@ -12,14 +14,16 @@ content = content.replace(
 )
 
 // For page titles, we need to use template literals
+// Security: Use bounded quantifiers to prevent ReDoS attacks
 content = content.replace(
-  /pageTitle:\s*'([^']*?)Gwirio ansawdd aer([^']*?)'/g,
+  /pageTitle:\s*'([^']{0,200}?)Gwirio ansawdd aer([^']{0,200}?)'/g,
   'pageTitle: `$1${WELSH_TITLE}$2`'
 )
 
 // For titles like "Cwcis ar Gwirio ansawdd aer"
+// Security: Use bounded quantifiers to prevent ReDoS attacks
 content = content.replace(
-  /title:\s*'([^']*?)Gwirio ansawdd aer([^']*?)'/g,
+  /title:\s*'([^']{0,200}?)Gwirio ansawdd aer([^']{0,200}?)'/g,
   'title: `$1${WELSH_TITLE}$2`'
 )
 
@@ -30,8 +34,9 @@ content = content.replace(
 )
 
 // For other text content that includes Gwirio ansawdd aer
+// Security: Use bounded quantifiers to prevent ReDoS attacks
 content = content.replace(
-  /'([^']*?)Gwirio ansawdd aer([^']*?)'/g,
+  /'([^']{0,200}?)Gwirio ansawdd aer([^']{0,200}?)'/g,
   '`$1${WELSH_TITLE}$2`'
 )
 

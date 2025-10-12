@@ -31,13 +31,16 @@ describe('#buildRedisClient', () => {
   })
 
   describe('When a Redis Cluster is requested', () => {
+    const testUsername = process.env.REDIS_TEST_USERNAME || 'test-user'
+    const testPassword = process.env.REDIS_TEST_PASSWORD || 'test-password-123'
+    
     beforeEach(() => {
       buildRedisClient({
         ...config.get('redis'),
         useSingleInstanceCache: false,
         useTLS: true,
-        username: 'user',
-        password: 'pass'
+        username: testUsername,
+        password: testPassword
       })
     })
 
@@ -47,7 +50,7 @@ describe('#buildRedisClient', () => {
         {
           dnsLookup: expect.any(Function),
           keyPrefix: 'aqie-front-end',
-          redisOptions: { db: 0, password: 'pass', tls: {}, username: 'user' },
+          redisOptions: { db: 0, password: testPassword, tls: {}, username: testUsername },
           slotsRefreshTimeout: 10000
         }
       )

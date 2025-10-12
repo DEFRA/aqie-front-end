@@ -103,6 +103,7 @@ describe('daqi-columns module', () => {
     const divider1 = document
       .querySelector('.daqi-numbered')
       .style.getPropertyValue('--daqi-divider-1')
+    // Security: /\d+px$/ pattern is safe from ReDoS attacks - uses linear quantifier with anchoring
     expect(divider1).toMatch(/\d+px$/) // Should be set to calculated pixel value
   })
 
@@ -124,6 +125,7 @@ describe('daqi-columns module', () => {
     const divider1 = container.style.getPropertyValue('--daqi-divider-1')
     // Mobile should clear columns but calculate divider positions
     expect(cssValue).toBe('')
+    // Security: /\d+px$/ pattern is safe from ReDoS attacks - uses linear quantifier with anchoring
     expect(divider1).toMatch(/\d+px$/) // Should be set to calculated pixel value
   })
 

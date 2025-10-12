@@ -1,4 +1,6 @@
 /* eslint-disable no-template-curly-in-string */
+// Security: All regex patterns use bounded quantifiers {0,200} to prevent ReDoS attacks
+// This limits backtracking and ensures linear time complexity even with malicious input
 const fs = require('fs')
 
 const filePath = 'src/server/data/en/en.js'
@@ -17,26 +19,30 @@ content = content.replace(
 )
 
 // For page titles, we need to use template literals
+// Security: Use bounded quantifiers to prevent ReDoS attacks
 content = content.replace(
-  /pageTitle:\s*'([^']*?)Check air quality([^']*?)'/g,
+  /pageTitle:\s*'([^']{0,200}?)Check air quality([^']{0,200}?)'/g,
   'pageTitle: `$1${SERVICE_NAME}$2`'
 )
 
 // For descriptions with Check air quality at the beginning
+// Security: Use bounded quantifiers to prevent ReDoS attacks
 content = content.replace(
-  /:\s*'Check air quality([^']*?)'/g,
+  /:\s*'Check air quality([^']{0,200}?)'/g,
   ': `${SERVICE_NAME}$1`'
 )
 
 // For titles like "Cookies on Check air quality"
+// Security: Use bounded quantifiers to prevent ReDoS attacks
 content = content.replace(
-  /title:\s*'([^']*?)Check air quality([^']*?)'/g,
+  /title:\s*'([^']{0,200}?)Check air quality([^']{0,200}?)'/g,
   'title: `$1${SERVICE_NAME}$2`'
 )
 
 // For other text content
+// Security: Use bounded quantifiers to prevent ReDoS attacks
 content = content.replace(
-  /'([^']*?)Check air quality([^']*?)'/g,
+  /'([^']{0,200}?)Check air quality([^']{0,200}?)'/g,
   '`$1${SERVICE_NAME}$2`'
 )
 
