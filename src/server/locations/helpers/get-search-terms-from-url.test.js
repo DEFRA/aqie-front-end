@@ -101,4 +101,69 @@ describe('getSearchTermsFromUrl', () => {
       searchTermsLocationType: LOCATION_TYPE_UK
     })
   })
+
+  test('handles partial Northern Ireland postcode type', () => {
+    getPostcode.mockImplementation((searchTerms) => ({
+      postcodeType: 'Partial Northern Ireland Postcode'
+    }))
+    const url = 'https://example.com/location/BT1'
+    const result = getSearchTermsFromUrl(url)
+    expect(result).toEqual({
+      searchTerms: 'BT1',
+      secondSearchTerm: '',
+      searchTermsLang: 'en',
+      searchTermsLocationType: LOCATION_TYPE_NI
+    })
+  })
+
+  test('handles partial UK postcode type', () => {
+    getPostcode.mockImplementation((searchTerms) => ({
+      postcodeType: 'Partial UK Postcode'
+    }))
+    const url = 'https://example.com/location/SW1A'
+    const result = getSearchTermsFromUrl(url)
+    expect(result).toEqual({
+      searchTerms: 'SW1A',
+      secondSearchTerm: '',
+      searchTermsLang: 'en',
+      searchTermsLocationType: LOCATION_TYPE_UK
+    })
+  })
+
+  test('handles URL with unknown language path', () => {
+    const url = 'https://example.com/unknown/some-location'
+    const result = getSearchTermsFromUrl(url)
+    expect(result).toEqual({
+      searchTerms: 'some location',
+      secondSearchTerm: undefined,
+      searchTermsLang: '',
+      searchTermsLocationType: LOCATION_TYPE_UK
+    })
+  })
+
+  test('handles invalid postcode with no underscores but not only words', () => {
+    isOnlyWords.mockImplementation((searchTerms) => false)
+    const url = 'https://example.com/location/some123location'
+    const result = getSearchTermsFromUrl(url)
+    expect(result).toEqual({
+      searchTerms: 'some123location',
+      secondSearchTerm: '',
+      searchTermsLang: 'en',
+      searchTermsLocationType: 'Invalid Postcode'
+    })
+  })
+
+  test('handles unknown postcode type', () => {
+    getPostcode.mockImplementation((searchTerms) => ({
+      postcodeType: 'Unknown Type'
+    }))
+    const url = 'https://example.com/location/unknown-location'
+    const result = getSearchTermsFromUrl(url)
+    expect(result).toEqual({
+      searchTerms: 'unknown location',
+      secondSearchTerm: '',
+      searchTermsLang: 'en',
+      searchTermsLocationType: 'Unknown Type'
+    })
+  })
 })

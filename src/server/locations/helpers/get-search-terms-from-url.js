@@ -8,6 +8,13 @@ import { isOnlyWords } from './convert-string.js'
 
 // '' Helper to determine language from URL path segment
 function determineLanguageFromUrl(splits) {
+  if (
+    !splits ||
+    !Array.isArray(splits) ||
+    splits.length <= URL_LANGUAGE_SEGMENT_INDEX
+  ) {
+    return ''
+  }
   const locLang = splits[URL_LANGUAGE_SEGMENT_INDEX]
   if (locLang === 'lleoliad') {
     return 'cy'
@@ -50,14 +57,24 @@ function determineLocationType(postcodeType) {
 }
 
 const getSearchTermsFromUrl = (url) => {
+  if (!url) {
+    return {
+      searchTerms: '',
+      secondSearchTerm: '',
+      searchTermsLang: '',
+      searchTermsLocationType: ''
+    }
+  }
+
   const splits = url?.split('/')
   const searchTermsLang = determineLanguageFromUrl(splits)
 
   const extractedString = extractSearchString(url)
   const parts = extractedString?.split(/[_-]/)
-  let searchTerms = parts.join(' ')
+  let searchTerms = parts?.join(' ') || ''
 
-  const { postcodeType } = getPostcode(searchTerms)
+  const postcodeResult = getPostcode(searchTerms)
+  const postcodeType = postcodeResult?.postcodeType || 'Invalid Postcode'
   let searchTermsLocationType = determineLocationType(postcodeType)
 
   const underscoreParts = extractedString?.split('_')
