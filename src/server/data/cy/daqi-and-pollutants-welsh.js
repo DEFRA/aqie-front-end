@@ -7,6 +7,10 @@ const PAGE_TITLE_TEMPLATE = (pollutant) =>
   `${pollutant} – ${WELSH_SERVICE_NAME}${GOVUK_SUFFIX}`
 const HEADER_TEXT = WELSH_TITLE
 
+// Common Welsh exposure phrases
+const SHORT_TERM_EXPOSURE_PREFIX = 'Gall amlygiad byrdymor'
+const LONG_TERM_EXPOSURE_PREFIX = 'Gall amlygiad hirdymor'
+
 /**
  * Welsh translations for DAQI display and pollutant information pages
  */
@@ -98,12 +102,12 @@ export const pollutantTranslationsWelsh = {
       paragraphs: {
         a: "Does dim ffynonellau allyriadau mawr o osôn ei hun. Mae osôn yn yr aer yn cael ei ffurfio gan adweithiau rhwng llygryddion eraill, er enghraifft, pan fydd llygryddion o geir, gorsafoedd pŵer a ffatrïoedd yn adweithio gyda golau'r haul.",
         b: "Gall osôn ar lefel y ddaear fod ar lefelau afiach ar ddiwrnodau poeth ac oer. Gall deithio gyda'r gwynt, gan effeithio ar ardaloedd trefol a gwledig.",
-        c: 'Gall amlygiad byrdymor i osôn achosi:',
+        c: `${SHORT_TERM_EXPOSURE_PREFIX} i osôn achosi:`,
         d: 'diffyg anadl, gwichian a phesychu',
         e: 'pyliau asthma',
         f: "mwy o risg o heintiau'r anadl",
         g: "llid yn y llygaid, y trwyn a'r gwddf",
-        h: 'Gall amlygiad hirdymor i osôn arwain at y canlynol:',
+        h: `${LONG_TERM_EXPOSURE_PREFIX} i osôn arwain at y canlynol:`,
         i: 'mwy o salwch yr anadl',
         j: 'materion y system nerfol',
         k: 'canser',
@@ -128,11 +132,11 @@ export const pollutantTranslationsWelsh = {
         e: 'defnyddio ffrwydron',
         f: 'gweithgynhyrchu masnachol',
         g: 'gweithgynhyrchu bwyd',
-        h: 'Gall amlygiad byrdymor i nitrogen deuocsid achosi:',
+        h: `${SHORT_TERM_EXPOSURE_PREFIX} i nitrogen deuocsid achosi:`,
         i: 'pyliau asthma',
         j: "heintiau'r anadl",
         k: "symptomau cyflyrau'r ysgyfaint neu'r galon i waethygu",
-        l: 'Gall amlygiad hirdymor i nitrogen deuocsid achosi:',
+        l: `${LONG_TERM_EXPOSURE_PREFIX} i nitrogen deuocsid achosi:`,
         m: 'mwy o risg o heintiau anadlol',
         n: 'gwaeth gweithrediad yr ysgyfaint mewn plant'
       },
@@ -154,11 +158,11 @@ export const pollutantTranslationsWelsh = {
         d: "pwerdai sy'n llosgi glo",
         e: 'gweithgynhyrchu masnachol',
         f: 'gweithgynhyrchu bwyd',
-        g: 'Gall amlygiad byrdymor achosi llid ar y canlynol:',
+        g: `${SHORT_TERM_EXPOSURE_PREFIX} achosi llid ar y canlynol:`,
         h: 'llygaid',
         i: 'trwyn',
         j: 'gwddf',
-        k: 'Gall amlygiad hirdymor ar lefelau uchel arwain at y canlynol:',
+        k: `${LONG_TERM_EXPOSURE_PREFIX} ar lefelau uchel arwain at y canlynol:`,
         l: 'llai o weithrediad yn yr ysgyfaint',
         m: 'newid synnwyr arogli',
         n: "mwy o heintiau'r anadl"
