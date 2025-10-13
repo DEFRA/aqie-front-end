@@ -12,6 +12,9 @@ const DAQI_DESCRIPTION =
 
 // Common Welsh phrases
 const WHERE_DO_YOU_WANT_TO_CHECK_WELSH = 'Ble hoffech chi wirio?'
+const ENTER_LOCATION_OR_POSTCODE = 'Rhowch leoliad neu god post'
+const ENTER_POSTCODE = 'Rhowch god post'
+const GO_BACK_TO_AIR_QUALITY = 'Ewch yn ôl i ansawdd aer'
 
 // Common page title patterns for Welsh
 const WELSH_PAGE_TITLE_BASE = `${WELSH_SERVICE_NAME}${GOVUK_SUFFIX}`
@@ -51,8 +54,8 @@ export const navigationTranslationsWelsh = {
         text: WHERE_DO_YOU_WANT_TO_CHECK_WELSH
       },
       hint: {
-        text1: 'Rhowch leoliad neu god post',
-        text2: 'Rhowch god post'
+        text1: ENTER_LOCATION_OR_POSTCODE,
+        text2: ENTER_POSTCODE
       },
       locations: {
         a: 'Lloegr, Yr Alban, Cymru',
@@ -71,7 +74,7 @@ export const navigationTranslationsWelsh = {
         fields: {
           title: ERROR_TITLE,
           list: {
-            text: 'Rhowch leoliad neu god post'
+            text: ENTER_LOCATION_OR_POSTCODE
           }
         }
       },
@@ -79,7 +82,7 @@ export const navigationTranslationsWelsh = {
         fields: {
           title: ERROR_TITLE,
           list: {
-            text: 'Rhowch god post'
+            text: ENTER_POSTCODE
           }
         }
       }
@@ -105,7 +108,7 @@ export const navigationTranslationsWelsh = {
       pageTitle: createWelshPageTitle("Ni allem ddod o hyd i'r dudalen hon"),
       heading: "Ni allem ddod o hyd i'r dudalen hon",
       paragraphs: {
-        a: 'Ewch yn ôl i ansawdd aer',
+        a: GO_BACK_TO_AIR_QUALITY,
         b: 'If you pasted the web address, check you copied the entire address.',
         c: 'Contact the ',
         d: 'air quality team',
@@ -115,7 +118,7 @@ export const navigationTranslationsWelsh = {
     serviceAPI: {
       heading: "Ni allem ddod o hyd i'r dudalen hon",
       paragraphs: {
-        a: 'Ewch yn ôl i ansawdd aer'
+        a: GO_BACK_TO_AIR_QUALITY
       }
     }
   },
