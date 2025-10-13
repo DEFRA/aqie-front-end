@@ -49,7 +49,7 @@ jobs:
             -Dsonar.organization=defra
             -Dsonar.projectKey=DEFRA_aqie-front-end
             -Dsonar.sources=src/server/,src/config/,src/helpers/,src/index.js
-            -Dsonar.exclusions=**/*.test.js,src/client/**,src/server/common/**/*,src/server/locations/cy/**,src/src/govuk/**/*,src/config/nunjucks/filters/format-currency.js,src/**/__fixtures__/**
+            -Dsonar.exclusions=**/*.test.js,src/client/**,src/server/common/**/*,src/server/locations/cy/**,src/src/govuk/**/*,src/config/nunjucks/filters/format-currency.js,src/**/__fixtures__/**,src/server/data/**/daqi-and-pollutants*.js,src/server/data/**/navigation*.js,src/server/data/**/footer-and-ui*.js,src/server/data/**/en.js,src/server/data/**/cy.js
             -Dsonar.tests=src/server/,src/config/,src/helpers/,test/
             -Dsonar.test.inclusions=**/*.test.js
             -Dsonar.test.exclusions=src/client/**,src/server/common/**/*,src/server/locations/cy/**,src/src/govuk/**/*,src/**/__fixtures__/**
@@ -57,6 +57,18 @@ jobs:
             -Dsonar.coverage.exclusions=src/client/**,coverage/**,node_modules/**,**/test/**,**/*.test.js,src/server/common/**/*,src/server/locations/cy/**,src/src/govuk/**/*,src/config/nunjucks/filters/format-currency.js,src/**/__fixtures__/**
             -Dsonar.newCode.referenceBranch=main
             -Dsonar.newCodePeriod.type=PREVIOUS_VERSION
+            -Dsonar.cpd.exclusions=src/server/data/**/daqi-and-pollutants*.js,src/server/data/**/navigation*.js,src/server/data/**/footer-and-ui*.js,src/server/data/**/en.js,src/server/data/**/cy.js
+            -Dsonar.issue.exclusions.multicriteria=e1,e2,e3,e4,e5
+            -Dsonar.issue.exclusions.multicriteria.e1.ruleKey=javascript:S1192
+            -Dsonar.issue.exclusions.multicriteria.e1.resourceKey=src/server/data/en/daqi-and-pollutants.js
+            -Dsonar.issue.exclusions.multicriteria.e2.ruleKey=javascript:S1192
+            -Dsonar.issue.exclusions.multicriteria.e2.resourceKey=src/server/data/cy/daqi-and-pollutants-welsh.js
+            -Dsonar.issue.exclusions.multicriteria.e3.ruleKey=javascript:S1192
+            -Dsonar.issue.exclusions.multicriteria.e3.resourceKey=src/server/data/**/navigation*.js
+            -Dsonar.issue.exclusions.multicriteria.e4.ruleKey=javascript:S1192
+            -Dsonar.issue.exclusions.multicriteria.e4.resourceKey=src/server/data/**/footer-and-ui*.js
+            -Dsonar.issue.exclusions.multicriteria.e5.ruleKey=javascript:S1192
+            -Dsonar.issue.exclusions.multicriteria.e5.resourceKey=src/server/data/**/*content*.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # NOSONAR - This is a GitHub Actions secret reference

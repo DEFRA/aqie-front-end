@@ -230,6 +230,45 @@ function determineLocationType(locationData) {
   return LOCATION_TYPE_UK
 }
 
+// Helper to initialize request data
+function initializeRequestData(request) {
+  const { query, headers } = request
+  const locationId = request.params.id
+  const searchTermsSaved = request.yar.get('searchTermsSaved')
+  const useNewRicardoMeasurementsEnabled = config.get(
+    'useNewRicardoMeasurementsEnabled'
+  )
+  const currentUrl = request.url.href
+  const lang = query?.lang ?? LANG_EN
+
+  return {
+    query,
+    headers,
+    locationId,
+    searchTermsSaved,
+    useNewRicardoMeasurementsEnabled,
+    currentUrl,
+    lang
+  }
+}
+
+// Helper to initialize common variables
+function initializeCommonVariables(request) {
+  request.yar.clear('searchTermsSaved')
+  const formattedDate = moment().format('DD MMMM YYYY').split(' ')
+  const getMonth = calendarEnglish.findIndex(
+    (item) => item.indexOf(formattedDate[1]) !== -1
+  )
+  const metaSiteUrl = getAirQualitySiteUrl(request)
+  const locationData = request.yar.get('locationData') || {}
+
+  return {
+    getMonth,
+    metaSiteUrl,
+    locationData
+  }
+}
+
 // Helper to process successful location result
 function processLocationResult(
   request,
@@ -255,17 +294,18 @@ function processLocationResult(
 }
 
 const getLocationDetailsController = {
-  // sonar-disable-next-line javascript:S3776
   handler: async (request, h) => {
     try {
-      const { query, headers } = request
-      const locationId = request.params.id
-      const searchTermsSaved = request.yar.get('searchTermsSaved')
-      const useNewRicardoMeasurementsEnabled = config.get(
-        'useNewRicardoMeasurementsEnabled'
-      )
-      const currentUrl = request.url.href
-      const lang = query?.lang ?? LANG_EN
+      // Initialize request data
+      const {
+        query,
+        headers,
+        locationId,
+        searchTermsSaved,
+        useNewRicardoMeasurementsEnabled,
+        currentUrl,
+        lang
+      } = initializeRequestData(request)
 
       // Handle Welsh redirect
       const welshRedirect = handleWelshRedirect(query, locationId, h)
@@ -286,13 +326,8 @@ const getLocationDetailsController = {
       }
 
       // Initialize common variables
-      request.yar.clear('searchTermsSaved')
-      const formattedDate = moment().format('DD MMMM YYYY').split(' ')
-      const getMonth = calendarEnglish.findIndex(
-        (item) => item.indexOf(formattedDate[1]) !== -1
-      )
-      const metaSiteUrl = getAirQualitySiteUrl(request)
-      const locationData = request.yar.get('locationData') || {}
+      const { getMonth, metaSiteUrl, locationData } =
+        initializeCommonVariables(request)
 
       // Validate session data
       const sessionValidationResult = validateAndProcessSessionData(
