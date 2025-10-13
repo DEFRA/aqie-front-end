@@ -67,6 +67,15 @@ const COMMON_SOURCES_WELSH = {
   LIQUID_DROPS: 'diferion hylif'
 }
 
+// Additional Welsh burning-related constants to eliminate duplicated literals
+const BURNING_SOURCES_WELSH = {
+  PETROL_DIESEL_ENGINE: 'llosgi petrol neu ddisel mewn injan car',
+  NATURAL_GAS_BOILER:
+    'llosgi nwy naturiol mewn boeler gwres canolog neu orsaf bŵer',
+  FUEL_BY_VEHICLES: 'llosgi tanwydd mewn cerbydau, diwydiant ac eiddo domestig',
+  VEGETATION: 'llosgi llystyfiant'
+}
+
 // Additional Welsh vulnerability patterns to reduce duplication
 const VULNERABILITY_PATTERNS_WELSH = {
   SYMPTOMS_WORSE: "symptomau cyflyrau'r ysgyfaint neu'r galon yn gwaethygu",
@@ -223,8 +232,8 @@ export const pollutantTranslationsWelsh = {
       },
       paragraphs: {
         a: createWelshSourceIntroText('nitrogen deuocsid', 'cynhyrchu'),
-        b: 'llosgi petrol neu ddisel mewn injan car',
-        c: 'llosgi nwy naturiol mewn boeler gwres canolog neu orsaf bŵer',
+        b: BURNING_SOURCES_WELSH.PETROL_DIESEL_ENGINE,
+        c: BURNING_SOURCES_WELSH.NATURAL_GAS_BOILER,
         d: 'weldio',
         e: 'defnyddio ffrwydron',
         f: COMMERCIAL_MANUFACTURING,
@@ -316,11 +325,11 @@ export const pollutantTranslationsWelsh = {
         e: COMMON_SOURCES_WELSH.SMOKE,
         f: COMMON_SOURCES_WELSH.LIQUID_DROPS,
         g: createWelshPMSourcesIntro(),
-        h: 'llosgi tanwydd mewn cerbydau, diwydiant ac eiddo domestig',
+        h: BURNING_SOURCES_WELSH.FUEL_BY_VEHICLES,
         i: 'traul ar deiars a breciau',
         j: 'pridd a llwch yn cael eu chwythu gan y gwynt',
         k: 'gronynnau ewyn y môr',
-        l: 'llosgi llystyfiant',
+        l: BURNING_SOURCES_WELSH.VEGETATION,
         m: SHORT_EFFECTS_PM25,
         n: ASTHMA_WELSH,
         o: COPD_WELSH,

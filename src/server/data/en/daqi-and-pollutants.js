@@ -69,6 +69,16 @@ const COMMON_SOURCES = {
   LIQUID_DROPS: 'drops of liquid'
 }
 
+// Additional burning-related constants to eliminate duplicated literals
+const BURNING_SOURCES = {
+  PETROL_DIESEL_ENGINE: 'burning of petrol or diesel in a car engine',
+  NATURAL_GAS_BOILER:
+    'burning natural gas in a central-heating boiler or power station',
+  FUEL_BY_VEHICLES:
+    'burning of fuel by vehicles, industry and domestic properties',
+  VEGETATION: 'burning vegetation'
+}
+
 // Common vulnerability and health impact patterns
 const VULNERABILITY_PATTERNS = {
   SYMPTOMS_WORSE: 'symptoms of lung or heart conditions to get worse',
@@ -221,8 +231,8 @@ export const pollutantTranslations = {
       },
       paragraphs: {
         a: createSourceIntroText('nitrogen dioxide', 'produced'),
-        b: 'burning of petrol or diesel in a car engine',
-        c: 'burning natural gas in a central-heating boiler or power station',
+        b: BURNING_SOURCES.PETROL_DIESEL_ENGINE,
+        c: BURNING_SOURCES.NATURAL_GAS_BOILER,
         d: 'welding',
         e: 'the use of explosives',
         f: COMMERCIAL_MANUFACTURING,
@@ -312,11 +322,11 @@ export const pollutantTranslations = {
         e: COMMON_SOURCES.SMOKE,
         f: COMMON_SOURCES.LIQUID_DROPS,
         g: createPMSourcesIntro(),
-        h: 'burning of fuel by vehicles, industry and domestic properties',
+        h: BURNING_SOURCES.FUEL_BY_VEHICLES,
         i: 'wear of tyres and brakes',
         j: 'wind blown soil and dust',
         k: 'sea spray particles',
-        l: 'burning vegetation',
+        l: BURNING_SOURCES.VEGETATION,
         m: SHORT_TERM_PM25_IMPACTS,
         n: ASTHMA,
         o: COMMON_HEALTH_SYMPTOMS.COPD,
