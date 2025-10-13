@@ -1,5 +1,6 @@
 // English translations module for footer, UI components, privacy policy, cookies policy, and accessibility statement
 const SERVICE_NAME = 'Check air quality'
+const GOVUK_SUFFIX = ' - GOV.UK'
 
 // Common cookie-related text constants
 const COOKIES_TEXT = 'Cookies'
@@ -45,7 +46,7 @@ export const uiTranslations = {
 export const footerTranslations = {
   footer: {
     privacy: {
-      pageTitle: `Privacy - ${SERVICE_NAME} - GOV.UK`,
+      pageTitle: `Privacy - ${SERVICE_NAME}${GOVUK_SUFFIX}`,
       title: `${SERVICE_NAME} privacy notice`,
       heading: SERVICE_NAME,
       headings: {
@@ -119,7 +120,7 @@ export const footerTranslations = {
     },
     cookies: {
       title: 'Cookies',
-      pageTitle: `Cookies - ${SERVICE_NAME} - GOV.UK`,
+      pageTitle: `Cookies - ${SERVICE_NAME}${GOVUK_SUFFIX}`,
       headings: {
         a: 'Essential cookies (strictly necessary)',
         b: 'Analytics cookies (optional)',
@@ -181,7 +182,7 @@ export const footerTranslations = {
     },
     accessibility: {
       title: 'Accessibility Statement',
-      pageTitle: `Accessibility Statement - ${SERVICE_NAME} - GOV.UK`,
+      pageTitle: `Accessibility Statement - ${SERVICE_NAME}${GOVUK_SUFFIX}`,
       headings: {
         a: 'Compliance status',
         b: 'Preparation of this accessibility statement',

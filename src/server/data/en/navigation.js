@@ -8,6 +8,9 @@ const GOVUK_SUFFIX = ' - GOV.UK'
 const TRY_AGAIN_LATER = 'Try again later'
 const AIR_QUALITY_TEAM = 'air quality team'
 
+// Common English phrases
+const WHERE_DO_YOU_WANT_TO_CHECK = 'Where do you want to check?'
+
 // Common page title patterns for English
 const ENGLISH_PAGE_TITLE_BASE = `${SERVICE_NAME}${GOVUK_SUFFIX}`
 const createEnglishPageTitle = (prefix) =>
@@ -42,13 +45,13 @@ export const navigationTranslations = {
     description: `${SERVICE_NAME} in your local area and the air pollution forecast for the next 5 days. Also, get health advice to reduce your exposure to pollutants`
   },
   searchLocation: {
-    pageTitle: createEnglishPageTitle('Where do you want to check?'),
+    pageTitle: createEnglishPageTitle(WHERE_DO_YOU_WANT_TO_CHECK),
     heading: SERVICE_NAME,
     page: 'search-location',
     serviceName: SERVICE_NAME,
     searchParams: {
       label: {
-        text: 'Where do you want to check?'
+        text: WHERE_DO_YOU_WANT_TO_CHECK
       },
       hint: {
         text1: 'Enter a location or postcode',

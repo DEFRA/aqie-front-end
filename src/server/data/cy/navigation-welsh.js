@@ -10,6 +10,9 @@ const GOVUK_SUFFIX = ' - GOV.UK'
 const DAQI_DESCRIPTION =
   "Mae'r mynegai ansawdd aer dyddiol(DAQI) yn dweud wrthoch chi am lefelau llygredd aer. Mae'n darparu cyngor iechyd ar gyfer y lefelau presennol."
 
+// Common Welsh phrases
+const WHERE_DO_YOU_WANT_TO_CHECK_WELSH = 'Ble hoffech chi wirio?'
+
 // Common page title patterns for Welsh
 const WELSH_PAGE_TITLE_BASE = `${WELSH_SERVICE_NAME}${GOVUK_SUFFIX}`
 const createWelshPageTitle = (prefix) =>
@@ -39,13 +42,13 @@ export const navigationTranslationsWelsh = {
       "Gwiriwch ansawdd aer eich ardal leol a'r rhagolygon llygredd aer am y 5 diwrnod nesaf. Hefyd, mynnwch gyngor iechyd i leihau'ch amlygiad i lygryddion."
   },
   searchLocation: {
-    pageTitle: createWelshPageTitle('Ble hoffech chi wirio?'),
+    pageTitle: createWelshPageTitle(WHERE_DO_YOU_WANT_TO_CHECK_WELSH),
     heading: WELSH_SERVICE_NAME_SPACED,
     page: 'search-location',
     serviceName: WELSH_SERVICE_NAME_SPACED,
     searchParams: {
       label: {
-        text: 'Ble hoffech chi wirio?'
+        text: WHERE_DO_YOU_WANT_TO_CHECK_WELSH
       },
       hint: {
         text1: 'Rhowch leoliad neu god post',

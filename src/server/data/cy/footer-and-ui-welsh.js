@@ -7,6 +7,7 @@ const GOVUK_SUFFIX = ' - GOV.UK'
 // Common Welsh cookies and privacy text patterns
 const WELSH_COOKIES_TEXT = 'Cwcis'
 const WELSH_PRIVACY_TEXT = 'Preifatrwydd'
+const WELSH_ANALYTICS_COOKIES = 'cwcis dadansoddol'
 
 /**
  * Welsh translations for footer, cookies, privacy, and UI components
@@ -16,16 +17,16 @@ export const uiTranslationsWelsh = {
     title: `${WELSH_COOKIES_TEXT} ar ${WELSH_SERVICE_NAME}`,
     paragraphs: {
       a: "Rydym yn defnyddio rhai cwcis hanfodol i wneud i'r gwasanaeth hwn weithio.",
-      b: "Hoffem hefyd ddefnyddio cwcis dadansoddol fel y gallwn ddeall sut rydych yn defnyddio'r gwasanaeth a gwneud gwelliannau."
+      b: `Hoffem hefyd ddefnyddio ${WELSH_ANALYTICS_COOKIES} fel y gallwn ddeall sut rydych yn defnyddio'r gwasanaeth a gwneud gwelliannau.`
     },
     buttons: {
-      a: 'Derbyn cwcis dadansoddol',
-      b: 'Gwrthod cwcis dadansoddol',
+      a: `Derbyn ${WELSH_ANALYTICS_COOKIES}`,
+      b: `Gwrthod ${WELSH_ANALYTICS_COOKIES}`,
       c: 'Gweld cwcis'
     },
     hideCookieMsg: {
-      text0: 'Rydych chi wedi derbyn cwcis dadansoddol. Gallwch newid ',
-      text1: 'Rydych chi wedi gwrthod cwcis dadansoddol. Gallwch newid ',
+      text0: `Rydych chi wedi derbyn ${WELSH_ANALYTICS_COOKIES}. Gallwch newid `,
+      text1: `Rydych chi wedi gwrthod ${WELSH_ANALYTICS_COOKIES}. Gallwch newid `,
       text2: 'eich gosodiadau cwci ',
       text3: ' ar unrhyw adeg.',
       buttonText: 'Cuddio neges cwci'
@@ -76,7 +77,7 @@ export const footerTranslationsWelsh = {
         i: 'neu yn y cyfeiriad uchod.',
         j: "Swyddog diogelu data Defra sy'n gyfrifol am wirio bod Defra yn cydymffurfio â'r ddeddfwriaeth. Gallwch gysylltu â nhw yn",
         k0: "Er mwyn i'r gwasanaeth fod yn weithredol, rydym yn casglu'r cod post neu'r enw lle rydych yn chwilio amdano gan fod hwn yn ddata hanfodol er mwyn i'r gwasanaeth roi data perthnasol.",
-        k: 'Os byddwch yn derbyn y cwcis dadansoddol Google, yna byddwn yn casglu:',
+        k: `Os byddwch yn derbyn y ${WELSH_ANALYTICS_COOKIES} Google, yna byddwn yn casglu:`,
         l: 'eich cyfeiriad IP fel y gallwn gasglu gwybodaeth am leoliad defnyddwyr ein gwasanaeth.',
         m: "Bydd hyn yn ein helpu i weld pa leoliadau daearyddol sy'n defnyddio ein gwasanaeth.",
         n: "eich dyfais a'ch system weithredu i'n galluogi i wella ein gwasanaeth y term chwilio a ddefnyddiwyd gennych i ddod o hyd i 'Gwirio ansawdd aer' i'n galluogi i wella ein gwasanaeth",
@@ -185,7 +186,7 @@ export const footerTranslationsWelsh = {
     },
     accessibility: {
       title: 'Datganiad Hygyrchedd',
-      pageTitle: 'Datganiad Hygyrchedd - Gwirio ansawdd aer - GOV.UK',
+      pageTitle: `Datganiad Hygyrchedd - ${WELSH_SERVICE_NAME}${GOVUK_SUFFIX}`,
       headings: {
         a: 'Statws cydymffurfio',
         b: "Paratoi'r datganiad hygyrchedd yma ",
