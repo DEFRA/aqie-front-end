@@ -1,8 +1,17 @@
 ''
 const SERVICE_NAME = 'Check air quality'
-const GOVUK_SUFFIX = ' – GOV.UK'
 const pageTitleTemplate = (pollutant) =>
-  `${pollutant} – ${SERVICE_NAME}${GOVUK_SUFFIX}`
+  `What is ${pollutant}? - Check air quality - GOV.UK`
+
+/**
+ * Description template for pollutant information pages
+ */
+const createPollutantDescription = (pollutant, verb) =>
+  `Learn how ${pollutant} is ${verb}. Also, learn the short term and long term health effects of ${pollutant} exposure.`
+
+/**
+ * Page meta titles for consistent formatting
+ */
 const HEADER_TEXT = SERVICE_NAME
 
 // Common English exposure phrases
@@ -117,8 +126,7 @@ export const pollutantTranslations = {
         k: 'cancer',
         l: 'heart issues'
       },
-      description:
-        'Learn how ozone is formed. Also, learn the short term and long term health effects of ozone exposure.'
+      description: createPollutantDescription('ozone', 'formed')
     },
     nitrogenDioxide: {
       title: 'Nitrogen dioxide (NO₂)',
@@ -144,8 +152,7 @@ export const pollutantTranslations = {
         m: `an increase risk of ${RESPIRATORY_INFECTIONS}`,
         n: 'poorer lung function in children'
       },
-      description:
-        'Learn how nitrogen dioxide is produced. Also, learn the short term and long term health effects of nitrogen dioxide exposure.'
+      description: createPollutantDescription('nitrogen dioxide', 'produced')
     },
     sulphurDioxide: {
       title: 'Sulphur dioxide (SO₂)',
@@ -171,8 +178,7 @@ export const pollutantTranslations = {
         m: 'altered sense of smell',
         n: `increased ${RESPIRATORY_INFECTIONS}`
       },
-      description:
-        'Learn how sulphur dioxide is produced. Also, learn the short term and long term health effects of sulphur dioxide'
+      description: createPollutantDescription('sulphur dioxide', 'produced')
     },
     particulateMatter10: {
       title: 'Particulate matter (PM10)',

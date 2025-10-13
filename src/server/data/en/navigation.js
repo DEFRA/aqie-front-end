@@ -7,12 +7,17 @@ const SERVICE_ERROR_MESSAGE = 'Sorry, there is a problem with the service'
 const TRY_AGAIN_LATER = 'Try again later'
 const AIR_QUALITY_TEAM = 'air quality team'
 
+// Common page title patterns for English
+const ENGLISH_PAGE_TITLE_BASE = `${SERVICE_NAME} - GOV.UK`
+const createEnglishPageTitle = (prefix) =>
+  prefix ? `${prefix} - ${SERVICE_NAME} - GOV.UK` : ENGLISH_PAGE_TITLE_BASE
+
 /**
  * English translations for navigation, search, and authentication components
  */
 export const navigationTranslations = {
   login: {
-    pageTitle: `Sign in - ${SERVICE_NAME} - GOV.UK`,
+    pageTitle: createEnglishPageTitle('Sign in'),
     heading: 'This is a private beta',
     texts: {
       a: 'You should only continue if you have been invited to.',
@@ -21,7 +26,7 @@ export const navigationTranslations = {
     }
   },
   home: {
-    pageTitle: `${SERVICE_NAME} - GOV.UK`,
+    pageTitle: ENGLISH_PAGE_TITLE_BASE,
     heading: SERVICE_NAME,
     page: SERVICE_NAME,
     paragraphs: {
@@ -34,7 +39,7 @@ export const navigationTranslations = {
     description: `${SERVICE_NAME} in your local area and the air pollution forecast for the next 5 days. Also, get health advice to reduce your exposure to pollutants`
   },
   searchLocation: {
-    pageTitle: `Where do you want to check? - ${SERVICE_NAME} - GOV.UK`,
+    pageTitle: createEnglishPageTitle('Where do you want to check?'),
     heading: SERVICE_NAME,
     page: 'search-location',
     serviceName: SERVICE_NAME,
@@ -102,7 +107,7 @@ export const navigationTranslations = {
       }
     },
     serviceAPI: {
-      pageTitle: `${SERVICE_ERROR_MESSAGE} - ${SERVICE_NAME} - GOV.UK`,
+      pageTitle: createEnglishPageTitle(SERVICE_ERROR_MESSAGE),
       heading: SERVICE_ERROR_MESSAGE,
       paragraphs: {
         a: TRY_AGAIN_LATER,
@@ -112,7 +117,7 @@ export const navigationTranslations = {
       }
     },
     nonService: {
-      pageTitle: `Page not found - ${SERVICE_NAME} - GOV.UK`,
+      pageTitle: createEnglishPageTitle('Page not found'),
       heading: 'Page not found',
       paragraphs: {
         a: 'If you typed the web address, check it is correct.',
@@ -125,7 +130,7 @@ export const navigationTranslations = {
   },
   multipleLocations: {
     titlePrefix: 'Air quality in',
-    pageTitle: `${SERVICE_NAME} - GOV.UK`,
+    pageTitle: ENGLISH_PAGE_TITLE_BASE,
     title: 'Locations matching',
     serviceName: SERVICE_NAME,
     paragraphs: {

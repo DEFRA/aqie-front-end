@@ -1,20 +1,25 @@
 ''
 const SERVICE_NAME = 'Check air quality'
 
+// Common cookie-related text constants
+const COOKIES_TEXT = 'Cookies'
+const ANALYTICS_COOKIES_TEXT = 'analytics cookies'
+const ESSENTIAL_COOKIES_TEXT = 'essential cookies'
+
 /**
  * English translations for footer, cookies, privacy, and UI components
  */
 export const uiTranslations = {
   cookieBanner: {
-    title: `Cookies on ${SERVICE_NAME}`,
+    title: `${COOKIES_TEXT} on ${SERVICE_NAME}`,
     paragraphs: {
-      a: 'We use some essential cookies to make this service work.',
-      b: "We'd also like to use analytics cookies so we can understand how you use the service and make improvements."
+      a: `We use some ${ESSENTIAL_COOKIES_TEXT} to make this service work.`,
+      b: `We'd also like to use ${ANALYTICS_COOKIES_TEXT} so we can understand how you use the service and make improvements.`
     },
     buttons: {
-      a: 'Accept analytics cookies',
-      b: 'Reject analytics cookies',
-      c: 'View cookies'
+      a: `Accept ${ANALYTICS_COOKIES_TEXT}`,
+      b: `Reject ${ANALYTICS_COOKIES_TEXT}`,
+      c: `View ${COOKIES_TEXT.toLowerCase()}`
     },
     hideCookieMsg: {
       text0: "You've accepted analytics cookies. You can ",

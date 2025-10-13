@@ -9,12 +9,17 @@ const WELSH_SERVICE_NAME_SPACED = 'Gwirio ansawdd aer '
 const DAQI_DESCRIPTION =
   "Mae'r mynegai ansawdd aer dyddiol(DAQI) yn dweud wrthoch chi am lefelau llygredd aer. Mae'n darparu cyngor iechyd ar gyfer y lefelau presennol."
 
+// Common page title patterns for Welsh
+const WELSH_PAGE_TITLE_BASE = `${WELSH_SERVICE_NAME} - GOV.UK`
+const createWelshPageTitle = (prefix) =>
+  prefix ? `${prefix} - ${WELSH_SERVICE_NAME} - GOV.UK` : WELSH_PAGE_TITLE_BASE
+
 /**
  * Welsh translations for navigation, search, and authentication components
  */
 export const navigationTranslationsWelsh = {
   home: {
-    pageTitle: `${WELSH_SERVICE_NAME} - GOV.UK`,
+    pageTitle: WELSH_PAGE_TITLE_BASE,
     heading: `${WELSH_TITLE}`,
     caption: DAQI_DESCRIPTION,
     summaryText:
@@ -31,7 +36,7 @@ export const navigationTranslationsWelsh = {
       "Gwiriwch ansawdd aer eich ardal leol a'r rhagolygon llygredd aer am y 5 diwrnod nesaf. Hefyd, mynnwch gyngor iechyd i leihau'ch amlygiad i lygryddion."
   },
   searchLocation: {
-    pageTitle: `Ble hoffech chi wirio? - ${WELSH_SERVICE_NAME}  - GOV.UK`,
+    pageTitle: createWelshPageTitle('Ble hoffech chi wirio?'),
     heading: WELSH_SERVICE_NAME_SPACED,
     page: 'search-location',
     serviceName: WELSH_SERVICE_NAME_SPACED,
@@ -91,7 +96,7 @@ export const navigationTranslationsWelsh = {
   },
   notFoundUrl: {
     nonService: {
-      pageTitle: `Ni allem ddod o hyd i'r dudalen hon - ${WELSH_SERVICE_NAME} - GOV.UK`,
+      pageTitle: createWelshPageTitle("Ni allem ddod o hyd i'r dudalen hon"),
       heading: "Ni allem ddod o hyd i'r dudalen hon",
       paragraphs: {
         a: 'Ewch yn ôl i ansawdd aer',
@@ -110,7 +115,7 @@ export const navigationTranslationsWelsh = {
   },
   multipleLocations: {
     titlePrefix: 'Ansawdd aer –',
-    pageTitle: `${WELSH_SERVICE_NAME} - GOV.UK`,
+    pageTitle: WELSH_PAGE_TITLE_BASE,
     title: 'Lleoliadau yn cyfateb',
     heading: WELSH_SERVICE_NAME_SPACED,
     serviceName: WELSH_SERVICE_NAME_SPACED,

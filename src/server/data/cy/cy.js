@@ -1,17 +1,12 @@
 ''
-import {
-  navigationTranslationsWelsh,
-  calendarWelsh,
-  PAGE_NOT_FOUND_CY
-} from './navigation-welsh.js'
+import { navigationTranslationsWelsh } from './navigation-welsh.js'
 import {
   daqiTranslationsWelsh,
   pollutantTranslationsWelsh
 } from './daqi-and-pollutants-welsh.js'
 import {
   uiTranslationsWelsh,
-  footerTranslationsWelsh,
-  calendarWelshDays
+  footerTranslationsWelsh
 } from './footer-and-ui-welsh.js'
 
 /**
@@ -26,4 +21,6 @@ export const welsh = {
   ...footerTranslationsWelsh
 }
 
-export { calendarWelsh, PAGE_NOT_FOUND_CY, calendarWelshDays }
+// Re-export using export...from syntax for consistency
+export { calendarWelsh, PAGE_NOT_FOUND_CY } from './navigation-welsh.js'
+export { calendarWelshDays } from './footer-and-ui-welsh.js'

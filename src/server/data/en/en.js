@@ -1,5 +1,5 @@
 ''
-import { navigationTranslations, calendarEnglish } from './navigation.js'
+import { navigationTranslations } from './navigation.js'
 import {
   daqiTranslations,
   pollutantTranslations
@@ -18,4 +18,5 @@ export const english = {
   ...footerTranslations
 }
 
-export { calendarEnglish }
+// Re-export using export...from syntax for consistency
+export { calendarEnglish } from './navigation.js'

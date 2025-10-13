@@ -50,6 +50,17 @@ function getLocationType(locationData) {
     : LOCATION_TYPE_NI
 }
 
+// Common Welsh UI components
+const WELSH_UI_COMPONENTS = {
+  notFoundLocation: welsh.notFoundLocation,
+  footerTxt: welsh.footerTxt,
+  phaseBanner: welsh.phaseBanner,
+  backlink: welsh.backlink,
+  cookieBanner: welsh.cookieBanner,
+  daqi: welsh.daqi,
+  multipleLocations: welsh.multipleLocations
+}
+
 // Helper to initialize Welsh controller variables
 function initializeWelshVariables(request) {
   request.yar.clear('searchTermsSaved')
@@ -60,27 +71,11 @@ function initializeWelshVariables(request) {
   )
   const metaSiteUrl = getAirQualitySiteUrl(request)
 
-  const {
-    notFoundLocation,
-    footerTxt,
-    phaseBanner,
-    backlink,
-    cookieBanner,
-    daqi,
-    multipleLocations
-  } = welsh
-
   return {
     lang,
     getMonth,
     metaSiteUrl,
-    notFoundLocation,
-    footerTxt,
-    phaseBanner,
-    backlink,
-    cookieBanner,
-    daqi,
-    multipleLocations
+    ...WELSH_UI_COMPONENTS
   }
 }
 
@@ -132,6 +127,74 @@ async function processWelshLocationData(
     nearestLocationsRange,
     nearestLocation
   }
+}
+
+// Helper to render Welsh location view
+function renderWelshLocationView(h, viewData) {
+  const {
+    locationDetails,
+    airQuality,
+    airQualityData,
+    nearestLocationsRange,
+    siteTypeDescriptions,
+    pollutantTypes,
+    pageTitle,
+    metaSiteUrl,
+    description,
+    title,
+    transformedDailySummary,
+    footerTxt,
+    phaseBanner,
+    backlink,
+    cookieBanner,
+    daqi,
+    welshMonth,
+    summaryDate,
+    dailySummaryTexts,
+    serviceName,
+    lang
+  } = viewData
+
+  return h.view('locations/location', {
+    result: locationDetails,
+    airQuality,
+    airQualityData: airQualityData.commonMessages,
+    monitoringSites: nearestLocationsRange,
+    siteTypeDescriptions,
+    pollutantTypes,
+    pageTitle,
+    metaSiteUrl,
+    description,
+    title,
+    displayBacklink: true,
+    transformedDailySummary,
+    footerTxt,
+    phaseBanner,
+    backlink,
+    cookieBanner,
+    daqi,
+    welshMonth,
+    summaryDate,
+    dailySummaryTexts,
+    serviceName,
+    lang
+  })
+}
+
+// Helper to render Welsh not found view
+function renderWelshNotFoundView(
+  h,
+  { notFoundLocation, footerTxt, phaseBanner, backlink, cookieBanner, lang }
+) {
+  return h.view(LOCATION_NOT_FOUND, {
+    paragraph: notFoundLocation.paragraphs,
+    serviceName: notFoundLocation.heading,
+    footerTxt,
+    phaseBanner,
+    backlink,
+    cookieBanner,
+    lang
+  })
 }
 
 const getLocationDetailsController = {
@@ -211,18 +274,17 @@ const getLocationDetailsController = {
           `After Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
         )
 
-        return h.view('locations/location', {
-          result: locationDetails,
+        return renderWelshLocationView(h, {
+          locationDetails,
           airQuality,
-          airQualityData: airQualityData.commonMessages,
-          monitoringSites: nearestLocationsRange,
+          airQualityData,
+          nearestLocationsRange,
           siteTypeDescriptions,
           pollutantTypes,
           pageTitle: `${multipleLocations.titlePrefix} ${title} - ${multipleLocations.pageTitle}`,
           metaSiteUrl,
           description: `${daqi.description.a} ${headerTitle}${daqi.description.b}`,
           title: `${multipleLocations.titlePrefix} ${headerTitle}`,
-          displayBacklink: true,
           transformedDailySummary,
           footerTxt,
           phaseBanner,
@@ -239,9 +301,8 @@ const getLocationDetailsController = {
           lang
         })
       } else {
-        return h.view(LOCATION_NOT_FOUND, {
-          paragraph: notFoundLocation.paragraphs,
-          serviceName: notFoundLocation.heading,
+        return renderWelshNotFoundView(h, {
+          notFoundLocation,
           footerTxt,
           phaseBanner,
           backlink,
