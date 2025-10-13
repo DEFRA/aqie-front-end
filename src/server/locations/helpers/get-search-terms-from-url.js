@@ -2,58 +2,102 @@ import { LOCATION_TYPE_NI, LOCATION_TYPE_UK } from '../../data/constants.js'
 import { getPostcode } from './get-postcode-type.js'
 import { isOnlyWords } from './convert-string.js'
 
-const getSearchTermsFromUrl = (url) => {
-  let searchTermsLang = ''
-  let searchTermsLocationType = ''
-  const splits = url?.split('/') // Split the URL by forward slashes
-  const locLang = splits[3] // Get the string after the second forward slash and before the third one
+// '' Helper to determine language from URL path segment
+function determineLanguageFromUrl(splits) {
+  const locLang = splits[3]
   if (locLang === 'lleoliad') {
-    searchTermsLang = 'cy'
-  } // If the string is 'lleoliad', set the language to Welsh
+    return 'cy'
+  }
   if (locLang === 'location') {
-    searchTermsLang = 'en'
-  } // If the string is 'location', set the language to English
-  const lastSlashIndex = url.lastIndexOf('/') // Find the position of the last forward slash
-  let interrogationSignIndex = url.indexOf('?') // Find the position of the interrogation sign
+    return 'en'
+  }
+  return ''
+}
+
+// '' Helper to extract string between last slash and query parameter
+function extractSearchString(url) {
+  const lastSlashIndex = url.lastIndexOf('/')
+  let interrogationSignIndex = url.indexOf('?')
+  
   if (interrogationSignIndex === -1) {
-    interrogationSignIndex = url.length // If there is no interrogation sign, set the index to the end of the string
+    interrogationSignIndex = url.length
   }
-  const extractedString = url.substring(
-    lastSlashIndex + 1,
-    interrogationSignIndex
-  ) // Extract the string between the last forward slash and the interrogation sign
-  const parts = extractedString?.split(/[_-]/) // Split by hyphen and underscore
-  let searchTerms = parts.join(' ') // Join the parts with spaces
-  const { postcodeType } = getPostcode(searchTerms) // Get the postcode type
-  searchTermsLocationType = postcodeType // Set the location type to 'invalid postcode or not a postcode'
-  if (
-    postcodeType === 'Full Northern Ireland Postcode' ||
-    postcodeType === 'Partial Northern Ireland Postcode'
-  ) {
-    searchTermsLocationType = LOCATION_TYPE_NI // Set the location type to Northern Ireland ''
+  
+  return url.substring(lastSlashIndex + 1, interrogationSignIndex)
+}
+
+// '' Helper to determine location type based on postcode type
+function determineLocationType(postcodeType) {
+  if (postcodeType === 'Full Northern Ireland Postcode' || 
+      postcodeType === 'Partial Northern Ireland Postcode') {
+    return LOCATION_TYPE_NI
   }
-  if (
-    postcodeType === 'Full UK Postcode' ||
-    postcodeType === 'Partial UK Postcode'
-  ) {
-    searchTermsLocationType = LOCATION_TYPE_UK // Set the location type to UK ''
+  
+  if (postcodeType === 'Full UK Postcode' || 
+      postcodeType === 'Partial UK Postcode') {
+    return LOCATION_TYPE_UK
   }
-  // Separate the string after the underscore
-  const underscoreParts = extractedString?.split('_') // Split the string by underscore
-  let secondSearchTerm = '' // Initialize the second search term
+  
+  return postcodeType
+}
+
+const getSearchTermsFromUrl = (url) => {
+  const splits = url?.split('/')
+  const searchTermsLang = determineLanguageFromUrl(splits)
+  
+  const extractedString = extractSearchString(url)
+  const parts = extractedString?.split(/[_-]/)
+  let searchTerms = parts.join(' ')
+  
+  const { postcodeType } = getPostcode(searchTerms)
+  let searchTermsLocationType = determineLocationType(postcodeType)
+  
+  const underscoreParts = extractedString?.split('_')
+  let secondSearchTerm = ''
+  
   if (postcodeType === 'Invalid Postcode') {
+    // If there are underscores, process as multi-part search terms
+    if (underscoreParts.length > 1) {
+      if (isOnlyWords(searchTerms)) {
+        searchTermsLocationType = LOCATION_TYPE_UK
+      }
+      searchTerms = underscoreParts[0]?.split('-').join(' ') || ''
+      secondSearchTerm = underscoreParts[1]?.split('-').join(' ') || ''
+      return {
+        searchTerms,
+        secondSearchTerm,
+        searchTermsLang,
+        searchTermsLocationType
+      }
+    }
+    
+    // For simple location names (only words, no underscores), return undefined for secondSearchTerm
     if (isOnlyWords(searchTerms)) {
       searchTermsLocationType = LOCATION_TYPE_UK
+      return {
+        searchTerms,
+        secondSearchTerm: undefined,
+        searchTermsLang,
+        searchTermsLocationType
+      }
     }
-    searchTerms = underscoreParts[0]?.split('-').join(' ') // Get the part before the underscore // ''
-    secondSearchTerm = underscoreParts[1]?.split('-').join(' ') // Get the part after the underscore // ''
+    
+    // For other invalid postcodes
+    return {
+      searchTerms,
+      secondSearchTerm: '',
+      searchTermsLang,
+      searchTermsLocationType
+    }
   }
+  
+  // For valid postcodes, return empty string for secondSearchTerm
   return {
     searchTerms,
-    secondSearchTerm,
+    secondSearchTerm: '',
     searchTermsLang,
     searchTermsLocationType
-  } // Return the search terms, the language and the location type
+  }
 }
 
 export { getSearchTermsFromUrl }

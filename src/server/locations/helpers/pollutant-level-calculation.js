@@ -1,97 +1,62 @@
+// '' Pollutant threshold configuration
+const POLLUTANT_THRESHOLDS = {
+  'PM10': [
+    { max: 50, daqi: 1, band: 'Low' },
+    { max: 75, daqi: 4, band: 'Moderate' },
+    { max: 100, daqi: 7, band: 'High' },
+    { max: Infinity, daqi: 10, band: 'Very high' }
+  ],
+  'GE10': [
+    { max: 50, daqi: 1, band: 'Low' },
+    { max: 75, daqi: 4, band: 'Moderate' },
+    { max: 100, daqi: 7, band: 'High' },
+    { max: Infinity, daqi: 10, band: 'Very high' }
+  ],
+  'NO2': [
+    { max: 200, daqi: 1, band: 'Low' },
+    { max: 400, daqi: 4, band: 'Moderate' },
+    { max: 600, daqi: 7, band: 'High' },
+    { max: Infinity, daqi: 10, band: 'Very high' }
+  ],
+  'PM25': [
+    { max: 36, daqi: 1, band: 'Low' },
+    { max: 53, daqi: 4, band: 'Moderate' },
+    { max: 70, daqi: 7, band: 'High' },
+    { max: Infinity, daqi: 10, band: 'Very high' }
+  ],
+  'SO2': [
+    { max: 266, daqi: 1, band: 'Low' },
+    { max: 710, daqi: 4, band: 'Moderate' },
+    { max: 1064, daqi: 7, band: 'High' },
+    { max: Infinity, daqi: 10, band: 'Very high' }
+  ],
+  'O3': [
+    { max: 100, daqi: 1, band: 'Low' },
+    { max: 160, daqi: 4, band: 'Moderate' },
+    { max: 240, daqi: 7, band: 'High' },
+    { max: Infinity, daqi: 10, band: 'Very high' }
+  ]
+}
+
+// '' Helper function to find the appropriate threshold for a pollutant value
+function findPollutantThreshold(thresholds, value) {
+  return thresholds.find(threshold => value <= threshold.max)
+}
+
 function getPollutantLevel(polValue, pollutant) {
-  let getDaqi = 0
-  let getBand = ''
-  if (pollutant === 'PM10' || pollutant === 'GE10') {
-    if (polValue <= 50) {
-      getDaqi = 1
-      getBand = 'Low'
-    }
-    if (polValue > 50 && polValue <= 75) {
-      getDaqi = 4
-      getBand = 'Moderate'
-    }
-    if (polValue > 75 && polValue <= 100) {
-      getDaqi = 7
-      getBand = 'High'
-    }
-    if (polValue > 100) {
-      getDaqi = 10
-      getBand = 'Very high'
-    }
+  const thresholds = POLLUTANT_THRESHOLDS[pollutant]
+  
+  if (!thresholds) {
+    return { getDaqi: 0, getBand: '' }
   }
-  if (pollutant === 'NO2') {
-    if (polValue <= 200) {
-      getDaqi = 1
-      getBand = 'Low'
-    }
-    if (polValue > 200 && polValue <= 400) {
-      getDaqi = 4
-      getBand = 'Moderate'
-    }
-    if (polValue > 400 && polValue <= 600) {
-      getDaqi = 7
-      getBand = 'High'
-    }
-    if (polValue > 600) {
-      getDaqi = 10
-      getBand = 'Very high'
-    }
+  
+  const threshold = findPollutantThreshold(thresholds, polValue)
+  
+  if (!threshold) {
+    return { getDaqi: 0, getBand: '' }
   }
-  if (pollutant === 'PM25') {
-    if (polValue <= 36) {
-      getDaqi = 1
-      getBand = 'Low'
-    }
-    if (polValue > 36 && polValue <= 53) {
-      getDaqi = 4
-      getBand = 'Moderate'
-    }
-    if (polValue > 53 && polValue <= 70) {
-      getDaqi = 7
-      getBand = 'High'
-    }
-    if (polValue > 70) {
-      getDaqi = 10
-      getBand = 'Very high'
-    }
-  }
-  if (pollutant === 'SO2') {
-    if (polValue <= 266) {
-      getDaqi = 1
-      getBand = 'Low'
-    }
-    if (polValue > 266 && polValue <= 710) {
-      getDaqi = 4
-      getBand = 'Moderate'
-    }
-    if (polValue > 710 && polValue <= 1064) {
-      getDaqi = 7
-      getBand = 'High'
-    }
-    if (polValue > 1064) {
-      getDaqi = 10
-      getBand = 'Very high'
-    }
-  }
-  if (pollutant === 'O3') {
-    if (polValue <= 100) {
-      getDaqi = 1
-      getBand = 'Low'
-    }
-    if (polValue > 100 && polValue <= 160) {
-      getDaqi = 4
-      getBand = 'Moderate'
-    }
-    if (polValue > 160 && polValue <= 240) {
-      getDaqi = 7
-      getBand = 'High'
-    }
-    if (polValue > 240) {
-      getDaqi = 10
-      getBand = 'Very high'
-    }
-  }
-  return { getDaqi, getBand }
+  
+  return { getDaqi: threshold.daqi, getBand: threshold.band }
 }
 
 export { getPollutantLevel }

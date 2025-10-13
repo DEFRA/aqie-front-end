@@ -1,97 +1,62 @@
+// '' Welsh pollutant threshold configuration
+const POLLUTANT_THRESHOLDS_CY = {
+  'PM10': [
+    { max: 50, daqi: 1, band: 'Isel' },
+    { max: 75, daqi: 4, band: 'Cymedrol' },
+    { max: 100, daqi: 7, band: 'Uchel' },
+    { max: Infinity, daqi: 10, band: 'Uchel iawn' }
+  ],
+  'GE10': [
+    { max: 50, daqi: 1, band: 'Isel' },
+    { max: 75, daqi: 4, band: 'Cymedrol' },
+    { max: 100, daqi: 7, band: 'Uchel' },
+    { max: Infinity, daqi: 10, band: 'Uchel iawn' }
+  ],
+  'NO2': [
+    { max: 200, daqi: 1, band: 'Isel' },
+    { max: 400, daqi: 4, band: 'Cymedrol' },
+    { max: 600, daqi: 7, band: 'Uchel' },
+    { max: Infinity, daqi: 10, band: 'Uchel iawn' }
+  ],
+  'PM25': [
+    { max: 36, daqi: 1, band: 'Isel' },
+    { max: 53, daqi: 4, band: 'Cymedrol' },
+    { max: 70, daqi: 7, band: 'Uchel' },
+    { max: Infinity, daqi: 10, band: 'Uchel iawn' }
+  ],
+  'SO2': [
+    { max: 266, daqi: 1, band: 'Isel' },
+    { max: 710, daqi: 4, band: 'Cymedrol' },
+    { max: 1064, daqi: 7, band: 'Uchel' },
+    { max: Infinity, daqi: 10, band: 'Uchel iawn' }
+  ],
+  'O3': [
+    { max: 100, daqi: 1, band: 'Isel' },
+    { max: 160, daqi: 4, band: 'Cymedrol' },
+    { max: 240, daqi: 7, band: 'Uchel' },
+    { max: Infinity, daqi: 10, band: 'Uchel iawn' }
+  ]
+}
+
+// '' Helper function to find the appropriate threshold for a pollutant value
+function findPollutantThresholdCy(thresholds, value) {
+  return thresholds.find(threshold => value <= threshold.max)
+}
+
 function getPollutantLevelCy(polValue, pollutant) {
-  let getDaqi = 0
-  let getBand = ''
-  if (pollutant === 'PM10' || pollutant === 'GE10') {
-    if (polValue <= 50) {
-      getDaqi = 1
-      getBand = 'Isel'
-    }
-    if (polValue > 50 && polValue <= 75) {
-      getDaqi = 4
-      getBand = 'Cymedrol'
-    }
-    if (polValue > 75 && polValue <= 100) {
-      getDaqi = 7
-      getBand = 'Uchel'
-    }
-    if (polValue > 100) {
-      getDaqi = 10
-      getBand = 'Uchel iawn'
-    }
+  const thresholds = POLLUTANT_THRESHOLDS_CY[pollutant]
+  
+  if (!thresholds) {
+    return { getDaqi: 0, getBand: '' }
   }
-  if (pollutant === 'NO2') {
-    if (polValue <= 200) {
-      getDaqi = 1
-      getBand = 'Isel'
-    }
-    if (polValue > 200 && polValue <= 400) {
-      getDaqi = 4
-      getBand = 'Cymedrol'
-    }
-    if (polValue > 400 && polValue <= 600) {
-      getDaqi = 7
-      getBand = 'Uchel'
-    }
-    if (polValue > 600) {
-      getDaqi = 10
-      getBand = 'Uchel iawn'
-    }
+  
+  const threshold = findPollutantThresholdCy(thresholds, polValue)
+  
+  if (!threshold) {
+    return { getDaqi: 0, getBand: '' }
   }
-  if (pollutant === 'PM25') {
-    if (polValue <= 36) {
-      getDaqi = 1
-      getBand = 'Isel'
-    }
-    if (polValue > 36 && polValue <= 53) {
-      getDaqi = 4
-      getBand = 'Cymedrol'
-    }
-    if (polValue > 53 && polValue <= 70) {
-      getDaqi = 7
-      getBand = 'Uchel'
-    }
-    if (polValue > 70) {
-      getDaqi = 10
-      getBand = 'Uchel iawn'
-    }
-  }
-  if (pollutant === 'SO2') {
-    if (polValue <= 266) {
-      getDaqi = 1
-      getBand = 'Isel'
-    }
-    if (polValue > 266 && polValue <= 710) {
-      getDaqi = 4
-      getBand = 'Cymedrol'
-    }
-    if (polValue > 710 && polValue <= 1064) {
-      getDaqi = 7
-      getBand = 'Uchel'
-    }
-    if (polValue > 1064) {
-      getDaqi = 10
-      getBand = 'Uchel iawn'
-    }
-  }
-  if (pollutant === 'O3') {
-    if (polValue <= 100) {
-      getDaqi = 1
-      getBand = 'Isel'
-    }
-    if (polValue > 100 && polValue <= 160) {
-      getDaqi = 4
-      getBand = 'Cymedrol'
-    }
-    if (polValue > 160 && polValue <= 240) {
-      getDaqi = 7
-      getBand = 'Uchel'
-    }
-    if (polValue > 240) {
-      getDaqi = 10
-      getBand = 'Uchel iawn'
-    }
-  }
-  return { getDaqi, getBand }
+  
+  return { getDaqi: threshold.daqi, getBand: threshold.band }
 }
 
 export { getPollutantLevelCy }

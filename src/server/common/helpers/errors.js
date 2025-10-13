@@ -1,15 +1,14 @@
-import { PAGE_NOT_FOUND_CY } from '../../data/cy/cy.js'
+import { PAGE_NOT_FOUND_CY, welsh } from '../../data/cy/cy.js'
 import { english } from '../../data/en/en.js'
-import { welsh } from '../../data/cy/cy.js'
 import { createLogger } from './logging/logger.js'
-import { LANG_CY, LANG_EN, STATUS_NOT_FOUND } from '../../data/constants.js'
+import { LANG_CY, LANG_EN, STATUS_NOT_FOUND, LANG_SLICE_LENGTH } from '../../data/constants.js'
 
 const logger = createLogger()
 
 function statusCodeMessage(statusCode, lang) {
   switch (true) {
     case statusCode === STATUS_NOT_FOUND:
-      if (lang.slice(0, 2) === LANG_CY) {
+      if (lang.slice(0, LANG_SLICE_LENGTH) === LANG_CY) {
         return PAGE_NOT_FOUND_CY
       }
       return 'Page not found'
@@ -27,9 +26,8 @@ function statusCodeMessage(statusCode, lang) {
 }
 
 function catchAll(request, h) {
-  const { query, response, path, headers } = request
-  const referer = headers?.referer
-  let lang = path?.split('/').pop()?.slice(0, 2)
+  const { query, response, path } = request
+  let lang = path?.split('/').pop()?.slice(0, LANG_SLICE_LENGTH)
   if (lang === LANG_CY) {
     lang = LANG_CY
   } else {

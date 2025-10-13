@@ -1,6 +1,6 @@
 import { english } from '../data/en/en.js'
 import { welsh } from '../data/cy/cy.js'
-import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../data/constants.js'
+import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE, LANG_SLICE_LENGTH } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
 // Define the handler function
@@ -17,7 +17,7 @@ const accessibilityHandler = (request, h, content = english) => {
   }
 
   // Determine the language
-  let lang = query?.lang?.slice(0, 2)
+  let lang = query?.lang?.slice(0, LANG_SLICE_LENGTH)
   if (lang !== LANG_CY && lang !== LANG_EN && path === '/accessibility') {
     lang = LANG_EN
   }

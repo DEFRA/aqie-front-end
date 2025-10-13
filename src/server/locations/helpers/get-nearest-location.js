@@ -11,7 +11,8 @@ import { getPollutantLevelCy } from './cy/pollutant-level-calculation.js'
 import {
   LANG_CY,
   FORECAST_DAY_SLICE_LENGTH,
-  MINUS_NINETY_NINE
+  MINUS_NINETY_NINE,
+  NEARBY_LOCATIONS_COUNT
 } from '../../data/constants.js'
 import { fetchMeasurements } from './fetch-data.js'
 
@@ -129,7 +130,7 @@ function buildNearestLocationsRange(matches, getMeasurments, latlon, lang) {
     { latitude: latlon?.lat, longitude: latlon?.lon },
     measurementsCoordinates
   )
-  const nearestMeasurementsPoints = orderByDistanceMeasurements.slice(0, 3)
+  const nearestMeasurementsPoints = orderByDistanceMeasurements.slice(0, NEARBY_LOCATIONS_COUNT)
   const pointsToDisplay = nearestMeasurementsPoints.filter((p) =>
     pointsInRange(latlon, p)
   )

@@ -4,6 +4,9 @@ export const REFERER_PATH_INDEX = 3
 export const FORECAST_DAY_SLICE_LENGTH = 3
 export const LANG_SLICE_LENGTH = 2
 export const MIN_LOCATION_NAME_LENGTH = 3
+export const SINGLE_ITEM = 1
+export const FIRST_INDEX = 0
+export const NEARBY_LOCATIONS_COUNT = 3
 
 export const WELSH_TITLE = 'Gwirio ansawdd aer'
 export const PAGE_NOT_FOUND_MESSAGE = 'Page not found'
