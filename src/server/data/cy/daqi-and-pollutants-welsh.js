@@ -91,18 +91,22 @@ const PARTICLE_DESCRIPTIONS_WELSH = {
 }
 
 // Common Welsh paragraph generation functions to eliminate duplication
-const createWelshExposureText = (pollutant, timeframe) => 
+const createWelshExposureText = (pollutant, timeframe) =>
   `${timeframe === 'short' ? SHORT_TERM_EXPOSURE_PREFIX : LONG_TERM_EXPOSURE_PREFIX} i ${pollutant} achosi:`
 
 const createWelshSourceIntroText = (pollutant, verb) => {
   const gasDescription = pollutant.includes('sylffwr') ? ' ag arogl cryf' : ''
-  const mainlyText = verb === 'cynhyrchu' ? 'yn bennaf yn cael ei gynhyrchu yn ystod:' : 'yn bennaf yn cael ei gynhyrchu o:'
+  const mainlyText =
+    verb === 'cynhyrchu'
+      ? 'yn bennaf yn cael ei gynhyrchu yn ystod:'
+      : 'yn bennaf yn cael ei gynhyrchu o:'
   return `Mae ${pollutant} yn nwy di-liw${gasDescription}. Mae ${mainlyText}`
 }
 
 const createWelshPMSourcesIntro = () => 'Prif ffynonellau mater gronynnol yw:'
 
-const createWelshPMParticlesIntro = (pmType) => `Gall gronynnau ${pmType} gynnwys:`
+const createWelshPMParticlesIntro = (pmType) =>
+  `Gall gronynnau ${pmType} gynnwys:`
 
 /**
  * Welsh translations for DAQI display and pollutant information pages

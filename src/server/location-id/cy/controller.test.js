@@ -163,48 +163,78 @@ vi.mock('../../common/helpers/location-controller-helper.js', () => {
       return {
         lang: 'cy',
         ui: {
-          notFoundLocation: { 
+          notFoundLocation: {
             paragraphs: { a: 'Mock Welsh not found message' },
-            heading: 'Mock Welsh heading' 
+            heading: 'Mock Welsh heading'
           },
           footerTxt: { cookies: 'Cwcis' },
           phaseBanner: { tag: 'Beta' },
           backlink: { text: 'Yn ôl' },
           cookieBanner: { message: 'Mock cookie message' },
           daqi: { description: { a: 'Mock Welsh A', b: 'Mock Welsh B' } },
-          multipleLocations: { titlePrefix: 'Ansawdd aer yn', serviceName: 'Mock Welsh service' },
+          multipleLocations: {
+            titlePrefix: 'Ansawdd aer yn',
+            serviceName: 'Mock Welsh service'
+          },
           dailySummaryTexts: { today: 'Heddiw' },
-          calendar: ['Ionawr', 'Chwefror', 'Mawrth', 'Ebrill', 'Mai', 'Mehefin', 'Gorffennaf', 'Awst', 'Medi', 'Hydref', 'Tachwedd', 'Rhagfyr']
+          calendar: [
+            'Ionawr',
+            'Chwefror',
+            'Mawrth',
+            'Ebrill',
+            'Mai',
+            'Mehefin',
+            'Gorffennaf',
+            'Awst',
+            'Medi',
+            'Hydref',
+            'Tachwedd',
+            'Rhagfyr'
+          ]
         }
       }
     }),
-    processLocationData: vi.fn().mockImplementation(() => Promise.resolve(mockProcessLocationDataResult)),
-    buildLocationViewData: vi.fn().mockImplementation((processedData, locationData, initData, siteTypeDescriptions, pollutantTypes, airQualityData, request) => {
-      // Mock the session set operation that the real helper does - simulating data optimization
-      const optimizedLocationData = {
-        ...locationData,
-        // Replace large getForecasts array with single optimized object  
-        getForecasts: { id: 1, data: 'mock' },
-        // Replace large getMeasurements array with optimized version
-        getMeasurements: [{ id: 1, name: 'Mock Site' }]
-      }
-      request.yar.set('locationData', optimizedLocationData)
-      return {
-        lang: 'cy',
-        pageTitle: 'Ansawdd aer yn Cardiff',
-        serviceName: 'Mock Welsh service',
-        summaryDate: '15 Hydref 2023',
-        welshMonth: 'Hydref',
-        displayBacklink: true,
-        result: { name: 'Cardiff' },
-        airQuality: { level: 'Low' },
-        backlink: { text: 'Yn ôl' },
-        cookieBanner: { message: 'Mock cookie message' },
-        dailySummaryTexts: { today: 'Heddiw' },
-        footerTxt: { cookies: 'Cwcis' },
-        phaseBanner: { tag: 'Beta' }
-      }
-    }),
+    processLocationData: vi
+      .fn()
+      .mockImplementation(() => Promise.resolve(mockProcessLocationDataResult)),
+    buildLocationViewData: vi
+      .fn()
+      .mockImplementation(
+        (
+          processedData,
+          locationData,
+          initData,
+          siteTypeDescriptions,
+          pollutantTypes,
+          airQualityData,
+          request
+        ) => {
+          // Mock the session set operation that the real helper does - simulating data optimization
+          const optimizedLocationData = {
+            ...locationData,
+            // Replace large getForecasts array with single optimized object
+            getForecasts: { id: 1, data: 'mock' },
+            // Replace large getMeasurements array with optimized version
+            getMeasurements: [{ id: 1, name: 'Mock Site' }]
+          }
+          request.yar.set('locationData', optimizedLocationData)
+          return {
+            lang: 'cy',
+            pageTitle: 'Ansawdd aer yn Cardiff',
+            serviceName: 'Mock Welsh service',
+            summaryDate: '15 Hydref 2023',
+            welshMonth: 'Hydref',
+            displayBacklink: true,
+            result: { name: 'Cardiff' },
+            airQuality: { level: 'Low' },
+            backlink: { text: 'Yn ôl' },
+            cookieBanner: { message: 'Mock cookie message' },
+            dailySummaryTexts: { today: 'Heddiw' },
+            footerTxt: { cookies: 'Cwcis' },
+            phaseBanner: { tag: 'Beta' }
+          }
+        }
+      ),
     renderLocationView: vi.fn().mockImplementation((h, viewData) => {
       return h.view('locations/location', viewData)
     }),

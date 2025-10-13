@@ -12,13 +12,13 @@ import {
 } from '../../data/constants.js'
 import { getSearchTermsFromUrl } from '../../locations/helpers/get-search-terms-from-url.js'
 import { config } from '../../../config/index.js'
-// Import shared helper functions  
-import { 
+// Import shared helper functions
+import {
   initializeLocationVariables,
   processLocationData,
-  buildLocationViewData, 
+  buildLocationViewData,
   renderLocationView,
-  renderNotFoundView 
+  renderNotFoundView
 } from '../../common/helpers/location-controller-helper.js'
 
 const logger = createLogger()
@@ -37,13 +37,7 @@ function buildRedirectUrl(currentUrl) {
   return `/lleoliad?lang=cy&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}`
 }
 
-function getLocationType(locationData) {
-  return locationData.locationType === LOCATION_TYPE_UK
-    ? LOCATION_TYPE_UK
-    : LOCATION_TYPE_NI
-}
-
-// Cleaned up - UI components now handled by shared helper
+// Cleaned up - UI components and helper functions now handled by shared helper
 
 const getLocationDetailsController = {
   handler: async (request, h) => {

@@ -95,7 +95,7 @@ const PARTICLE_DESCRIPTIONS = {
 }
 
 // Common paragraph generation functions to eliminate duplication
-const createExposureText = (pollutant, timeframe) => 
+const createExposureText = (pollutant, timeframe) =>
   `${timeframe === 'short' ? SHORT_TERM_EXPOSURE_PREFIX : LONG_TERM_EXPOSURE_PREFIX} to ${pollutant} can cause:`
 
 const createExposureIrritationText = (timeframe) =>
