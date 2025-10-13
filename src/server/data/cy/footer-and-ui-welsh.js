@@ -80,8 +80,8 @@ export const footerTranslationsWelsh = {
         k: `Os byddwch yn derbyn y ${WELSH_ANALYTICS_COOKIES} Google, yna byddwn yn casglu:`,
         l: 'eich cyfeiriad IP fel y gallwn gasglu gwybodaeth am leoliad defnyddwyr ein gwasanaeth.',
         m: "Bydd hyn yn ein helpu i weld pa leoliadau daearyddol sy'n defnyddio ein gwasanaeth.",
-        n: "eich dyfais a'ch system weithredu i'n galluogi i wella ein gwasanaeth y term chwilio a ddefnyddiwyd gennych i ddod o hyd i 'Gwirio ansawdd aer' i'n galluogi i wella ein gwasanaeth",
-        o: "y tudalennau rydych yn rhyngweithio â nhw yn 'Gwirio ansawdd aer' i'n galluogi i wella ein gwasanaeth",
+        n: `eich dyfais a'ch system weithredu i'n galluogi i wella ein gwasanaeth y term chwilio a ddefnyddiwyd gennych i ddod o hyd i '${WELSH_SERVICE_NAME}' i'n galluogi i wella ein gwasanaeth`,
+        o: `y tudalennau rydych yn rhyngweithio â nhw yn '${WELSH_SERVICE_NAME}' i'n galluogi i wella ein gwasanaeth`,
         q: "Y sail gyfreithlon dros brosesu'ch data personol er mwyn gwneud ymchwil ar effeithiolrwydd y gwasanaeth yw cydsyniad. Does dim rhaid ichi roi'ch cydsyniad a gallwch dynnu'ch cydsyniad yn ôl unrhyw bryd.",
         r: 'Mae prosesu eich data personol yn seiliedig ar ganiatâd. Nid ydym yn casglu unrhyw wybodaeth a allai fod yn gysylltiedig yn bersonol ag unigolyn; fodd bynnag, bydd y cyfeiriad IP yn cael ei gofnodi ar gyfer ymarferoldeb y gwasanaeth. ',
         r2: 'Os ydych wedi cydsynio i dderbyn cwcis, ni ellir dileu unrhyw wybodaeth a gasglwn yn ystod y broses hon gan na fyddwn yn gallu adnabod y wybodaeth honno i unigolyn penodol.',
@@ -157,13 +157,13 @@ export const footerTranslationsWelsh = {
         w: 'Mae',
         a: `${WELSH_TITLE}`,
         b: "yn rhoi ffeiliau bach (o'r enw 'cwcis') ar eich cyfrifiadur. ",
-        c: "Mae'r cwcis yma yn cael eu defnyddio ar draws gwefan Gwirio ansawdd aer.",
+        c: `Mae'r cwcis yma yn cael eu defnyddio ar draws gwefan ${WELSH_SERVICE_NAME}.`,
         d: "Dim pan fydd JavaScript yn rhedeg yn eich porwr a phan fyddwch chi wedi'u derbyn y byddwn ni'n gosod cwcis. Os dewiswch chi beidio â rhedeg Javascript, fydd yr wybodaeth ar y dudalen yma ddim yn gymwys i chi.",
         e: 'Darganfyddwch',
         f: 'sut i reoli cwcis',
         g: "drwy Swyddfa'r Comisiynydd Gwybodaeth.",
         h: "Rydyn ni'n defnyddio cwci hanfodol i gofio pryd y byddwch chi'n derbyn neu'n gwrthod cwcis ar ein gwefan.",
-        i: "Rydyn ni'n defnyddio meddalwedd Google Analytics i ddeall sut mae pobl yn defnyddio Gwirio ansawdd aer. Rydyn ni'n gwneud hyn er mwyn helpu i sicrhau bod y wefan yn ateb anghenion ei defnyddwyr ac i'n helpu i wneud gwelliannau. ",
+        i: `Rydyn ni'n defnyddio meddalwedd Google Analytics i ddeall sut mae pobl yn defnyddio ${WELSH_SERVICE_NAME}. Rydyn ni'n gwneud hyn er mwyn helpu i sicrhau bod y wefan yn ateb anghenion ei defnyddwyr ac i'n helpu i wneud gwelliannau. `,
         j: "Dydyn ni ddim yn casglu nac yn storio'ch gwybodaeth bersonol (er enghraifft eich enw neu'ch cyfeiriad) felly does dim modd defnyddio'r wybodaeth yma i wybod pwy ydych chi. ",
         k: "Dydyn ni ddim yn caniatáu i Google ddefnyddio na rhannu'n data dadansoddeg.",
         l: 'Mae Google Analytics yn cadw gwybodaeth am y canlynol:',
@@ -181,8 +181,7 @@ export const footerTranslationsWelsh = {
         ga4: 'a',
         ga5: 'ond yn weithredol os byddwch yn derbyn y cwcis. Fodd bynnag, os nad ydych yn derbyn cwcis, efallai y byddant yn dal i ymddangos yn eich sesiwn cwci, ond ni fyddant yn weithredol.'
       },
-      description:
-        "Mae Gwirio ansawdd aer yn defnyddio cwcis. Drwy ddefnyddio'r gwasanaeth yma rydych chi'n cytuno i'n defnydd o gwcis."
+      description: `Mae ${WELSH_SERVICE_NAME} yn defnyddio cwcis. Drwy ddefnyddio'r gwasanaeth yma rydych chi'n cytuno i'n defnydd o gwcis.`
     },
     accessibility: {
       title: 'Datganiad Hygyrchedd',
@@ -204,8 +203,7 @@ export const footerTranslationsWelsh = {
         h: "Y Comisiwn Cydraddoldeb a Hawliau Dynol (EHRC) sy'n gyfrifol am orfodi Rheoliadau Hygyrchedd Cyrff y Sector Cyhoeddus (Gwefannau a Chymwysiadau Symudol) (Rhif 2) 2018 (y 'rheoliadau hygyrchedd'). ",
         i: "Os nad ydych chi'n fodlon ar y ffordd rydyn ni'n ymateb i'ch cwyn, cysylltwch â'r Gwasanaeth Cynghori a Chymorth Cydraddoldeb (EASS)."
       },
-      description:
-        'Mae Gwirio ansawdd aer wedi ymrwymo i wella hygyrchedd i bob defnyddiwr gwe, ffonau symudol ac ap, dan arweiniad y Canllawiau diweddaraf ar Hygyrchedd Cynnwys y We (WCAG).'
+      description: `Mae ${WELSH_SERVICE_NAME} wedi ymrwymo i wella hygyrchedd i bob defnyddiwr gwe, ffonau symudol ac ap, dan arweiniad y Canllawiau diweddaraf ar Hygyrchedd Cynnwys y We (WCAG).`
     }
   }
 }
