@@ -3,6 +3,10 @@ const SERVICE_NAME = 'Check air quality'
 const ERROR_TITLE = 'There is a problem'
 const SERVICE_ERROR_MESSAGE = 'Sorry, there is a problem with the service'
 
+// Common error and contact phrases
+const TRY_AGAIN_LATER = 'Try again later'
+const AIR_QUALITY_TEAM = 'air quality team'
+
 /**
  * English translations for navigation, search, and authentication components
  */
@@ -91,9 +95,9 @@ export const navigationTranslations = {
     serviceAll: {
       heading: 'Sorry, this service is unavailable',
       paragraphs: {
-        a: 'Try again later',
+        a: TRY_AGAIN_LATER,
         b: 'You can contact the ',
-        c: 'air quality team ',
+        c: `${AIR_QUALITY_TEAM} `,
         d: ' if this error continues'
       }
     },
@@ -101,9 +105,9 @@ export const navigationTranslations = {
       pageTitle: `${SERVICE_ERROR_MESSAGE} - ${SERVICE_NAME} - GOV.UK`,
       heading: SERVICE_ERROR_MESSAGE,
       paragraphs: {
-        a: 'Try again later',
+        a: TRY_AGAIN_LATER,
         b: 'You can contact the ',
-        c: 'air quality team ',
+        c: `${AIR_QUALITY_TEAM} `,
         d: ' if this error continues'
       }
     },
@@ -114,7 +118,7 @@ export const navigationTranslations = {
         a: 'If you typed the web address, check it is correct.',
         b: 'If you pasted the web address, check you copied the entire address.',
         c: 'Contact the ',
-        d: 'air quality team',
+        d: AIR_QUALITY_TEAM,
         e: ' if you continue to get this error message.'
       }
     }
