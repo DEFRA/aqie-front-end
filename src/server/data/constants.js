@@ -4,6 +4,9 @@ export const REFERER_PATH_INDEX = 3
 export const FORECAST_DAY_SLICE_LENGTH = 3
 export const LANG_SLICE_LENGTH = 2
 export const MIN_LOCATION_NAME_LENGTH = 3
+export const SINGLE_ITEM = 1
+export const FIRST_INDEX = 0
+export const NEARBY_LOCATIONS_COUNT = 3
 
 export const WELSH_TITLE = 'Gwirio ansawdd aer'
 export const PAGE_NOT_FOUND_MESSAGE = 'Page not found'
@@ -79,6 +82,36 @@ export const SUMMARY_TRANSLATIONS = {
   Sunday: 'Dydd Sul',
   Today: 'Heddiw'
 }
+
+// '' - Pollutant band translations
+export const POLLUTANT_BAND_LABELS = {
+  LOW: { en: 'Low', cy: 'Isel' },
+  MODERATE: { en: 'Moderate', cy: 'Cymedrol' },
+  HIGH: { en: 'High', cy: 'Uchel' },
+  VERY_HIGH: { en: 'Very high', cy: 'Uchel iawn' }
+}
+
+// '' - Pollutant threshold values
+export const POLLUTANT_THRESHOLD_VALUES = {
+  PM10_MAX_1: 50,
+  PM10_MAX_2: 75,
+  PM10_MAX_3: 100,
+  NO2_MAX_1: 200,
+  NO2_MAX_2: 400,
+  NO2_MAX_3: 600,
+  PM25_MAX_1: 36,
+  PM25_MAX_2: 53,
+  PM25_MAX_3: 70,
+  SO2_MAX_1: 266,
+  SO2_MAX_2: 710,
+  SO2_MAX_3: 1064,
+  O3_MAX_1: 100,
+  O3_MAX_2: 160,
+  O3_MAX_3: 240
+}
+
+export const ENGLISH_LANG = 'english'
+export const URL_LANGUAGE_SEGMENT_INDEX = 3
 export const LANG_EN = 'en'
 export const LANG_CY = 'cy'
 export const BASE_URL = 'https://check-air-quality.service.gov.uk'
@@ -95,6 +128,8 @@ export const DEFAULT_LOCATION_TYPE = 'uk-location'
 export const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500
 export const MINUS_NINETY_NINE = -99
 export const ROUND_OF_SIX = 6
+export const FORECAST_ARRAY_INDEX_THIRD = 3
+export const MAX_FORECAST_DAYS = 6
 
 // '' - Constant for the server directory name
 export const SERVER_DIRNAME = dirname(fileURLToPath(import.meta.url))

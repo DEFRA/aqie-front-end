@@ -1,5 +1,9 @@
 import moment from 'moment'
-import { LANG_CY, SUMMARY_TRANSLATIONS } from '../../data/constants.js'
+import {
+  LANG_CY,
+  SUMMARY_TRANSLATIONS,
+  MAX_FORECAST_DAYS
+} from '../../data/constants.js'
 
 const transformKeys = (dailySummary, lang) => {
   const isValidDate = (date) => moment(date, moment.ISO_8601, true).isValid()
@@ -20,7 +24,7 @@ const transformKeys = (dailySummary, lang) => {
   const remainingDays = []
   let transformedDailySummary
 
-  for (let i = 2; i <= 6; i++) {
+  for (let i = 2; i <= MAX_FORECAST_DAYS; i++) {
     remainingDays.push(
       dailySummaryIssueDate.isValid()
         ? dailySummaryIssueDate.clone().add(i, 'days').format('dddd')

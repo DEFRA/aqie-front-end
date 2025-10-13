@@ -3,7 +3,8 @@ import {
   LANG_CY,
   LANG_EN,
   SEARCH_LOCATION_ROUTE_CY,
-  REDIRECT_STATUS_CODE
+  REDIRECT_STATUS_CODE,
+  LANG_SLICE_LENGTH
 } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
@@ -14,7 +15,7 @@ import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
  */
 const determineLanguage = (request) => {
   const { query, path } = request
-  const lang = query?.lang?.slice(0, 2)
+  const lang = query?.lang?.slice(0, LANG_SLICE_LENGTH)
 
   // Extracted nested ternary operation into an independent statement
   if (lang === LANG_CY || lang === LANG_EN) {

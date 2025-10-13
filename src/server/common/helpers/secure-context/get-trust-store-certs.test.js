@@ -1,4 +1,3 @@
-import { createLogger } from '../logging/logger.js'
 import { getTrustStoreCerts } from './get-trust-store-certs'
 
 describe('#getTrustStoreCerts', () => {

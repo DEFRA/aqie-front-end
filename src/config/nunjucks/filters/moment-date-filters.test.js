@@ -68,12 +68,13 @@ describe('moment-date-filters', () => {
 
   describe('addDaysToTodayAbrev', () => {
     it('should add addDaysToTodayAbrev filter to environment', () => {
-      addDaysToTodayAbrev(mockEnv)
+      const result = addDaysToTodayAbrev(mockEnv)
 
       expect(mockEnv.addFilter).toHaveBeenCalledWith(
         'addDaysToTodayAbrev',
         expect.any(Function)
       )
+      expect(result).toBe(mockEnv)
     })
 
     it('should create filter that adds days to current date', () => {
@@ -111,12 +112,13 @@ describe('moment-date-filters', () => {
 
   describe('addDaysToTodayAbrevWelsh', () => {
     it('should add addDaysToTodayAbrevWelsh filter to environment', () => {
-      addDaysToTodayAbrevWelsh(mockEnv)
+      const result = addDaysToTodayAbrevWelsh(mockEnv)
 
       expect(mockEnv.addFilter).toHaveBeenCalledWith(
         'addDaysToTodayAbrevWelsh',
         expect.any(Function)
       )
+      expect(result).toBe(mockEnv)
     })
 
     it('should create filter that adds days to current date in Welsh locale', () => {

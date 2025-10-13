@@ -1,11 +1,12 @@
 import { english } from '../data/en/en.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
+import { LANG_SLICE_LENGTH } from '../data/constants.js'
 
 const logger = createLogger()
 
 // Helper function to determine language
 const determineLanguage = (queryLang, path, referer) => {
-  const lang = queryLang?.slice(0, 2)
+  const lang = queryLang?.slice(0, LANG_SLICE_LENGTH)
   if (lang === 'cy') {
     return 'cy'
   }

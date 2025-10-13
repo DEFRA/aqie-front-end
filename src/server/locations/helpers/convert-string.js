@@ -105,11 +105,12 @@ function splitAndCheckSpecificWords(sourceString, name1) {
     const [firstWord, secondWord] = words // Destructure the array to get the first two and the last word
     const firstTwoWords = `${firstWord} ${secondWord}` // Combine the first two words
     return sourceString.includes(firstTwoWords) // Check if the target string contains the exact first two words together or the exact last word
+  } else {
+    return (
+      sourceString.includes(name1.toUpperCase()) ||
+      name1.toUpperCase().includes(sourceString)
+    ) // Return false if the source string does not contain exactly two or three words
   }
-  return (
-    sourceString.includes(name1.toUpperCase()) ||
-    name1.toUpperCase().includes(sourceString)
-  ) // Return false if the source string does not contain exactly two or three words
 }
 
 function splitAndCheckExactWords(sourceString, targetString) {
@@ -151,10 +152,12 @@ function hasExactMatch(wordString, name1, name2 = null) {
   const normalizeString = (str) => str?.toUpperCase().replace(/\s+/g, '') // Normalize string by converting to uppercase and removing spaces
   const words = wordString.split(' ').map((word) => word.toUpperCase()) // Split and normalize words in the input string
 
-  const checkMatch = (target, words) => {
-    if (!target) return false // Return false if the target string is null or undefined
+  const checkMatch = (target, wordArray) => {
+    if (!target) {
+      return false // Return false if the target string is null or undefined
+    }
     const normalizedTarget = normalizeString(target) // Normalize the target string
-    const joinedWords = words.join('') // Join the array elements into a single string without spaces
+    const joinedWords = wordArray.join('') // Join the array elements into a single string without spaces
     return (
       normalizedTarget.includes(joinedWords) &&
       joinedWords.includes(normalizedTarget)
@@ -201,7 +204,9 @@ function compareLastElements(previousUrl, currentUrl) {
   // Define a function to compare the last two elements of two URLs
   const LAST_TWO_ELEMENTS = 2 // Number of elements to compare from the end of the URL
   const getLastTwoElements = (url) => {
-    if (!url) return false // Return false if the URL is not provided
+    if (!url) {
+      return false // Return false if the URL is not provided
+    }
     const cleanUrl = url.split('?')[0] // Remove any text after '?'
     const parts = cleanUrl?.split('/') // Split the URL by '/'
     return parts.slice(-LAST_TWO_ELEMENTS).join('/') // Return the last two elements joined by '/'

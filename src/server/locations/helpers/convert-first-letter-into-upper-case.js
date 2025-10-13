@@ -1,6 +1,6 @@
 // Define and export the convertFirstLetterIntoUppercase function
 export const convertFirstLetterIntoUppercase = (str) => {
-  const isNumeric = (str) => /[0-9]/.test(str)
+  const isNumeric = (text) => /[0-9]/.test(text)
   const hasNumber = isNumeric(str)
   if (hasNumber) {
     // Split the string at the first comma
