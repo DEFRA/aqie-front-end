@@ -1,10 +1,14 @@
-import { LOCATION_TYPE_NI, LOCATION_TYPE_UK } from '../../data/constants.js'
+import {
+  LOCATION_TYPE_NI,
+  LOCATION_TYPE_UK,
+  URL_LANGUAGE_SEGMENT_INDEX
+} from '../../data/constants.js'
 import { getPostcode } from './get-postcode-type.js'
 import { isOnlyWords } from './convert-string.js'
 
 // '' Helper to determine language from URL path segment
 function determineLanguageFromUrl(splits) {
-  const locLang = splits[3]
+  const locLang = splits[URL_LANGUAGE_SEGMENT_INDEX]
   if (locLang === 'lleoliad') {
     return 'cy'
   }

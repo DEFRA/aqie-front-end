@@ -4,7 +4,7 @@ import {
   LOCATION_NOT_FOUND_ROUTE_CY,
   REDIRECT_STATUS_CODE
 } from '../data/constants.js' //
-import { english } from '../data/en/en.js'
+import { english as englishData } from '../data/en/en.js'
 
 // '' Helper to handle Welsh language redirect
 function handleWelshRedirect(h) {
@@ -24,7 +24,7 @@ function getLocationData(request) {
 }
 
 // '' Helper to prepare English page content
-function prepareEnglishContent(english) {
+function prepareEnglishContent(languageData) {
   const {
     notFoundLocation = {},
     home = {},
@@ -33,7 +33,7 @@ function prepareEnglishContent(english) {
     backlink = {},
     cookieBanner = {},
     multipleLocations = {}
-  } = english
+  } = languageData
 
   return {
     notFoundLocation,
@@ -82,7 +82,7 @@ const locationNotFoundController = {
     }
 
     const locationData = getLocationData(request)
-    const content = prepareEnglishContent(english)
+    const content = prepareEnglishContent(englishData)
     const viewData = buildViewData(locationData, content, query)
 
     return h.view(LOCATION_NOT_FOUND, viewData)

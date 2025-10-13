@@ -82,6 +82,36 @@ export const SUMMARY_TRANSLATIONS = {
   Sunday: 'Dydd Sul',
   Today: 'Heddiw'
 }
+
+// '' - Pollutant band translations
+export const POLLUTANT_BAND_LABELS = {
+  LOW: { en: 'Low', cy: 'Isel' },
+  MODERATE: { en: 'Moderate', cy: 'Cymedrol' },
+  HIGH: { en: 'High', cy: 'Uchel' },
+  VERY_HIGH: { en: 'Very high', cy: 'Uchel iawn' }
+}
+
+// '' - Pollutant threshold values
+export const POLLUTANT_THRESHOLD_VALUES = {
+  PM10_MAX_1: 50,
+  PM10_MAX_2: 75,
+  PM10_MAX_3: 100,
+  NO2_MAX_1: 200,
+  NO2_MAX_2: 400,
+  NO2_MAX_3: 600,
+  PM25_MAX_1: 36,
+  PM25_MAX_2: 53,
+  PM25_MAX_3: 70,
+  SO2_MAX_1: 266,
+  SO2_MAX_2: 710,
+  SO2_MAX_3: 1064,
+  O3_MAX_1: 100,
+  O3_MAX_2: 160,
+  O3_MAX_3: 240
+}
+
+export const ENGLISH_LANG = 'english'
+export const URL_LANGUAGE_SEGMENT_INDEX = 3
 export const LANG_EN = 'en'
 export const LANG_CY = 'cy'
 export const BASE_URL = 'https://check-air-quality.service.gov.uk'
