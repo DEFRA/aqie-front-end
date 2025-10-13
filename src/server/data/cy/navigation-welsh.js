@@ -4,6 +4,8 @@ import { WELSH_TITLE } from '../constants.js'
 // Welsh page not found constant
 export const PAGE_NOT_FOUND_CY = 'Tudalen heb ei chanfod'
 const ERROR_TITLE = 'Mae yna broblem'
+const WELSH_SERVICE_NAME = 'Gwirio ansawdd aer'
+const WELSH_SERVICE_NAME_SPACED = 'Gwirio ansawdd aer '
 const DAQI_DESCRIPTION =
   "Mae'r mynegai ansawdd aer dyddiol(DAQI) yn dweud wrthoch chi am lefelau llygredd aer. Mae'n darparu cyngor iechyd ar gyfer y lefelau presennol."
 
@@ -12,7 +14,7 @@ const DAQI_DESCRIPTION =
  */
 export const navigationTranslationsWelsh = {
   home: {
-    pageTitle: 'Gwirio ansawdd aer - GOV.UK',
+    pageTitle: `${WELSH_SERVICE_NAME} - GOV.UK`,
     heading: `${WELSH_TITLE}`,
     caption: DAQI_DESCRIPTION,
     summaryText:
@@ -29,10 +31,10 @@ export const navigationTranslationsWelsh = {
       "Gwiriwch ansawdd aer eich ardal leol a'r rhagolygon llygredd aer am y 5 diwrnod nesaf. Hefyd, mynnwch gyngor iechyd i leihau'ch amlygiad i lygryddion."
   },
   searchLocation: {
-    pageTitle: 'Ble hoffech chi wirio? - Gwirio ansawdd aer  - GOV.UK',
-    heading: 'Gwirio ansawdd aer ',
+    pageTitle: `Ble hoffech chi wirio? - ${WELSH_SERVICE_NAME}  - GOV.UK`,
+    heading: WELSH_SERVICE_NAME_SPACED,
     page: 'search-location',
-    serviceName: 'Gwirio ansawdd aer ',
+    serviceName: WELSH_SERVICE_NAME_SPACED,
     searchParams: {
       label: {
         text: 'Ble hoffech chi wirio?'
@@ -75,7 +77,7 @@ export const navigationTranslationsWelsh = {
       "Chwiliwch am ansawdd aer unrhyw ardal leol. Hefyd, mynnwch gyngor iechyd am lygredd aer a sut i leihau'ch amlygiad iddo."
   },
   notFoundLocation: {
-    heading: 'Gwirio ansawdd aer ',
+    heading: WELSH_SERVICE_NAME_SPACED,
     paragraphs: {
       a: 'Rydyn ni wedi methu dod o hyd i',
       b: "Os buoch chi'n chwilio am le yng Nghymru, Lloegr neu'r Alban, fe ddylech chi:",
@@ -89,8 +91,7 @@ export const navigationTranslationsWelsh = {
   },
   notFoundUrl: {
     nonService: {
-      pageTitle:
-        "Ni allem ddod o hyd i'r dudalen hon - Gwirio ansawdd aer - GOV.UK",
+      pageTitle: `Ni allem ddod o hyd i'r dudalen hon - ${WELSH_SERVICE_NAME} - GOV.UK`,
       heading: "Ni allem ddod o hyd i'r dudalen hon",
       paragraphs: {
         a: 'Ewch yn ôl i ansawdd aer',
@@ -109,10 +110,10 @@ export const navigationTranslationsWelsh = {
   },
   multipleLocations: {
     titlePrefix: 'Ansawdd aer –',
-    pageTitle: 'Gwirio ansawdd aer - GOV.UK',
+    pageTitle: `${WELSH_SERVICE_NAME} - GOV.UK`,
     title: 'Lleoliadau yn cyfateb',
-    heading: 'Gwirio ansawdd aer ',
-    serviceName: 'Gwirio ansawdd aer ',
+    heading: WELSH_SERVICE_NAME_SPACED,
+    serviceName: WELSH_SERVICE_NAME_SPACED,
     paragraphs: {
       a: "Canfuwyd mwy nag un cyfatebiaeth ar gyfer eich lleoliad. Dewiswch y lleoliad cywir o'r opsiynau canlynol:",
       b: 'Fel arall,',
