@@ -27,7 +27,6 @@ const RESPIRATORY_INFECTIONS = "heintiau'r anadl"
 const COPD_WELSH = 'clefyd rhwystrol cronig yr ysgyfaint (COPD)'
 const CANCER_WELSH = 'canser'
 const HEART_PROBLEMS_WELSH = 'materion y galon'
-const LUNG_FUNCTION_WELSH = 'gweithrediad yr ysgyfaint'
 
 // Common Welsh pollutant sources
 const COMMERCIAL_MANUFACTURING = 'gweithgynhyrchu masnachol'
@@ -39,6 +38,57 @@ const LONG_EFFECTS_PM10 = 'Mae effeithiau hirdymor PM10 yn cynnwys:'
 const SHORT_EFFECTS_PM25 =
   "Gall effeithiau iechyd byrdymor PM2.5 gynnwys cyflyrau sy'n gwaethygu, fel:"
 const LONG_EFFECTS_PM25 = 'Gall effeithiau hirdymor PM2.5 gynnwys:'
+
+// Additional Welsh health symptoms to reduce duplication
+const COMMON_HEALTH_SYMPTOMS_WELSH = {
+  DIFFICULTY_BREATHING: 'anhawster anadlu',
+  COUGHING: 'pesychu',
+  SHORTNESS_OF_BREATH: 'byrdra anadl',
+  WHEEZING: 'whezan a phesychu',
+  CHEST_TIGHTNESS: 'tyndera a phoen yn y frest',
+  REDUCED_LUNG_FUNCTION: 'gweithrediad ysgyfaint gostyngedig',
+  INCREASED_RESPIRATORY_ILLNESS: 'salwch anadlol cynyddol',
+  ALTERED_SMELL: 'synnwyr arogli wedi newid'
+}
+
+// Additional Welsh pollution sources to reduce duplication
+const COMMON_SOURCES_WELSH = {
+  POWER_STATIONS: 'gorsafoedd pŵer',
+  PETROL_DIESEL_VEHICLES: 'llosgi petrol neu ddesel mewn cerbydau',
+  GAS_BOILERS: 'boeleri nwy',
+  COAL_POWER_STATIONS: 'gorsafoedd pŵer llosgi glo',
+  CONSTRUCTION_DUST: 'llwch o safleoedd adeiladu',
+  AGRICULTURE_DUST: 'llwch o amaethyddiaeth',
+  WILDFIRES: 'tanau gwyllt',
+  POLLEN: 'paill',
+  DUST: 'llwch',
+  SOOT: 'huddygl',
+  SMOKE: 'mwg',
+  LIQUID_DROPS: 'diferion hylif'
+}
+
+// Additional Welsh vulnerability patterns to reduce duplication
+const VULNERABILITY_PATTERNS_WELSH = {
+  SYMPTOMS_WORSE: "symptomau cyflyrau'r ysgyfaint neu'r galon yn gwaethygu",
+  POORER_LUNG_FUNCTION: 'gweithrediad ysgyfaint gwaeth mewn plant',
+  LUNG_TISSUE_DAMAGE: 'difrod meinwe ysgyfaint',
+  HEART_FAILURE: 'methiant calon',
+  STROKES: 'strôc',
+  LUNG_CANCER: 'canser ysgyfaint',
+  DIABETES: 'diabetes',
+  NEUROLOGICAL_DISEASES: 'clefyd Alzheimer a Parkinson',
+  POOR_LUNG_HEALTH_CHILDREN: 'iechyd ysgyfaint gwael mewn plant'
+}
+
+// Welsh particle descriptions to reduce duplication
+const PARTICLE_DESCRIPTIONS_WELSH = {
+  PM_DEFINITION:
+    'Mae mater gronynnol (PM) yn ronynnau bach o solidau neu hylifau sydd yn yr awyr.',
+  PM10_CONTEXT:
+    "Mae'r gronynnau dim ond 10 micromedr mewn diamedr. I roi cyd-destun, mae lled gwallt dynol rhwng 50 a 70 micromedr.",
+  PM25_CONTEXT:
+    "Mae'r gronynnau dim ond 2.5 micromedr mewn diamedr. I roi cyd-destun, mae lled gwallt dynol rhwng 50 a 70 micromedr."
+}
 
 /**
  * Welsh translations for DAQI display and pollutant information pages
@@ -129,15 +179,15 @@ export const pollutantTranslationsWelsh = {
         b: HEALTH_EFFECTS_WELSH
       },
       paragraphs: {
-        a: "Does dim ffynonellau allyriadau mawr o osôn ei hun. Mae osôn yn yr aer yn cael ei ffurfio gan adweithiau rhwng llygryddion eraill, er enghraifft, pan fydd llygryddion o geir, gorsafoedd pŵer a ffatrïoedd yn adweithio gyda golau'r haul.",
+        a: `Does dim ffynonellau allyriadau mawr o osôn ei hun. Mae osôn yn yr aer yn cael ei ffurfio gan adweithiau rhwng llygryddion eraill, er enghraifft, pan fydd llygryddion o geir, ${COMMON_SOURCES_WELSH.POWER_STATIONS} a ffatrïoedd yn adweithio gyda golau'r haul.`,
         b: "Gall osôn ar lefel y ddaear fod ar lefelau afiach ar ddiwrnodau poeth ac oer. Gall deithio gyda'r gwynt, gan effeithio ar ardaloedd trefol a gwledig.",
         c: `${SHORT_TERM_EXPOSURE_PREFIX} i osôn achosi:`,
-        d: 'diffyg anadl, gwichian a phesychu',
+        d: `${COMMON_HEALTH_SYMPTOMS_WELSH.SHORTNESS_OF_BREATH}, ${COMMON_HEALTH_SYMPTOMS_WELSH.WHEEZING}`,
         e: ASTHMA_ATTACKS_WELSH,
         f: `mwy o risg o ${RESPIRATORY_INFECTIONS}`,
         g: EYES_NOSE_THROAT_INFLAMMATION,
         h: `${LONG_TERM_EXPOSURE_PREFIX} i osôn arwain at y canlynol:`,
-        i: 'mwy o salwch yr anadl',
+        i: COMMON_HEALTH_SYMPTOMS_WELSH.INCREASED_RESPIRATORY_ILLNESS,
         j: 'materion y system nerfol',
         k: CANCER_WELSH,
         l: HEART_PROBLEMS_WELSH
@@ -164,10 +214,10 @@ export const pollutantTranslationsWelsh = {
         h: `${SHORT_TERM_EXPOSURE_PREFIX} i nitrogen deuocsid achosi:`,
         i: ASTHMA_ATTACKS_WELSH,
         j: RESPIRATORY_INFECTIONS,
-        k: "symptomau cyflyrau'r ysgyfaint neu'r galon i waethygu",
+        k: VULNERABILITY_PATTERNS_WELSH.SYMPTOMS_WORSE,
         l: `${LONG_TERM_EXPOSURE_PREFIX} i nitrogen deuocsid achosi:`,
         m: `mwy o risg o ${RESPIRATORY_INFECTIONS}`,
-        n: `gwaeth ${LUNG_FUNCTION_WELSH} mewn plant`
+        n: VULNERABILITY_PATTERNS_WELSH.POORER_LUNG_FUNCTION
       },
       description:
         'Dysgwch sut mae nitrogen deuocsid yn cael ei gynhyrchu. Hefyd, dysgwch am effeithiau iechyd byrdymor a hirdymor amlygiad i nitrogen deuocsid.'
@@ -182,9 +232,9 @@ export const pollutantTranslationsWelsh = {
       },
       paragraphs: {
         a: "Mae sylffwr deuocsid yn nwy di-liw sydd ag arogl cryf. Mae'n cael ei gynhyrchu'n bennaf yn sgil:",
-        b: 'llosgi petrol neu ddisel mewn cerbydau',
-        c: 'boeleri nwy',
-        d: "pwerdai sy'n llosgi glo",
+        b: COMMON_SOURCES_WELSH.PETROL_DIESEL_VEHICLES,
+        c: COMMON_SOURCES_WELSH.GAS_BOILERS,
+        d: COMMON_SOURCES_WELSH.COAL_POWER_STATIONS,
         e: COMMERCIAL_MANUFACTURING,
         f: FOOD_MANUFACTURING,
         g: `${SHORT_TERM_EXPOSURE_PREFIX} achosi llid ar y canlynol:`,
@@ -192,8 +242,8 @@ export const pollutantTranslationsWelsh = {
         i: NOSE_WELSH,
         j: THROAT_WELSH,
         k: `${LONG_TERM_EXPOSURE_PREFIX} ar lefelau uchel arwain at y canlynol:`,
-        l: `llai o ${LUNG_FUNCTION_WELSH}`,
-        m: 'newid synnwyr arogli',
+        l: COMMON_HEALTH_SYMPTOMS_WELSH.REDUCED_LUNG_FUNCTION,
+        m: COMMON_HEALTH_SYMPTOMS_WELSH.ALTERED_SMELL,
         n: `mwy o ${RESPIRATORY_INFECTIONS}`
       },
       description:
@@ -208,24 +258,24 @@ export const pollutantTranslationsWelsh = {
         b: HEALTH_EFFECTS_WELSH
       },
       paragraphs: {
-        a: "Mae mater gronynnol (PM) yn ronynnau mân iawn o solidau neu hylifau yn yr aer. Dim ond 10 micrometr mewn diamedr yw'r gronynnau.O ran cyd- destun, mae lled blewyn o wallt dynol yn 50 i 70 micrometr.",
+        a: `${PARTICLE_DESCRIPTIONS_WELSH.PM_DEFINITION} ${PARTICLE_DESCRIPTIONS_WELSH.PM10_CONTEXT}`,
         b: 'Prif ffynonellau mater gronynnol yw:',
-        c: 'llwch o safleoedd adeiladu',
+        c: COMMON_SOURCES_WELSH.CONSTRUCTION_DUST,
         d: 'llwch o safleoedd tirlenwi',
-        e: 'llwch o amaethyddiaeth',
-        f: 'tanau gwyllt',
-        g: 'paill',
-        h: 'gorsafoedd pŵer',
+        e: COMMON_SOURCES_WELSH.AGRICULTURE_DUST,
+        f: COMMON_SOURCES_WELSH.WILDFIRES,
+        g: COMMON_SOURCES_WELSH.POLLEN,
+        h: COMMON_SOURCES_WELSH.POWER_STATIONS,
         i: 'Cerbydau',
         j: SHORT_EFFECTS_PM10,
-        k: 'anhawster anadlu',
-        l: 'pesychu',
+        k: COMMON_HEALTH_SYMPTOMS_WELSH.DIFFICULTY_BREATHING,
+        l: COMMON_HEALTH_SYMPTOMS_WELSH.COUGHING,
         m: EYES_NOSE_THROAT_INFLAMMATION,
-        n: 'tyndra a phoen y frest',
+        n: COMMON_HEALTH_SYMPTOMS_WELSH.CHEST_TIGHTNESS,
         o: LONG_EFFECTS_PM10,
-        p: "difrod i feinwe'r ysgyfaint",
+        p: VULNERABILITY_PATTERNS_WELSH.LUNG_TISSUE_DAMAGE,
         q: ASTHMA_WELSH,
-        r: 'methiant y galon',
+        r: VULNERABILITY_PATTERNS_WELSH.HEART_FAILURE,
         s: CANCER_WELSH,
         t: COPD_WELSH
       },
@@ -241,12 +291,12 @@ export const pollutantTranslationsWelsh = {
         b: HEALTH_EFFECTS_WELSH
       },
       paragraphs: {
-        a: "Mae mater gronynnol (PM) yn ronynnau mân iawn o solidau neu hylifau sydd yn yr aer. Dim ond 2.5 micrometr mewn diamedr yw'r gronynnau.O ran cyd- destun, mae lled blewyn o wallt dynol yn 50 i 70 micrometr.",
+        a: `${PARTICLE_DESCRIPTIONS_WELSH.PM_DEFINITION} ${PARTICLE_DESCRIPTIONS_WELSH.PM25_CONTEXT}`,
         b: 'Gall gronynnau PM2.5 gynnwys:',
-        c: 'llwch',
-        d: 'huddygl',
-        e: 'mwg',
-        f: 'diferion hylif',
+        c: COMMON_SOURCES_WELSH.DUST,
+        d: COMMON_SOURCES_WELSH.SOOT,
+        e: COMMON_SOURCES_WELSH.SMOKE,
+        f: COMMON_SOURCES_WELSH.LIQUID_DROPS,
         g: 'Prif ffynonellau mater gronynnol yw:',
         h: 'llosgi tanwydd mewn cerbydau, diwydiant ac eiddo domestig',
         i: 'traul ar deiars a breciau',
@@ -257,11 +307,11 @@ export const pollutantTranslationsWelsh = {
         n: ASTHMA_WELSH,
         o: COPD_WELSH,
         p: LONG_EFFECTS_PM25,
-        q: 'strôc',
-        r: 'canser yr ysgyfaint',
-        s: 'diabetes',
-        t: 'clefyd Alzheimer a chlefyd Parkinson',
-        u: 'iechyd ysgyfaint gwael mewn plant'
+        q: VULNERABILITY_PATTERNS_WELSH.STROKES,
+        r: VULNERABILITY_PATTERNS_WELSH.LUNG_CANCER,
+        s: VULNERABILITY_PATTERNS_WELSH.DIABETES,
+        t: VULNERABILITY_PATTERNS_WELSH.NEUROLOGICAL_DISEASES,
+        u: VULNERABILITY_PATTERNS_WELSH.POOR_LUNG_HEALTH_CHILDREN
       },
       description:
         "Mae PM2.5 yn fater gronynnol (PM) wedi'i wneud o ronynnau bach o solidau neu hylifau yn yr awyr. Dysgwch am ffynonellau PM2.5 a sut y gall amlygiad iddo effeithio ar iechyd."
