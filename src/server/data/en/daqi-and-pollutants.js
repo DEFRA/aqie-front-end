@@ -79,6 +79,25 @@ const BURNING_SOURCES = {
   VEGETATION: 'burning vegetation'
 }
 
+// Additional duplicated sources and activities
+const INDUSTRIAL_ACTIVITIES = {
+  WELDING: 'welding',
+  EXPLOSIVES: 'the use of explosives'
+}
+
+// Additional environment and particle sources
+const ENVIRONMENTAL_SOURCES = {
+  DUST_LANDFILLS: 'dust from landfills',
+  TYRES_BRAKES: 'wear of tyres and brakes',
+  WIND_SOIL_DUST: 'wind blown soil and dust',
+  SEA_SPRAY: 'sea spray particles'
+}
+
+// Additional health effects to reduce duplication
+const ADDITIONAL_HEALTH_EFFECTS = {
+  INCREASED_RESPIRATORY_ILLNESSES: 'increased respiratory illnesses'
+}
+
 // Common vulnerability and health impact patterns
 const VULNERABILITY_PATTERNS = {
   SYMPTOMS_WORSE: 'symptoms of lung or heart conditions to get worse',
@@ -214,7 +233,7 @@ export const pollutantTranslations = {
         f: `${VULNERABILITY_PATTERNS.INCREASED_RISK} ${RESPIRATORY_INFECTIONS}`,
         g: COMMON_HEALTH_SYMPTOMS.EYE_IRRITATION,
         h: `${LONG_TERM_EXPOSURE_PREFIX} to ozone may lead to:`,
-        i: 'increased respiratory illnesses',
+        i: ADDITIONAL_HEALTH_EFFECTS.INCREASED_RESPIRATORY_ILLNESSES,
         j: COMMON_HEALTH_SYMPTOMS.NERVOUS_SYSTEM,
         k: COMMON_HEALTH_SYMPTOMS.CANCER,
         l: COMMON_HEALTH_SYMPTOMS.HEART_ISSUES
@@ -233,8 +252,8 @@ export const pollutantTranslations = {
         a: createSourceIntroText('nitrogen dioxide', 'produced'),
         b: BURNING_SOURCES.PETROL_DIESEL_ENGINE,
         c: BURNING_SOURCES.NATURAL_GAS_BOILER,
-        d: 'welding',
-        e: 'the use of explosives',
+        d: INDUSTRIAL_ACTIVITIES.WELDING,
+        e: INDUSTRIAL_ACTIVITIES.EXPLOSIVES,
         f: COMMERCIAL_MANUFACTURING,
         g: FOOD_MANUFACTURING,
         h: createExposureText('nitrogen dioxide', 'short'),
@@ -285,7 +304,7 @@ export const pollutantTranslations = {
         a: `${PARTICLE_DESCRIPTIONS.PM_DEFINITION} ${PARTICLE_DESCRIPTIONS.PM10_CONTEXT}`,
         b: createPMSourcesIntro(),
         c: COMMON_SOURCES.CONSTRUCTION_DUST,
-        d: 'dust from landfills',
+        d: ENVIRONMENTAL_SOURCES.DUST_LANDFILLS,
         e: COMMON_SOURCES.AGRICULTURE_DUST,
         f: COMMON_SOURCES.WILDFIRES,
         g: COMMON_SOURCES.POLLEN,
@@ -323,9 +342,9 @@ export const pollutantTranslations = {
         f: COMMON_SOURCES.LIQUID_DROPS,
         g: createPMSourcesIntro(),
         h: BURNING_SOURCES.FUEL_BY_VEHICLES,
-        i: 'wear of tyres and brakes',
-        j: 'wind blown soil and dust',
-        k: 'sea spray particles',
+        i: ENVIRONMENTAL_SOURCES.TYRES_BRAKES,
+        j: ENVIRONMENTAL_SOURCES.WIND_SOIL_DUST,
+        k: ENVIRONMENTAL_SOURCES.SEA_SPRAY,
         l: BURNING_SOURCES.VEGETATION,
         m: SHORT_TERM_PM25_IMPACTS,
         n: ASTHMA,

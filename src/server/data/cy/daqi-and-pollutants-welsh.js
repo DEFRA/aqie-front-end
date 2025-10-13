@@ -89,6 +89,25 @@ const VULNERABILITY_PATTERNS_WELSH = {
   POOR_LUNG_HEALTH_CHILDREN: 'iechyd ysgyfaint gwael mewn plant'
 }
 
+// Additional duplicated Welsh sources and activities
+const INDUSTRIAL_ACTIVITIES_WELSH = {
+  WELDING: 'weldio',
+  EXPLOSIVES: 'defnyddio ffrwydron'
+}
+
+// Additional Welsh environment and particle sources
+const ENVIRONMENTAL_SOURCES_WELSH = {
+  DUST_LANDFILLS: 'llwch o safleoedd tirlenwi',
+  TYRES_BRAKES: 'traul ar deiars a breciau',
+  WIND_SOIL_DUST: 'pridd a llwch yn cael eu chwythu gan y gwynt',
+  SEA_SPRAY: 'gronynnau ewyn y môr'
+}
+
+// Additional Welsh health effects to reduce duplication
+const ADDITIONAL_HEALTH_EFFECTS_WELSH = {
+  INCREASED_RESPIRATORY_ILLNESSES: 'salwch anadlol cynyddol'
+}
+
 // Welsh particle descriptions to reduce duplication
 const PARTICLE_DESCRIPTIONS_WELSH = {
   PM_DEFINITION:
@@ -214,7 +233,7 @@ export const pollutantTranslationsWelsh = {
         f: `mwy o risg o ${RESPIRATORY_INFECTIONS}`,
         g: EYES_NOSE_THROAT_INFLAMMATION,
         h: `${LONG_TERM_EXPOSURE_PREFIX} i osôn arwain at y canlynol:`,
-        i: COMMON_HEALTH_SYMPTOMS_WELSH.INCREASED_RESPIRATORY_ILLNESS,
+        i: ADDITIONAL_HEALTH_EFFECTS_WELSH.INCREASED_RESPIRATORY_ILLNESSES,
         j: 'materion y system nerfol',
         k: CANCER_WELSH,
         l: HEART_PROBLEMS_WELSH
@@ -234,8 +253,8 @@ export const pollutantTranslationsWelsh = {
         a: createWelshSourceIntroText('nitrogen deuocsid', 'cynhyrchu'),
         b: BURNING_SOURCES_WELSH.PETROL_DIESEL_ENGINE,
         c: BURNING_SOURCES_WELSH.NATURAL_GAS_BOILER,
-        d: 'weldio',
-        e: 'defnyddio ffrwydron',
+        d: INDUSTRIAL_ACTIVITIES_WELSH.WELDING,
+        e: INDUSTRIAL_ACTIVITIES_WELSH.EXPLOSIVES,
         f: COMMERCIAL_MANUFACTURING,
         g: FOOD_MANUFACTURING,
         h: createWelshExposureText('nitrogen deuocsid', 'short'),
@@ -288,7 +307,7 @@ export const pollutantTranslationsWelsh = {
         a: `${PARTICLE_DESCRIPTIONS_WELSH.PM_DEFINITION} ${PARTICLE_DESCRIPTIONS_WELSH.PM10_CONTEXT}`,
         b: createWelshPMSourcesIntro(),
         c: COMMON_SOURCES_WELSH.CONSTRUCTION_DUST,
-        d: 'llwch o safleoedd tirlenwi',
+        d: ENVIRONMENTAL_SOURCES_WELSH.DUST_LANDFILLS,
         e: COMMON_SOURCES_WELSH.AGRICULTURE_DUST,
         f: COMMON_SOURCES_WELSH.WILDFIRES,
         g: COMMON_SOURCES_WELSH.POLLEN,
@@ -326,9 +345,9 @@ export const pollutantTranslationsWelsh = {
         f: COMMON_SOURCES_WELSH.LIQUID_DROPS,
         g: createWelshPMSourcesIntro(),
         h: BURNING_SOURCES_WELSH.FUEL_BY_VEHICLES,
-        i: 'traul ar deiars a breciau',
-        j: 'pridd a llwch yn cael eu chwythu gan y gwynt',
-        k: 'gronynnau ewyn y môr',
+        i: ENVIRONMENTAL_SOURCES_WELSH.TYRES_BRAKES,
+        j: ENVIRONMENTAL_SOURCES_WELSH.WIND_SOIL_DUST,
+        k: ENVIRONMENTAL_SOURCES_WELSH.SEA_SPRAY,
         l: BURNING_SOURCES_WELSH.VEGETATION,
         m: SHORT_EFFECTS_PM25,
         n: ASTHMA_WELSH,
