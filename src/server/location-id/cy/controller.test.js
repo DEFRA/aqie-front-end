@@ -243,12 +243,14 @@ vi.mock('../../common/helpers/location-controller-helper.js', () => {
     }),
     optimizeLocationDataInSession: vi
       .fn()
-      .mockImplementation((request, locationData, nearestLocation, nearestLocationsRange) => {
-        // Mock the optimization behavior - update session with optimized data
-        locationData.getForecasts = nearestLocation
-        locationData.getMeasurements = nearestLocationsRange
-        request.yar.set('locationData', locationData)
-      }),
+      .mockImplementation(
+        (request, locationData, nearestLocation, nearestLocationsRange) => {
+          // Mock the optimization behavior - update session with optimized data
+          locationData.getForecasts = nearestLocation
+          locationData.getMeasurements = nearestLocationsRange
+          request.yar.set('locationData', locationData)
+        }
+      ),
     // Helper to control mock behavior for different test scenarios
     __setMockProcessLocationDataResult: (result) => {
       mockProcessLocationDataResult = result

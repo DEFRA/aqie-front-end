@@ -70,7 +70,10 @@ const getLocationDetailsController = {
       const locationData = request.yar.get('locationData') || {}
 
       // Validate session data - redirect to search if missing required data
-      if (!Array.isArray(locationData?.results) || !locationData?.getForecasts) {
+      if (
+        !Array.isArray(locationData?.results) ||
+        !locationData?.getForecasts
+      ) {
         request.yar.clear('locationData')
         return h
           .redirect(buildRedirectUrl(currentUrl))
