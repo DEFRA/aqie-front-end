@@ -18,7 +18,8 @@ import {
   processLocationData,
   buildLocationViewData,
   renderLocationView,
-  renderNotFoundView
+  renderNotFoundView,
+  optimizeLocationDataInSession
 } from '../../common/helpers/location-controller-helper.js'
 
 const logger = createLogger()
@@ -66,7 +67,16 @@ const getLocationDetailsController = {
 
       // Initialize Welsh variables using helper
       const initData = initializeLocationVariables(request, LANG_CY)
-      const locationData = request.yar.get('locationData') || []
+      const locationData = request.yar.get('locationData') || {}
+
+      // Validate session data - redirect to search if missing required data
+      if (!Array.isArray(locationData?.results) || !locationData?.getForecasts) {
+        request.yar.clear('locationData')
+        return h
+          .redirect(buildRedirectUrl(currentUrl))
+          .code(REDIRECT_STATUS_CODE)
+          .takeover()
+      }
 
       // Process Welsh location data using helper
       const processedData = await processLocationData(
@@ -77,20 +87,31 @@ const getLocationDetailsController = {
       )
 
       if (processedData.locationDetails) {
-        // Build view data using helper
-        const viewData = buildLocationViewData(
-          processedData,
+        // Optimize session data to reduce memory usage
+        optimizeLocationDataInSession(
+          request,
           locationData,
-          initData,
-          siteTypeDescriptions,
-          pollutantTypes,
-          airQualityData,
-          request
+          processedData.nearestLocation,
+          processedData.nearestLocationsRange
         )
+
+        // Build view data using helper
+        const viewData = buildLocationViewData({
+          locationDetails: processedData.locationDetails,
+          nearestLocationsRange: processedData.nearestLocationsRange,
+          locationData,
+          forecastNum: processedData.forecastNum,
+          lang: LANG_CY,
+          getMonth: initData.getMonth,
+          metaSiteUrl: initData.metaSiteUrl,
+          airQualityData,
+          siteTypeDescriptions,
+          pollutantTypes
+        })
 
         return renderLocationView(h, viewData)
       } else {
-        return renderNotFoundView(h, initData)
+        return renderNotFoundView(h, LANG_CY)
       }
     } catch (error) {
       logger.error(`error on single location ${error.message}`)

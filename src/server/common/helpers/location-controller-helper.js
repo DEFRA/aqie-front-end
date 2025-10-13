@@ -1,4 +1,3 @@
-''
 import {
   LANG_CY,
   LANG_EN,
@@ -60,7 +59,6 @@ const UI_COMPONENTS = {
  * Initialize common variables for location controller
  */
 export function initializeLocationVariables(request, lang) {
-  ''
   request.yar.clear('searchTermsSaved')
   const formattedDate = moment().format('DD MMMM YYYY').split(' ')
   const getMonth = calendarEnglish.findIndex((item) =>
@@ -86,10 +84,11 @@ export async function processLocationData(
   lang,
   useNewRicardoMeasurementsEnabled
 ) {
-  ''
   const { getForecasts } = locationData
   const locationType = getLocationType(locationData)
   let distance
+  let resultNI
+  const indexNI = 0
 
   if (locationData.locationType === LOCATION_TYPE_NI) {
     distance = getNearestLocation(
@@ -100,10 +99,10 @@ export async function processLocationData(
       lang,
       useNewRicardoMeasurementsEnabled
     )
+    const niDataResult = getNIData(locationData, distance, locationType)
+    resultNI = niDataResult.resultNI
   }
 
-  const indexNI = 0
-  const { resultNI } = getNIData(locationData, distance, locationType)
   const { locationIndex, locationDetails } = getIdMatch(
     locationId,
     locationData,
@@ -145,7 +144,6 @@ export function buildLocationViewData({
   siteTypeDescriptions,
   pollutantTypes
 }) {
-  ''
   let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
   title = convertFirstLetterIntoUppercase(title)
   headerTitle = convertFirstLetterIntoUppercase(headerTitle)
@@ -190,7 +188,6 @@ export function buildLocationViewData({
  * Render location view with common patterns
  */
 export function renderLocationView(h, viewData) {
-  ''
   return h.view('locations/location', viewData)
 }
 
@@ -198,7 +195,6 @@ export function renderLocationView(h, viewData) {
  * Build not found view data
  */
 export function buildNotFoundViewData(lang) {
-  ''
   const components = UI_COMPONENTS[lang]
 
   return {
@@ -216,7 +212,6 @@ export function buildNotFoundViewData(lang) {
  * Render not found view with common patterns
  */
 export function renderNotFoundView(h, lang) {
-  ''
   return h.view(LOCATION_NOT_FOUND, buildNotFoundViewData(lang))
 }
 
@@ -229,7 +224,6 @@ export function optimizeLocationDataInSession(
   nearestLocation,
   nearestLocationsRange
 ) {
-  ''
   logger.info(
     `Before Session (yar) size in MB for getForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
   )
@@ -250,7 +244,6 @@ export function optimizeLocationDataInSession(
  * Check if should redirect to English version
  */
 export function shouldRedirectToEnglish(query) {
-  ''
   return query?.lang && query?.lang === LANG_EN && !query?.searchTerms
 }
 
@@ -258,7 +251,6 @@ export function shouldRedirectToEnglish(query) {
  * Get previous URL from request headers
  */
 export function getPreviousUrl(request) {
-  ''
   return request.headers.referer || request.headers.referrer
 }
 
@@ -266,7 +258,6 @@ export function getPreviousUrl(request) {
  * Build redirect URL for missing search terms
  */
 export function buildRedirectUrl(currentUrl) {
-  ''
   const url = new URL(currentUrl)
   const searchParams = url.searchParams
   const searchTerms = searchParams.get('searchTerms') || ''

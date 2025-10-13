@@ -153,7 +153,9 @@ vi.mock('../../common/helpers/location-controller-helper.js', () => {
       locationType: 'UK'
     },
     forecastData: { mockForecast: 'data' },
-    measurementData: { mockMeasurement: 'data' }
+    measurementData: { mockMeasurement: 'data' },
+    nearestLocation: { id: 1, data: 'mock' },
+    nearestLocationsRange: [{ id: 1, name: 'Mock Site' }]
   }
 
   return {
@@ -161,37 +163,37 @@ vi.mock('../../common/helpers/location-controller-helper.js', () => {
       // Mock the session clear operation that the real helper does
       request.yar.clear('searchTermsSaved')
       return {
-        lang: 'cy',
-        ui: {
-          notFoundLocation: {
-            paragraphs: { a: 'Mock Welsh not found message' },
-            heading: 'Mock Welsh heading'
-          },
-          footerTxt: { cookies: 'Cwcis' },
-          phaseBanner: { tag: 'Beta' },
-          backlink: { text: 'Yn ôl' },
-          cookieBanner: { message: 'Mock cookie message' },
-          daqi: { description: { a: 'Mock Welsh A', b: 'Mock Welsh B' } },
-          multipleLocations: {
-            titlePrefix: 'Ansawdd aer yn',
-            serviceName: 'Mock Welsh service'
-          },
-          dailySummaryTexts: { today: 'Heddiw' },
-          calendar: [
-            'Ionawr',
-            'Chwefror',
-            'Mawrth',
-            'Ebrill',
-            'Mai',
-            'Mehefin',
-            'Gorffennaf',
-            'Awst',
-            'Medi',
-            'Hydref',
-            'Tachwedd',
-            'Rhagfyr'
-          ]
-        }
+        lang: lang || 'cy',
+        getMonth: 9, // Mock October (index 9)
+        metaSiteUrl: 'https://mock-site-url.com',
+        notFoundLocation: {
+          paragraphs: { a: 'Mock Welsh not found message' },
+          heading: 'Mock Welsh heading'
+        },
+        footerTxt: { cookies: 'Cwcis' },
+        phaseBanner: { tag: 'Beta' },
+        backlink: { text: 'Yn ôl' },
+        cookieBanner: { message: 'Mock cookie message' },
+        daqi: { description: { a: 'Mock Welsh A', b: 'Mock Welsh B' } },
+        multipleLocations: {
+          titlePrefix: 'Ansawdd aer yn',
+          serviceName: 'Mock Welsh service'
+        },
+        dailySummaryTexts: { today: 'Heddiw' },
+        calendar: [
+          'Ionawr',
+          'Chwefror',
+          'Mawrth',
+          'Ebrill',
+          'Mai',
+          'Mehefin',
+          'Gorffennaf',
+          'Awst',
+          'Medi',
+          'Hydref',
+          'Tachwedd',
+          'Rhagfyr'
+        ]
       }
     }),
     processLocationData: vi
@@ -200,32 +202,26 @@ vi.mock('../../common/helpers/location-controller-helper.js', () => {
     buildLocationViewData: vi
       .fn()
       .mockImplementation(
-        (
-          processedData,
+        ({
+          locationDetails,
+          nearestLocationsRange,
           locationData,
-          initData,
-          siteTypeDescriptions,
-          pollutantTypes,
+          forecastNum,
+          lang,
+          getMonth,
+          metaSiteUrl,
           airQualityData,
-          request
-        ) => {
-          // Mock the session set operation that the real helper does - simulating data optimization
-          const optimizedLocationData = {
-            ...locationData,
-            // Replace large getForecasts array with single optimized object
-            getForecasts: { id: 1, data: 'mock' },
-            // Replace large getMeasurements array with optimized version
-            getMeasurements: [{ id: 1, name: 'Mock Site' }]
-          }
-          request.yar.set('locationData', optimizedLocationData)
+          siteTypeDescriptions,
+          pollutantTypes
+        }) => {
           return {
-            lang: 'cy',
+            lang: lang || 'cy',
             pageTitle: 'Ansawdd aer yn Cardiff',
             serviceName: 'Mock Welsh service',
             summaryDate: '15 Hydref 2023',
             welshMonth: 'Hydref',
             displayBacklink: true,
-            result: { name: 'Cardiff' },
+            result: locationDetails || { name: 'Cardiff' },
             airQuality: { level: 'Low' },
             backlink: { text: 'Yn ôl' },
             cookieBanner: { message: 'Mock cookie message' },
@@ -238,13 +234,21 @@ vi.mock('../../common/helpers/location-controller-helper.js', () => {
     renderLocationView: vi.fn().mockImplementation((h, viewData) => {
       return h.view('locations/location', viewData)
     }),
-    renderNotFoundView: vi.fn().mockImplementation((h, initData) => {
+    renderNotFoundView: vi.fn().mockImplementation((h, lang) => {
       return h.view('location-not-found/index', {
-        lang: initData.lang,
-        paragraph: initData.ui.notFoundLocation.paragraphs,
-        serviceName: initData.ui.notFoundLocation.heading
+        lang: lang,
+        paragraph: { a: 'Mock Welsh not found message' },
+        serviceName: 'Mock Welsh heading'
       })
     }),
+    optimizeLocationDataInSession: vi
+      .fn()
+      .mockImplementation((request, locationData, nearestLocation, nearestLocationsRange) => {
+        // Mock the optimization behavior - update session with optimized data
+        locationData.getForecasts = nearestLocation
+        locationData.getMeasurements = nearestLocationsRange
+        request.yar.set('locationData', locationData)
+      }),
     // Helper to control mock behavior for different test scenarios
     __setMockProcessLocationDataResult: (result) => {
       mockProcessLocationDataResult = result
@@ -440,8 +444,8 @@ describe('Welsh Location ID Controller', () => {
     it('should render location not found view when no location details found', async () => {
       const mockLocationData = {
         locationType: 'UK',
-        results: [],
-        getForecasts: []
+        results: [{ id: 'CARD3', name: 'Cardiff' }],
+        getForecasts: [{ id: 1, data: 'mock' }]
       }
 
       mockRequest.yar.get.mockReturnValue(mockLocationData)
@@ -516,7 +520,9 @@ describe('Welsh Location ID Controller', () => {
           locationType: 'UK'
         },
         forecastData: { mockForecast: 'data' },
-        measurementData: { mockMeasurement: 'data' }
+        measurementData: { mockMeasurement: 'data' },
+        nearestLocation: { id: 1, data: 'mock' },
+        nearestLocationsRange: [{ id: 1, name: 'Mock Site' }]
       })
 
       await getLocationDetailsController.handler(mockRequest, mockH)
@@ -577,7 +583,13 @@ describe('Welsh Location ID Controller', () => {
     })
 
     it('should handle empty location data gracefully', async () => {
-      mockRequest.yar.get.mockReturnValue([])
+      const mockLocationData = {
+        locationType: 'UK',
+        results: [{ id: 'CARD3', name: 'Cardiff' }],
+        getForecasts: [{ id: 1, data: 'mock' }]
+      }
+
+      mockRequest.yar.get.mockReturnValue(mockLocationData)
 
       // Set the helper to return no location details for empty data
       const { __setMockProcessLocationDataResult } = await import(
