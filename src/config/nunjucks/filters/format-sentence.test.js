@@ -13,12 +13,13 @@ describe('format-sentence', () => {
   describe('addToSentenceCase', () => {
     it('should add toSentenceCase filter to environment', () => {
       // ''
-      addToSentenceCase(mockEnv)
+      const result = addToSentenceCase(mockEnv)
 
       expect(mockEnv.addFilter).toHaveBeenCalledWith(
         'toSentenceCase',
         expect.any(Function)
       )
+      expect(result).toBe(mockEnv)
     })
 
     it('should handle errors during filter registration', () => {

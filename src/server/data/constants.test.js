@@ -22,7 +22,9 @@ import {
   POLLUTANT_BAND_LABELS,
   POLLUTANT_THRESHOLD_VALUES,
   ENGLISH_LANG,
-  URL_LANGUAGE_SEGMENT_INDEX
+  URL_LANGUAGE_SEGMENT_INDEX,
+  FORECAST_ARRAY_INDEX_THIRD,
+  MAX_FORECAST_DAYS
 } from './constants.js'
 
 // Add a comment: ''
@@ -39,6 +41,11 @@ describe('Constants', () => {
       expect(FIRST_INDEX).toBe(0)
       expect(NEARBY_LOCATIONS_COUNT).toBe(3)
       expect(URL_LANGUAGE_SEGMENT_INDEX).toBe(3)
+    })
+
+    it('should have correct forecast-related constants', () => {
+      expect(FORECAST_ARRAY_INDEX_THIRD).toBe(3)
+      expect(MAX_FORECAST_DAYS).toBe(6)
     })
 
     it('should have air quality thresholds in ascending order', () => {
