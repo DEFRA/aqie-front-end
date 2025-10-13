@@ -5,6 +5,10 @@ const PAGE_TITLE_TEMPLATE = (pollutant) =>
   `${pollutant} – ${SERVICE_NAME}${GOVUK_SUFFIX}`
 const HEADER_TEXT = SERVICE_NAME
 
+// Common English exposure phrases
+const SHORT_TERM_EXPOSURE_PREFIX = 'Short term exposure'
+const LONG_TERM_EXPOSURE_PREFIX = 'Long term exposure'
+
 /**
  * English translations for DAQI display and pollutant information pages
  */
@@ -96,12 +100,12 @@ export const pollutantTranslations = {
       paragraphs: {
         a: 'There are no major emission sources of ozone itself. Reactions between other pollutants form ozone in the air. For example, when pollutants from cars, power stations and factories react with sunlight.',
         b: 'Ground level ozone can be at unhealthy levels on both hot and cold days. It can travel by the wind, affecting both urban and rural areas.',
-        c: 'Short term exposure to ozone can cause:',
+        c: `${SHORT_TERM_EXPOSURE_PREFIX} to ozone can cause:`,
         d: 'shortness of breath, wheezing and coughing',
         e: 'asthma attacks',
         f: 'increased risk of respiratory infections',
         g: 'irritation of eyes, nose and throat',
-        h: 'Long term exposure to ozone may lead to:',
+        h: `${LONG_TERM_EXPOSURE_PREFIX} to ozone may lead to:`,
         i: 'increased respiratory illnesses',
         j: 'nervous system issues',
         k: 'cancer',
@@ -126,11 +130,11 @@ export const pollutantTranslations = {
         e: 'the use of explosives',
         f: 'commercial manufacturing',
         g: 'food manufacturing',
-        h: 'Short term exposure to nitrogen dioxide can cause:',
+        h: `${SHORT_TERM_EXPOSURE_PREFIX} to nitrogen dioxide can cause:`,
         i: 'asthma attacks',
         j: 'respiratory infections',
         k: 'symptoms of lung or heart conditions to get worse',
-        l: 'Long term exposure to nitrogen dioxide can cause:',
+        l: `${LONG_TERM_EXPOSURE_PREFIX} to nitrogen dioxide can cause:`,
         m: 'an increase risk of respiratory infections',
         n: 'poorer lung function in children'
       },
@@ -152,11 +156,11 @@ export const pollutantTranslations = {
         d: 'coal burning power stations',
         e: 'commercial manufacturing',
         f: 'food manufacturing',
-        g: 'Short term exposure can cause irritation to the:',
+        g: `${SHORT_TERM_EXPOSURE_PREFIX} can cause irritation to the:`,
         h: 'eyes',
         i: 'nose',
         j: 'throat',
-        k: 'Long term exposure at high levels may lead to:',
+        k: `${LONG_TERM_EXPOSURE_PREFIX} at high levels may lead to:`,
         l: 'reduced lung function',
         m: 'altered sense of smell',
         n: 'increased respiratory infections'
