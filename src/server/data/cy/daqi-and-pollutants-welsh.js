@@ -3,7 +3,7 @@ import { WELSH_TITLE } from '../constants.js'
 
 const WELSH_SERVICE_NAME = 'Gwirio ansawdd aer'
 const GOVUK_SUFFIX = ' – GOV.UK'
-const PAGE_TITLE_TEMPLATE = (pollutant) =>
+const pageTitleTemplate = (pollutant) =>
   `${pollutant} – ${WELSH_SERVICE_NAME}${GOVUK_SUFFIX}`
 const HEADER_TEXT = WELSH_TITLE
 
@@ -14,6 +14,7 @@ const LONG_TERM_EXPOSURE_PREFIX = 'Gall amlygiad hirdymor'
 // Common Welsh health effects
 const ASTHMA_ATTACKS_WELSH = 'pyliau asthma'
 const ASTHMA_WELSH = 'asma'
+const HEALTH_EFFECTS_WELSH = 'Effeithiau ar iechyd'
 
 /**
  * Welsh translations for DAQI display and pollutant information pages
@@ -97,11 +98,11 @@ export const pollutantTranslationsWelsh = {
   pollutants: {
     ozone: {
       title: 'Osôn(O₃)',
-      pageTitle: PAGE_TITLE_TEMPLATE('Osôn(O₃)'),
+      pageTitle: pageTitleTemplate('Osôn(O₃)'),
       headerText: HEADER_TEXT,
       headings: {
         a: 'Ffynonellau osôn',
-        b: 'Effeithiau ar iechyd'
+        b: HEALTH_EFFECTS_WELSH
       },
       paragraphs: {
         a: "Does dim ffynonellau allyriadau mawr o osôn ei hun. Mae osôn yn yr aer yn cael ei ffurfio gan adweithiau rhwng llygryddion eraill, er enghraifft, pan fydd llygryddion o geir, gorsafoedd pŵer a ffatrïoedd yn adweithio gyda golau'r haul.",
@@ -122,11 +123,11 @@ export const pollutantTranslationsWelsh = {
     },
     nitrogenDioxide: {
       title: 'Nitrogen deuocsid (NO₂)',
-      pageTitle: PAGE_TITLE_TEMPLATE('Nitrogen deuocsid (NO₂)'),
+      pageTitle: pageTitleTemplate('Nitrogen deuocsid (NO₂)'),
       headerText: HEADER_TEXT,
       headings: {
         a: 'Ffynonellau nitrogen deuocsid',
-        b: 'Effeithiau ar iechyd'
+        b: HEALTH_EFFECTS_WELSH
       },
       paragraphs: {
         a: "Mae nitrogen deuocsid yn nwy di-liw. Mae'n cael ei gynhyrchu'n bennaf yn sgil:",
@@ -149,11 +150,11 @@ export const pollutantTranslationsWelsh = {
     },
     sulphurDioxide: {
       title: 'Sylffwr deuocsid (SO₂)',
-      pageTitle: PAGE_TITLE_TEMPLATE('Sylffwr deuocsid (SO₂)'),
+      pageTitle: pageTitleTemplate('Sylffwr deuocsid (SO₂)'),
       headerText: HEADER_TEXT,
       headings: {
         a: 'Ffynonellau sylffwr deuocsid',
-        b: 'Effeithiau ar iechyd'
+        b: HEALTH_EFFECTS_WELSH
       },
       paragraphs: {
         a: "Mae sylffwr deuocsid yn nwy di-liw sydd ag arogl cryf. Mae'n cael ei gynhyrchu'n bennaf yn sgil:",
@@ -176,11 +177,11 @@ export const pollutantTranslationsWelsh = {
     },
     particulateMatter10: {
       title: 'Mater gronynnol (PM10)',
-      pageTitle: PAGE_TITLE_TEMPLATE('Mater gronynnol (PM10)'),
+      pageTitle: pageTitleTemplate('Mater gronynnol (PM10)'),
       headerText: HEADER_TEXT,
       headings: {
         a: 'Ffynonellau PM10',
-        b: 'Effeithiau ar iechyd'
+        b: HEALTH_EFFECTS_WELSH
       },
       paragraphs: {
         a: "Mae mater gronynnol (PM) yn ronynnau mân iawn o solidau neu hylifau yn yr aer. Dim ond 10 micrometr mewn diamedr yw'r gronynnau.O ran cyd- destun, mae lled blewyn o wallt dynol yn 50 i 70 micrometr.",
@@ -209,11 +210,11 @@ export const pollutantTranslationsWelsh = {
     },
     particulateMatter25: {
       title: 'Mater gronynnol (PM2.5)',
-      pageTitle: PAGE_TITLE_TEMPLATE('Mater gronynnol (PM2.5)'),
+      pageTitle: pageTitleTemplate('Mater gronynnol (PM2.5)'),
       headerText: HEADER_TEXT,
       headings: {
         a: 'Ffynonellau PM2.5',
-        b: 'Effeithiau ar iechyd'
+        b: HEALTH_EFFECTS_WELSH
       },
       paragraphs: {
         a: "Mae mater gronynnol (PM) yn ronynnau mân iawn o solidau neu hylifau sydd yn yr aer. Dim ond 2.5 micrometr mewn diamedr yw'r gronynnau.O ran cyd- destun, mae lled blewyn o wallt dynol yn 50 i 70 micrometr.",

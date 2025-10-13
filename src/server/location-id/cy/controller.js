@@ -55,8 +55,8 @@ function initializeWelshVariables(request) {
   request.yar.clear('searchTermsSaved')
   const lang = LANG_CY
   const formattedDate = moment().format('DD MMMM YYYY').split(' ')
-  const getMonth = calendarEnglish.findIndex(
-    (item) => item.indexOf(formattedDate[1]) !== -1
+  const getMonth = calendarEnglish.findIndex((item) =>
+    item.includes(formattedDate[1])
   )
   const metaSiteUrl = getAirQualitySiteUrl(request)
 

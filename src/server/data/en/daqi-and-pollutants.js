@@ -1,7 +1,7 @@
 ''
 const SERVICE_NAME = 'Check air quality'
 const GOVUK_SUFFIX = ' – GOV.UK'
-const PAGE_TITLE_TEMPLATE = (pollutant) =>
+const pageTitleTemplate = (pollutant) =>
   `${pollutant} – ${SERVICE_NAME}${GOVUK_SUFFIX}`
 const HEADER_TEXT = SERVICE_NAME
 
@@ -13,6 +13,7 @@ const LONG_TERM_EXPOSURE_PREFIX = 'Long term exposure'
 const ASTHMA_ATTACKS = 'asthma attacks'
 const ASTHMA = 'asthma'
 const RESPIRATORY_INFECTIONS = 'respiratory infections'
+const HEALTH_EFFECTS = 'Health effects'
 
 /**
  * English translations for DAQI display and pollutant information pages
@@ -96,11 +97,11 @@ export const pollutantTranslations = {
   pollutants: {
     ozone: {
       title: 'Ozone (O₃)',
-      pageTitle: PAGE_TITLE_TEMPLATE('Ozone(O₃)'),
+      pageTitle: pageTitleTemplate('Ozone(O₃)'),
       headerText: HEADER_TEXT,
       headings: {
         a: 'Sources of ozone',
-        b: 'Health effects'
+        b: HEALTH_EFFECTS
       },
       paragraphs: {
         a: 'There are no major emission sources of ozone itself. Reactions between other pollutants form ozone in the air. For example, when pollutants from cars, power stations and factories react with sunlight.',
@@ -121,11 +122,11 @@ export const pollutantTranslations = {
     },
     nitrogenDioxide: {
       title: 'Nitrogen dioxide (NO₂)',
-      pageTitle: PAGE_TITLE_TEMPLATE('Nitrogen dioxide (NO₂)'),
+      pageTitle: pageTitleTemplate('Nitrogen dioxide (NO₂)'),
       headerText: HEADER_TEXT,
       headings: {
         a: 'Sources of nitrogen dioxide',
-        b: 'Health effects'
+        b: HEALTH_EFFECTS
       },
       paragraphs: {
         a: "Nitrogen dioxide is a colourless gas. It's mainly produced during:",
@@ -148,11 +149,11 @@ export const pollutantTranslations = {
     },
     sulphurDioxide: {
       title: 'Sulphur dioxide (SO₂)',
-      pageTitle: PAGE_TITLE_TEMPLATE('Sulphur dioxide (SO₂)'),
+      pageTitle: pageTitleTemplate('Sulphur dioxide (SO₂)'),
       headerText: HEADER_TEXT,
       headings: {
         a: 'Sources of sulphur dioxide',
-        b: 'Health effects'
+        b: HEALTH_EFFECTS
       },
       paragraphs: {
         a: "Sulphur dioxide is a colourless gas with a strong odour. It's mainly produced from:",
@@ -175,11 +176,11 @@ export const pollutantTranslations = {
     },
     particulateMatter10: {
       title: 'Particulate matter (PM10)',
-      pageTitle: PAGE_TITLE_TEMPLATE('Particulate matter (PM10)'),
+      pageTitle: pageTitleTemplate('Particulate matter (PM10)'),
       headerText: HEADER_TEXT,
       headings: {
         a: 'Sources of PM10',
-        b: 'Health effects'
+        b: HEALTH_EFFECTS
       },
       paragraphs: {
         a: 'Particulate matter (PM) are small particles of solids or liquids that are in the air. The particles are only 10 micrometres in diameter. For context, the width of a human hair is 50 to 70 micrometres.',
@@ -208,11 +209,11 @@ export const pollutantTranslations = {
     },
     particulateMatter25: {
       title: 'Particulate matter (PM2.5)',
-      pageTitle: PAGE_TITLE_TEMPLATE('Particulate matter (PM2.5)'),
+      pageTitle: pageTitleTemplate('Particulate matter (PM2.5)'),
       headerText: HEADER_TEXT,
       headings: {
         a: 'Sources of PM2.5',
-        b: 'Health effects'
+        b: HEALTH_EFFECTS
       },
       paragraphs: {
         a: 'Particulate matter (PM) are small particles of solids or liquids that are in the air. The particles are only 2.5 micrometres in diameter. For context, the width of a human hair is 50 to 70 micrometres.',
