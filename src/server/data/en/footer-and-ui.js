@@ -7,6 +7,9 @@ const COOKIES_TEXT = 'Cookies'
 const ANALYTICS_COOKIES_TEXT = 'analytics cookies'
 const ESSENTIAL_COOKIES_TEXT = 'essential cookies'
 
+// Common privacy-related text constants
+const PERSONAL_DATA = 'personal data'
+
 /**
  * English translations for footer, cookies, privacy, and UI components
  */
@@ -50,15 +53,15 @@ export const footerTranslations = {
       title: `${SERVICE_NAME} privacy notice`,
       heading: SERVICE_NAME,
       headings: {
-        a: 'Who collects your personal data',
-        b: 'What personal data we collect and how it is used',
-        c: 'Lawful basis for processing your personal data',
-        d: 'Consent to process your personal data',
-        e: 'Who we share your personal data with',
-        f: 'How long we hold personal data',
-        g: 'What happens if you do not provide the personal data',
+        a: `Who collects your ${PERSONAL_DATA}`,
+        b: `What ${PERSONAL_DATA} we collect and how it is used`,
+        c: `Lawful basis for processing your ${PERSONAL_DATA}`,
+        d: `Consent to process your ${PERSONAL_DATA}`,
+        e: `Who we share your ${PERSONAL_DATA} with`,
+        f: `How long we hold ${PERSONAL_DATA}`,
+        g: `What happens if you do not provide the ${PERSONAL_DATA}`,
         h: 'Use of automated decision-making or profiling',
-        i: 'Transfer of your personal data outside of the UK',
+        i: `Transfer of your ${PERSONAL_DATA} outside of the UK`,
         j: 'Your rights',
         k: 'Complaints',
         l: 'Personal information charter'

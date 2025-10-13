@@ -16,6 +16,23 @@ const ASTHMA_ATTACKS_WELSH = 'pyliau asthma'
 const ASTHMA_WELSH = 'asma'
 const HEALTH_EFFECTS_WELSH = 'Effeithiau ar iechyd'
 
+// Common Welsh body parts and symptoms
+const EYES_WELSH = 'llygaid'
+const NOSE_WELSH = 'trwyn'
+const THROAT_WELSH = 'gwddf'
+const EYES_NOSE_THROAT_INFLAMMATION = "llid yn y llygaid, y trwyn a'r gwddf"
+const RESPIRATORY_INFECTIONS = "heintiau'r anadl"
+
+// Common Welsh health conditions and effects
+const COPD_WELSH = 'clefyd rhwystrol cronig yr ysgyfaint (COPD)'
+const CANCER_WELSH = 'canser'
+const HEART_PROBLEMS_WELSH = 'materion y galon'
+const LUNG_FUNCTION_WELSH = 'gweithrediad yr ysgyfaint'
+
+// Common Welsh pollutant sources
+const COMMERCIAL_MANUFACTURING = 'gweithgynhyrchu masnachol'
+const FOOD_MANUFACTURING = 'gweithgynhyrchu bwyd'
+
 /**
  * Welsh translations for DAQI display and pollutant information pages
  */
@@ -110,13 +127,13 @@ export const pollutantTranslationsWelsh = {
         c: `${SHORT_TERM_EXPOSURE_PREFIX} i osôn achosi:`,
         d: 'diffyg anadl, gwichian a phesychu',
         e: ASTHMA_ATTACKS_WELSH,
-        f: "mwy o risg o heintiau'r anadl",
-        g: "llid yn y llygaid, y trwyn a'r gwddf",
+        f: `mwy o risg o ${RESPIRATORY_INFECTIONS}`,
+        g: EYES_NOSE_THROAT_INFLAMMATION,
         h: `${LONG_TERM_EXPOSURE_PREFIX} i osôn arwain at y canlynol:`,
         i: 'mwy o salwch yr anadl',
         j: 'materion y system nerfol',
-        k: 'canser',
-        l: 'materion y galon'
+        k: CANCER_WELSH,
+        l: HEART_PROBLEMS_WELSH
       },
       description:
         'Dysgwch sut mae osôn yn cael ei ffurfio. Hefyd, dysgwch am effeithiau iechyd byrdymor a hirdymor amlygiad i osôn.'
@@ -135,15 +152,15 @@ export const pollutantTranslationsWelsh = {
         c: 'llosgi nwy naturiol mewn boeler gwres canolog neu orsaf bŵer',
         d: 'weldio',
         e: 'defnyddio ffrwydron',
-        f: 'gweithgynhyrchu masnachol',
-        g: 'gweithgynhyrchu bwyd',
+        f: COMMERCIAL_MANUFACTURING,
+        g: FOOD_MANUFACTURING,
         h: `${SHORT_TERM_EXPOSURE_PREFIX} i nitrogen deuocsid achosi:`,
         i: ASTHMA_ATTACKS_WELSH,
-        j: "heintiau'r anadl",
+        j: RESPIRATORY_INFECTIONS,
         k: "symptomau cyflyrau'r ysgyfaint neu'r galon i waethygu",
         l: `${LONG_TERM_EXPOSURE_PREFIX} i nitrogen deuocsid achosi:`,
-        m: 'mwy o risg o heintiau anadlol',
-        n: 'gwaeth gweithrediad yr ysgyfaint mewn plant'
+        m: `mwy o risg o ${RESPIRATORY_INFECTIONS}`,
+        n: `gwaeth ${LUNG_FUNCTION_WELSH} mewn plant`
       },
       description:
         'Dysgwch sut mae nitrogen deuocsid yn cael ei gynhyrchu. Hefyd, dysgwch am effeithiau iechyd byrdymor a hirdymor amlygiad i nitrogen deuocsid.'
@@ -161,16 +178,16 @@ export const pollutantTranslationsWelsh = {
         b: 'llosgi petrol neu ddisel mewn cerbydau',
         c: 'boeleri nwy',
         d: "pwerdai sy'n llosgi glo",
-        e: 'gweithgynhyrchu masnachol',
-        f: 'gweithgynhyrchu bwyd',
+        e: COMMERCIAL_MANUFACTURING,
+        f: FOOD_MANUFACTURING,
         g: `${SHORT_TERM_EXPOSURE_PREFIX} achosi llid ar y canlynol:`,
-        h: 'llygaid',
-        i: 'trwyn',
-        j: 'gwddf',
+        h: EYES_WELSH,
+        i: NOSE_WELSH,
+        j: THROAT_WELSH,
         k: `${LONG_TERM_EXPOSURE_PREFIX} ar lefelau uchel arwain at y canlynol:`,
-        l: 'llai o weithrediad yn yr ysgyfaint',
+        l: `llai o ${LUNG_FUNCTION_WELSH}`,
         m: 'newid synnwyr arogli',
-        n: "mwy o heintiau'r anadl"
+        n: `mwy o ${RESPIRATORY_INFECTIONS}`
       },
       description:
         'Dysgwch sut mae sylffwr deuocsid yn cael ei gynhyrchu. Hefyd, dysgwch am effeithiau iechyd byrdymor a thymor hir sylffwr deuocsid.'
@@ -196,14 +213,14 @@ export const pollutantTranslationsWelsh = {
         j: 'Mae effeithiau iechyd byrdymor PM10 yn cynnwys:',
         k: 'anhawster anadlu',
         l: 'pesychu',
-        m: "llid yn y llygaid, y trwyn a'r gwddf",
+        m: EYES_NOSE_THROAT_INFLAMMATION,
         n: 'tyndra a phoen y frest',
         o: 'Mae effeithiau hirdymor PM10 yn cynnwys:',
         p: "difrod i feinwe'r ysgyfaint",
         q: ASTHMA_WELSH,
         r: 'methiant y galon',
-        s: 'canser',
-        t: 'clefyd rhwystrol cronig yr ysgyfaint (COPD)'
+        s: CANCER_WELSH,
+        t: COPD_WELSH
       },
       description:
         "Mae PM10 yn fater gronynnol (PM) wedi'i wneud o ronynnau bach o solidau neu hylifau yn yr awyr. Dysgwch am ffynonellau PM10 a sut y gall amlygiad iddo effeithio ar iechyd."
@@ -231,7 +248,7 @@ export const pollutantTranslationsWelsh = {
         l: 'llosgi llystyfiant',
         m: "Gall effeithiau iechyd byrdymor PM2.5 gynnwys cyflyrau sy'n gwaethygu, fel:",
         n: ASTHMA_WELSH,
-        o: 'clefyd rhwystrol cronig yr ysgyfaint (COPD)',
+        o: COPD_WELSH,
         p: 'Gall effeithiau hirdymor PM2.5 gynnwys:',
         q: 'strôc',
         r: 'canser yr ysgyfaint',

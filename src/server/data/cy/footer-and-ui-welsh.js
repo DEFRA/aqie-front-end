@@ -9,6 +9,9 @@ const WELSH_COOKIES_TEXT = 'Cwcis'
 const WELSH_PRIVACY_TEXT = 'Preifatrwydd'
 const WELSH_ANALYTICS_COOKIES = 'cwcis dadansoddol'
 
+// Common Welsh privacy-related text constants
+const DATA_PERSONOL = 'data personol'
+
 /**
  * Welsh translations for footer, cookies, privacy, and UI components
  */
@@ -52,15 +55,15 @@ export const footerTranslationsWelsh = {
       title: `Hysbysiad preifatrwydd ${WELSH_SERVICE_NAME}`,
       heading: WELSH_SERVICE_NAME,
       headings: {
-        a: "Pwy sy'n casglu'ch data personol",
-        b: "Pa ddata personol rydyn ni'n ei gasglu a sut mae'n cael ei ddefnyddio",
-        c: "Y sail gyfreithlon dros brosesu'ch data personol",
-        d: "Cydsyniad i brosesu'ch data personol",
-        e: "Gyda phwy rydyn ni'n rhannu'ch data personol",
-        f: "Pa mor hir rydyn ni'n cadw data personol",
-        g: "Beth sy'n digwydd os na fyddwch chi'n darparu'r data personol ",
+        a: `Pwy sy'n casglu'ch ${DATA_PERSONOL}`,
+        b: `Pa ${DATA_PERSONOL} rydyn ni'n ei gasglu a sut mae'n cael ei ddefnyddio`,
+        c: `Y sail gyfreithlon dros brosesu'ch ${DATA_PERSONOL}`,
+        d: `Cydsyniad i brosesu'ch ${DATA_PERSONOL}`,
+        e: `Gyda phwy rydyn ni'n rhannu'ch ${DATA_PERSONOL}`,
+        f: `Pa mor hir rydyn ni'n cadw ${DATA_PERSONOL}`,
+        g: `Beth sy'n digwydd os na fyddwch chi'n darparu'r ${DATA_PERSONOL} `,
         h: 'Defnyddio penderfyniadau awtomataidd neu broffilio',
-        i: "Trosglwyddo'ch data personol y tu allan i'r Deyrnas Unedig ",
+        i: `Trosglwyddo'ch ${DATA_PERSONOL} y tu allan i'r Deyrnas Unedig `,
         j: 'Eich hawliau',
         k: 'Cwynion',
         l: 'Siarter gwybodaeth bersonol'

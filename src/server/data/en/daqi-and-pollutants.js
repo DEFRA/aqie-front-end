@@ -24,6 +24,8 @@ const ASTHMA_ATTACKS = 'asthma attacks'
 const ASTHMA = 'asthma'
 const RESPIRATORY_INFECTIONS = 'respiratory infections'
 const HEALTH_EFFECTS = 'Health effects'
+const COMMERCIAL_MANUFACTURING = 'commercial manufacturing'
+const FOOD_MANUFACTURING = 'food manufacturing'
 
 /**
  * English translations for DAQI display and pollutant information pages
@@ -142,8 +144,8 @@ export const pollutantTranslations = {
         c: 'burning natural gas in a central-heating boiler or power station',
         d: 'welding',
         e: 'the use of explosives',
-        f: 'commercial manufacturing',
-        g: 'food manufacturing',
+        f: COMMERCIAL_MANUFACTURING,
+        g: FOOD_MANUFACTURING,
         h: `${SHORT_TERM_EXPOSURE_PREFIX} to nitrogen dioxide can cause:`,
         i: ASTHMA_ATTACKS,
         j: RESPIRATORY_INFECTIONS,
@@ -167,8 +169,8 @@ export const pollutantTranslations = {
         b: 'burning petrol or diesel in vehicles',
         c: 'gas boilers',
         d: 'coal burning power stations',
-        e: 'commercial manufacturing',
-        f: 'food manufacturing',
+        e: COMMERCIAL_MANUFACTURING,
+        f: FOOD_MANUFACTURING,
         g: `${SHORT_TERM_EXPOSURE_PREFIX} can cause irritation to the:`,
         h: 'eyes',
         i: 'nose',
