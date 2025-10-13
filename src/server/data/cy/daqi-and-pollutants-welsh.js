@@ -33,6 +33,13 @@ const LUNG_FUNCTION_WELSH = 'gweithrediad yr ysgyfaint'
 const COMMERCIAL_MANUFACTURING = 'gweithgynhyrchu masnachol'
 const FOOD_MANUFACTURING = 'gweithgynhyrchu bwyd'
 
+// Common Welsh health effects patterns
+const SHORT_EFFECTS_PM10 = 'Mae effeithiau iechyd byrdymor PM10 yn cynnwys:'
+const LONG_EFFECTS_PM10 = 'Mae effeithiau hirdymor PM10 yn cynnwys:'
+const SHORT_EFFECTS_PM25 =
+  "Gall effeithiau iechyd byrdymor PM2.5 gynnwys cyflyrau sy'n gwaethygu, fel:"
+const LONG_EFFECTS_PM25 = 'Gall effeithiau hirdymor PM2.5 gynnwys:'
+
 /**
  * Welsh translations for DAQI display and pollutant information pages
  */
@@ -210,12 +217,12 @@ export const pollutantTranslationsWelsh = {
         g: 'paill',
         h: 'gorsafoedd pŵer',
         i: 'Cerbydau',
-        j: 'Mae effeithiau iechyd byrdymor PM10 yn cynnwys:',
+        j: SHORT_EFFECTS_PM10,
         k: 'anhawster anadlu',
         l: 'pesychu',
         m: EYES_NOSE_THROAT_INFLAMMATION,
         n: 'tyndra a phoen y frest',
-        o: 'Mae effeithiau hirdymor PM10 yn cynnwys:',
+        o: LONG_EFFECTS_PM10,
         p: "difrod i feinwe'r ysgyfaint",
         q: ASTHMA_WELSH,
         r: 'methiant y galon',
@@ -246,10 +253,10 @@ export const pollutantTranslationsWelsh = {
         j: 'pridd a llwch yn cael eu chwythu gan y gwynt',
         k: 'gronynnau ewyn y môr',
         l: 'llosgi llystyfiant',
-        m: "Gall effeithiau iechyd byrdymor PM2.5 gynnwys cyflyrau sy'n gwaethygu, fel:",
+        m: SHORT_EFFECTS_PM25,
         n: ASTHMA_WELSH,
         o: COPD_WELSH,
-        p: 'Gall effeithiau hirdymor PM2.5 gynnwys:',
+        p: LONG_EFFECTS_PM25,
         q: 'strôc',
         r: 'canser yr ysgyfaint',
         s: 'diabetes',

@@ -27,6 +27,13 @@ const HEALTH_EFFECTS = 'Health effects'
 const COMMERCIAL_MANUFACTURING = 'commercial manufacturing'
 const FOOD_MANUFACTURING = 'food manufacturing'
 
+// Common English health effect descriptions
+const SHORT_TERM_PM10_IMPACTS = 'Short term health impacts of PM10 can include:'
+const LONG_TERM_PM10_IMPACTS = 'Long term health impacts of PM10 can include:'
+const SHORT_TERM_PM25_IMPACTS =
+  'Short term health impacts of PM2.5 can include worsening of conditions such as:'
+const LONG_TERM_PM25_IMPACTS = 'Long term health impacts of PM2.5 can include:'
+
 /**
  * English translations for DAQI display and pollutant information pages
  */
@@ -200,12 +207,12 @@ export const pollutantTranslations = {
         g: 'pollen',
         h: 'power stations',
         i: 'vehicles',
-        j: 'Short term health impacts of PM10 can include:',
+        j: SHORT_TERM_PM10_IMPACTS,
         k: 'difficulty breathing',
         l: 'coughing',
         m: 'eye, nose and throat irritation',
         n: 'chest tightness and pain',
-        o: 'Long term health impacts of PM10 can include:',
+        o: LONG_TERM_PM10_IMPACTS,
         p: 'lung tissue damage',
         q: ASTHMA,
         r: 'heart failure',
@@ -236,10 +243,10 @@ export const pollutantTranslations = {
         j: 'wind blown soil and dust',
         k: 'sea spray particles',
         l: 'burning vegetation',
-        m: 'Short term health impacts of PM2.5 can include worsening of conditions such as:',
+        m: SHORT_TERM_PM25_IMPACTS,
         n: ASTHMA,
         o: 'chronic obstructive pulmonary disease (COPD)',
-        p: 'Long term health impacts of PM2.5 can include:',
+        p: LONG_TERM_PM25_IMPACTS,
         q: 'strokes',
         r: 'lung cancer',
         s: 'diabetes',
