@@ -1,7 +1,8 @@
-''
+// English translations module for DAQI display, pollutant information pages, and air quality data
 const SERVICE_NAME = 'Check air quality'
+const GOVUK_SUFFIX = ' - GOV.UK'
 const pageTitleTemplate = (pollutant) =>
-  `What is ${pollutant}? - Check air quality - GOV.UK`
+  `What is ${pollutant}? - ${SERVICE_NAME}${GOVUK_SUFFIX}`
 
 /**
  * Description template for pollutant information pages
@@ -53,8 +54,7 @@ export const daqiTranslations = {
       a: 'UK air pollution summary',
       b: 'Latest at 5am on',
       c: 'How air pollutants can affect your health',
-      d: 'Air pollutants monitored near by',
-      e: ''
+      d: 'Air pollutants monitored near by'
     },
     headings: {
       main: 'Daily Air Quality Index (DAQI)',

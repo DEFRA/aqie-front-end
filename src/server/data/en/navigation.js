@@ -1,16 +1,19 @@
-''
+// English translations module for navigation, search, authentication, and calendar components
 const SERVICE_NAME = 'Check air quality'
 const ERROR_TITLE = 'There is a problem'
 const SERVICE_ERROR_MESSAGE = 'Sorry, there is a problem with the service'
+const GOVUK_SUFFIX = ' - GOV.UK'
 
 // Common error and contact phrases
 const TRY_AGAIN_LATER = 'Try again later'
 const AIR_QUALITY_TEAM = 'air quality team'
 
 // Common page title patterns for English
-const ENGLISH_PAGE_TITLE_BASE = `${SERVICE_NAME} - GOV.UK`
+const ENGLISH_PAGE_TITLE_BASE = `${SERVICE_NAME}${GOVUK_SUFFIX}`
 const createEnglishPageTitle = (prefix) =>
-  prefix ? `${prefix} - ${SERVICE_NAME} - GOV.UK` : ENGLISH_PAGE_TITLE_BASE
+  prefix
+    ? `${prefix} - ${SERVICE_NAME}${GOVUK_SUFFIX}`
+    : ENGLISH_PAGE_TITLE_BASE
 
 /**
  * English translations for navigation, search, and authentication components

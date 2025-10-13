@@ -1,4 +1,4 @@
-''
+// English translations module for footer, UI components, privacy policy, cookies policy, and accessibility statement
 const SERVICE_NAME = 'Check air quality'
 
 // Common cookie-related text constants
@@ -151,7 +151,6 @@ export const footerTranslations = {
         text12: '30 minutes'
       },
       paragraphs: {
-        w: '',
         a: `${SERVICE_NAME}`,
         b: "puts small files (known as 'cookies') on your computer.",
         c: `These cookies are used across the ${SERVICE_NAME} website.`,

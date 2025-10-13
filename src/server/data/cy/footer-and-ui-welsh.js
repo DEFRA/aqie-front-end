@@ -1,12 +1,19 @@
-''
+// Welsh translations module for footer, UI components, privacy policy, cookies policy, and accessibility statement
 import { WELSH_TITLE } from '../constants.js'
+
+const WELSH_SERVICE_NAME = 'Gwirio ansawdd aer'
+const GOVUK_SUFFIX = ' - GOV.UK'
+
+// Common Welsh cookies and privacy text patterns
+const WELSH_COOKIES_TEXT = 'Cwcis'
+const WELSH_PRIVACY_TEXT = 'Preifatrwydd'
 
 /**
  * Welsh translations for footer, cookies, privacy, and UI components
  */
 export const uiTranslationsWelsh = {
   cookieBanner: {
-    title: 'Cwcis ar Gwirio ansawdd aer',
+    title: `${WELSH_COOKIES_TEXT} ar ${WELSH_SERVICE_NAME}`,
     paragraphs: {
       a: "Rydym yn defnyddio rhai cwcis hanfodol i wneud i'r gwasanaeth hwn weithio.",
       b: "Hoffem hefyd ddefnyddio cwcis dadansoddol fel y gallwn ddeall sut rydych yn defnyddio'r gwasanaeth a gwneud gwelliannau."
@@ -25,8 +32,8 @@ export const uiTranslationsWelsh = {
     }
   },
   footerTxt: {
-    cookies: 'Cwcis',
-    privacy: 'Preifatrwydd',
+    cookies: WELSH_COOKIES_TEXT,
+    privacy: WELSH_PRIVACY_TEXT,
     accessibility: 'Datganiad hygyrchedd',
     paragraphs: {
       a: "Mae'r holl gynnwys ar gael o dan y",
@@ -40,9 +47,9 @@ export const uiTranslationsWelsh = {
 export const footerTranslationsWelsh = {
   footer: {
     privacy: {
-      pageTitle: 'Preifatrwydd - Gwirio ansawdd aer - GOV.UK',
-      title: 'Hysbysiad preifatrwydd Gwirio ansawdd aer',
-      heading: 'Gwirio ansawdd aer',
+      pageTitle: `${WELSH_PRIVACY_TEXT} - ${WELSH_SERVICE_NAME}${GOVUK_SUFFIX}`,
+      title: `Hysbysiad preifatrwydd ${WELSH_SERVICE_NAME}`,
+      heading: WELSH_SERVICE_NAME,
       headings: {
         a: "Pwy sy'n casglu'ch data personol",
         b: "Pa ddata personol rydyn ni'n ei gasglu a sut mae'n cael ei ddefnyddio",
@@ -109,12 +116,11 @@ export const footerTranslationsWelsh = {
         a23: 'Gallwch ',
         a24: 'optio i mewn ac allan o dderbyn cwcis.'
       },
-      description:
-        "Mae Gwirio ansawdd aer yn cymryd eich preifatrwydd o ddifrif. Darllenwch y Polisi Preifatrwydd yma i ddysgu sut rydyn ni'n trin eich data personol."
+      description: `Mae ${WELSH_SERVICE_NAME} yn cymryd eich preifatrwydd o ddifrif. Darllenwch y Polisi Preifatrwydd yma i ddysgu sut rydyn ni'n trin eich data personol.`
     },
     cookies: {
-      title: 'Cwcis',
-      pageTitle: 'Cwcis - Gwirio ansawdd aer - GOV.UK',
+      title: WELSH_COOKIES_TEXT,
+      pageTitle: `${WELSH_COOKIES_TEXT} - ${WELSH_SERVICE_NAME}${GOVUK_SUFFIX}`,
       headings: {
         a: 'Cwcis hanfodol (cwbl angenrheidiol)',
         b: 'Cwcis dadansoddeg (dewisol)',
@@ -135,12 +141,10 @@ export const footerTranslationsWelsh = {
         text1: 'Enw',
         text2: 'Diben',
         text3: 'Yn dod i ben',
-        text4:
-          "Mae'n ein helpu i gyfrif faint o bobl sy'n ymweld â Gwirio ansawdd aer trwy ddweud wrthon ni a ydych chi wedi ymweld o'r blaen.",
+        text4: `Mae'n ein helpu i gyfrif faint o bobl sy'n ymweld â ${WELSH_SERVICE_NAME} trwy ddweud wrthon ni a ydych chi wedi ymweld o'r blaen.`,
         text5: '2 flynedd',
         text6: '_gid',
-        text7:
-          "Mae'n ein helpu i gyfrif faint o bobl sy'n ymweld â Gwirio ansawdd aer trwy ddweud wrthon ni a ydych chi wedi ymweld o'r blaen. ",
+        text7: `Mae'n ein helpu i gyfrif faint o bobl sy'n ymweld â ${WELSH_SERVICE_NAME} trwy ddweud wrthon ni a ydych chi wedi ymweld o'r blaen. `,
         text8: '24 awr',
         text9: "Mae'n cael ei ddefnyddio i leihau nifer y ceisiadau.",
         text10: '1 funud',

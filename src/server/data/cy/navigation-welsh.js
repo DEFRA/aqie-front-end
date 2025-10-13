@@ -1,4 +1,4 @@
-''
+// Welsh translations module for navigation, search, authentication, and calendar components
 import { WELSH_TITLE } from '../constants.js'
 
 // Welsh page not found constant
@@ -6,13 +6,16 @@ export const PAGE_NOT_FOUND_CY = 'Tudalen heb ei chanfod'
 const ERROR_TITLE = 'Mae yna broblem'
 const WELSH_SERVICE_NAME = 'Gwirio ansawdd aer'
 const WELSH_SERVICE_NAME_SPACED = 'Gwirio ansawdd aer '
+const GOVUK_SUFFIX = ' - GOV.UK'
 const DAQI_DESCRIPTION =
   "Mae'r mynegai ansawdd aer dyddiol(DAQI) yn dweud wrthoch chi am lefelau llygredd aer. Mae'n darparu cyngor iechyd ar gyfer y lefelau presennol."
 
 // Common page title patterns for Welsh
-const WELSH_PAGE_TITLE_BASE = `${WELSH_SERVICE_NAME} - GOV.UK`
+const WELSH_PAGE_TITLE_BASE = `${WELSH_SERVICE_NAME}${GOVUK_SUFFIX}`
 const createWelshPageTitle = (prefix) =>
-  prefix ? `${prefix} - ${WELSH_SERVICE_NAME} - GOV.UK` : WELSH_PAGE_TITLE_BASE
+  prefix
+    ? `${prefix} - ${WELSH_SERVICE_NAME}${GOVUK_SUFFIX}`
+    : WELSH_PAGE_TITLE_BASE
 
 /**
  * Welsh translations for navigation, search, and authentication components

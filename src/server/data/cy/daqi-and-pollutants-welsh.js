@@ -1,4 +1,4 @@
-''
+// Welsh translations module for DAQI display, pollutant information pages, and air quality data
 import { WELSH_TITLE } from '../constants.js'
 
 const WELSH_SERVICE_NAME = 'Gwirio ansawdd aer'
