@@ -293,95 +293,134 @@ function processLocationResult(
   return h.view('locations/location', viewData)
 }
 
+// Helper to handle all initialization and validation steps
+async function initializeAndValidateRequest(request, h) {
+  // Initialize request data
+  const {
+    query,
+    headers,
+    locationId,
+    searchTermsSaved,
+    useNewRicardoMeasurementsEnabled,
+    currentUrl,
+    lang
+  } = initializeRequestData(request)
+
+  // Handle Welsh redirect
+  const welshRedirect = handleWelshRedirect(query, locationId, h)
+  if (welshRedirect) {
+    return { redirect: welshRedirect }
+  }
+
+  // Handle search terms redirect
+  const searchTermsRedirect = handleSearchTermsRedirect(
+    headers,
+    searchTermsSaved,
+    currentUrl,
+    request,
+    h
+  )
+  if (searchTermsRedirect) {
+    return { redirect: searchTermsRedirect }
+  }
+
+  // Initialize common variables
+  const { getMonth, metaSiteUrl, locationData } =
+    initializeCommonVariables(request)
+
+  // Validate session data
+  const sessionValidationResult = validateAndProcessSessionData(
+    locationData,
+    currentUrl,
+    lang,
+    h,
+    request
+  )
+  if (sessionValidationResult) {
+    return { redirect: sessionValidationResult }
+  }
+
+  return {
+    data: {
+      locationData,
+      useNewRicardoMeasurementsEnabled,
+      locationId,
+      lang,
+      getMonth,
+      metaSiteUrl
+    }
+  }
+}
+
+// Helper to process location data and return appropriate response
+async function processLocationWorkflow({
+  locationData,
+  useNewRicardoMeasurementsEnabled,
+  locationId,
+  lang,
+  getMonth,
+  metaSiteUrl,
+  request,
+  h
+}) {
+  // Process location data
+  const { getForecasts } = locationData
+  const locationType = determineLocationType(locationData)
+
+  // Get nearest location and related data
+  const {
+    locationDetails,
+    forecastNum,
+    nearestLocationsRange,
+    nearestLocation
+  } = await getNearestLocationData(
+    locationData,
+    getForecasts,
+    locationType,
+    locationId,
+    lang,
+    useNewRicardoMeasurementsEnabled
+  )
+
+  // Process result
+  if (locationDetails) {
+    const viewData = buildLocationViewData({
+      locationDetails,
+      nearestLocationsRange,
+      locationData,
+      forecastNum,
+      lang,
+      getMonth,
+      metaSiteUrl
+    })
+    return processLocationResult(
+      request,
+      locationData,
+      nearestLocation,
+      nearestLocationsRange,
+      h,
+      viewData
+    )
+  } else {
+    return h.view(LOCATION_NOT_FOUND, buildNotFoundViewData(lang))
+  }
+}
+
 const getLocationDetailsController = {
   handler: async (request, h) => {
     try {
-      // Initialize request data
-      const {
-        query,
-        headers,
-        locationId,
-        searchTermsSaved,
-        useNewRicardoMeasurementsEnabled,
-        currentUrl,
-        lang
-      } = initializeRequestData(request)
-
-      // Handle Welsh redirect
-      const welshRedirect = handleWelshRedirect(query, locationId, h)
-      if (welshRedirect) {
-        return welshRedirect
+      // Handle initialization and validation
+      const initResult = await initializeAndValidateRequest(request, h)
+      if (initResult.redirect) {
+        return initResult.redirect
       }
 
-      // Handle search terms redirect
-      const searchTermsRedirect = handleSearchTermsRedirect(
-        headers,
-        searchTermsSaved,
-        currentUrl,
+      // Process location workflow
+      return await processLocationWorkflow({
+        ...initResult.data,
         request,
         h
-      )
-      if (searchTermsRedirect) {
-        return searchTermsRedirect
-      }
-
-      // Initialize common variables
-      const { getMonth, metaSiteUrl, locationData } =
-        initializeCommonVariables(request)
-
-      // Validate session data
-      const sessionValidationResult = validateAndProcessSessionData(
-        locationData,
-        currentUrl,
-        lang,
-        h,
-        request
-      )
-      if (sessionValidationResult) {
-        return sessionValidationResult
-      }
-
-      // Process location data
-      const { getForecasts } = locationData
-      const locationType = determineLocationType(locationData)
-
-      // Get nearest location and related data
-      const {
-        locationDetails,
-        forecastNum,
-        nearestLocationsRange,
-        nearestLocation
-      } = await getNearestLocationData(
-        locationData,
-        getForecasts,
-        locationType,
-        locationId,
-        lang,
-        useNewRicardoMeasurementsEnabled
-      )
-
-      // Process result
-      if (locationDetails) {
-        const viewData = buildLocationViewData({
-          locationDetails,
-          nearestLocationsRange,
-          locationData,
-          forecastNum,
-          lang,
-          getMonth,
-          metaSiteUrl
-        })
-        return processLocationResult(
-          request,
-          locationData,
-          nearestLocation,
-          nearestLocationsRange,
-          h,
-          viewData
-        )
-      } else {
-        return h.view(LOCATION_NOT_FOUND, buildNotFoundViewData(lang))
-      }
+      })
     } catch (error) {
       logger.error(`error on single location ${error.message}`)
       return h
