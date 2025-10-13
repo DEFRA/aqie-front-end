@@ -1,6 +1,10 @@
 import { getAirQuality } from '../../data/en/air-quality.js'
 import { getAirQualityCy } from '../../data/cy/air-quality.js'
-import { LANG_CY, LANG_EN } from '../../data/constants.js'
+import {
+  LANG_CY,
+  LANG_EN,
+  FORECAST_ARRAY_INDEX_THIRD
+} from '../../data/constants.js'
 
 function airQualityValues(forecastNum, lang) {
   let airQuality = ''
@@ -9,7 +13,7 @@ function airQualityValues(forecastNum, lang) {
       forecastNum[0][0].today,
       Object.values(forecastNum[0][1])[0],
       Object.values(forecastNum[0][2])[0],
-      Object.values(forecastNum[0][3])[0],
+      Object.values(forecastNum[0][FORECAST_ARRAY_INDEX_THIRD])[0],
       Object.values(forecastNum[0][4])[0]
     )
   }
@@ -18,7 +22,7 @@ function airQualityValues(forecastNum, lang) {
       forecastNum[0][0].today,
       Object.values(forecastNum[0][1])[0],
       Object.values(forecastNum[0][2])[0],
-      Object.values(forecastNum[0][3])[0],
+      Object.values(forecastNum[0][FORECAST_ARRAY_INDEX_THIRD])[0],
       Object.values(forecastNum[0][4])[0]
     )
   }

@@ -70,6 +70,7 @@ const addDaysToTodayAbrev = function (env) {
       // Return the formatted future date
       return futureDate.format(CALENDAR_STRING.DDD)
     })
+    return env
   } catch (error) {
     logger.error('Error registering addDaysToTodayAbrev filter:', error)
     return error
@@ -89,6 +90,7 @@ const addDaysToTodayAbrevWelsh = function (env) {
       // Return the formatted future date
       return futureDate.format(CALENDAR_STRING.DDD)
     })
+    return env
   } catch (error) {
     logger.error('Error registering addDaysToTodayAbrevWelsh filter:', error)
     return error

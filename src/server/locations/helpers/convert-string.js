@@ -152,12 +152,12 @@ function hasExactMatch(wordString, name1, name2 = null) {
   const normalizeString = (str) => str?.toUpperCase().replace(/\s+/g, '') // Normalize string by converting to uppercase and removing spaces
   const words = wordString.split(' ').map((word) => word.toUpperCase()) // Split and normalize words in the input string
 
-  const checkMatch = (target, words) => {
+  const checkMatch = (target, wordArray) => {
     if (!target) {
       return false // Return false if the target string is null or undefined
     }
     const normalizedTarget = normalizeString(target) // Normalize the target string
-    const joinedWords = words.join('') // Join the array elements into a single string without spaces
+    const joinedWords = wordArray.join('') // Join the array elements into a single string without spaces
     return (
       normalizedTarget.includes(joinedWords) &&
       joinedWords.includes(normalizedTarget)
