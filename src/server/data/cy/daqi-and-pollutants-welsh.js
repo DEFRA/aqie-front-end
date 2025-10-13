@@ -90,6 +90,20 @@ const PARTICLE_DESCRIPTIONS_WELSH = {
     "Mae'r gronynnau dim ond 2.5 micromedr mewn diamedr. I roi cyd-destun, mae lled gwallt dynol rhwng 50 a 70 micromedr."
 }
 
+// Common Welsh paragraph generation functions to eliminate duplication
+const createWelshExposureText = (pollutant, timeframe) => 
+  `${timeframe === 'short' ? SHORT_TERM_EXPOSURE_PREFIX : LONG_TERM_EXPOSURE_PREFIX} i ${pollutant} achosi:`
+
+const createWelshSourceIntroText = (pollutant, verb) => {
+  const gasDescription = pollutant.includes('sylffwr') ? ' ag arogl cryf' : ''
+  const mainlyText = verb === 'cynhyrchu' ? 'yn bennaf yn cael ei gynhyrchu yn ystod:' : 'yn bennaf yn cael ei gynhyrchu o:'
+  return `Mae ${pollutant} yn nwy di-liw${gasDescription}. Mae ${mainlyText}`
+}
+
+const createWelshPMSourcesIntro = () => 'Prif ffynonellau mater gronynnol yw:'
+
+const createWelshPMParticlesIntro = (pmType) => `Gall gronynnau ${pmType} gynnwys:`
+
 /**
  * Welsh translations for DAQI display and pollutant information pages
  */
@@ -204,18 +218,18 @@ export const pollutantTranslationsWelsh = {
         b: HEALTH_EFFECTS_WELSH
       },
       paragraphs: {
-        a: "Mae nitrogen deuocsid yn nwy di-liw. Mae'n cael ei gynhyrchu'n bennaf yn sgil:",
+        a: createWelshSourceIntroText('nitrogen deuocsid', 'cynhyrchu'),
         b: 'llosgi petrol neu ddisel mewn injan car',
         c: 'llosgi nwy naturiol mewn boeler gwres canolog neu orsaf bŵer',
         d: 'weldio',
         e: 'defnyddio ffrwydron',
         f: COMMERCIAL_MANUFACTURING,
         g: FOOD_MANUFACTURING,
-        h: `${SHORT_TERM_EXPOSURE_PREFIX} i nitrogen deuocsid achosi:`,
+        h: createWelshExposureText('nitrogen deuocsid', 'short'),
         i: ASTHMA_ATTACKS_WELSH,
         j: RESPIRATORY_INFECTIONS,
         k: VULNERABILITY_PATTERNS_WELSH.SYMPTOMS_WORSE,
-        l: `${LONG_TERM_EXPOSURE_PREFIX} i nitrogen deuocsid achosi:`,
+        l: createWelshExposureText('nitrogen deuocsid', 'long'),
         m: `mwy o risg o ${RESPIRATORY_INFECTIONS}`,
         n: VULNERABILITY_PATTERNS_WELSH.POORER_LUNG_FUNCTION
       },
@@ -231,7 +245,7 @@ export const pollutantTranslationsWelsh = {
         b: HEALTH_EFFECTS_WELSH
       },
       paragraphs: {
-        a: "Mae sylffwr deuocsid yn nwy di-liw sydd ag arogl cryf. Mae'n cael ei gynhyrchu'n bennaf yn sgil:",
+        a: createWelshSourceIntroText('sylffwr deuocsid', 'cynhyrchu'),
         b: COMMON_SOURCES_WELSH.PETROL_DIESEL_VEHICLES,
         c: COMMON_SOURCES_WELSH.GAS_BOILERS,
         d: COMMON_SOURCES_WELSH.COAL_POWER_STATIONS,
@@ -259,7 +273,7 @@ export const pollutantTranslationsWelsh = {
       },
       paragraphs: {
         a: `${PARTICLE_DESCRIPTIONS_WELSH.PM_DEFINITION} ${PARTICLE_DESCRIPTIONS_WELSH.PM10_CONTEXT}`,
-        b: 'Prif ffynonellau mater gronynnol yw:',
+        b: createWelshPMSourcesIntro(),
         c: COMMON_SOURCES_WELSH.CONSTRUCTION_DUST,
         d: 'llwch o safleoedd tirlenwi',
         e: COMMON_SOURCES_WELSH.AGRICULTURE_DUST,
@@ -292,12 +306,12 @@ export const pollutantTranslationsWelsh = {
       },
       paragraphs: {
         a: `${PARTICLE_DESCRIPTIONS_WELSH.PM_DEFINITION} ${PARTICLE_DESCRIPTIONS_WELSH.PM25_CONTEXT}`,
-        b: 'Gall gronynnau PM2.5 gynnwys:',
+        b: createWelshPMParticlesIntro('PM2.5'),
         c: COMMON_SOURCES_WELSH.DUST,
         d: COMMON_SOURCES_WELSH.SOOT,
         e: COMMON_SOURCES_WELSH.SMOKE,
         f: COMMON_SOURCES_WELSH.LIQUID_DROPS,
-        g: 'Prif ffynonellau mater gronynnol yw:',
+        g: createWelshPMSourcesIntro(),
         h: 'llosgi tanwydd mewn cerbydau, diwydiant ac eiddo domestig',
         i: 'traul ar deiars a breciau',
         j: 'pridd a llwch yn cael eu chwythu gan y gwynt',

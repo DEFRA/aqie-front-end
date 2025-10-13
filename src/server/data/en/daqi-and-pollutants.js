@@ -94,6 +94,20 @@ const PARTICLE_DESCRIPTIONS = {
     'Particulate matter (PM) are small particles of solids or liquids that are in the air.'
 }
 
+// Common paragraph generation functions to eliminate duplication
+const createExposureText = (pollutant, timeframe) => 
+  `${timeframe === 'short' ? SHORT_TERM_EXPOSURE_PREFIX : LONG_TERM_EXPOSURE_PREFIX} to ${pollutant} can cause:`
+
+const createExposureIrritationText = (timeframe) =>
+  `${timeframe === 'short' ? SHORT_TERM_EXPOSURE_PREFIX : LONG_TERM_EXPOSURE_PREFIX} can cause irritation to the:`
+
+const createSourceIntroText = (pollutant, verb) =>
+  `${pollutant} is a colourless gas${pollutant.includes('sulphur') ? ' with a strong odour' : ''}. It's mainly ${verb} ${pollutant.includes('nitrogen') ? 'during:' : 'from:'}`
+
+const createPMSourcesIntro = () => 'The main sources of particulate matter are:'
+
+const createPMParticlesIntro = (pmType) => `${pmType} particles may include:`
+
 /**
  * English translations for DAQI display and pollutant information pages
  */
@@ -206,18 +220,18 @@ export const pollutantTranslations = {
         b: HEALTH_EFFECTS
       },
       paragraphs: {
-        a: "Nitrogen dioxide is a colourless gas. It's mainly produced during:",
+        a: createSourceIntroText('nitrogen dioxide', 'produced'),
         b: 'burning of petrol or diesel in a car engine',
         c: 'burning natural gas in a central-heating boiler or power station',
         d: 'welding',
         e: 'the use of explosives',
         f: COMMERCIAL_MANUFACTURING,
         g: FOOD_MANUFACTURING,
-        h: `${SHORT_TERM_EXPOSURE_PREFIX} to nitrogen dioxide can cause:`,
+        h: createExposureText('nitrogen dioxide', 'short'),
         i: ASTHMA_ATTACKS,
         j: RESPIRATORY_INFECTIONS,
         k: VULNERABILITY_PATTERNS.SYMPTOMS_WORSE,
-        l: `${LONG_TERM_EXPOSURE_PREFIX} to nitrogen dioxide can cause:`,
+        l: createExposureText('nitrogen dioxide', 'long'),
         m: `an ${VULNERABILITY_PATTERNS.INCREASED_RISK} ${RESPIRATORY_INFECTIONS}`,
         n: VULNERABILITY_PATTERNS.POORER_FUNCTION
       },
@@ -232,13 +246,13 @@ export const pollutantTranslations = {
         b: HEALTH_EFFECTS
       },
       paragraphs: {
-        a: "Sulphur dioxide is a colourless gas with a strong odour. It's mainly produced from:",
+        a: createSourceIntroText('sulphur dioxide', 'produced'),
         b: COMMON_SOURCES.PETROL_DIESEL,
         c: COMMON_SOURCES.GAS_BOILERS,
         d: COMMON_SOURCES.COAL_POWER,
         e: COMMERCIAL_MANUFACTURING,
         f: FOOD_MANUFACTURING,
-        g: `${SHORT_TERM_EXPOSURE_PREFIX} can cause irritation to the:`,
+        g: createExposureIrritationText('short'),
         h: COMMON_HEALTH_SYMPTOMS.EYES,
         i: COMMON_HEALTH_SYMPTOMS.NOSE,
         j: COMMON_HEALTH_SYMPTOMS.THROAT,
@@ -259,7 +273,7 @@ export const pollutantTranslations = {
       },
       paragraphs: {
         a: `${PARTICLE_DESCRIPTIONS.PM_DEFINITION} ${PARTICLE_DESCRIPTIONS.PM10_CONTEXT}`,
-        b: 'The main sources of particulate matter are:',
+        b: createPMSourcesIntro(),
         c: COMMON_SOURCES.CONSTRUCTION_DUST,
         d: 'dust from landfills',
         e: COMMON_SOURCES.AGRICULTURE_DUST,
@@ -270,7 +284,7 @@ export const pollutantTranslations = {
         j: SHORT_TERM_PM10_IMPACTS,
         k: COMMON_HEALTH_SYMPTOMS.DIFFICULTY_BREATHING,
         l: COMMON_HEALTH_SYMPTOMS.COUGHING,
-        m: 'eye, nose and throat irritation',
+        m: COMMON_HEALTH_SYMPTOMS.EYE_IRRITATION,
         n: COMMON_HEALTH_SYMPTOMS.CHEST_TIGHTNESS,
         o: LONG_TERM_PM10_IMPACTS,
         p: VULNERABILITY_PATTERNS.LUNG_TISSUE_DAMAGE,
@@ -292,12 +306,12 @@ export const pollutantTranslations = {
       },
       paragraphs: {
         a: `${PARTICLE_DESCRIPTIONS.PM_DEFINITION} ${PARTICLE_DESCRIPTIONS.PM25_CONTEXT}`,
-        b: 'PM2.5 particles may include:',
+        b: createPMParticlesIntro('PM2.5'),
         c: COMMON_SOURCES.DUST,
         d: COMMON_SOURCES.SOOT,
         e: COMMON_SOURCES.SMOKE,
         f: COMMON_SOURCES.LIQUID_DROPS,
-        g: 'The main sources of particulate matter are from:',
+        g: createPMSourcesIntro(),
         h: 'burning of fuel by vehicles, industry and domestic properties',
         i: 'wear of tyres and brakes',
         j: 'wind blown soil and dust',
