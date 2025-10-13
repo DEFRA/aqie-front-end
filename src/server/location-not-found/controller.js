@@ -49,7 +49,15 @@ function prepareEnglishContent(english) {
 // '' Helper to build view data object
 function buildViewData(locationData, content, query) {
   const { locationNameOrPostcode, lang } = locationData
-  const { notFoundLocation, home, footerTxt, phaseBanner, backlink, cookieBanner, multipleLocations } = content
+  const {
+    notFoundLocation,
+    home,
+    footerTxt,
+    phaseBanner,
+    backlink,
+    cookieBanner,
+    multipleLocations
+  } = content
 
   return {
     userLocation: locationNameOrPostcode,
@@ -68,15 +76,15 @@ function buildViewData(locationData, content, query) {
 const locationNotFoundController = {
   handler: (request, h) => {
     const { query } = request
-    
+
     if (query?.lang === LANG_CY) {
       return handleWelshRedirect(h)
     }
-    
+
     const locationData = getLocationData(request)
     const content = prepareEnglishContent(english)
     const viewData = buildViewData(locationData, content, query)
-    
+
     return h.view(LOCATION_NOT_FOUND, viewData)
   }
 }

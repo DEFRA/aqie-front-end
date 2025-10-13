@@ -130,7 +130,10 @@ function buildNearestLocationsRange(matches, getMeasurments, latlon, lang) {
     { latitude: latlon?.lat, longitude: latlon?.lon },
     measurementsCoordinates
   )
-  const nearestMeasurementsPoints = orderByDistanceMeasurements.slice(0, NEARBY_LOCATIONS_COUNT)
+  const nearestMeasurementsPoints = orderByDistanceMeasurements.slice(
+    0,
+    NEARBY_LOCATIONS_COUNT
+  )
   const pointsToDisplay = nearestMeasurementsPoints.filter((p) =>
     pointsInRange(latlon, p)
   )

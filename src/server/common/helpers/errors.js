@@ -1,7 +1,12 @@
 import { PAGE_NOT_FOUND_CY, welsh } from '../../data/cy/cy.js'
 import { english } from '../../data/en/en.js'
 import { createLogger } from './logging/logger.js'
-import { LANG_CY, LANG_EN, STATUS_NOT_FOUND, LANG_SLICE_LENGTH } from '../../data/constants.js'
+import {
+  LANG_CY,
+  LANG_EN,
+  STATUS_NOT_FOUND,
+  LANG_SLICE_LENGTH
+} from '../../data/constants.js'
 
 const logger = createLogger()
 
