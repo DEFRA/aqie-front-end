@@ -11,6 +11,10 @@ const HEADER_TEXT = WELSH_TITLE
 const SHORT_TERM_EXPOSURE_PREFIX = 'Gall amlygiad byrdymor'
 const LONG_TERM_EXPOSURE_PREFIX = 'Gall amlygiad hirdymor'
 
+// Common Welsh health effects
+const ASTHMA_ATTACKS_WELSH = 'pyliau asthma'
+const ASTHMA_WELSH = 'asma'
+
 /**
  * Welsh translations for DAQI display and pollutant information pages
  */
@@ -104,7 +108,7 @@ export const pollutantTranslationsWelsh = {
         b: "Gall osôn ar lefel y ddaear fod ar lefelau afiach ar ddiwrnodau poeth ac oer. Gall deithio gyda'r gwynt, gan effeithio ar ardaloedd trefol a gwledig.",
         c: `${SHORT_TERM_EXPOSURE_PREFIX} i osôn achosi:`,
         d: 'diffyg anadl, gwichian a phesychu',
-        e: 'pyliau asthma',
+        e: ASTHMA_ATTACKS_WELSH,
         f: "mwy o risg o heintiau'r anadl",
         g: "llid yn y llygaid, y trwyn a'r gwddf",
         h: `${LONG_TERM_EXPOSURE_PREFIX} i osôn arwain at y canlynol:`,
@@ -133,7 +137,7 @@ export const pollutantTranslationsWelsh = {
         f: 'gweithgynhyrchu masnachol',
         g: 'gweithgynhyrchu bwyd',
         h: `${SHORT_TERM_EXPOSURE_PREFIX} i nitrogen deuocsid achosi:`,
-        i: 'pyliau asthma',
+        i: ASTHMA_ATTACKS_WELSH,
         j: "heintiau'r anadl",
         k: "symptomau cyflyrau'r ysgyfaint neu'r galon i waethygu",
         l: `${LONG_TERM_EXPOSURE_PREFIX} i nitrogen deuocsid achosi:`,
@@ -195,7 +199,7 @@ export const pollutantTranslationsWelsh = {
         n: 'tyndra a phoen y frest',
         o: 'Mae effeithiau hirdymor PM10 yn cynnwys:',
         p: "difrod i feinwe'r ysgyfaint",
-        q: 'asma',
+        q: ASTHMA_WELSH,
         r: 'methiant y galon',
         s: 'canser',
         t: 'clefyd rhwystrol cronig yr ysgyfaint (COPD)'
@@ -225,7 +229,7 @@ export const pollutantTranslationsWelsh = {
         k: 'gronynnau ewyn y môr',
         l: 'llosgi llystyfiant',
         m: "Gall effeithiau iechyd byrdymor PM2.5 gynnwys cyflyrau sy'n gwaethygu, fel:",
-        n: 'asma',
+        n: ASTHMA_WELSH,
         o: 'clefyd rhwystrol cronig yr ysgyfaint (COPD)',
         p: 'Gall effeithiau hirdymor PM2.5 gynnwys:',
         q: 'strôc',

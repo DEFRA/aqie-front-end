@@ -9,6 +9,11 @@ const HEADER_TEXT = SERVICE_NAME
 const SHORT_TERM_EXPOSURE_PREFIX = 'Short term exposure'
 const LONG_TERM_EXPOSURE_PREFIX = 'Long term exposure'
 
+// Common English health effects
+const ASTHMA_ATTACKS = 'asthma attacks'
+const ASTHMA = 'asthma'
+const RESPIRATORY_INFECTIONS = 'respiratory infections'
+
 /**
  * English translations for DAQI display and pollutant information pages
  */
@@ -102,8 +107,8 @@ export const pollutantTranslations = {
         b: 'Ground level ozone can be at unhealthy levels on both hot and cold days. It can travel by the wind, affecting both urban and rural areas.',
         c: `${SHORT_TERM_EXPOSURE_PREFIX} to ozone can cause:`,
         d: 'shortness of breath, wheezing and coughing',
-        e: 'asthma attacks',
-        f: 'increased risk of respiratory infections',
+        e: ASTHMA_ATTACKS,
+        f: `increased risk of ${RESPIRATORY_INFECTIONS}`,
         g: 'irritation of eyes, nose and throat',
         h: `${LONG_TERM_EXPOSURE_PREFIX} to ozone may lead to:`,
         i: 'increased respiratory illnesses',
@@ -131,11 +136,11 @@ export const pollutantTranslations = {
         f: 'commercial manufacturing',
         g: 'food manufacturing',
         h: `${SHORT_TERM_EXPOSURE_PREFIX} to nitrogen dioxide can cause:`,
-        i: 'asthma attacks',
-        j: 'respiratory infections',
+        i: ASTHMA_ATTACKS,
+        j: RESPIRATORY_INFECTIONS,
         k: 'symptoms of lung or heart conditions to get worse',
         l: `${LONG_TERM_EXPOSURE_PREFIX} to nitrogen dioxide can cause:`,
-        m: 'an increase risk of respiratory infections',
+        m: `an increase risk of ${RESPIRATORY_INFECTIONS}`,
         n: 'poorer lung function in children'
       },
       description:
@@ -163,7 +168,7 @@ export const pollutantTranslations = {
         k: `${LONG_TERM_EXPOSURE_PREFIX} at high levels may lead to:`,
         l: 'reduced lung function',
         m: 'altered sense of smell',
-        n: 'increased respiratory infections'
+        n: `increased ${RESPIRATORY_INFECTIONS}`
       },
       description:
         'Learn how sulphur dioxide is produced. Also, learn the short term and long term health effects of sulphur dioxide'
@@ -193,7 +198,7 @@ export const pollutantTranslations = {
         n: 'chest tightness and pain',
         o: 'Long term health impacts of PM10 can include:',
         p: 'lung tissue damage',
-        q: 'asthma',
+        q: ASTHMA,
         r: 'heart failure',
         s: 'cancer',
         t: 'chronic obstructive pulmonary disease (COPD)'
@@ -223,7 +228,7 @@ export const pollutantTranslations = {
         k: 'sea spray particles',
         l: 'burning vegetation',
         m: 'Short term health impacts of PM2.5 can include worsening of conditions such as:',
-        n: 'asthma',
+        n: ASTHMA,
         o: 'chronic obstructive pulmonary disease (COPD)',
         p: 'Long term health impacts of PM2.5 can include:',
         q: 'strokes',
