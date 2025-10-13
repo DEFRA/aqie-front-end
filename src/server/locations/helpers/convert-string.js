@@ -1,6 +1,10 @@
 /**
  * Converts a string into lowercase words joined by hyphens and removes commas.
  */
+
+// Constants for word count validation
+const THREE_WORDS = 3
+
 const convertStringToHyphenatedLowercaseWords = (input) => {
   const removedHyphens = input.replace(/ - /g, ' ')
   // Remove commas, convert to lowercase, and split the string into words
@@ -100,7 +104,7 @@ function splitAndCheckSpecificWords(sourceString, name1) {
       sourceString.includes(joinedWords.toUpperCase()) ||
       joinedWords.toUpperCase().includes(sourceString)
     ) // Check if the target string contains the exact first two words together or the exact last word
-  } else if (words.length === 3) {
+  } else if (words.length === THREE_WORDS) {
     // Check if the source string contains exactly three words
     const [firstWord, secondWord] = words // Destructure the array to get the first two and the last word
     const firstTwoWords = `${firstWord} ${secondWord}` // Combine the first two words
@@ -116,7 +120,7 @@ function splitAndCheckSpecificWords(sourceString, name1) {
 function splitAndCheckExactWords(sourceString, targetString) {
   // Define a function to split a string and check if another string contains exactly any of the three words
   const words = sourceString.split(' ') // Split the source string into an array of words
-  if (words.length >= 3) {
+  if (words.length >= THREE_WORDS) {
     // Check if the source string contains exactly three words
     return words.some((word) => new RegExp(`\\b${word}\\b`).test(targetString)) // Check if the target string contains exactly any of the three words
   }

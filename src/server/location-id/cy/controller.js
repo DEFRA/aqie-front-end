@@ -50,6 +50,90 @@ function getLocationType(locationData) {
     : LOCATION_TYPE_NI
 }
 
+// Helper to initialize Welsh controller variables
+function initializeWelshVariables(request) {
+  request.yar.clear('searchTermsSaved')
+  const lang = LANG_CY
+  const formattedDate = moment().format('DD MMMM YYYY').split(' ')
+  const getMonth = calendarEnglish.findIndex(
+    (item) => item.indexOf(formattedDate[1]) !== -1
+  )
+  const metaSiteUrl = getAirQualitySiteUrl(request)
+
+  const {
+    notFoundLocation,
+    footerTxt,
+    phaseBanner,
+    backlink,
+    cookieBanner,
+    daqi,
+    multipleLocations
+  } = welsh
+
+  return {
+    lang,
+    getMonth,
+    metaSiteUrl,
+    notFoundLocation,
+    footerTxt,
+    phaseBanner,
+    backlink,
+    cookieBanner,
+    daqi,
+    multipleLocations
+  }
+}
+
+// Helper to process Welsh location data
+async function processWelshLocationData(
+  locationData,
+  locationId,
+  lang,
+  useNewRicardoMeasurementsEnabled
+) {
+  const { getForecasts } = locationData
+  const locationType = getLocationType(locationData)
+  let distance
+
+  if (locationData.locationType === LOCATION_TYPE_NI) {
+    distance = getNearestLocation(
+      locationData?.results,
+      getForecasts,
+      locationType,
+      0,
+      lang,
+      useNewRicardoMeasurementsEnabled
+    )
+  }
+
+  const indexNI = 0
+  const { resultNI } = getNIData(locationData, distance, locationType)
+  const { locationIndex, locationDetails } = getIdMatch(
+    locationId,
+    locationData,
+    resultNI,
+    locationType,
+    indexNI
+  )
+
+  const { forecastNum, nearestLocationsRange, nearestLocation } =
+    await getNearestLocation(
+      locationData?.results,
+      getForecasts,
+      locationType,
+      locationIndex,
+      lang,
+      useNewRicardoMeasurementsEnabled
+    )
+
+  return {
+    locationDetails,
+    forecastNum,
+    nearestLocationsRange,
+    nearestLocation
+  }
+}
+
 const getLocationDetailsController = {
   handler: async (request, h) => {
     try {
@@ -74,14 +158,12 @@ const getLocationDetailsController = {
           .code(REDIRECT_STATUS_CODE)
           .takeover()
       }
-      request.yar.clear('searchTermsSaved')
-      const lang = LANG_CY
-      const formattedDate = moment().format('DD MMMM YYYY').split(' ')
-      const getMonth = calendarEnglish.findIndex(function (item) {
-        return item.indexOf(formattedDate[1]) !== -1
-      })
-      const metaSiteUrl = getAirQualitySiteUrl(request)
+
+      // Initialize Welsh variables
       const {
+        lang,
+        getMonth,
+        metaSiteUrl,
         notFoundLocation,
         footerTxt,
         phaseBanner,
@@ -89,39 +171,22 @@ const getLocationDetailsController = {
         cookieBanner,
         daqi,
         multipleLocations
-      } = welsh
+      } = initializeWelshVariables(request)
+
       const locationData = request.yar.get('locationData') || []
-      const { getForecasts } = locationData
-      const locationType = getLocationType(locationData)
-      let distance
-      if (locationData.locationType === LOCATION_TYPE_NI) {
-        distance = getNearestLocation(
-          locationData?.results,
-          getForecasts,
-          locationType,
-          0,
-          lang,
-          useNewRicardoMeasurementsEnabled
-        )
-      }
-      const indexNI = 0
-      const { resultNI } = getNIData(locationData, distance, locationType)
-      const { locationIndex, locationDetails } = getIdMatch(
-        locationId,
+
+      // Process Welsh location data
+      const {
+        locationDetails,
+        forecastNum,
+        nearestLocationsRange,
+        nearestLocation
+      } = await processWelshLocationData(
         locationData,
-        resultNI,
-        locationType,
-        indexNI
+        locationId,
+        lang,
+        useNewRicardoMeasurementsEnabled
       )
-      const { forecastNum, nearestLocationsRange, nearestLocation } =
-        await getNearestLocation(
-          locationData?.results,
-          getForecasts,
-          locationType,
-          locationIndex,
-          lang,
-          useNewRicardoMeasurementsEnabled
-        )
 
       if (locationDetails) {
         let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
