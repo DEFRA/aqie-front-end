@@ -1,5 +1,7 @@
 ''
 const SERVICE_NAME = 'Check air quality'
+const ERROR_TITLE = 'There is a problem'
+const SERVICE_ERROR_MESSAGE = 'Sorry, there is a problem with the service'
 
 /**
  * English translations for navigation, search, and authentication components
@@ -48,14 +50,14 @@ export const navigationTranslations = {
     button: 'Continue',
     errorText: {
       radios: {
-        title: 'There is a problem',
+        title: ERROR_TITLE,
         list: {
           text: 'Select where you want to check'
         }
       },
       uk: {
         fields: {
-          title: 'There is a problem',
+          title: ERROR_TITLE,
           list: {
             text: 'Enter a location or postcode'
           }
@@ -63,7 +65,7 @@ export const navigationTranslations = {
       },
       ni: {
         fields: {
-          title: 'There is a problem',
+          title: ERROR_TITLE,
           list: {
             text: 'Enter a postcode'
           }
@@ -96,8 +98,8 @@ export const navigationTranslations = {
       }
     },
     serviceAPI: {
-      pageTitle: `Sorry, there is a problem with the service - ${SERVICE_NAME} - GOV.UK`,
-      heading: 'Sorry, there is a problem with the service',
+      pageTitle: `${SERVICE_ERROR_MESSAGE} - ${SERVICE_NAME} - GOV.UK`,
+      heading: SERVICE_ERROR_MESSAGE,
       paragraphs: {
         a: 'Try again later',
         b: 'You can contact the ',

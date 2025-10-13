@@ -3,6 +3,9 @@ import { WELSH_TITLE } from '../constants.js'
 
 // Welsh page not found constant
 export const PAGE_NOT_FOUND_CY = 'Tudalen heb ei chanfod'
+const ERROR_TITLE = 'Mae yna broblem'
+const DAQI_DESCRIPTION =
+  "Mae'r mynegai ansawdd aer dyddiol(DAQI) yn dweud wrthoch chi am lefelau llygredd aer. Mae'n darparu cyngor iechyd ar gyfer y lefelau presennol."
 
 /**
  * Welsh translations for navigation, search, and authentication components
@@ -11,8 +14,7 @@ export const navigationTranslationsWelsh = {
   home: {
     pageTitle: 'Gwirio ansawdd aer - GOV.UK',
     heading: `${WELSH_TITLE}`,
-    caption:
-      "Mae'r mynegai ansawdd aer dyddiol(DAQI) yn dweud wrthoch chi am lefelau llygredd aer. Mae'n darparu cyngor iechyd ar gyfer y lefelau presennol.",
+    caption: DAQI_DESCRIPTION,
     summaryText:
       'Sut y gall lefelau gwahanol o lygredd aer effeithio ar iechyd',
     page: `${WELSH_TITLE}`,
@@ -47,14 +49,14 @@ export const navigationTranslationsWelsh = {
     button: 'Parhau',
     errorText: {
       radios: {
-        title: 'Mae yna broblem',
+        title: ERROR_TITLE,
         list: {
           text: 'Dewiswch lle rydych chi am wirio'
         }
       },
       uk: {
         fields: {
-          title: 'Mae yna broblem',
+          title: ERROR_TITLE,
           list: {
             text: 'Rhowch leoliad neu god post'
           }
@@ -62,7 +64,7 @@ export const navigationTranslationsWelsh = {
       },
       ni: {
         fields: {
-          title: 'Mae yna broblem',
+          title: ERROR_TITLE,
           list: {
             text: 'Rhowch god post'
           }

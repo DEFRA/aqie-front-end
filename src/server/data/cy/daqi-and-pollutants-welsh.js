@@ -1,6 +1,12 @@
 ''
 import { WELSH_TITLE } from '../constants.js'
 
+const WELSH_SERVICE_NAME = 'Gwirio ansawdd aer'
+const GOVUK_SUFFIX = ' – GOV.UK'
+const PAGE_TITLE_TEMPLATE = (pollutant) =>
+  `${pollutant} – ${WELSH_SERVICE_NAME}${GOVUK_SUFFIX}`
+const HEADER_TEXT = WELSH_TITLE
+
 /**
  * Welsh translations for DAQI display and pollutant information pages
  */
@@ -83,8 +89,8 @@ export const pollutantTranslationsWelsh = {
   pollutants: {
     ozone: {
       title: 'Osôn(O₃)',
-      pageTitle: 'Osôn(O₃) – Gwirio ansawdd aer – GOV.UK',
-      headerText: `${WELSH_TITLE}`,
+      pageTitle: PAGE_TITLE_TEMPLATE('Osôn(O₃)'),
+      headerText: HEADER_TEXT,
       headings: {
         a: 'Ffynonellau osôn',
         b: 'Effeithiau ar iechyd'
@@ -108,8 +114,8 @@ export const pollutantTranslationsWelsh = {
     },
     nitrogenDioxide: {
       title: 'Nitrogen deuocsid (NO₂)',
-      pageTitle: 'Nitrogen deuocsid (NO₂) – Gwirio ansawdd aer – GOV.UK',
-      headerText: `${WELSH_TITLE}`,
+      pageTitle: PAGE_TITLE_TEMPLATE('Nitrogen deuocsid (NO₂)'),
+      headerText: HEADER_TEXT,
       headings: {
         a: 'Ffynonellau nitrogen deuocsid',
         b: 'Effeithiau ar iechyd'
@@ -135,8 +141,8 @@ export const pollutantTranslationsWelsh = {
     },
     sulphurDioxide: {
       title: 'Sylffwr deuocsid (SO₂)',
-      pageTitle: 'Sylffwr deuocsid (SO₂) – Gwirio ansawdd aer – GOV.UK',
-      headerText: `${WELSH_TITLE}`,
+      pageTitle: PAGE_TITLE_TEMPLATE('Sylffwr deuocsid (SO₂)'),
+      headerText: HEADER_TEXT,
       headings: {
         a: 'Ffynonellau sylffwr deuocsid',
         b: 'Effeithiau ar iechyd'
@@ -162,8 +168,8 @@ export const pollutantTranslationsWelsh = {
     },
     particulateMatter10: {
       title: 'Mater gronynnol (PM10)',
-      pageTitle: 'Mater gronynnol (PM10) – Gwirio ansawdd aer – GOV.UK',
-      headerText: `${WELSH_TITLE}`,
+      pageTitle: PAGE_TITLE_TEMPLATE('Mater gronynnol (PM10)'),
+      headerText: HEADER_TEXT,
       headings: {
         a: 'Ffynonellau PM10',
         b: 'Effeithiau ar iechyd'
@@ -195,8 +201,8 @@ export const pollutantTranslationsWelsh = {
     },
     particulateMatter25: {
       title: 'Mater gronynnol (PM2.5)',
-      pageTitle: 'Mater gronynnol (PM2.5) – Gwirio ansawdd aer – GOV.UK',
-      headerText: 'Gwirio ansawdd aer',
+      pageTitle: PAGE_TITLE_TEMPLATE('Mater gronynnol (PM2.5)'),
+      headerText: HEADER_TEXT,
       headings: {
         a: 'Ffynonellau PM2.5',
         b: 'Effeithiau ar iechyd'

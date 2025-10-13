@@ -1,5 +1,9 @@
 ''
 const SERVICE_NAME = 'Check air quality'
+const GOVUK_SUFFIX = ' – GOV.UK'
+const PAGE_TITLE_TEMPLATE = (pollutant) =>
+  `${pollutant} – ${SERVICE_NAME}${GOVUK_SUFFIX}`
+const HEADER_TEXT = SERVICE_NAME
 
 /**
  * English translations for DAQI display and pollutant information pages
@@ -83,8 +87,8 @@ export const pollutantTranslations = {
   pollutants: {
     ozone: {
       title: 'Ozone (O₃)',
-      pageTitle: `Ozone(O₃) – ${SERVICE_NAME} – GOV.UK`,
-      headerText: `${SERVICE_NAME}`,
+      pageTitle: PAGE_TITLE_TEMPLATE('Ozone(O₃)'),
+      headerText: HEADER_TEXT,
       headings: {
         a: 'Sources of ozone',
         b: 'Health effects'
@@ -108,8 +112,8 @@ export const pollutantTranslations = {
     },
     nitrogenDioxide: {
       title: 'Nitrogen dioxide (NO₂)',
-      pageTitle: `Nitrogen dioxide (NO₂) – ${SERVICE_NAME} – GOV.UK`,
-      headerText: `${SERVICE_NAME}`,
+      pageTitle: PAGE_TITLE_TEMPLATE('Nitrogen dioxide (NO₂)'),
+      headerText: HEADER_TEXT,
       headings: {
         a: 'Sources of nitrogen dioxide',
         b: 'Health effects'
@@ -135,8 +139,8 @@ export const pollutantTranslations = {
     },
     sulphurDioxide: {
       title: 'Sulphur dioxide (SO₂)',
-      pageTitle: `Sulphur dioxide (SO₂) – ${SERVICE_NAME} – GOV.UK`,
-      headerText: `${SERVICE_NAME}`,
+      pageTitle: PAGE_TITLE_TEMPLATE('Sulphur dioxide (SO₂)'),
+      headerText: HEADER_TEXT,
       headings: {
         a: 'Sources of sulphur dioxide',
         b: 'Health effects'
@@ -162,8 +166,8 @@ export const pollutantTranslations = {
     },
     particulateMatter10: {
       title: 'Particulate matter (PM10)',
-      pageTitle: `Particulate matter (PM10) – ${SERVICE_NAME} – GOV.UK`,
-      headerText: `${SERVICE_NAME}`,
+      pageTitle: PAGE_TITLE_TEMPLATE('Particulate matter (PM10)'),
+      headerText: HEADER_TEXT,
       headings: {
         a: 'Sources of PM10',
         b: 'Health effects'
@@ -195,8 +199,8 @@ export const pollutantTranslations = {
     },
     particulateMatter25: {
       title: 'Particulate matter (PM2.5)',
-      pageTitle: `Particulate matter (PM2.5) – ${SERVICE_NAME} – GOV.UK`,
-      headerText: `${SERVICE_NAME}`,
+      pageTitle: PAGE_TITLE_TEMPLATE('Particulate matter (PM2.5)'),
+      headerText: HEADER_TEXT,
       headings: {
         a: 'Sources of PM2.5',
         b: 'Health effects'
