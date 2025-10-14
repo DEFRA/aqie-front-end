@@ -236,7 +236,7 @@ vi.mock('../../common/helpers/location-controller-helper.js', () => {
     }),
     renderNotFoundView: vi.fn().mockImplementation((h, lang) => {
       return h.view('location-not-found/index', {
-        lang: lang,
+        lang,
         paragraph: { a: 'Mock Welsh not found message' },
         serviceName: 'Mock Welsh heading'
       })
@@ -383,6 +383,42 @@ describe('Welsh Location ID Controller', () => {
     it('should redirect to Welsh location search when no previous URL and no saved search terms', async () => {
       mockRequest.headers.referer = undefined
       mockRequest.yar.get.mockReturnValue(null)
+
+      await getLocationDetailsController.handler(mockRequest, mockH)
+
+      expect(mockH.redirect).toHaveBeenCalledWith(
+        '/lleoliad?lang=cy&searchTerms=Cardiff&secondSearchTerm=&searchTermsLocationType=city'
+      )
+      expect(mockRequest.yar.clear).toHaveBeenCalledWith('locationData')
+    })
+
+    it('should redirect to search when session data is invalid', async () => {
+      const mockLocationDataInvalid = {
+        locationType: 'UK',
+        results: null, // Invalid results array
+        getForecasts: [{ id: 1, data: 'forecast' }]
+      }
+
+      mockRequest.yar.get.mockReturnValue(mockLocationDataInvalid)
+      mockRequest.url.href = 'http://localhost:3000/lleoliad/CARD3?lang=cy'
+
+      await getLocationDetailsController.handler(mockRequest, mockH)
+
+      expect(mockH.redirect).toHaveBeenCalledWith(
+        '/lleoliad?lang=cy&searchTerms=Cardiff&secondSearchTerm=&searchTermsLocationType=city'
+      )
+      expect(mockRequest.yar.clear).toHaveBeenCalledWith('locationData')
+    })
+
+    it('should redirect to search when getForecasts is missing', async () => {
+      const mockLocationDataInvalid = {
+        locationType: 'UK',
+        results: [{ id: 'CARD3', name: 'Cardiff' }],
+        getForecasts: null // Invalid forecasts
+      }
+
+      mockRequest.yar.get.mockReturnValue(mockLocationDataInvalid)
+      mockRequest.url.href = 'http://localhost:3000/lleoliad/CARD3?lang=cy'
 
       await getLocationDetailsController.handler(mockRequest, mockH)
 

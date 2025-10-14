@@ -2,14 +2,36 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { createServer } from './index.js'
 
 // Mock all dependencies
-vi.mock('~/src/config', () => ({
-  default: {
+vi.mock('../config/index.js', () => ({
+  config: {
     get: vi.fn().mockImplementation((key) => {
       const mockValues = {
         port: 3000, // Valid port number
         host: 'localhost',
         cacheName: 'test-cache',
-        rootPath: '/test',
+        root: '/test',
+        'session.cache.name': 'test-session-cache',
+        'session.cache.engine': 'memory',
+        sessionPassword: 'test-session-password-at-least-32-chars',
+        sessionTimeout: 3600000,
+        serviceVersion: '1.0.0'
+      }
+      return mockValues[key] || 'default-value'
+    })
+  }
+}))
+
+// Also mock the alias path in case it's used
+vi.mock('~/src/config', () => ({
+  config: {
+    get: vi.fn().mockImplementation((key) => {
+      const mockValues = {
+        port: 3000, // Valid port number
+        host: 'localhost',
+        cacheName: 'test-cache',
+        root: '/test',
+        'session.cache.name': 'test-session-cache',
+        'session.cache.engine': 'memory',
         sessionPassword: 'test-session-password-at-least-32-chars',
         sessionTimeout: 3600000,
         serviceVersion: '1.0.0'
@@ -61,10 +83,12 @@ vi.mock('./common/helpers/secure-context/index.js', () => ({
 
 vi.mock('./common/helpers/session-cache/cache-engine.js', () => ({
   getCacheEngine: vi.fn().mockReturnValue({
-    start: vi.fn(),
-    stop: vi.fn(),
-    get: vi.fn(),
-    set: vi.fn()
+    start: vi.fn().mockResolvedValue(),
+    stop: vi.fn().mockResolvedValue(),
+    get: vi.fn().mockResolvedValue(null),
+    set: vi.fn().mockResolvedValue(),
+    drop: vi.fn().mockResolvedValue(),
+    isReady: vi.fn().mockReturnValue(true)
   })
 }))
 
@@ -147,7 +171,7 @@ describe('Server Index', () => {
       expect(server).toBeDefined()
       expect(server.info).toBeDefined()
       expect(server.info.port).toBe(3000)
-      expect(server.info.host).toBe('0.0.0.0') // Hapi.js resolves localhost to 0.0.0.0
+      expect(server.info.host).toBe('localhost') // Host as configured in mock
     })
 
     it('should configure security settings correctly', async () => {
