@@ -16,9 +16,21 @@ import {
   formatNorthernIrelandPostcode
 } from './convert-string.js'
 
+const optionsEphemeralProtected = {
+  method: 'get',
+  headers: {
+    'x-api-key': config.get('cdpXApiKey'),
+    'Content-Type': 'text/json',
+    preserveWhitespace: true
+  }
+}
+
 const options = {
   method: 'get',
-  headers: { 'Content-Type': 'text/json', preserveWhitespace: true }
+  headers: {
+    'Content-Type': 'text/json',
+    preserveWhitespace: true
+  }
 }
 const logger = createLogger()
 const clientId = config.get('clientIdNIreland')
@@ -177,7 +189,7 @@ const fetchForecasts = async () => {
   const forecastsAPIurl = config.get('forecastsApiUrl')
   const [forecastError, getForecasts] = await catchFetchError(
     forecastsAPIurl,
-    options
+    optionsEphemeralProtected
   )
 
   if (forecastError) {
@@ -197,7 +209,7 @@ export const fetchMeasurements = async (
   const formatCoordinate = (coord) => Number(coord).toFixed(ROUND_OF_SIX)
 
   const fetchDataFromApi = async (url) => {
-    const [error, getMeasurements] = await catchFetchError(url, options)
+    const [error, getMeasurements] = await catchFetchError(url, optionsEphemeralProtected)
     if (error) {
       logger.error(`Error fetching data: ${error.message}`)
       return []
