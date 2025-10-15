@@ -209,7 +209,10 @@ export const fetchMeasurements = async (
   const formatCoordinate = (coord) => Number(coord).toFixed(ROUND_OF_SIX)
 
   const fetchDataFromApi = async (url) => {
-    const [error, getMeasurements] = await catchFetchError(url, optionsEphemeralProtected)
+    const [error, getMeasurements] = await catchFetchError(
+      url,
+      optionsEphemeralProtected
+    )
     if (error) {
       logger.error(`Error fetching data: ${error.message}`)
       return []
