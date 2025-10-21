@@ -253,6 +253,21 @@ const searchMiddleware = async (request, h) => {
     )
   }
 
+  // Guard: Ensure getDailySummary is valid before calling transformKeys
+  if (
+    !getDailySummary ||
+    typeof getDailySummary !== 'object' ||
+    !getDailySummary.today
+  ) {
+    return handleLocationDataNotFound(
+      request,
+      h,
+      locationNameOrPostcode,
+      lang,
+      searchTerms
+    )
+  }
+
   const { transformedDailySummary } = transformKeys(getDailySummary, lang)
   const { formattedDateSummary, getMonthSummary } = getFormattedDateSummary(
     getDailySummary?.issue_date,

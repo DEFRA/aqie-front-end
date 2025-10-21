@@ -241,7 +241,7 @@ export const config = convict({
   ephemeralProtectedDevApiUrl: {
     doc: 'Ephemeral Protected Dev API url',
     format: String,
-    default: `https://ephemeral-protected-dev-api.cognitodev.com`,
+    default: `https://ephemeral-protected.api.test.cdp-int.defra.cloud`,
     env: 'EPHEMERAL_PROTECTED_DEV_API_URL'
   },
   measurementsApiUrl: {

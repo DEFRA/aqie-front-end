@@ -1,3 +1,19 @@
+// Error fix attempt #5: Add named exports for options and optionsEphemeralProtected for test mocks and code compatibility
+export const options = {
+  method: 'get',
+  headers: {
+    'Content-Type': 'text/json',
+    preserveWhitespace: true
+  }
+}
+export const optionsEphemeralProtected = {
+  method: 'GET',
+  headers: {
+    'x-api-key': config.get('cdpXApiKey'),
+    'Content-Type': 'application/json',
+    'Accept-Encoding': '*'
+  }
+}
 import { ecsFormat } from '@elastic/ecs-pino-format'
 import { getTraceId } from '@defra/hapi-tracing'
 

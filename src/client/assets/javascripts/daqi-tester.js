@@ -442,6 +442,113 @@ class DAQICurrentImplementationTester {
 // Create global instance
 const daqiTester = new DAQICurrentImplementationTester()
 
+// ''
+// Utility: Only select DAQI bar segments inside the main DAQI bar (application, not test/demo)
+function getMainDaqiBarSegments() {
+  // Prefer the main DAQI bar inside .daqi-numbered > .daqi-bar
+  const mainBar = document.querySelector('.daqi-numbered .daqi-bar')
+  if (!mainBar) return []
+  const segments = Array.from(mainBar.querySelectorAll('.daqi-bar-segment'))
+  // Only return if exactly 10 segments
+  return segments.length === 10 ? segments : []
+}
+
+// If you use cycleDaqiBarSegmentColors, update it to use getMainDaqiBarSegments
+window.cycleDaqiBarSegmentColors = function () {
+  const daqiCells = getMainDaqiBarSegments()
+  if (daqiCells.length !== 10) {
+    console.warn(`Expected 10 DAQI bar segments, found ${daqiCells.length}.`)
+    return
+  }
+  // List of DAQI colors for 10 cells, in order
+  const colors = [
+    '#00e400', // 1 Good
+    '#a3ff00', // 2 Fair
+    '#ffff00', // 3 Moderate
+    '#ffc100', // 4 Poor
+    '#ff7e00', // 5 Unhealthy for Sensitive Groups
+    '#ff0000', // 6 Unhealthy
+    '#99004c', // 7 Very Unhealthy
+    '#7e0023', // 8 Hazardous
+    '#b97b1b', // 9 Extra
+    '#1e90ff' // 10 Extra
+  ]
+  let idx = 0
+  function highlightNext() {
+    daqiCells.forEach((cell, i) => {
+      cell.style.transition = 'background 0.3s'
+      cell.style.background = i === idx ? colors[i] : ''
+    })
+    console.log(`DAQI cell ${idx + 1} set to color: ${colors[idx]}`)
+    idx++
+    if (idx < daqiCells.length) {
+      setTimeout(highlightNext, 900) // Highlight next cell every 900ms
+    } else {
+      setTimeout(() => {
+        daqiCells.forEach((cell) => (cell.style.background = ''))
+        console.log('DAQI cell color test complete.')
+      }, 1200)
+    }
+  }
+  highlightNext()
+}
+// Utility: Clean up the DOM by hiding extra DAQI bars (keep only the one inside #main-content or .govuk-main-wrapper with 10 segments)
+function cleanUpDaqiBars() {
+  const mainContent = document.querySelector(
+    '#main-content, .govuk-main-wrapper'
+  )
+  let kept = false
+  const allBars = Array.from(
+    document.querySelectorAll('.daqi-bar, .daqi-numbered')
+  )
+  allBars.forEach((bar) => {
+    const segments = bar.querySelectorAll('.daqi-bar-segment')
+    const style = window.getComputedStyle(bar)
+    // Only keep the bar inside main content area with 10 segments and visible
+    const isInMain = mainContent && mainContent.contains(bar)
+    if (
+      !kept &&
+      isInMain &&
+      segments.length === 10 &&
+      style.display !== 'none' &&
+      style.visibility !== 'hidden' &&
+      style.opacity !== '0'
+    ) {
+      kept = true
+      bar.style.display = ''
+      console.log('[DAQI CLEANUP] Keeping DAQI bar:', bar)
+    } else {
+      bar.style.display = 'none'
+      console.log('[DAQI CLEANUP] Hiding extra DAQI bar:', bar)
+    }
+  })
+}
+
+// Expose cleanup for manual use
+window.cleanUpDaqiBars = cleanUpDaqiBars
+
+// Automatically clean up extra DAQI bars on desktop only, and observe DOM for changes
+function autoCleanDaqiBarsDesktop() {
+  if (window.innerWidth >= 641) {
+    // GOV.UK Design System desktop breakpoint
+    cleanUpDaqiBars()
+    // Set up MutationObserver to keep DOM clean if new bars are added dynamically
+    if (!window._daqibarObserver) {
+      const observer = new MutationObserver(() => {
+        cleanUpDaqiBars()
+      })
+      observer.observe(document.body, { childList: true, subtree: true })
+      window._daqibarObserver = observer
+    }
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', autoCleanDaqiBarsDesktop)
+} else {
+  autoCleanDaqiBarsDesktop()
+}
+
 // Convenience functions for easy testing
 window.testCurrentDAQI = {
   /**

@@ -9,17 +9,19 @@ async function catchFetchError(url, options) {
     const endTime = performance.now()
     const duration = endTime - startTime
     logger.info(`API from ${url} fetch took ${date} ${duration} milliseconds`)
+    const status = response.status
     if (!response.ok) {
       logger.info(
         `Failed to fetch data from ${url}: ${JSON.stringify(response)}`
       )
-      throw new Error(`HTTP error! status from ${url}: ${response.status}`)
+      return [status, undefined]
     }
     const data = await response.json()
-    return [undefined, data]
+    return [status, data]
   } catch (error) {
     logger.error(`Failed to fetch data from ${url}: ${error.message}`)
-    return [error]
+    // Return 0 as status code for network or unexpected errors
+    return [0, undefined]
   }
 }
 
