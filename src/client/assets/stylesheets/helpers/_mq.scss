@@ -1,0 +1,42 @@
+// ''
+// Simple mq (media query) mixin for common breakpoints
+// Usage: @include mq($from: desktop) { ... }
+
+// ''
+// mq mixin supporting $from and $until for responsive breakpoints
+// Usage: @include mq($from: tablet, $until: desktop) { ... }
+// Breakpoints: mobile (0-767px), tablet (768-1023px), desktop (1024px+)
+
+$breakpoints: (
+  mobile: 0,
+  tablet: 768px,
+  desktop: 1024px
+);
+
+@mixin mq($from: null, $until: null) {
+  $min-width: null;
+  $max-width: null;
+
+  @if $from {
+    $min-width: map-get($breakpoints, $from);
+  }
+  @if $until {
+    $max-width: map-get($breakpoints, $until) - 1px;
+  }
+
+  @if $min-width and $max-width {
+    @media (min-width: #{$min-width}) and (max-width: #{$max-width}) {
+      @content;
+    }
+  } @else if $min-width {
+    @media (min-width: #{$min-width}) {
+      @content;
+    }
+  } @else if $max-width {
+    @media (max-width: #{$max-width}) {
+      @content;
+    }
+  } @else {
+    @content;
+  }
+}
