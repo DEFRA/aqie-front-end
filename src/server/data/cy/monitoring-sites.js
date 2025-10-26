@@ -33,8 +33,6 @@ export const pollutantTypes = {
   }
 }
 
-// Used to populate toggletips on monitoring sites //
-
 // Urban traffic area -Traffic Urban
 // Urban industrial area - Industrial Urban
 // Suburban industrial area - Industrial Suburban

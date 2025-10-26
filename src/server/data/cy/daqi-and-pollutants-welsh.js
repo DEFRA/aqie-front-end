@@ -6,6 +6,7 @@ import { WELSH_TITLE } from '../constants.js'
  */
 export const daqiTranslationsWelsh = {
   daqi: {
+    forecastIntro: 'Y rhagolwg llygredd aer heddiw yw',
     description: {
       a: 'Gwiriwch ansawdd aer',
       b: ". Mynnwch gyngor ar iechyd, gwybodaeth am lygryddion a chanllawiau ar sut i leihau'ch amlygiad i lygrydd aer."

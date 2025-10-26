@@ -33,7 +33,6 @@ export const pollutantTypes = {
   }
 }
 
-// Used to populate toggletips on monitoring sites //
 export const siteTypeDescriptions = {
   'Background Urban':
     'This monitoring area is located in a city or a town. It is located so pollutant measurements do not come from one specific source.',
