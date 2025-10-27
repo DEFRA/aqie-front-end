@@ -479,9 +479,9 @@ describe('fetchMeasurements error handling', () => {
       optionsEphemeralProtected: {},
       nodeEnv: 'production'
     }
-    await expect(fetchMeasurements(51.5, -0.1, false, di)).rejects.toThrow(
-      'config fail'
-    )
+    const result = await fetchMeasurements(51.5, -0.1, false, di)
+    expect(result).toEqual([])
+    expect(di.logger.error).toHaveBeenCalled()
   })
 })
 
