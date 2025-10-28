@@ -12,7 +12,8 @@ const determineNearestLocation = (
     getForecasts,
     locationType,
     index,
-    lang
+    lang,
+    undefined // No request available in this context
   )
 }
 

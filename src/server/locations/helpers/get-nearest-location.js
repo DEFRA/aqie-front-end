@@ -155,7 +155,8 @@ async function getNearestLocation(
   location,
   index,
   lang,
-  useNewRicardoMeasurementsEnabled
+  useNewRicardoMeasurementsEnabled,
+  request
 ) {
   const { latlon, forecastCoordinates } = getLatLonAndForecastCoords(
     matches,
@@ -178,7 +179,8 @@ async function getNearestLocation(
     getMeasurments = await fetchMeasurements(
       latlon.lat,
       latlon.lon,
-      useNewRicardoMeasurementsEnabled
+      useNewRicardoMeasurementsEnabled,
+      { request }
     )
     nearestLocationsRange = buildNearestLocationsRange(
       matches,
@@ -192,7 +194,8 @@ async function getNearestLocation(
       newMeasurements = await fetchMeasurements(
         latlon.lat,
         latlon.lon,
-        useNewRicardoMeasurementsEnabled
+        useNewRicardoMeasurementsEnabled,
+        { request }
       )
     }
 

@@ -22,28 +22,55 @@ describe('fetchForecastsTestMode', () => {
 })
 
 describe('selectForecastsUrlAndOptions', () => {
-  it('returns dev url and opts in development', () => {
-    const result = selectForecastsUrlAndOptions(
-      'development',
-      'prod-url',
-      'dev-url',
-      'forecast-path',
-      'dev-opts',
-      'prod-opts'
-    )
-    expect(result.url).toBe('dev-url/forecast-path')
+  // ''
+  it('returns optsEphemeralProtected if request host is localhost', () => {
+    const result = selectForecastsUrlAndOptions({
+      request: { headers: { host: 'localhost:3000' } },
+      forecastsApiUrl: 'http://localhost:3000/api',
+      optionsEphemeralProtected: 'dev-opts',
+      options: 'prod-opts'
+    })
+    expect(result.url).toBe('http://localhost:3000/api')
     expect(result.opts).toBe('dev-opts')
   })
-  it('returns prod url and opts in production', () => {
-    const result = selectForecastsUrlAndOptions(
-      'production',
-      'prod-url',
-      'dev-url',
-      'forecast-path',
-      'dev-opts',
-      'prod-opts'
-    )
-    expect(result.url).toBe('prod-url')
+  it('returns optsEphemeralProtected if request host is 127.0.0.1', () => {
+    const result = selectForecastsUrlAndOptions({
+      request: { headers: { host: '127.0.0.1:4000' } },
+      forecastsApiUrl: 'http://127.0.0.1:4000/api',
+      optionsEphemeralProtected: 'dev-opts',
+      options: 'prod-opts'
+    })
+    expect(result.url).toBe('http://127.0.0.1:4000/api')
+    expect(result.opts).toBe('dev-opts')
+  })
+  it('returns opts if request host is not local', () => {
+    const result = selectForecastsUrlAndOptions({
+      request: { headers: { host: 'api.defra.gov.uk' } },
+      forecastsApiUrl: 'https://api.defra.gov.uk/api',
+      optionsEphemeralProtected: 'dev-opts',
+      options: 'prod-opts'
+    })
+    expect(result.url).toBe('https://api.defra.gov.uk/api')
+    expect(result.opts).toBe('prod-opts')
+  })
+  it('falls back to URL-based detection if request is missing', () => {
+    const result = selectForecastsUrlAndOptions({
+      request: undefined,
+      forecastsApiUrl: 'http://localhost:3000/api',
+      optionsEphemeralProtected: 'dev-opts',
+      options: 'prod-opts'
+    })
+    expect(result.url).toBe('http://localhost:3000/api')
+    expect(result.opts).toBe('dev-opts')
+  })
+  it('falls back to opts if neither request nor url is local', () => {
+    const result = selectForecastsUrlAndOptions({
+      request: undefined,
+      forecastsApiUrl: 'https://api.defra.gov.uk/api',
+      optionsEphemeralProtected: 'dev-opts',
+      options: 'prod-opts'
+    })
+    expect(result.url).toBe('https://api.defra.gov.uk/api')
     expect(result.opts).toBe('prod-opts')
   })
 })

@@ -1,12 +1,3 @@
-// ''
-// Error fix attempt #1: Add missing imports and define isMockEnabled for dependency-injected fallbacks
-import { config } from '../../../config/index.js'
-import {
-  optionsEphemeralProtected,
-  options
-} from '../../common/helpers/logging/logger-options.js'
-import { fetchOAuthToken } from './get-ni-places.js'
-import { catchFetchError } from '../../common/helpers/catch-fetch-error.js'
 import { catchProxyFetchError } from '../../common/helpers/catch-proxy-fetch-error.js'
 import {
   buildUKLocationFilters,
@@ -15,13 +6,20 @@ import {
   shouldCallUKApi,
   formatUKApiResponse,
   buildNIPostcodeUrl,
-  formatNIResponse,
   isTestMode,
   errorResponse,
   validateParams,
   isValidFullPostcodeUK,
   isValidPartialPostcodeUK
 } from './location-helpers.js'
+import { config } from '../../../config/index.js'
+import {
+  optionsEphemeralProtected,
+  options
+} from '../../common/helpers/logging/logger-options.js'
+import { fetchOAuthToken } from './get-ni-places.js'
+import { getOSPlaces } from './get-os-places.js'
+import { catchFetchError } from '../../common/helpers/catch-fetch-error.js'
 import {
   LOCATION_TYPE_NI,
   LOCATION_TYPE_UK,
@@ -29,28 +27,140 @@ import {
   HTTP_STATUS_OK,
   STATUS_UNAUTHORIZED,
   SYMBOLS_ARRAY,
-  ROUND_OF_SIX
+  ROUND_OF_SIX,
+  MEASUREMENTS_API_PATH
 } from '../../data/constants.js'
 import { createLogger } from '../../common/helpers/logging/logger.js'
 import { formatNorthernIrelandPostcode } from './convert-string.js'
-export async function fetchForecastsAndSummary({
-  injectedFetchForecasts,
-  args
-}) {
-  const getForecasts = await injectedFetchForecasts(args || {})
-  let getDailySummary = null
-  if (
-    getForecasts &&
-    typeof getForecasts === 'object' &&
-    'forecast-summary' in getForecasts
-  ) {
-    getDailySummary = getForecasts['forecast-summary']
-  } else if (getForecasts && typeof getForecasts === 'string') {
-    getDailySummary = 'summary'
+
+// Helper to normalize location type
+function normalizeLocationType(locationType) {
+  if (locationType === 'UK' || locationType === LOCATION_TYPE_UK) {
+    return LOCATION_TYPE_UK
   }
-  return { getForecasts, getDailySummary }
+  if (locationType === 'NI' || locationType === LOCATION_TYPE_NI) {
+    return LOCATION_TYPE_NI
+  }
+  return locationType
 }
-// ''
+
+// Helper to build UK test mode result
+function buildUKTestModeResult(getOSPlaces) {
+  return {
+    getDailySummary: 'summary',
+    getForecasts: 'summary',
+    getOSPlaces: {
+      results: Array.isArray(getOSPlaces?.results)
+        ? getOSPlaces.results
+        : [getOSPlaces]
+    }
+  }
+}
+
+// Helper to build NI test mode result
+function buildNITestModeResult(getNIPlaces) {
+  return {
+    getDailySummary: 'summary',
+    getForecasts: { 'forecast-summary': 'summary' },
+    getNIPlaces: getNIPlaces || { results: [] }
+  }
+}
+
+// Helper to handle unsupported location type
+function handleUnsupportedLocationType(
+  injectedLogger,
+  injectedErrorResponse,
+  locationType
+) {
+  injectedLogger.error('Unsupported location type provided:', locationType)
+  return injectedErrorResponse('Unsupported location type provided', 400)
+}
+// Helper to setup DI for fetchForecasts
+function setupFetchForecastsDI(di = {}) {
+  return {
+    injectedConfig: di.config || config,
+    injectedLogger: di.logger || logger,
+    injectedCatchFetchError: di.catchFetchError || catchFetchError,
+    injectedErrorResponse: di.errorResponse || errorResponse,
+    injectedIsTestMode: di.isTestMode || isTestMode,
+    injectedForecastsApiPath: di.FORECASTS_API_PATH || FORECASTS_API_PATH,
+    injectedHttpStatusOk: di.HTTP_STATUS_OK || HTTP_STATUS_OK,
+    injectedOptionsEphemeralProtected:
+      di.optionsEphemeralProtected || optionsEphemeralProtected,
+    injectedOptions: di.options || options
+  }
+}
+
+// Helper to handle API call and response for forecasts
+async function callForecastsApi({
+  injectedConfig,
+  injectedForecastsApiPath,
+  injectedOptionsEphemeralProtected,
+  injectedOptions,
+  injectedCatchFetchError,
+  injectedHttpStatusOk,
+  injectedLogger,
+  injectedErrorResponse,
+  request
+}) {
+  const forecastsApiUrl = injectedConfig.get('forecastsApiUrl')
+  // ''
+  const { url, opts } = selectForecastsUrlAndOptions({
+    request,
+    forecastsApiUrl,
+    optionsEphemeralProtected: injectedOptionsEphemeralProtected,
+    options: injectedOptions
+  })
+  return await callAndHandleForecastsResponse(
+    url,
+    opts,
+    injectedCatchFetchError,
+    injectedHttpStatusOk,
+    injectedLogger,
+    injectedErrorResponse
+  )
+}
+// Helper to setup DI for handleNILocationData
+function setupNILocationDataDI(di = {}) {
+  return {
+    injectedLogger: di.logger || logger,
+    injectedBuildNIPostcodeUrl: di.buildNIPostcodeUrl || buildNIPostcodeUrl,
+    injectedIsMockEnabled:
+      di.isMockEnabled !== undefined ? di.isMockEnabled : isMockEnabled,
+    injectedConfig: di.config || config,
+    injectedFormatNorthernIrelandPostcode:
+      di.formatNorthernIrelandPostcode || formatNorthernIrelandPostcode,
+    injectedCatchProxyFetchError:
+      di.catchProxyFetchError || catchProxyFetchError,
+    injectedIsTestMode: di.isTestMode || isTestMode
+  }
+}
+
+// Helper to setup DI for handleUKLocationData
+function setupUKLocationDataDI(di = {}) {
+  return {
+    injectedLogger: di.logger || logger,
+    injectedConfig: di.config || config,
+    injectedBuildUKLocationFilters:
+      di.buildUKLocationFilters || buildUKLocationFilters,
+    injectedCombineUKSearchTerms:
+      di.combineUKSearchTerms || combineUKSearchTerms,
+    injectedIsValidFullPostcodeUK:
+      di.isValidFullPostcodeUK || isValidFullPostcodeUK,
+    injectedIsValidPartialPostcodeUK:
+      di.isValidPartialPostcodeUK || isValidPartialPostcodeUK,
+    injectedBuildUKApiUrl: di.buildUKApiUrl || buildUKApiUrl,
+    injectedShouldCallUKApi: di.shouldCallUKApi || shouldCallUKApi,
+    injectedCatchProxyFetchError:
+      di.catchProxyFetchError || catchProxyFetchError,
+    injectedFormatUKApiResponse: di.formatUKApiResponse || formatUKApiResponse,
+    injectedIsTestMode: di.isTestMode || isTestMode,
+    injectedSymbolsArray: di.SYMBOLS_ARRAY || SYMBOLS_ARRAY,
+    injectedHttpStatusOk: di.HTTP_STATUS_OK || HTTP_STATUS_OK,
+    injectedOptions: di.options || options
+  }
+}
+
 export async function buildNIOptionsOAuth({
   request,
   injectedIsMockEnabled,
@@ -82,25 +192,34 @@ export function fetchDailySummaryTestMode(injectedIsTestMode, injectedLogger) {
   return null
 }
 
-// Helper to select the correct daily summary URL and options based on environment
-export function selectDailySummaryUrlAndOptions(
-  nodeEnv,
+// ''
+// Refactored to use the request object for local detection
+export function selectDailySummaryUrlAndOptions({
+  request,
   forecastsApiUrl,
-  ephemeralProtectedDevApiUrl,
-  forecastsApiPath,
-  optionsEphemeralProtected,
   options
-) {
-  if (nodeEnv === 'development') {
-    return {
-      url: `${ephemeralProtectedDevApiUrl}/${forecastsApiPath}`,
-      opts: optionsEphemeralProtected
+}) {
+  // ''
+  // Only use the request object to determine if the call is local
+  let isLocal = false
+  if (request && request.headers && request.headers.host) {
+    const host = request.headers.host
+    isLocal = host.includes('localhost') || host.includes('127.0.0.1')
+  }
+  let url = forecastsApiUrl
+  let selectedOptions = options
+  if (isLocal && typeof config?.get === 'function') {
+    const ephemeralProtectedDevApiUrl = config.get(
+      'ephemeralProtectedDevApiUrl'
+    )
+    if (ephemeralProtectedDevApiUrl) {
+      url = ephemeralProtectedDevApiUrl + FORECASTS_API_PATH
+      selectedOptions = optionsEphemeralProtected
     }
-  } else {
-    return {
-      url: forecastsApiUrl,
-      opts: options
-    }
+  }
+  return {
+    url,
+    opts: selectedOptions // ''
   }
 }
 
@@ -126,7 +245,7 @@ export async function callAndHandleDailySummaryResponse(
 }
 // Helper to handle test mode logic for fetchMeasurements
 export function fetchMeasurementsTestMode(injectedIsTestMode, injectedLogger) {
-  if (typeof injectedIsTestMode === 'function' && injectedIsTestMode()) {
+  if (injectedIsTestMode?.()) {
     if (injectedLogger && typeof injectedLogger.info === 'function') {
       injectedLogger.info(
         'Test mode: fetchMeasurements returning mock measurements'
@@ -142,12 +261,15 @@ export function selectMeasurementsUrlAndOptions(
   latitude,
   longitude,
   useNewRicardoMeasurementsEnabled,
-  injectedConfig,
-  injectedLogger,
-  injectedNodeEnv,
-  injectedOptionsEphemeralProtected,
-  injectedOptions
+  di = {}
 ) {
+  const {
+    injectedConfig,
+    injectedLogger,
+    injectedOptionsEphemeralProtected,
+    injectedOptions,
+    request
+  } = di
   const formatCoordinate = (coord) => Number(coord).toFixed(ROUND_OF_SIX)
   if (useNewRicardoMeasurementsEnabled) {
     injectedLogger.info(
@@ -170,12 +292,18 @@ export function selectMeasurementsUrlAndOptions(
     injectedLogger.info(
       `New Ricardo measurements API URL: ${newRicardoMeasurementsApiUrl}`
     )
-    if (injectedNodeEnv === 'development') {
+    // Use isLocal logic based on request object
+    let isLocal = false
+    if (request && request.headers && request.headers.host) {
+      const host = request.headers.host
+      isLocal = host.includes('localhost') || host.includes('127.0.0.1')
+    }
+    if (isLocal) {
       const ephemeralProtectedDevApiUrl = injectedConfig.get(
         'ephemeralProtectedDevApiUrl'
       )
       return {
-        url: `${ephemeralProtectedDevApiUrl}/aqie-back-end/monitoringStationInfo?${queryParams.toString()}`,
+        url: `${ephemeralProtectedDevApiUrl}${MEASUREMENTS_API_PATH}${queryParams.toString()}`,
         opts: injectedOptionsEphemeralProtected
       }
     } else {
@@ -235,29 +363,38 @@ export async function callAndHandleForecastsResponse(
   return getForecasts
 }
 // Helper to select the correct forecasts URL and options based on environment
-export function selectForecastsUrlAndOptions(
-  nodeEnv,
+// ''
+// Refactored to use the request object for local detection
+export function selectForecastsUrlAndOptions({
+  request,
   forecastsApiUrl,
-  ephemeralProtectedDevApiUrl,
-  forecastsApiPath,
   optionsEphemeralProtected,
   options
-) {
-  if (nodeEnv === 'development') {
-    return {
-      url: `${ephemeralProtectedDevApiUrl}/${forecastsApiPath}`,
-      opts: optionsEphemeralProtected
+}) {
+  // ''
+  // Only use the request object to determine if the call is local
+  let isLocal = false
+  if (request && request.headers && request.headers.host) {
+    const host = request.headers.host
+    isLocal = host.includes('localhost') || host.includes('127.0.0.1')
+  }
+  let url = forecastsApiUrl
+  if (isLocal && typeof config?.get === 'function') {
+    const ephemeralProtectedDevApiUrl = config.get(
+      'ephemeralProtectedDevApiUrl'
+    )
+    if (ephemeralProtectedDevApiUrl) {
+      url = ephemeralProtectedDevApiUrl + FORECASTS_API_PATH
     }
-  } else {
-    return {
-      url: forecastsApiUrl,
-      opts: options
-    }
+  }
+  return {
+    url,
+    opts: isLocal ? optionsEphemeralProtected : options // ''
   }
 }
 // Helper to handle test mode logic for fetchForecasts
 export function fetchForecastsTestMode(injectedIsTestMode, injectedLogger) {
-  if (injectedIsTestMode && injectedIsTestMode()) {
+  if (injectedIsTestMode?.()) {
     if (injectedLogger && typeof injectedLogger.info === 'function') {
       injectedLogger.info('Test mode: fetchForecasts returning mock forecasts')
     }
@@ -269,15 +406,26 @@ export function fetchForecastsTestMode(injectedIsTestMode, injectedLogger) {
 export async function callAndHandleUKApiResponse(
   osNamesApiUrlFull,
   injectedOptions,
+  injectedOptionsEphemeralProtected,
   shouldCallApi,
   injectedCatchProxyFetchError,
   injectedHttpStatusOk,
   injectedLogger,
   injectedFormatUKApiResponse
 ) {
+  const isLocal =
+    String(osNamesApiUrlFull).includes('localhost') ||
+    String(osNamesApiUrlFull).includes('127.0.0.1')
+  const selectedOptions = isLocal
+    ? injectedOptionsEphemeralProtected
+    : injectedOptions
+  injectedLogger.info(
+    `[DEBUG] Calling catchProxyFetchError with URL: ${osNamesApiUrlFull}`
+  )
+  injectedLogger.info(`[DEBUG] Options: ${JSON.stringify(selectedOptions)}`)
   const [statusCodeOSPlace, getOSPlaces] = await injectedCatchProxyFetchError(
     osNamesApiUrlFull,
-    injectedOptions,
+    selectedOptions,
     shouldCallApi
   )
   if (statusCodeOSPlace === injectedHttpStatusOk) {
@@ -328,7 +476,7 @@ export function handleUKLocationDataTestMode(
   injectedIsTestMode,
   injectedLogger
 ) {
-  if (injectedIsTestMode && injectedIsTestMode()) {
+  if (injectedIsTestMode?.()) {
     if (injectedLogger && typeof injectedLogger.info === 'function') {
       injectedLogger.info('Test mode: handleUKLocationData returning mock data')
     }
@@ -357,27 +505,21 @@ const handleUKLocationData = async (
   secondSearchTerm,
   di = {}
 ) => {
-  // Dependency injection with fallbacks
-  const injectedLogger = di.logger || logger
-  const injectedConfig = di.config || config
-  const injectedBuildUKLocationFilters =
-    di.buildUKLocationFilters || buildUKLocationFilters
-  const injectedCombineUKSearchTerms =
-    di.combineUKSearchTerms || combineUKSearchTerms
-  const injectedIsValidFullPostcodeUK =
-    di.isValidFullPostcodeUK || isValidFullPostcodeUK
-  const injectedIsValidPartialPostcodeUK =
-    di.isValidPartialPostcodeUK || isValidPartialPostcodeUK
-  const injectedBuildUKApiUrl = di.buildUKApiUrl || buildUKApiUrl
-  const injectedShouldCallUKApi = di.shouldCallUKApi || shouldCallUKApi
-  const injectedCatchProxyFetchError =
-    di.catchProxyFetchError || catchProxyFetchError
-  const injectedFormatUKApiResponse =
-    di.formatUKApiResponse || formatUKApiResponse
-  const injectedIsTestMode = di.isTestMode || isTestMode
-  const injectedSymbolsArray = di.SYMBOLS_ARRAY || SYMBOLS_ARRAY
-  const injectedHttpStatusOk = di.HTTP_STATUS_OK || HTTP_STATUS_OK
-  const injectedOptions = di.options || options
+  const {
+    injectedLogger,
+    injectedBuildUKLocationFilters,
+    injectedCombineUKSearchTerms,
+    injectedIsValidFullPostcodeUK,
+    injectedIsValidPartialPostcodeUK,
+    injectedBuildUKApiUrl,
+    injectedShouldCallUKApi,
+    injectedIsTestMode,
+    injectedSymbolsArray,
+    injectedOptions,
+    injectedOptionsEphemeralProtected,
+    injectedConfig,
+    request
+  } = setupUKLocationDataDI(di)
 
   // 1. Test mode logic
   const testModeResult = handleUKLocationDataTestMode(
@@ -391,14 +533,18 @@ const handleUKLocationData = async (
   // 2. Build API URL and check key
   const injected = {
     buildUKLocationFilters: injectedBuildUKLocationFilters,
-    config: injectedConfig,
     combineUKSearchTerms: injectedCombineUKSearchTerms,
     isValidFullPostcodeUK: injectedIsValidFullPostcodeUK,
     isValidPartialPostcodeUK: injectedIsValidPartialPostcodeUK,
-    buildUKApiUrl: injectedBuildUKApiUrl
+    buildUKApiUrl: injectedBuildUKApiUrl,
+    config: injectedConfig
   }
-  const { osNamesApiUrlFull, hasOsKey, combinedLocation } =
-    buildAndCheckUKApiUrl(userLocation, searchTerms, secondSearchTerm, injected)
+  const { hasOsKey, combinedLocation } = buildAndCheckUKApiUrl(
+    userLocation,
+    searchTerms,
+    secondSearchTerm,
+    injected
+  )
   if (!hasOsKey) {
     injectedLogger.warn(
       'OS_NAMES_API_KEY not set; skipping OS Names API call and returning empty results.'
@@ -412,14 +558,14 @@ const handleUKLocationData = async (
     userLocation,
     injectedSymbolsArray
   )
-  return await callAndHandleUKApiResponse(
-    osNamesApiUrlFull,
-    injectedOptions,
+  return await getOSPlaces(
+    userLocation,
+    searchTerms,
+    secondSearchTerm,
     shouldCallApi,
-    injectedCatchProxyFetchError,
-    injectedHttpStatusOk,
-    injectedLogger,
-    injectedFormatUKApiResponse
+    injectedOptions,
+    injectedOptionsEphemeralProtected,
+    request
   )
 }
 
@@ -433,53 +579,38 @@ const handleUKLocationData = async (
  * }
  * @returns {object} API response or mock/test-mode value
  */
-const handleNILocationData = async (userLocation, optionsOAuth, di = {}) => {
-  // Dependency injection with fallbacks
-  const injectedLogger = di.logger || logger
-  const injectedBuildNIPostcodeUrl = di.buildNIPostcodeUrl || buildNIPostcodeUrl
-  const injectedIsMockEnabled =
-    di.isMockEnabled !== undefined ? di.isMockEnabled : isMockEnabled
-  const injectedConfig = di.config || config
-  const injectedFormatNorthernIrelandPostcode =
-    di.formatNorthernIrelandPostcode || formatNorthernIrelandPostcode
-  const injectedCatchProxyFetchError =
-    di.catchProxyFetchError || catchProxyFetchError
-  const injectedIsTestMode = di.isTestMode || isTestMode
+const handleNILocationData = async (
+  userLocation,
+  optionsOAuth,
+  searchTerms,
+  secondSearchTerm,
+  shouldCallApi,
+  injectedOptions,
+  injectedOptionsEphemeralProtected,
+  request,
+  di = {}
+) => {
+  // Setup DI
+  const { injectedLogger, injectedIsTestMode } = setupNILocationDataDI(di)
 
   // Explicit test mode logic
-  if (injectedIsTestMode && injectedIsTestMode()) {
+  if (injectedIsTestMode?.()) {
     if (injectedLogger && typeof injectedLogger.info === 'function') {
       injectedLogger.info('Test mode: handleNILocationData returning mock data')
     }
     return { results: ['niData'] }
   }
 
-  // Production logic
-  const postcodeNortherIrelandURL = injectedBuildNIPostcodeUrl(
+  return await getOSPlaces(
     userLocation,
-    injectedIsMockEnabled,
-    injectedConfig,
-    injectedFormatNorthernIrelandPostcode
+    searchTerms,
+    secondSearchTerm,
+    shouldCallApi,
+    injectedOptions,
+    injectedOptionsEphemeralProtected,
+    request
   )
-  let [statusCodeNI, getNIPlaces] = await injectedCatchProxyFetchError(
-    postcodeNortherIrelandURL,
-    optionsOAuth,
-    true
-  )
-  if (injectedIsMockEnabled) {
-    getNIPlaces = {
-      results: Array.isArray(getNIPlaces) ? getNIPlaces : [getNIPlaces]
-    }
-  }
-  if (statusCodeNI === HTTP_STATUS_OK) {
-    injectedLogger.info(`getNIPlaces data fetched:`)
-    return formatNIResponse(getNIPlaces)
-  } else {
-    injectedLogger.error(`Error fetching statusCodeNI data: ${statusCodeNI}`)
-    return null
-  }
 }
-
 /**
  * Refreshes OAuth token and stores it in session.
  * @param {object} request - Hapi request object (required for session)
@@ -493,7 +624,7 @@ const refreshOAuthToken = async (request, di = {}) => {
   const injectedIsTestMode = di.isTestMode || isTestMode
 
   // Explicit test mode logic
-  if (injectedIsTestMode && injectedIsTestMode()) {
+  if (injectedIsTestMode?.()) {
     if (injectedLogger && typeof injectedLogger.info === 'function') {
       injectedLogger.info('Test mode: refreshOAuthToken returning mock token')
     }
@@ -502,7 +633,9 @@ const refreshOAuthToken = async (request, di = {}) => {
 
   // Production logic
   const accessToken = await injectedFetchOAuthToken({ logger: injectedLogger })
-  if (accessToken?.error) return accessToken
+  if (accessToken?.error) {
+    return accessToken
+  }
   request.yar.clear('savedAccessToken')
   request.yar.set('savedAccessToken', accessToken)
   return accessToken
@@ -520,18 +653,19 @@ const refreshOAuthToken = async (request, di = {}) => {
  * @returns {object} API response or mock/test-mode value
  */
 const fetchForecasts = async (di = {}) => {
-  // Dependency injection with fallbacks
-  const injectedConfig = di.config || config
-  const injectedLogger = di.logger || logger
-  const injectedCatchFetchError = di.catchFetchError || catchFetchError
-  const injectedErrorResponse = di.errorResponse || errorResponse
-  const injectedIsTestMode = di.isTestMode || isTestMode
-  const injectedForecastsApiPath = di.FORECASTS_API_PATH || FORECASTS_API_PATH
-  const injectedHttpStatusOk = di.HTTP_STATUS_OK || HTTP_STATUS_OK
-  const injectedOptionsEphemeralProtected =
-    di.optionsEphemeralProtected || optionsEphemeralProtected
-  const injectedOptions = di.options || options
-  const nodeEnv = di.nodeEnv || process.env.NODE_ENV
+  // Setup DI
+  const {
+    injectedConfig,
+    injectedLogger,
+    injectedCatchFetchError,
+    injectedErrorResponse,
+    injectedIsTestMode,
+    injectedForecastsApiPath,
+    injectedHttpStatusOk,
+    injectedOptionsEphemeralProtected,
+    injectedOptions,
+    request
+  } = { ...setupFetchForecastsDI(di), ...di }
 
   // Explicit test mode logic
   const testModeResult = fetchForecastsTestMode(
@@ -539,30 +673,34 @@ const fetchForecasts = async (di = {}) => {
     injectedLogger
   )
   if (testModeResult) {
+    // Always provide forecast-summary in test mode
+    if (!testModeResult['forecast-summary']) {
+      testModeResult['forecast-summary'] = { today: null }
+    }
     return testModeResult
   }
 
   // Production logic
-  const forecastsApiUrl = injectedConfig.get('forecastsApiUrl')
-  const ephemeralProtectedDevApiUrl = injectedConfig.get(
-    'ephemeralProtectedDevApiUrl'
-  )
-  const { url, opts } = selectForecastsUrlAndOptions(
-    nodeEnv,
-    forecastsApiUrl,
-    ephemeralProtectedDevApiUrl,
+  const forecastsResult = await callForecastsApi({
+    injectedConfig,
     injectedForecastsApiPath,
     injectedOptionsEphemeralProtected,
-    injectedOptions
-  )
-  return await callAndHandleForecastsResponse(
-    url,
-    opts,
+    injectedOptions,
     injectedCatchFetchError,
     injectedHttpStatusOk,
     injectedLogger,
-    injectedErrorResponse
-  )
+    injectedErrorResponse,
+    request
+  })
+  // Always provide forecast-summary property, even if missing
+  if (
+    forecastsResult &&
+    typeof forecastsResult === 'object' &&
+    !('forecast-summary' in forecastsResult)
+  ) {
+    forecastsResult['forecast-summary'] = { today: null }
+  }
+  return forecastsResult
 }
 
 /**
@@ -608,11 +746,14 @@ export const fetchMeasurements = async (
       latitude,
       longitude,
       useNewRicardoMeasurementsEnabled,
-      injectedConfig,
-      injectedLogger,
-      injectedNodeEnv,
-      injectedOptionsEphemeralProtected,
-      injectedOptions
+      {
+        injectedConfig,
+        injectedLogger,
+        injectedNodeEnv,
+        injectedOptionsEphemeralProtected,
+        injectedOptions,
+        request: di.request // Pass request if present in DI
+      }
     )
     url = selection.url
     opts = selection.opts
@@ -636,58 +777,7 @@ export const fetchMeasurements = async (
  * Fetch daily summary from API
  */
 
-/**
- * Fetches daily summary from API.
- * @param {object} di - Dependency injection object: {
- *   config, logger, catchFetchError, errorResponse, isTestMode, FORECASTS_API_PATH, optionsEphemeralProtected, options, nodeEnv
- * }
- * @returns {object} API response or mock/test-mode value
- */
-const fetchDailySummary = async (di = {}) => {
-  // Dependency injection with fallbacks
-  const injectedConfig = di.config || config
-  const injectedLogger = di.logger || logger
-  const injectedCatchFetchError = di.catchFetchError || catchFetchError
-  const injectedErrorResponse = di.errorResponse || errorResponse
-  const injectedIsTestMode = di.isTestMode || isTestMode
-  const injectedForecastsApiPath = di.FORECASTS_API_PATH || FORECASTS_API_PATH
-  const injectedOptionsEphemeralProtected =
-    di.optionsEphemeralProtected || optionsEphemeralProtected
-  const injectedOptions = di.options || options
-  const nodeEnv = di.nodeEnv || process.env.NODE_ENV
-
-  // 1. Test mode logic
-  const testModeResult = fetchDailySummaryTestMode(
-    injectedIsTestMode,
-    injectedLogger
-  )
-  if (testModeResult) {
-    return testModeResult
-  }
-
-  // 2. Select URL and options
-  const forecastsApiUrl = injectedConfig.get('forecastsApiUrl')
-  const ephemeralProtectedDevApiUrl = injectedConfig.get(
-    'ephemeralProtectedDevApiUrl'
-  )
-  const { url, opts } = selectDailySummaryUrlAndOptions(
-    nodeEnv,
-    forecastsApiUrl,
-    ephemeralProtectedDevApiUrl,
-    injectedForecastsApiPath,
-    injectedOptionsEphemeralProtected,
-    injectedOptions
-  )
-
-  // 3. Call API and handle response
-  return await callAndHandleDailySummaryResponse(
-    url,
-    opts,
-    injectedCatchFetchError,
-    injectedLogger,
-    injectedErrorResponse
-  )
-}
+// ''
 
 // ''
 export function handleTestModeFetchData({
@@ -704,14 +794,7 @@ export function handleTestModeFetchData({
   injectedErrorResponse,
   args
 }) {
-  // Support both string and constant locationType for test compatibility
-  const type =
-    locationType === 'UK' || locationType === LOCATION_TYPE_UK
-      ? LOCATION_TYPE_UK
-      : locationType === 'NI' || locationType === LOCATION_TYPE_NI
-        ? LOCATION_TYPE_NI
-        : locationType
-
+  const type = normalizeLocationType(locationType)
   if (type === LOCATION_TYPE_UK) {
     const getOSPlaces = injectedHandleUKLocationData(
       userLocation,
@@ -719,37 +802,23 @@ export function handleTestModeFetchData({
       secondSearchTerm,
       args || {}
     )
-    return {
-      getDailySummary: 'summary',
-      getForecasts: 'summary',
-      getOSPlaces: {
-        results: Array.isArray(getOSPlaces?.results)
-          ? getOSPlaces.results
-          : [getOSPlaces]
-      }
-    }
+    return buildUKTestModeResult(getOSPlaces)
   } else if (type === LOCATION_TYPE_NI) {
     const result = injectedHandleNILocationData(
       userLocation,
       optionsOAuth,
       args || {}
     )
-    // If the result is a Promise, resolve it for test compatibility
     if (result && typeof result.then === 'function') {
-      return result.then((getNIPlaces) => ({
-        getDailySummary: 'summary',
-        getForecasts: { 'forecast-summary': 'summary' },
-        getNIPlaces: getNIPlaces || { results: [] }
-      }))
+      return result.then((getNIPlaces) => buildNITestModeResult(getNIPlaces))
     }
-    return {
-      getDailySummary: 'summary',
-      getForecasts: { 'forecast-summary': 'summary' },
-      getNIPlaces: result || { results: [] }
-    }
+    return buildNITestModeResult(result)
   } else {
-    injectedLogger.error('Unsupported location type provided:', locationType)
-    return injectedErrorResponse('Unsupported location type provided', 400)
+    return handleUnsupportedLocationType(
+      injectedLogger,
+      injectedErrorResponse,
+      locationType
+    )
   }
 }
 
@@ -758,7 +827,6 @@ async function fetchData(
   { locationType, userLocation, searchTerms, secondSearchTerm },
   {
     fetchForecasts: injectedFetchForecasts = fetchForecasts,
-    fetchDailySummary: injectedFetchDailySummary = fetchDailySummary,
     handleUKLocationData: injectedHandleUKLocationData = handleUKLocationData,
     handleNILocationData: injectedHandleNILocationData = handleNILocationData,
     isTestMode: injectedIsTestMode = isTestMode,
@@ -776,12 +844,26 @@ async function fetchData(
     catchFetchError: injectedCatchFetchError = catchFetchError
   } = {}
 ) {
+  // DEBUG: Log request and DI object for troubleshooting
+  console.log(
+    '[fetchData] request:',
+    request,
+    'DI.request:',
+    arguments[2] && arguments[2].request
+  )
+  if (!request) {
+    throw new Error(
+      "fetchData: 'request' argument is required and was not provided."
+    )
+  }
   // Input validation
   const validationError = injectedValidateParams(
     { locationType, userLocation },
     ['locationType', 'userLocation']
   )
-  if (validationError) return validationError
+  if (validationError) {
+    return validationError
+  }
 
   // Build options for NI if needed
   let optionsOAuth
@@ -795,11 +877,22 @@ async function fetchData(
     // accessToken is not used
   }
 
-  // Fetch forecasts and summary
-  const { getForecasts, getDailySummary } = await fetchForecastsAndSummary({
-    injectedFetchForecasts,
-    args: arguments[2]
+  // Fetch forecasts (which contains daily summary)
+  const diRequest =
+    arguments[2] && arguments[2].request !== undefined
+      ? arguments[2].request
+      : request
+  const getForecasts = await injectedFetchForecasts({
+    ...(arguments[2] || {}),
+    request: diRequest
   })
+
+  // getDailySummary is derived from getForecasts['forecast-summary']
+  let getDailySummary = getForecasts && getForecasts['forecast-summary']
+  // Always provide a fallback object if missing or invalid
+  if (!getDailySummary || typeof getDailySummary !== 'object') {
+    getDailySummary = { today: null }
+  }
 
   // In test mode, always return the actual handler function result so test mocks control output
   if (injectedIsTestMode()) {
@@ -809,6 +902,7 @@ async function fetchData(
       searchTerms,
       secondSearchTerm,
       optionsOAuth,
+      getDailySummary,
       getForecasts,
       injectedHandleUKLocationData,
       injectedHandleNILocationData,
@@ -820,18 +914,36 @@ async function fetchData(
 
   // Main logic for UK and NI
   if (locationType === LOCATION_TYPE_UK) {
+    // Ensure request is always defined and not overwritten by undefined in DI
+    const di = { ...(arguments[2] || {}), request: diRequest || {} }
     const getOSPlaces = await injectedHandleUKLocationData(
       userLocation,
       searchTerms,
       secondSearchTerm,
-      arguments[2] || {}
+      di
     )
     return { getDailySummary, getForecasts, getOSPlaces }
   } else if (locationType === LOCATION_TYPE_NI) {
+    const di = { ...(arguments[2] || {}), request: diRequest || {} }
+    const {
+      searchTerms: niSearchTerms,
+      secondSearchTerm: niSecondSearchTerm,
+      shouldCallApi: niShouldCallApi,
+      options: niInjectedOptions = options,
+      optionsEphemeralProtected:
+        niInjectedOptionsEphemeralProtected = optionsEphemeralProtected,
+      request: niRequest = diRequest
+    } = di
     const getNIPlaces = await injectedHandleNILocationData(
       userLocation,
       optionsOAuth,
-      arguments[2] || {}
+      niSearchTerms,
+      niSecondSearchTerm,
+      niShouldCallApi,
+      niInjectedOptions,
+      niInjectedOptionsEphemeralProtected,
+      niRequest,
+      di
     )
     return { getDailySummary, getForecasts, getNIPlaces }
   } else {
@@ -841,11 +953,11 @@ async function fetchData(
 }
 
 // Grouped exports for clarity
+
 export {
   fetchData,
   handleUKLocationData,
   handleNILocationData,
   fetchForecasts,
-  fetchDailySummary,
   refreshOAuthToken
 }

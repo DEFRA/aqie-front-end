@@ -24,7 +24,10 @@ describe('fetchMeasurements edge branches', () => {
       optionsEphemeralProtected: {},
       nodeEnv: 'development'
     }
-    const result = await fetchMeasurements(51.5, -0.1, true, di)
+    const result = await fetchMeasurements(51.5, -0.1, true, {
+      ...di,
+      request: {}
+    })
     expect(result).toEqual([{ measurement: 'dev' }])
     expect(di.logger.info).toHaveBeenCalledWith(
       expect.stringContaining('New Ricardo measurements API URL:')
@@ -41,7 +44,10 @@ describe('fetchMeasurements edge branches', () => {
       optionsEphemeralProtected: {},
       nodeEnv: 'production'
     }
-    const result = await fetchMeasurements(51.5, -0.1, false, di)
+    const result = await fetchMeasurements(51.5, -0.1, false, {
+      ...di,
+      request: {}
+    })
     expect(result).toEqual([{ measurement: 'old' }])
     expect(di.logger.info).toHaveBeenCalledWith(
       'Old measurements API URL: old-url'
@@ -188,7 +194,11 @@ describe('fetchData more branches', () => {
       handleNILocationData: vi.fn()
     }
     const { fetchData } = await import('./fetch-data.js')
-    const result = await fetchData({}, { userLocation: 'x' }, di)
+    const mockRequest = {
+      headers: { host: 'localhost' },
+      yar: { get: () => {}, set: () => {}, clear: () => {} }
+    }
+    const result = await fetchData(mockRequest, { userLocation: 'x' }, di)
     expect(result).toBe('error-response')
     expect(di.logger.error).toHaveBeenCalled()
   })
@@ -204,8 +214,12 @@ describe('fetchData more branches', () => {
       handleNILocationData: vi.fn()
     }
     const { fetchData } = await import('./fetch-data.js')
+    const mockRequest = {
+      headers: { host: 'localhost' },
+      yar: { get: () => {}, set: () => {}, clear: () => {} }
+    }
     const result = await fetchData(
-      {},
+      mockRequest,
       { locationType: 'UNKNOWN', userLocation: 'x' },
       di
     )
@@ -232,7 +246,10 @@ describe('fetchMeasurements additional coverage', () => {
       optionsEphemeralProtected: {},
       nodeEnv: 'production'
     }
-    const result = await fetchMeasurements(51.5, -0.1, false, di)
+    const result = await fetchMeasurements(51.5, -0.1, false, {
+      ...di,
+      request: {}
+    })
     expect(result).toEqual([])
     expect(di.logger.error).toHaveBeenCalled()
   })
@@ -247,7 +264,10 @@ describe('fetchMeasurements additional coverage', () => {
       optionsEphemeralProtected: {},
       nodeEnv: 'production'
     }
-    const result = await fetchMeasurements(51.5, -0.1, false, di)
+    const result = await fetchMeasurements(51.5, -0.1, false, {
+      ...di,
+      request: {}
+    })
     expect(result).toEqual([])
     expect(di.logger.error).toHaveBeenCalledWith(
       'Error fetching data: not found'
@@ -354,8 +374,12 @@ describe('fetchData', () => {
       logger: { error: vi.fn() }
     }
     const { fetchData } = await import('./fetch-data.js')
+    const mockRequest = {
+      headers: { host: 'localhost' },
+      yar: { get: () => {}, set: () => {}, clear: () => {} }
+    }
     const result = await fetchData(
-      {},
+      mockRequest,
       { locationType: 'UK', userLocation: null },
       di
     )
@@ -371,8 +395,12 @@ describe('fetchData', () => {
       fetchForecasts: vi.fn(() => ({}))
     }
     const { fetchData } = await import('./fetch-data.js')
+    const mockRequest = {
+      headers: { host: 'localhost' },
+      yar: { get: () => {}, set: () => {}, clear: () => {} }
+    }
     const result = await fetchData(
-      {},
+      mockRequest,
       { locationType: 'OTHER', userLocation: 'x' },
       di
     )
@@ -460,7 +488,10 @@ describe('fetchMeasurements error handling', () => {
       optionsEphemeralProtected: {},
       nodeEnv: 'production'
     }
-    const result = await fetchMeasurements(51.5, -0.1, false, di)
+    const result = await fetchMeasurements(51.5, -0.1, false, {
+      ...di,
+      request: {}
+    })
     expect(result).toEqual([])
     expect(di.logger.error).toHaveBeenCalledWith('Error fetching data: fail')
   })
@@ -479,7 +510,10 @@ describe('fetchMeasurements error handling', () => {
       optionsEphemeralProtected: {},
       nodeEnv: 'production'
     }
-    const result = await fetchMeasurements(51.5, -0.1, false, di)
+    const result = await fetchMeasurements(51.5, -0.1, false, {
+      ...di,
+      request: {}
+    })
     expect(result).toEqual([])
     expect(di.logger.error).toHaveBeenCalled()
   })

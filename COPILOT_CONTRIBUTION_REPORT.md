@@ -142,7 +142,7 @@ export const getLocationDetailsController = async (request, h) => {
       return handleValidationError(validationResult, h)
     }
 
-    const locationData = await processLocationData(request.params)
+    const locationData = await processLocationData(request)
     return formatLocationResponse(locationData, request)
   } catch (error) {
     return handleLocationError(error, h)

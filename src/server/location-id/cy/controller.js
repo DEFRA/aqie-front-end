@@ -83,6 +83,7 @@ const getLocationDetailsController = {
 
       // Process Welsh location data using helper
       const processedData = await processLocationData(
+        request,
         locationData,
         locationId,
         LANG_CY,

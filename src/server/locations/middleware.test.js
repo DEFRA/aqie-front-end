@@ -1,6 +1,10 @@
 // ...existing code...
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { searchMiddleware } from './middleware.js'
+import {
+  searchMiddleware,
+  shouldReturnNotFound,
+  isInvalidDailySummary
+} from './middleware.js'
 import { fetchData } from './helpers/fetch-data.js'
 // Removed unused imports 'english', 'calendarEnglish', 'calendarWelsh'
 import { transformKeys } from './helpers/transform-summary-keys.js'
@@ -486,7 +490,82 @@ describe('locations middleware', () => {
       // await searchMiddleware(mockRequest, mockH)
       // expect(mockRequest.yar.clear).toHaveBeenCalledWith('searchTermsSaved')
       // expect(mockRedirect).toHaveBeenCalledWith(`${LOCATION_NOT_FOUND_URL}?lang=en`)
+
+      // Assertion: getFormattedDateSummary should be called with the issue_date
+      expect(getFormattedDateSummary).toHaveBeenCalledWith('2024-01-15')
     })
-    it.skip('should process date formatting correctly', async () => {})
+    it.skip('should process date formatting correctly', async () => {
+      // Example assertion for demonstration
+      // This test is skipped, but if enabled, it should check date formatting logic
+      // Arrange: mock getFormattedDateSummary
+      // Act: (would call the middleware)
+      // Assert:
+      expect(getFormattedDateSummary).toHaveBeenCalledWith('2024-01-15')
+    })
+  })
+
+  // Unit tests for shouldReturnNotFound
+
+  describe('shouldReturnNotFound', () => {
+    it('returns true for NI location type with empty results', () => {
+      const redirectError = { locationType: 'NI' }
+      const getNIPlaces = { results: [] }
+      const userLocation = 'BT1 1AA'
+      const getOSPlaces = {}
+      expect(
+        shouldReturnNotFound(
+          redirectError,
+          getNIPlaces,
+          userLocation,
+          getOSPlaces
+        )
+      ).toBe(true)
+    })
+
+    it('returns true for isLocationDataNotFound', () => {
+      const redirectError = { locationType: 'UK' }
+      const getNIPlaces = { results: [1] }
+      const userLocation = 'SW1A 1AA'
+      const getOSPlaces = null
+      // Simulate isLocationDataNotFound returning true by passing nulls
+      expect(
+        shouldReturnNotFound(
+          redirectError,
+          getNIPlaces,
+          userLocation,
+          getOSPlaces
+        )
+      ).toBe(true)
+    })
+
+    it('returns false for valid NI results', () => {
+      const redirectError = { locationType: 'NI' }
+      const getNIPlaces = { results: [1, 2] }
+      const userLocation = 'BT1 1AA'
+      const getOSPlaces = {}
+      expect(
+        shouldReturnNotFound(
+          redirectError,
+          getNIPlaces,
+          userLocation,
+          getOSPlaces
+        )
+      ).toBe(false)
+    })
+  })
+
+  describe('isInvalidDailySummary', () => {
+    it('returns true for null', () => {
+      expect(isInvalidDailySummary(null)).toBe(true)
+    })
+    it('returns true for non-object', () => {
+      expect(isInvalidDailySummary('string')).toBe(true)
+    })
+    it('returns true for missing today property', () => {
+      expect(isInvalidDailySummary({})).toBe(true)
+    })
+    it('returns false for valid daily summary', () => {
+      expect(isInvalidDailySummary({ today: {} })).toBe(false)
+    })
   })
 })
