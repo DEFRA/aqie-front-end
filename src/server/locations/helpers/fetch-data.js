@@ -980,10 +980,20 @@ async function fetchData(
 
 // Grouped exports for clarity
 
+
+// Grouped exports for clarity
 export {
   fetchData,
   handleUKLocationData,
   handleNILocationData,
   fetchForecasts,
-  refreshOAuthToken
+  refreshOAuthToken,
+  // Add all helpers required by tests
+  normalizeLocationType,
+  buildUKTestModeResult,
+  buildNITestModeResult,
+  handleUnsupportedLocationType,
+  selectForecastsUrlAndOptions,
+  callAndHandleForecastsResponse,
+  // Add any other helpers as needed
 }
