@@ -257,69 +257,7 @@ export async function buildNIOptionsOAuth({
   }
   return { optionsOAuth, accessToken }
 }
-// Helper to handle test mode logic for fetchDailySummary
-export function fetchDailySummaryTestMode(injectedIsTestMode, injectedLogger) {
-  if (injectedIsTestMode && injectedIsTestMode()) {
-    if (injectedLogger && typeof injectedLogger.info === 'function') {
-      injectedLogger.info('Test mode: fetchDailySummary returning mock summary')
-    }
-    return { summary: 'mock-summary' }
-  }
-  return null
-}
 
-// ''
-// Refactored to use the request object for local detection
-export function selectDailySummaryUrlAndOptions({
-  request,
-  forecastsApiUrl,
-  options: localOptions
-}) {
-  // ''
-  // Only use the request object to determine if the call is local
-  let isLocal = false
-  if (request && request.headers && request.headers.host) {
-    const host = request.headers.host
-    isLocal = host.includes('localhost') || host.includes('127.0.0.1')
-  }
-  let url = forecastsApiUrl
-  let selectedOptions = paramOptions
-  if (isLocal && typeof config?.get === 'function') {
-    const ephemeralProtectedDevApiUrl = config.get(
-      'ephemeralProtectedDevApiUrl'
-    )
-    if (ephemeralProtectedDevApiUrl) {
-      url = ephemeralProtectedDevApiUrl + FORECASTS_API_PATH
-      selectedOptions = paramOptionsEphemeralProtected
-    }
-  }
-  // Use localOptions if provided, otherwise fallback to selectedOptions
-  return {
-    url,
-    opts: localOptions || selectedOptions // ''
-  }
-}
-
-// Helper to call the daily summary API and handle the response
-export async function callAndHandleDailySummaryResponse(
-  url,
-  opts,
-  injectedCatchFetchError,
-  injectedLogger,
-  injectedErrorResponse
-) {
-  if (injectedLogger && typeof injectedLogger.info === 'function') {
-    injectedLogger.info(`Fetch Daily Summary URL: ${url}`)
-    injectedLogger.info(`Fetch Daily Summary Options: ${JSON.stringify(opts)}`)
-  }
-  const [status, data] = await injectedCatchFetchError(url, opts)
-  if (status !== HTTP_STATUS_OK) {
-    injectedLogger.error('Error fetching daily summary: status code', status)
-    return injectedErrorResponse('Daily summary fetch failed', status || 500)
-  }
-  injectedLogger.info('Daily summary data fetched')
-  return data
-}
 // Helper to handle test mode logic for fetchMeasurements
 export function fetchMeasurementsTestMode(injectedIsTestMode, injectedLogger) {
   if (injectedIsTestMode?.()) {
@@ -350,10 +288,7 @@ export function selectMeasurementsUrlAndOptions(
   const formatCoordinate = (coord) => Number(coord).toFixed(ROUND_OF_SIX)
   if (useNewRicardoMeasurementsEnabled) {
     injectedLogger.info(
-      'Using mock measurements with latitude:',
-      latitude,
-      ', longitude:',
-      longitude
+      `Using mock measurements with latitude: ${latitude}, longitude: ${longitude}`
     )
     // Use SafeURLSearchParams polyfill for all environments
     if (!SafeURLSearchParams) {
@@ -374,8 +309,7 @@ export function selectMeasurementsUrlAndOptions(
     const baseUrl = injectedConfig.get('ricardoMeasurementsApiUrl')
     const newRicardoMeasurementsApiUrl = `${baseUrl}?${queryParams.toString()}`
     injectedLogger.info(
-      'New Ricardo measurements API URL:',
-      newRicardoMeasurementsApiUrl
+      `New Ricardo measurements API URL: ${newRicardoMeasurementsApiUrl}`
     )
     // Use isLocal logic based on request object
     let isLocal = false
@@ -399,7 +333,7 @@ export function selectMeasurementsUrlAndOptions(
     }
   } else {
     const measurementsAPIurl = injectedConfig.get('measurementsApiUrl')
-    injectedLogger.info('Old measurements API URL:', measurementsAPIurl)
+    injectedLogger.info(`Old measurements API URL: ${measurementsAPIurl}`)
     return {
       url: measurementsAPIurl,
       opts: injectedOptions
@@ -416,7 +350,7 @@ export async function callAndHandleMeasurementsResponse(
 ) {
   const [status, data] = await injectedCatchFetchError(url, opts)
   if (status !== 200) {
-    injectedLogger.error('Error fetching data:', data && data.message)
+    injectedLogger.error(`Error fetching data: ${data && data.message}`)
     return []
   }
   injectedLogger.info('Data fetched successfully.')
@@ -978,22 +912,16 @@ async function fetchData(
   }
 }
 
-// Grouped exports for clarity
-
-
-// Grouped exports for clarity
 export {
   fetchData,
   handleUKLocationData,
   handleNILocationData,
   fetchForecasts,
   refreshOAuthToken,
-  // Add all helpers required by tests
   normalizeLocationType,
   buildUKTestModeResult,
   buildNITestModeResult,
   handleUnsupportedLocationType,
   selectForecastsUrlAndOptions,
-  callAndHandleForecastsResponse,
-  // Add any other helpers as needed
+  callAndHandleForecastsResponse
 }
