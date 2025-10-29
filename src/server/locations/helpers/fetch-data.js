@@ -1,3 +1,5 @@
+/* global globalThis, window */
+/* eslint-env node */
 import { catchProxyFetchError } from '../../common/helpers/catch-proxy-fetch-error.js'
 import {
   buildUKLocationFilters,
@@ -14,11 +16,11 @@ import {
 } from './location-helpers.js'
 import { config } from '../../../config/index.js'
 import {
-  optionsEphemeralProtected,
-  options
+  optionsEphemeralProtected as paramOptionsEphemeralProtected,
+  options as paramOptions
 } from '../../common/helpers/logging/logger-options.js'
 import { fetchOAuthToken } from './get-ni-places.js'
-import { getOSPlaces } from './get-os-places.js'
+import { getOSPlaces as getOSPlacesHelper } from './get-os-places.js'
 import { catchFetchError } from '../../common/helpers/catch-fetch-error.js'
 import {
   LOCATION_TYPE_NI,
@@ -33,6 +35,50 @@ import {
 import { createLogger } from '../../common/helpers/logging/logger.js'
 import { formatNorthernIrelandPostcode } from './convert-string.js'
 
+let SafeURLSearchParams
+try {
+  if (typeof URLSearchParams !== 'undefined') {
+    SafeURLSearchParams = URLSearchParams
+  } else if (typeof globalThis !== 'undefined' && globalThis.URLSearchParams) {
+    SafeURLSearchParams = globalThis.URLSearchParams
+  } else if (typeof window !== 'undefined' && window.URLSearchParams) {
+    SafeURLSearchParams = window.URLSearchParams
+  }
+} catch (e) {
+  // Ignore if unable to polyfill
+}
+// Helper to call the forecasts API and handle the response
+async function callAndHandleForecastsResponse(
+  url,
+  opts,
+  injectedCatchFetchError,
+  injectedHttpStatusOk,
+  injectedLogger,
+  injectedErrorResponse
+) {
+  const [forecastStatus, getForecasts] = await injectedCatchFetchError(
+    url,
+    opts
+  )
+  if (forecastStatus !== injectedHttpStatusOk) {
+    injectedLogger.error(
+      'Error fetching forecasts data: status code',
+      forecastStatus
+    )
+    return injectedErrorResponse(
+      'Forecasts fetch failed',
+      forecastStatus || 500
+    )
+  }
+  injectedLogger.info('Forecasts data fetched')
+  return getForecasts
+}
+
+const logger = createLogger()
+const isMockEnabled = false
+// Ensure these are available at the top level for DI helpers
+const optionsEphemeralProtected = paramOptionsEphemeralProtected
+const options = paramOptions
 // Helper to normalize location type
 function normalizeLocationType(locationType) {
   if (locationType === 'UK' || locationType === LOCATION_TYPE_UK) {
@@ -91,10 +137,40 @@ function setupFetchForecastsDI(di = {}) {
   }
 }
 
+// Helper to select the correct forecasts URL and options based on environment
+// ''
+// Refactored to use the request object for local detection
+function selectForecastsUrlAndOptions({
+  request,
+  forecastsApiUrl,
+  optionsEphemeralProtected: localOptionsEphemeralProtected,
+  options: localOptions
+}) {
+  // ''
+  // Only use the request object to determine if the call is local
+  let isLocal = false
+  if (request && request.headers && request.headers.host) {
+    const host = request.headers.host
+    isLocal = host.includes('localhost') || host.includes('127.0.0.1')
+  }
+  let url = forecastsApiUrl
+  if (isLocal && typeof config?.get === 'function') {
+    const ephemeralProtectedDevApiUrl = config.get(
+      'ephemeralProtectedDevApiUrl'
+    )
+    if (ephemeralProtectedDevApiUrl) {
+      url = ephemeralProtectedDevApiUrl + FORECASTS_API_PATH
+    }
+  }
+  return {
+    url,
+    opts: isLocal ? localOptionsEphemeralProtected : localOptions // ''
+  }
+}
+
 // Helper to handle API call and response for forecasts
 async function callForecastsApi({
   injectedConfig,
-  injectedForecastsApiPath,
   injectedOptionsEphemeralProtected,
   injectedOptions,
   injectedCatchFetchError,
@@ -111,7 +187,7 @@ async function callForecastsApi({
     optionsEphemeralProtected: injectedOptionsEphemeralProtected,
     options: injectedOptions
   })
-  return await callAndHandleForecastsResponse(
+  return callAndHandleForecastsResponse(
     url,
     opts,
     injectedCatchFetchError,
@@ -197,7 +273,7 @@ export function fetchDailySummaryTestMode(injectedIsTestMode, injectedLogger) {
 export function selectDailySummaryUrlAndOptions({
   request,
   forecastsApiUrl,
-  options
+  options: localOptions
 }) {
   // ''
   // Only use the request object to determine if the call is local
@@ -207,19 +283,20 @@ export function selectDailySummaryUrlAndOptions({
     isLocal = host.includes('localhost') || host.includes('127.0.0.1')
   }
   let url = forecastsApiUrl
-  let selectedOptions = options
+  let selectedOptions = paramOptions
   if (isLocal && typeof config?.get === 'function') {
     const ephemeralProtectedDevApiUrl = config.get(
       'ephemeralProtectedDevApiUrl'
     )
     if (ephemeralProtectedDevApiUrl) {
       url = ephemeralProtectedDevApiUrl + FORECASTS_API_PATH
-      selectedOptions = optionsEphemeralProtected
+      selectedOptions = paramOptionsEphemeralProtected
     }
   }
+  // Use localOptions if provided, otherwise fallback to selectedOptions
   return {
     url,
-    opts: selectedOptions // ''
+    opts: localOptions || selectedOptions // ''
   }
 }
 
@@ -237,7 +314,7 @@ export async function callAndHandleDailySummaryResponse(
   }
   const [status, data] = await injectedCatchFetchError(url, opts)
   if (status !== HTTP_STATUS_OK) {
-    injectedLogger.error(`Error fetching daily summary: status code ${status}`)
+    injectedLogger.error('Error fetching daily summary: status code', status)
     return injectedErrorResponse('Daily summary fetch failed', status || 500)
   }
   injectedLogger.info('Daily summary data fetched')
@@ -273,9 +350,16 @@ export function selectMeasurementsUrlAndOptions(
   const formatCoordinate = (coord) => Number(coord).toFixed(ROUND_OF_SIX)
   if (useNewRicardoMeasurementsEnabled) {
     injectedLogger.info(
-      `Using mock measurements with latitude: ${latitude}, longitude: ${longitude}`
+      'Using mock measurements with latitude:',
+      latitude,
+      ', longitude:',
+      longitude
     )
-    const queryParams = new URLSearchParams({
+    // Use SafeURLSearchParams polyfill for all environments
+    if (!SafeURLSearchParams) {
+      throw new Error('URLSearchParams is not available in this environment')
+    }
+    const queryParams = new SafeURLSearchParams({
       page: '1',
       'latest-measurement': 'true',
       'with-closed': 'false',
@@ -290,7 +374,8 @@ export function selectMeasurementsUrlAndOptions(
     const baseUrl = injectedConfig.get('ricardoMeasurementsApiUrl')
     const newRicardoMeasurementsApiUrl = `${baseUrl}?${queryParams.toString()}`
     injectedLogger.info(
-      `New Ricardo measurements API URL: ${newRicardoMeasurementsApiUrl}`
+      'New Ricardo measurements API URL:',
+      newRicardoMeasurementsApiUrl
     )
     // Use isLocal logic based on request object
     let isLocal = false
@@ -314,7 +399,7 @@ export function selectMeasurementsUrlAndOptions(
     }
   } else {
     const measurementsAPIurl = injectedConfig.get('measurementsApiUrl')
-    injectedLogger.info(`Old measurements API URL: ${measurementsAPIurl}`)
+    injectedLogger.info('Old measurements API URL:', measurementsAPIurl)
     return {
       url: measurementsAPIurl,
       opts: injectedOptions
@@ -331,66 +416,11 @@ export async function callAndHandleMeasurementsResponse(
 ) {
   const [status, data] = await injectedCatchFetchError(url, opts)
   if (status !== 200) {
-    injectedLogger.error(`Error fetching data: ${data && data.message}`)
+    injectedLogger.error('Error fetching data:', data && data.message)
     return []
   }
   injectedLogger.info('Data fetched successfully.')
   return data || []
-}
-// Helper to call the forecasts API and handle the response
-export async function callAndHandleForecastsResponse(
-  url,
-  opts,
-  injectedCatchFetchError,
-  injectedHttpStatusOk,
-  injectedLogger,
-  injectedErrorResponse
-) {
-  const [forecastStatus, getForecasts] = await injectedCatchFetchError(
-    url,
-    opts
-  )
-  if (forecastStatus !== injectedHttpStatusOk) {
-    injectedLogger.error(
-      `Error fetching forecasts data: status code ${forecastStatus}`
-    )
-    return injectedErrorResponse(
-      'Forecasts fetch failed',
-      forecastStatus || 500
-    )
-  }
-  injectedLogger.info('Forecasts data fetched')
-  return getForecasts
-}
-// Helper to select the correct forecasts URL and options based on environment
-// ''
-// Refactored to use the request object for local detection
-export function selectForecastsUrlAndOptions({
-  request,
-  forecastsApiUrl,
-  optionsEphemeralProtected,
-  options
-}) {
-  // ''
-  // Only use the request object to determine if the call is local
-  let isLocal = false
-  if (request && request.headers && request.headers.host) {
-    const host = request.headers.host
-    isLocal = host.includes('localhost') || host.includes('127.0.0.1')
-  }
-  let url = forecastsApiUrl
-  if (isLocal && typeof config?.get === 'function') {
-    const ephemeralProtectedDevApiUrl = config.get(
-      'ephemeralProtectedDevApiUrl'
-    )
-    if (ephemeralProtectedDevApiUrl) {
-      url = ephemeralProtectedDevApiUrl + FORECASTS_API_PATH
-    }
-  }
-  return {
-    url,
-    opts: isLocal ? optionsEphemeralProtected : options // ''
-  }
 }
 // Helper to handle test mode logic for fetchForecasts
 export function fetchForecastsTestMode(injectedIsTestMode, injectedLogger) {
@@ -422,7 +452,7 @@ export async function callAndHandleUKApiResponse(
   injectedLogger.info(
     `[DEBUG] Calling catchProxyFetchError with URL: ${osNamesApiUrlFull}`
   )
-  injectedLogger.info(`[DEBUG] Options: ${JSON.stringify(selectedOptions)}`)
+  injectedLogger.info('[DEBUG] Options:', JSON.stringify(selectedOptions))
   const [statusCodeOSPlace, getOSPlaces] = await injectedCatchProxyFetchError(
     osNamesApiUrlFull,
     selectedOptions,
@@ -439,7 +469,8 @@ export async function callAndHandleUKApiResponse(
       return null
     } else {
       injectedLogger.error(
-        `Error fetching statusCodeOSPlace data: ${statusCodeOSPlace}`
+        'Error fetching statusCodeOSPlace data:',
+        statusCodeOSPlace
       )
       return null
     }
@@ -485,8 +516,7 @@ export function handleUKLocationDataTestMode(
     return null
   }
 }
-const logger = createLogger()
-const isMockEnabled = false
+
 // ...existing code...
 /**
  * Handles UK Location Data fetch.
@@ -551,15 +581,15 @@ const handleUKLocationData = async (
     )
     return { results: [] }
   }
-  userLocation = combinedLocation
+  const finalUserLocation = combinedLocation
 
   // 3. Call API and handle response
   const shouldCallApi = injectedShouldCallUKApi(
-    userLocation,
+    finalUserLocation,
     injectedSymbolsArray
   )
-  return await getOSPlaces(
-    userLocation,
+  return getOSPlacesHelper(
+    finalUserLocation,
     searchTerms,
     secondSearchTerm,
     shouldCallApi,
@@ -601,7 +631,7 @@ const handleNILocationData = async (
     return { results: ['niData'] }
   }
 
-  return await getOSPlaces(
+  return getOSPlacesHelper(
     userLocation,
     searchTerms,
     secondSearchTerm,
@@ -726,7 +756,14 @@ export const fetchMeasurements = async (
   const injectedOptionsEphemeralProtected =
     di.optionsEphemeralProtected || optionsEphemeralProtected
   const injectedOptions = di.options || options
-  const injectedNodeEnv = di.nodeEnv || process.env.NODE_ENV
+  let injectedNodeEnv = di.nodeEnv
+  if (
+    typeof process !== 'undefined' &&
+    typeof process.env !== 'undefined' &&
+    Object.prototype.hasOwnProperty.call(process.env, 'NODE_ENV')
+  ) {
+    injectedNodeEnv = injectedNodeEnv || process.env.NODE_ENV
+  }
   const injectedIsTestMode =
     typeof di.isTestMode === 'function' ? di.isTestMode : isTestMode
 
@@ -765,7 +802,7 @@ export const fetchMeasurements = async (
   }
 
   // 3. Call API and handle response
-  return await callAndHandleMeasurementsResponse(
+  return callAndHandleMeasurementsResponse(
     url,
     opts,
     injectedCatchFetchError,
@@ -786,8 +823,7 @@ export function handleTestModeFetchData({
   searchTerms,
   secondSearchTerm,
   optionsOAuth,
-  getDailySummary,
-  getForecasts,
+  // getDailySummary and getForecasts are not used in this function
   injectedHandleUKLocationData,
   injectedHandleNILocationData,
   injectedLogger,
@@ -796,13 +832,13 @@ export function handleTestModeFetchData({
 }) {
   const type = normalizeLocationType(locationType)
   if (type === LOCATION_TYPE_UK) {
-    const getOSPlaces = injectedHandleUKLocationData(
+    const osPlacesResult = injectedHandleUKLocationData(
       userLocation,
       searchTerms,
       secondSearchTerm,
       args || {}
     )
-    return buildUKTestModeResult(getOSPlaces)
+    return buildUKTestModeResult(osPlacesResult)
   } else if (type === LOCATION_TYPE_NI) {
     const result = injectedHandleNILocationData(
       userLocation,
@@ -825,7 +861,16 @@ export function handleTestModeFetchData({
 async function fetchData(
   request,
   { locationType, userLocation, searchTerms, secondSearchTerm },
-  {
+  diOverrides = {}
+) {
+  // Remove console.log for production and lint compliance
+  if (!request) {
+    throw new Error(
+      "fetchData: 'request' argument is required and was not provided."
+    )
+  }
+  // Dependency injection destructure
+  const {
     fetchForecasts: injectedFetchForecasts = fetchForecasts,
     handleUKLocationData: injectedHandleUKLocationData = handleUKLocationData,
     handleNILocationData: injectedHandleNILocationData = handleNILocationData,
@@ -834,28 +879,9 @@ async function fetchData(
     logger: injectedLogger = logger,
     errorResponse: injectedErrorResponse = errorResponse,
     isMockEnabled: injectedIsMockEnabled = isMockEnabled,
-    refreshOAuthToken: injectedRefreshOAuthToken = refreshOAuthToken,
-    config: injectedConfig = config,
-    options: injectedOptions = options,
-    optionsEphemeralProtected:
-      injectedOptionsEphemeralProtected = optionsEphemeralProtected,
-    formatNorthernIrelandPostcode: injectedFormatNorthernIrelandPostcode,
-    fetchOAuthToken: injectedFetchOAuthToken,
-    catchFetchError: injectedCatchFetchError = catchFetchError
-  } = {}
-) {
-  // DEBUG: Log request and DI object for troubleshooting
-  console.log(
-    '[fetchData] request:',
-    request,
-    'DI.request:',
-    arguments[2] && arguments[2].request
-  )
-  if (!request) {
-    throw new Error(
-      "fetchData: 'request' argument is required and was not provided."
-    )
-  }
+    refreshOAuthToken: injectedRefreshOAuthToken = refreshOAuthToken
+  } = diOverrides
+
   // Input validation
   const validationError = injectedValidateParams(
     { locationType, userLocation },
@@ -879,11 +905,11 @@ async function fetchData(
 
   // Fetch forecasts (which contains daily summary)
   const diRequest =
-    arguments[2] && arguments[2].request !== undefined
-      ? arguments[2].request
+    diOverrides && diOverrides.request !== undefined
+      ? diOverrides.request
       : request
   const getForecasts = await injectedFetchForecasts({
-    ...(arguments[2] || {}),
+    ...diOverrides,
     request: diRequest
   })
 
@@ -908,23 +934,23 @@ async function fetchData(
       injectedHandleNILocationData,
       injectedLogger,
       injectedErrorResponse,
-      args: arguments[2]
+      args: diOverrides
     })
   }
 
   // Main logic for UK and NI
   if (locationType === LOCATION_TYPE_UK) {
     // Ensure request is always defined and not overwritten by undefined in DI
-    const di = { ...(arguments[2] || {}), request: diRequest || {} }
-    const getOSPlaces = await injectedHandleUKLocationData(
+    const di = { ...diOverrides, request: diRequest || {} }
+    const osPlacesResult = await injectedHandleUKLocationData(
       userLocation,
       searchTerms,
       secondSearchTerm,
       di
     )
-    return { getDailySummary, getForecasts, getOSPlaces }
+    return { getDailySummary, getForecasts, getOSPlaces: osPlacesResult }
   } else if (locationType === LOCATION_TYPE_NI) {
-    const di = { ...(arguments[2] || {}), request: diRequest || {} }
+    const di = { ...diOverrides, request: diRequest || {} }
     const {
       searchTerms: niSearchTerms,
       secondSearchTerm: niSecondSearchTerm,
