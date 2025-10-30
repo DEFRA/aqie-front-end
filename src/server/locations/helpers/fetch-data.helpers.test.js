@@ -1,19 +1,10 @@
 // ''
 import {
-  normalizeLocationType,
   buildUKTestModeResult,
   buildNITestModeResult,
   handleUnsupportedLocationType
 } from './fetch-data.js'
 import { describe, it, expect, vi } from 'vitest'
-
-describe('normalizeLocationType', () => {
-  it('should normalize UK string and constant', () => {
-    expect(normalizeLocationType('UK')).toBe('UK')
-    expect(normalizeLocationType('NI')).toBe('NI')
-    expect(normalizeLocationType('OTHER')).toBe('OTHER')
-  })
-})
 
 describe('buildUKTestModeResult', () => {
   it('should wrap results in array if not already', () => {

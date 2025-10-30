@@ -85,11 +85,7 @@ function setupNILocationDataDI(di = {}) {
         ? buildNIPostcodeUrl
         : undefined),
     injectedIsMockEnabled:
-      di.isMockEnabled !== undefined
-        ? di.isMockEnabled
-        : typeof isMockEnabled !== 'undefined'
-          ? isMockEnabled
-          : undefined,
+      di.isMockEnabled !== undefined ? di.isMockEnabled : isMockEnabled,
     injectedConfig:
       di.config || (typeof config !== 'undefined' ? config : undefined),
     injectedFormatNorthernIrelandPostcode:

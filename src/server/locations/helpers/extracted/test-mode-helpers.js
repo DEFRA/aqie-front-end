@@ -1,4 +1,4 @@
-import { normalizeLocationType } from './util-helpers.js'
+import { config } from '../../../../config/index.js'
 import { LOCATION_TYPE_UK, LOCATION_TYPE_NI } from '../../../data/constants.js'
 function handleTestModeFetchData({
   locationType,
@@ -12,10 +12,7 @@ function handleTestModeFetchData({
   injectedErrorResponse,
   args
 }) {
-  // normalizeLocationType must be imported in the consumer file
-  // This function expects normalizeLocationType, buildUKTestModeResult, buildNITestModeResult to be available in the consumer scope
-  const type = normalizeLocationType(locationType)
-  if (type === 'UK' || type === LOCATION_TYPE_UK) {
+  if (locationType === LOCATION_TYPE_UK) {
     const osPlacesResult = injectedHandleUKLocationData(
       userLocation,
       searchTerms,
@@ -23,7 +20,7 @@ function handleTestModeFetchData({
       args || {}
     )
     return buildUKTestModeResult(osPlacesResult)
-  } else if (type === 'NI' || type === LOCATION_TYPE_NI) {
+  } else if (locationType === LOCATION_TYPE_NI) {
     const result = injectedHandleNILocationData(
       userLocation,
       optionsOAuth,
@@ -36,7 +33,10 @@ function handleTestModeFetchData({
   }
   // fallback for unsupported types
   if (injectedLogger && typeof injectedLogger.error === 'function') {
-    injectedLogger.error('Unsupported location type in test mode:', type)
+    injectedLogger.error(
+      'Unsupported location type in test mode:',
+      locationType
+    )
   }
   return injectedErrorResponse('Unsupported location type in test mode', 400)
 }
@@ -90,15 +90,8 @@ function fetchForecastsTestMode(injectedIsTestMode, injectedLogger) {
   return null
 }
 
-// ''
-// Determines if mock mode is enabled (stub implementation)
 function isMockEnabled() {
-  // TODO: Replace with real logic if needed
-  return (
-    typeof process !== 'undefined' &&
-    process.env &&
-    process.env.MOCK_MODE === 'true'
-  )
+  return config.get('enabledMock')
 }
 
 export {

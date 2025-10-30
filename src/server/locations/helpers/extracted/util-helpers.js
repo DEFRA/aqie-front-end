@@ -1,3 +1,4 @@
+import { getOSPlaces as getOSPlacesHelper } from '../get-os-places.js'
 import {
   isValidFullPostcodeUK,
   isValidPartialPostcodeUK,
@@ -5,7 +6,7 @@ import {
   isValidPartialPostcodeNI
 } from '../convert-string.js'
 import { setupNILocationDataDI, setupUKLocationDataDI } from './di-helpers.js'
-import { getOSPlaces as getOSPlacesHelper } from '../get-os-places.js'
+import { getNIPlaces } from '../get-ni-places.js'
 import { handleUKLocationDataTestMode } from './test-mode-helpers.js'
 import { buildAndCheckUKApiUrl } from './api-utils.js'
 import { catchFetchError } from '../../../common/helpers/catch-fetch-error.js'
@@ -58,20 +59,24 @@ const handleNILocationData = async (
   request,
   di = {}
 ) => {
-  const { injectedLogger, injectedIsTestMode } = setupNILocationDataDI(di)
+  const { injectedLogger, injectedIsTestMode, injectedIsMockEnabled } =
+    setupNILocationDataDI(di)
   if (injectedIsTestMode?.()) {
     if (injectedLogger && typeof injectedLogger.info === 'function') {
       injectedLogger.info('Test mode: handleNILocationData returning mock data')
     }
     return { results: ['niData'] }
   }
-  return getOSPlacesHelper(
+  // Use getNIPlaces for NI lookups
+  // Pass userLocation, isMockEnabled, optionsOAuth, request
+  // isMockEnabled: use injectedIsMockEnabled (from DI or config)
+  // optionsOAuth: prefer injectedOptions (OAuth headers)
+  return getNIPlaces(
     userLocation,
-    searchTerms,
-    secondSearchTerm,
-    shouldCallApi,
+    typeof injectedIsMockEnabled === 'function'
+      ? injectedIsMockEnabled()
+      : !!injectedIsMockEnabled,
     injectedOptions,
-    injectedOptionsEphemeralProtected,
     request
   )
 }
@@ -145,7 +150,7 @@ const buildNIOptionsOAuth = async ({
   injectedIsMockEnabled,
   injectedRefreshOAuthToken
 }) => {
-  let optionsOAuth
+  let optionsOAuth = {}
   let accessToken
   if (!injectedIsMockEnabled) {
     const savedAccessToken = request.yar.get('savedAccessToken')
@@ -158,24 +163,8 @@ const buildNIOptionsOAuth = async ({
       }
     }
   }
+  // Always return an object for optionsOAuth, even in mock mode
   return { optionsOAuth, accessToken }
-}
-
-function normalizeLocationType(locationType) {
-  if (typeof locationType !== 'string') return ''
-  const type = locationType.trim().toUpperCase()
-  if (
-    type === 'UK' ||
-    type === 'ENGLAND' ||
-    type === 'SCOTLAND' ||
-    type === 'WALES'
-  ) {
-    return 'UK'
-  }
-  if (type === 'NI' || type === 'NORTHERN IRELAND') {
-    return 'NI'
-  }
-  return ''
 }
 
 function handleUnsupportedLocationType(/* params */) {
@@ -245,7 +234,6 @@ export {
   handleNILocationData,
   handleUKLocationData,
   buildNIOptionsOAuth,
-  normalizeLocationType,
   handleUnsupportedLocationType,
   catchProxyFetchError,
   buildNIPostcodeUrl,

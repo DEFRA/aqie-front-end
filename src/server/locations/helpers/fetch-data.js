@@ -21,7 +21,6 @@ import {
   handleUKLocationData,
   handleNILocationData,
   refreshOAuthToken,
-  normalizeLocationType,
   buildNIOptionsOAuth
 } from './extracted/util-helpers.js'
 import {
@@ -207,7 +206,7 @@ async function fetchData(
   diOverrides = {}
 ) {
   // Local fallback for optionsEphemeralProtected
-  const optionsEphemeralProtected = {}
+  // Removed unused optionsEphemeralProtected
   // Remove console.log for production and lint compliance
   if (!request) {
     throw new Error(
@@ -320,27 +319,21 @@ async function fetchData(
     )
     return { getDailySummary, getForecasts, getOSPlaces: osPlacesResult }
   } else if (locationType === LOCATION_TYPE_NI) {
-    const di = { ...diOverrides, request: diRequest || {} }
-    // Provide local fallback for options and optionsEphemeralProtected
-    const options = {}
-    const {
-      searchTerms: niSearchTerms,
-      secondSearchTerm: niSecondSearchTerm,
-      shouldCallApi: niShouldCallApi,
-      options: niInjectedOptions = options,
-      optionsEphemeralProtected:
-        niInjectedOptionsEphemeralProtected = optionsEphemeralProtected,
-      request: niRequest = diRequest
-    } = di
+  const di = { ...diOverrides, request: diRequest || {} }
+  // Removed unused options
+    // Explicitly call handleNILocationData with correct arguments for NI
+    const isMock =
+      typeof injectedIsMockEnabled === 'function'
+        ? injectedIsMockEnabled()
+        : !!injectedIsMockEnabled
     const getNIPlaces = await injectedHandleNILocationData(
       userLocation,
-      optionsOAuth,
-      niSearchTerms,
-      niSecondSearchTerm,
-      niShouldCallApi,
-      niInjectedOptions,
-      niInjectedOptionsEphemeralProtected,
-      niRequest,
+      searchTerms,
+      secondSearchTerm,
+      isMock, // isMockEnabled
+      optionsOAuth, // optionsOAuth (OAuth headers)
+      undefined, // optionsEphemeralProtected (not used for NI)
+      diRequest, // real request object
       di
     )
     return { getDailySummary, getForecasts, getNIPlaces }
@@ -356,7 +349,6 @@ export {
   handleNILocationData,
   fetchForecasts,
   refreshOAuthToken,
-  normalizeLocationType,
   buildUKTestModeResult,
   buildNITestModeResult,
   handleUnsupportedLocationType,
