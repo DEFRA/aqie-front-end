@@ -130,6 +130,10 @@ function getToken(req) {
   return req?.headers?.authorization || null
 }
 
+function isMockEnabled() {
+  return process.env.MOCK_ENABLED === 'true'
+}
+
 export {
   buildUKLocationFilters,
   combineUKSearchTerms,
@@ -145,5 +149,6 @@ export {
   fetchApi,
   getToken,
   isValidFullPostcodeUK,
-  isValidPartialPostcodeUK
+  isValidPartialPostcodeUK,
+  isMockEnabled
 }

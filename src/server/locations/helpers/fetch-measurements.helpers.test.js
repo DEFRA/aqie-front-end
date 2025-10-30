@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from 'vitest'
+import { fetchMeasurementsTestMode } from './extracted/test-mode-helpers.js'
 import {
-  fetchMeasurementsTestMode,
   selectMeasurementsUrlAndOptions,
   callAndHandleMeasurementsResponse
-} from './fetch-data.js'
+} from './extracted/api-utils.js'
 
 describe('fetchMeasurementsTestMode', () => {
   it('returns mock measurement and logs in test mode', () => {
