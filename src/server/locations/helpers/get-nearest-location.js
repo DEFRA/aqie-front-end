@@ -119,13 +119,8 @@ function buildNearestLocationEntry(curr, latlon, lang) {
 
 // Helper to build nearestLocationsRange for !useNewRicardoMeasurementsEnabled
 function buildNearestLocationsRange(matches, getMeasurments, latlon, lang) {
-  if (!getMeasurments?.measurements) {
-    return []
-  }
   const measurementsCoordinates =
-    matches.length !== 0
-      ? coordinatesTotal(getMeasurments.measurements, latlon)
-      : []
+    matches.length !== 0 ? coordinatesTotal(getMeasurments, latlon) : []
   const orderByDistanceMeasurements = geolib.orderByDistance(
     { latitude: latlon?.lat, longitude: latlon?.lon },
     measurementsCoordinates
@@ -137,18 +132,16 @@ function buildNearestLocationsRange(matches, getMeasurments, latlon, lang) {
   const pointsToDisplay = nearestMeasurementsPoints.filter((p) =>
     pointsInRange(latlon, p)
   )
-  const nearestLocationsRangeCal = getMeasurments.measurements.filter(
-    (item) => {
-      if (!item.location?.coordinates) {
-        return false
-      }
-      return pointsToDisplay.some(
-        (dis) =>
-          item.location.coordinates[0] === dis.latitude &&
-          item.location.coordinates[1] === dis.longitude
-      )
+  const nearestLocationsRangeCal = getMeasurments.filter((item) => {
+    if (!item.location?.coordinates) {
+      return false
     }
-  )
+    return pointsToDisplay.some(
+      (dis) =>
+        item.location.coordinates[0] === dis.latitude &&
+        item.location.coordinates[1] === dis.longitude
+    )
+  })
   const result = nearestLocationsRangeCal
     .map((curr) => buildNearestLocationEntry(curr, latlon, lang))
     .filter(Boolean)
@@ -162,7 +155,8 @@ async function getNearestLocation(
   location,
   index,
   lang,
-  useNewRicardoMeasurementsEnabled
+  useNewRicardoMeasurementsEnabled,
+  request
 ) {
   const { latlon, forecastCoordinates } = getLatLonAndForecastCoords(
     matches,
@@ -185,7 +179,8 @@ async function getNearestLocation(
     getMeasurments = await fetchMeasurements(
       latlon.lat,
       latlon.lon,
-      useNewRicardoMeasurementsEnabled
+      useNewRicardoMeasurementsEnabled,
+      { request }
     )
     nearestLocationsRange = buildNearestLocationsRange(
       matches,
@@ -199,12 +194,13 @@ async function getNearestLocation(
       newMeasurements = await fetchMeasurements(
         latlon.lat,
         latlon.lon,
-        useNewRicardoMeasurementsEnabled
+        useNewRicardoMeasurementsEnabled,
+        { request }
       )
     }
 
     if (newMeasurements?.measurements) {
-      nearestLocationsRange = newMeasurements.measurements.map(
+      const newMeasurementsMapped = newMeasurements.measurements.map(
         (measurement) => {
           const updatedPollutants = {}
 
@@ -236,6 +232,12 @@ async function getNearestLocation(
           }
         }
       )
+      nearestLocationsRange = buildNearestLocationsRange(
+        matches,
+        newMeasurementsMapped,
+        latlon,
+        lang
+      )
     }
   }
   nearestLocation =
@@ -248,6 +250,7 @@ async function getNearestLocation(
         )
       : {}
   forecastNum = buildForecastNum(matches, nearestLocation, forecastDay)
+
   return {
     forecastNum,
     nearestLocationsRange,

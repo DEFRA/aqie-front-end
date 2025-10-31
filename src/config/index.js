@@ -231,6 +231,19 @@ export const config = convict({
     default: `https://aqie-forecast-api.dev.cdp-int.defra.cloud/forecast`,
     env: 'FORECAST_API_URL'
   },
+  cdpXApiKey: {
+    doc: 'CDP X API Key',
+    format: '*',
+    default: '',
+    sensitive: true,
+    env: 'CDP_X_API_KEY'
+  },
+  ephemeralProtectedDevApiUrl: {
+    doc: 'Ephemeral Protected Dev API url',
+    format: String,
+    default: `https://ephemeral-protected.api.test.cdp-int.defra.cloud`,
+    env: 'EPHEMERAL_PROTECTED_DEV_API_URL'
+  },
   measurementsApiUrl: {
     doc: 'Ricardo API url',
     format: String,

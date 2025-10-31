@@ -42,7 +42,8 @@ describe('determineNearestLocation', () => {
       getForecasts,
       locationType,
       index,
-      lang
+      lang,
+      undefined
     )
     expect(result).toBe(expectedResult)
   })
@@ -70,7 +71,8 @@ describe('determineNearestLocation', () => {
       getForecasts,
       locationType,
       index,
-      lang
+      lang,
+      undefined
     )
     expect(result).toBe(expectedResult)
   })

@@ -1,22 +1,31 @@
 {
+  "_comment": "This is a template for local.json - copy this to local.json and replace placeholders with real values",
+  "_note": "All sensitive information should go in local.json which is git-ignored",
+
   "log": {
     "enabled": true,
     "level": "info",
     "format": "pino-pretty"
   },
-  "osNamesApiKey": "REPLACE-ME-OSNAMES-KEY",
+
+  "osNamesApiKey": "REPLACE-ME-OS-NAMES-API-KEY",
   "daqiePassword": "REPLACE-ME-DAQIE-PASSWORD",
+
   "session": {
     "cookie": {
-      "password": "the-password-must-be-at-least-32-characters-long"
+      "password": "REPLACE-ME-SESSION-COOKIE-PASSWORD-MUST-BE-AT-LEAST-32-CHARACTERS-LONG"
     }
   },
-  "cookiePassword": "the-password-must-be-at-least-32-characters-long",
-  "oauthTokenNorthernIrelandTenantId": "",
-  "clientIdNIreland": "",
-  "clientSecretNIreland": "",
-  "scopeNIreland": "",
+
+  "cookiePassword": "REPLACE-ME-COOKIE-PASSWORD-MUST-BE-AT-LEAST-32-CHARACTERS-LONG",
+  "cdpXApiKey": "REPLACE-ME-CDP-X-API-KEY",
+
+  "oauthTokenNorthernIrelandTenantId": "REPLACE-ME-OAUTH-TENANT-ID",
+  "clientIdNIreland": "REPLACE-ME-CLIENT-ID-NORTHERN-IRELAND",
+  "clientSecretNIreland": "REPLACE-ME-CLIENT-SECRET-NORTHERN-IRELAND",
+  "scopeNIreland": "REPLACE-ME-SCOPE-NORTHERN-IRELAND",
+
   "redis": {
-    "password": ""
+    "password": "REPLACE-ME-REDIS-PASSWORD-IF-NEEDED"
   }
 }

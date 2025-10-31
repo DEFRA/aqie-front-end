@@ -64,7 +64,8 @@ describe.skip('getNearestLocation', () => {
       measurements,
       location,
       index,
-      lang
+      lang,
+      {} // mock request
     )
     expect(result).toHaveProperty('forecastNum')
     expect(result).toHaveProperty('nearestLocationsRange')
@@ -80,7 +81,8 @@ describe.skip('getNearestLocation', () => {
       measurements,
       location,
       index,
-      lang
+      lang,
+      {} // mock request
     )
     expect(result).toHaveProperty('forecastNum')
     expect(result).toHaveProperty('nearestLocationsRange')
@@ -96,7 +98,8 @@ describe.skip('getNearestLocation', () => {
       measurements,
       location,
       index,
-      lang
+      lang,
+      {} // mock request
     )
     expect(result).toEqual({
       forecastNum: 0,
@@ -125,7 +128,8 @@ describe.skip('getNearestLocation', () => {
       measurements,
       location,
       index,
-      lang
+      lang,
+      {} // mock request
     )
     expect(result.nearestLocationsRange).toHaveLength(1)
     expect(result.nearestLocationsRange[0]).toHaveProperty(
