@@ -326,4 +326,4 @@ const searchMiddleware = async (request, h) => {
   }
 }
 
-export { searchMiddleware }
+export { searchMiddleware, shouldReturnNotFound, isInvalidDailySummary }

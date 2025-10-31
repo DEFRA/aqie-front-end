@@ -319,8 +319,8 @@ async function fetchData(
     )
     return { getDailySummary, getForecasts, getOSPlaces: osPlacesResult }
   } else if (locationType === LOCATION_TYPE_NI) {
-  const di = { ...diOverrides, request: diRequest || {} }
-  // Removed unused options
+    const di = { ...diOverrides, request: diRequest || {} }
+    // Removed unused options
     // Explicitly call handleNILocationData with correct arguments for NI
     const isMock =
       typeof injectedIsMockEnabled === 'function'

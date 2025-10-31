@@ -22,7 +22,8 @@ async function getOSPlaces(
   secondSearchTerm,
   shouldCallApi,
   options,
-  request
+  request,
+  injectedCatchProxyFetchError
 ) {
   let updatedOptions = options || {}
   const filters = [
@@ -81,18 +82,21 @@ async function getOSPlaces(
     `[DEBUG] Calling catchProxyFetchError with URL: ${osNamesApiUrlFull}`
   )
   logger.info(`[DEBUG] Options: ${JSON.stringify(updatedOptions)}`)
-  const [statusCodeOSPlace, osPlacesData] = await catchProxyFetchError(
+  const fetchErrorFn = injectedCatchProxyFetchError || catchProxyFetchError
+  const [statusCodeOSPlace, osPlacesData] = await fetchErrorFn(
     osNamesApiUrlFull,
     updatedOptions,
     shouldCallApi
   )
   if (statusCodeOSPlace !== STATUS_CODE_SUCCESS) {
     logger.error(`Error fetching statusCodeOSPlace data: ${statusCodeOSPlace}`)
+    // Always return a defined object, even on error
+    return { results: [] }
   } else {
     logger.info(`osPlacesData fetched:`)
+    // Defensive: always return a defined object
+    return osPlacesData || { results: [] }
   }
-
-  return osPlacesData
 }
 
 export { getOSPlaces }

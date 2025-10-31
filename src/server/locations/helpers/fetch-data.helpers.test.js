@@ -40,7 +40,7 @@ describe('handleUnsupportedLocationType', () => {
   it('should log error and return error response', () => {
     const logger = { error: vi.fn() }
     const errorResponse = vi.fn((msg, code) => ({ msg, code }))
-    const result = handleUnsupportedLocationType(logger, errorResponse, 'BAD')
+    const result = handleUnsupportedLocationType()(logger, errorResponse, 'BAD')
     expect(logger.error).toHaveBeenCalledWith(
       'Unsupported location type provided:',
       'BAD'

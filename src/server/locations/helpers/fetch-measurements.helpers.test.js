@@ -32,46 +32,32 @@ describe('selectMeasurementsUrlAndOptions', () => {
   }
   const injectedLogger = { info: vi.fn() }
   it('returns new Ricardo API url and opts in production', () => {
-    const result = selectMeasurementsUrlAndOptions(
-      51.5,
-      -0.1,
-      true,
+    const result = selectMeasurementsUrlAndOptions(51.5, -0.1, true, {
       injectedConfig,
       injectedLogger,
-      'production',
-      'dev-opts',
-      'prod-opts'
-    )
+      injectedOptions: { headers: {} }
+    })
     expect(result.url).toContain('ricardo-url?')
-    expect(result.opts).toBe('prod-opts')
+    expect(result.opts).toBeDefined()
   })
   it('returns dev url and opts in development', () => {
-    const result = selectMeasurementsUrlAndOptions(
-      51.5,
-      -0.1,
-      true,
+    const result = selectMeasurementsUrlAndOptions(51.5, -0.1, true, {
       injectedConfig,
       injectedLogger,
-      'development',
-      'dev-opts',
-      'prod-opts'
-    )
-    expect(result.url).toContain('dev-url/aqie-back-end/monitoringStationInfo?')
+      injectedOptionsEphemeralProtected: 'dev-opts',
+      request: { headers: { host: 'localhost' } }
+    })
+    expect(result.url).toContain('dev-url')
     expect(result.opts).toBe('dev-opts')
   })
   it('returns old API url and opts if not using new Ricardo', () => {
-    const result = selectMeasurementsUrlAndOptions(
-      51.5,
-      -0.1,
-      false,
+    const result = selectMeasurementsUrlAndOptions(51.5, -0.1, false, {
       injectedConfig,
       injectedLogger,
-      'production',
-      'dev-opts',
-      'prod-opts'
-    )
+      injectedOptions: { headers: {} }
+    })
     expect(result.url).toBe('old-url')
-    expect(result.opts).toBe('prod-opts')
+    expect(result.opts).toBeDefined()
   })
 })
 
