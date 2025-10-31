@@ -32,7 +32,8 @@ export const daqiTranslationsWelsh = {
       a: 'Crynodeb o lygredd aer y UK',
       b: 'Y diweddariad diwethaf ddoe am 5am',
       c: 'Sut y gall llygryddion aer effeithio ar eich iechyd',
-      d: "Llygryddion aer sy'n cael eu monitro gerllaw"
+      d: "Llygryddion aer sy'n cael eu monitro gerllaw",
+      ukForecast: 'Rhagolwg y DU'
     },
     headings: {
       main: 'Mynegai Ansawdd Aer Dyddiol (DAQI)',

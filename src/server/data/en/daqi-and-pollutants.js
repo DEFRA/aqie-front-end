@@ -32,7 +32,8 @@ export const daqiTranslations = {
       b: 'Latest at 5am on',
       c: 'How air pollutants can affect your health',
       d: 'Air pollutants monitored near by',
-      e: ''
+      e: '',
+      ukForecast: 'UK forecast'
     },
     headings: {
       main: 'Daily Air Quality Index (DAQI)',

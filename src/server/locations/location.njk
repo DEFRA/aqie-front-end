@@ -25,11 +25,13 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full-until-desktop govuk-grid-column-two-thirds-from-desktop">
       {% include "daqi.njk" %}
-      {% if lang == "cy" %}
-      {% include "forecast-welsh.njk" %}
-      {% else %}
-      {% include "forecast.njk" %}
-      {% endif %}
+  {% if lang == "cy" %}
+  {% include "forecast-welsh.njk" %}
+  <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ daqi.pageTexts.ukForecast }}</h2>
+  {% else %}
+  {% include "forecast.njk" %}
+  <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ daqi.pageTexts.ukForecast }}</h2>
+  {% endif %}
       {% if transformedDailySummary and transformedDailySummary.isCurrentDate %}
       <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ daqi.pageTexts.e }}</h2>
         {% for key, value in transformedDailySummary %}
