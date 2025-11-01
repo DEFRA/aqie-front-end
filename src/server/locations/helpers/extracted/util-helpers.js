@@ -150,11 +150,21 @@ const buildNIOptionsOAuth = async ({
   injectedIsMockEnabled,
   injectedRefreshOAuthToken
 }) => {
+  // Check if injectedIsMockEnabled is a function and call it, otherwise use as boolean
+  const isMock =
+    typeof injectedIsMockEnabled === 'function'
+      ? injectedIsMockEnabled()
+      : !!injectedIsMockEnabled
+
+  logger.info(`buildNIOptionsOAuth called - isMockEnabled: ${isMock}`)
   let optionsOAuth = {}
   let accessToken
-  if (!injectedIsMockEnabled) {
+  if (!isMock) {
+    logger.info('Mock is disabled, fetching OAuth token...')
     const savedAccessToken = request.yar.get('savedAccessToken')
+    logger.info(`Saved access token exists: ${!!savedAccessToken}`)
     accessToken = savedAccessToken || (await injectedRefreshOAuthToken(request))
+    logger.info(`Access token obtained: ${!!accessToken}`)
     optionsOAuth = {
       method: 'GET',
       headers: {
@@ -162,6 +172,8 @@ const buildNIOptionsOAuth = async ({
         'Content-Type': 'application/json'
       }
     }
+  } else {
+    logger.info('Mock is enabled, skipping OAuth token fetch')
   }
   // Always return an object for optionsOAuth, even in mock mode
   return { optionsOAuth, accessToken }

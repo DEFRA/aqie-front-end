@@ -62,10 +62,4 @@ async function getNIPlaces(userLocation, isMockEnabled, optionsOAuth, request) {
   return niPlacesData
 }
 
-export async function fetchOAuthToken(params) {
-  // TODO: Implement OAuth token fetching logic
-  // Placeholder implementation
-  return Promise.resolve({ token: 'mock-token', error: null })
-}
-
 export { getNIPlaces }
