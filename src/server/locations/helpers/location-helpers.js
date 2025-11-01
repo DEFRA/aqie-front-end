@@ -131,7 +131,15 @@ function getToken(req) {
 }
 
 function isMockEnabled() {
-  return config.get('enabledMock')
+  const mockValue = config.get('enabledMock')
+  console.log(
+    '[DEBUG] isMockEnabled called, value:',
+    mockValue,
+    'type:',
+    typeof mockValue
+  )
+  console.log('[DEBUG] ENABLED_MOCK env var:', process.env.ENABLED_MOCK)
+  return mockValue
 }
 
 export {

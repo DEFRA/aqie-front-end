@@ -1,15 +1,53 @@
 // ''
-// Stub for fetchOAuthToken for DI and test mode compatibility
-// Returns a mock token for development and test environments
+import { createLogger } from './logging/logger.js'
+import { catchFetchError } from './catch-fetch-error.js'
+import { config } from '../../../config/index.js'
 
-/**
- * Fetches an OAuth token (stub implementation).
- * @param {Object} [options] - Optional options for token fetch.
- * @returns {Promise<string>} A promise that resolves to a mock token string.
- */
+const logger = createLogger()
+
+// ''
+const tokenUrl = config.get('oauthTokenUrlNIreland')
+const oauthTokenNorthernIrelandTenantId = config.get(
+  'oauthTokenNorthernIrelandTenantId'
+)
+const clientId = config.get('clientIdNIreland')
+const clientSecret = config.get('clientSecretNIreland')
+const redirectUri = config.get('redirectUriNIreland')
+const scope = config.get('scopeNIreland')
+
 export async function fetchOAuthToken(options = {}) {
-  // ''
-  // In a real implementation, this would fetch a token from an auth server.
-  // For now, return a mock token for development/test mode.
-  return 'mock-oauth-token'
+  const fetchLogger = options.logger || logger
+
+  fetchLogger.info('OAuth token requested:')
+
+  const url = `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`
+  const requestOptions = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams({
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uri: redirectUri,
+      scope,
+      grant_type: 'client_credentials',
+      state: '1245'
+    })
+  }
+
+  // Invoking token API
+  const [statusCodeToken, dataToken] = await catchFetchError(
+    url,
+    requestOptions,
+    true
+  )
+
+  if (statusCodeToken !== 200) {
+    fetchLogger.error('Error OAuth statusCodeToken fetched:', statusCodeToken)
+  } else {
+    fetchLogger.info('OAuth token fetched:::')
+  }
+
+  return dataToken.access_token
 }
