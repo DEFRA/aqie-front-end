@@ -73,7 +73,7 @@ export const daqiTranslationsWelsh = {
     tooltipText: {
       level:
         'Cyfrifir y lefel ar sail y mynegai ansawdd aer dyddiol (DAQI). Mae 4 lefel: isel, cymedrol, uchel ac uchel iawn.',
-      latest1: "Mae'r darlleniadau'n cael eu mesur bob awr. Mae'r uned µg/m",
+      latest1: 'Mae’r darlleniadau’n cael eu mesur bob awr. Mae’r uned µg/m',
       latest2:
         ' yn sefyll am ficrogramau (miliynfed o gram) am bob metr ciwbig o aer.'
     }
