@@ -30,7 +30,7 @@ export const daqiTranslationsWelsh = {
     },
     pageTexts: {
       a: 'Crynodeb o lygredd aer y UK',
-      b: 'Y diweddariad diwethaf ddoe am 5am',
+      b: 'Y diweddaraf am 5am ymlaen',
       c: 'Sut y gall llygryddion aer effeithio ar eich iechyd',
       d: "Llygryddion aer sy'n cael eu monitro gerllaw",
       ukForecast: 'Rhagolwg y DU'
