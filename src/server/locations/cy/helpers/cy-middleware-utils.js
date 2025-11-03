@@ -1,6 +1,6 @@
 import { fetchData } from '../../helpers/fetch-data.js'
 import { calendarWelsh } from '../../../data/cy/cy.js'
-import { calendarEnglish } from '../../../data/en/en.js'
+import { calendarEnglish, english } from '../../../data/en/en.js'
 import { handleErrorInputAndRedirect } from '../../helpers/error-input-and-redirect.js'
 import {
   getLanguageDates,
@@ -56,9 +56,9 @@ export const validateInputAndHandleErrors = async (
         request,
         h,
         locationNameOrPostcode,
-        lang,
+        'en',
         true,
-        welsh
+        english
       )
     }
   }
@@ -76,9 +76,9 @@ export const validateInputAndHandleErrors = async (
         request,
         h,
         locationNameOrPostcode,
-        lang,
+        'en',
         Boolean(searchTerms),
-        welsh
+        english
       )
     }
   }

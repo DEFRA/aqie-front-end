@@ -26,8 +26,8 @@ export const uiTranslations = {
       c: `View ${COOKIES_TEXT.toLowerCase()}`
     },
     hideCookieMsg: {
-      text0: "You've accepted analytics cookies. You can ",
-      text1: "You've rejected analytics cookies. You can",
+      text0: 'You’ve accepted analytics cookies. You can ',
+      text1: 'You’ve rejected analytics cookies. You can',
       text2: 'change your cookie settings',
       text3: ' at any time.',
       buttonText: 'Hide cookie message'
