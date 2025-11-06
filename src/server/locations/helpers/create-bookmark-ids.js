@@ -40,9 +40,9 @@ function createURLRouteBookmarks(selectedMatchesAddedIDs) {
     acc.push(item)
     return acc
   }, [])
-  logger.info(
-    `Creating URL route bookmarks for matches 1xxx after: ${JSON.stringify(selectedMatchesAddedIDs)}`
-  )
+  // logger.info(
+  //   `Creating URL route bookmarks for matches 1xxx after: ${JSON.stringify(selectedMatchesAddedIDs)}`
+  // )
   return { selectedMatchesAddedIDs }
 }
 

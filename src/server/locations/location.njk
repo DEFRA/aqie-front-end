@@ -27,10 +27,14 @@
       {% include "daqi.njk" %}
   {% if lang == "cy" %}
   {% include "forecast-welsh.njk" %}
+  {% if transformedDailySummary and transformedDailySummary.isCurrentDate %}
   <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ daqi.pageTexts.ukForecast }}</h2>
+  {% endif %}
   {% else %}
   {% include "forecast.njk" %}
+  {% if transformedDailySummary and transformedDailySummary.isCurrentDate %}
   <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ daqi.pageTexts.ukForecast }}</h2>
+  {% endif %}
   {% endif %}
       {% if transformedDailySummary and transformedDailySummary.isCurrentDate %}
       <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ daqi.pageTexts.e }}</h2>
