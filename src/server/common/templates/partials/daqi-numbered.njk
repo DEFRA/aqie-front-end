@@ -17,9 +17,9 @@
     <div class="daqi-bar">
       {% for i in range(1, 11) %}
         {% if i == safeValue %}
-          <div class="daqi-bar-segment daqi-{{ safeValue }}"><span class="daqi-number">{{ i }}</span></div>
+          <div class="daqi-bar-segment daqi-{{ i }} daqi-selected"><span class="daqi-number">{{ i }}</span></div>
         {% else %}
-          <div class="daqi-bar-segment daqi-0"><span class="daqi-number">{{ i }}</span></div>
+          <div class="daqi-bar-segment"><span class="daqi-number">{{ i }}</span></div>
         {% endif %}
       {% endfor %}
     </div>

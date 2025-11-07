@@ -14,11 +14,6 @@ function pointsInRange(point1, point2) {
 
 function getNearLocation(lat, lon, forecastCoordinates, forecasts) {
   let getLocation
-  logger.info(`Fetching nearest location for latxx: ${lat}, lon: ${lon}`)
-  logger.info(
-    `Fetching forecast coordinatesxx: ${JSON.stringify(forecastCoordinates)}`
-  )
-  logger.info(`Fetching forecastsxx: ${JSON.stringify(forecasts)}`)
   try {
     if (lat && lon && forecastCoordinates) {
       getLocation = geolib.findNearest(

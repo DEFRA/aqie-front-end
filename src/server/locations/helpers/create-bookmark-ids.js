@@ -1,16 +1,10 @@
-import { createLogger } from '../../common/helpers/logging/logger.js'
 import {
   convertStringToHyphenatedLowercaseWords,
   isValidFullPostcodeUK
 } from './convert-string.js'
 
-const logger = createLogger()
-
 function createURLRouteBookmarks(selectedMatchesAddedIDs) {
   const normalizeString = (str) => str?.toLowerCase().replace(/\s+/g, '')
-  logger.info(
-    `Creating URL route bookmarks for matches 1xxx: ${JSON.stringify(selectedMatchesAddedIDs)}`
-  )
   selectedMatchesAddedIDs.reduce((acc, item) => {
     let urlRoute = ''
     const validPostcode = isValidFullPostcodeUK(
@@ -40,9 +34,6 @@ function createURLRouteBookmarks(selectedMatchesAddedIDs) {
     acc.push(item)
     return acc
   }, [])
-  logger.info(
-    `Creating URL route bookmarks for matches 1xxx after: ${JSON.stringify(selectedMatchesAddedIDs)}`
-  )
   return { selectedMatchesAddedIDs }
 }
 

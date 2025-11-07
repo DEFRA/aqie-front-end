@@ -422,20 +422,32 @@ svg|foreignObject {
     z-index: 5;
   }
 
-// Active/selected segment styling
-.daqi-bar-segment.daqi-1,
-.daqi-bar-segment.daqi-2,
-.daqi-bar-segment.daqi-3 {
+// Active/selected segment styling - each level gets its unique color
+.daqi-bar-segment.daqi-1 {
   background-color: $daqi-colour-1;
 
   .daqi-number {
-    color: govuk-colour("white");
+    color: govuk-colour("black");
   }
 }
 
-.daqi-bar-segment.daqi-4,
-.daqi-bar-segment.daqi-5,
-.daqi-bar-segment.daqi-6 {
+.daqi-bar-segment.daqi-2 {
+  background-color: $daqi-colour-2;
+
+  .daqi-number {
+    color: govuk-colour("black");
+  }
+}
+
+.daqi-bar-segment.daqi-3 {
+  background-color: $daqi-colour-3;
+
+  .daqi-number {
+    color: govuk-colour("black");
+  }
+}
+
+.daqi-bar-segment.daqi-4 {
   background-color: $daqi-colour-4;
 
   .daqi-number {
@@ -443,9 +455,32 @@ svg|foreignObject {
   }
 }
 
-.daqi-bar-segment.daqi-7,
-.daqi-bar-segment.daqi-8 {
+.daqi-bar-segment.daqi-5 {
+  background-color: $daqi-colour-5;
+
+  .daqi-number {
+    color: govuk-colour("black");
+  }
+}
+
+.daqi-bar-segment.daqi-6 {
+  background-color: $daqi-colour-6;
+
+  .daqi-number {
+    color: govuk-colour("black");
+  }
+}
+
+.daqi-bar-segment.daqi-7 {
   background-color: $daqi-colour-7;
+
+  .daqi-number {
+    color: govuk-colour("white");
+  }
+}
+
+.daqi-bar-segment.daqi-8 {
+  background-color: $daqi-colour-8;
 
   .daqi-number {
     color: govuk-colour("white");
