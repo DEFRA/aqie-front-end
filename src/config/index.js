@@ -89,8 +89,7 @@ export const config = convict({
   enabledMock: {
     doc: 'Enabled Mock Data for Northern Ireland Names API',
     format: Boolean,
-    default: false,
-    env: 'ENABLED_MOCK'
+    default: true
   },
   useNewRicardoMeasurementsEnabled: {
     doc: 'Falg To Use New Ricardo Measurements API',

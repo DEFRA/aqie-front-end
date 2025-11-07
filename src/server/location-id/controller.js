@@ -28,8 +28,50 @@ import { getNIData } from '../locations/helpers/get-ni-single-data.js'
 import { compareLastElements } from '../locations/helpers/convert-string.js'
 import sizeof from 'object-sizeof'
 import { config } from '../../config/index.js'
+import { mockLevelColor } from '../common/helpers/mock-daqi-level.js'
 
 const logger = createLogger()
+
+/**
+ * Check if mock level is requested and override air quality data
+ * Non-intrusive: only applies mock if explicitly enabled, otherwise returns original data
+ */
+function applyMockLevel(request, airQuality) {
+  // Check session for mockLevel (preserved across redirects)
+  const mockLevel = request.yar.get('mockLevel')
+
+  logger.info(
+    `🔍 applyMockLevel called - mockLevel from session:`,
+    mockLevel,
+    `(type: ${typeof mockLevel})`
+  )
+
+  if (mockLevel !== undefined && mockLevel !== null) {
+    const level = parseInt(mockLevel, 10)
+
+    logger.info(`🔍 Parsed level:`, level, `isNaN:`, isNaN(level))
+
+    // Validate level
+    if (!isNaN(level) && level >= 0 && level <= 10) {
+      logger.info(`🎨 Mock DAQI Level ${level} applied from session`)
+
+      // Generate mock data
+      const mockData = mockLevelColor(level, {
+        includeForecast: true,
+        allSameLevel: true,
+        logDetails: false
+      })
+
+      return mockData
+    } else {
+      logger.warn(`Invalid mock level: ${mockLevel}. Must be 0-10.`)
+    }
+  }
+
+  // Return original data if no mock level (default behavior unchanged)
+  logger.info(`🔍 Returning original airQuality (no mock)`)
+  return airQuality
+}
 
 // Helper to handle redirection for Welsh language
 function handleWelshRedirect(query, locationId, h) {
@@ -62,9 +104,17 @@ function handleSearchTermsRedirect(
       getSearchTermsFromUrl(currentUrl)
     request.yar.clear('locationData')
     logger.info('Redirecting to location search')
+
+    // Preserve mockLevel in redirect if present
+    const mockLevel = request.query?.mockLevel
+    const mockLevelParam =
+      mockLevel !== undefined
+        ? `&mockLevel=${encodeURIComponent(mockLevel)}`
+        : ''
+
     return h
       .redirect(
-        `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}`
+        `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}${mockLevelParam}`
       )
       .code(REDIRECT_STATUS_CODE)
       .takeover()
@@ -80,7 +130,8 @@ function buildLocationViewData({
   forecastNum,
   lang,
   getMonth,
-  metaSiteUrl
+  metaSiteUrl,
+  request
 }) {
   let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
   title = convertFirstLetterIntoUppercase(title)
@@ -89,7 +140,12 @@ function buildLocationViewData({
     locationData.dailySummary,
     lang
   )
-  const { airQuality } = airQualityValues(forecastNum, lang)
+
+  let { airQuality } = airQualityValues(forecastNum, lang)
+
+  // Apply mock level if requested
+  airQuality = applyMockLevel(request, airQuality)
+
   return {
     result: locationDetails,
     airQuality,
@@ -244,6 +300,19 @@ function initializeRequestData(request) {
   const currentUrl = request.url.href
   const lang = query?.lang ?? LANG_EN
 
+  // Store mockLevel in session if provided, clear if not (non-intrusive approach)
+  if (query?.mockLevel !== undefined) {
+    request.yar.set('mockLevel', query.mockLevel)
+    logger.info(`🎨 Mock level ${query.mockLevel} stored in session`)
+  } else {
+    // Clear mock level from session when parameter is not present
+    const currentMockLevel = request.yar.get('mockLevel')
+    if (currentMockLevel !== undefined && currentMockLevel !== null) {
+      request.yar.set('mockLevel', null)
+      logger.info(`🎨 Mock level cleared from session - returning to real data`)
+    }
+  }
+
   return {
     query,
     headers,
@@ -395,7 +464,8 @@ async function processLocationWorkflow({
       forecastNum,
       lang,
       getMonth,
-      metaSiteUrl
+      metaSiteUrl,
+      request
     })
     return processLocationResult(
       request,
