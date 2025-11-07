@@ -54,9 +54,21 @@ const handleSingleMatch = (
     lang
   })
   logger.info(`Redirecting to location with custom ID: ${customId}`)
+
+  // Preserve mockLevel in redirect if present
+  const mockLevel = request.query?.mockLevel
+  const mockLevelParam =
+    mockLevel !== undefined ? `?mockLevel=${encodeURIComponent(mockLevel)}` : ''
+
   return lang === LANG_EN
-    ? h.redirect(`/location/${customId}`).code(REDIRECT_STATUS_CODE).takeover()
-    : h.redirect(`/lleoliad/${customId}`).code(REDIRECT_STATUS_CODE).takeover()
+    ? h
+        .redirect(`/location/${customId}${mockLevelParam}`)
+        .code(REDIRECT_STATUS_CODE)
+        .takeover()
+    : h
+        .redirect(`/lleoliad/${customId}${mockLevelParam}`)
+        .code(REDIRECT_STATUS_CODE)
+        .takeover()
 }
 
 // Helper function to handle multiple matches
@@ -154,15 +166,9 @@ const processMatches = (
     locationNameOrPostcode,
     options
   )
-  logger.info(
-    `Selected matches after filtering: ${JSON.stringify(selectedMatches)}`
-  )
   // Add IDs to selected matches
   const { selectedMatchesAddedIDs } = createURLRouteBookmarks(selectedMatches)
   selectedMatches = selectedMatchesAddedIDs
-  logger.info(
-    `Selected matches after adding IDs 2xxx: ${JSON.stringify(selectedMatches)}`
-  )
   return { selectedMatches }
 }
 
