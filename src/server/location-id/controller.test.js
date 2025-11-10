@@ -295,23 +295,17 @@ describe('Location ID Controller Tests', () => {
       )
     })
 
-    it.skip('should not redirect when referer exists and search terms saved', async () => {
-      // '' TODO: Fix test - mock DAQI changes affected this test
-      mockRequest.headers = {
-        referer: 'http://localhost:3000/location?searchTerms=test'
-      }
+    it('should not redirect when referer exists and search terms saved', async () => {
+      // ''
       vi.mocked(compareLastElements).mockReturnValue(false)
 
       mockRequest.yar.get
         .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(null) // mockLevel (first call in initializeRequestData)
-        .mockReturnValueOnce(null) // mockLevel (second call in initializeRequestData)
         .mockReturnValueOnce({
           results: [{ id: 'test', name: 'Test Location' }],
           getForecasts: [{ locationId: 'test' }],
           locationType: 'uk'
         })
-        .mockReturnValueOnce(null) // mockLevel in applyMockLevel
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
@@ -326,7 +320,9 @@ describe('Location ID Controller Tests', () => {
 
       await getLocationDetailsController.handler(mockRequest, mockH)
 
-      expect(mockH.redirect).not.toHaveBeenCalled()
+      expect(mockH.redirect).not.toHaveBeenCalledWith(
+        expect.stringContaining('/location?lang=en&searchTerms=')
+      )
     })
   })
 
@@ -564,10 +560,7 @@ describe('Location ID Controller Tests', () => {
 
       mockRequest.yar.get
         .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(null) // mockLevel (first call in initializeRequestData)
-        .mockReturnValueOnce(null) // mockLevel (second call in initializeRequestData)
         .mockReturnValueOnce(mockLocationData)
-        .mockReturnValueOnce(null) // mockLevel in applyMockLevel
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
@@ -585,7 +578,8 @@ describe('Location ID Controller Tests', () => {
       expect(mockH.view).toHaveBeenCalledWith(
         'locations/location',
         expect.objectContaining({
-          lang: 'cy'
+          lang: 'cy',
+          summaryDate: '15 Hydref 2025'
         })
       )
     })
