@@ -208,7 +208,8 @@ async function getNearestLocationData(
   locationType,
   locationId,
   lang,
-  useNewRicardoMeasurementsEnabled
+  useNewRicardoMeasurementsEnabled,
+  request
 ) {
   let distance
   if (locationData.locationType === LOCATION_TYPE_NI) {
@@ -218,7 +219,8 @@ async function getNearestLocationData(
       locationType,
       0,
       lang,
-      useNewRicardoMeasurementsEnabled
+      useNewRicardoMeasurementsEnabled,
+      request
     )
   }
   const indexNI = 0
@@ -237,7 +239,8 @@ async function getNearestLocationData(
       locationType,
       locationIndex,
       lang,
-      useNewRicardoMeasurementsEnabled
+      useNewRicardoMeasurementsEnabled,
+      request
     )
   return {
     locationDetails,
@@ -448,7 +451,8 @@ async function processLocationWorkflow({
     locationType,
     locationId,
     lang,
-    useNewRicardoMeasurementsEnabled
+    useNewRicardoMeasurementsEnabled,
+    request
   )
 
   // Process result

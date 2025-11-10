@@ -1,4 +1,4 @@
-// Helper functions for location data and API logic
+import { config } from '../../../config/index.js'
 import {
   isValidFullPostcodeUK,
   isValidPartialPostcodeUK
@@ -130,6 +130,18 @@ function getToken(req) {
   return req?.headers?.authorization || null
 }
 
+function isMockEnabled() {
+  const mockValue = config.get('enabledMock')
+  console.log(
+    '[DEBUG] isMockEnabled called, value:',
+    mockValue,
+    'type:',
+    typeof mockValue
+  )
+  console.log('[DEBUG] ENABLED_MOCK env var:', process.env.ENABLED_MOCK)
+  return mockValue
+}
+
 export {
   buildUKLocationFilters,
   combineUKSearchTerms,
@@ -145,5 +157,6 @@ export {
   fetchApi,
   getToken,
   isValidFullPostcodeUK,
-  isValidPartialPostcodeUK
+  isValidPartialPostcodeUK,
+  isMockEnabled
 }

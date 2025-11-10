@@ -15,7 +15,7 @@ const WHERE_DO_YOU_WANT_TO_CHECK_WELSH = 'Ble hoffech chi wirio?'
 const ENTER_LOCATION_OR_POSTCODE = 'Rhowch leoliad neu god post'
 const ENTER_POSTCODE = 'Rhowch god post'
 const GO_BACK_TO_AIR_QUALITY = 'Ewch yn ôl i ansawdd aer'
-const PAGE_NOT_FOUND_MESSAGE = "Ni allem ddod o hyd i'r dudalen hon"
+const PAGE_NOT_FOUND_MESSAGE = 'Ni allem ddod o hyd i’r dudalen hon'
 
 // Common page title patterns for Welsh
 const WELSH_PAGE_TITLE_BASE = `${WELSH_SERVICE_NAME}${GOVUK_SUFFIX}`

@@ -193,6 +193,39 @@ const processLocationData = async (
   })
 }
 
+function shouldReturnNotFound(
+  redirectError,
+  getNIPlaces,
+  userLocation,
+  getOSPlaces
+) {
+  if (
+    redirectError.locationType === LOCATION_TYPE_NI &&
+    (!getNIPlaces?.results || getNIPlaces?.results.length === 0)
+  ) {
+    return true
+  }
+  if (
+    isLocationDataNotFound(
+      userLocation,
+      redirectError,
+      getOSPlaces,
+      getNIPlaces
+    )
+  ) {
+    return true
+  }
+  return false
+}
+
+function isInvalidDailySummary(getDailySummary) {
+  return (
+    !getDailySummary ||
+    typeof getDailySummary !== 'object' ||
+    !getDailySummary.today
+  )
+}
+
 const searchMiddleware = async (request, h) => {
   const { query, payload } = request
   const lang = LANG_EN
@@ -213,7 +246,6 @@ const searchMiddleware = async (request, h) => {
   }
 
   const { userLocation, locationNameOrPostcode } = redirectError
-
   const { getDailySummary, getForecasts, getOSPlaces, getNIPlaces } =
     await processLocationData(
       request,
@@ -224,40 +256,13 @@ const searchMiddleware = async (request, h) => {
     )
 
   if (
-    redirectError.locationType === LOCATION_TYPE_NI &&
-    (!getNIPlaces?.results || getNIPlaces?.results.length === 0)
-  ) {
-    return handleLocationDataNotFound(
-      request,
-      h,
-      locationNameOrPostcode,
-      lang,
-      searchTerms
-    )
-  }
-
-  if (
-    isLocationDataNotFound(
-      userLocation,
+    shouldReturnNotFound(
       redirectError,
-      getOSPlaces,
-      getNIPlaces
-    )
-  ) {
-    return handleLocationDataNotFound(
-      request,
-      h,
-      locationNameOrPostcode,
-      lang,
-      searchTerms
-    )
-  }
-
-  // Guard: Ensure getDailySummary is valid before calling transformKeys
-  if (
-    !getDailySummary ||
-    typeof getDailySummary !== 'object' ||
-    !getDailySummary.today
+      getNIPlaces,
+      userLocation,
+      getOSPlaces
+    ) ||
+    isInvalidDailySummary(getDailySummary)
   ) {
     return handleLocationDataNotFound(
       request,
@@ -321,4 +326,4 @@ const searchMiddleware = async (request, h) => {
   }
 }
 
-export { searchMiddleware }
+export { searchMiddleware, shouldReturnNotFound, isInvalidDailySummary }

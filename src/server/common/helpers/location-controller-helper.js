@@ -79,6 +79,7 @@ export function initializeLocationVariables(request, lang) {
  * Process location data for both English and Welsh controllers
  */
 export async function processLocationData(
+  request,
   locationData,
   locationId,
   lang,
@@ -97,7 +98,8 @@ export async function processLocationData(
       locationType,
       0,
       lang,
-      useNewRicardoMeasurementsEnabled
+      useNewRicardoMeasurementsEnabled,
+      request
     )
     const niDataResult = getNIData(locationData, distance, locationType)
     resultNI = niDataResult.resultNI
@@ -118,7 +120,8 @@ export async function processLocationData(
       locationType,
       locationIndex,
       lang,
-      useNewRicardoMeasurementsEnabled
+      useNewRicardoMeasurementsEnabled,
+      request
     )
 
   return {

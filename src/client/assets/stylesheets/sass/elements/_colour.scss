@@ -1,17 +1,17 @@
 
-// DAQI Colours - Enhanced color scheme with improved accessibility
+// DAQI Colours
 
-$daqi-colour-0: govuk-colour("light-grey");  // No data - keep existing grey
-$daqi-colour-1: #9CFF9C;   // Low - Light green
-$daqi-colour-2: #31FF00;   // Low - Bright green  
-$daqi-colour-3: #31CF00;   // Low - Medium green
-$daqi-colour-4: #FFFF00;   // Moderate - Yellow
-$daqi-colour-5: #FFCF00;   // Moderate - Orange-yellow
-$daqi-colour-6: #FF9A00;   // Moderate - Orange
-$daqi-colour-7: #FF6464;   // High - Light red
-$daqi-colour-8: #FF0000;   // High - Red
-$daqi-colour-9: #990000;   // High - Dark red
-$daqi-colour-10: #CE30FF;  // Very High - Purple
+$daqi-colour-0: govuk-colour("light-grey");
+$daqi-colour-1: govuk-colour("green");
+$daqi-colour-2: govuk-colour("green");
+$daqi-colour-3: govuk-colour("green");
+$daqi-colour-4: govuk-colour("yellow");
+$daqi-colour-5: govuk-colour("yellow");
+$daqi-colour-6: govuk-colour("yellow");
+$daqi-colour-7: govuk-colour("red");
+$daqi-colour-8: govuk-colour("red");
+$daqi-colour-9: govuk-colour("red");
+$daqi-colour-10: govuk-colour("purple");
 
 $daqi-colour: (
   $daqi-colour-0,

@@ -1,0 +1,43 @@
+{% for site in monitoringSites %}
+{% set time %}
+    {{ "now" | date | minusOneHour }}
+{% endset %}
+
+  <h3 class="govuk-heading-s govuk-!-margin-bottom-1">{{ site.site_name }}</h3>
+  <p class="govuk-caption-m govuk-!-margin-bottom-3">{{ site.distance }} {{daqi.pollutantTable.a}}</p>
+  {% set rows = [] %}
+  {% for pollutant in site.pollutants %}
+      {% set pollutantDetail = pollutantTypes[pollutant.type] %}
+      {% set row = [
+          { 
+              html: "<a class='govuk-!-margin-bottom-1' href='/" + version + pollutantDetail.href + "?userId=" + userId + "&utm_source=" + utm_source + "'>" + pollutantDetail.title + "</a><span class='govuk-caption-s govuk-!-margin-bottom-1'>Low range " + pollutantDetail.low_range + "</span>",
+              classes: "defra-aq-levels-table__cell--pollutant" 
+          },
+          { 
+              html: (pollutant.measurement | int) +  " <span class='govuk-!-font-size-16 govuk-!-font-weight-regular'>μg/&#13221;</span>",
+              classes: "defra-aq-levels-table__cell--reading" 
+          },
+          { 
+              html: pollutant.trend, 
+              classes: "defra-aq-levels-table__cell--trend" 
+          },
+          { 
+              html: "<strong class='daqi-tag daqi-tag--" + (pollutant.aqi if pollutant.aqi else "default-aqi-value") + "'>" + pollutant.band + "</strong>",
+              classes: "defra-aq-levels-table__cell--level" 
+          }
+      ] %}
+      {% set _ = rows.push(row) %}
+  {% endfor %}
+  {{ aqLevelsTable({
+      classes: "govuk-!-margin-bottom-2",
+      firstCellIsHeader: false,
+      head: [
+        { text: "Pollutant", classes: "defra-aq-levels-table__cell--pollutant"},
+        { text: "Measurement", classes: "defra-aq-levels-table__cell--reading" },
+        { text: "Trend", classes: "defra-aq-levels-table__cell--trend" },
+        { text: "Level", classes: "defra-aq-levels-table__cell--level" }
+      ],
+      rows: rows
+  }) }}
+  <p class='govuk-caption-s govuk-!-margin-bottom-6'>Latest {{ "now" | date | minusOneHour | lower }}</p>
+{% endfor %}

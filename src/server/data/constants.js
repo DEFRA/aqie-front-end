@@ -1,7 +1,8 @@
 // '' - API endpoint path for forecasts
 import { fileURLToPath } from 'node:url'
 import { dirname } from 'node:path'
-export const FORECASTS_API_PATH = 'aqie-forecast-api/forecast'
+export const FORECASTS_API_PATH = '/aqie-forecast-api/forecast'
+export const MEASUREMENTS_API_PATH = '/aqie-back-end/monitoringStationInfo?'
 export const REFERER_PATH_INDEX = 3
 export const FORECAST_DAY_SLICE_LENGTH = 3
 export const LANG_SLICE_LENGTH = 2

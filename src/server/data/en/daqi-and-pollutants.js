@@ -6,6 +6,7 @@ const SERVICE_NAME = 'Check air quality'
  */
 export const daqiTranslations = {
   daqi: {
+    forecastIntro: 'The air pollution forecast for today is',
     description: {
       a: `${SERVICE_NAME} for`,
       b: '. Get health advice, pollutant information and guidance on how to reduce your exposure to air pollution.'
@@ -31,7 +32,8 @@ export const daqiTranslations = {
       b: 'Latest at 5am on',
       c: 'How air pollutants can affect your health',
       d: 'Air pollutants monitored near by',
-      e: ''
+      e: '',
+      ukForecast: 'UK forecast'
     },
     headings: {
       main: 'Daily Air Quality Index (DAQI)',

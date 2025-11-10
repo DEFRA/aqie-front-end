@@ -6,6 +6,7 @@ import { WELSH_TITLE } from '../constants.js'
  */
 export const daqiTranslationsWelsh = {
   daqi: {
+    forecastIntro: 'Y rhagolwg llygredd aer heddiw yw',
     description: {
       a: 'Gwiriwch ansawdd aer',
       b: ". Mynnwch gyngor ar iechyd, gwybodaeth am lygryddion a chanllawiau ar sut i leihau'ch amlygiad i lygrydd aer."
@@ -29,9 +30,10 @@ export const daqiTranslationsWelsh = {
     },
     pageTexts: {
       a: 'Crynodeb o lygredd aer y UK',
-      b: 'Y diweddariad diwethaf ddoe am 5am',
+      b: 'Y diweddaraf am 5am ymlaen',
       c: 'Sut y gall llygryddion aer effeithio ar eich iechyd',
-      d: "Llygryddion aer sy'n cael eu monitro gerllaw"
+      d: "Llygryddion aer sy'n cael eu monitro gerllaw",
+      ukForecast: 'Rhagolwg y DU'
     },
     headings: {
       main: 'Mynegai Ansawdd Aer Dyddiol (DAQI)',
@@ -71,7 +73,7 @@ export const daqiTranslationsWelsh = {
     tooltipText: {
       level:
         'Cyfrifir y lefel ar sail y mynegai ansawdd aer dyddiol (DAQI). Mae 4 lefel: isel, cymedrol, uchel ac uchel iawn.',
-      latest1: "Mae'r darlleniadau'n cael eu mesur bob awr. Mae'r uned µg/m",
+      latest1: 'Mae’r darlleniadau’n cael eu mesur bob awr. Mae’r uned µg/m',
       latest2:
         ' yn sefyll am ficrogramau (miliynfed o gram) am bob metr ciwbig o aer.'
     }

@@ -139,6 +139,7 @@ describe('Location Controller Helper', () => {
       }
 
       const result = await processLocationData(
+        {}, // mock request
         locationData,
         'location123',
         LANG_EN,
