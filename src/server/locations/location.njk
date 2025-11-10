@@ -5,7 +5,7 @@
 {% set pollutantMonth = '' %}
 {% set pollutantYear = '' %}
 {% set pageHeadingSize = pageHeadingSize or "xl govuk-!-margin-top-4" %}
-{% if onlyShowTwoPages == "Yes" %}
+{# '' #}
 {% block content %}
 {% if lang == "en" %}
 {% set htmlLang = "en" %}
@@ -24,34 +24,12 @@
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full-until-desktop govuk-grid-column-two-thirds-from-desktop">
-      {% include "daqi.njk" %}
-  {% if lang == "cy" %}
-  {% include "forecast-welsh.njk" %}
-  {% if transformedDailySummary and transformedDailySummary.isCurrentDate %}
-  <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ daqi.pageTexts.ukForecast }}</h2>
-  {% endif %}
-  {% else %}
-  {% include "forecast.njk" %}
-  {% if transformedDailySummary and transformedDailySummary.isCurrentDate %}
-  <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ daqi.pageTexts.ukForecast }}</h2>
-  {% endif %}
-  {% endif %}
-      {% if transformedDailySummary and transformedDailySummary.isCurrentDate %}
-      <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ daqi.pageTexts.e }}</h2>
-        {% for key, value in transformedDailySummary %}
-        {% if key != 'issue_date' and key != 'isCurrentDate' %}
-            <h2 class="govuk-heading-s govuk-!-margin-bottom-1">{{ key }}</h2>
-            <p>{{ value }}</p>
-        {% endif %}
-        {% endfor %}
-      <p class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.pageTexts.b }} {{ summaryDate }}</p>
-      {% endif %}
-      <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6 govuk-!-margin-top-6">
+  {% include "daqi-numbered.njk" %}
       {% if airQuality.today.value >= 1 and airQuality.today.value <= 3 %}
-          <h2 class="govuk-heading-m">{{ daqi.healthAdvice.paragraphs.a }} {{ airQuality.today.readableBand }} {{ daqi.healthAdvice.paragraphs.b }}</h2>
+          <h2 class="govuk-heading-m govuk-!-margin-top-9">{{ daqi.healthAdvice.paragraphs.a }} {{ airQuality.today.readableBand }} {{ daqi.healthAdvice.paragraphs.b }}</h2>
           <p>{{ airQuality.today.advice }}</p>
       {% elseif airQuality.today.value >= 4 %}
-          <h2 class="govuk-heading-m">{{ daqi.healthAdvice.paragraphs.a }} {{ airQuality.today.readableBand }} {{ daqi.healthAdvice.paragraphs.b }}</h2>
+          <h2 class="govuk-heading-m govuk-!-margin-top-9">{{ daqi.healthAdvice.paragraphs.a }} {{ airQuality.today.readableBand }} {{ daqi.healthAdvice.paragraphs.b }}</h2>
           <p>{{ airQuality.today.advice }}</p>
           {% set adultsText %}
             {{ (airQuality.today.atrisk.adults) }}
@@ -167,6 +145,8 @@
 
   {% set tableHtml %}
     <h3 class="govuk-heading-s govuk-!-margin-bottom-1 pollutant-table">{{ site.name }}</h3>
+    {# Distance text visible only on mobile devices #}
+    <p class="defra-aq-tabs__mobile-distance govuk-caption-m">{{ site.distance }} {{daqi.pollutantTable.a}}</p>
     <p>{{ siteTypeDescriptions[site.areaType] }}</p>
     {{ govukTable({
         classes: "govuk-!-margin-bottom-2",
@@ -293,4 +273,3 @@
     </div>
   </div>
 {% endblock %}
-{% endif %}
