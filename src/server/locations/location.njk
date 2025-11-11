@@ -127,8 +127,11 @@
       {% endif %}
       {% if pollutant.band is defined %}
         {% set pollutantBand = pollutant.band %}
+        {# '' - Convert band to lowercase for CSS class (e.g., "Low" -> "low", "Very High" -> "very-high") #}
+        {% set pollutantBandClass = pollutant.band | lower | replace(" ", "-") %}
       {% else %}
         {% set pollutantBand = '' %}
+        {% set pollutantBandClass = '' %}
       {% endif %}
       {% set pollutantTableE = daqi.pollutantTable.e or '' %}
       {% set row = [
@@ -141,7 +144,7 @@
           classes: "align-middle"
         },
         {
-          html: "<strong class='daqi-tag daqi-tag--" + pollutantDaqi + "'>" + pollutantBand + "</strong>",
+          html: "<strong class='daqi-tag daqi-tag--" + pollutantBandClass + "'>" + pollutantBand + "</strong>",
           classes: "align-middle"
         }
       ] %}
@@ -233,8 +236,11 @@
       {% endif %}
       {% if pollutant.band is defined %}
         {% set pollutantBand = pollutant.band %}
+        {# '' - Convert band to lowercase for CSS class (e.g., "Low" -> "low", "Very High" -> "very-high") #}
+        {% set pollutantBandClass = pollutant.band | lower | replace(" ", "-") %}
       {% else %}
         {% set pollutantBand = '' %}
+        {% set pollutantBandClass = '' %}
       {% endif %}
       {% set pollutantTableE = daqi.pollutantTable.e or '' %}
       {% set row = [
@@ -247,7 +253,7 @@
           classes: "align-middle"
         },
         {
-          html: "<strong class=\"daqi-tag daqi-tag--" ~ pollutantDaqi ~ "\">" ~ pollutantBand ~ "</strong>",
+          html: "<strong class=\"daqi-tag daqi-tag--" ~ pollutantBandClass ~ "\">" ~ pollutantBand ~ "</strong>",
           classes: "align-middle"
         }
       ] %}

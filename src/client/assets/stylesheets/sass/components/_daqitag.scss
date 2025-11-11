@@ -86,3 +86,24 @@ mark {
   color: govuk-colour("white");
   background: $daqi-colour-10;
 }
+
+// '' - Pollutant band colors (separate from DAQI 1-10 scale)
+.daqi-tag--low {
+  color: govuk-colour("white");
+  background: govuk-colour("green");
+}
+
+.daqi-tag--moderate {
+  color: govuk-colour("black");
+  background: govuk-colour("yellow");
+}
+
+.daqi-tag--high {
+  color: govuk-colour("white");
+  background: govuk-colour("orange");
+}
+
+.daqi-tag--very-high {
+  color: govuk-colour("white");
+  background: govuk-colour("red");
+}
