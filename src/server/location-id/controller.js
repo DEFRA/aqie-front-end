@@ -105,16 +105,20 @@ function handleSearchTermsRedirect(
     request.yar.clear('locationData')
     logger.info('Redirecting to location search')
 
-    // Preserve mockLevel in redirect if present
+    // Preserve mockLevel and testMode in redirect if present
     const mockLevel = request.query?.mockLevel
     const mockLevelParam =
       mockLevel !== undefined
         ? `&mockLevel=${encodeURIComponent(mockLevel)}`
         : ''
 
+    const testMode = request.query?.testMode
+    const testModeParam =
+      testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
+
     return h
       .redirect(
-        `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}${mockLevelParam}`
+        `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}${mockLevelParam}${testModeParam}`
       )
       .code(REDIRECT_STATUS_CODE)
       .takeover()
@@ -136,10 +140,11 @@ function buildLocationViewData({
   let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
   title = convertFirstLetterIntoUppercase(title)
   headerTitle = convertFirstLetterIntoUppercase(headerTitle)
-  const { transformedDailySummary } = transformKeys(
-    locationData.dailySummary,
-    lang
-  )
+
+  // '' Handle case where dailySummary might be undefined (e.g., in test mode)
+  const { transformedDailySummary } = locationData.dailySummary
+    ? transformKeys(locationData.dailySummary, lang)
+    : { transformedDailySummary: undefined }
 
   let { airQuality } = airQualityValues(forecastNum, lang)
 
@@ -167,6 +172,7 @@ function buildLocationViewData({
     welshMonth: calendarWelsh[getMonth],
     summaryDate:
       lang === LANG_CY ? locationData.welshDate : locationData.englishDate,
+    showSummaryDate: locationData.showSummaryDate,
     dailySummaryTexts: english.dailySummaryTexts,
     serviceName: english.multipleLocations.serviceName,
     lang
@@ -313,6 +319,14 @@ function initializeRequestData(request) {
     }
   }
 
+  // Store testMode in session if provided (but DON'T clear it if not present - let it persist)
+  if (query?.testMode !== undefined) {
+    request.yar.set('testMode', query.testMode)
+    logger.info(`🧪 Test mode ${query.testMode} stored in session`)
+  }
+  // Note: We don't clear testMode automatically - it persists across requests
+  // To clear it, user must explicitly visit with ?testMode=clear or restart session
+
   return {
     query,
     headers,
@@ -439,6 +453,101 @@ async function processLocationWorkflow({
   const { getForecasts } = locationData
   const locationType = determineLocationType(locationData)
 
+  // 🔍 DEBUG: Check if query params or session testMode are present
+  const testModeFromQuery = request.query?.testMode
+  const testModeFromSession = request.yar.get('testMode')
+  const testMode = testModeFromQuery || testModeFromSession
+
+  logger.info(`🔍 request.query.testMode:`, testModeFromQuery)
+  logger.info(`🔍 session testMode:`, testModeFromSession)
+  logger.info(`🔍 final testMode:`, testMode)
+
+  // 🧪 TESTING: Temporary test modes for visual verification
+  // TODO: REMOVE THIS CODE AFTER TESTING!
+  if (testMode) {
+    logger.info(`🧪 TEST MODE ACTIVE: ${testMode}`)
+
+    switch (testMode) {
+      case 'noDailySummary':
+        // '' Remove daily summary text only (keep date if today)
+        logger.info('🧪 TEST: Removing daily summary data')
+        locationData.dailySummary = undefined
+        break
+
+      case 'oldDate':
+        // '' Set date to yesterday (date should NOT show)
+        logger.info('🧪 TEST: Setting old issue_date (yesterday)')
+        if (locationData.dailySummary) {
+          const yesterday = moment().subtract(1, 'days')
+          locationData.dailySummary.issue_date = yesterday.format(
+            'YYYY-MM-DD HH:mm:ss'
+          )
+          locationData.englishDate = yesterday.format('DD MMMM YYYY')
+          locationData.welshDate = yesterday.format('DD MMMM YYYY')
+          logger.info(
+            `🧪 Changed issue_date to: ${locationData.dailySummary.issue_date}`
+          )
+        }
+        break
+
+      case 'todayDate':
+        // '' Set date to today (date SHOULD show)
+        logger.info('🧪 TEST: Setting today issue_date')
+        if (locationData.dailySummary) {
+          const today = moment()
+          locationData.dailySummary.issue_date = today.format(
+            'YYYY-MM-DD HH:mm:ss'
+          )
+          locationData.englishDate = today.format('DD MMMM YYYY')
+          locationData.welshDate = today.format('DD MMMM YYYY')
+          logger.info(
+            `🧪 Changed issue_date to: ${locationData.dailySummary.issue_date}`
+          )
+          logger.info(`🧪 Changed englishDate to: ${locationData.englishDate}`)
+        }
+        break
+
+      case 'noDataOldDate': {
+        // '' Remove daily summary AND set old date (nothing should show)
+        logger.info('🧪 TEST: Removing summary AND setting old date')
+        const yesterday = moment().subtract(1, 'days')
+        locationData.dailySummary = {
+          issue_date: yesterday.format('YYYY-MM-DD HH:mm:ss')
+        }
+        locationData.englishDate = yesterday.format('DD MMMM YYYY')
+        locationData.welshDate = yesterday.format('DD MMMM YYYY')
+        logger.info(
+          `🧪 Changed issue_date to: ${locationData.dailySummary.issue_date}`
+        )
+        logger.info(`🧪 Removed daily summary data (only kept issue_date)`)
+        break
+      }
+
+      default:
+        logger.warn(`🧪 Unknown testMode: ${testMode}`)
+    }
+
+    // Re-calculate showSummaryDate after any changes
+    const isSummaryDateToday = (issueDate) => {
+      if (!issueDate) return false
+      const today = moment().format('YYYY-MM-DD')
+      const issueDateFormatted = moment(issueDate).format('YYYY-MM-DD')
+      return today === issueDateFormatted
+    }
+
+    locationData.showSummaryDate = isSummaryDateToday(
+      locationData.dailySummary?.issue_date
+    )
+
+    // Update session with modified data
+    request.yar.set('locationData', locationData)
+    logger.info('🧪 TEST: Updated locationData in session')
+    logger.info(
+      `🧪 TEST: Final showSummaryDate = ${locationData.showSummaryDate}`
+    )
+  }
+  // END TEST CODE
+
   // Get nearest location and related data
   const {
     locationDetails,
@@ -454,6 +563,51 @@ async function processLocationWorkflow({
     useNewRicardoMeasurementsEnabled,
     request
   )
+
+  // 🔍 DEBUG: Log showSummaryDate value
+  logger.info(`🔍 ========== SUMMARY DATE DEBUG ==========`)
+  logger.info(
+    `🔍 showSummaryDate (from session): ${locationData.showSummaryDate}`
+  )
+  logger.info(`🔍 dailySummary object exists: ${!!locationData.dailySummary}`)
+  logger.info(
+    `🔍 dailySummary.issue_date (raw): ${locationData.dailySummary?.issue_date}`
+  )
+  logger.info(
+    `🔍 dailySummary.today exists: ${!!locationData.dailySummary?.today}`
+  )
+  logger.info(`🔍 dailySummary.today value:`, locationData.dailySummary?.today)
+  logger.info(
+    `🔍 dailySummary.issue_date (type): ${typeof locationData.dailySummary?.issue_date}`
+  )
+  logger.info(`🔍 Today's date: ${moment().format('YYYY-MM-DD')}`)
+
+  // '' Calculate showSummaryDate if not already set (for direct access to location pages)
+  if (
+    locationData.showSummaryDate === undefined &&
+    locationData.dailySummary?.issue_date
+  ) {
+    const today = moment().format('YYYY-MM-DD')
+    const issueDate = moment(locationData.dailySummary.issue_date).format(
+      'YYYY-MM-DD'
+    )
+    locationData.showSummaryDate = today === issueDate
+    logger.info(`🔍 CALCULATED showSummaryDate:`)
+    logger.info(`🔍   - today: ${today}`)
+    logger.info(`🔍   - issueDate: ${issueDate}`)
+    logger.info(`🔍   - match: ${today === issueDate}`)
+    logger.info(`🔍   - result: ${locationData.showSummaryDate}`)
+  } else if (locationData.showSummaryDate !== undefined) {
+    logger.info(
+      `🔍 showSummaryDate already set to: ${locationData.showSummaryDate}`
+    )
+  } else {
+    logger.info(
+      `🔍 No issue_date available, showSummaryDate will be false/undefined`
+    )
+  }
+  logger.info(`🔍 FINAL showSummaryDate: ${locationData.showSummaryDate}`)
+  logger.info(`🔍 ========================================`)
 
   // Process result
   if (locationDetails) {

@@ -26,8 +26,8 @@
     <div class="govuk-grid-column-full-until-desktop govuk-grid-column-two-thirds-from-desktop">
   {% include "daqi-numbered.njk" %}
       
-      {# '' Display summary date if available #}
-      {% if summaryDate %}
+      {# '' Display summary date only if it's today's date #}
+      {% if showSummaryDate and summaryDate %}
         <p class="govuk-caption-s govuk-!-margin-top-6 govuk-!-margin-bottom-4">{{ daqi.pageTexts.b }} {{ summaryDate }}</p>
       {% endif %}
 

@@ -37,9 +37,9 @@
   <span class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.headings.main }}</span>
   {{ daqiNumberedBar(airQuality.today.value | default(0), airQuality.today.readableBand | default('')) }}
 
-  {# Add daily summary details for today #}
+  {# '' Add daily summary details for today only if date is current #}
   {% set todayKey = daqi.tabs.today %}
-  {% if transformedDailySummary and transformedDailySummary[todayKey] %}
+  {% if showSummaryDate and transformedDailySummary and transformedDailySummary[todayKey] %}
     <div class="daqitab-summary govuk-!-margin-top-6">
       <h3 class="govuk-heading-s">{{ daqi.pageTexts.e }}</h3>
       <p>{{ transformedDailySummary[todayKey] }}</p>
@@ -76,8 +76,8 @@
     <span class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.headings.main }}</span>
     {{ daqiNumberedBar(airQuality.day2.value | default(0), airQuality.day2.readableBand | capitalize | default('')) }}
 
-    {# Add daily summary details for day2 (tomorrow) #}
-    {% if transformedDailySummary %}
+    {# '' Add daily summary details for day2 only if date is current #}
+    {% if showSummaryDate and transformedDailySummary %}
       {% set todayKey = daqi.tabs.today %}
       {% for key, value in transformedDailySummary %}
         {% if key != 'issue_date' and key != 'isCurrentDate' and key != todayKey %}
@@ -115,8 +115,8 @@
     <span class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.headings.main }}</span>
     {{ daqiNumberedBar(airQuality.day3.value | default(0), airQuality.day3.readableBand | capitalize | default('')) }}
 
-    {# Add daily summary details for day3 (part of remaining days range) #}
-    {% if transformedDailySummary %}
+    {# '' Add daily summary details for day3 only if date is current #}
+    {% if showSummaryDate and transformedDailySummary %}
       {% set todayKey = daqi.tabs.today %}
       {% for key, value in transformedDailySummary %}
         {% if key != 'issue_date' and key != 'isCurrentDate' and key != todayKey %}
@@ -154,8 +154,8 @@
     <span class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.headings.main }}</span>
     {{ daqiNumberedBar(airQuality.day4.value | default(0), airQuality.day4.readableBand | capitalize | default('')) }}
 
-    {# Add daily summary details for day4 (part of remaining days range) #}
-    {% if transformedDailySummary %}
+    {# '' Add daily summary details for day4 only if date is current #}
+    {% if showSummaryDate and transformedDailySummary %}
       {% set todayKey = daqi.tabs.today %}
       {% for key, value in transformedDailySummary %}
         {% if key != 'issue_date' and key != 'isCurrentDate' and key != todayKey %}
@@ -193,8 +193,8 @@
     <span class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.headings.main }}</span>
     {{ daqiNumberedBar(airQuality.day5.value | default(0), airQuality.day5.readableBand | capitalize | default('')) }}
 
-    {# Add daily summary details for day5 (part of remaining days range) #}
-    {% if transformedDailySummary %}
+    {# '' Add daily summary details for day5 only if date is current #}
+    {% if showSummaryDate and transformedDailySummary %}
       {% set todayKey = daqi.tabs.today %}
       {% for key, value in transformedDailySummary %}
         {% if key != 'issue_date' and key != 'isCurrentDate' and key != todayKey %}

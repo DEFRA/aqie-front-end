@@ -38,6 +38,8 @@ const handleSingleMatch = (
   }
 ) => {
   const customId = selectedMatches.length === 1 ? urlRoute : headerTitleRoute // Use the helper function to generate the custom ID
+  const showSummaryDate = isSummaryDateToday(getDailySummary?.issue_date)
+
   request.yar.set('locationData', {
     results: selectedMatches,
     getForecasts: getForecasts?.forecasts,
@@ -51,7 +53,8 @@ const handleSingleMatch = (
     titleRoute,
     headerTitleRoute,
     locationType,
-    lang
+    lang,
+    showSummaryDate
   })
   logger.info(`Redirecting to location with custom ID: ${customId}`)
 
@@ -100,6 +103,8 @@ const handleMultipleMatches = (
 ) => {
   const resolvedLocationNameOrPostcode =
     locationNameOrPostcode ?? 'Unknown Location'
+  const showSummaryDate = isSummaryDateToday(getDailySummary?.issue_date)
+
   request.yar.set('locationData', {
     results: selectedMatches,
     getForecasts: getForecasts?.forecasts,
@@ -124,7 +129,8 @@ const handleMultipleMatches = (
     welshDate,
     englishDate,
     locationType,
-    lang
+    lang,
+    showSummaryDate
   })
 
   return lang === LANG_EN
@@ -290,6 +296,14 @@ const getFormattedDateSummary = (issueDate, calendarEnglish) => {
   return { getMonthSummary, formattedDateSummary }
 }
 
+// Helper function to check if date is today
+const isSummaryDateToday = (issueDate) => {
+  if (!issueDate) return false
+  const today = moment().format('YYYY-MM-DD')
+  const issueDateFormatted = moment(issueDate).format('YYYY-MM-DD')
+  return today === issueDateFormatted
+}
+
 // Helper function to deduplicate results
 const deduplicateResults = (results) => {
   return Array.from(new Set(results.map((item) => JSON.stringify(item)))).map(
@@ -304,5 +318,6 @@ export {
   getTitleAndHeaderTitle,
   getLanguageDates,
   getFormattedDateSummary,
+  isSummaryDateToday,
   deduplicateResults
 }
