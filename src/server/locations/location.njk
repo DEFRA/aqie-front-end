@@ -25,6 +25,12 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full-until-desktop govuk-grid-column-two-thirds-from-desktop">
   {% include "daqi-numbered.njk" %}
+      
+      {# '' Display summary date only if it's today's date #}
+      {% if showSummaryDate and summaryDate %}
+        <p class="govuk-caption-s govuk-!-margin-top-6 govuk-!-margin-bottom-4">{{ daqi.pageTexts.b }} {{ summaryDate }}</p>
+      {% endif %}
+
       {% if airQuality.today.value >= 1 and airQuality.today.value <= 3 %}
           <h2 class="govuk-heading-m govuk-!-margin-top-9">{{ daqi.healthAdvice.paragraphs.a }} {{ airQuality.today.readableBand }} {{ daqi.healthAdvice.paragraphs.b }}</h2>
           <p>{{ airQuality.today.advice }}</p>
@@ -121,8 +127,11 @@
       {% endif %}
       {% if pollutant.band is defined %}
         {% set pollutantBand = pollutant.band %}
+        {# '' - Convert band to lowercase for CSS class (e.g., "Low" -> "low", "Very High" -> "very-high") #}
+        {% set pollutantBandClass = pollutant.band | lower | replace(" ", "-") %}
       {% else %}
         {% set pollutantBand = '' %}
+        {% set pollutantBandClass = '' %}
       {% endif %}
       {% set pollutantTableE = daqi.pollutantTable.e or '' %}
       {% set row = [
@@ -135,7 +144,7 @@
           classes: "align-middle"
         },
         {
-          html: "<strong class='daqi-tag daqi-tag--" + pollutantDaqi + "'>" + pollutantBand + "</strong>",
+          html: "<strong class='daqi-tag daqi-tag--" + pollutantBandClass + "'>" + pollutantBand + "</strong>",
           classes: "align-middle"
         }
       ] %}
@@ -227,8 +236,11 @@
       {% endif %}
       {% if pollutant.band is defined %}
         {% set pollutantBand = pollutant.band %}
+        {# '' - Convert band to lowercase for CSS class (e.g., "Low" -> "low", "Very High" -> "very-high") #}
+        {% set pollutantBandClass = pollutant.band | lower | replace(" ", "-") %}
       {% else %}
         {% set pollutantBand = '' %}
+        {% set pollutantBandClass = '' %}
       {% endif %}
       {% set pollutantTableE = daqi.pollutantTable.e or '' %}
       {% set row = [
@@ -241,7 +253,7 @@
           classes: "align-middle"
         },
         {
-          html: "<strong class=\"daqi-tag daqi-tag--" ~ pollutantDaqi ~ "\">" ~ pollutantBand ~ "</strong>",
+          html: "<strong class=\"daqi-tag daqi-tag--" ~ pollutantBandClass ~ "\">" ~ pollutantBand ~ "</strong>",
           classes: "align-middle"
         }
       ] %}
