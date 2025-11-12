@@ -100,10 +100,10 @@ mark {
 
 .daqi-tag--high {
   color: govuk-colour("white");
-  background: govuk-colour("orange");
+  background: #FF0000; // '' - Red (matches DAQI 8 color for high pollution)
 }
 
 .daqi-tag--very-high {
   color: govuk-colour("white");
-  background: govuk-colour("red");
+  background: #CE30FF; // '' - Purple (matches DAQI 10 color for very high pollution)
 }

@@ -29,6 +29,10 @@ import { compareLastElements } from '../locations/helpers/convert-string.js'
 import sizeof from 'object-sizeof'
 import { config } from '../../config/index.js'
 import { mockLevelColor } from '../common/helpers/mock-daqi-level.js'
+import {
+  mockPollutantBand as generateMockPollutantBand,
+  applyMockPollutantsToSites
+} from '../common/helpers/mock-pollutant-level.js'
 
 const logger = createLogger()
 
@@ -73,11 +77,88 @@ function applyMockLevel(request, airQuality) {
   return airQuality
 }
 
+/**
+ * Check if mock pollutant band is requested and override pollutant data in monitoring sites
+ * '' - Non-intrusive: only applies mock if explicitly enabled
+ */
+function applyMockPollutants(request, monitoringSites) {
+  // Check session for mockPollutantBand (preserved across redirects)
+  const mockPollutantBandFromSession = request.yar.get('mockPollutantBand')
+
+  logger.info(
+    `🔍 applyMockPollutants called - mockPollutantBand from session:`,
+    mockPollutantBandFromSession,
+    `(type: ${typeof mockPollutantBandFromSession})`
+  )
+
+  if (
+    mockPollutantBandFromSession !== undefined &&
+    mockPollutantBandFromSession !== null
+  ) {
+    const bandStr = mockPollutantBandFromSession.toString().toLowerCase()
+
+    logger.info(`🔍 Parsed band:`, bandStr)
+
+    // Validate band
+    const validBands = ['low', 'moderate', 'high', 'very-high', 'very high']
+    if (
+      validBands.includes(bandStr) ||
+      validBands.includes(bandStr.replace('-', ' '))
+    ) {
+      logger.info(`🎨 Mock Pollutant Band '${bandStr}' applied from session`)
+
+      // Generate mock pollutants using the renamed import
+      const mockPollutants = generateMockPollutantBand(bandStr, {
+        logDetails: false
+      })
+
+      // Apply to all monitoring sites
+      const modifiedSites = applyMockPollutantsToSites(
+        monitoringSites,
+        mockPollutants,
+        {
+          applyToAllSites: true,
+          logDetails: false
+        }
+      )
+
+      return modifiedSites
+    } else {
+      logger.warn(
+        `Invalid mock pollutant band: ${mockPollutantBandFromSession}. Must be one of: low, moderate, high, very-high.`
+      )
+    }
+  }
+
+  // Return original data if no mock band (default behavior unchanged)
+  logger.info(`🔍 Returning original monitoringSites (no mock pollutants)`)
+  return monitoringSites
+}
+
 // Helper to handle redirection for Welsh language
 function handleWelshRedirect(query, locationId, h) {
   if (query?.lang && query?.lang === LANG_CY && !query?.searchTerms) {
+    // Preserve mock parameters in redirect
+    const mockLevel = query?.mockLevel
+    const mockLevelParam =
+      mockLevel !== undefined
+        ? `&mockLevel=${encodeURIComponent(mockLevel)}`
+        : ''
+
+    const mockPollutantBand = query?.mockPollutantBand
+    const mockPollutantParam =
+      mockPollutantBand !== undefined
+        ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
+        : ''
+
+    const testMode = query?.testMode
+    const testModeParam =
+      testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
+
     return h
-      .redirect(`/lleoliad/${locationId}/?lang=cy`)
+      .redirect(
+        `/lleoliad/${locationId}/?lang=cy${mockLevelParam}${mockPollutantParam}${testModeParam}`
+      )
       .code(REDIRECT_STATUS_CODE)
   }
   return null
@@ -112,13 +193,19 @@ function handleSearchTermsRedirect(
         ? `&mockLevel=${encodeURIComponent(mockLevel)}`
         : ''
 
+    const mockPollutantBand = request.query?.mockPollutantBand
+    const mockPollutantParam =
+      mockPollutantBand !== undefined
+        ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
+        : ''
+
     const testMode = request.query?.testMode
     const testModeParam =
       testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
 
     return h
       .redirect(
-        `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}${mockLevelParam}${testModeParam}`
+        `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}${mockLevelParam}${mockPollutantParam}${testModeParam}`
       )
       .code(REDIRECT_STATUS_CODE)
       .takeover()
@@ -151,11 +238,17 @@ function buildLocationViewData({
   // Apply mock level if requested
   airQuality = applyMockLevel(request, airQuality)
 
+  // '' Apply mock pollutant bands if requested
+  const modifiedMonitoringSites = applyMockPollutants(
+    request,
+    nearestLocationsRange
+  )
+
   return {
     result: locationDetails,
     airQuality,
     airQualityData: airQualityData.commonMessages,
-    monitoringSites: nearestLocationsRange,
+    monitoringSites: modifiedMonitoringSites,
     siteTypeDescriptions,
     pollutantTypes,
     pageTitle: `${english.multipleLocations.titlePrefix} ${title} - ${english.multipleLocations.pageTitle}`,
@@ -276,8 +369,28 @@ function validateAndProcessSessionData(
       safeSearchTerms || safeSecondSearchTerm || safeSearchTermsLocationType
         ? `&searchTerms=${encodeURIComponent(safeSearchTerms)}&secondSearchTerm=${encodeURIComponent(safeSecondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(safeSearchTermsLocationType)}`
         : ''
+
+    // Preserve mock parameters in redirect
+    const mockLevel = request.query?.mockLevel
+    const mockLevelParam =
+      mockLevel !== undefined
+        ? `&mockLevel=${encodeURIComponent(mockLevel)}`
+        : ''
+
+    const mockPollutantBand = request.query?.mockPollutantBand
+    const mockPollutantParam =
+      mockPollutantBand !== undefined
+        ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
+        : ''
+
+    const testMode = request.query?.testMode
+    const testModeParam =
+      testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
+
     return h
-      .redirect(`/location?lang=${encodeURIComponent(lang)}${searchParams}`)
+      .redirect(
+        `/location?lang=${encodeURIComponent(lang)}${searchParams}${mockLevelParam}${mockPollutantParam}${testModeParam}`
+      )
       .code(REDIRECT_STATUS_CODE)
       .takeover()
   }
@@ -306,18 +419,50 @@ function initializeRequestData(request) {
   const currentUrl = request.url.href
   const lang = query?.lang ?? LANG_EN
 
-  // Store mockLevel in session if provided, clear if not (non-intrusive approach)
+  // Store mockLevel in session if provided
+  // Note: We preserve mockLevel in session across redirects
+  // Only clear if explicitly set to empty string or 'clear'
   if (query?.mockLevel !== undefined) {
-    request.yar.set('mockLevel', query.mockLevel)
-    logger.info(`🎨 Mock level ${query.mockLevel} stored in session`)
-  } else {
-    // Clear mock level from session when parameter is not present
-    const currentMockLevel = request.yar.get('mockLevel')
-    if (currentMockLevel !== undefined && currentMockLevel !== null) {
+    // Check if explicitly clearing
+    if (query.mockLevel === '' || query.mockLevel === 'clear') {
       request.yar.set('mockLevel', null)
-      logger.info(`🎨 Mock level cleared from session - returning to real data`)
+      logger.info(`🎨 Mock level explicitly cleared from session`)
+    } else {
+      request.yar.set('mockLevel', query.mockLevel)
+      logger.info(`🎨 Mock level ${query.mockLevel} stored in session`)
     }
   }
+  // If parameter is not present, preserve existing session value (don't clear)
+
+  // '' Store mockPollutantBand in session if provided
+  // Note: We preserve mockPollutantBand in session across redirects
+  // Only clear if explicitly set to empty string or 'clear'
+  logger.info(
+    `🔍 DEBUG mockPollutantBand - query.mockPollutantBand:`,
+    query?.mockPollutantBand
+  )
+  logger.info(
+    `🔍 DEBUG mockPollutantBand - type:`,
+    typeof query?.mockPollutantBand
+  )
+  logger.info(
+    `🔍 DEBUG mockPollutantBand - full query object:`,
+    JSON.stringify(query)
+  )
+
+  if (query?.mockPollutantBand !== undefined) {
+    // Check if explicitly clearing
+    if (query.mockPollutantBand === '' || query.mockPollutantBand === 'clear') {
+      request.yar.set('mockPollutantBand', null)
+      logger.info(`🎨 Mock pollutant band explicitly cleared from session`)
+    } else {
+      request.yar.set('mockPollutantBand', query.mockPollutantBand)
+      logger.info(
+        `🎨 Mock pollutant band '${query.mockPollutantBand}' stored in session`
+      )
+    }
+  }
+  // If parameter is not present, preserve existing session value (don't clear)
 
   // Store testMode in session if provided (but DON'T clear it if not present - let it persist)
   if (query?.testMode !== undefined) {
