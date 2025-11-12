@@ -1,3 +1,8 @@
+export const warningMessages = {
+  forecastWarning:
+    '{level} levels of air pollution are predicted in this location from {weekday}.'
+}
+
 export const commonMessages = {
   low: {
     values: [1, 2, 3],

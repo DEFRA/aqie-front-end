@@ -33,6 +33,7 @@ import {
   mockPollutantBand as generateMockPollutantBand,
   applyMockPollutantsToSites
 } from '../common/helpers/mock-pollutant-level.js'
+import { getForecastWarning } from '../locations/helpers/forecast-warning.js'
 
 const logger = createLogger()
 
@@ -43,11 +44,13 @@ const logger = createLogger()
 function applyMockLevel(request, airQuality) {
   // Check session for mockLevel (preserved across redirects)
   const mockLevel = request.yar.get('mockLevel')
+  const mockDay = request.yar.get('mockDay') // '' Optional: specific day to apply mock level
 
   logger.info(
     `🔍 applyMockLevel called - mockLevel from session:`,
     mockLevel,
-    `(type: ${typeof mockLevel})`
+    `(type: ${typeof mockLevel}), mockDay:`,
+    mockDay
   )
 
   if (mockLevel !== undefined && mockLevel !== null) {
@@ -59,14 +62,56 @@ function applyMockLevel(request, airQuality) {
     if (!isNaN(level) && level >= 0 && level <= 10) {
       logger.info(`🎨 Mock DAQI Level ${level} applied from session`)
 
-      // Generate mock data
-      const mockData = mockLevelColor(level, {
-        includeForecast: true,
-        allSameLevel: true,
-        logDetails: false
-      })
+      // If mockDay is specified, apply mock level only to that specific day
+      if (
+        mockDay &&
+        ['today', 'day2', 'day3', 'day4', 'day5'].includes(mockDay)
+      ) {
+        // Generate mock data for the specific day only
+        const mockDayData = mockLevelColor(level, {
+          includeForecast: false,
+          allSameLevel: false,
+          logDetails: false
+        })
 
-      return mockData
+        // Start with existing airQuality or generate full forecast with current values
+        let modifiedAirQuality
+        if (airQuality && typeof airQuality === 'object') {
+          // Deep clone each day to avoid reference issues
+          modifiedAirQuality = {
+            today: airQuality.today ? { ...airQuality.today } : null,
+            day2: airQuality.day2 ? { ...airQuality.day2 } : null,
+            day3: airQuality.day3 ? { ...airQuality.day3 } : null,
+            day4: airQuality.day4 ? { ...airQuality.day4 } : null,
+            day5: airQuality.day5 ? { ...airQuality.day5 } : null
+          }
+        } else {
+          // If no airQuality exists, generate default forecast (all moderate level 4)
+          const defaultData = mockLevelColor(4, {
+            includeForecast: true,
+            allSameLevel: true,
+            logDetails: false
+          })
+          modifiedAirQuality = defaultData
+        }
+
+        // Override the specific day with the mock level
+        modifiedAirQuality[mockDay] = mockDayData.today
+
+        logger.info(
+          `🎯 Applied mock level ${level} to ${mockDay} only (value: ${mockDayData.today.value}, band: ${mockDayData.today.band})`
+        )
+        return modifiedAirQuality
+      } else {
+        // Generate mock data for all days (default behavior)
+        const mockData = mockLevelColor(level, {
+          includeForecast: true,
+          allSameLevel: true,
+          logDetails: false
+        })
+
+        return mockData
+      }
     } else {
       logger.warn(`Invalid mock level: ${mockLevel}. Must be 0-10.`)
     }
@@ -145,6 +190,10 @@ function handleWelshRedirect(query, locationId, h) {
         ? `&mockLevel=${encodeURIComponent(mockLevel)}`
         : ''
 
+    const mockDay = query?.mockDay
+    const mockDayParam =
+      mockDay !== undefined ? `&mockDay=${encodeURIComponent(mockDay)}` : ''
+
     const mockPollutantBand = query?.mockPollutantBand
     const mockPollutantParam =
       mockPollutantBand !== undefined
@@ -157,7 +206,7 @@ function handleWelshRedirect(query, locationId, h) {
 
     return h
       .redirect(
-        `/lleoliad/${locationId}/?lang=cy${mockLevelParam}${mockPollutantParam}${testModeParam}`
+        `/lleoliad/${locationId}/?lang=cy${mockLevelParam}${mockDayParam}${mockPollutantParam}${testModeParam}`
       )
       .code(REDIRECT_STATUS_CODE)
   }
@@ -244,6 +293,9 @@ function buildLocationViewData({
     nearestLocationsRange
   )
 
+  // '' Get forecast warning for high/very high pollution levels
+  const forecastWarning = getForecastWarning(airQuality, lang)
+
   return {
     result: locationDetails,
     airQuality,
@@ -268,6 +320,7 @@ function buildLocationViewData({
     showSummaryDate: locationData.showSummaryDate,
     dailySummaryTexts: english.dailySummaryTexts,
     serviceName: english.multipleLocations.serviceName,
+    forecastWarning,
     lang
   }
 }
@@ -430,6 +483,20 @@ function initializeRequestData(request) {
     } else {
       request.yar.set('mockLevel', query.mockLevel)
       logger.info(`🎨 Mock level ${query.mockLevel} stored in session`)
+    }
+  }
+  // If parameter is not present, preserve existing session value (don't clear)
+
+  // '' Store mockDay in session if provided (optional: specific day for mock level)
+  // Valid values: today, day2, day3, day4, day5
+  if (query?.mockDay !== undefined) {
+    // Check if explicitly clearing
+    if (query.mockDay === '' || query.mockDay === 'clear') {
+      request.yar.set('mockDay', null)
+      logger.info(`🎨 Mock day explicitly cleared from session`)
+    } else {
+      request.yar.set('mockDay', query.mockDay)
+      logger.info(`🎨 Mock day ${query.mockDay} stored in session`)
     }
   }
   // If parameter is not present, preserve existing session value (don't clear)

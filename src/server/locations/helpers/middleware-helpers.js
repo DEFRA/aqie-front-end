@@ -58,18 +58,30 @@ const handleSingleMatch = (
   })
   logger.info(`Redirecting to location with custom ID: ${customId}`)
 
-  // Preserve mockLevel in redirect if present
+  // Preserve mock parameters in redirect if present
   const mockLevel = request.query?.mockLevel
   const mockLevelParam =
     mockLevel !== undefined ? `?mockLevel=${encodeURIComponent(mockLevel)}` : ''
 
+  const mockDay = request.query?.mockDay
+  const mockDayParam =
+    mockDay !== undefined ? `&mockDay=${encodeURIComponent(mockDay)}` : ''
+
+  const mockPollutantBand = request.query?.mockPollutantBand
+  const mockPollutantParam =
+    mockPollutantBand !== undefined
+      ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
+      : ''
+
+  const queryParams = `${mockLevelParam}${mockDayParam}${mockPollutantParam}`
+
   return lang === LANG_EN
     ? h
-        .redirect(`/location/${customId}${mockLevelParam}`)
+        .redirect(`/location/${customId}${queryParams}`)
         .code(REDIRECT_STATUS_CODE)
         .takeover()
     : h
-        .redirect(`/lleoliad/${customId}${mockLevelParam}`)
+        .redirect(`/lleoliad/${customId}${queryParams}`)
         .code(REDIRECT_STATUS_CODE)
         .takeover()
 }
