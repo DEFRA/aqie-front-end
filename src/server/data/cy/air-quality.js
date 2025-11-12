@@ -1,3 +1,8 @@
+export const warningMessages = {
+  forecastWarning:
+    'Rhagwelir lefelau {level} o lygredd aer yn y lleoliad hwn o {weekday}.'
+}
+
 export const commonMessages = {
   isel: {
     values: [1, 2, 3],
