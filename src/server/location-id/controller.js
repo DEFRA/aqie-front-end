@@ -42,6 +42,13 @@ const logger = createLogger()
  * Non-intrusive: only applies mock if explicitly enabled, otherwise returns original data
  */
 function applyMockLevel(request, airQuality) {
+  // '' Disable mock functionality when configured (production by default)
+  const mocksDisabled = config.get('disableTestMocks')
+  if (mocksDisabled) {
+    logger.info(`🚫 Mock DAQI levels disabled (disableTestMocks=true)`)
+    return airQuality
+  }
+
   // Check session for mockLevel (preserved across redirects)
   const mockLevel = request.yar.get('mockLevel')
   const mockDay = request.yar.get('mockDay') // '' Optional: specific day to apply mock level
@@ -127,6 +134,13 @@ function applyMockLevel(request, airQuality) {
  * '' - Non-intrusive: only applies mock if explicitly enabled
  */
 function applyMockPollutants(request, monitoringSites) {
+  // '' Disable mock functionality when configured (production by default)
+  const mocksDisabled = config.get('disableTestMocks')
+  if (mocksDisabled) {
+    logger.info(`🚫 Mock pollutant bands disabled (disableTestMocks=true)`)
+    return monitoringSites
+  }
+
   // Check session for mockPollutantBand (preserved across redirects)
   const mockPollutantBandFromSession = request.yar.get('mockPollutantBand')
 
@@ -183,24 +197,29 @@ function applyMockPollutants(request, monitoringSites) {
 // Helper to handle redirection for Welsh language
 function handleWelshRedirect(query, locationId, h) {
   if (query?.lang && query?.lang === LANG_CY && !query?.searchTerms) {
-    // Preserve mock parameters in redirect
-    const mockLevel = query?.mockLevel
+    // '' Disable mock parameters when configured (production by default)
+    const mocksDisabled = config.get('disableTestMocks')
+
+    // Preserve mock parameters in redirect (only when mocks enabled)
+    const mockLevel = !mocksDisabled ? query?.mockLevel : undefined
     const mockLevelParam =
       mockLevel !== undefined
         ? `&mockLevel=${encodeURIComponent(mockLevel)}`
         : ''
 
-    const mockDay = query?.mockDay
+    const mockDay = !mocksDisabled ? query?.mockDay : undefined
     const mockDayParam =
       mockDay !== undefined ? `&mockDay=${encodeURIComponent(mockDay)}` : ''
 
-    const mockPollutantBand = query?.mockPollutantBand
+    const mockPollutantBand = !mocksDisabled
+      ? query?.mockPollutantBand
+      : undefined
     const mockPollutantParam =
       mockPollutantBand !== undefined
         ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
         : ''
 
-    const testMode = query?.testMode
+    const testMode = !mocksDisabled ? query?.testMode : undefined
     const testModeParam =
       testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
 
@@ -235,26 +254,35 @@ function handleSearchTermsRedirect(
     request.yar.clear('locationData')
     logger.info('Redirecting to location search')
 
-    // Preserve mockLevel and testMode in redirect if present
-    const mockLevel = request.query?.mockLevel
+    // '' Disable mock parameters when configured (production by default)
+    const mocksDisabled = config.get('disableTestMocks')
+
+    // Preserve mock parameters in redirect if present (only when mocks enabled)
+    const mockLevel = !mocksDisabled ? request.query?.mockLevel : undefined
     const mockLevelParam =
       mockLevel !== undefined
         ? `&mockLevel=${encodeURIComponent(mockLevel)}`
         : ''
 
-    const mockPollutantBand = request.query?.mockPollutantBand
+    const mockDay = !mocksDisabled ? request.query?.mockDay : undefined
+    const mockDayParam =
+      mockDay !== undefined ? `&mockDay=${encodeURIComponent(mockDay)}` : ''
+
+    const mockPollutantBand = !mocksDisabled
+      ? request.query?.mockPollutantBand
+      : undefined
     const mockPollutantParam =
       mockPollutantBand !== undefined
         ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
         : ''
 
-    const testMode = request.query?.testMode
+    const testMode = !mocksDisabled ? request.query?.testMode : undefined
     const testModeParam =
       testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
 
     return h
       .redirect(
-        `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}${mockLevelParam}${mockPollutantParam}${testModeParam}`
+        `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}${mockLevelParam}${mockDayParam}${mockPollutantParam}${testModeParam}`
       )
       .code(REDIRECT_STATUS_CODE)
       .takeover()
@@ -472,10 +500,13 @@ function initializeRequestData(request) {
   const currentUrl = request.url.href
   const lang = query?.lang ?? LANG_EN
 
+  // '' Disable mock functionality when configured (production by default)
+  const mocksDisabled = config.get('disableTestMocks')
+
   // Store mockLevel in session if provided
   // Note: We preserve mockLevel in session across redirects
   // Only clear if explicitly set to empty string or 'clear'
-  if (query?.mockLevel !== undefined) {
+  if (query?.mockLevel !== undefined && !mocksDisabled) {
     // Check if explicitly clearing
     if (query.mockLevel === '' || query.mockLevel === 'clear') {
       request.yar.set('mockLevel', null)
@@ -484,12 +515,16 @@ function initializeRequestData(request) {
       request.yar.set('mockLevel', query.mockLevel)
       logger.info(`🎨 Mock level ${query.mockLevel} stored in session`)
     }
+  } else if (mocksDisabled && query?.mockLevel !== undefined) {
+    logger.warn(
+      `🚫 Attempted to set mock level when mocks disabled (disableTestMocks=true) - ignoring parameter`
+    )
   }
   // If parameter is not present, preserve existing session value (don't clear)
 
   // '' Store mockDay in session if provided (optional: specific day for mock level)
   // Valid values: today, day2, day3, day4, day5
-  if (query?.mockDay !== undefined) {
+  if (query?.mockDay !== undefined && !mocksDisabled) {
     // Check if explicitly clearing
     if (query.mockDay === '' || query.mockDay === 'clear') {
       request.yar.set('mockDay', null)
@@ -498,6 +533,10 @@ function initializeRequestData(request) {
       request.yar.set('mockDay', query.mockDay)
       logger.info(`🎨 Mock day ${query.mockDay} stored in session`)
     }
+  } else if (mocksDisabled && query?.mockDay !== undefined) {
+    logger.warn(
+      `🚫 Attempted to set mock day when mocks disabled (disableTestMocks=true) - ignoring parameter`
+    )
   }
   // If parameter is not present, preserve existing session value (don't clear)
 
@@ -517,7 +556,7 @@ function initializeRequestData(request) {
     JSON.stringify(query)
   )
 
-  if (query?.mockPollutantBand !== undefined) {
+  if (query?.mockPollutantBand !== undefined && !mocksDisabled) {
     // Check if explicitly clearing
     if (query.mockPollutantBand === '' || query.mockPollutantBand === 'clear') {
       request.yar.set('mockPollutantBand', null)
@@ -528,15 +567,24 @@ function initializeRequestData(request) {
         `🎨 Mock pollutant band '${query.mockPollutantBand}' stored in session`
       )
     }
+  } else if (mocksDisabled && query?.mockPollutantBand !== undefined) {
+    logger.warn(
+      `🚫 Attempted to set mock pollutant band when mocks disabled (disableTestMocks=true) - ignoring parameter`
+    )
   }
   // If parameter is not present, preserve existing session value (don't clear)
 
-  // Store testMode in session if provided (but DON'T clear it if not present - let it persist)
-  if (query?.testMode !== undefined) {
+  // '' Store testMode in session if provided (but DON'T clear it if not present - let it persist)
+  // Disable when mocks are disabled
+  if (query?.testMode !== undefined && !mocksDisabled) {
     request.yar.set('testMode', query.testMode)
     logger.info(`🧪 Test mode ${query.testMode} stored in session`)
+  } else if (mocksDisabled && query?.testMode !== undefined) {
+    logger.warn(
+      `🚫 Attempted to set test mode when mocks disabled (disableTestMocks=true) - ignoring parameter`
+    )
   }
-  // Note: We don't clear testMode automatically - it persists across requests
+  // Note: We don't clear testMode automatically - it persists across requests (when mocks enabled)
   // To clear it, user must explicitly visit with ?testMode=clear or restart session
 
   return {

@@ -24,6 +24,15 @@ vi.mock('../../data/en/en.js', () => ({
   }
 }))
 
+vi.mock('../../../config/index.js', () => ({
+  config: {
+    get: vi.fn((key) => {
+      if (key === 'disableTestMocks') return false
+      return undefined
+    })
+  }
+}))
+
 vi.mock('moment-timezone', () => {
   const moment = vi.fn(() => ({
     format: vi.fn(() => '15 March 2024')

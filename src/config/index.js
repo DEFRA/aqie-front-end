@@ -20,6 +20,7 @@ const ONE_WEEK_IN_MILLISECONDS = DAYS_IN_A_WEEK * 24 * 60 * 60 * 1000
 const isProduction = process.env.NODE_ENV === 'production'
 const isTest = process.env.NODE_ENV === 'test'
 const isDevelopment = process.env.NODE_ENV === 'development'
+const isPerfTest = process.env.NODE_ENV === 'perf-test'
 
 convict.addFormats(convictFormatWithValidator)
 
@@ -33,7 +34,7 @@ export const config = convict({
   },
   env: {
     doc: 'The application environment.',
-    format: ['production', 'development', 'test'],
+    format: ['production', 'development', 'test', 'perf-test'],
     default: 'development',
     env: 'NODE_ENV'
   },
@@ -85,6 +86,11 @@ export const config = convict({
     doc: 'If this application running in the test environment',
     format: Boolean,
     default: isTest
+  },
+  isPerfTest: {
+    doc: 'If this application running in the perf-test environment',
+    format: Boolean,
+    default: isPerfTest
   },
   enabledMock: {
     doc: 'Enabled Mock Data for Northern Ireland Names API',
@@ -150,6 +156,12 @@ export const config = convict({
     format: Boolean,
     default: isProduction,
     env: 'ENABLE_METRICS'
+  },
+  disableTestMocks: {
+    doc: 'Disable test mock parameters (mockLevel, mockDay, mockPollutantBand, testMode). Defaults to true in production and perf-test environments, false otherwise. Set DISABLE_TEST_MOCKS=true to test production behavior in development.',
+    format: Boolean,
+    default: isProduction || isPerfTest,
+    env: 'DISABLE_TEST_MOCKS'
   },
   airQualityDomainUrl: {
     doc: 'Air Quality Domain Url',
