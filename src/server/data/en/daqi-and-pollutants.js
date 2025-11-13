@@ -29,7 +29,7 @@ export const daqiTranslations = {
     },
     pageTexts: {
       a: 'UK air pollution summary',
-      b: 'Latest at 5am on',
+      b: 'Latest at',
       c: 'How air pollutants can affect your health',
       d: 'Air pollutants monitored near by',
       e: '',

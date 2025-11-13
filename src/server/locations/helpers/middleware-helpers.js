@@ -40,6 +40,7 @@ const handleSingleMatch = (
 ) => {
   const customId = selectedMatches.length === 1 ? urlRoute : headerTitleRoute // Use the helper function to generate the custom ID
   const showSummaryDate = isSummaryDateToday(getDailySummary?.issue_date)
+  const issueTime = getIssueTime(getDailySummary?.issue_date)
 
   request.yar.set('locationData', {
     results: selectedMatches,
@@ -55,7 +56,8 @@ const handleSingleMatch = (
     headerTitleRoute,
     locationType,
     lang,
-    showSummaryDate
+    showSummaryDate,
+    issueTime
   })
   logger.info(`Redirecting to location with custom ID: ${customId}`)
 
@@ -126,6 +128,7 @@ const handleMultipleMatches = (
   const resolvedLocationNameOrPostcode =
     locationNameOrPostcode ?? 'Unknown Location'
   const showSummaryDate = isSummaryDateToday(getDailySummary?.issue_date)
+  const issueTime = getIssueTime(getDailySummary?.issue_date)
 
   request.yar.set('locationData', {
     results: selectedMatches,
@@ -152,7 +155,8 @@ const handleMultipleMatches = (
     englishDate,
     locationType,
     lang,
-    showSummaryDate
+    showSummaryDate,
+    issueTime
   })
 
   return lang === LANG_EN
@@ -326,6 +330,14 @@ const isSummaryDateToday = (issueDate) => {
   return today === issueDateFormatted
 }
 
+// '' Helper function to extract time from issue_date in H:mm format
+const getIssueTime = (issueDate) => {
+  if (!issueDate) return '5:00' // Default fallback
+  const issueMoment = moment(issueDate)
+  if (!issueMoment.isValid()) return '5:00' // Default fallback for invalid dates
+  return issueMoment.format('H:mm') // Format as H:mm (e.g., "5:34", "14:05")
+}
+
 // Helper function to deduplicate results
 const deduplicateResults = (results) => {
   return Array.from(new Set(results.map((item) => JSON.stringify(item)))).map(
@@ -341,5 +353,6 @@ export {
   getLanguageDates,
   getFormattedDateSummary,
   isSummaryDateToday,
+  getIssueTime,
   deduplicateResults
 }

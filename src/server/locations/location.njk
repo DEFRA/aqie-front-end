@@ -38,7 +38,7 @@
       
       {# '' Display summary date only if it's today's date #}
       {% if showSummaryDate and summaryDate %}
-        <p class="govuk-caption-s govuk-!-margin-top-6 govuk-!-margin-bottom-4">{{ daqi.pageTexts.b }} {{ summaryDate }}</p>
+        <p class="govuk-caption-s govuk-!-margin-top-6 govuk-!-margin-bottom-4">{{ daqi.pageTexts.b }} {{ issueTime | default('5:00') }} on {{ summaryDate }}</p>
       {% endif %}
 
       {% if airQuality.today.value >= 1 and airQuality.today.value <= 3 %}

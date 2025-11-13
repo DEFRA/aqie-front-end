@@ -34,6 +34,7 @@ import {
   applyMockPollutantsToSites
 } from '../common/helpers/mock-pollutant-level.js'
 import { getForecastWarning } from '../locations/helpers/forecast-warning.js'
+import { getIssueTime } from '../locations/helpers/middleware-helpers.js'
 
 const logger = createLogger()
 
@@ -346,6 +347,7 @@ function buildLocationViewData({
     summaryDate:
       lang === LANG_CY ? locationData.welshDate : locationData.englishDate,
     showSummaryDate: locationData.showSummaryDate,
+    issueTime: locationData.issueTime,
     dailySummaryTexts: english.dailySummaryTexts,
     serviceName: english.multipleLocations.serviceName,
     forecastWarning,
@@ -798,6 +800,7 @@ async function processLocationWorkflow({
     locationData.showSummaryDate = isSummaryDateToday(
       locationData.dailySummary?.issue_date
     )
+    locationData.issueTime = getIssueTime(locationData.dailySummary?.issue_date)
 
     // Update session with modified data
     request.yar.set('locationData', locationData)
@@ -852,21 +855,37 @@ async function processLocationWorkflow({
       'YYYY-MM-DD'
     )
     locationData.showSummaryDate = today === issueDate
+    locationData.issueTime = getIssueTime(locationData.dailySummary.issue_date)
     logger.info(`🔍 CALCULATED showSummaryDate:`)
     logger.info(`🔍   - today: ${today}`)
     logger.info(`🔍   - issueDate: ${issueDate}`)
     logger.info(`🔍   - match: ${today === issueDate}`)
     logger.info(`🔍   - result: ${locationData.showSummaryDate}`)
+    logger.info(`🔍   - issueTime: ${locationData.issueTime}`)
   } else if (locationData.showSummaryDate !== undefined) {
     logger.info(
       `🔍 showSummaryDate already set to: ${locationData.showSummaryDate}`
     )
+    // '' Ensure issueTime is also set
+    logger.info(
+      `🔍   - checking issueTime: ${locationData.issueTime}, has issue_date: ${!!locationData.dailySummary?.issue_date}`
+    )
+    if (!locationData.issueTime && locationData.dailySummary?.issue_date) {
+      locationData.issueTime = getIssueTime(
+        locationData.dailySummary.issue_date
+      )
+      logger.info(`🔍   - issueTime calculated: ${locationData.issueTime}`)
+      // '' Update session with the calculated issueTime
+      request.yar.set('locationData', locationData)
+      logger.info(`🔍   - issueTime saved to session`)
+    }
   } else {
     logger.info(
       `🔍 No issue_date available, showSummaryDate will be false/undefined`
     )
   }
   logger.info(`🔍 FINAL showSummaryDate: ${locationData.showSummaryDate}`)
+  logger.info(`🔍 FINAL issueTime: ${locationData.issueTime}`)
   logger.info(`🔍 ========================================`)
 
   // Process result

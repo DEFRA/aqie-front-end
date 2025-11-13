@@ -53,6 +53,8 @@ const renderLocationDetailsView = (locationDetails, config, h) => {
     welshMonth: calendarWelsh[getMonth],
     summaryDate:
       lang === LANG_CY ? locationData.welshDate : locationData.englishDate,
+    showSummaryDate: locationData.showSummaryDate,
+    issueTime: locationData.issueTime,
     dailySummaryTexts: english.dailySummaryTexts,
     serviceName: multipleLocations.serviceName,
     lang
