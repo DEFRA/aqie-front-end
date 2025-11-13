@@ -158,7 +158,7 @@ export const config = convict({
     env: 'ENABLE_METRICS'
   },
   disableTestMocks: {
-    doc: 'Disable test mock parameters (mockLevel, mockDay, mockPollutantBand, testMode). Defaults to true in production and perf-test environments, false otherwise. Set DISABLE_TEST_MOCKS=true to test production behavior in development.',
+    doc: 'Disable test mock parameters (mockLevel, mockDay, mockPollutantBand, testMode). Enabled (false) in local/dev/test environments, disabled (true) in production and perf-test environments. Can be overridden with DISABLE_TEST_MOCKS environment variable.',
     format: Boolean,
     default: isProduction || isPerfTest,
     env: 'DISABLE_TEST_MOCKS'
