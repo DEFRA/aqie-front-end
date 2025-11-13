@@ -13,6 +13,7 @@
     "build:frontend": "cross-env NODE_ENV=production webpack",
     "dev": "run-p frontend:watch server:watch",
     "dev:debug": "run-p frontend:watch server:debug",
+    "dev:perf-test": "cross-env NODE_ENV=perf-test SESSION_CACHE_ENGINE=memory nodemon --inspect=0.0.0.0 --ext js,json --legacy-watch ./src",
     "docker:dev": "npm run dev",
     "format": "prettier --write \"src/**/*.js\" \"**/*.{js,cjs,md,json,config.js,test.js}\"",
     "format:check": "prettier --check \"src/**/*.js\" \"**/*.{js,cjs,md,json,config.js,test.js}\"",

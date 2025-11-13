@@ -13,6 +13,7 @@ import { createURLRouteBookmarks } from './create-bookmark-ids.js'
 import reduceMatches from './reduce-matches.js'
 import { filterMatches } from './filter-matches.js'
 import { createLogger } from '../../common/helpers/logging/logger.js'
+import { config } from '../../../config/index.js'
 
 const logger = createLogger()
 
@@ -58,22 +59,31 @@ const handleSingleMatch = (
   })
   logger.info(`Redirecting to location with custom ID: ${customId}`)
 
-  // Preserve mock parameters in redirect if present
-  const mockLevel = request.query?.mockLevel
+  // '' Disable mock parameters when configured (production by default)
+  const mocksDisabled = config.get('disableTestMocks')
+
+  // Preserve mock parameters in redirect if present (only when mocks enabled)
+  const mockLevel = !mocksDisabled ? request.query?.mockLevel : undefined
   const mockLevelParam =
     mockLevel !== undefined ? `?mockLevel=${encodeURIComponent(mockLevel)}` : ''
 
-  const mockDay = request.query?.mockDay
+  const mockDay = !mocksDisabled ? request.query?.mockDay : undefined
   const mockDayParam =
     mockDay !== undefined ? `&mockDay=${encodeURIComponent(mockDay)}` : ''
 
-  const mockPollutantBand = request.query?.mockPollutantBand
+  const mockPollutantBand = !mocksDisabled
+    ? request.query?.mockPollutantBand
+    : undefined
   const mockPollutantParam =
     mockPollutantBand !== undefined
       ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
       : ''
 
-  const queryParams = `${mockLevelParam}${mockDayParam}${mockPollutantParam}`
+  const testMode = !mocksDisabled ? request.query?.testMode : undefined
+  const testModeParam =
+    testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
+
+  const queryParams = `${mockLevelParam}${mockDayParam}${mockPollutantParam}${testModeParam}`
 
   return lang === LANG_EN
     ? h
