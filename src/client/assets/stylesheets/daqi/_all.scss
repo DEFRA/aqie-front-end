@@ -72,7 +72,10 @@ $daqi-colour-10: #CE30FF;  // Very High - Purple
   // DAQI table
 
   .daqi-selected {
-    font-weight: bold; 
+    font-weight: bold;
+    border: 3px solid govuk-colour("black");
+    padding: 7px 0;
+    width: 9.016%;
   }
 
   .daqi-0 {
