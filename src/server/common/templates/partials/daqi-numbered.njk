@@ -5,7 +5,10 @@
 
 {# Display the predicted levels heading above the tabs if provided #}
 {% if daqi.headings and daqi.headings.predictedLevels %}
-  <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ daqi.headings.predictedLevels }}</h2>
+  <h2 class="govuk-heading-m govuk-!-margin-bottom-4">
+    {{ daqi.headings.predictedLevels }}
+    <span class="govuk-visually-hidden">for the next 5 days.</span>
+  </h2>
 {% endif %}
 
 {# '' First tab label is translatable via content files #}
@@ -13,8 +16,10 @@
 
 {% macro daqiNumberedBar(value, readableBand) %}
   {% set safeValue = value | default(0) %}
-  <div class="daqi-numbered" role="img" aria-label="{{ readableBand | default('') }} {{ safeValue }}">
-    <div class="daqi-bar">
+  {# '' Screen reader announcement: "Daily Air Quality Index, level [number], [level]" with "pollution" visually hidden #}
+  {% set ariaLabel = "Daily Air Quality Index, level " + (safeValue | string) + ", " + (readableBand | default('unknown') | lower) %}
+  <div class="daqi-numbered" role="img" aria-label="{{ ariaLabel }}">
+    <div class="daqi-bar" aria-hidden="true">
       {% for i in range(1, 11) %}
         {% if i == safeValue %}
           <div class="daqi-bar-segment daqi-{{ i }} daqi-selected"><span class="daqi-number">{{ i }}</span></div>
@@ -30,6 +35,8 @@
       <span class="daqi-band daqi-band-very-high">{{ daqi.levels.d }}</span>
     </div>
   </div>
+  {# '' Hidden text for screen readers: "pollution" #}
+  <span class="govuk-visually-hidden">pollution.</span>
 {% endmacro %}
 
 {% set todayPanel %}

@@ -34,20 +34,10 @@ function announceTabChange(tab) {
   const liveRegion = document.getElementById('daqi-live-region')
   if (!liveRegion) return
 
-  const daqiValue = tab.getAttribute('data-daqi-value') || '0'
-  const daqiBand = tab.getAttribute('data-daqi-band') || 'unknown level'
   const tabText = tab.textContent.trim()
-  const tabIndex = getTabIndex(tab)
 
-  // Find the active DAQI cell/segment in the current tab's panel
-  const activeDaqiInfo = getActiveDaqiCellInfo(tab)
-
-  // Create meaningful announcement with active cell info - "number 2 Low" format
-  const levelText = getDaqiLevelText(parseInt(daqiValue))
-  const cellInfo = activeDaqiInfo
-    ? `DAQI cell ${activeDaqiInfo.cellNumber} of 10 is selected, ${activeDaqiInfo.label} level.`
-    : `DAQI number ${daqiValue}, ${levelText} level.`
-  const announcement = `${tabText} selected. ${cellInfo} Daily Air Quality Index number ${daqiValue}, ${levelText} pollution level.`
+  // '' Minimal announcement: Just the day name since panel content will be read naturally
+  const announcement = `${tabText} tab selected`
 
   // Clear and set new announcement
   liveRegion.textContent = ''
@@ -78,24 +68,9 @@ function enhanceTabInteractions() {
       }, 150)
     })
 
-    // Enhance ARIA label with more context including index
-    const currentAriaLabel = tab.getAttribute('aria-label')
-    if (!currentAriaLabel || currentAriaLabel.length < 10) {
-      const daqiValue = tab.getAttribute('data-daqi-value') || '0'
-      const daqiBand = tab.getAttribute('data-daqi-band') || 'unknown level'
-      const tabText = tab.textContent.trim()
-      const levelText = getDaqiLevelText(parseInt(daqiValue))
-      const tabIndex = index + 1
-      const totalTabs = tabs.length
-
-      const enhancedLabel = `${tabText}, tab ${tabIndex} of ${totalTabs}, DAQI number ${daqiValue}, ${levelText} air pollution`
-      tab.setAttribute('aria-label', enhancedLabel)
-      tab.setAttribute('title', enhancedLabel)
-
-      // Add position information - use actual tab count for navigation context
-      tab.setAttribute('aria-posinset', tabIndex)
-      tab.setAttribute('aria-setsize', totalTabs)
-    }
+    // '' Keep tab labels simple - just the day name
+    // The DAQI info will be read naturally in the panel content below
+    // No need to enhance ARIA labels - natural content order is sufficient
   })
 }
 
@@ -114,17 +89,10 @@ function enhanceKeyboardNavigation() {
   tabs.forEach((tab, index) => {
     // Handle focus events
     tab.addEventListener('focus', (event) => {
-      // Announce current tab with active cell info when focused
+      // '' Minimal focus announcement - just the day name
       setTimeout(() => {
-        const daqiValue = tab.getAttribute('data-daqi-value') || '0'
-        const levelText = getDaqiLevelText(parseInt(daqiValue))
-        const tabIndex = index + 1
-        const activeDaqiInfo = getActiveDaqiCellInfo(tab)
-
-        let announcement = `Tab ${tabIndex}, DAQI number ${daqiValue}, ${levelText}`
-        if (activeDaqiInfo) {
-          announcement += `. Cell ${activeDaqiInfo.cellNumber} of 10 selected, ${activeDaqiInfo.label} level`
-        }
+        const tabText = tab.textContent.trim()
+        const announcement = `${tabText}`
 
         // Use a temporary live region for focus announcements
         announceFocus(announcement)
@@ -284,49 +252,13 @@ function enhanceDaqiBarAccessibility() {
   const daqiContainers = document.querySelectorAll('.daqi-numbered')
 
   daqiContainers.forEach((container) => {
+    // '' DAQI bar container already has role="img" and aria-label from template
+    // Individual segments are decorative and should be hidden from screen readers
     const segments = container.querySelectorAll('.daqi-bar-segment')
 
-    segments.forEach((segment, index) => {
-      const segmentNumber = index + 1
-      const number = segment.querySelector('.daqi-number')
-      const isActive =
-        segment.classList.contains('daqi-1') ||
-        segment.classList.contains('daqi-2') ||
-        segment.classList.contains('daqi-3') ||
-        segment.classList.contains('daqi-4') ||
-        segment.classList.contains('daqi-5') ||
-        segment.classList.contains('daqi-6') ||
-        segment.classList.contains('daqi-7') ||
-        segment.classList.contains('daqi-8') ||
-        segment.classList.contains('daqi-9') ||
-        segment.classList.contains('daqi-10')
-
-      // Add ARIA attributes for screen readers
-      segment.setAttribute('role', 'img')
-      const levelText = getDaqiLevelText(segmentNumber)
-      const status = isActive ? 'active' : 'inactive'
-      segment.setAttribute(
-        'aria-label',
-        `DAQI segment ${segmentNumber}, ${levelText} level, ${status}`
-      )
-
-      // Make segments focusable for keyboard users who want to explore
-      segment.setAttribute('tabindex', '0')
-
-      // Add keyboard support for segments
-      segment.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault()
-          const announcement = `DAQI number ${segmentNumber}, ${levelText} pollution level, currently ${status}`
-          announceFocus(announcement)
-        }
-      })
-
-      // Add focus handler
-      segment.addEventListener('focus', () => {
-        const announcement = `DAQI segment ${segmentNumber}, ${levelText}`
-        announceFocus(announcement)
-      })
+    segments.forEach((segment) => {
+      // Hide decorative segments from screen readers
+      segment.setAttribute('aria-hidden', 'true')
     })
   })
 }
