@@ -16,7 +16,7 @@
 
 {% macro daqiNumberedBar(value, readableBand) %}
   {% set safeValue = value | default(0) %}
-  {# '' Screen reader announcement: "Daily Air Quality Index, level [number], [level]" with "pollution" visually hidden #}
+  {# '' Screen reader reads only: "Daily Air Quality Index, level [number], [level]" - all visual elements hidden #}
   {% set ariaLabel = "Daily Air Quality Index, level " + (safeValue | string) + ", " + (readableBand | default('unknown') | lower) %}
   <div class="daqi-numbered" role="img" aria-label="{{ ariaLabel }}">
     <div class="daqi-bar" aria-hidden="true">
@@ -35,20 +35,19 @@
       <span class="daqi-band daqi-band-very-high">{{ daqi.levels.d }}</span>
     </div>
   </div>
-  {# '' Hidden text for screen readers: "pollution" #}
-  <span class="govuk-visually-hidden">pollution.</span>
 {% endmacro %}
 
 {% set todayPanel %}
-  <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ todayAbbrev }}</h2>
-  <span class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.headings.main }}</span>
+  {# '' Day name heading - screen reader reads just the day #}
+  <h3 class="govuk-heading-m govuk-!-margin-bottom-4">{{ todayAbbrev }}</h3>
+  <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.today.value | default(0) }}, {{ airQuality.today.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
+  {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level 3, low" #}
   {{ daqiNumberedBar(airQuality.today.value | default(0), airQuality.today.readableBand | default('')) }}
 
-  {# '' Add daily summary details for today only if date is current #}
+  {# '' Forecast text - no heading, screen reader continues reading #}
   {% set todayKey = daqi.tabs.today %}
   {% if showSummaryDate and transformedDailySummary and transformedDailySummary[todayKey] %}
     <div class="daqitab-summary govuk-!-margin-top-6">
-      <h3 class="govuk-heading-s">{{ daqi.pageTexts.e }}</h3>
       <p>{{ transformedDailySummary[todayKey] }}</p>
     </div>
   {% endif %}
@@ -79,18 +78,19 @@
   {% endif %}
   {% set day2TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day2.value | default(0) | string) %}
   {% set day2Panel %}
-    <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ day2Label }}</h2>
-    <span class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.headings.main }}</span>
+    {# '' Day name heading - screen reader reads just the day #}
+    <h3 class="govuk-heading-m govuk-!-margin-bottom-4">{{ day2Label }}</h3>
+    <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day2.value | default(0) }}, {{ airQuality.day2.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
+    {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X, [band]" #}
     {{ daqiNumberedBar(airQuality.day2.value | default(0), airQuality.day2.readableBand | capitalize | default('')) }}
 
-    {# '' Add daily summary details for day2 only if date is current #}
+    {# '' Forecast text - no heading, screen reader continues reading #}
     {% if showSummaryDate and transformedDailySummary %}
       {% set todayKey = daqi.tabs.today %}
       {% for key, value in transformedDailySummary %}
         {% if key != 'issue_date' and key != 'isCurrentDate' and key != todayKey %}
           {% if not (' to ' in key) and not (' i ' in key) %}
             <div class="daqitab-summary govuk-!-margin-top-6">
-              <h3 class="govuk-heading-s">{{ daqi.pageTexts.e }}</h3>
               <p>{{ value }}</p>
             </div>
           {% endif %}
@@ -118,18 +118,19 @@
   {% endif %}
   {% set day3TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day3.value | default(0) | string) %}
   {% set day3Panel %}
-    <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ day3Label }}</h2>
-    <span class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.headings.main }}</span>
+    {# '' Day name heading - screen reader reads just the day #}
+    <h3 class="govuk-heading-m govuk-!-margin-bottom-4">{{ day3Label }}</h3>
+    <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day3.value | default(0) }}, {{ airQuality.day3.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
+    {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X, [band]" #}
     {{ daqiNumberedBar(airQuality.day3.value | default(0), airQuality.day3.readableBand | capitalize | default('')) }}
 
-    {# '' Add daily summary details for day3 only if date is current #}
+    {# '' Forecast text - no heading, screen reader continues reading #}
     {% if showSummaryDate and transformedDailySummary %}
       {% set todayKey = daqi.tabs.today %}
       {% for key, value in transformedDailySummary %}
         {% if key != 'issue_date' and key != 'isCurrentDate' and key != todayKey %}
           {% if (' to ' in key) or (' i ' in key) %}
             <div class="daqitab-summary govuk-!-margin-top-6">
-              <h3 class="govuk-heading-s">{{ daqi.pageTexts.e }}</h3>
               <p>{{ value }}</p>
             </div>
           {% endif %}
@@ -157,18 +158,19 @@
   {% endif %}
   {% set day4TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day4.value | default(0) | string) %}
   {% set day4Panel %}
-    <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ day4Label }}</h2>
-    <span class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.headings.main }}</span>
+    {# '' Day name heading - screen reader reads just the day #}
+    <h3 class="govuk-heading-m govuk-!-margin-bottom-4">{{ day4Label }}</h3>
+    <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day4.value | default(0) }}, {{ airQuality.day4.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
+    {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X, [band]" #}
     {{ daqiNumberedBar(airQuality.day4.value | default(0), airQuality.day4.readableBand | capitalize | default('')) }}
 
-    {# '' Add daily summary details for day4 only if date is current #}
+    {# '' Forecast text - no heading, screen reader continues reading #}
     {% if showSummaryDate and transformedDailySummary %}
       {% set todayKey = daqi.tabs.today %}
       {% for key, value in transformedDailySummary %}
         {% if key != 'issue_date' and key != 'isCurrentDate' and key != todayKey %}
           {% if (' to ' in key) or (' i ' in key) %}
             <div class="daqitab-summary govuk-!-margin-top-6">
-              <h3 class="govuk-heading-s">{{ daqi.pageTexts.e }}</h3>
               <p>{{ value }}</p>
             </div>
           {% endif %}
@@ -196,18 +198,19 @@
   {% endif %}
   {% set day5TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day5.value | default(0) | string) %}
   {% set day5Panel %}
-    <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ day5Label }}</h2>
-    <span class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.headings.main }}</span>
+    {# '' Day name heading - screen reader reads just the day #}
+    <h3 class="govuk-heading-m govuk-!-margin-bottom-4">{{ day5Label }}</h3>
+    <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day5.value | default(0) }}, {{ airQuality.day5.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
+    {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X, [band]" #}
     {{ daqiNumberedBar(airQuality.day5.value | default(0), airQuality.day5.readableBand | capitalize | default('')) }}
 
-    {# '' Add daily summary details for day5 only if date is current #}
+    {# '' Forecast text - no heading, screen reader continues reading #}
     {% if showSummaryDate and transformedDailySummary %}
       {% set todayKey = daqi.tabs.today %}
       {% for key, value in transformedDailySummary %}
         {% if key != 'issue_date' and key != 'isCurrentDate' and key != todayKey %}
           {% if (' to ' in key) or (' i ' in key) %}
             <div class="daqitab-summary govuk-!-margin-top-6">
-              <h3 class="govuk-heading-s">{{ daqi.pageTexts.e }}</h3>
               <p>{{ value }}</p>
             </div>
           {% endif %}
