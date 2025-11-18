@@ -11,13 +11,20 @@ import { getPollutantLevelCy } from './cy/pollutant-level-calculation.js'
 import {
   LANG_CY,
   FORECAST_DAY_SLICE_LENGTH,
-  MINUS_NINETY_NINE,
   NEARBY_LOCATIONS_COUNT
 } from '../../data/constants.js'
 import { fetchMeasurements } from './fetch-data.js'
+import { createLogger } from '../../common/helpers/logging/logger.js'
+
+const logger = createLogger()
 
 // Helper to get latlon and forecastCoordinates //
-function getLatLonAndForecastCoords(matches, location, index, forecasts) {
+export function getLatLonAndForecastCoords(
+  matches,
+  location,
+  index,
+  forecasts
+) {
   const latlon =
     matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
   const forecastCoordinates =
@@ -26,7 +33,7 @@ function getLatLonAndForecastCoords(matches, location, index, forecasts) {
 }
 
 // Helper to build forecastNum
-function buildForecastNum(matches, nearestLocation, forecastDay) {
+export function buildForecastNum(matches, nearestLocation, forecastDay) {
   return matches.length !== 0
     ? nearestLocation.map((current) => {
         let todayDate = []
@@ -43,53 +50,57 @@ function buildForecastNum(matches, nearestLocation, forecastDay) {
     : 0
 }
 
+// Helper to validate pollutant values (allow only numbers >= 0)
+export function isValidNonNegativeNumber(value) {
+  // Coerce to number (handles numeric strings)
+  const num = Number(value)
+  // Reject NaN, infinities, null/undefined, and negatives
+  return Number.isFinite(num) && num >= 0
+}
+
 // Helper to build pollutants object for a measurement
-function buildPollutantsObject(curr, lang) {
+export function buildPollutantsObject(curr, lang) {
   const newpollutants = []
   Object.keys(curr.pollutants).forEach((pollutant) => {
     const polValue = curr.pollutants[pollutant].value
-    if (
-      polValue !== null &&
-      polValue !== MINUS_NINETY_NINE &&
-      polValue !== '0'
-    ) {
-      const { getDaqi, getBand } =
-        lang === LANG_CY
-          ? getPollutantLevelCy(polValue, pollutant)
-          : getPollutantLevel(polValue, pollutant)
-      const formatHour = moment(curr.pollutants[pollutant].time.date).format(
-        'ha'
-      )
-      const dayNumber = moment(curr.pollutants[pollutant].time.date).format('D')
-      const yearNumber = moment(curr.pollutants[pollutant].time.date).format(
-        'YYYY'
-      )
-      const monthNumber = moment(curr.pollutants[pollutant].time.date).format(
-        'MMMM'
-      )
-      Object.assign(newpollutants, {
-        [pollutant]: {
-          exception: curr.pollutants[pollutant].exception,
-          featureOfInterest: curr.pollutants[pollutant].featureOfInterest,
-          time: {
-            date: curr.pollutants[pollutant].time.date,
-            hour: formatHour,
-            day: dayNumber,
-            month: monthNumber,
-            year: yearNumber
-          },
-          value: polValue,
-          daqi: getDaqi,
-          band: getBand
-        }
-      })
+    // Only proceed if the value is a valid non‑negative number
+    if (!isValidNonNegativeNumber(polValue)) {
+      return
     }
+    const { getDaqi, getBand } =
+      lang === LANG_CY
+        ? getPollutantLevelCy(polValue, pollutant)
+        : getPollutantLevel(polValue, pollutant)
+    const formatHour = moment(curr.pollutants[pollutant].time.date).format('ha')
+    const dayNumber = moment(curr.pollutants[pollutant].time.date).format('D')
+    const yearNumber = moment(curr.pollutants[pollutant].time.date).format(
+      'YYYY'
+    )
+    const monthNumber = moment(curr.pollutants[pollutant].time.date).format(
+      'MMMM'
+    )
+    Object.assign(newpollutants, {
+      [pollutant]: {
+        exception: curr.pollutants[pollutant].exception,
+        featureOfInterest: curr.pollutants[pollutant].featureOfInterest,
+        time: {
+          date: curr.pollutants[pollutant].time.date,
+          hour: formatHour,
+          day: dayNumber,
+          month: monthNumber,
+          year: yearNumber
+        },
+        value: polValue,
+        daqi: getDaqi,
+        band: getBand
+      }
+    })
   })
   return newpollutants
 }
 
 // Helper to build a single nearest location range entry
-function buildNearestLocationEntry(curr, latlon, lang) {
+export function buildNearestLocationEntry(curr, latlon, lang) {
   const getDistance =
     geolib.getDistance(
       { latitude: latlon?.lat, longitude: latlon?.lon },
@@ -100,6 +111,10 @@ function buildNearestLocationEntry(curr, latlon, lang) {
     ) * 0.000621371192
   const newpollutants = buildPollutantsObject(curr, lang)
   if (Object.keys(newpollutants).length === 0) {
+    logger.error(`No valid pollutants found for location`, {
+      locationId: curr.id,
+      latlon
+    })
     return null
   }
   return {
@@ -118,7 +133,12 @@ function buildNearestLocationEntry(curr, latlon, lang) {
 }
 
 // Helper to build nearestLocationsRange for !useNewRicardoMeasurementsEnabled
-function buildNearestLocationsRange(matches, getMeasurments, latlon, lang) {
+export function buildNearestLocationsRange(
+  matches,
+  getMeasurments,
+  latlon,
+  lang
+) {
   const measurementsCoordinates =
     matches.length !== 0 ? coordinatesTotal(getMeasurments, latlon) : []
   const orderByDistanceMeasurements = geolib.orderByDistance(
@@ -207,25 +227,29 @@ async function getNearestLocation(
           Object.entries(measurement.pollutants || {}).forEach(
             ([pollutant, data]) => {
               const polValue = data?.value
-              if (
-                polValue !== null &&
-                polValue !== MINUS_NINETY_NINE &&
-                polValue !== '0'
-              ) {
-                const { getDaqi, getBand } =
-                  lang === LANG_CY
-                    ? getPollutantLevelCy(polValue, pollutant)
-                    : getPollutantLevel(polValue, pollutant)
+              // Only proceed if the value is a valid non‑negative number
+              if (!isValidNonNegativeNumber(polValue)) {
+                return
+              }
+              const { getDaqi, getBand } =
+                lang === LANG_CY
+                  ? getPollutantLevelCy(polValue, pollutant)
+                  : getPollutantLevel(polValue, pollutant)
 
-                updatedPollutants[pollutant] = {
-                  ...data,
-                  daqi: getDaqi,
-                  band: getBand
-                }
+              updatedPollutants[pollutant] = {
+                ...data,
+                daqi: getDaqi,
+                band: getBand
               }
             }
           )
-
+          // validate updatedPollutants {} is still empty and log an error statement
+          if (Object.keys(updatedPollutants).length === 0) {
+            logger.error(`No valid pollutants found for measurement`, {
+              measurementId: measurement.id,
+              latlon
+            })
+          }
           return {
             ...measurement,
             pollutants: updatedPollutants

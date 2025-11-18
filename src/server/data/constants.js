@@ -129,7 +129,6 @@ export const AIR_QUALITY_THRESHOLD_3 = 3
 export const AIR_QUALITY_THRESHOLD_4 = 4
 export const DEFAULT_LOCATION_TYPE = 'uk-location'
 export const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500
-export const MINUS_NINETY_NINE = -99
 export const ROUND_OF_SIX = 6
 export const FORECAST_ARRAY_INDEX_THIRD = 3
 export const MAX_FORECAST_DAYS = 6
