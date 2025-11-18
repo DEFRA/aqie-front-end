@@ -332,10 +332,10 @@ const isSummaryDateToday = (issueDate) => {
 
 // '' Helper function to extract time from issue_date in H:mm format
 const getIssueTime = (issueDate) => {
-  if (!issueDate) return '5:00' // Default fallback
+  if (!issueDate) return '5:00am' // Default fallback
   const issueMoment = moment(issueDate)
-  if (!issueMoment.isValid()) return '5:00' // Default fallback for invalid dates
-  return issueMoment.format('H:mm') // Format as H:mm (e.g., "5:34", "14:05")
+  if (!issueMoment.isValid()) return '5:00am' // Default fallback for invalid dates
+  return issueMoment.format('h:mma') // Format as h:mma (e.g., "5:34am", "2:05pm")
 }
 
 // Helper function to deduplicate results

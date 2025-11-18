@@ -97,4 +97,55 @@ const addDaysToTodayAbrevWelsh = function (env) {
   }
 }
 
-export { addMomentFilters, addDaysToTodayAbrev, addDaysToTodayAbrevWelsh }
+// '' - Full day name filters for screen reader accessibility
+const addDaysToTodayFull = function (env) {
+  try {
+    if (!env || typeof env.addFilter !== 'function') {
+      logger.error('Invalid Nunjucks environment passed to addDaysToTodayFull.')
+      throw new Error('Invalid Nunjucks environment.')
+    }
+    env.addFilter('addDaysToTodayFull', function (days) {
+      if (typeof days !== 'number') {
+        days = 0
+      }
+      // Create a new moment object for today and add days
+      const futureDate = moment()
+        .locale(LANG_EN)
+        .add(days, CALENDAR_STRING.DAYS)
+      // Return the full day name (dddd format)
+      return futureDate.format('dddd')
+    })
+    return env
+  } catch (error) {
+    logger.error('Error registering addDaysToTodayFull filter:', error)
+    return error
+  }
+}
+
+const addDaysToTodayFullWelsh = function (env) {
+  try {
+    env.addFilter('addDaysToTodayFullWelsh', function (days) {
+      if (typeof days !== 'number') {
+        days = 0
+      }
+      // Create a new moment object for today and add days
+      const futureDate = moment()
+        .locale(LANG_CY)
+        .add(days, CALENDAR_STRING.DAYS)
+      // Return the full day name (dddd format)
+      return futureDate.format('dddd')
+    })
+    return env
+  } catch (error) {
+    logger.error('Error registering addDaysToTodayFullWelsh filter:', error)
+    return error
+  }
+}
+
+export {
+  addMomentFilters,
+  addDaysToTodayAbrev,
+  addDaysToTodayAbrevWelsh,
+  addDaysToTodayFull,
+  addDaysToTodayFullWelsh
+}
