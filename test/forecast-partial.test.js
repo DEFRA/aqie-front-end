@@ -29,6 +29,12 @@ if (filters && filters.addDaysToTodayAbrev) {
 if (filters && filters.addDaysToTodayAbrevWelsh) {
   filters.addDaysToTodayAbrevWelsh(env)
 }
+if (filters && filters.addDaysToTodayFull) {
+  filters.addDaysToTodayFull(env)
+}
+if (filters && filters.addDaysToTodayFullWelsh) {
+  filters.addDaysToTodayFullWelsh(env)
+}
 
 describe('forecast partial in DAQI tabs', () => {
   it('renders DAQI numbered block and tabs structure', () => {

@@ -521,8 +521,11 @@ svg|foreignObject {
   white-space: nowrap;
 }
 
-.daqi-selected {
-  font-weight: bold; 
+.daqi-bar-segment.daqi-selected {
+  font-weight: bold;
+  border: 3px solid govuk-colour("black");
+  padding: 7px 0;
+  width: 9.016%;
 }
 
 @media (prefers-contrast: more) {

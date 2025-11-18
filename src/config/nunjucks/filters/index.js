@@ -3,7 +3,9 @@ import { formatCurrency } from './format-currency.js'
 import {
   addMomentFilters,
   addDaysToTodayAbrev,
-  addDaysToTodayAbrevWelsh
+  addDaysToTodayAbrevWelsh,
+  addDaysToTodayFull,
+  addDaysToTodayFullWelsh
 } from './moment-date-filters.js'
 import { addToSentenceCase } from './format-sentence.js'
 
@@ -13,5 +15,7 @@ export {
   addMomentFilters,
   addDaysToTodayAbrev,
   addDaysToTodayAbrevWelsh,
+  addDaysToTodayFull,
+  addDaysToTodayFullWelsh,
   addToSentenceCase
 }

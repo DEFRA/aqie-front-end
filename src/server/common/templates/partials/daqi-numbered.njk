@@ -5,16 +5,27 @@
 
 {# Display the predicted levels heading above the tabs if provided #}
 {% if daqi.headings and daqi.headings.predictedLevels %}
-  <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ daqi.headings.predictedLevels }}</h2>
+  <h2 class="govuk-heading-m govuk-!-margin-bottom-4">
+    {{ daqi.headings.predictedLevels }}
+    <span class="govuk-visually-hidden">for the next 5 days.</span>
+  </h2>
 {% endif %}
 
 {# '' First tab label is translatable via content files #}
 {% set todayAbbrev = daqi.tabs.today | default('Today') %}
+{# '' Get full day name for "Today" for screen readers #}
+{% if lang == "en" %}
+  {% set todayFull = 0 | addDaysToTodayFull %}
+{% else %}
+  {% set todayFull = 0 | addDaysToTodayFullWelsh %}
+{% endif %}
 
 {% macro daqiNumberedBar(value, readableBand) %}
   {% set safeValue = value | default(0) %}
-  <div class="daqi-numbered" role="img" aria-label="{{ readableBand | default('') }} {{ safeValue }}">
-    <div class="daqi-bar">
+  {# '' Screen reader reads: "Daily Air Quality Index, level [number], [level] pollution" #}
+  {% set ariaLabel = "Daily Air Quality Index, level " + (safeValue | string) + ", " + (readableBand | default('unknown') | lower) + " pollution" %}
+  <div class="daqi-numbered" role="img" aria-label="{{ ariaLabel }}">
+    <div class="daqi-bar" aria-hidden="true">
       {% for i in range(1, 11) %}
         {% if i == safeValue %}
           <div class="daqi-bar-segment daqi-{{ i }} daqi-selected"><span class="daqi-number">{{ i }}</span></div>
@@ -33,15 +44,16 @@
 {% endmacro %}
 
 {% set todayPanel %}
-  <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ todayAbbrev }}</h2>
-  <span class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.headings.main }}</span>
+  {# '' Day name heading - screen reader reads full day name, visual shows "Today" or translated version #}
+  <h3 class="govuk-heading-m govuk-!-margin-bottom-4" aria-label="{{ todayFull }}">{{ todayAbbrev }}</h3>
+  <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.today.value | default(0) }}, {{ airQuality.today.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
+  {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level 3, low" #}
   {{ daqiNumberedBar(airQuality.today.value | default(0), airQuality.today.readableBand | default('')) }}
 
-  {# '' Add daily summary details for today only if date is current #}
+  {# '' Forecast text - no heading, screen reader continues reading #}
   {% set todayKey = daqi.tabs.today %}
   {% if showSummaryDate and transformedDailySummary and transformedDailySummary[todayKey] %}
     <div class="daqitab-summary govuk-!-margin-top-6">
-      <h3 class="govuk-heading-s">{{ daqi.pageTexts.e }}</h3>
       <p>{{ transformedDailySummary[todayKey] }}</p>
     </div>
   {% endif %}
@@ -59,7 +71,8 @@
   attributes: {
     class: todayTabClass,
     'data-daqi-value': airQuality.today.value | default(0),
-    'data-daqi-band': airQuality.today.readableBand | default('')
+    'data-daqi-band': airQuality.today.readableBand | default(''),
+    'aria-label': todayFull
   }
 }) %}
 
@@ -67,23 +80,26 @@
 {% if airQuality.day2 %}
   {% if lang == "en" %}
     {% set day2Label = 1 | addDaysToTodayAbrev %}
+    {% set day2LabelFull = 1 | addDaysToTodayFull %}
   {% else %}
     {% set day2Label = 1 | addDaysToTodayAbrevWelsh %}
+    {% set day2LabelFull = 1 | addDaysToTodayFullWelsh %}
   {% endif %}
   {% set day2TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day2.value | default(0) | string) %}
   {% set day2Panel %}
-    <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ day2Label }}</h2>
-    <span class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.headings.main }}</span>
+    {# '' Day name heading - screen reader reads full day name, visual shows abbreviation #}
+    <h3 class="govuk-heading-m govuk-!-margin-bottom-4" aria-label="{{ day2LabelFull }}">{{ day2Label }}</h3>
+    <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day2.value | default(0) }}, {{ airQuality.day2.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
+    {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X, [band]" #}
     {{ daqiNumberedBar(airQuality.day2.value | default(0), airQuality.day2.readableBand | capitalize | default('')) }}
 
-    {# '' Add daily summary details for day2 only if date is current #}
+    {# '' Forecast text - no heading, screen reader continues reading #}
     {% if showSummaryDate and transformedDailySummary %}
       {% set todayKey = daqi.tabs.today %}
       {% for key, value in transformedDailySummary %}
         {% if key != 'issue_date' and key != 'isCurrentDate' and key != todayKey %}
           {% if not (' to ' in key) and not (' i ' in key) %}
             <div class="daqitab-summary govuk-!-margin-top-6">
-              <h3 class="govuk-heading-s">{{ daqi.pageTexts.e }}</h3>
               <p>{{ value }}</p>
             </div>
           {% endif %}
@@ -98,7 +114,8 @@
     attributes: {
       class: day2TabClass,
       'data-daqi-value': airQuality.day2.value | default(0),
-      'data-daqi-band': airQuality.day2.readableBand | default('')
+      'data-daqi-band': airQuality.day2.readableBand | default(''),
+      'aria-label': day2LabelFull
     }
   }) %}
 {% endif %}
@@ -106,23 +123,26 @@
 {% if airQuality.day3 %}
   {% if lang == "en" %}
     {% set day3Label = 2 | addDaysToTodayAbrev %}
+    {% set day3LabelFull = 2 | addDaysToTodayFull %}
   {% else %}
     {% set day3Label = 2 | addDaysToTodayAbrevWelsh %}
+    {% set day3LabelFull = 2 | addDaysToTodayFullWelsh %}
   {% endif %}
   {% set day3TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day3.value | default(0) | string) %}
   {% set day3Panel %}
-    <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ day3Label }}</h2>
-    <span class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.headings.main }}</span>
+    {# '' Day name heading - screen reader reads full day name, visual shows abbreviation #}
+    <h3 class="govuk-heading-m govuk-!-margin-bottom-4" aria-label="{{ day3LabelFull }}">{{ day3Label }}</h3>
+    <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day3.value | default(0) }}, {{ airQuality.day3.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
+    {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X, [band]" #}
     {{ daqiNumberedBar(airQuality.day3.value | default(0), airQuality.day3.readableBand | capitalize | default('')) }}
 
-    {# '' Add daily summary details for day3 only if date is current #}
+    {# '' Forecast text - no heading, screen reader continues reading #}
     {% if showSummaryDate and transformedDailySummary %}
       {% set todayKey = daqi.tabs.today %}
       {% for key, value in transformedDailySummary %}
         {% if key != 'issue_date' and key != 'isCurrentDate' and key != todayKey %}
           {% if (' to ' in key) or (' i ' in key) %}
             <div class="daqitab-summary govuk-!-margin-top-6">
-              <h3 class="govuk-heading-s">{{ daqi.pageTexts.e }}</h3>
               <p>{{ value }}</p>
             </div>
           {% endif %}
@@ -137,7 +157,8 @@
     attributes: {
       class: day3TabClass,
       'data-daqi-value': airQuality.day3.value | default(0),
-      'data-daqi-band': airQuality.day3.readableBand | default('')
+      'data-daqi-band': airQuality.day3.readableBand | default(''),
+      'aria-label': day3LabelFull
     }
   }) %}
 {% endif %}
@@ -145,23 +166,26 @@
 {% if airQuality.day4 %}
   {% if lang == "en" %}
     {% set day4Label = 3 | addDaysToTodayAbrev %}
+    {% set day4LabelFull = 3 | addDaysToTodayFull %}
   {% else %}
     {% set day4Label = 3 | addDaysToTodayAbrevWelsh %}
+    {% set day4LabelFull = 3 | addDaysToTodayFullWelsh %}
   {% endif %}
   {% set day4TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day4.value | default(0) | string) %}
   {% set day4Panel %}
-    <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ day4Label }}</h2>
-    <span class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.headings.main }}</span>
+    {# '' Day name heading - screen reader reads full day name, visual shows abbreviation #}
+    <h3 class="govuk-heading-m govuk-!-margin-bottom-4" aria-label="{{ day4LabelFull }}">{{ day4Label }}</h3>
+    <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day4.value | default(0) }}, {{ airQuality.day4.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
+    {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X, [band]" #}
     {{ daqiNumberedBar(airQuality.day4.value | default(0), airQuality.day4.readableBand | capitalize | default('')) }}
 
-    {# '' Add daily summary details for day4 only if date is current #}
+    {# '' Forecast text - no heading, screen reader continues reading #}
     {% if showSummaryDate and transformedDailySummary %}
       {% set todayKey = daqi.tabs.today %}
       {% for key, value in transformedDailySummary %}
         {% if key != 'issue_date' and key != 'isCurrentDate' and key != todayKey %}
           {% if (' to ' in key) or (' i ' in key) %}
             <div class="daqitab-summary govuk-!-margin-top-6">
-              <h3 class="govuk-heading-s">{{ daqi.pageTexts.e }}</h3>
               <p>{{ value }}</p>
             </div>
           {% endif %}
@@ -176,7 +200,8 @@
     attributes: {
       class: day4TabClass,
       'data-daqi-value': airQuality.day4.value | default(0),
-      'data-daqi-band': airQuality.day4.readableBand | default('')
+      'data-daqi-band': airQuality.day4.readableBand | default(''),
+      'aria-label': day4LabelFull
     }
   }) %}
 {% endif %}
@@ -184,23 +209,26 @@
 {% if airQuality.day5 %}
   {% if lang == "en" %}
     {% set day5Label = 4 | addDaysToTodayAbrev %}
+    {% set day5LabelFull = 4 | addDaysToTodayFull %}
   {% else %}
     {% set day5Label = 4 | addDaysToTodayAbrevWelsh %}
+    {% set day5LabelFull = 4 | addDaysToTodayFullWelsh %}
   {% endif %}
   {% set day5TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day5.value | default(0) | string) %}
   {% set day5Panel %}
-    <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ day5Label }}</h2>
-    <span class="govuk-caption-s govuk-!-margin-bottom-4">{{ daqi.headings.main }}</span>
+    {# '' Day name heading - screen reader reads full day name, visual shows abbreviation #}
+    <h3 class="govuk-heading-m govuk-!-margin-bottom-4" aria-label="{{ day5LabelFull }}">{{ day5Label }}</h3>
+    <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day5.value | default(0) }}, {{ airQuality.day5.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
+    {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X, [band]" #}
     {{ daqiNumberedBar(airQuality.day5.value | default(0), airQuality.day5.readableBand | capitalize | default('')) }}
 
-    {# '' Add daily summary details for day5 only if date is current #}
+    {# '' Forecast text - no heading, screen reader continues reading #}
     {% if showSummaryDate and transformedDailySummary %}
       {% set todayKey = daqi.tabs.today %}
       {% for key, value in transformedDailySummary %}
         {% if key != 'issue_date' and key != 'isCurrentDate' and key != todayKey %}
           {% if (' to ' in key) or (' i ' in key) %}
             <div class="daqitab-summary govuk-!-margin-top-6">
-              <h3 class="govuk-heading-s">{{ daqi.pageTexts.e }}</h3>
               <p>{{ value }}</p>
             </div>
           {% endif %}
@@ -215,7 +243,8 @@
     attributes: {
       class: day5TabClass,
       'data-daqi-value': airQuality.day5.value | default(0),
-      'data-daqi-band': airQuality.day5.readableBand | default('')
+      'data-daqi-band': airQuality.day5.readableBand | default(''),
+      'aria-label': day5LabelFull
     }
   }) %}
 {% endif %}

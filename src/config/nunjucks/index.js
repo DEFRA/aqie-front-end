@@ -7,7 +7,9 @@ import { config } from '../index.js'
 import { context } from './context/context.js'
 import {
   addDaysToTodayAbrev,
-  addDaysToTodayAbrevWelsh
+  addDaysToTodayAbrevWelsh,
+  addDaysToTodayFull,
+  addDaysToTodayFullWelsh
 } from './filters/index.js'
 import * as globals from './globals/globals.js'
 import * as filters from './filters/index.js'
@@ -102,6 +104,8 @@ nunjucksEnvironment.addFilter('date', function (date, _format) {
 try {
   addDaysToTodayAbrev(nunjucksEnvironment)
   addDaysToTodayAbrevWelsh(nunjucksEnvironment)
+  addDaysToTodayFull(nunjucksEnvironment)
+  addDaysToTodayFullWelsh(nunjucksEnvironment)
   addToSentenceCase(nunjucksEnvironment)
   logger.info('Filters registered successfully.')
 } catch (error) {
