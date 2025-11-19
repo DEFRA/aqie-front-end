@@ -76,7 +76,17 @@ export const daqiTranslations = {
       latest1: 'Readings are measured every hour. The unit µg/m',
       latest2:
         ' stands for micrograms (one millionth of a gram) per cubic metre of air.'
-    }
+    },
+    // '' AQC-657: Exposure reduction advice section (HTML rendered via partial)
+    exposureHtml: `<h2 class="govuk-heading-m">How you can reduce your exposure to air pollution</h2>
+<p>Consider the following actions:</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>take routes where there is less traffic, especially at busy times of day</li>
+  <li>commute, walk or exercise in parks or other green spaces, if you are not affected by pollen</li>
+  <li>if you exercise indoors, make sure the room is well ventilated</li>
+</ul>
+<p>Get more advice on <a class="govuk-link" href="/proto-dev-new/actions?locationName=&parentArea=">actions you can take to reduce your exposure to air pollution</a>.</p>
+<p>Long term exposure to air pollution (over years) can lead to many different <a class="govuk-link" href="/proto-dev-new/health-effects?locationName=&parentArea=">health conditions</a> and can reduce life expectancy.</p>`
   }
 }
 

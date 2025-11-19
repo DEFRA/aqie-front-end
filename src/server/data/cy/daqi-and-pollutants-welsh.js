@@ -76,7 +76,17 @@ export const daqiTranslationsWelsh = {
       latest1: 'Mae’r darlleniadau’n cael eu mesur bob awr. Mae’r uned µg/m',
       latest2:
         ' yn sefyll am ficrogramau (miliynfed o gram) am bob metr ciwbig o aer.'
-    }
+    },
+    // '' AQC-657: Adran cyngor ar leihau amlygiad (HTML trwy'r partial) - TODO: adolygu cyfieithiad
+    exposureHtml: `<h2 class="govuk-heading-m">Sut y gallwch leihau eich amlygiad i lygredd aer</h2>
+<p>Ystyriwch y camau canlynol:</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>dewiswch lwybrau gyda llai o draffig, yn enwedig ar adegau prysur o'r diwrnod</li>
+  <li>teithiwch i'r gwaith, cerddwch neu ymarferwch mewn parciau neu leoedd gwyrdd eraill, os nad ydych yn cael eich effeithio gan baill</li>
+  <li>os ydych yn ymarfer dan do, gwnewch yn siŵr bod yr ystafell wedi'i hawyru'n dda</li>
+</ul>
+<p>Cael mwy o gyngor ar <a class="govuk-link" href="/proto-dev-new/actions?locationName=&parentArea=">gamau y gallwch eu cymryd i leihau eich amlygiad i lygredd aer</a>.</p>
+<p>Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer o wahanol <a class="govuk-link" href="/proto-dev-new/health-effects?locationName=&parentArea=">gyflyrau iechyd</a> ac ostwng disgwyliad oes.</p>`
   }
 }
 
