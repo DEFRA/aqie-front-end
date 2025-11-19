@@ -7,6 +7,21 @@ export const commonMessages = {
   low: {
     values: [1, 2, 3],
     advice: 'Enjoy your usual outdoor activities.',
+    insetText: `<p>For most people, short term exposure to low levels of air pollution is not an issue. Continue your usual outdoor activities.</p>
+<p>Some people might experience symptoms due to air pollution, even when levels are low.</p>
+<p>Adults and children with lung or heart conditions are at greater risk of experiencing symptoms.</p>
+<p>Symptoms could include:</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>coughing</li>
+    <li>chest tightness and pain</li>
+    <li>difficulty breathing</li>
+    <li>worsening of asthma symptoms</li>
+    <li>worsening of heart-related symptoms, such as heart palpitations</li>
+    <li>worsening of chronic obstructive pulmonary disease (COPD) symptoms</li>
+</ul>
+<p>Follow your doctor or nurse's usual advice about physically demanding activities and managing your condition.</p>
+<p>Follow your agreed management plan if you have one – for example, an asthma action plan. Ask your doctor or nurse for a plan if you do not have one.</p>
+<p>Also consider the impact of other triggers on your symptoms – for example, high pollen outside or poor air quality indoors.</p>`,
     atrisk: {
       adults: 'Enjoy your usual outdoor activities.',
       asthma: 'Enjoy your usual outdoor activities.',
@@ -19,6 +34,37 @@ export const commonMessages = {
     values: [4, 5, 6],
     advice:
       'For most people, short term exposure to moderate levels of air pollution is not an issue.',
+    insetText: `<p>For most people, short term exposure to moderate levels of air pollution is not an issue. Continue your usual outdoor activities. However, if you are experiencing symptoms, try to reduce your exposure to air pollution.</p>
+<p>However, some people may experience symptoms of exposure to air pollution. These can start within hours or several days after exposure.</p>
+
+<h3 class="govuk-heading-s">Short term air pollution exposure</h3>
+
+<p>Short term exposure (over hours or days) can cause a range of health impacts, including:</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>coughing</li>
+    <li>eye, nose, and throat irritation</li>
+    <li>chest tightness and pain</li>
+    <li>difficulty breathing</li>
+    <li>worsening of asthma symptoms</li>
+    <li>worsening of heart-related symptoms, such as heart palpitations</li>
+    <li>worsening of chronic obstructive pulmonary disease (COPD) symptoms</li>
+</ul>
+
+<p>Symptoms could start within hours or several days after exposure to air pollution.</p>
+
+<p>Speak to your doctor or nurse if:</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>you have new symptoms</li>
+    <li>your symptoms get worse</li>
+    <li>your symptoms do not get better after a week</li>
+</ul>
+
+<p>Also consider the impact of other triggers on your symptoms – for example, high pollen outside or poor air quality indoors.</p>
+
+<h3 class="govuk-heading-s">Advice for adults and children with lung or heart conditions</h3>
+
+<p>Try to adapt physically demanding activities outdoors, especially if your symptoms get worse.</p>
+<p>Follow your agreed management plan if you have one – for example, an asthma action plan. Ask your doctor or nurse for a plan if you do not have one.</p>`,
     atrisk: {
       adults:
         'Adults who have heart problems and feel unwell should consider doing less strenuous exercise, especially outside.',
@@ -34,6 +80,35 @@ export const commonMessages = {
     values: [7, 8, 9],
     advice:
       'Anyone experiencing discomfort such as sore eyes, cough or sore throat should consider reducing activity, particularly outdoors.',
+    insetText: `<p>Try to <a href="/proto-dev-new/actions?locationName">reduce your exposure to air pollution</a>, especially if you're experiencing symptoms.</p>
+
+<h3 class="govuk-heading-s">Short term air pollution exposure</h3>
+
+<p>Short term exposure (over hours or days) can cause a range of health impacts, including:</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>coughing</li>
+    <li>eye, nose, and throat irritation</li>
+    <li>chest tightness and pain</li>
+    <li>difficulty breathing</li>
+    <li>worsening of heart-related symptoms, such as heart palpitations</li>
+    <li>worsening of chronic obstructive pulmonary disease (COPD) symptoms</li>
+</ul>
+
+<p>Symptoms could start within hours or several days after exposure to air pollution.</p>
+
+<p>Speak to your doctor or nurse if:</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>you have new symptoms</li>
+    <li>your symptoms get worse</li>
+    <li>your symptoms do not get better after a week</li>
+</ul>
+
+<p>Also consider the impact of other triggers on your symptoms – for example, high pollen outside or poor air quality indoors.</p>
+
+<h3 class="govuk-heading-s">Advice for adults and children with lung or heart conditions</h3>
+
+<p>You should adapt physically demanding activities outdoors, especially if your symptoms get worse.</p>
+<p>Follow your agreed management plan if you have one – for example, an asthma action plan. Ask your doctor or nurse for a plan if you do not have one.</p>`,
     atrisk: {
       adults:
         'Adults with heart problems should reduce strenuous physical exertion, particularly outdoors, especially if they experience symptoms.',
@@ -48,6 +123,35 @@ export const commonMessages = {
     values: [10],
     advice:
       'Reduce physical exertion, particularly outdoors, especially if you experience symptoms such as cough or sore throat.',
+    insetText: `<p>Try to <a href="">reduce your exposure to air pollution</a>, especially if you're experiencing symptoms.</p>
+
+<h3 class="govuk-heading-s">Short term air pollution exposure</h3>
+
+<p>Short term exposure (over hours or days) can cause a range of health impacts, including:</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>coughing</li>
+    <li>eye, nose, and throat irritation</li>
+    <li>chest tightness and pain</li>
+    <li>difficulty breathing</li>
+    <li>worsening of heart-related symptoms, such as heart palpitations</li>
+    <li>worsening of chronic obstructive pulmonary disease (COPD) symptoms</li>
+</ul>
+
+<p>Symptoms could start within hours or several days after exposure to air pollution.</p>
+
+<p>Speak to your doctor or nurse if:</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>you have new symptoms</li>
+    <li>your symptoms get worse</li>
+    <li>your symptoms do not get better after a week</li>
+</ul>
+
+<p>Also consider the impact of other triggers on your symptoms – for example, high pollen outside or poor air quality indoors.</p>
+
+<h3 class="govuk-heading-s">Advice for adults and children with lung or heart conditions</h3>
+
+<p>You should adapt physically demanding activities outdoors, especially if your symptoms get worse.</p>
+<p>Follow your agreed management plan if you have one – for example, an asthma action plan. Ask your doctor or nurse for a plan if you do not have one.</p>`,
     atrisk: {
       adults:
         'Adults with heart problems should avoid strenuous physical activity.',
@@ -59,7 +163,8 @@ export const commonMessages = {
       'The current heatwave shows no signs of relenting, causing air pollution levels to remain very high across many areas today.'
   },
   unknown: {
-    advice: 'No data available.'
+    advice: 'No data available.',
+    insetText: '<p>No data available.</p>'
   }
 }
 
@@ -97,6 +202,7 @@ export function getDetailedInfo(aqValue) {
     band,
     readableBand,
     advice: message.advice,
+    insetText: message.insetText, // '' AQC-657: Include insetText for dynamic health advice display
     atrisk: message.atrisk,
     outlook: message.outlook,
     ukToday: message.ukToday, // Consider updating these messages to be relevant for each day
