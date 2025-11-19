@@ -278,14 +278,14 @@ svg|foreignObject {
       
       // Create flexbox-aligned dividers using exact flex ratios
       // Total flex: Low(153) + Moderate(153) + High(153) + VeryHigh(100) = 559
-      // Crispy 1px dividers moved 2px left for perfect alignment
+      // Adjusted dividers for proper centering in gaps
       background: 
-        // Divider after "Low" - 153/559 = 27.37% (moved 2px left)
+        // Divider after "Low" - 153/559 = 27.37%
         linear-gradient(90deg, transparent calc(27.37% - 0.5px), $govuk-border-colour calc(27.37% - 0.5px) calc(27.37% + 0.5px), transparent calc(27.37% + 0.5px)),
-        // Divider after "Moderate" - (153+153)/559 = 54.74% (moved 3px left)
-        linear-gradient(90deg, transparent calc(54.74% + 0px), $govuk-border-colour calc(54.74% + 0px) calc(54.74% + 1px), transparent calc(54.74% + 1px)),
-        // Divider after "High" - (153+153+153)/559 = 82.11% (moved 3px left)
-        linear-gradient(90deg, transparent calc(82.11% + 1.5px), $govuk-border-colour calc(82.11% + 1.5px) calc(82.11% + 2.5px), transparent calc(82.11% + 2.5px));
+        // Divider after "Moderate" - (153+153)/559 = 54.74% (shifted 2px right for mobile)
+        linear-gradient(90deg, transparent calc(54.74% + 2px), $govuk-border-colour calc(54.74% + 2px) calc(54.74% + 3px), transparent calc(54.74% + 3px)),
+        // Divider after "High" - (153+153+153)/559 = 82.11% (shifted 2px right for mobile)
+        linear-gradient(90deg, transparent calc(82.11% + 3.5px), $govuk-border-colour calc(82.11% + 3.5px) calc(82.11% + 4.5px), transparent calc(82.11% + 4.5px));
     }
   }
 }
@@ -312,13 +312,13 @@ svg|foreignObject {
       
       // Create flexbox-aligned dividers using exact flex ratios
       // Total flex: Low(153) + Moderate(153) + High(153) + VeryHigh(100) = 559
-      // Crispy 1px dividers moved 2px left for perfect alignment
+      // Adjusted dividers for proper centering in gaps
       background: 
-        // Divider after "Low" - 153/559 = 27.37% (moved 2px left)
+        // Divider after "Low" - 153/559 = 27.37%
         linear-gradient(90deg, transparent calc(27.37% + 0px), $govuk-border-colour calc(27.37% + 0px) calc(27.37% + 1px), transparent calc(27.37% + 1px)),
-        // Divider after "Moderate" - (153+153)/559 = 54.74% (moved 3px left)
+        // Divider after "Moderate" - (153+153)/559 = 54.74%
         linear-gradient(90deg, transparent calc(54.74% + 1px), $govuk-border-colour calc(54.74% + 1px) calc(54.74% + 2px), transparent calc(54.74% + 2px)),
-        // Divider after "High" - (153+153+153)/559 = 82.11% (moved 3px left)
+        // Divider after "High" - (153+153+153)/559 = 82.11%
         linear-gradient(90deg, transparent calc(82.11% + 3px), $govuk-border-colour calc(82.11% + 3px) calc(82.11% + 4px), transparent calc(82.11% + 4px));
     }
   }
@@ -347,13 +347,13 @@ svg|foreignObject {
       
       // Create flexbox-aligned dividers using exact flex ratios
       // Total flex: Low(153) + Moderate(153) + High(153) + VeryHigh(100) = 559
-      // Crispy 1px dividers moved 2px left for perfect alignment
+      // Adjusted dividers for proper centering in gaps
       background: 
-        // Divider after "Low" - 153/559 = 27.37% (moved 2px left)
+        // Divider after "Low" - 153/559 = 27.37%
         linear-gradient(90deg, transparent calc(27.37% + 0.5px), $govuk-border-colour calc(27.37% + 0.5px) calc(27.37% + 1.5px), transparent calc(27.37% + 1.5px)),
-        // Divider after "Moderate" - (153+153)/559 = 54.74% (moved 3px left)
+        // Divider after "Moderate" - (153+153)/559 = 54.74%
         linear-gradient(90deg, transparent calc(54.74% + 2px), $govuk-border-colour calc(54.74% + 2px) calc(54.74% + 3px), transparent calc(54.74% + 3px)),
-        // Divider after "High" - (153+153+153)/559 = 82.11% (moved 3px left)
+        // Divider after "High" - (153+153+153)/559 = 82.11%
         linear-gradient(90deg, transparent calc(82.11% + 4.5px), $govuk-border-colour calc(82.11% + 4.5px) calc(82.11% + 5.5px), transparent calc(82.11% + 5.5px));
     }
   }
@@ -523,9 +523,10 @@ svg|foreignObject {
 
 .daqi-bar-segment.daqi-selected {
   font-weight: bold;
-  border: 3px solid govuk-colour("black");
+  // '' Use box-shadow instead of border to avoid affecting layout/alignment
+  box-shadow: inset 0 0 0 3px govuk-colour("black");
   padding: 7px 0;
-  width: 9.016%;
+  // '' Remove fixed width - let flexbox handle sizing to prevent alignment issues
 }
 
 @media (prefers-contrast: more) {
