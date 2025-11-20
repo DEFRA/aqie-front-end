@@ -7,15 +7,16 @@ export const commonMessages = {
     values: [1, 2, 3],
     // '' AQC-657: Updated Welsh health advice for low levels
     advice:
-      "[WELSH TRANSLATION: For most people, short term exposure to low levels of air pollution is not an issue.]",
+      '[WELSH TRANSLATION: For most people, short term exposure to low levels of air pollution is not an issue.]',
     insetText: `[WELSH TRANSLATION OF FULL HTML BLOCK - See Translation Guide Section 1]`,
     atrisk: {
       // '' Provide distinct at-risk summaries
       adults:
-        "[WELSH: Some people may experience symptoms, even when levels are low.]",
-      asthma: "[WELSH: People with asthma should follow their usual management plan.]",
+        '[WELSH: Some people may experience symptoms, even when levels are low.]',
+      asthma:
+        '[WELSH: People with asthma should follow their usual management plan.]',
       oldPeople:
-        "[WELSH: Older people with heart or lung conditions should follow usual advice.]"
+        '[WELSH: Older people with heart or lung conditions should follow usual advice.]'
     },
     outlook:
       'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.'
@@ -23,7 +24,7 @@ export const commonMessages = {
   cymedrol: {
     values: [4, 5, 6],
     advice:
-      "[WELSH TRANSLATION: For most people, short term exposure to moderate levels of air pollution is not an issue.]",
+      '[WELSH TRANSLATION: For most people, short term exposure to moderate levels of air pollution is not an issue.]',
     insetText: `[WELSH TRANSLATION OF FULL HTML BLOCK - See Translation Guide Section 2]`,
     atrisk: {
       adults:
@@ -39,14 +40,14 @@ export const commonMessages = {
   uchel: {
     values: [7, 8, 9],
     advice:
-      "[WELSH TRANSLATION: Anyone experiencing discomfort such as sore eyes, cough or sore throat should consider reducing activity, particularly outdoors.]",
+      '[WELSH TRANSLATION: Anyone experiencing discomfort such as sore eyes, cough or sore throat should consider reducing activity, particularly outdoors.]',
     insetText: `[WELSH TRANSLATION OF FULL HTML BLOCK - See Translation Guide Section 3]`,
     atrisk: {
       adults:
         "Dylai oedolion sydd â phroblemau'r galon leihau ymdrech gorfforol egnïol, yn arbennig yn yr awyr agored, yn enwedig os ydynt yn profi symptomau.",
       asthma:
         "Efallai y bydd pobl sydd ag asthma yn gweld bod angen defnyddio'u hnanadlydd llliniaru yn amlach.",
-      oldPeople: "Dylai pobl hŷn leihau eu hymdrech gorfforol."
+      oldPeople: 'Dylai pobl hŷn leihau eu hymdrech gorfforol.'
     },
     outlook:
       'Warm temperatures are expected to increase pollution levels to high across many areas today.'
@@ -54,7 +55,7 @@ export const commonMessages = {
   uchelIawn: {
     values: [10],
     advice:
-      "[WELSH TRANSLATION: Reduce physical exertion, particularly outdoors, especially if you experience symptoms such as cough or sore throat.]",
+      '[WELSH TRANSLATION: Reduce physical exertion, particularly outdoors, especially if you experience symptoms such as cough or sore throat.]',
     insetText: `[WELSH TRANSLATION OF FULL HTML BLOCK - See Translation Guide Section 4]`,
     atrisk: {
       adults:

@@ -1,6 +1,7 @@
 # Welsh DAQI Health Messages Update - Summary
 
 ## Overview
+
 This branch (`feature/update-welsh-daqi-health-messages`) is set up to update the Welsh health messaging for the Daily Air Quality Index (DAQI) system to match the improvements made to the English version.
 
 ## What Has Been Done
@@ -12,25 +13,28 @@ This branch (`feature/update-welsh-daqi-health-messages`) is set up to update th
 ## What Needs to Be Done
 
 ### Step 1: Translation (Welsh Translator)
+
 Send `WELSH_HEALTH_MESSAGES_TRANSLATION_GUIDE.md` to a Welsh translator to translate the following sections:
 
 1. **LOW level (isel)** - Full detailed health advice with symptoms and guidance
-2. **MODERATE level (cymedrol)** - Full detailed health advice with symptoms and guidance  
+2. **MODERATE level (cymedrol)** - Full detailed health advice with symptoms and guidance
 3. **HIGH level (uchel)** - Full detailed health advice with symptoms and guidance
 4. **VERY HIGH level (uchelIawn)** - Full detailed health advice with symptoms and guidance
 
 The translator should provide:
+
 - Short `advice` summaries
 - Detailed `insetText` HTML blocks with health information
 - Three `atrisk` summaries for low level only (moderate, high, and very high already have these)
 
 ### Step 2: Integration (Development Team)
+
 Once translations are received:
 
 1. **Copy the template**: Use `WELSH_TRANSLATION_TEMPLATE.js` as a starting point
 2. **Insert translations**: Replace `[WELSH TRANSLATION HERE]` placeholders with actual Welsh text
 3. **Handle apostrophes**: Welsh contains many apostrophes (') which need proper escaping:
-   - In regular strings, use double quotes: `"I'r rhan fwyaf"` 
+   - In regular strings, use double quotes: `"I'r rhan fwyaf"`
    - In template literals, apostrophes are fine: `` `<p>I'r rhan...</p>` ``
 4. **Update the file**: Copy the completed structure to `src/server/data/cy/air-quality.js`
 5. **Add `insetText` property**: Ensure `getDetailedInfo()` function returns `insetText: message.insetText`
@@ -44,7 +48,7 @@ npm run format
 # Run linter
 npm run lint
 
-# Run tests  
+# Run tests
 npm test
 
 # Commit changes
@@ -80,6 +84,7 @@ git push origin feature/update-welsh-daqi-health-messages --force-with-lease
 ## Reference
 
 The English version was updated in branch: `feature/update-daqi-health-messages`
+
 - Commit: [tag: v0.15.1-daqi-health-messages]
 - See `src/server/data/en/air-quality.js` for the English implementation
 
@@ -92,24 +97,28 @@ Welsh uses many apostrophes which can cause issues in JavaScript:
 **Problem:** `'I'r rhan fwyaf'` → syntax error (mismatched quotes)
 
 **Solutions:**
+
 1. Use double quotes for the outer string:
+
    ```javascript
    advice: "I'r rhan fwyaf o bobl..."
    ```
 
 2. For template literals (insetText), apostrophes are fine:
+
    ```javascript
    insetText: `<p>I'r rhan fwyaf...</p>`
    ```
 
 3. If needed, escape apostrophes:
    ```javascript
-   advice: 'I\'r rhan fwyaf...'  // Not recommended, harder to read
+   advice: "I'r rhan fwyaf..." // Not recommended, harder to read
    ```
 
 ### HTML Structure in insetText
 
 The `insetText` should contain HTML with:
+
 - `<p>` tags for paragraphs
 - `<ul class="govuk-list govuk-list--bullet">` for bullet lists
 - `<li>` for list items
@@ -127,6 +136,7 @@ The `insetText` should contain HTML with:
 ## Questions?
 
 If you have any questions about:
+
 - **Translation content**: Refer to the English version in `src/server/data/en/air-quality.js`
 - **Technical implementation**: Check the template in `WELSH_TRANSLATION_TEMPLATE.js`
 - **HTML structure**: See examples in `WELSH_HEALTH_MESSAGES_TRANSLATION_GUIDE.md`
