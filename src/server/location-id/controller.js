@@ -307,11 +307,11 @@ function buildLocationViewData({
   headerTitle = convertFirstLetterIntoUppercase(headerTitle)
 
   // '' Handle case where dailySummary might be undefined (e.g., in test mode)
-  const { transformedDailySummary } = locationData.dailySummary
-    ? transformKeys(locationData.dailySummary, lang)
-    : { transformedDailySummary: undefined }
-
   let { airQuality } = airQualityValues(forecastNum, lang)
+  const highestAQ = Math.max(...forecastNum)
+  const { transformedDailySummary } = locationData.dailySummary
+    ? transformKeys(locationData.dailySummary, lang, highestAQ)
+    : { transformedDailySummary: undefined }
 
   // Apply mock level if requested
   airQuality = applyMockLevel(request, airQuality)

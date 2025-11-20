@@ -118,16 +118,13 @@ function updateHealthAdvice(level, band) {
 
   // Handle Low level (1-3): show advice paragraph + regular text div, no inset box
   if (level <= 3) {
-    // Show/update main advice paragraph
-    let mainAdviceParagraph = healthHeading.nextElementSibling
-    if (!mainAdviceParagraph || mainAdviceParagraph.tagName !== 'P') {
-      // Create the paragraph if it doesn't exist
-      mainAdviceParagraph = document.createElement('p')
-      healthHeading.insertAdjacentElement('afterend', mainAdviceParagraph)
+    // '' Structural refinement (AQC-657): Remove standalone low-level advice paragraph to prevent duplication of first sentence
+    // Hide/remove any existing paragraph created during previous state transitions
+    let existingParagraph = healthHeading.nextElementSibling
+    if (existingParagraph && existingParagraph.tagName === 'P') {
+      existingParagraph.style.display = 'none'
+      existingParagraph.textContent = ''
     }
-    mainAdviceParagraph.textContent = adviceData.advice
-    mainAdviceParagraph.style.display = 'block'
-    console.log('Main advice paragraph updated for Low level')
 
     // Hide any existing inset text
     const insetText = document.querySelector('.daqi-health-inset')
@@ -141,8 +138,8 @@ function updateHealthAdvice(level, band) {
       // Create the content div if it doesn't exist
       contentDiv = document.createElement('div')
       contentDiv.className = 'daqi-health-content daqi-health-content--low'
-      // Insert after the advice paragraph
-      mainAdviceParagraph.insertAdjacentElement('afterend', contentDiv)
+      // Insert directly after the heading (paragraph removed to avoid duplication)
+      healthHeading.insertAdjacentElement('afterend', contentDiv)
     }
     contentDiv.innerHTML = adviceData.insetText
     contentDiv.style.display = 'block'
@@ -213,7 +210,9 @@ function getAdviceForBand(band, level) {
   // Health advice messages matching server-side data
   const advice = {
     low: {
-      advice: 'Enjoy your usual outdoor activities.',
+      // '' AQC-657: Removed redundant legacy phrase "Enjoy your usual outdoor activities." to align with updated server copy
+      advice:
+        'For most people, short term exposure to low levels of air pollution is not an issue.',
       insetText: `<p>For most people, short term exposure to low levels of air pollution is not an issue. Continue your usual outdoor activities.</p>
 <p>Some people might experience symptoms due to air pollution, even when levels are low.</p>
 <p>Adults and children with lung or heart conditions are at greater risk of experiencing symptoms.</p>
@@ -230,9 +229,12 @@ function getAdviceForBand(band, level) {
 <p>Follow your agreed management plan if you have one – for example, an asthma action plan. Ask your doctor or nurse for a plan if you do not have one.</p>
 <p>Also consider the impact of other triggers on your symptoms – for example, high pollen outside or poor air quality indoors.</p>`,
       atrisk: {
-        adults: 'Enjoy your usual outdoor activities.',
-        asthma: 'Enjoy your usual outdoor activities.',
-        oldPeople: 'Enjoy your usual outdoor activities.'
+        // '' Distinct summaries replacing redundant generic sentence
+        adults:
+          'Some people may experience symptoms, even when levels are low.',
+        asthma: 'People with asthma should follow their usual management plan.',
+        oldPeople:
+          'Older people with heart or lung conditions should follow usual advice.'
       }
     },
     moderate: {

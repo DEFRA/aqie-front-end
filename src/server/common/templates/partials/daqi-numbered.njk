@@ -43,6 +43,16 @@
   </div>
 {% endmacro %}
 
+{# '' Provide robust fallback key for today's summary (Welsh pages may have English summary body). Avoid ternary to prevent syntax issues. #}
+{% if transformedDailySummary and transformedDailySummary[daqi.tabs.today] %}
+  {% set excludeTodayKey = daqi.tabs.today %}
+{% else %}
+  {% if lang == 'cy' %}
+    {% set excludeTodayKey = 'Heddiw' %}
+  {% else %}
+    {% set excludeTodayKey = 'Today' %}
+  {% endif %}
+{% endif %}
 {% set todayPanel %}
   {# '' Day name heading - screen reader reads full day name, visual shows "Today" or translated version #}
   <h3 class="govuk-heading-m govuk-!-margin-bottom-4" aria-label="{{ todayFull }}">{{ todayAbbrev }}</h3>
@@ -51,12 +61,12 @@
   {{ daqiNumberedBar(airQuality.today.value | default(0), airQuality.today.readableBand | default('')) }}
 
   {# '' Forecast text - no heading, screen reader continues reading #}
-  {% set todayKey = daqi.tabs.today %}
-  {% if showSummaryDate and transformedDailySummary and transformedDailySummary[todayKey] %}
+  {% if showSummaryDate and transformedDailySummary and transformedDailySummary[excludeTodayKey] %}
     <div class="daqitab-summary govuk-!-margin-top-6">
-      <p>{{ transformedDailySummary[todayKey] }}</p>
+      <p>{{ transformedDailySummary[excludeTodayKey] }}</p>
     </div>
   {% endif %}
+  {# '' Horizontal rule should NOT be inside tab panel per clarified requirement; removed here #}
 {% endset %}
 
 {# Build tabs with dynamic coloring using existing variables '' #}
@@ -95,9 +105,8 @@
 
     {# '' Forecast text - no heading, screen reader continues reading #}
     {% if showSummaryDate and transformedDailySummary %}
-      {% set todayKey = daqi.tabs.today %}
       {% for key, value in transformedDailySummary %}
-        {% if key != 'issue_date' and key != 'isCurrentDate' and key != todayKey %}
+        {% if key != 'issue_date' and key != 'isCurrentDate' and key != excludeTodayKey %}
           {% if not (' to ' in key) and not (' i ' in key) %}
             <div class="daqitab-summary govuk-!-margin-top-6">
               <p>{{ value }}</p>
@@ -106,6 +115,7 @@
         {% endif %}
       {% endfor %}
     {% endif %}
+    {# '' Removed per-panel HR; only Today panel shows separator per requirement #}
   {% endset %}
   {% set _ = items.push({
     label: day2Label,
@@ -138,9 +148,8 @@
 
     {# '' Forecast text - no heading, screen reader continues reading #}
     {% if showSummaryDate and transformedDailySummary %}
-      {% set todayKey = daqi.tabs.today %}
       {% for key, value in transformedDailySummary %}
-        {% if key != 'issue_date' and key != 'isCurrentDate' and key != todayKey %}
+        {% if key != 'issue_date' and key != 'isCurrentDate' and key != excludeTodayKey %}
           {% if (' to ' in key) or (' i ' in key) %}
             <div class="daqitab-summary govuk-!-margin-top-6">
               <p>{{ value }}</p>
@@ -149,6 +158,7 @@
         {% endif %}
       {% endfor %}
     {% endif %}
+    {# '' Removed per-panel HR; only Today panel shows separator per requirement #}
   {% endset %}
   {% set _ = items.push({
     label: day3Label,
@@ -181,9 +191,8 @@
 
     {# '' Forecast text - no heading, screen reader continues reading #}
     {% if showSummaryDate and transformedDailySummary %}
-      {% set todayKey = daqi.tabs.today %}
       {% for key, value in transformedDailySummary %}
-        {% if key != 'issue_date' and key != 'isCurrentDate' and key != todayKey %}
+        {% if key != 'issue_date' and key != 'isCurrentDate' and key != excludeTodayKey %}
           {% if (' to ' in key) or (' i ' in key) %}
             <div class="daqitab-summary govuk-!-margin-top-6">
               <p>{{ value }}</p>
@@ -192,6 +201,7 @@
         {% endif %}
       {% endfor %}
     {% endif %}
+    {# '' Removed per-panel HR; only Today panel shows separator per requirement #}
   {% endset %}
   {% set _ = items.push({
     label: day4Label,
@@ -224,9 +234,8 @@
 
     {# '' Forecast text - no heading, screen reader continues reading #}
     {% if showSummaryDate and transformedDailySummary %}
-      {% set todayKey = daqi.tabs.today %}
       {% for key, value in transformedDailySummary %}
-        {% if key != 'issue_date' and key != 'isCurrentDate' and key != todayKey %}
+        {% if key != 'issue_date' and key != 'isCurrentDate' and key != excludeTodayKey %}
           {% if (' to ' in key) or (' i ' in key) %}
             <div class="daqitab-summary govuk-!-margin-top-6">
               <p>{{ value }}</p>
@@ -235,6 +244,7 @@
         {% endif %}
       {% endfor %}
     {% endif %}
+    {# '' Removed per-panel HR; only Today panel shows separator per requirement #}
   {% endset %}
   {% set _ = items.push({
     label: day5Label,

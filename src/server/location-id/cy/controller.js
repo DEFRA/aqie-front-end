@@ -12,6 +12,8 @@ import {
 } from '../../data/constants.js'
 import { getSearchTermsFromUrl } from '../../locations/helpers/get-search-terms-from-url.js'
 import { config } from '../../../config/index.js'
+import moment from 'moment'
+import { getIssueTime } from '../../locations/helpers/middleware-helpers.js'
 // Import shared helper functions
 import {
   initializeLocationVariables,
@@ -98,6 +100,21 @@ const getLocationDetailsController = {
           processedData.nearestLocation,
           processedData.nearestLocationsRange
         )
+
+        // '' Calculate showSummaryDate if not already set (for direct access to location pages)
+        if (
+          locationData.showSummaryDate === undefined &&
+          locationData.dailySummary?.issue_date
+        ) {
+          const today = moment().format('YYYY-MM-DD')
+          const issueDate = moment(locationData.dailySummary.issue_date).format(
+            'YYYY-MM-DD'
+          )
+          locationData.showSummaryDate = today === issueDate
+          locationData.issueTime = getIssueTime(
+            locationData.dailySummary.issue_date
+          )
+        }
 
         // Build view data using helper
         const viewData = buildLocationViewData({
