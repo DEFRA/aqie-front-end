@@ -6,7 +6,9 @@ export const warningMessages = {
 export const commonMessages = {
   low: {
     values: [1, 2, 3],
-    advice: 'Enjoy your usual outdoor activities.',
+    // '' AQC-657: Removed redundant legacy phrase "Enjoy your usual outdoor activities." after rebase; updated copy for low level
+    advice:
+      'For most people, short term exposure to low levels of air pollution is not an issue.',
     insetText: `<p>For most people, short term exposure to low levels of air pollution is not an issue. Continue your usual outdoor activities.</p>
 <p>Some people might experience symptoms due to air pollution, even when levels are low.</p>
 <p>Adults and children with lung or heart conditions are at greater risk of experiencing symptoms.</p>
@@ -23,9 +25,11 @@ export const commonMessages = {
 <p>Follow your agreed management plan if you have one – for example, an asthma action plan. Ask your doctor or nurse for a plan if you do not have one.</p>
 <p>Also consider the impact of other triggers on your symptoms – for example, high pollen outside or poor air quality indoors.</p>`,
     atrisk: {
-      adults: 'Enjoy your usual outdoor activities.',
-      asthma: 'Enjoy your usual outdoor activities.',
-      oldPeople: 'Enjoy your usual outdoor activities.'
+      // '' Provide distinct at-risk summaries instead of redundant generic sentence
+      adults: 'Some people may experience symptoms, even when levels are low.',
+      asthma: 'People with asthma should follow their usual management plan.',
+      oldPeople:
+        'Older people with heart or lung conditions should follow usual advice.'
     },
     outlook:
       'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.'
