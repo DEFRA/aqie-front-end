@@ -42,7 +42,7 @@ export const commonMessages = {
       oldPeople: 'Dylai pobl hŷn leihau eu hymdrech gorfforol.'
     },
     outlook:
-      'Mae disgwyl i dymheredd cynnes gynyddu lefelau llygredd i lefel uchel ar draws sawl ardal heddiw.'
+      'Warm temperatures are expected to increase pollution levels to high across many areas today.'
   },
   uchelIawn: {
     values: [10],
@@ -56,7 +56,7 @@ export const commonMessages = {
       oldPeople: 'Dylai pobl hŷn osgoi gweithgareddau corfforol egnïol.'
     },
     outlook:
-      'Nid yw’r tywydd poeth presennol yn dangos unrhyw arwyddion o ad- daliad, gan achosi i lefelau llygredd aer barhau’n uchel iawn ar draws sawl ardal heddiw.'
+      'The current heatwave shows no signs of relenting, causing air pollution levels to remain very high across many areas today.'
   },
   unknown: {
     advice: 'Dim data ar gael.'

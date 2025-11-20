@@ -181,6 +181,8 @@ export function buildLocationViewData({
       lang === LANG_CY
         ? (locationData.welshDate ?? locationData.summaryDate)
         : (locationData.englishDate ?? locationData.summaryDate),
+    showSummaryDate: locationData.showSummaryDate,
+    issueTime: locationData.issueTime,
     dailySummaryTexts: components.dailySummaryTexts,
     serviceName: components.multipleLocations.serviceName,
     lang
