@@ -97,13 +97,20 @@ function updateHealthAdvice(level, band) {
   console.log(`updateHealthAdvice called: level=${level}, band=${band}`)
   console.log('Advice data:', adviceData)
 
-  // Find health advice elements (look for the heading that contains "Health advice for")
+  // Find health advice elements (look for the heading that contains "Health advice for" or Welsh "Cyngor iechyd ar gyfer")
   const allHeadings = document.querySelectorAll('h2.govuk-heading-m')
   let healthHeading = null
+  let isWelsh = false
 
   for (const heading of allHeadings) {
-    if (heading.textContent.includes('Health advice for')) {
+    const headingText = heading.textContent
+    if (headingText.includes('Health advice for')) {
       healthHeading = heading
+      isWelsh = false
+      break
+    } else if (headingText.includes('Cyngor iechyd ar gyfer')) {
+      healthHeading = heading
+      isWelsh = true
       break
     }
   }
@@ -113,8 +120,14 @@ function updateHealthAdvice(level, band) {
     return
   }
 
-  // Update heading
-  healthHeading.textContent = `Health advice for ${band} levels of air pollution`
+  // Update heading (English or Welsh)
+  if (isWelsh) {
+    // Get Welsh band name from server data if available
+    const welshBand = getWelshBandName(band)
+    healthHeading.textContent = `Cyngor iechyd ar gyfer lefelau ${welshBand} o lygredd aer`
+  } else {
+    healthHeading.textContent = `Health advice for ${band} levels of air pollution`
+  }
 
   // Handle Low level (1-3): show advice paragraph + regular text div, no inset box
   if (level <= 3) {
@@ -183,7 +196,11 @@ function updateHealthAdvice(level, band) {
         'daqi-health-inset--low',
         'daqi-health-inset--moderate',
         'daqi-health-inset--high',
-        'daqi-health-inset--veryHigh'
+        'daqi-health-inset--veryHigh',
+        'daqi-health-inset--isel',
+        'daqi-health-inset--cymedrol',
+        'daqi-health-inset--uchel',
+        'daqi-health-inset--uchelIawn'
       )
 
       const bandClass = getBandClassName(band)
@@ -199,13 +216,41 @@ function updateHealthAdvice(level, band) {
 // Helper function to normalize band name for CSS class
 function getBandClassName(band) {
   const normalized = band.toLowerCase().trim()
+  // Handle English band names
   if (normalized === 'very high') return 'veryHigh'
+  // Handle Welsh band names
+  if (normalized === 'uchel iawn') return 'uchelIawn'
   return normalized
+}
+
+// Helper function to get Welsh band name for heading
+function getWelshBandName(englishBand) {
+  const welshBands = {
+    low: 'isel',
+    moderate: 'cymedrol',
+    high: 'uchel',
+    'very high': 'uchel iawn'
+  }
+  return welshBands[englishBand.toLowerCase().trim()] || englishBand
 }
 
 function getAdviceForBand(band, level) {
   // Normalize band name
-  const normalizedBand = band.toLowerCase().trim()
+  let normalizedBand = band.toLowerCase().trim()
+
+  // '' Translate Welsh band names to English keys (template maps Welsh→English for JS compatibility)
+  const welshToEnglishBands = {
+    isel: 'low',
+    cymedrol: 'moderate',
+    uchel: 'high',
+    'uchel iawn': 'very high'
+  }
+
+  // Check if this is a Welsh band name and translate it
+  if (welshToEnglishBands[normalizedBand]) {
+    normalizedBand = welshToEnglishBands[normalizedBand]
+    console.log(`Translated Welsh band to English key: ${normalizedBand}`)
+  }
 
   // '' Use server-injected data if available, otherwise fall back to hardcoded data
   if (
@@ -381,11 +426,14 @@ function reorderExposureAndHealth(level) {
   try {
     const exposure = document.getElementById('exposure-section')
     if (!exposure) return
-    // Identify health heading
+    // Identify health heading (English or Welsh)
     const allHeadings = document.querySelectorAll('h2.govuk-heading-m')
     let healthHeading = null
     for (const heading of allHeadings) {
-      if (heading.textContent.includes('Health advice for')) {
+      if (
+        heading.textContent.includes('Health advice for') ||
+        heading.textContent.includes('Cyngor iechyd ar gyfer')
+      ) {
         healthHeading = heading
         break
       }
