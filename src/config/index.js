@@ -172,7 +172,7 @@ export const config = convict({
     doc: 'OS Name Places key',
     format: '*',
     sensitive: true,
-    default: 'c9O510hZRxRTi82EMezEhIupOrrWmCfh',
+    default: '',
     env: 'OS_NAMES_API_KEY'
   },
   osNamesApiUrl: {
@@ -241,32 +241,32 @@ export const config = convict({
   forecastsApiUrl: {
     doc: 'API forecast rss feed',
     format: String,
-    default: `https://aqie-forecast-api.perf-test.cdp-int.defra.cloud/forecast`,
+    default: `https://aqie-forecast-api.dev.cdp-int.defra.cloud/forecast`,
     env: 'FORECAST_API_URL'
   },
   cdpXApiKey: {
     doc: 'CDP X API Key',
     format: '*',
-    default: 'PR5Bg19XNquVrtziT4zvoZ14nJOTHGYq',
+    default: '',
     sensitive: true,
     env: 'CDP_X_API_KEY'
   },
   ephemeralProtectedDevApiUrl: {
     doc: 'Ephemeral Protected Dev API url',
     format: String,
-    default: `https://ephemeral-protected.api.perf-test.cdp-int.defra.cloud`,
+    default: `https://ephemeral-protected.api.test.cdp-int.defra.cloud`,
     env: 'EPHEMERAL_PROTECTED_DEV_API_URL'
   },
   measurementsApiUrl: {
     doc: 'Ricardo API url',
     format: String,
-    default: `https://aqie-back-end.perf-test.cdp-int.defra.cloud/measurements`,
+    default: `https://aqie-back-end.dev.cdp-int.defra.cloud/measurements`,
     env: 'MEASUREMENTS_API_URL'
   },
   ricardoMeasurementsApiUrl: {
     doc: 'New Ricardo API url',
     format: String,
-    default: `https://aqie-back-end.perf-test.cdp-int.defra.cloud/monitoringStationInfo?`,
+    default: `https://aqie-back-end.dev.cdp-int.defra.cloud/monitoringStationInfo?`,
     env: 'NEW_RICARDO_MEASUREMENTS_API_URL'
   },
   forecastSummaryUrl: {
@@ -308,7 +308,7 @@ export const config = convict({
   redirectUriNIreland: {
     doc: 'Redirect URI for Northern Ireland',
     format: String,
-    default: 'https://aqie-front-end.perf-test.cdp-int.defra.cloud',
+    default: 'https://aqie-front-end.dev.cdp-int.defra.cloud',
     env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_REDIRECT_URI'
   },
   clientIdNIreland: {

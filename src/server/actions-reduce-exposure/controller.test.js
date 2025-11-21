@@ -65,8 +65,10 @@ describe('actions reduce exposure controller - English', () => {
       actionsReduceExposure: mockContent.actionsReduceExposure,
       page: 'Actions to reduce exposure',
       displayBacklink: false,
+      customBackLink: false,
       backLinkText: mockContent.backlink.text,
       backLinkUrl: '/search-location?lang=en',
+      locationName: '',
       phaseBanner: mockContent.phaseBanner,
       footerTxt: mockContent.footerTxt,
       cookieBanner: mockContent.cookieBanner,
@@ -90,8 +92,10 @@ describe('actions reduce exposure controller - English', () => {
       'actions-reduce-exposure/index',
       expect.objectContaining({
         displayBacklink: true,
-        backLinkText: '< Air pollution in Manchester',
-        backLinkUrl: '/search-location?lang=en&searchTerms=Manchester'
+        customBackLink: true,
+        backLinkText: 'Air pollution in Manchester',
+        backLinkUrl: '/location/manchester?lang=en',
+        locationName: 'Manchester'
       })
     )
   })

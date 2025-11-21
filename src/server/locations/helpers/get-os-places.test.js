@@ -25,6 +25,7 @@ describe('getOSPlaces', () => {
   })
 
   it('should call getOSPlaces function without errors', async () => {
+    vi.clearAllMocks()
     const { config } = await import('../../config/index.js')
     config.get.mockImplementation((key) => {
       if (key === 'osNamesApiUrl') return 'https://api.test.com/'
@@ -58,6 +59,7 @@ describe('getOSPlaces', () => {
   })
 
   it('should handle postcode input', async () => {
+    vi.clearAllMocks()
     const { config } = await import('../../config/index.js')
     config.get.mockImplementation((key) => {
       if (key === 'osNamesApiUrl') return 'https://api.test.com/'

@@ -417,6 +417,7 @@ describe('Location ID Controller Tests', () => {
         expect.objectContaining({
           result: expect.objectContaining({ id: 'test-location' }),
           pageTitle: expect.stringContaining('Air quality in'),
+          locationName: 'Test Location',
           lang: 'en'
         })
       )

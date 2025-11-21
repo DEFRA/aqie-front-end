@@ -65,8 +65,10 @@ describe('actions reduce exposure controller - Welsh', () => {
       actionsReduceExposure: mockContent.actionsReduceExposure,
       page: 'Camau i leihau amlygiad',
       displayBacklink: false,
+      customBackLink: false,
       backLinkText: mockContent.backlink.text,
       backLinkUrl: '/chwilio-lleoliad/cy?lang=cy',
+      locationName: '',
       phaseBanner: mockContent.phaseBanner,
       footerTxt: mockContent.footerTxt,
       cookieBanner: mockContent.cookieBanner,
@@ -90,8 +92,10 @@ describe('actions reduce exposure controller - Welsh', () => {
       'actions-reduce-exposure/index',
       expect.objectContaining({
         displayBacklink: true,
-        backLinkText: '< Llygredd aer yn Abertawe',
-        backLinkUrl: '/chwilio-lleoliad/cy?lang=cy&searchTerms=Abertawe'
+        customBackLink: true,
+        backLinkText: 'Llygredd aer yn Abertawe',
+        backLinkUrl: '/lleoliad/abertawe?lang=cy',
+        locationName: 'Abertawe'
       })
     )
   })
