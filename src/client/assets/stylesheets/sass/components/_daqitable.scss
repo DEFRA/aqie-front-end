@@ -701,16 +701,20 @@ svg|foreignObject {
 // '' Health advice inset text with dynamic border colors for Moderate+ levels (4-10)
 // '' AQC-657: Inset text border color changes according to forecast level
 .daqi-health-inset {
-  &.daqi-health-inset--moderate {
+  &.daqi-health-inset--moderate,
+  &.daqi-health-inset--cymedrol {
     border-left: 10px solid #FFCF00; // '' DAQI yellow (moderate)
   }
   
-  &.daqi-health-inset--high {
+  &.daqi-health-inset--high,
+  &.daqi-health-inset--uchel {
     border-left: 10px solid #990000; // '' DAQI red (high)
   }
   
   // stylelint-disable-next-line selector-class-pattern
-  &.daqi-health-inset--veryHigh {
+  &.daqi-health-inset--veryHigh,
+  // stylelint-disable-next-line selector-class-pattern
+  &.daqi-health-inset--uchelIawn {
     border-left: 10px solid #CE30FF; // '' AQC-657: Updated DAQI very high (10) border colour
   }
 }

@@ -24,7 +24,7 @@ export const daqiTranslationsWelsh = {
     },
     healthAdvice: {
       paragraphs: {
-        a: 'Iechyd cyngor ar gyfer lefelau',
+        a: 'Cyngor iechyd ar gyfer lefelau',
         b: 'o lygredd aer'
       }
     },
