@@ -306,3 +306,25 @@
     </div>
   </div>
 {% endblock %}
+
+{% block bodyEnd %}
+  {{ super() }}
+  {# '' Inject air quality health messages from server to eliminate data duplication #}
+  <script>
+    window.airQualityMessages = {
+      {% if lang == 'cy' %}
+      {# Welsh messages - map Welsh keys to English keys for JavaScript compatibility #}
+      'low': {{ airQualityData.isel | dump | safe }},
+      'moderate': {{ airQualityData.cymedrol | dump | safe }},
+      'high': {{ airQualityData.uchel | dump | safe }},
+      'very high': {{ airQualityData.uchelIawn | dump | safe }}
+      {% else %}
+      {# English messages - map veryHigh to 'very high' for JavaScript compatibility #}
+      'low': {{ airQualityData.low | dump | safe }},
+      'moderate': {{ airQualityData.moderate | dump | safe }},
+      'high': {{ airQualityData.high | dump | safe }},
+      'very high': {{ airQualityData.veryHigh | dump | safe }}
+      {% endif %}
+    };
+  </script>
+{% endblock %}

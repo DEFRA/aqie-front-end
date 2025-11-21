@@ -207,7 +207,18 @@ function getAdviceForBand(band, level) {
   // Normalize band name
   const normalizedBand = band.toLowerCase().trim()
 
-  // Health advice messages matching server-side data
+  // '' Use server-injected data if available, otherwise fall back to hardcoded data
+  if (
+    typeof window.airQualityMessages !== 'undefined' &&
+    window.airQualityMessages[normalizedBand]
+  ) {
+    console.log(`Using server-injected data for band: ${normalizedBand}`)
+    return window.airQualityMessages[normalizedBand]
+  }
+
+  console.log(`Using hardcoded fallback data for band: ${normalizedBand}`)
+
+  // Health advice messages matching server-side data (fallback only)
   const advice = {
     low: {
       // '' AQC-657: Removed redundant legacy phrase "Enjoy your usual outdoor activities." to align with updated server copy
