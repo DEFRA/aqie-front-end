@@ -1,7 +1,8 @@
 import { navigationTranslationsWelsh } from './navigation-welsh.js'
 import {
   daqiTranslationsWelsh,
-  pollutantTranslationsWelsh
+  pollutantTranslationsWelsh,
+  actionsReduceExposureTranslationsWelsh
 } from './daqi-and-pollutants-welsh.js'
 import {
   uiTranslationsWelsh,
@@ -16,6 +17,7 @@ export const welsh = {
   ...navigationTranslationsWelsh,
   ...daqiTranslationsWelsh,
   ...pollutantTranslationsWelsh,
+  ...actionsReduceExposureTranslationsWelsh,
   ...uiTranslationsWelsh,
   ...footerTranslationsWelsh
 }

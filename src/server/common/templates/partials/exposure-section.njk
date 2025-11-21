@@ -1,5 +1,13 @@
 {# '' AQC-657: Exposure reduction advice section. Rendered in different positions depending on DAQI level #}
 {# '' Wrapped with stable id for dynamic reordering when active forecast tab changes #}
 <div id="exposure-section" class="daqiexposure" data-daqi-exposure>
-  {{ daqi.exposureHtml | safe }}
+  {% set exposureContent = daqi.exposureHtml %}
+  {% if locationName %}
+    {% if lang == 'en' %}
+      {% set exposureContent = exposureContent | replace('/actions-reduce-exposure?lang=' + lang, '/actions-reduce-exposure?lang=' + lang + '&locationName=' + (locationName | urlencode)) %}
+    {% elif lang == 'cy' %}
+      {% set exposureContent = exposureContent | replace('/camau-lleihau-amlygiad/cy?lang=cy', '/camau-lleihau-amlygiad/cy?lang=cy&locationName=' + (locationName | urlencode)) %}
+    {% endif %}
+  {% endif %}
+  {{ exposureContent | safe }}
 </div>

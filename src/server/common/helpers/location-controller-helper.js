@@ -169,6 +169,7 @@ export function buildLocationViewData({
     metaSiteUrl,
     description: `${components.daqi.description.a} ${headerTitle}${components.daqi.description.b}`,
     title: `${components.multipleLocations.titlePrefix} ${headerTitle}`,
+    locationName: headerTitle,
     displayBacklink: true,
     transformedDailySummary,
     footerTxt: components.footerTxt,

@@ -336,6 +336,7 @@ function buildLocationViewData({
     metaSiteUrl,
     description: `${english.daqi.description.a} ${headerTitle}${english.daqi.description.b}`,
     title: `${english.multipleLocations.titlePrefix} ${headerTitle}`,
+    locationName: headerTitle,
     displayBacklink: true,
     transformedDailySummary,
     footerTxt: english.footerTxt,

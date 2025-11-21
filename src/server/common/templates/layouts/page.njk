@@ -102,8 +102,13 @@
   {% if displayBacklink %}
    {%else%}
    {% set queryhref = "" %}
-   {% set fullHrefEn = queryhref + "?lang=en" %}
-   {% set fullHrefCy = queryhref + "?lang=cy" %}
+   {% if locationName %}
+     {% set fullHrefEn = queryhref + "?lang=en&locationName=" + (locationName | urlencode) %}
+     {% set fullHrefCy = queryhref + "?lang=cy&locationName=" + (locationName | urlencode) %}
+   {% else %}
+     {% set fullHrefEn = queryhref + "?lang=en" %}
+     {% set fullHrefCy = queryhref + "?lang=cy" %}
+   {% endif %}
    {% if statusCode != 500 %}
        {{
         dwpLanguageToggle({
@@ -122,6 +127,12 @@
 {%if page != "Check air quality"%}
   {%if displayBacklink %}
   <div class='top-nav'>
+  {%if customBackLink %}
+    {{ govukBackLink({
+    text: backLinkText,
+    href: backLinkUrl
+  }) }}
+  {%else%}
   {%if htmlLang == "en"%}
   {% set queryhrefSearchEn %}/search-location?lang=en{% endset %}
     {{ govukBackLink({
@@ -136,9 +147,15 @@
     href: queryhrefSearchCy
   }) }}
   {% endif %}
+  {%endif%}
     {% set queryhref = "" %}
-    {% set fullHrefEn = queryhref + "?lang=en" %}
-    {% set fullHrefCy = queryhref + "?lang=cy" %}
+    {% if locationName %}
+      {% set fullHrefEn = queryhref + "?lang=en&locationName=" + (locationName | urlencode) %}
+      {% set fullHrefCy = queryhref + "?lang=cy&locationName=" + (locationName | urlencode) %}
+    {% else %}
+      {% set fullHrefEn = queryhref + "?lang=en" %}
+      {% set fullHrefCy = queryhref + "?lang=cy" %}
+    {% endif %}
     {{
       dwpLanguageToggle({
           selectedLang: lang,

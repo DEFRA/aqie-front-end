@@ -90,6 +90,84 @@ export const daqiTranslations = {
   }
 }
 
+export const actionsReduceExposureTranslations = {
+  actionsReduceExposure: {
+    title: 'Actions you can take to reduce your exposure to air pollution',
+    pageTitle: `Actions you can take to reduce your exposure to air pollution – ${SERVICE_NAME} – GOV.UK`,
+    description:
+      'Learn practical actions to reduce your exposure to air pollution in urban areas, rural areas, indoors and outdoors.',
+    intro:
+      'There is no safe level of air pollution, but there are actions you can take to reduce your exposure.',
+    mainAdvice:
+      'You should try to reduce your exposure to air pollution where you can, even when levels are low. Long term exposure to air pollution (over years) can lead to',
+    healthConditionsLink: '/health-effects',
+    healthConditionsLinkText:
+      'many different health conditions and reduce life expectancy',
+    urbanAreas: {
+      heading: 'Urban areas',
+      description:
+        'Urban areas have more than 10,000 residents, for example a large town or a city.',
+      advice:
+        'Consider the following actions if you live or work in an urban area:',
+      actions: [
+        'if you need to walk next to a busy road, keep as far from the edge of the road as you can – putting even a short distance between yourself and the source of pollution reduces the amount of pollution you breathe in',
+        'avoid driving in heavy traffic – sitting in traffic can expose you to high levels of pollution',
+        'check pollution forecasts to help you plan outdoor activities'
+      ]
+    },
+    ruralAreas: {
+      heading: 'Rural areas',
+      description:
+        'Rural areas have less than 10,000 residents, for example a village, hamlet or small town.',
+      advice:
+        'Some pollutants are often higher in the countryside, such as ozone.',
+      advice2:
+        'Consider the following actions if you live or work in a rural area:',
+      actions: [
+        'check for agricultural activities and plan to avoid them – ploughing fields, spreading fertilisers, and spraying pesticides can all increase air pollution levels',
+        'avoid bonfires and burning garden waste',
+        'check pollution forecasts – pollution can travel long distances and you cannot always see the sources'
+      ]
+    },
+    allOutdoorAreas: {
+      heading: 'All outdoor areas',
+      advice: 'Consider the following actions in any area:',
+      actions: [
+        'take routes where there is less traffic, especially at busy times of day',
+        'commute, walk or exercise in parks or other green spaces, if you are not affected by pollen'
+      ]
+    },
+    indoorAirPollution: {
+      heading: 'Indoor air pollution',
+      description:
+        'The air quality indoors is not always better than outdoors.',
+      advice:
+        'Consider the following actions to improve your indoor air quality:',
+      actions: [
+        'avoid smoking or vaping indoors',
+        'ventilate when cooking, showering, bathing and washing and drying laundry – for example, use an extractor fan or open windows',
+        'avoid burning on a stove or open fire if you can',
+        'if you exercise indoors, make sure the room is well ventilated',
+        'check labels on cleaning products, aerosols and paints – look for products labelled as low emission or "low VOC"'
+      ],
+      additionalAdvice:
+        "If you need to use cleaning products, aerosols and paints indoors, follow the manufacturer's instructions and use them in a ventilated area."
+    },
+    reduceContribution: {
+      heading: 'Reduce your contribution to air pollution',
+      advice: 'Consider the following actions to reduce your air pollution:',
+      actions: [
+        'walk, cycle and use public transport more frequently',
+        "drive less, and when you do drive, drive smarter – car share if you can, turn your engine off when you're not moving, and keep your vehicle well maintained",
+        'consider switching to a hybrid or electric vehicle',
+        'compost or take garden waste to a refuse centre rather than burning it',
+        'avoid unnecessary burning at home – for example, using a wood burner or open fire',
+        'if you need to burn wood or other fuel for heating, make sure you use <a href="https://www.readytoburn.org/" class="govuk-link">Ready to Burn</a> fuels and keep your appliances clean and maintained'
+      ]
+    }
+  }
+}
+
 export const pollutantTranslations = {
   // sonar-disable-next-line javascript:S1192
   pollutants: {
