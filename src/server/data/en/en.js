@@ -2,7 +2,8 @@
 import { navigationTranslations } from './navigation.js'
 import {
   daqiTranslations,
-  pollutantTranslations
+  pollutantTranslations,
+  actionsReduceExposureTranslations
 } from './daqi-and-pollutants.js'
 import { uiTranslations, footerTranslations } from './footer-and-ui.js'
 
@@ -14,6 +15,7 @@ export const english = {
   ...navigationTranslations,
   ...daqiTranslations,
   ...pollutantTranslations,
+  ...actionsReduceExposureTranslations,
   ...uiTranslations,
   ...footerTranslations
 }

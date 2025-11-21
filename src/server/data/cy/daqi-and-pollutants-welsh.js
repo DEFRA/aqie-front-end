@@ -90,6 +90,84 @@ export const daqiTranslationsWelsh = {
   }
 }
 
+export const actionsReduceExposureTranslationsWelsh = {
+  actionsReduceExposure: {
+    title: 'Camau y gallwch eu cymryd i leihau’ch amlygiad i lygredd aer ',
+    pageTitle:
+      'Camau y gallwch eu cymryd i leihau eich amlygiad i lygredd aer – Gwirio ansawdd aer – GOV.UK',
+    description:
+      'Dysgwch gamau ymarferol i leihau eich amlygiad i lygredd aer mewn ardaloedd trefol, ardaloedd gwledig, dan do ac yn yr awyr agored.',
+    intro:
+      'Does dim lefel ddiogel o lygredd aer, ond mae yna gamau y gallwch eu cymryd i leihau’ch amlygiad i lygredd aer.',
+    mainAdvice:
+      'Dylech chi geisio lleihau’ch amlygiad i lygredd aer lle gallwch chi, hyd yn oed pan fo’r lefelau’n isel. Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer',
+    healthConditionsLink: '/effeithiau-iechyd/cy',
+    healthConditionsLinkText:
+      'o wahanol gyflyrau iechyd a lleihau disgwyliad oes',
+    urbanAreas: {
+      heading: 'Ardaloedd trefol',
+      description:
+        'Mae gan ardaloedd trefol fwy na 10,000 o drigolion, er enghraifft tref fawr neu ddinas.',
+      advice:
+        'Ystyriwch y camau canlynol os ydych chi’n byw neu’n gweithio mewn ardal drefol:',
+      actions: [
+        'os oes angen ichi gerdded wrth ymyl ffordd brysur, cadwch mor bell o ymyl y ffordd ag y gallwch – mae rhoi hyd yn oed pellter byr rhyngoch chi a’r ffynhonnell llygredd yn lleihau faint o lygredd y byddwch chi’n ei anadlu',
+        'osgoi gyrru mewn traffig trwm – gall eistedd mewn traffig eich amlygu i lefelau uchel o lygredd',
+        'gwirio rhagolygon y llygredd i’ch helpu i gynllunio gweithgareddau awyr agored'
+      ]
+    },
+    ruralAreas: {
+      heading: 'Ardaloedd gwledig',
+      description:
+        'Mae gan ardaloedd gwledig lai na 10,000 o drigolion, er enghraifft pentref, pentrefan neu dref fach.',
+      advice:
+        'Mae rhai llygryddion yn aml yn uwch yng nghefn gwlad, megis osôn.',
+      advice2:
+        'Ystyriwch y camau canlynol os ydych chi’n byw neu’n gweithio mewn ardal wledig:',
+      actions: [
+        'gwirio am weithgareddau amaethyddol a chynllunio i’w hosgoi – gall aredig caeau, taenu gwrtaith, a chwistrellu plaladdwyr i gyd gynyddu lefelau llygredd aer',
+        'osgoi coelcerthi a llosgi gwastraff gardd',
+        'gwirio rhagolygon y llygredd – gall llygredd deithio pellteroedd hir ac allwch chi ddim bob amser weld y ffynonellau'
+      ]
+    },
+    allOutdoorAreas: {
+      heading: 'Cyngor cyffredinol',
+      advice: 'Ystyriwch y camau canlynol mewn unrhyw ardal:',
+      actions: [
+        'cymryd llwybrau lle mae llai o draffig, yn enwedig ar adegau prysur o’r dydd',
+        'cymudo, cerdded neu ymarfer corff mewn parciau neu fannau gwyrdd eraill, os nad yw paill yn effeithio arnoch',
+        'os ydych chi’n ymarfer corff dan do, gofalwch fod yr ystafell wedi’i hawyru’n dda'
+      ]
+    },
+    indoorAirPollution: {
+      heading: 'Llygredd aer dan do',
+      description:
+        'Dyw ansawdd yr aer dan do ddim bob amser yn well nag yn yr awyr agored.',
+      advice: 'Ystyriwch y camau canlynol i wella ansawdd eich aer dan do:',
+      actions: [
+        'osgoi ysmygu neu fepio dan do',
+        'awyru wrth goginio – er enghraifft, defnyddio ffan echdynnu neu ffenestri agored',
+        'osgoi llosgi ar stôf neu dân agored os gallwch chi',
+        'gwirio labeli ar gynhyrchion glanhau, erosolau a phaent – chwiliwch am gynhyrchion sydd wedi’u labelu fel allyriadau isel neu "low VOC"'
+      ],
+      additionalAdvice:
+        'Os oes angen ichi ddefnyddio cynhyrchion glanhau, erosolau a phaent dan do, dilynwch gyfarwyddiadau’r gweithgynhyrchydd a’u defnyddio mewn man sydd wedi’i awyru.'
+    },
+    reduceContribution: {
+      heading: 'Lleihau’ch cyfraniad at lygredd aer',
+      advice: 'Ystyriwch y camau canlynol i leihau’ch llygredd aer:',
+      actions: [
+        'cerdded, beicio a defnyddio trafnidiaeth gyhoeddus yn amlach',
+        'gyrru llai, a phan fyddwch chi’n gyrru, gyrru’n ddoethach – rhannu car os gallwch chi, diffoddwch eich injan pan nad ydych chi’n symud, a chadwch eich cerbyd mewn cyflwr da',
+        'ystyried newid i gerbyd hybrid neu drydan',
+        'compostio neu fynd â gwastraff gardd i ganolfan sbwriel yn hytrach na’i losgi',
+        'osgoi llosgi diangen yn y cartref – er enghraifft, defnyddio llosgwr coed neu dân agored',
+        'os oes angen ichi losgi pren neu danwydd arall ar gyfer gwres, gofalwch eich bod yn defnyddio tanwydd <a href="https://www.readytoburn.org/" class="govuk-link">Parod i Losgi</a> a chadwch eich offer yn lân ac mewn cyflwr da'
+      ]
+    }
+  }
+}
+
 export const pollutantTranslationsWelsh = {
   // sonar-disable-next-line javascript:S1192
   pollutants: {

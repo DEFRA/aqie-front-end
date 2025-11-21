@@ -451,6 +451,7 @@ describe('handleUKLocationData edge cases', () => {
   })
 
   it('returns { results: [] } and warns if unauthorized', async () => {
+    vi.clearAllMocks()
     const di = {
       isTestMode: () => false,
       logger: { warn: vi.fn(), info: vi.fn(), error: vi.fn() },
@@ -476,6 +477,7 @@ describe('handleUKLocationData edge cases', () => {
   })
 
   it('returns { results: [] } and logs error for other status', async () => {
+    vi.clearAllMocks()
     const di = {
       isTestMode: () => false,
       logger: { warn: vi.fn(), info: vi.fn(), error: vi.fn() },

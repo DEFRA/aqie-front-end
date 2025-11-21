@@ -175,6 +175,7 @@ describe('Location Controller Helper', () => {
 
       expect(result.lang).toBe(LANG_EN)
       expect(result.pageTitle).toContain('Test location')
+      expect(result.locationName).toBe('Test location')
       expect(result.displayBacklink).toBe(true)
       expect(result.footerTxt).toBeDefined()
     })
