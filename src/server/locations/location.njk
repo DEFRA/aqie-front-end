@@ -46,11 +46,13 @@
       {% set todayValue = airQuality.today.value | int %}
       {# '' AQC-657: Exposure section ordering: show first ONLY for Low (1-3) levels #}
       {% if todayValue <= 3 %}
+        {# '' Set variable to add top margin when summary date not shown #}
+        {% set needsTopMargin = not (showSummaryDate and summaryDate) %}
         {% include "exposure-section.njk" %}
         {# '' AQC-657: Visual separator between exposure advice and health advice (Low level order) #}
         <hr data-daqi-separator="between-health-exposure" class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-6 govuk-!-margin-bottom-6">
       {% endif %}
-      <h2 class="govuk-heading-m">{{ daqi.healthAdvice.paragraphs.a }} {{ airQuality.today.readableBand }} {{ daqi.healthAdvice.paragraphs.b }}</h2>
+      <h2 class="govuk-heading-m{% if not (showSummaryDate and summaryDate) %} govuk-!-margin-top-6{% endif %}">{{ daqi.healthAdvice.paragraphs.a }} {{ airQuality.today.readableBand }} {{ daqi.healthAdvice.paragraphs.b }}</h2>
       
       {# '' For Low levels (1-3): show advice paragraph + regular text content without inset box #}
       {% if todayValue <= 3 %}

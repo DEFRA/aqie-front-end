@@ -1,6 +1,6 @@
 {# '' AQC-657: Exposure reduction advice section. Rendered in different positions depending on DAQI level #}
 {# '' Wrapped with stable id for dynamic reordering when active forecast tab changes #}
-<div id="exposure-section" class="daqiexposure" data-daqi-exposure>
+<div id="exposure-section" class="daqiexposure{% if needsTopMargin %} govuk-!-margin-top-6{% endif %}" data-daqi-exposure>
   {% set exposureContent = daqi.exposureHtml %}
   {% if locationName %}
     {% if lang == 'en' %}
