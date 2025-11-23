@@ -678,3 +678,125 @@ describe('fetchData branch coverage', () => {
     expect(resultNI.getNIPlaces).toEqual({ results: [] })
   })
 })
+
+// ''
+describe('fetchData missing request parameter', () => {
+  it('throws error if request parameter is missing', async () => {
+    await expect(
+      fetchData(null, { locationType: LOCATION_TYPE_UK })
+    ).rejects.toThrow(
+      "fetchData: 'request' argument is required and was not provided."
+    )
+  })
+
+  it('throws error if request parameter is undefined', async () => {
+    await expect(
+      fetchData(undefined, { locationType: LOCATION_TYPE_UK })
+    ).rejects.toThrow(
+      "fetchData: 'request' argument is required and was not provided."
+    )
+  })
+})
+
+// ''
+describe('fetchData getDailySummary fallback coverage', () => {
+  it('uses fallback object when getDailySummary is invalid', async () => {
+    const mockRequest = { yar: { get: vi.fn() } }
+    const di = {
+      validateParams: () => null,
+      errorResponse: vi.fn(),
+      logger: { error: vi.fn() },
+      isTestMode: () => false,
+      handleUKLocationData: vi.fn(async () => 'uk-places'),
+      handleNILocationData: vi.fn(),
+      fetchForecasts: vi.fn(async () => ({
+        'forecast-summary': null // Invalid - should trigger fallback
+      })),
+      options: {},
+      config: { get: vi.fn() },
+      isMockEnabled: false
+    }
+    const result = await fetchData(
+      mockRequest,
+      {
+        locationType: LOCATION_TYPE_UK,
+        userLocation: 'loc',
+        searchTerms: 'st',
+        secondSearchTerm: 'sst'
+      },
+      di
+    )
+    expect(result.getDailySummary).toEqual({ today: null })
+  })
+
+  it('uses fallback object when getDailySummary is not an object', async () => {
+    const mockRequest = { yar: { get: vi.fn() } }
+    const di = {
+      validateParams: () => null,
+      errorResponse: vi.fn(),
+      logger: { error: vi.fn() },
+      isTestMode: () => false,
+      handleUKLocationData: vi.fn(async () => 'uk-places'),
+      handleNILocationData: vi.fn(),
+      fetchForecasts: vi.fn(async () => ({
+        'forecast-summary': 'invalid-string' // Not an object - should trigger fallback
+      })),
+      options: {},
+      config: { get: vi.fn() },
+      isMockEnabled: false
+    }
+    const result = await fetchData(
+      mockRequest,
+      {
+        locationType: LOCATION_TYPE_UK,
+        userLocation: 'loc',
+        searchTerms: 'st',
+        secondSearchTerm: 'sst'
+      },
+      di
+    )
+    expect(result.getDailySummary).toEqual({ today: null })
+  })
+})
+
+// ''
+describe('fetchData unsupported location type coverage', () => {
+  it('returns errorResponse for unsupported location type', async () => {
+    const mockRequest = { yar: { get: vi.fn() } }
+    const mockLogger = { error: vi.fn() }
+    const mockErrorResponse = vi.fn(() => ({
+      error: 'Unsupported location type'
+    }))
+    const di = {
+      validateParams: () => null,
+      errorResponse: mockErrorResponse,
+      logger: mockLogger,
+      isTestMode: () => false,
+      handleUKLocationData: vi.fn(),
+      handleNILocationData: vi.fn(),
+      fetchForecasts: vi.fn(async () => ({
+        'forecast-summary': { today: null }
+      })),
+      options: {},
+      config: { get: vi.fn() },
+      isMockEnabled: false
+    }
+    const result = await fetchData(
+      mockRequest,
+      {
+        locationType: 'INVALID_TYPE',
+        userLocation: 'loc'
+      },
+      di
+    )
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      'Unsupported location type provided:',
+      'INVALID_TYPE'
+    )
+    expect(mockErrorResponse).toHaveBeenCalledWith(
+      'Unsupported location type provided',
+      400
+    )
+    expect(result).toEqual({ error: 'Unsupported location type' })
+  })
+})
