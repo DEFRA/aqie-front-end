@@ -7,7 +7,7 @@ const actionsReduceExposureCy = {
       server.route([
         {
           method: 'GET',
-          path: '/camau-lleihau-amlygiad/cy',
+          path: '/lleoliad/{locationId}/camau-lleihau-amlygiad/cy',
           ...actionsReduceExposureCyController
         }
       ])

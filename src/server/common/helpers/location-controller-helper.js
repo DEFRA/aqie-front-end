@@ -295,7 +295,8 @@ export function buildLocationViewData({
   airQualityData,
   siteTypeDescriptions,
   pollutantTypes,
-  request
+  request,
+  locationId
 }) {
   let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
   title = convertFirstLetterIntoUppercase(title)
@@ -315,6 +316,9 @@ export function buildLocationViewData({
 
   const components = UI_COMPONENTS[lang]
 
+  // '' Get searchTerms from request query for back link context
+  const searchTerms = request?.query?.searchTerms || ''
+
   return {
     result: locationDetails,
     airQuality,
@@ -328,6 +332,8 @@ export function buildLocationViewData({
     description: `${components.daqi.description.a} ${headerTitle}${components.daqi.description.b}`,
     title: `${components.multipleLocations.titlePrefix} ${headerTitle}`,
     locationName: headerTitle,
+    locationId,
+    searchTerms,
     displayBacklink: true,
     transformedDailySummary,
     footerTxt: components.footerTxt,

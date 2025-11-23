@@ -300,7 +300,8 @@ function buildLocationViewData({
   lang,
   getMonth,
   metaSiteUrl,
-  request
+  request,
+  locationId
 }) {
   let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
   title = convertFirstLetterIntoUppercase(title)
@@ -325,6 +326,9 @@ function buildLocationViewData({
   // '' Get forecast warning for high/very high pollution levels
   const forecastWarning = getForecastWarning(airQuality, lang)
 
+  // '' Get searchTerms from request query for back link context
+  const searchTerms = request?.query?.searchTerms || ''
+
   return {
     result: locationDetails,
     airQuality,
@@ -337,6 +341,8 @@ function buildLocationViewData({
     description: `${english.daqi.description.a} ${headerTitle}${english.daqi.description.b}`,
     title: `${english.multipleLocations.titlePrefix} ${headerTitle}`,
     locationName: headerTitle,
+    locationId,
+    searchTerms,
     displayBacklink: true,
     transformedDailySummary,
     footerTxt: english.footerTxt,
@@ -899,7 +905,8 @@ async function processLocationWorkflow({
       lang,
       getMonth,
       metaSiteUrl,
-      request
+      request,
+      locationId
     })
     return processLocationResult(
       request,

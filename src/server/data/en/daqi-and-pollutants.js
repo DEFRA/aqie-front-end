@@ -1,4 +1,6 @@
 ''
+import { ACTIONS_REDUCE_EXPOSURE_ROUTE_EN } from '../constants.js'
+
 const SERVICE_NAME = 'Check air quality'
 
 /**
@@ -85,7 +87,7 @@ export const daqiTranslations = {
   <li>commute, walk or exercise in parks or other green spaces, if you are not affected by pollen</li>
   <li>if you exercise indoors, make sure the room is well ventilated</li>
 </ul>
-<p>Get more advice on <a class="govuk-link" href="/proto-dev-new/actions?locationName=&parentArea=">actions you can take to reduce your exposure to air pollution</a>.</p>
+<p>Get more advice on <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_EN}?lang=en">actions you can take to reduce your exposure to air pollution</a>.</p>
 <p>Long term exposure to air pollution (over years) can lead to many different <a class="govuk-link" href="/proto-dev-new/health-effects?locationName=&parentArea=">health conditions</a> and can reduce life expectancy.</p>`
   }
 }

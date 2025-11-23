@@ -25,6 +25,10 @@ export const SEARCH_LOCATION_ROUTE_EN = '/search-location?lang=en'
 export const SEARCH_LOCATION_ROUTE_CY = '/chwilio-lleoliad/cy?lang=cy'
 export const MULTIPLE_LOCATIONS_ROUTE_EN = '/multiple-results?lang=en'
 export const MULTIPLE_LOCATIONS_ROUTE_CY = '/canlyniadau-lluosog/cy?lang=cy'
+export const ACTIONS_REDUCE_EXPOSURE_ROUTE_EN =
+  '/location/{locationId}/actions-reduce-exposure'
+export const ACTIONS_REDUCE_EXPOSURE_ROUTE_CY =
+  '/lleoliad/{locationId}/camau-lleihau-amlygiad/cy'
 export const STATUS_UNAUTHORIZED = 401
 export const STATUS_NOT_FOUND = 404
 export const STATUS_INTERNAL_SERVER_ERROR = 500
