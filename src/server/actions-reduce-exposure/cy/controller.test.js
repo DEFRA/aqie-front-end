@@ -12,7 +12,8 @@ describe('actions reduce exposure controller - Welsh', () => {
   beforeEach(() => {
     mockRequest = {
       query: {},
-      path: '/camau-lleihau-amlygiad/cy'
+      params: { locationId: 'n87ge' },
+      path: '/lleoliad/n87ge/camau-lleihau-amlygiad/cy'
     }
     vi.mock('../../common/helpers/get-site-url.js', () => ({
       getAirQualitySiteUrl: vi.fn((request) => {
@@ -33,15 +34,15 @@ describe('actions reduce exposure controller - Welsh', () => {
 
   it('should redirect to the English version if the language is "en"', () => {
     mockRequest.query.lang = LANG_EN
-    mockRequest.path = '/actions-reduce-exposure'
+    mockRequest.path = '/location/n87ge/actions-reduce-exposure'
     const expectedUrl =
-      'https://check-air-quality.service.gov.uk/actions-reduce-exposure?lang=en'
+      'https://check-air-quality.service.gov.uk/location/n87ge/actions-reduce-exposure?lang=en'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = actionsReduceExposureCyController.handler(mockRequest, mockH)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith(
-      '/actions-reduce-exposure?lang=en'
+      '/location/n87ge/actions-reduce-exposure?lang=en'
     )
   })
 
@@ -50,10 +51,11 @@ describe('actions reduce exposure controller - Welsh', () => {
       query: {
         lang: LANG_CY
       },
-      path: '/camau-lleihau-amlygiad/cy'
+      params: { locationId: 'n87ge' },
+      path: '/lleoliad/n87ge/camau-lleihau-amlygiad/cy'
     }
     const expectedUrl =
-      'https://check-air-quality.service.gov.uk/camau-lleihau-amlygiad/cy?lang=cy'
+      'https://check-air-quality.service.gov.uk/lleoliad/n87ge/camau-lleihau-amlygiad/cy?lang=cy'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = actionsReduceExposureCyController.handler(mockRequest, mockH)
@@ -64,11 +66,12 @@ describe('actions reduce exposure controller - Welsh', () => {
       metaSiteUrl: actualUrl,
       actionsReduceExposure: mockContent.actionsReduceExposure,
       page: 'Camau i leihau amlygiad',
-      displayBacklink: false,
-      customBackLink: false,
+      displayBacklink: true,
+      customBackLink: true,
       backLinkText: mockContent.backlink.text,
-      backLinkUrl: '/chwilio-lleoliad/cy?lang=cy',
+      backLinkUrl: '/lleoliad/n87ge?lang=cy',
       locationName: '',
+      locationId: 'n87ge',
       phaseBanner: mockContent.phaseBanner,
       footerTxt: mockContent.footerTxt,
       cookieBanner: mockContent.cookieBanner,
@@ -84,7 +87,8 @@ describe('actions reduce exposure controller - Welsh', () => {
         lang: LANG_CY,
         locationName: 'Abertawe'
       },
-      path: '/camau-lleihau-amlygiad/cy'
+      params: { locationId: 'xyz789' },
+      path: '/lleoliad/xyz789/camau-lleihau-amlygiad/cy'
     }
     const result = actionsReduceExposureCyController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
@@ -94,8 +98,9 @@ describe('actions reduce exposure controller - Welsh', () => {
         displayBacklink: true,
         customBackLink: true,
         backLinkText: 'Llygredd aer yn Abertawe',
-        backLinkUrl: '/lleoliad/abertawe?lang=cy',
-        locationName: 'Abertawe'
+        backLinkUrl: '/lleoliad/xyz789?lang=cy',
+        locationName: 'Abertawe',
+        locationId: 'xyz789'
       })
     )
   })

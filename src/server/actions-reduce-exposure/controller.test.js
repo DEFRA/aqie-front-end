@@ -12,7 +12,8 @@ describe('actions reduce exposure controller - English', () => {
   beforeEach(() => {
     mockRequest = {
       query: {},
-      path: '/actions-reduce-exposure'
+      params: { locationId: 'n87ge' },
+      path: '/location/n87ge/actions-reduce-exposure'
     }
     vi.mock('../common/helpers/get-site-url.js', () => ({
       getAirQualitySiteUrl: vi.fn((request) => {
@@ -33,15 +34,16 @@ describe('actions reduce exposure controller - English', () => {
 
   it('should redirect to the Welsh version if the language is "cy"', () => {
     mockRequest.query.lang = LANG_CY
-    mockRequest.path = '/camau-lleihau-amlygiad/cy'
+    mockRequest.params = { locationId: 'n87ge' }
+    mockRequest.path = '/lleoliad/n87ge/camau-lleihau-amlygiad/cy'
     const expectedUrl =
-      'https://check-air-quality.service.gov.uk/camau-lleihau-amlygiad/cy?lang=cy'
+      'https://check-air-quality.service.gov.uk/lleoliad/n87ge/camau-lleihau-amlygiad/cy?lang=cy'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = actionsReduceExposureController.handler(mockRequest, mockH)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith(
-      '/camau-lleihau-amlygiad/cy?lang=cy'
+      '/lleoliad/n87ge/camau-lleihau-amlygiad/cy?lang=cy'
     )
   })
 
@@ -50,10 +52,11 @@ describe('actions reduce exposure controller - English', () => {
       query: {
         lang: LANG_EN
       },
-      path: '/actions-reduce-exposure'
+      params: { locationId: 'n87ge' },
+      path: '/location/n87ge/actions-reduce-exposure'
     }
     const expectedUrl =
-      'https://check-air-quality.service.gov.uk/actions-reduce-exposure?lang=en'
+      'https://check-air-quality.service.gov.uk/location/n87ge/actions-reduce-exposure?lang=en'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = actionsReduceExposureController.handler(mockRequest, mockH)
@@ -64,11 +67,12 @@ describe('actions reduce exposure controller - English', () => {
       metaSiteUrl: actualUrl,
       actionsReduceExposure: mockContent.actionsReduceExposure,
       page: 'Actions to reduce exposure',
-      displayBacklink: false,
-      customBackLink: false,
+      displayBacklink: true,
+      customBackLink: true,
       backLinkText: mockContent.backlink.text,
-      backLinkUrl: '/search-location?lang=en',
+      backLinkUrl: '/location/n87ge?lang=en',
       locationName: '',
+      locationId: 'n87ge',
       phaseBanner: mockContent.phaseBanner,
       footerTxt: mockContent.footerTxt,
       cookieBanner: mockContent.cookieBanner,
@@ -84,7 +88,8 @@ describe('actions reduce exposure controller - English', () => {
         lang: LANG_EN,
         locationName: 'Manchester'
       },
-      path: '/actions-reduce-exposure'
+      params: { locationId: 'abc123' },
+      path: '/location/abc123/actions-reduce-exposure'
     }
     const result = actionsReduceExposureController.handler(mockRequest, mockH)
     expect(result).toBe('view rendered')
@@ -94,8 +99,9 @@ describe('actions reduce exposure controller - English', () => {
         displayBacklink: true,
         customBackLink: true,
         backLinkText: 'Air pollution in Manchester',
-        backLinkUrl: '/location/manchester?lang=en',
-        locationName: 'Manchester'
+        backLinkUrl: '/location/abc123?lang=en',
+        locationName: 'Manchester',
+        locationId: 'abc123'
       })
     )
   })

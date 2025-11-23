@@ -12,33 +12,44 @@ const actionsReduceExposureCyController = {
       multipleLocations,
       backlink
     } = welsh
-    const { query } = request
+    const { query, params } = request
     const lang = LANG_CY
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
-    // Get location name from query parameters
-    const locationName = query?.locationName || query?.searchTerms || ''
+    // Get location ID from path parameters and location name from session/query
+    const locationId = params.locationId
+    const searchTerms = query?.searchTerms || ''
+    const locationName = query?.locationName || ''
+    const hasSearchTerms = searchTerms.trim() !== ''
     const hasLocationName = locationName.trim() !== ''
 
     if (query?.lang && query?.lang === LANG_EN) {
-      const redirectUrl = hasLocationName
-        ? `/actions-reduce-exposure?lang=en&locationName=${encodeURIComponent(locationName)}`
-        : `/actions-reduce-exposure?lang=en`
+      // Build redirect URL with query parameters to preserve context
+      let redirectUrl = `/location/${locationId}/actions-reduce-exposure?lang=en`
+      if (hasSearchTerms) {
+        redirectUrl += `&searchTerms=${encodeURIComponent(searchTerms)}`
+      }
+      if (hasLocationName) {
+        redirectUrl += `&locationName=${encodeURIComponent(locationName)}`
+      }
       return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE)
     }
 
-    // Create dynamic back link text and URL
+    // Create dynamic back link - simple now with nested routes
     let backLinkText = backlink.text
     let backLinkUrl = '/chwilio-lleoliad/cy?lang=cy'
 
-    if (hasLocationName) {
-      backLinkText = `Llygredd aer yn ${locationName}`
-      // Create direct link back to location page instead of history.back()
-      const locationSlug = locationName
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '_')
-        .replace(/^_+|_+$/g, '')
-      backLinkUrl = `/lleoliad/${locationSlug}?lang=cy`
+    if (locationId) {
+      // Build back link text: "Llygredd aer yn {postcode}, {location}" or just one if only one available
+      if (hasSearchTerms && hasLocationName) {
+        backLinkText = `Llygredd aer yn ${searchTerms}, ${locationName}`
+      } else if (hasSearchTerms) {
+        backLinkText = `Llygredd aer yn ${searchTerms}`
+      } else if (hasLocationName) {
+        backLinkText = `Llygredd aer yn ${locationName}`
+      }
+      // Back link is simply the parent location page
+      backLinkUrl = `/lleoliad/${locationId}?lang=cy`
     }
 
     return h.view('actions-reduce-exposure/index', {
@@ -47,11 +58,12 @@ const actionsReduceExposureCyController = {
       metaSiteUrl,
       actionsReduceExposure,
       page: 'Camau i leihau amlygiad',
-      displayBacklink: hasLocationName,
-      customBackLink: hasLocationName,
+      displayBacklink: !!locationId,
+      customBackLink: !!locationId,
       backLinkText,
       backLinkUrl,
       locationName,
+      locationId,
       phaseBanner,
       footerTxt,
       cookieBanner,

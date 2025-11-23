@@ -157,7 +157,8 @@ const getLocationDetailsController = {
           airQualityData,
           siteTypeDescriptions,
           pollutantTypes,
-          request
+          request,
+          locationId
         })
 
         return renderLocationView(h, viewData)

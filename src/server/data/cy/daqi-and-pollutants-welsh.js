@@ -1,5 +1,5 @@
 ''
-import { WELSH_TITLE } from '../constants.js'
+import { WELSH_TITLE, ACTIONS_REDUCE_EXPOSURE_ROUTE_CY } from '../constants.js'
 
 /**
  * Welsh translations for DAQI display and pollutant information pages
@@ -85,7 +85,7 @@ export const daqiTranslationsWelsh = {
   <li>teithiwch i'r gwaith, cerddwch neu ymarferwch mewn parciau neu leoedd gwyrdd eraill, os nad ydych yn cael eich effeithio gan baill</li>
   <li>os ydych yn ymarfer dan do, gwnewch yn siŵr bod yr ystafell wedi'i hawyru'n dda</li>
 </ul>
-<p>Cael mwy o gyngor ar <a class="govuk-link" href="/proto-dev-new/actions?locationName=&parentArea=">gamau y gallwch eu cymryd i leihau eich amlygiad i lygredd aer</a>.</p>
+<p>Cael mwy o gyngor ar <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_CY}?lang=cy">gamau y gallwch eu cymryd i leihau eich amlygiad i lygredd aer</a>.</p>
 <p>Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer o wahanol <a class="govuk-link" href="/proto-dev-new/health-effects?locationName=&parentArea=">gyflyrau iechyd</a> ac ostwng disgwyliad oes.</p>`
   }
 }

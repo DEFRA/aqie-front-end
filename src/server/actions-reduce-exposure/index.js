@@ -7,7 +7,7 @@ const actionsReduceExposure = {
       server.route([
         {
           method: 'GET',
-          path: '/actions-reduce-exposure',
+          path: '/location/{locationId}/actions-reduce-exposure',
           ...actionsReduceExposureController
         }
       ])
