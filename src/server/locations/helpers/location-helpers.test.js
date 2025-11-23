@@ -1,4 +1,4 @@
-/* global describe, it, expect, beforeEach, vi */
+/* global describe, it, expect, beforeEach, afterEach, vi */
 
 import {
   buildUKLocationFilters,
@@ -12,7 +12,9 @@ import {
   isProductionMode,
   errorResponse,
   validateParams,
-  getToken
+  fetchApi,
+  getToken,
+  isMockEnabled
 } from './location-helpers.js'
 
 describe('location-helpers', () => {
@@ -441,6 +443,144 @@ describe('location-helpers', () => {
     it('should return null when req is null', () => {
       const result = getToken(null)
       expect(result).toBeNull()
+    })
+  })
+
+  describe('fetchApi', () => {
+    it('should return data when API request is successful', async () => {
+      const mockResponse = {
+        ok: true,
+        json: vi.fn().mockResolvedValue({ result: 'success' })
+      }
+      global.fetch = vi.fn().mockResolvedValue(mockResponse)
+
+      const mockLogger = { error: vi.fn() }
+      const result = await fetchApi(
+        'https://api.example.com/data',
+        {},
+        mockLogger
+      )
+
+      expect(result).toEqual({
+        error: false,
+        data: { result: 'success' }
+      })
+      expect(global.fetch).toHaveBeenCalledWith(
+        'https://api.example.com/data',
+        {}
+      )
+      expect(mockLogger.error).not.toHaveBeenCalled()
+    })
+
+    it('should return error response when API response is not ok', async () => {
+      const mockResponse = {
+        ok: false,
+        status: 404,
+        statusText: 'Not Found'
+      }
+      global.fetch = vi.fn().mockResolvedValue(mockResponse)
+
+      const mockLogger = { error: vi.fn() }
+      const result = await fetchApi(
+        'https://api.example.com/missing',
+        {},
+        mockLogger
+      )
+
+      expect(result).toEqual({
+        error: true,
+        message: 'API request failed: Not Found',
+        statusCode: 404
+      })
+      expect(mockLogger.error).not.toHaveBeenCalled()
+    })
+
+    it('should return error response when fetch throws an error', async () => {
+      const fetchError = new Error('Network error')
+      global.fetch = vi.fn().mockRejectedValue(fetchError)
+
+      const mockLogger = { error: vi.fn() }
+      const result = await fetchApi(
+        'https://api.example.com/error',
+        {},
+        mockLogger
+      )
+
+      expect(result).toEqual({
+        error: true,
+        message: 'API request error',
+        statusCode: 500
+      })
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'API request error:',
+        fetchError
+      )
+    })
+
+    it('should pass options to fetch request', async () => {
+      const mockResponse = {
+        ok: true,
+        json: vi.fn().mockResolvedValue({ data: 'test' })
+      }
+      global.fetch = vi.fn().mockResolvedValue(mockResponse)
+
+      const mockLogger = { error: vi.fn() }
+      const options = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      }
+      await fetchApi('https://api.example.com/post', options, mockLogger)
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        'https://api.example.com/post',
+        options
+      )
+    })
+  })
+
+  describe('isMockEnabled', () => {
+    let consoleSpy
+
+    beforeEach(() => {
+      consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+    })
+
+    afterEach(() => {
+      consoleSpy.mockRestore()
+    })
+
+    it('should return the enabledMock config value', () => {
+      const result = isMockEnabled()
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        '[DEBUG] isMockEnabled called, value:',
+        expect.anything(),
+        'type:',
+        expect.any(String)
+      )
+      expect(consoleSpy).toHaveBeenCalledWith(
+        '[DEBUG] ENABLED_MOCK env var:',
+        process.env.ENABLED_MOCK
+      )
+      expect(typeof result).toBe('boolean')
+    })
+
+    it('should log debug information when called', () => {
+      isMockEnabled()
+
+      expect(consoleSpy).toHaveBeenCalledTimes(2)
+      expect(consoleSpy).toHaveBeenNthCalledWith(
+        1,
+        '[DEBUG] isMockEnabled called, value:',
+        expect.anything(),
+        'type:',
+        expect.any(String)
+      )
+      expect(consoleSpy).toHaveBeenNthCalledWith(
+        2,
+        '[DEBUG] ENABLED_MOCK env var:',
+        process.env.ENABLED_MOCK
+      )
     })
   })
 })
