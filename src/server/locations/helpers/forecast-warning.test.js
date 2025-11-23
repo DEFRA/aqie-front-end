@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { getForecastWarning } from './forecast-warning.js'
-import moment from 'moment'
 
 describe('getForecastWarning', () => {
   beforeEach(() => {

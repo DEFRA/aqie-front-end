@@ -12,9 +12,7 @@ import {
   isProductionMode,
   errorResponse,
   validateParams,
-  fetchApi,
-  getToken,
-  isMockEnabled
+  getToken
 } from './location-helpers.js'
 
 describe('location-helpers', () => {

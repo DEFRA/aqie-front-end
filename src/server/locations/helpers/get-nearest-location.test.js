@@ -10,7 +10,6 @@ import {
 } from './get-nearest-location.js'
 import * as locationUtil from './location-util.js'
 import * as fetchData from './fetch-data.js'
-import moment from 'moment-timezone'
 
 // Mock dependencies
 vi.mock('./location-util.js', () => ({

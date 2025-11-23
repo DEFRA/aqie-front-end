@@ -219,7 +219,9 @@ describe('handle-multiple-match-helper', () => {
 
       const callArgs = middlewareHelpers.handleMultipleMatches.mock.calls[0]
       const passedParams = callArgs[2]
-      expect(passedParams.footerTxt).toEqual({ copyright: '© Crown copyright' })
+      expect(passedParams.footerTxt).toEqual({
+        copyright: '© Crown copyright'
+      })
     })
 
     it('should pass phaseBanner from english to handleMultipleMatches', () => {
