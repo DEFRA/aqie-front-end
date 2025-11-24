@@ -105,28 +105,11 @@
             // Tablet+ - allow tabs to use natural width for proper component sizing
             box-sizing: border-box;
             line-height: normal;
-        }
     }
-
-// Extracted pseudo-class rules to reduce nesting depth
-.defra-aq-tabs.daqi-tabs .govuk-tabs__tab:visited {
-    background: transparent;
-    text-decoration: none;
 }
 
-.defra-aq-tabs.daqi-tabs .govuk-tabs__tab:hover {
-    background-color: govuk-colour("light-grey");
-    text-decoration: none;
-}
-
-.defra-aq-tabs.daqi-tabs .govuk-tabs__tab:active {
-    background-color: transparent;
-    text-decoration: underline;
-    border: none;
-    box-shadow: none;
-}
-
-// High specificity override - no !important needed
+// '' DAQI tabs use default GOV.UK link interaction styles (hover, active, focus, visited)
+// '' No custom overrides - same behavior as pollutant tabs// High specificity override - no !important needed
 // Only apply flex styling to tabs on tablet+, not mobile table of contents
 @include govuk-media-query($from: tablet) {
     .defra-aq-tabs.daqi-tabs.defra-aq-tabs .govuk-tabs__list-item,
@@ -160,37 +143,49 @@
 }
 
 // Dynamic tab coloring based on DAQI values
-    .daqi-tab--1, .daqi-tab--2, .daqi-tab--3 {
-        border-bottom: 3px solid $daqi-colour-1;
-        // '' Avoid colouring the list item itself when selected to prevent a thin strip above the tab
-        &.govuk-tabs__list-item--selected {
-            background: transparent;
-        }
-    }
+.defra-aq-tabs.daqi-tabs .daqi-tab--1,
+.defra-aq-tabs.daqi-tabs .daqi-tab--2,
+.defra-aq-tabs.daqi-tabs .daqi-tab--3 {
+    border-bottom: 3px solid $daqi-colour-1;
+}
 
-    .daqi-tab--4, .daqi-tab--5, .daqi-tab--6 {
-        border-bottom: 3px solid $daqi-colour-4;
-        // '' Avoid colouring the list item itself when selected to prevent a thin strip above the tab
-        &.govuk-tabs__list-item--selected {
-            background: transparent;
-        }
-    }
+.defra-aq-tabs.daqi-tabs .daqi-tab--1.govuk-tabs__list-item--selected,
+.defra-aq-tabs.daqi-tabs .daqi-tab--2.govuk-tabs__list-item--selected,
+.defra-aq-tabs.daqi-tabs .daqi-tab--3.govuk-tabs__list-item--selected {
+    background: transparent;
+}
 
-    .daqi-tab--7, .daqi-tab--8 {
-        border-bottom: 3px solid $daqi-colour-7;
-        // '' Avoid colouring the list item itself when selected to prevent a thin strip above the tab
-        &.govuk-tabs__list-item--selected {
-            background: transparent;
-        }
-    }
+.defra-aq-tabs.daqi-tabs .daqi-tab--4,
+.defra-aq-tabs.daqi-tabs .daqi-tab--5,
+.defra-aq-tabs.daqi-tabs .daqi-tab--6 {
+    border-bottom: 3px solid $daqi-colour-4;
+}
 
-    .daqi-tab--9, .daqi-tab--10 {
-        border-bottom: 3px solid $daqi-colour-9;
-        // '' Avoid colouring the list item itself when selected to prevent a thin strip above the tab
-        &.govuk-tabs__list-item--selected {
-            background: transparent;
-        }
-    }
+.defra-aq-tabs.daqi-tabs .daqi-tab--4.govuk-tabs__list-item--selected,
+.defra-aq-tabs.daqi-tabs .daqi-tab--5.govuk-tabs__list-item--selected,
+.defra-aq-tabs.daqi-tabs .daqi-tab--6.govuk-tabs__list-item--selected {
+    background: transparent;
+}
+
+.defra-aq-tabs.daqi-tabs .daqi-tab--7,
+.defra-aq-tabs.daqi-tabs .daqi-tab--8 {
+    border-bottom: 3px solid $daqi-colour-7;
+}
+
+.defra-aq-tabs.daqi-tabs .daqi-tab--7.govuk-tabs__list-item--selected,
+.defra-aq-tabs.daqi-tabs .daqi-tab--8.govuk-tabs__list-item--selected {
+    background: transparent;
+}
+
+.defra-aq-tabs.daqi-tabs .daqi-tab--9,
+.defra-aq-tabs.daqi-tabs .daqi-tab--10 {
+    border-bottom: 3px solid $daqi-colour-9;
+}
+
+.defra-aq-tabs.daqi-tabs .daqi-tab--9.govuk-tabs__list-item--selected,
+.defra-aq-tabs.daqi-tabs .daqi-tab--10.govuk-tabs__list-item--selected {
+    background: transparent;
+}
 
     .govuk-tabs__panel h3 {
         position: relative;
@@ -327,41 +322,20 @@
 
 // '' Selected tab should sit visually connected to the bordered box
 .defra-aq-tabs.daqi-tabs .govuk-tabs__list-item--selected .govuk-tabs__tab {
-    background-color: govuk-colour("white"); // '' no !important so GOV.UK :focus can apply
-    border-bottom: 0; // '' avoid extra line between tab and panel
-    // '' Keep selected tab white on hover/active; let :focus use GOV.UK yellow
-    &:hover,
-    &:active {
-        background-color: govuk-colour("white");
-        text-decoration: none;
-    }
-
-    &:focus {
-        text-decoration: none;
-    }
+    // '' Use default GOV.UK styles - inherits all link states naturally
+    border-bottom: 0; // '' Remove bottom border to connect tab to panel (GOV.UK default)
 }
 
-// '' Enhanced focus override for accessibility
-
+// '' Remove yellow top border from focus state, keep black bottom underline
 .govuk-frontend-supported .defra-aq-tabs.daqi-tabs .govuk-tabs__tab:focus,
 .defra-aq-tabs.daqi-tabs .govuk-tabs__list-item--selected .govuk-tabs__tab:focus {
-    background-color: govuk-colour("yellow"); // '' GOV.UK focus yellow
-    color: govuk-colour("black");
-    outline: 3px solid govuk-colour("black"); // '' Ensure visible outline
-    outline-offset: 0; // '' Keep outline tight to element
-    box-shadow: none; // '' remove yellow/black focus lines so height equals text bounding box
-    text-decoration: none; // '' no underline on focus
-    z-index: 10; // '' Ensure focus outline is always visible
+    // '' Override GOV.UK default box-shadow which creates both yellow top line and black bottom line
+    // '' Keep only the black bottom underline (4px below), remove yellow top line (-2px above)
+    box-shadow: 0 4px govuk-colour("black"); // '' Black bottom "underline" only
 }
 
 // '' Enhanced high contrast mode support
 @media (forced-colors: active) {
-    .govuk-frontend-supported .defra-aq-tabs.daqi-tabs .govuk-tabs__tab:focus,
-    .defra-aq-tabs.daqi-tabs .govuk-tabs__list-item--selected .govuk-tabs__tab:focus {
-        outline-color: Highlight;
-        forced-color-adjust: none;
-    }
-    
     .defra-aq-tabs.daqi-tabs .govuk-tabs__list-item {
         border: 1px solid windowText;
     }
