@@ -30,9 +30,10 @@ const handleErrorInputAndRedirect = (
       footerTxt: english.footerTxt,
       url: request.path,
       phaseBanner: english.phaseBanner,
-      statusCode: error?.message && error.message.includes('access_token')
-        ? STATUS_UNAUTHORIZED
-        : STATUS_INTERNAL_SERVER_ERROR,
+      statusCode:
+        error?.message && error.message.includes('access_token')
+          ? STATUS_UNAUTHORIZED
+          : STATUS_INTERNAL_SERVER_ERROR,
       cookieBanner: english.cookieBanner,
       serviceName: english.multipleLocations.serviceName,
       notFoundUrl: english.notFoundUrl,

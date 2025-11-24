@@ -1,10 +1,15 @@
 // '' Tests for Welsh Health Effects Hapi plugin
 import { describe, it, expect, vi, beforeEach } from 'vitest' // '' Vitest API
-import { Server } from '@hapi/hapi' // '' Hapi server
+import { Server } from '@hapi/hapi'
+
+import { healthEffectsCy } from './index.js' // '' Welsh plugin
+import { healthEffectsController } from '../controller.js' // '' Hapi server
 
 // '' Mock unified controller and logger before importing the plugin so module-level imports use the mocks
 vi.mock('../controller.js', () => ({
-  healthEffectsController: { handler: vi.fn((req, h) => h.response('ok').code(200)) } // '' Mock unified handler
+  healthEffectsController: {
+    handler: vi.fn((req, h) => h.response('ok').code(200))
+  } // '' Mock unified handler
 }))
 
 vi.mock('../../common/helpers/logging/logger.js', () => ({
@@ -13,10 +18,7 @@ vi.mock('../../common/helpers/logging/logger.js', () => ({
     warn: vi.fn(),
     error: vi.fn()
   })
-}))
-
-import { healthEffectsCy } from './index.js' // '' Welsh plugin
-import { healthEffectsController } from '../controller.js' // '' Unified controller
+})) // '' Unified controller
 
 describe("'' healthEffectsCy plugin", () => {
   let server
@@ -38,9 +40,13 @@ describe("'' healthEffectsCy plugin", () => {
 
   it("'' redirects legacy English path to Welsh dynamic route when lang=cy", async () => {
     // '' Provide lang=cy query so onPreHandler will perform the redirect when the plugin registers it.
-    const res = await server.inject('/location/locationName/health-effects?lang=cy')
+    const res = await server.inject(
+      '/location/locationName/health-effects?lang=cy'
+    )
     if (res.statusCode === 302) {
-      expect(res.headers.location).toBe('/lleoliad/locationName/effeithiau-iechyd')
+      expect(res.headers.location).toBe(
+        '/lleoliad/locationName/effeithiau-iechyd'
+      )
     } else {
       expect(res.statusCode).toBe(404)
     }
@@ -48,7 +54,9 @@ describe("'' healthEffectsCy plugin", () => {
 
   it("'' does not redirect when lang is not cy", async () => {
     // '' Should not redirect when lang is not 'cy' (wantsCy false)
-    const res = await server.inject('/location/locationName/health-effects?lang=en')
+    const res = await server.inject(
+      '/location/locationName/health-effects?lang=en'
+    )
     expect(res.statusCode).toBe(404) // '' No route matches / original path continues
   })
 
@@ -71,11 +79,15 @@ describe("'' healthEffectsCy plugin", () => {
     const warnCalls = logger.warn.mock?.calls?.length ?? 0
     const errorCalls = logger.error.mock?.calls?.length ?? 0
 
-    const combinedCalls = [...(logger.warn.mock?.calls || []), ...(logger.error.mock?.calls || [])]
-    const containsExpected = combinedCalls.some(call =>
-      call.some(arg =>
-        (arg instanceof Error) ||
-        (typeof arg === 'string' && arg.includes('onPreHandler'))
+    const combinedCalls = [
+      ...(logger.warn.mock?.calls || []),
+      ...(logger.error.mock?.calls || [])
+    ]
+    const containsExpected = combinedCalls.some((call) =>
+      call.some(
+        (arg) =>
+          arg instanceof Error ||
+          (typeof arg === 'string' && arg.includes('onPreHandler'))
       )
     )
 
@@ -93,6 +105,8 @@ describe("'' healthEffectsCy plugin", () => {
       }
     }
     // '' Expect registration to reject with the plugin error
-    await expect(server.register({ plugin: failingPlugin })).rejects.toThrow('Registration failed')
+    await expect(server.register({ plugin: failingPlugin })).rejects.toThrow(
+      'Registration failed'
+    )
   })
 })

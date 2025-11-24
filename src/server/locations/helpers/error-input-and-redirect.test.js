@@ -1,5 +1,8 @@
 // '' Mock dependencies before importing the module under test
-var mockLogger = {
+import { handleErrorInputAndRedirect } from './error-input-and-redirect.js'
+import { handleNoSearchTerms, handleSearchTerms } from './handle-error-helpers'
+
+const mockLogger = {
   error: vi.fn()
 }
 
@@ -7,9 +10,6 @@ vi.mock('./handle-error-helpers.js', () => ({
   handleNoSearchTerms: vi.fn(),
   handleSearchTerms: vi.fn()
 }))
-
-import { handleErrorInputAndRedirect } from './error-input-and-redirect.js'
-import { handleNoSearchTerms, handleSearchTerms } from './handle-error-helpers'
 
 describe('handleErrorInputAndRedirect', () => {
   let mockRequest, mockH, mockPayload
@@ -116,7 +116,9 @@ describe('handleErrorInputAndRedirect', () => {
     )
 
     expect(mockLogger.error).toHaveBeenCalledWith(
-      expect.stringContaining('Error in handleErrorInputAndRedirect: fail no search')
+      expect.stringContaining(
+        'Error in handleErrorInputAndRedirect: fail no search'
+      )
     )
     expect(mockH.view).toHaveBeenCalledWith(
       'error/index',
@@ -146,7 +148,9 @@ describe('handleErrorInputAndRedirect', () => {
     )
 
     expect(mockLogger.error).toHaveBeenCalledWith(
-      expect.stringContaining('Error in handleErrorInputAndRedirect: fail search')
+      expect.stringContaining(
+        'Error in handleErrorInputAndRedirect: fail search'
+      )
     )
     expect(mockH.view).toHaveBeenCalledWith(
       'error/index',
@@ -218,7 +222,7 @@ describe('handleErrorInputAndRedirect', () => {
     // ''
     handleNoSearchTerms.mockImplementation(() => {
       // '' Throw an error without a message property
-      throw { }
+      throw new Error()
     })
     const result = handleErrorInputAndRedirect(
       mockRequest,

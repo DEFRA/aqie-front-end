@@ -1,6 +1,5 @@
 // '' Health effects controller (CY)
 import { welsh } from '../../data/cy/cy.js' // '' Welsh copy
-import { english } from '../../data/en/en.js' // '' English copy for redirect
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js' // '' Site URL helper
 import { createLogger } from '../../common/helpers/logging/logger.js' // '' Logger
 import {
@@ -22,7 +21,11 @@ const healthEffectsHandlerCy = (request, h, content = welsh) => {
 
     // '' Redirect to English variant if requested
     if ((query?.lang || '').toLowerCase() === LANG_EN) {
-      const readableNameRedirect = getReadableLocationName(query, params, logger)
+      const readableNameRedirect = getReadableLocationName(
+        query,
+        params,
+        logger
+      )
       const redirectUrl = readableNameRedirect
         ? `/health-effects?lang=en&locationName=${encodeURIComponent(readableNameRedirect)}`
         : `/health-effects?lang=en`
@@ -35,14 +38,17 @@ const healthEffectsHandlerCy = (request, h, content = welsh) => {
       content,
       metaSiteUrl,
       readableName,
-      lang: (query.lang || LANG_CY)
+      lang: query.lang || LANG_CY
     })
 
     // '' Force Welsh title/backlink (helpers supply EN defaults)
     viewModel.page = 'Effaith llygredd aer ar iechyd'
     viewModel.pageTitle = 'Effaith llygredd aer ar iechyd' // '' Unconditional Welsh title
     viewModel.backLinkText = `Llygredd aer yn ${readableName || 'y lleoliad hwn'}`
-    viewModel.backlink = { text: viewModel.backLinkText, href: viewModel.backLinkUrl }
+    viewModel.backlink = {
+      text: viewModel.backLinkText,
+      href: viewModel.backLinkUrl
+    }
 
     logger.debug(
       {

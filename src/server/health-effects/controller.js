@@ -10,7 +10,6 @@ import {
 
 const LANG_EN = 'en' // ''
 const LANG_CY = 'cy'
-const REDIRECT_STATUS_CODE = 302
 
 const logger = createLogger() // ''
 
@@ -19,7 +18,6 @@ const healthEffectsHandler = (request, h, customContent = undefined) => {
   try {
     const { query = {}, params = {} } = request // ''
     const metaSiteUrl = getAirQualitySiteUrl(request) // ''
-    const lang = (query.lang || '').toLowerCase() // ''
 
     // '' Only render the page for the matching route and language
     const isWelshRoute = request.path.startsWith('/lleoliad/')
@@ -39,7 +37,10 @@ const healthEffectsHandler = (request, h, customContent = undefined) => {
       viewModel.page = 'Effaith llygredd aer ar iechyd' // ''
       viewModel.pageTitle = 'Effaith llygredd aer ar iechyd' // ''
       viewModel.backLinkText = `Llygredd aer yn ${readableName || 'y lleoliad hwn'}` // ''
-      viewModel.backlink = { text: viewModel.backLinkText, href: viewModel.backLinkUrl } // ''
+      viewModel.backlink = {
+        text: viewModel.backLinkText,
+        href: viewModel.backLinkUrl
+      } // ''
       logger.debug(
         {
           routePath: request.path,
@@ -74,7 +75,10 @@ const healthEffectsHandler = (request, h, customContent = undefined) => {
     }
 
     // '' If route does not match, return 404
-    logger.warn({ routePath: request.path }, "'' Health effects route not found") // ''
+    logger.warn(
+      { routePath: request.path },
+      "'' Health effects route not found"
+    ) // ''
     return h.response('Page Not Found').code(404) // ''
   } catch (err) {
     logger.error(err, "'' Failed to render health-effects") // ''

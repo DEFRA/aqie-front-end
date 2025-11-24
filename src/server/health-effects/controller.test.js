@@ -2,7 +2,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest' // ''
 import { healthEffectsHandler } from './controller.js' // ''
 import { english } from '../data/en/en.js' // ''
-import { welsh } from '../data/cy/cy.js' // ''
+import { welsh } from '../data/cy/cy.js'
+import {
+  getReadableLocationName,
+  buildHealthEffectsViewModel
+} from './helpers/index.js'
+import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js' // ''
 
 // '' Mock dependencies
 vi.mock('../common/helpers/get-site-url.js', () => ({
@@ -12,13 +17,13 @@ vi.mock('./helpers/index.js', () => ({
   getReadableLocationName: vi.fn(() => 'Mock Location'), // ''
   buildHealthEffectsViewModel: vi.fn((opts = {}) => ({
     backLinkUrl: 'javascript:history.back()',
-    pageTitle: opts?.content?.healthEffects?.pageTitle || 'Health effects of air pollution',
+    pageTitle:
+      opts?.content?.healthEffects?.pageTitle ||
+      'Health effects of air pollution',
     locationName: opts.readableName || 'Mock Location',
     lang: opts.lang || 'en'
   }))
 }))
-import { getReadableLocationName, buildHealthEffectsViewModel } from './helpers/index.js'
-import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
 // '' Fake hapi response toolkit
 const createH = () => {

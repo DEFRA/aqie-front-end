@@ -3,28 +3,28 @@
 // '' Derive readable location name (query wins; fallback normalises params.id)
 const getReadableLocationName = (query = {}, params = {}, logger) => {
   try {
-    const rawQuery = (query.locationName || query.searchTerms || '').trim(); // ''
-    if (rawQuery) return rawQuery; // ''
-    const rawId = (params.id || '').trim(); // ''
-    if (!rawId) return ''; // ''
+    const rawQuery = (query.locationName || query.searchTerms || '').trim() // ''
+    if (rawQuery) return rawQuery // ''
+    const rawId = (params.id || '').trim() // ''
+    if (!rawId) return '' // ''
     // '' Replace underscores / hyphens with spaces; collapse whitespace
     return rawId
-      .replace(/[_-]+/gi, ' ')   // '' Convert delimiters to space
-      .replace(/\s+/g, ' ')      // '' Collapse multiple spaces
-      .trim(); // ''
+      .replace(/[_-]+/gi, ' ') // '' Convert delimiters to space
+      .replace(/\s+/g, ' ') // '' Collapse multiple spaces
+      .trim() // ''
   } catch (e) {
-    logger && logger.warn(e, "'' Failed to derive readable locationName");
-    return '';
+    logger && logger.warn(e, "'' Failed to derive readable locationName")
+    return ''
   }
 }
 
 // '' Build backlink model (history-based navigation)
 const buildBackLinkModel = (readableName = '') => {
-  const safeName = readableName || 'this location'; // '' Fallback descriptor
+  const safeName = readableName || 'this location' // '' Fallback descriptor
   return {
     backLinkUrl: 'javascript:history.back()', // '' Use browser history
     backLinkText: `Air pollution in ${safeName}` // ''
-  };
+  }
 }
 
 // '' Compose view model for template
@@ -41,9 +41,9 @@ const buildHealthEffectsViewModel = ({
     cookieBanner,
     phaseBanner,
     multipleLocations: { serviceName = '' } = {}
-  } = content || {};
+  } = content || {}
 
-  const { backLinkUrl, backLinkText } = buildBackLinkModel(readableName); // ''
+  const { backLinkUrl, backLinkText } = buildBackLinkModel(readableName) // ''
 
   return {
     pageTitle: healthEffects?.pageTitle || 'Health effects of air pollution', // ''
@@ -64,7 +64,7 @@ const buildHealthEffectsViewModel = ({
     cookieBanner, // ''
     serviceName, // ''
     lang // ''
-  };
+  }
 }
 
 export {

@@ -8,19 +8,30 @@ import {
 
 describe("'' getReadableLocationName", () => {
   it("'' returns query.locationName when present", () => {
-    expect(getReadableLocationName({ locationName: 'Leeds' }, { id: 'leeds_city' })).toBe('Leeds')
+    expect(
+      getReadableLocationName({ locationName: 'Leeds' }, { id: 'leeds_city' })
+    ).toBe('Leeds')
   })
 
   it("'' returns query.searchTerms when locationName missing", () => {
-    expect(getReadableLocationName({ searchTerms: 'Bristol' }, { id: 'bristol_city' })).toBe('Bristol')
+    expect(
+      getReadableLocationName(
+        { searchTerms: 'Bristol' },
+        { id: 'bristol_city' }
+      )
+    ).toBe('Bristol')
   })
 
   it("'' normalises params.id (underscores & hyphens -> spaces)", () => {
-    expect(getReadableLocationName({}, { id: 'bristol_city-of_brIsTol' })).toBe('bristol city of brIsTol')
+    expect(getReadableLocationName({}, { id: 'bristol_city-of_brIsTol' })).toBe(
+      'bristol city of brIsTol'
+    )
   })
 
   it("'' collapses multiple delimiter groups", () => {
-    expect(getReadableLocationName({}, { id: 'alpha__beta---gamma' })).toBe('alpha beta gamma')
+    expect(getReadableLocationName({}, { id: 'alpha__beta---gamma' })).toBe(
+      'alpha beta gamma'
+    )
   })
 
   it("'' returns empty string when no query or id", () => {
@@ -63,7 +74,10 @@ describe("'' buildHealthEffectsViewModel", () => {
 
   it("'' uses content overrides", () => {
     const content = {
-      healthEffects: { pageTitle: 'Custom Health Title', description: 'Custom description.' },
+      healthEffects: {
+        pageTitle: 'Custom Health Title',
+        description: 'Custom description.'
+      },
       multipleLocations: { serviceName: 'Air Quality Service' },
       footerTxt: 'Footer copy',
       cookieBanner: { enabled: true },

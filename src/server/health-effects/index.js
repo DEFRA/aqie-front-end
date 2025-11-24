@@ -20,8 +20,11 @@ const healthEffects = {
       server.ext('onPreHandler', (request, h) => {
         try {
           // '' Match legacy Welsh path: /lleoliad/{id}/effeithiau-iechyd
-          const m = request.path.match(/^\/lleoliad\/([^/]+)\/effeithiau-iechyd$/i) // '' Extract {id} from CY path
-          const wantsEn = ((request.query.lang || '') + '').toLowerCase() === 'en' // '' Only redirect if lang=en
+          const m = request.path.match(
+            /^\/lleoliad\/([^/]+)\/effeithiau-iechyd$/i
+          ) // '' Extract {id} from CY path
+          const wantsEn =
+            ((request.query.lang || '') + '').toLowerCase() === 'en' // '' Only redirect if lang=en
           if (m && m[1] && wantsEn) {
             const id = encodeURIComponent(m[1]) // '' URL-safe
             return h.redirect(`/location/${id}/health-effects`).takeover() // '' Redirect to EN dynamic
@@ -32,7 +35,7 @@ const healthEffects = {
         }
         return h.continue // ''
       })
-      
+
       logger.info("'' Registered English route '/location/{id}/health-effects'") // ''
     } catch (error) {
       logger.error(error, "'' Failed to register English health effects route") // ''

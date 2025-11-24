@@ -1,5 +1,13 @@
 // '' Tests for Welsh healthEffectsHandlerCy
-import { describe, it, expect, vi, beforeEach } from 'vitest' // '' Vitest API
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+
+// '' Import after mocks
+import { healthEffectsHandlerCy } from './controller.js'
+import {
+  getReadableLocationName,
+  buildHealthEffectsViewModel
+} from '../helpers/index.js'
+import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js' // '' Vitest API
 
 // '' Mock site URL helper
 vi.mock('../../common/helpers/get-site-url.js', () => ({
@@ -17,22 +25,16 @@ vi.mock('../../common/helpers/logging/logger.js', () => ({
 // '' Mock pure helpers
 vi.mock('../helpers/index.js', () => ({
   getReadableLocationName: vi.fn(() => 'Caerdydd'), // '' Default Welsh location name
-  buildHealthEffectsViewModel: vi.fn(({ readableName = 'Caerdydd', lang = 'cy' } = {}) => ({
-    pageTitle: 'Health effects of air pollution',
-    backLinkUrl: 'javascript:history.back()',
-    backLinkText: `Air pollution in ${readableName}`,
-    locationName: readableName,
-    lang
-  }))
+  buildHealthEffectsViewModel: vi.fn(
+    ({ readableName = 'Caerdydd', lang = 'cy' } = {}) => ({
+      pageTitle: 'Health effects of air pollution',
+      backLinkUrl: 'javascript:history.back()',
+      backLinkText: `Air pollution in ${readableName}`,
+      locationName: readableName,
+      lang
+    })
+  )
 }))
-
-// '' Import after mocks
-import { healthEffectsHandlerCy } from './controller.js'
-import {
-  getReadableLocationName,
-  buildHealthEffectsViewModel
-} from '../helpers/index.js'
-import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
 // '' Fake hapi response toolkit
 const createH = () => {

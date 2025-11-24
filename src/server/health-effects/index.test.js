@@ -5,7 +5,9 @@ import { healthEffects } from './index.js' // '' English plugin
 import { healthEffectsController } from './controller.js' // '' English controller
 
 vi.mock('./controller.js', () => ({
-  healthEffectsController: { handler: vi.fn((req, h) => h.response('ok').code(200)) } // '' Mock handler
+  healthEffectsController: {
+    handler: vi.fn((req, h) => h.response('ok').code(200))
+  } // '' Mock handler
 }))
 
 // '' Use a shared logger instance so tests and plugin use the same mocked logger
@@ -34,14 +36,18 @@ describe("'' healthEffects plugin", () => {
   })
 
   it("'' registers English dynamic route", async () => {
-    const res = await server.inject('/location/bristol_city-of-bristol/health-effects')
+    const res = await server.inject(
+      '/location/bristol_city-of-bristol/health-effects'
+    )
     expect(res.statusCode).toBe(200)
     expect(healthEffectsController.handler).toHaveBeenCalledTimes(1)
   })
 
   it("'' redirects legacy Welsh path to English dynamic route", async () => {
     // '' In current test environment the legacy path isn't registered -> expect 404
-    const res = await server.inject('/lleoliad/bristol_city-of-bristol/effeithiau-iechyd')
+    const res = await server.inject(
+      '/lleoliad/bristol_city-of-bristol/effeithiau-iechyd'
+    )
     expect(res.statusCode).toBe(404)
   })
 
@@ -83,6 +89,8 @@ describe("'' healthEffects plugin", () => {
       }
     }
     // '' Expect registration to reject with the plugin error
-    await expect(server.register({ plugin: failingPlugin })).rejects.toThrow('Registration failed')
+    await expect(server.register({ plugin: failingPlugin })).rejects.toThrow(
+      'Registration failed'
+    )
   })
 })
