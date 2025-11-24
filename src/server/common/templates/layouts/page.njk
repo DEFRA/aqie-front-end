@@ -104,18 +104,18 @@
         {# '' Language toggle for health effects pages #}
         {% if locationId %}
           {# '' English: /location/{id}/health-effects?lang=en '' #}
-          {# '' Welsh: /lleoliad/{id}/effeithiau-iechyd?lang=cy '' #}
-          {% if locationId %}
+          {# '' Welsh: /lleoliad/{id}/effeithiau-iechyd '' #}
+          {% if locationName %}
             {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/health-effects?lang=en&locationName=" + (locationName | urlencode) %}
-            {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd?lang=cy&locationName=" + (locationName | urlencode) %}
+            {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd?locationName=" + (locationName | urlencode) %}
           {% else %}
             {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/health-effects?lang=en" %}
-            {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd?lang=cy" %}
+            {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd" %}
           {% endif %}
         {% else %}
           {# '' Fallback for pages without locationId '' #}
           {% set fullHrefEn = "/health-effects?lang=en" %}
-          {% set fullHrefCy = "/effeithiau-iechyd/cy?lang=cy" %}
+          {% set fullHrefCy = "/effeithiau-iechyd/cy" %}
         {% endif %}
         {% if statusCode != 500 %}
           {{
@@ -160,14 +160,14 @@
       {% if locationId %}
         {% if locationName %}
           {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/health-effects?lang=en&locationName=" + (locationName | urlencode) %}
-          {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd?lang=cy&locationName=" + (locationName | urlencode) %}
+          {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd?locationName=" + (locationName | urlencode) %}
         {% else %}
           {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/health-effects?lang=en" %}
-          {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd?lang=cy" %}
+          {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd" %}
         {% endif %}
       {% else %}
         {% set fullHrefEn = "/health-effects?lang=en" %}
-        {% set fullHrefCy = "/effeithiau-iechyd/cy?lang=cy" %}
+        {% set fullHrefCy = "/effeithiau-iechyd/cy" %}
       {% endif %}
       {{
         dwpLanguageToggle({

@@ -122,6 +122,8 @@
 .defra-aq-tabs.daqi-tabs .govuk-tabs__tab:active {
     background-color: transparent;
     text-decoration: underline;
+    border: none;
+    box-shadow: none;
 }
 
 // High specificity override - no !important needed

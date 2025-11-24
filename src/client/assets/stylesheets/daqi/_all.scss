@@ -54,12 +54,12 @@
 }
 
 
-// DAQI colours - Enhanced color scheme with improved accessibility
+// DAQI colours - Standard DAQI color scheme  
 
-$daqi-colour-0: govuk-colour("light-grey");  // No data - keep existing grey
-$daqi-colour-1: #9CFF9C;   // Low - Light green
-$daqi-colour-2: #31FF00;   // Low - Bright green  
-$daqi-colour-3: #31CF00;   // Low - Medium green
+$daqi-colour-0: govuk-colour("light-grey");  // No data - grey
+$daqi-colour-1: #9CFF9C;   // Low (1-3) - Green
+$daqi-colour-2: #9CFF9C;   // Low (1-3) - Green
+$daqi-colour-3: #9CFF9C;   // Low (1-3) - Green
 $daqi-colour-4: #FFFF00;   // Moderate - Yellow
 $daqi-colour-5: #FFCF00;   // Moderate - Orange-yellow
 $daqi-colour-6: #FF9A00;   // Moderate - Orange
