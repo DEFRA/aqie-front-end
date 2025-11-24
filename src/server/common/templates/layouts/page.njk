@@ -102,8 +102,13 @@
   {% if displayBacklink %}
    {%else%}
    {% set queryhref = "" %}
-   {% set fullHrefEn = queryhref + "?lang=en" %}
-   {% set fullHrefCy = queryhref + "?lang=cy" %}
+   {% if locationName %}
+     {% set fullHrefEn = queryhref + "?lang=en&locationName=" + (locationName | urlencode) %}
+     {% set fullHrefCy = queryhref + "?lang=cy&locationName=" + (locationName | urlencode) %}
+   {% else %}
+     {% set fullHrefEn = queryhref + "?lang=en" %}
+     {% set fullHrefCy = queryhref + "?lang=cy" %}
+   {% endif %}
    {% if statusCode != 500 %}
        {{
         dwpLanguageToggle({
@@ -121,6 +126,7 @@
  {{ super() }}
 {%if page != "Check air quality" and displayBacklink %}  {# '' Dynamic backlink block #}
   <div class='top-nav'>
+<<<<<<< HEAD
     {# '' Get href and text from controller (fall back to search if missing) #}
     {% set backHref = backLinkUrl or backLinkHref or (backlink and backlink.href) %}
     {% set backText = backLinkText or (backlink and backlink.text) or 'Back' %}
@@ -140,6 +146,37 @@
     {# '' Language toggle beside backlink #}
     {% set fullHrefEn = '?lang=en' %}
     {% set fullHrefCy = '?lang=cy' %}
+=======
+  {%if customBackLink %}
+    {{ govukBackLink({
+    text: backLinkText,
+    href: backLinkUrl
+  }) }}
+  {%else%}
+  {%if htmlLang == "en"%}
+  {% set queryhrefSearchEn %}/search-location?lang=en{% endset %}
+    {{ govukBackLink({
+    text: backlink.text,
+    href: queryhrefSearchEn
+  }) }}
+  {% endif %}
+  {%if htmlLang == "cy"%}
+  {% set queryhrefSearchCy %}/chwilio-lleoliad/cy?lang=cy{% endset %}
+    {{ govukBackLink({
+    text: backlink.text,
+    href: queryhrefSearchCy
+  }) }}
+  {% endif %}
+  {%endif%}
+    {% set queryhref = "" %}
+    {% if locationName %}
+      {% set fullHrefEn = queryhref + "?lang=en&locationName=" + (locationName | urlencode) %}
+      {% set fullHrefCy = queryhref + "?lang=cy&locationName=" + (locationName | urlencode) %}
+    {% else %}
+      {% set fullHrefEn = queryhref + "?lang=en" %}
+      {% set fullHrefCy = queryhref + "?lang=cy" %}
+    {% endif %}
+>>>>>>> 8f5b0a793587bb97f65999bd7bbd19c4f64a0ce8
     {{
       dwpLanguageToggle({
         selectedLang: lang,

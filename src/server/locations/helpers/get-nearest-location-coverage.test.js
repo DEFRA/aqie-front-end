@@ -1,5 +1,39 @@
 import { describe, it, expect, vi } from 'vitest'
 
+// Mock external dependencies
+vi.mock('geolib', () => ({
+  getDistance: vi.fn(() => 1000),
+  orderByDistance: vi.fn(() => [])
+}))
+
+vi.mock('moment-timezone', () => ({
+  default: vi.fn(() => ({
+    format: vi.fn(() => 'Mon'),
+    tz: vi.fn(() => ({
+      format: vi.fn(() => 'Mon')
+    }))
+  })),
+  tz: vi.fn(() => ({
+    format: vi.fn(() => 'Mon')
+  }))
+}))
+
+// Mock constants
+vi.mock('../../data/constants.js', () => ({
+  LANG_CY: 'cy',
+  FORECAST_DAY_SLICE_LENGTH: 3,
+  NEARBY_LOCATIONS_COUNT: 3
+}))
+
+// Mock logger
+vi.mock('../../common/helpers/logging/logger.js', () => ({
+  createLogger: vi.fn(() => ({
+    error: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn()
+  }))
+}))
+
 // Mock functions for helper functions
 vi.mock('./location-util.js', () => ({
   getNearLocation: vi.fn(),

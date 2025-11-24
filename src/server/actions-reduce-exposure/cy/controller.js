@@ -1,0 +1,77 @@
+import { welsh } from '../../data/cy/cy.js'
+import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../../data/constants.js'
+import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
+
+const actionsReduceExposureCyController = {
+  handler: (request, h) => {
+    const { actionsReduceExposure } = welsh
+    const {
+      footerTxt,
+      cookieBanner,
+      phaseBanner,
+      multipleLocations,
+      backlink
+    } = welsh
+    const { query, params } = request
+    const lang = LANG_CY
+    const metaSiteUrl = getAirQualitySiteUrl(request)
+
+    // Get location ID from path parameters and location name from session/query
+    const locationId = params.locationId
+    const searchTerms = query?.searchTerms || ''
+    const locationName = query?.locationName || ''
+    const hasSearchTerms = searchTerms.trim() !== ''
+    const hasLocationName = locationName.trim() !== ''
+
+    if (query?.lang && query?.lang === LANG_EN) {
+      // Build redirect URL with query parameters to preserve context
+      let redirectUrl = `/location/${locationId}/actions-reduce-exposure?lang=en`
+      if (hasSearchTerms) {
+        redirectUrl += `&searchTerms=${encodeURIComponent(searchTerms)}`
+      }
+      if (hasLocationName) {
+        redirectUrl += `&locationName=${encodeURIComponent(locationName)}`
+      }
+      return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE)
+    }
+
+    // Create dynamic back link - simple now with nested routes
+    let backLinkText = backlink.text
+    let backLinkUrl = '/chwilio-lleoliad/cy?lang=cy'
+
+    if (locationId) {
+      // Build back link text: "Llygredd aer yn {postcode}, {location}" or just one if only one available
+      if (hasSearchTerms && hasLocationName) {
+        backLinkText = `Llygredd aer yn ${searchTerms}, ${locationName}`
+      } else if (hasSearchTerms) {
+        backLinkText = `Llygredd aer yn ${searchTerms}`
+      } else if (hasLocationName) {
+        backLinkText = `Llygredd aer yn ${locationName}`
+      }
+      // Back link is simply the parent location page
+      backLinkUrl = `/lleoliad/${locationId}?lang=cy`
+    }
+
+    return h.view('actions-reduce-exposure/index', {
+      pageTitle: actionsReduceExposure.pageTitle,
+      description: actionsReduceExposure.description,
+      metaSiteUrl,
+      actionsReduceExposure,
+      page: 'Camau i leihau amlygiad',
+      displayBacklink: !!locationId,
+      customBackLink: !!locationId,
+      backLinkText,
+      backLinkUrl,
+      locationName,
+      locationId,
+      phaseBanner,
+      footerTxt,
+      cookieBanner,
+      backlink,
+      serviceName: multipleLocations.serviceName,
+      lang: query.lang ?? lang
+    })
+  }
+}
+
+export { actionsReduceExposureCyController }

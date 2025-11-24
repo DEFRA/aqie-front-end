@@ -1,0 +1,67 @@
+{% extends 'layouts/page.njk' %}
+{% set caption = "" %}
+{% set title = actionsReduceExposure.title %}
+{% set pageHeadingSize = pageHeadingSize or "xl" %}
+
+{% if displayBacklink and backLinkText and backLinkUrl %}
+  {% set customBackLink = true %}
+{% endif %}
+
+{% block content %}
+  <div class="govuk-grid-row govuk-!-margin-bottom-8">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl odd-page">{% if caption %}<span class="govuk-caption-{{ pageHeadingSize }}">{{ caption }}</span>
+        {% endif %}
+        {{ title | safe }}</h1>
+      
+      <p>{{ actionsReduceExposure.intro }}</p>
+      
+      <p>{{ actionsReduceExposure.mainAdvice }} <a href="{{ actionsReduceExposure.healthConditionsLink }}?lang={{ lang }}{% if locationName %}&locationName={{ locationName | urlencode }}{% endif %}" class="govuk-link">{{ actionsReduceExposure.healthConditionsLinkText }}</a>.</p>
+
+      <h2 class="govuk-heading-m">{{ actionsReduceExposure.urbanAreas.heading }}</h2>
+      <p>{{ actionsReduceExposure.urbanAreas.description }}</p>
+      <p>{{ actionsReduceExposure.urbanAreas.advice }}</p>
+      <ul class="govuk-list govuk-list--bullet">
+        {% for item in actionsReduceExposure.urbanAreas.actions %}
+          <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+
+      <h2 class="govuk-heading-m">{{ actionsReduceExposure.ruralAreas.heading }}</h2>
+      <p>{{ actionsReduceExposure.ruralAreas.description }}</p>
+      <p>{{ actionsReduceExposure.ruralAreas.advice }}</p>
+      <p>{{ actionsReduceExposure.ruralAreas.advice2 }}</p>
+      <ul class="govuk-list govuk-list--bullet">
+        {% for item in actionsReduceExposure.ruralAreas.actions %}
+          <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+
+      <h2 class="govuk-heading-m">{{ actionsReduceExposure.allOutdoorAreas.heading }}</h2>
+      <p>{{ actionsReduceExposure.allOutdoorAreas.advice }}</p>
+      <ul class="govuk-list govuk-list--bullet">
+        {% for item in actionsReduceExposure.allOutdoorAreas.actions %}
+          <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+
+      <h2 class="govuk-heading-m">{{ actionsReduceExposure.indoorAirPollution.heading }}</h2>
+      <p>{{ actionsReduceExposure.indoorAirPollution.description }}</p>
+      <p>{{ actionsReduceExposure.indoorAirPollution.advice }}</p>
+      <ul class="govuk-list govuk-list--bullet">
+        {% for item in actionsReduceExposure.indoorAirPollution.actions %}
+          <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+      <p>{{ actionsReduceExposure.indoorAirPollution.additionalAdvice }}</p>
+
+      <h2 class="govuk-heading-m">{{ actionsReduceExposure.reduceContribution.heading }}</h2>
+      <p>{{ actionsReduceExposure.reduceContribution.advice }}</p>
+      <ul class="govuk-list govuk-list--bullet">
+        {% for item in actionsReduceExposure.reduceContribution.actions %}
+          <li>{{ item | safe }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% endblock %}

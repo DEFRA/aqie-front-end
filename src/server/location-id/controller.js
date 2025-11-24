@@ -300,18 +300,19 @@ function buildLocationViewData({
   lang,
   getMonth,
   metaSiteUrl,
-  request
+  request,
+  locationId
 }) {
   let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
   title = convertFirstLetterIntoUppercase(title)
   headerTitle = convertFirstLetterIntoUppercase(headerTitle)
 
   // '' Handle case where dailySummary might be undefined (e.g., in test mode)
-  const { transformedDailySummary } = locationData.dailySummary
-    ? transformKeys(locationData.dailySummary, lang)
-    : { transformedDailySummary: undefined }
-
   let { airQuality } = airQualityValues(forecastNum, lang)
+  const highestAQ = Math.max(...forecastNum)
+  const { transformedDailySummary } = locationData.dailySummary
+    ? transformKeys(locationData.dailySummary, lang, highestAQ)
+    : { transformedDailySummary: undefined }
 
   // Apply mock level if requested
   airQuality = applyMockLevel(request, airQuality)
@@ -325,6 +326,9 @@ function buildLocationViewData({
   // '' Get forecast warning for high/very high pollution levels
   const forecastWarning = getForecastWarning(airQuality, lang)
 
+  // '' Get searchTerms from request query for back link context
+  const searchTerms = request?.query?.searchTerms || ''
+
   return {
     result: locationDetails,
     airQuality,
@@ -336,6 +340,9 @@ function buildLocationViewData({
     metaSiteUrl,
     description: `${english.daqi.description.a} ${headerTitle}${english.daqi.description.b}`,
     title: `${english.multipleLocations.titlePrefix} ${headerTitle}`,
+    locationName: headerTitle,
+    locationId,
+    searchTerms,
     displayBacklink: true,
     transformedDailySummary,
     footerTxt: english.footerTxt,
@@ -898,7 +905,8 @@ async function processLocationWorkflow({
       lang,
       getMonth,
       metaSiteUrl,
-      request
+      request,
+      locationId
     })
     return processLocationResult(
       request,

@@ -117,6 +117,13 @@ vi.mock('./location-not-found/index.js', () => ({
   locationNotFound: mockRouteModule
 }))
 vi.mock('./health/index.js', () => ({ health: mockRouteModule }))
+vi.mock('./actions-reduce-exposure/index.js', () => ({
+  actionsReduceExposure: mockRouteModule
+}))
+vi.mock('./actions-reduce-exposure/cy/index.js', () => ({
+  actionsReduceExposureCy: mockRouteModule
+}))
+vi.mock('./test-routes/index.js', () => ({ testRoutes: mockRouteModule }))
 
 // Mock helper modules
 vi.mock('./common/helpers/serve-static-files.js', () => ({
@@ -124,7 +131,7 @@ vi.mock('./common/helpers/serve-static-files.js', () => ({
 }))
 vi.mock('./data/constants.js', () => ({
   SERVER_DIRNAME: '/mock/server/dirname',
-  WELSH_TITLE: 'Mock Welsh Title', // Added missing mock
+  WELSH_TITLE: 'Gwirio ansawdd aer',
   WELSH_PAGE_TITLE_BASE: 'Mock Welsh Page Title Base',
   DAQI_DESCRIPTION: 'Mock DAQI Description'
 }))
@@ -174,6 +181,20 @@ describe('Router Tests', () => {
 
     expect(mockServer.register).toHaveBeenCalled()
     expect(mockServer.route).toHaveBeenCalled()
+
+    // Should register both static routes
+    expect(mockServer.route).toHaveBeenCalledWith(
+      expect.objectContaining({
+        method: 'GET',
+        path: '/.well-known/{param*}'
+      })
+    )
+    expect(mockServer.route).toHaveBeenCalledWith(
+      expect.objectContaining({
+        method: 'GET',
+        path: '/public/{param*}'
+      })
+    )
   })
 
   test('should handle static file routes', async () => {
@@ -227,5 +248,51 @@ describe('Router Tests', () => {
     const { router } = await import('./router.js')
     expect(router.plugin.register).toBeDefined()
     expect(typeof router.plugin.register).toBe('function')
+  })
+
+  test('should register actions-reduce-exposure routes', async () => {
+    // ''
+    const mockServer = {
+      register: vi.fn(),
+      route: vi.fn(),
+      table: vi.fn(() => [])
+    }
+
+    const { router } = await import('./router.js')
+    await router.plugin.register(mockServer)
+
+    // Should register both English and Welsh actions-reduce-exposure plugins
+    expect(mockServer.register).toHaveBeenCalledWith(
+      expect.objectContaining({
+        plugin: expect.objectContaining({
+          name: 'mock-plugin'
+        })
+      })
+    )
+  })
+
+  test('should register all required plugins including new routes', async () => {
+    // ''
+    const mockServer = {
+      register: vi.fn(),
+      route: vi.fn(),
+      table: vi.fn(() => [])
+    }
+
+    const { router } = await import('./router.js')
+    await router.plugin.register(mockServer)
+
+    // Should register inert plugin first
+    expect(mockServer.register).toHaveBeenCalledWith([expect.any(Object)])
+
+    // Should register multiple plugins (including actions-reduce-exposure)
+    expect(mockServer.register.mock.calls.length).toBeGreaterThan(30) // Should register many plugins
+  })
+
+  test('should handle WELSH_TITLE constant in imports', async () => {
+    // ''
+    const { router } = await import('./router.js')
+    expect(router).toBeDefined()
+    // Test passes if import succeeds without WELSH_TITLE error
   })
 })

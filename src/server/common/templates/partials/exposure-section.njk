@@ -1,0 +1,26 @@
+{# '' AQC-657: Exposure reduction advice section. Rendered in different positions depending on DAQI level #}
+{# '' Wrapped with stable id for dynamic reordering when active forecast tab changes #}
+<div id="exposure-section" class="daqiexposure{% if needsTopMargin %} govuk-!-margin-top-6{% endif %}" data-daqi-exposure>
+  {% set exposureContent = daqi.exposureHtml %}
+  {% if locationId %}
+    {# Replace the {locationId} placeholder in the URL with the actual location ID #}
+    {% set exposureContent = exposureContent | replace('{locationId}', locationId) %}
+    {# Build query parameters for back link context (postcode and location name) #}
+    {% set queryParams = '' %}
+    {% if searchTerms %}
+      {% set queryParams = queryParams + '&searchTerms=' + (searchTerms | urlencode) %}
+    {% endif %}
+    {% if locationName %}
+      {% set queryParams = queryParams + '&locationName=' + (locationName | urlencode) %}
+    {% endif %}
+    {# Add query parameters to the URL if we have any #}
+    {% if queryParams %}
+      {% if lang == 'en' %}
+        {% set exposureContent = exposureContent | replace('actions-reduce-exposure?lang=en', 'actions-reduce-exposure?lang=en' + queryParams) %}
+      {% elif lang == 'cy' %}
+        {% set exposureContent = exposureContent | replace('camau-lleihau-amlygiad/cy?lang=cy', 'camau-lleihau-amlygiad/cy?lang=cy' + queryParams) %}
+      {% endif %}
+    {% endif %}
+  {% endif %}
+  {{ exposureContent | safe }}
+</div>

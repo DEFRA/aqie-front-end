@@ -38,33 +38,44 @@
       
       {# '' Display summary date only if it's today's date #}
       {% if showSummaryDate and summaryDate %}
-        <p class="govuk-caption-s govuk-!-margin-top-6 govuk-!-margin-bottom-4">{{ daqi.pageTexts.b }} {{ issueTime | default('5:00') }} on {{ summaryDate }}</p>
+        <p class="govuk-caption-s daqi-health-summary-date">{{ daqi.pageTexts.b }} {{ issueTime | default('5:00') }} on {{ summaryDate }}</p>
+        <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l govuk-!-margin-bottom-6" data-daqi-tabs-separator>
       {% endif %}
 
       {# '' Convert value to integer for comparison to ensure mockLevel works correctly #}
       {% set todayValue = airQuality.today.value | int %}
-      <h2 class="govuk-heading-m govuk-!-margin-top-9">{{ daqi.healthAdvice.paragraphs.a }} {{ airQuality.today.readableBand }} {{ daqi.healthAdvice.paragraphs.b }}</h2>
-      <p>{{ airQuality.today.advice }}</p>
+      {# '' AQC-657: Exposure section ordering: show first ONLY for Low (1-3) levels #}
+      {% if todayValue <= 3 %}
+        {# '' Set variable to add top margin when summary date not shown #}
+        {% set needsTopMargin = not (showSummaryDate and summaryDate) %}
+        {% include "exposure-section.njk" %}
+        {# '' AQC-657: Visual separator between exposure advice and health advice (Low level order) #}
+        <hr data-daqi-separator="between-health-exposure" class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-6 govuk-!-margin-bottom-6">
+      {% endif %}
+      <h2 class="govuk-heading-m{% if not (showSummaryDate and summaryDate) %} govuk-!-margin-top-6{% endif %}">{{ daqi.healthAdvice.paragraphs.a }} {{ airQuality.today.readableBand }} {{ daqi.healthAdvice.paragraphs.b }}</h2>
       
-      {# '' Always render inset text element for dynamic JavaScript updates, but hide if today's level is low #}
-      {% set adultsText %}
-        {{ (airQuality.today.atrisk.adults) }}
-      {% endset %}
-      {% set asthmaText %}
-        {{ (airQuality.today.atrisk.asthma) }}
-      {% endset %}
-      {% set oldPeopleText %}
-        {{ (airQuality.today.atrisk.oldPeople) }}
-      {% endset %}
-      {{ govukInsetText({
-        html: 
-          "<p>" + adultsText + "</p>" + 
-          "<p>" + asthmaText + "</p>" +
-          "<p>" + oldPeopleText + "</p>",
-        attributes: {
-          style: 'display: ' + ('block' if todayValue >= 4 else 'none')
-        }
-      }) }}
+      {# '' For Low levels (1-3): show advice paragraph + regular text content without inset box #}
+      {% if todayValue <= 3 %}
+        <p>{{ airQuality.today.advice }}</p>
+        <div class="daqi-health-content daqi-health-content--low" data-daqi-band="low">
+          {{ airQuality.today.insetText | safe }}
+        </div>
+      {% else %}
+        {# '' For Moderate+ levels (4-10): advice is included in inset text, show colored inset text box only #}
+        {{ govukInsetText({
+          html: airQuality.today.insetText,
+          classes: 'daqi-health-inset daqi-health-inset--' + airQuality.today.band,
+          attributes: {
+            'data-daqi-band': airQuality.today.band
+          }
+        }) }}
+      {% endif %}
+      {# '' AQC-657: For Moderate+ (4-10) levels show exposure section after health advice block #}
+      {% if todayValue > 3 %}
+        {# '' AQC-657: Visual separator before exposure section for Moderate+ levels #}
+        <hr data-daqi-separator="between-health-exposure" class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-6 govuk-!-margin-bottom-6">
+        {% include "exposure-section.njk" %}
+      {% endif %}
       {% if lang == "en" %}
       {% include "daqi-index.njk" %}
       {% endif %}
@@ -296,4 +307,26 @@
 {% endif %}
     </div>
   </div>
+{% endblock %}
+
+{% block bodyEnd %}
+  {{ super() }}
+  {# '' Inject air quality health messages from server to eliminate data duplication #}
+  <script>
+    window.airQualityMessages = {
+      {% if lang == 'cy' %}
+      {# Welsh messages - map Welsh keys to English keys for JavaScript compatibility #}
+      'low': {{ airQualityData.isel | dump | safe }},
+      'moderate': {{ airQualityData.cymedrol | dump | safe }},
+      'high': {{ airQualityData.uchel | dump | safe }},
+      'very high': {{ airQualityData.uchelIawn | dump | safe }}
+      {% else %}
+      {# English messages - map veryHigh to 'very high' for JavaScript compatibility #}
+      'low': {{ airQualityData.low | dump | safe }},
+      'moderate': {{ airQualityData.moderate | dump | safe }},
+      'high': {{ airQualityData.high | dump | safe }},
+      'very high': {{ airQualityData.veryHigh | dump | safe }}
+      {% endif %}
+    };
+  </script>
 {% endblock %}

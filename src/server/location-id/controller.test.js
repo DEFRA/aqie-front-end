@@ -256,7 +256,9 @@ describe('Location ID Controller Tests', () => {
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
-        forecastNum: 4,
+        forecastNum: [
+          [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
+        ],
         nearestLocationsRange: [],
         nearestLocation: { id: 'test' }
       })
@@ -319,7 +321,9 @@ describe('Location ID Controller Tests', () => {
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
-        forecastNum: 4,
+        forecastNum: [
+          [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
+        ],
         nearestLocationsRange: [],
         nearestLocation: { id: 'test' }
       })
@@ -399,7 +403,9 @@ describe('Location ID Controller Tests', () => {
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
-        forecastNum: 4,
+        forecastNum: [
+          [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
+        ],
         nearestLocationsRange: [{ id: 'nearby-1' }],
         nearestLocation: { id: 'test-location' }
       })
@@ -411,6 +417,7 @@ describe('Location ID Controller Tests', () => {
         expect.objectContaining({
           result: expect.objectContaining({ id: 'test-location' }),
           pageTitle: expect.stringContaining('Air quality in'),
+          locationName: 'Test Location',
           lang: 'en'
         })
       )
@@ -438,7 +445,9 @@ describe('Location ID Controller Tests', () => {
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
-        forecastNum: 3,
+        forecastNum: [
+          [{ today: 3 }, { day2: 4 }, { day3: 2 }, { day4: 2 }, { day5: 3 }]
+        ],
         nearestLocationsRange: [{ id: 'ni-nearby-1' }],
         nearestLocation: { id: 'test-ni-location' }
       })
@@ -575,7 +584,9 @@ describe('Location ID Controller Tests', () => {
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
-        forecastNum: 4,
+        forecastNum: [
+          [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
+        ],
         nearestLocationsRange: [],
         nearestLocation: { id: 'cardiff' }
       })
@@ -610,7 +621,9 @@ describe('Location ID Controller Tests', () => {
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
-        forecastNum: 4,
+        forecastNum: [
+          [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
+        ],
         nearestLocationsRange: [],
         nearestLocation: { id: 'test' }
       })
@@ -645,7 +658,9 @@ describe('Location ID Controller Tests', () => {
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
-        forecastNum: 4,
+        forecastNum: [
+          [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
+        ],
         nearestLocationsRange: [],
         nearestLocation: { id: 'test' }
       })
@@ -676,7 +691,9 @@ describe('Location ID Controller Tests', () => {
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
-        forecastNum: 4,
+        forecastNum: [
+          [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
+        ],
         nearestLocationsRange,
         nearestLocation
       })

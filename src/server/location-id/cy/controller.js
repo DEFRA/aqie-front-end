@@ -12,6 +12,8 @@ import {
 } from '../../data/constants.js'
 import { getSearchTermsFromUrl } from '../../locations/helpers/get-search-terms-from-url.js'
 import { config } from '../../../config/index.js'
+import moment from 'moment'
+import { getIssueTime } from '../../locations/helpers/middleware-helpers.js'
 // Import shared helper functions
 import {
   initializeLocationVariables,
@@ -32,10 +34,39 @@ function getPreviousUrl(request) {
   return request.headers.referer || request.headers.referrer
 }
 
-function buildRedirectUrl(currentUrl) {
+function buildRedirectUrl(currentUrl, request) {
   const { searchTerms, secondSearchTerm, searchTermsLocationType } =
     getSearchTermsFromUrl(currentUrl)
-  return `/lleoliad?lang=cy&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}`
+
+  // '' Preserve mock parameters from query string
+  const mocksDisabled = config.get('disableTestMocks')
+  const mockLevel = !mocksDisabled ? request.query?.mockLevel : undefined
+  const mockDay = !mocksDisabled ? request.query?.mockDay : undefined
+  const mockPollutantBand = !mocksDisabled
+    ? request.query?.mockPollutantBand
+    : undefined
+  const testMode = !mocksDisabled ? request.query?.testMode : undefined
+
+  const mockParams = []
+  if (mockLevel !== undefined) {
+    mockParams.push(`mockLevel=${encodeURIComponent(mockLevel)}`)
+  }
+  if (mockDay !== undefined) {
+    mockParams.push(`mockDay=${encodeURIComponent(mockDay)}`)
+  }
+  if (mockPollutantBand !== undefined) {
+    mockParams.push(
+      `mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
+    )
+  }
+  if (testMode !== undefined) {
+    mockParams.push(`testMode=${encodeURIComponent(testMode)}`)
+  }
+
+  const mockParamsString =
+    mockParams.length > 0 ? `&${mockParams.join('&')}` : ''
+
+  return `/lleoliad?lang=cy&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}${mockParamsString}`
 }
 
 // Cleaned up - UI components and helper functions now handled by shared helper
@@ -60,7 +91,7 @@ const getLocationDetailsController = {
       if (previousUrl === undefined && !searchTermsSaved) {
         request.yar.clear('locationData')
         return h
-          .redirect(buildRedirectUrl(currentUrl))
+          .redirect(buildRedirectUrl(currentUrl, request))
           .code(REDIRECT_STATUS_CODE)
           .takeover()
       }
@@ -99,6 +130,21 @@ const getLocationDetailsController = {
           processedData.nearestLocationsRange
         )
 
+        // '' Calculate showSummaryDate if not already set (for direct access to location pages)
+        if (
+          locationData.showSummaryDate === undefined &&
+          locationData.dailySummary?.issue_date
+        ) {
+          const today = moment().format('YYYY-MM-DD')
+          const issueDate = moment(locationData.dailySummary.issue_date).format(
+            'YYYY-MM-DD'
+          )
+          locationData.showSummaryDate = today === issueDate
+          locationData.issueTime = getIssueTime(
+            locationData.dailySummary.issue_date
+          )
+        }
+
         // Build view data using helper
         const viewData = buildLocationViewData({
           locationDetails: processedData.locationDetails,
@@ -110,7 +156,9 @@ const getLocationDetailsController = {
           metaSiteUrl: initData.metaSiteUrl,
           airQualityData,
           siteTypeDescriptions,
-          pollutantTypes
+          pollutantTypes,
+          request,
+          locationId
         })
 
         return renderLocationView(h, viewData)

@@ -29,6 +29,8 @@ import { multipleResults } from './multiple-results/index.js'
 import { multipleResultsCy } from './multiple-results/cy/index.js'
 import { locationNotFound } from './location-not-found/index.js'
 import { testRoutes } from './test-routes/index.js'
+import { actionsReduceExposure } from './actions-reduce-exposure/index.js'
+import { actionsReduceExposureCy } from './actions-reduce-exposure/cy/index.js'
 import path from 'node:path'
 import { createLogger } from './common/helpers/logging/logger.js'
 import { SERVER_DIRNAME } from './data/constants.js'
@@ -73,9 +75,7 @@ const router = {
         multipleResultsCy,
         locationNotFound,
         health,
-        testRoutes,
-        healthEffects,
-        healthEffectsCy
+        testRoutes
       ]
 
       for (const plugin of plugins) {
