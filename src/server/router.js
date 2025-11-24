@@ -34,15 +34,18 @@ import { actionsReduceExposureCy } from './actions-reduce-exposure/cy/index.js'
 import path from 'node:path'
 import { createLogger } from './common/helpers/logging/logger.js'
 import { SERVER_DIRNAME } from './data/constants.js'
+import { healthEffects } from './health-effects/index.js'
+import { healthEffectsCy } from './health-effects/cy/index.js'
 
-const logger = createLogger()
+const logger = createLogger() // ''
 
 const router = {
   plugin: {
     name: 'router',
     register: async (server) => {
-      await server.register([inert])
+      await server.register([inert]) // ''
 
+      // Add all plugins including missing ones ''
       const plugins = [
         home,
         homeCy,
@@ -73,18 +76,20 @@ const router = {
         multipleResultsCy,
         locationNotFound,
         health,
-        actionsReduceExposure,
-        actionsReduceExposureCy,
-        testRoutes
+        testRoutes,
+        actionsReduceExposure, // ''
+        actionsReduceExposureCy, // ''
+        healthEffects, // ''
+        healthEffectsCy // ''
       ]
 
       for (const plugin of plugins) {
         const pluginName =
-          plugin.name || plugin.plugin?.name || 'CustomPluginName'
-        logger.info(`Registering plugin 2: ${pluginName}`)
-        await server.register(plugin)
+          plugin.name || plugin.plugin?.name || 'CustomPluginName' // ''
+        logger.info(`Registering plugin 2: ${pluginName}`) // ''
+        await server.register(plugin) // ''
       }
-      // Serve static files from .well-known directory
+
       server.route({
         method: 'GET',
         path: '/.well-known/{param*}',
@@ -95,13 +100,11 @@ const router = {
             index: true
           }
         }
-      })
+      }) // ''
 
-      // Check for duplicate route registration
-      const existingRoutes = server.table().map((route) => route.path)
+      const existingRoutes = server.table().map((route) => route.path) // ''
 
       if (!existingRoutes.includes('/public/{param*}')) {
-        // Serve static files from public directory
         server.route({
           method: 'GET',
           path: '/public/{param*}',
@@ -112,14 +115,14 @@ const router = {
               index: true
             }
           }
-        })
+        }) // ''
       } else {
         logger.warn(
           'Route /public/{param*} already exists. Skipping registration.'
-        )
+        ) // ''
       }
     }
   }
 }
 
-export { router }
+export { router } // ''

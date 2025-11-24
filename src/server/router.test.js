@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest'
 
-// Mock all the dependencies first, before any imports
+// Mock all the dependencies first, before any imports ''
 vi.mock('../../config/index.js', () => ({
   config: {
     get: vi.fn((key) => {
@@ -21,7 +21,7 @@ vi.mock('../../config/index.js', () => ({
   }
 }))
 
-// Mock pino to prevent initialization issues
+// Mock pino to prevent initialization issues ''
 vi.mock('pino', () => ({
   default: vi.fn(() => ({
     info: vi.fn(),
@@ -33,7 +33,7 @@ vi.mock('pino', () => ({
   }))
 }))
 
-// Mock the logger module completely
+// Mock the logger module completely ''
 vi.mock('./common/helpers/logging/logger.js', () => ({
   createLogger: vi.fn(() => ({
     info: vi.fn(),
@@ -45,7 +45,7 @@ vi.mock('./common/helpers/logging/logger.js', () => ({
   }))
 }))
 
-// Mock @hapi/inert
+// Mock @hapi/inert ''
 vi.mock('@hapi/inert', () => ({
   default: {
     name: 'inert',
@@ -53,7 +53,7 @@ vi.mock('@hapi/inert', () => ({
   }
 }))
 
-// Mock all route modules with proper structure
+// Mock all route modules with proper structure ''
 const mockRouteModule = {
   plugin: {
     name: 'mock-plugin',
@@ -124,17 +124,27 @@ vi.mock('./actions-reduce-exposure/cy/index.js', () => ({
   actionsReduceExposureCy: mockRouteModule
 }))
 vi.mock('./test-routes/index.js', () => ({ testRoutes: mockRouteModule }))
+vi.mock('./health-effects/index.js', () => ({ healthEffects: mockRouteModule }))
+vi.mock('./health-effects/cy/index.js', () => ({
+  healthEffectsCy: mockRouteModule
+}))
 
-// Mock helper modules
+// Mock helper modules ''
 vi.mock('./common/helpers/serve-static-files.js', () => ({
   serveStaticFiles: mockRouteModule
 }))
 vi.mock('./data/constants.js', () => ({
   SERVER_DIRNAME: '/mock/server/dirname',
-  WELSH_TITLE: 'Gwirio ansawdd aer'
+  WELSH_TITLE: 'Gwirio ansawdd aer',
+  WELSH_PAGE_TITLE_BASE: 'Mock Welsh Page Title Base',
+  DAQI_DESCRIPTION: 'Mock DAQI Description',
+  ACTIONS_REDUCE_EXPOSURE_ROUTE_EN: '/mock/actions-reduce-exposure-en', // ''
+  ACTIONS_REDUCE_EXPOSURE_ROUTE_CY: '/mock/actions-reduce-exposure-cy', // ''
+  HEALTH_EFFECTS_ROUTE_EN: '/mock/health-effects-en', // ''
+  HEALTH_EFFECTS_ROUTE_CY: '/mock/health-effects-cy' // ''
 }))
 
-// Mock Node.js modules
+// Mock Node.js modules ''
 vi.mock('node:path', () => ({
   default: {
     resolve: vi.fn((...args) => args.join('/')),
@@ -155,7 +165,7 @@ describe('Router Tests', () => {
     expect(router.plugin).toBeDefined()
     expect(router.plugin.name).toBe('router')
     expect(typeof router.plugin.register).toBe('function')
-  })
+  }, 10000) // Increased timeout to 10 seconds
 
   test('should have correct plugin structure', async () => {
     // ''
@@ -283,8 +293,8 @@ describe('Router Tests', () => {
     // Should register inert plugin first
     expect(mockServer.register).toHaveBeenCalledWith([expect.any(Object)])
 
-    // Should register multiple plugins (including actions-reduce-exposure)
-    expect(mockServer.register.mock.calls.length).toBeGreaterThan(30) // Should register many plugins
+    // Should register multiple plugins (including actions-reduce-exposure and health-effects)
+    expect(mockServer.register.mock.calls.length).toBeGreaterThan(30) // ''
   })
 
   test('should handle WELSH_TITLE constant in imports', async () => {

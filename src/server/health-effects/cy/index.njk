@@ -1,0 +1,66 @@
+{# '' Welsh health effects page #}
+{% extends "layouts/page.njk" %}
+
+{% set description = "Ansawdd aer gwael yw un o'r risgiau amgylcheddol mwyaf i iechyd y cyhoedd yn y Deyrnas Unedig." %}
+
+{% block pageTitle %}Effaith llygredd aer ar iechyd - Gwirio ansawdd aer{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row health-effects-page">
+  <div class="govuk-grid-column-two-thirds-from-desktop language-toggle">
+
+    {# '' Inline back link removed; layout supplies backlink #}
+    {# '' Removed location line #}
+
+    <style>
+      /* '' Scoped heading spacing adjustments */
+      .health-effects-page .health-effects-subheading.govuk-heading-l {
+        margin-top: 0;
+        margin-bottom: 0;
+        padding-top: 10px;
+        padding-bottom: 20px;
+      }
+    </style>
+
+    <h1 class="govuk-heading-xl govuk-!-margin-top-0">Effaith llygredd aer ar iechyd</h1>
+
+    <p class="govuk-body">Ansawdd aer gwael yw un o'r risgiau amgylcheddol mwyaf i iechyd y cyhoedd yn y Deyrnas Unedig.</p>
+    <p class="govuk-body">Mae'n fygythiad arbennig i grwpiau sy’n agored i niwed, gan gynnwys oedolion a phlant sydd â chyflyrau'r ysgyfaint neu'r galon, a phobl hŷn.</p>
+    <p class="govuk-body">Does dim lefel ddiogel o lygredd aer, ond mae yna gamau y gallwch eu cymryd i leihau’ch amlygiad i lygredd aer.</p>
+
+    <h2 class="govuk-heading-l health-effects-subheading">Sut mae llygredd aer yn effeithio ar y corff</h2>
+    <p class="govuk-body">Mae llygredd aer (gronynnau a nwyon) yn mynd i mewn i'n cyrff ac yn gallu niweidio’n celloedd mewn gwahanol ffyrdd. Maen nhw fel arfer yn mynd i'n hysgyfaint yn gyntaf ac yna gallan nhw symud i'n gwaed i gyrraedd ein horganau, fel y galon a'r ymennydd.</p>
+    <p class="govuk-body">Gall unrhyw swm o lygredd fod yn niweidiol i'n hiechyd, ond mwyaf i gyd o lygredd y byddwch chi'n agored iddo, mwyaf i gyd yw'r risg a'r effaith y gall ei chael arnoch chi. Mewn rhai achosion, gall y niwed fod yn raddol ac efallai na fyddwch chi'n sylwi arno am flynyddoedd lawer.</p>
+
+    <h2 class="govuk-heading-l health-effects-subheading">Amlygiad byrdymor i lygredd aer</h2>
+    <p class="govuk-body">Gall amlygiad byrdymor (dros oriau neu ddyddiau) achosi ystod o effeithiau ar iechyd, gan gynnwys:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>pesychu</li>
+      <li>llid yn y llygaid, y trwyn a’r gwddf</li>
+      <li>tyndra a phoen yn y frest</li>
+      <li>anhawster anadlu</li>
+      <li>symptomau asthma gwaeth</li>
+      <li>symptomau gwaeth yn gysylltiedig â'r galon, fel crychguriadau'r galon</li>
+      <li>symptomau gwaeth clefyd rhwystrol cronig yr ysgyfaint (COPD)</li>
+    </ul>
+
+    <h2 class="govuk-heading-l health-effects-subheading">Amlygiad hirdymor i lygredd aer</h2>
+    <p class="govuk-body">Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) gynyddu'r risg o gael cyflyrau iechyd penodol.</p>
+    <p class="govuk-body">Mae'r risg yma yn dibynnu ar beth sydd yn yr aer a pha mor hir y byddwch chi'n ei anadlu.</p>
+    <p class="govuk-body">Mae amlygiad hirdymor i lygredd aer, hyd yn oed ar lefelau isel, wedi'i gysylltu â’r canlynol:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>yr ysgyfaint yn gweithredu’n waeth mewn plant</li>
+      <li>cynnydd mewn afiechydon anadlu</li>
+      <li>clefyd y galon</li>
+      <li>strôc</li>
+      <li>canser</li>
+      <li>dementia</li>
+      <li>diabetes</li>
+      <li>clefyd rhwystrol cronig yr ysgyfaint (COPD)</li>
+      <li>clefyd Parkinson</li>
+      <li>clefyd Alzheimer</li>
+    </ul>
+
+  </div>
+</div>
+{% endblock %}
