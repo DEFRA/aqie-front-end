@@ -11,7 +11,7 @@ vi.mock('../controller.js', () => ({
   healthEffectsController: {
     handler: vi.fn((req, h) => h.response('ok').code(200))
   }
-}));
+}))
 
 vi.mock('../../common/helpers/logging/logger.js', () => ({
   createLogger: () => ({
@@ -19,7 +19,7 @@ vi.mock('../../common/helpers/logging/logger.js', () => ({
     warn: vi.fn(),
     error: vi.fn()
   })
-})); // '' Unified controller
+})) // '' Unified controller
 
 describe("'' healthEffectsCy plugin", () => {
   let server

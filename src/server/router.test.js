@@ -19,7 +19,7 @@ vi.mock('../../config/index.js', () => ({
       return mockConfig[key] || 'mock-value'
     })
   }
-})); // ''
+})) // ''
 
 // Mock pino to prevent initialization issues ''
 vi.mock('pino', () => ({
@@ -31,7 +31,7 @@ vi.mock('pino', () => ({
     trace: vi.fn(),
     fatal: vi.fn()
   }))
-})); // ''
+})) // ''
 
 // Mock the logger module completely ''
 vi.mock('./common/helpers/logging/logger.js', () => ({
@@ -43,7 +43,7 @@ vi.mock('./common/helpers/logging/logger.js', () => ({
     trace: vi.fn(),
     fatal: vi.fn()
   }))
-})); // ''
+})) // ''
 
 // Mock @hapi/inert ''
 vi.mock('@hapi/inert', () => ({
@@ -51,7 +51,7 @@ vi.mock('@hapi/inert', () => ({
     name: 'inert',
     register: vi.fn()
   }
-})); // ''
+})) // ''
 
 // Mock all route modules with proper structure ''
 const mockRouteModule = {
@@ -61,78 +61,78 @@ const mockRouteModule = {
   }
 }
 
-vi.mock('./home/index.js', () => ({ home: mockRouteModule })); // ''
-vi.mock('./home/cy/index.js', () => ({ homeCy: mockRouteModule })); // ''
+vi.mock('./home/index.js', () => ({ home: mockRouteModule })) // ''
+vi.mock('./home/cy/index.js', () => ({ homeCy: mockRouteModule })) // ''
 vi.mock('./search-location/index.js', () => ({
   searchLocation: mockRouteModule
-})); // ''
+})) // ''
 vi.mock('./search-location/cy/index.js', () => ({
   searchLocationCy: mockRouteModule
-})); // ''
-vi.mock('./locations/index.js', () => ({ locations: mockRouteModule })); // ''
-vi.mock('./locations/cy/index.js', () => ({ locationsCy: mockRouteModule })); // ''
-vi.mock('./location-id/index.js', () => ({ locationId: mockRouteModule })); // ''
-vi.mock('./location-id/cy/index.js', () => ({ locationIdCy: mockRouteModule })); // ''
+})) // ''
+vi.mock('./locations/index.js', () => ({ locations: mockRouteModule })) // ''
+vi.mock('./locations/cy/index.js', () => ({ locationsCy: mockRouteModule })) // ''
+vi.mock('./location-id/index.js', () => ({ locationId: mockRouteModule })) // ''
+vi.mock('./location-id/cy/index.js', () => ({ locationIdCy: mockRouteModule })) // ''
 vi.mock('./nitrogen-dioxide/index.js', () => ({
   nitrogenDioxide: mockRouteModule
-})); // ''
+})) // ''
 vi.mock('./nitrogen-dioxide/cy/index.js', () => ({
   nitrogenDioxideCy: mockRouteModule
-})); // ''
-vi.mock('./ozone/index.js', () => ({ ozone: mockRouteModule })); // ''
-vi.mock('./ozone/cy/index.js', () => ({ ozoneCy: mockRouteModule })); // ''
+})) // ''
+vi.mock('./ozone/index.js', () => ({ ozone: mockRouteModule })) // ''
+vi.mock('./ozone/cy/index.js', () => ({ ozoneCy: mockRouteModule })) // ''
 vi.mock('./particulate-matter-10/index.js', () => ({
   particulateMatter10: mockRouteModule
-})); // ''
+})) // ''
 vi.mock('./particulate-matter-10/cy/index.js', () => ({
   particulateMatter10Cy: mockRouteModule
-})); // ''
+})) // ''
 vi.mock('./particulate-matter-25/index.js', () => ({
   particulateMatter25: mockRouteModule
-})); // ''
+})) // ''
 vi.mock('./particulate-matter-25/cy/index.js', () => ({
   particulateMatter25Cy: mockRouteModule
-})); // ''
+})) // ''
 vi.mock('./sulphur-dioxide/index.js', () => ({
   sulphurDioxide: mockRouteModule
-})); // ''
+})) // ''
 vi.mock('./sulphur-dioxide/cy/index.js', () => ({
   sulphurDioxideCy: mockRouteModule
-})); // ''
-vi.mock('./privacy/index.js', () => ({ privacy: mockRouteModule })); // ''
-vi.mock('./privacy/cy/index.js', () => ({ privacyCy: mockRouteModule })); // ''
-vi.mock('./cookies/index.js', () => ({ cookies: mockRouteModule })); // ''
-vi.mock('./cookies/cy/index.js', () => ({ cookiesCy: mockRouteModule })); // ''
-vi.mock('./accessibility/index.js', () => ({ accessibility: mockRouteModule })); // ''
+})) // ''
+vi.mock('./privacy/index.js', () => ({ privacy: mockRouteModule })) // ''
+vi.mock('./privacy/cy/index.js', () => ({ privacyCy: mockRouteModule })) // ''
+vi.mock('./cookies/index.js', () => ({ cookies: mockRouteModule })) // ''
+vi.mock('./cookies/cy/index.js', () => ({ cookiesCy: mockRouteModule })) // ''
+vi.mock('./accessibility/index.js', () => ({ accessibility: mockRouteModule })) // ''
 vi.mock('./accessibility/cy/index.js', () => ({
   accessibilityCy: mockRouteModule
-})); // ''
+})) // ''
 vi.mock('./multiple-results/index.js', () => ({
   multipleResults: mockRouteModule
-})); // ''
+})) // ''
 vi.mock('./multiple-results/cy/index.js', () => ({
   multipleResultsCy: mockRouteModule
-})); // ''
+})) // ''
 vi.mock('./location-not-found/index.js', () => ({
   locationNotFound: mockRouteModule
-})); // ''
-vi.mock('./health/index.js', () => ({ health: mockRouteModule })); // ''
+})) // ''
+vi.mock('./health/index.js', () => ({ health: mockRouteModule })) // ''
 vi.mock('./actions-reduce-exposure/index.js', () => ({
   actionsReduceExposure: mockRouteModule
-})); // ''
+})) // ''
 vi.mock('./actions-reduce-exposure/cy/index.js', () => ({
   actionsReduceExposureCy: mockRouteModule
-})); // ''
-vi.mock('./test-routes/index.js', () => ({ testRoutes: mockRouteModule })); // ''
-vi.mock('./health-effects/index.js', () => ({ healthEffects: mockRouteModule })); // ''
+})) // ''
+vi.mock('./test-routes/index.js', () => ({ testRoutes: mockRouteModule })) // ''
+vi.mock('./health-effects/index.js', () => ({ healthEffects: mockRouteModule })) // ''
 vi.mock('./health-effects/cy/index.js', () => ({
   healthEffectsCy: mockRouteModule
-})); // ''
+})) // ''
 
 // Mock helper modules ''
 vi.mock('./common/helpers/serve-static-files.js', () => ({
   serveStaticFiles: mockRouteModule
-})); // ''
+})) // ''
 vi.mock('./data/constants.js', () => ({
   SERVER_DIRNAME: '/mock/server/dirname',
   WELSH_TITLE: 'Gwirio ansawdd aer',
@@ -142,7 +142,7 @@ vi.mock('./data/constants.js', () => ({
   ACTIONS_REDUCE_EXPOSURE_ROUTE_CY: '/mock/actions-reduce-exposure-cy', // ''
   HEALTH_EFFECTS_ROUTE_EN: '/mock/health-effects-en', // ''
   HEALTH_EFFECTS_ROUTE_CY: '/mock/health-effects-cy' // ''
-})); // ''
+})) // ''
 
 // Mock Node.js modules ''
 vi.mock('node:path', () => ({
@@ -151,7 +151,7 @@ vi.mock('node:path', () => ({
     join: vi.fn((...args) => args.join('/'))
   },
   dirname: vi.fn((path) => '/mock/dirname')
-})); // ''
+})) // ''
 
 describe('Router Tests', () => {
   beforeEach(() => {
