@@ -6,11 +6,12 @@ import { healthEffectsCy } from './index.js' // '' Welsh plugin
 import { healthEffectsController } from '../controller.js' // '' Hapi server
 
 // '' Mock unified controller and logger before importing the plugin so module-level imports use the mocks
+// '' Mock unified handler
 vi.mock('../controller.js', () => ({
   healthEffectsController: {
     handler: vi.fn((req, h) => h.response('ok').code(200))
-  } // '' Mock unified handler
-}))
+  }
+}));
 
 vi.mock('../../common/helpers/logging/logger.js', () => ({
   createLogger: () => ({
@@ -18,7 +19,7 @@ vi.mock('../../common/helpers/logging/logger.js', () => ({
     warn: vi.fn(),
     error: vi.fn()
   })
-})) // '' Unified controller
+})); // '' Unified controller
 
 describe("'' healthEffectsCy plugin", () => {
   let server
