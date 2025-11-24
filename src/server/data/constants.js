@@ -29,6 +29,9 @@ export const ACTIONS_REDUCE_EXPOSURE_ROUTE_EN =
   '/location/{locationId}/actions-reduce-exposure'
 export const ACTIONS_REDUCE_EXPOSURE_ROUTE_CY =
   '/lleoliad/{locationId}/camau-lleihau-amlygiad/cy'
+export const HEALTH_EFFECTS_ROUTE_EN = '/location/{locationId}/health-effects'
+export const HEALTH_EFFECTS_ROUTE_CY =
+  '/lleoliad/{locationId}/effaith-iechyd/cy'
 export const STATUS_UNAUTHORIZED = 401
 export const STATUS_NOT_FOUND = 404
 export const STATUS_INTERNAL_SERVER_ERROR = 500

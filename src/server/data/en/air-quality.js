@@ -1,3 +1,6 @@
+''
+import { ACTIONS_REDUCE_EXPOSURE_ROUTE_EN } from '../constants.js'
+
 export const warningMessages = {
   forecastWarning:
     '{level} levels of air pollution are predicted in this location from {weekday}.'
@@ -84,7 +87,7 @@ export const commonMessages = {
     values: [7, 8, 9],
     advice:
       'Anyone experiencing discomfort such as sore eyes, cough or sore throat should consider reducing activity, particularly outdoors.',
-    insetText: `<p>Try to <a href="/proto-dev-new/actions?locationName">reduce your exposure to air pollution</a>, especially if you're experiencing symptoms.</p>
+    insetText: `<p>Try to <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_EN}?lang=en">reduce your exposure to air pollution</a>, especially if you're experiencing symptoms.</p>
 
 <h3 class="govuk-heading-s">Short term air pollution exposure</h3>
 
@@ -127,7 +130,7 @@ export const commonMessages = {
     values: [10],
     advice:
       'Reduce physical exertion, particularly outdoors, especially if you experience symptoms such as cough or sore throat.',
-    insetText: `<p>Try to <a href="">reduce your exposure to air pollution</a>, especially if you're experiencing symptoms.</p>
+    insetText: `<p>Try to <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_EN}?lang=en">reduce your exposure to air pollution</a>, especially if you're experiencing symptoms.</p>
 
 <h3 class="govuk-heading-s">Short term air pollution exposure</h3>
 
