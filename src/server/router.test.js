@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest'
 
-// Mock all the dependencies first, before any imports
+// Mock all the dependencies first, before any imports ''
 vi.mock('../../config/index.js', () => ({
   config: {
     get: vi.fn((key) => {
@@ -19,9 +19,9 @@ vi.mock('../../config/index.js', () => ({
       return mockConfig[key] || 'mock-value'
     })
   }
-}))
+})); // ''
 
-// Mock pino to prevent initialization issues
+// Mock pino to prevent initialization issues ''
 vi.mock('pino', () => ({
   default: vi.fn(() => ({
     info: vi.fn(),
@@ -31,9 +31,9 @@ vi.mock('pino', () => ({
     trace: vi.fn(),
     fatal: vi.fn()
   }))
-}))
+})); // ''
 
-// Mock the logger module completely
+// Mock the logger module completely ''
 vi.mock('./common/helpers/logging/logger.js', () => ({
   createLogger: vi.fn(() => ({
     info: vi.fn(),
@@ -43,130 +43,104 @@ vi.mock('./common/helpers/logging/logger.js', () => ({
     trace: vi.fn(),
     fatal: vi.fn()
   }))
-}))
+})); // ''
 
-// Mock @hapi/inert
+// Mock @hapi/inert ''
 vi.mock('@hapi/inert', () => ({
   default: {
     name: 'inert',
     register: vi.fn()
   }
-}))
+})); // ''
 
-// Mock all route modules with proper structure
+// Mock all route modules with proper structure ''
 const mockRouteModule = {
   plugin: {
     name: 'mock-plugin',
     register: vi.fn()
   }
-}
+};
 
-vi.mock('./home/index.js', () => ({ home: mockRouteModule }))
-vi.mock('./home/cy/index.js', () => ({ homeCy: mockRouteModule }))
-vi.mock('./search-location/index.js', () => ({
-  searchLocation: mockRouteModule
-}))
-vi.mock('./search-location/cy/index.js', () => ({
-  searchLocationCy: mockRouteModule
-}))
-vi.mock('./locations/index.js', () => ({ locations: mockRouteModule }))
-vi.mock('./locations/cy/index.js', () => ({ locationsCy: mockRouteModule }))
-vi.mock('./location-id/index.js', () => ({ locationId: mockRouteModule }))
-vi.mock('./location-id/cy/index.js', () => ({ locationIdCy: mockRouteModule }))
-vi.mock('./nitrogen-dioxide/index.js', () => ({
-  nitrogenDioxide: mockRouteModule
-}))
-vi.mock('./nitrogen-dioxide/cy/index.js', () => ({
-  nitrogenDioxideCy: mockRouteModule
-}))
-vi.mock('./ozone/index.js', () => ({ ozone: mockRouteModule }))
-vi.mock('./ozone/cy/index.js', () => ({ ozoneCy: mockRouteModule }))
-vi.mock('./particulate-matter-10/index.js', () => ({
-  particulateMatter10: mockRouteModule
-}))
-vi.mock('./particulate-matter-10/cy/index.js', () => ({
-  particulateMatter10Cy: mockRouteModule
-}))
-vi.mock('./particulate-matter-25/index.js', () => ({
-  particulateMatter25: mockRouteModule
-}))
-vi.mock('./particulate-matter-25/cy/index.js', () => ({
-  particulateMatter25Cy: mockRouteModule
-}))
-vi.mock('./sulphur-dioxide/index.js', () => ({
-  sulphurDioxide: mockRouteModule
-}))
-vi.mock('./sulphur-dioxide/cy/index.js', () => ({
-  sulphurDioxideCy: mockRouteModule
-}))
-vi.mock('./privacy/index.js', () => ({ privacy: mockRouteModule }))
-vi.mock('./privacy/cy/index.js', () => ({ privacyCy: mockRouteModule }))
-vi.mock('./cookies/index.js', () => ({ cookies: mockRouteModule }))
-vi.mock('./cookies/cy/index.js', () => ({ cookiesCy: mockRouteModule }))
-vi.mock('./accessibility/index.js', () => ({ accessibility: mockRouteModule }))
-vi.mock('./accessibility/cy/index.js', () => ({
-  accessibilityCy: mockRouteModule
-}))
-vi.mock('./multiple-results/index.js', () => ({
-  multipleResults: mockRouteModule
-}))
-vi.mock('./multiple-results/cy/index.js', () => ({
-  multipleResultsCy: mockRouteModule
-}))
-vi.mock('./location-not-found/index.js', () => ({
-  locationNotFound: mockRouteModule
-}))
-vi.mock('./health/index.js', () => ({ health: mockRouteModule }))
-vi.mock('./actions-reduce-exposure/index.js', () => ({
-  actionsReduceExposure: mockRouteModule
-}))
-vi.mock('./actions-reduce-exposure/cy/index.js', () => ({
-  actionsReduceExposureCy: mockRouteModule
-}))
-vi.mock('./test-routes/index.js', () => ({ testRoutes: mockRouteModule }))
+vi.mock('./home/index.js', () => ({ home: mockRouteModule })); // ''
+vi.mock('./home/cy/index.js', () => ({ homeCy: mockRouteModule })); // ''
+vi.mock('./search-location/index.js', () => ({ searchLocation: mockRouteModule })); // ''
+vi.mock('./search-location/cy/index.js', () => ({ searchLocationCy: mockRouteModule })); // ''
+vi.mock('./locations/index.js', () => ({ locations: mockRouteModule })); // ''
+vi.mock('./locations/cy/index.js', () => ({ locationsCy: mockRouteModule })); // ''
+vi.mock('./location-id/index.js', () => ({ locationId: mockRouteModule })); // ''
+vi.mock('./location-id/cy/index.js', () => ({ locationIdCy: mockRouteModule })); // ''
+vi.mock('./nitrogen-dioxide/index.js', () => ({ nitrogenDioxide: mockRouteModule })); // ''
+vi.mock('./nitrogen-dioxide/cy/index.js', () => ({ nitrogenDioxideCy: mockRouteModule })); // ''
+vi.mock('./ozone/index.js', () => ({ ozone: mockRouteModule })); // ''
+vi.mock('./ozone/cy/index.js', () => ({ ozoneCy: mockRouteModule })); // ''
+vi.mock('./particulate-matter-10/index.js', () => ({ particulateMatter10: mockRouteModule })); // ''
+vi.mock('./particulate-matter-10/cy/index.js', () => ({ particulateMatter10Cy: mockRouteModule })); // ''
+vi.mock('./particulate-matter-25/index.js', () => ({ particulateMatter25: mockRouteModule })); // ''
+vi.mock('./particulate-matter-25/cy/index.js', () => ({ particulateMatter25Cy: mockRouteModule })); // ''
+vi.mock('./sulphur-dioxide/index.js', () => ({ sulphurDioxide: mockRouteModule })); // ''
+vi.mock('./sulphur-dioxide/cy/index.js', () => ({ sulphurDioxideCy: mockRouteModule })); // ''
+vi.mock('./privacy/index.js', () => ({ privacy: mockRouteModule })); // ''
+vi.mock('./privacy/cy/index.js', () => ({ privacyCy: mockRouteModule })); // ''
+vi.mock('./cookies/index.js', () => ({ cookies: mockRouteModule })); // ''
+vi.mock('./cookies/cy/index.js', () => ({ cookiesCy: mockRouteModule })); // ''
+vi.mock('./accessibility/index.js', () => ({ accessibility: mockRouteModule })); // ''
+vi.mock('./accessibility/cy/index.js', () => ({ accessibilityCy: mockRouteModule })); // ''
+vi.mock('./multiple-results/index.js', () => ({ multipleResults: mockRouteModule })); // ''
+vi.mock('./multiple-results/cy/index.js', () => ({ multipleResultsCy: mockRouteModule })); // ''
+vi.mock('./location-not-found/index.js', () => ({ locationNotFound: mockRouteModule })); // ''
+vi.mock('./health/index.js', () => ({ health: mockRouteModule })); // ''
+vi.mock('./actions-reduce-exposure/index.js', () => ({ actionsReduceExposure: mockRouteModule })); // ''
+vi.mock('./actions-reduce-exposure/cy/index.js', () => ({ actionsReduceExposureCy: mockRouteModule })); // ''
+vi.mock('./test-routes/index.js', () => ({ testRoutes: mockRouteModule })); // ''
+vi.mock('./health-effects/index.js', () => ({ healthEffects: mockRouteModule })); // ''
+vi.mock('./health-effects/cy/index.js', () => ({ healthEffectsCy: mockRouteModule })); // ''
 
-// Mock helper modules
+// Mock helper modules ''
 vi.mock('./common/helpers/serve-static-files.js', () => ({
   serveStaticFiles: mockRouteModule
-}))
+})); // ''
 vi.mock('./data/constants.js', () => ({
   SERVER_DIRNAME: '/mock/server/dirname',
   WELSH_TITLE: 'Gwirio ansawdd aer',
   WELSH_PAGE_TITLE_BASE: 'Mock Welsh Page Title Base',
-  DAQI_DESCRIPTION: 'Mock DAQI Description'
-}))
+  DAQI_DESCRIPTION: 'Mock DAQI Description',
+  ACTIONS_REDUCE_EXPOSURE_ROUTE_EN: '/mock/actions-reduce-exposure-en', // ''
+  ACTIONS_REDUCE_EXPOSURE_ROUTE_CY: '/mock/actions-reduce-exposure-cy', // ''
+  HEALTH_EFFECTS_ROUTE_EN: '/mock/health-effects-en', // ''
+  HEALTH_EFFECTS_ROUTE_CY: '/mock/health-effects-cy' // ''
+})); // ''
 
-// Mock Node.js modules
+// Mock Node.js modules ''
 vi.mock('node:path', () => ({
   default: {
     resolve: vi.fn((...args) => args.join('/')),
     join: vi.fn((...args) => args.join('/'))
   },
   dirname: vi.fn((path) => '/mock/dirname')
-}))
+})); // ''
 
 describe('Router Tests', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   test('should export router object', async () => {
     // ''
-    const { router } = await import('./router.js')
-    expect(router).toBeDefined()
-    expect(router.plugin).toBeDefined()
-    expect(router.plugin.name).toBe('router')
-    expect(typeof router.plugin.register).toBe('function')
-  }, 10000) // Increased timeout to 10 seconds
+    const { router } = await import('./router.js');
+    expect(router).toBeDefined();
+    expect(router.plugin).toBeDefined();
+    expect(router.plugin.name).toBe('router');
+    expect(typeof router.plugin.register).toBe('function');
+  }, 10000); // Increased timeout to 10 seconds
 
   test('should have correct plugin structure', async () => {
     // ''
-    const { router } = await import('./router.js')
+    const { router } = await import('./router.js');
     expect(router.plugin).toMatchObject({
       name: 'router',
       register: expect.any(Function)
-    })
-  })
+    });
+  });
 
   test('should register plugins on server', async () => {
     // ''
@@ -174,13 +148,13 @@ describe('Router Tests', () => {
       register: vi.fn(),
       route: vi.fn(),
       table: vi.fn(() => [])
-    }
+    };
 
-    const { router } = await import('./router.js')
-    await router.plugin.register(mockServer)
+    const { router } = await import('./router.js');
+    await router.plugin.register(mockServer);
 
-    expect(mockServer.register).toHaveBeenCalled()
-    expect(mockServer.route).toHaveBeenCalled()
+    expect(mockServer.register).toHaveBeenCalled();
+    expect(mockServer.route).toHaveBeenCalled();
 
     // Should register both static routes
     expect(mockServer.route).toHaveBeenCalledWith(
@@ -188,14 +162,14 @@ describe('Router Tests', () => {
         method: 'GET',
         path: '/.well-known/{param*}'
       })
-    )
+    );
     expect(mockServer.route).toHaveBeenCalledWith(
       expect.objectContaining({
         method: 'GET',
         path: '/public/{param*}'
       })
-    )
-  })
+    );
+  });
 
   test('should handle static file routes', async () => {
     // ''
@@ -203,10 +177,10 @@ describe('Router Tests', () => {
       register: vi.fn(),
       route: vi.fn(),
       table: vi.fn(() => [])
-    }
+    };
 
-    const { router } = await import('./router.js')
-    await router.plugin.register(mockServer)
+    const { router } = await import('./router.js');
+    await router.plugin.register(mockServer);
 
     // Should register .well-known route
     expect(mockServer.route).toHaveBeenCalledWith(
@@ -214,7 +188,7 @@ describe('Router Tests', () => {
         method: 'GET',
         path: '/.well-known/{param*}'
       })
-    )
+    );
 
     // Should register public route
     expect(mockServer.route).toHaveBeenCalledWith(
@@ -222,8 +196,8 @@ describe('Router Tests', () => {
         method: 'GET',
         path: '/public/{param*}'
       })
-    )
-  })
+    );
+  });
 
   test('should prevent duplicate route registration', async () => {
     // ''
@@ -231,24 +205,24 @@ describe('Router Tests', () => {
       register: vi.fn(),
       route: vi.fn(),
       table: vi.fn(() => [{ path: '/public/{param*}' }])
-    }
+    };
 
-    const { router } = await import('./router.js')
-    await router.plugin.register(mockServer)
+    const { router } = await import('./router.js');
+    await router.plugin.register(mockServer);
 
     // Should only call route once for .well-known (not for duplicate public)
     const publicRouteCalls = mockServer.route.mock.calls.filter(
       (call) => call[0].path === '/public/{param*}'
-    )
-    expect(publicRouteCalls).toHaveLength(0) // Should be skipped due to existing route
-  })
+    );
+    expect(publicRouteCalls).toHaveLength(0); // Should be skipped due to existing route
+  });
 
   test('should handle plugin registration errors gracefully', async () => {
     // ''
-    const { router } = await import('./router.js')
-    expect(router.plugin.register).toBeDefined()
-    expect(typeof router.plugin.register).toBe('function')
-  })
+    const { router } = await import('./router.js');
+    expect(router.plugin.register).toBeDefined();
+    expect(typeof router.plugin.register).toBe('function');
+  });
 
   test('should register actions-reduce-exposure routes', async () => {
     // ''
@@ -256,10 +230,10 @@ describe('Router Tests', () => {
       register: vi.fn(),
       route: vi.fn(),
       table: vi.fn(() => [])
-    }
+    };
 
-    const { router } = await import('./router.js')
-    await router.plugin.register(mockServer)
+    const { router } = await import('./router.js');
+    await router.plugin.register(mockServer);
 
     // Should register both English and Welsh actions-reduce-exposure plugins
     expect(mockServer.register).toHaveBeenCalledWith(
@@ -268,8 +242,8 @@ describe('Router Tests', () => {
           name: 'mock-plugin'
         })
       })
-    )
-  })
+    );
+  });
 
   test('should register all required plugins including new routes', async () => {
     // ''
@@ -277,22 +251,22 @@ describe('Router Tests', () => {
       register: vi.fn(),
       route: vi.fn(),
       table: vi.fn(() => [])
-    }
+    };
 
-    const { router } = await import('./router.js')
-    await router.plugin.register(mockServer)
+    const { router } = await import('./router.js');
+    await router.plugin.register(mockServer);
 
     // Should register inert plugin first
-    expect(mockServer.register).toHaveBeenCalledWith([expect.any(Object)])
+    expect(mockServer.register).toHaveBeenCalledWith([expect.any(Object)]);
 
-    // Should register multiple plugins (including actions-reduce-exposure)
-    expect(mockServer.register.mock.calls.length).toBeGreaterThan(30) // Should register many plugins
-  })
+    // Should register multiple plugins (including actions-reduce-exposure and health-effects)
+    expect(mockServer.register.mock.calls.length).toBeGreaterThan(30); // ''
+  });
 
   test('should handle WELSH_TITLE constant in imports', async () => {
     // ''
-    const { router } = await import('./router.js')
-    expect(router).toBeDefined()
+    const { router } = await import('./router.js');
+    expect(router).toBeDefined();
     // Test passes if import succeeds without WELSH_TITLE error
-  })
-})
+  });
+});

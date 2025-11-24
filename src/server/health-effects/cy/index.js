@@ -1,5 +1,5 @@
 // '' Hapi plugin for Welsh Health Effects page (CY, dynamic route)
-import { healthEffectsControllerCy } from './controller.js' // '' Welsh controller
+import { healthEffectsController } from '../controller.js' // '' Welsh controller
 import { createLogger } from '../../common/helpers/logging/logger.js' // '' Logger
 
 const logger = createLogger() // '' Logger instance
@@ -13,7 +13,7 @@ const healthEffectsCy = {
       server.route({
         method: 'GET',
         path: '/lleoliad/{id}/effeithiau-iechyd',
-        handler: healthEffectsControllerCy.handler
+        handler: healthEffectsController.handler// ''
       })
 
       // '' Legacy redirect: /location/{id}/health-effects?lang=cy -> /lleoliad/{id}/effeithiau-iechyd
@@ -34,9 +34,9 @@ const healthEffectsCy = {
       logger.info("'' Registered Welsh route '/lleoliad/{id}/effeithiau-iechyd'")
     } catch (error) {
       logger.error(error, "'' Failed to register Welsh health effects route")
-      throw error
+      throw error // ''
     }
   }
 }
 
-export { healthEffectsCy }
+export { healthEffectsCy } // ''

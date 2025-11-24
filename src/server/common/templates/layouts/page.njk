@@ -23,7 +23,7 @@
 {% set metaTitle = (pageTitle or 'Check air quality - GOV.UK') %}
 {% set metaDescription = description | default('Check air quality in your local area and the air pollution forecast for the next 5 days. Also, get health advice to reduce your exposure to pollutants.') %}
 {% set metaSiteUrl = (metaSiteUrl or 'https://check-air-quality.service.gov.uk') %}
-{%set htmlLang = lang %}
+{% set htmlLang = lang %}
 {% block bodyStart %}
 {% include "cookie-banner.njk" %}
 {% endblock %}
@@ -48,120 +48,148 @@
 
 {% block header %}
  {# serviceName being used in govukHeader will be @deprecated in v6. It has moved to govukServiceNavigation - https://github.com/alphagov/govuk-frontend/blob/main/CHANGELOG.md#move-service-name-and-navigation-links-from-the-govuk-header-to-service-navigation-component #}
-{%if page == "Check air quality"%}{% set serviceName = ""%}{%endif%}
-{%if page != "home"%}
-  {%if htmlLang == "en"%}
-  {% set queryhref = "/" %}
-  {{ govukHeader({
-    homepageUrl: "https://www.gov.uk/",
-    classes: "app-header",
-    containerClasses: "govuk-width-container",
-    serviceName: serviceName,
-    serviceUrl: queryhref,
-    useTudorCrown: true
-  }) }}
-  {%endif%}
-  {%if htmlLang == "cy"%}
-  {% set queryhref = "/cy" %}
-  {{ govukHeader({
-    homepageUrl: "https://www.gov.uk/",
-    classes: "app-header",
-    containerClasses: "govuk-width-container",
-    serviceName: serviceName,
-    serviceUrl: queryhref,
-    useTudorCrown: true
-  }) }}
-  {%endif%}
-
-  {%endif%}
+{% if page == "Check air quality" %}{% set serviceName = "" %}{% endif %}
+{% if page != "home" %}
+  {% if htmlLang == "en" %}
+    {% set queryhref = "/" %}
+    {{ govukHeader({
+      homepageUrl: "https://www.gov.uk/",
+      classes: "app-header",
+      containerClasses: "govuk-width-container",
+      serviceName: serviceName,
+      serviceUrl: queryhref,
+      useTudorCrown: true
+    }) }}
+  {% endif %}
+  {% if htmlLang == "cy" %}
+    {% set queryhref = "/cy" %}
+    {{ govukHeader({
+      homepageUrl: "https://www.gov.uk/",
+      classes: "app-header",
+      containerClasses: "govuk-width-container",
+      serviceName: serviceName,
+      serviceUrl: queryhref,
+      useTudorCrown: true
+    }) }}
+  {% endif %}
+{% endif %}
 {% endblock %}
 {% block pageTitle %}
   {{ pageTitle }}
 {% endblock %}
 
 {% block beforeContent %}
-{%if page != "home"%}
-{% if notFoundUrl %}
-{% if (statusCode == '500') or ( statusCode == '404') or ( statusCode == '401') %}
-  {{ govukPhaseBanner({
-    tag: {
-      text: phaseBanner.paragraphs.a
-    },
-    html: phaseBanner.paragraphs.b + " <a class='govuk-link' href='https://defragroup.eu.qualtrics.com/jfe/form/SV_dj4wJCoOkFQLXfM'>" + phaseBanner.paragraphs.c + " </a>" + phaseBanner.paragraphs.d
-  }) }}
-  {%endif%}
-{% else %}
-  {{ govukPhaseBanner({
-    tag: {
-      text: phaseBanner.paragraphs.a
-    },
-    html: phaseBanner.paragraphs.b + " <a class='govuk-link' href='https://defragroup.eu.qualtrics.com/jfe/form/SV_dj4wJCoOkFQLXfM'>" + phaseBanner.paragraphs.c + " </a>" + phaseBanner.paragraphs.d
-  }) }}
-
-  {%if (page != "Check air quality") and (page != "Gwirio ansawdd aer") %}
-  {% if displayBacklink %}
-   {%else%}
-   {% set queryhref = "" %}
-   {% set fullHrefEn = queryhref + "?lang=en" %}
-   {% set fullHrefCy = queryhref + "?lang=cy" %}
-   {% if statusCode != 500 %}
-       {{
-        dwpLanguageToggle({
-            selectedLang: lang,
-            href: {
-                en: fullHrefEn,
-                cy: fullHrefCy
-            }
-        })
-      }}
-    {%endif%}
-  {%endif%}
-  {%endif%}
-{% endif %}
- {{ super() }}
-{%if page != "Check air quality" and displayBacklink %}  {# '' Dynamic backlink block #}
-  <div class='top-nav'>
-    {# '' Get href and text from controller (fall back to search if missing) #}
-    {% set backHref = backLinkUrl or backLinkHref or (backlink and backlink.href) %}
-    {% set backText = backLinkText or (backlink and backlink.text) or 'Back' %}
-    {% if not backHref %}
-      {% if htmlLang == 'cy' %}
-        {% set backHref = '/chwilio-lleoliad/cy?lang=cy' %}
-      {% else %}
-        {% set backHref = '/search-location?lang=en' %}
-      {% endif %}
+{% if page != "home" %}
+  {% if notFoundUrl %}
+    {% if (statusCode == '500') or (statusCode == '404') or (statusCode == '401') %}
+      {{ govukPhaseBanner({
+        tag: {
+          text: phaseBanner.paragraphs.a
+        },
+        html: phaseBanner.paragraphs.b + " <a class='govuk-link' href='https://defragroup.eu.qualtrics.com/jfe/form/SV_dj4wJCoOkFQLXfM'>" + phaseBanner.paragraphs.c + " </a>" + phaseBanner.paragraphs.d
+      }) }}
     {% endif %}
-
-    {{ govukBackLink({
-      text: backText,
-      href: backHref
+  {% else %}
+    {{ govukPhaseBanner({
+      tag: {
+        text: phaseBanner.paragraphs.a
+      },
+      html: phaseBanner.paragraphs.b + " <a class='govuk-link' href='https://defragroup.eu.qualtrics.com/jfe/form/SV_dj4wJCoOkFQLXfM'>" + phaseBanner.paragraphs.c + " </a>" + phaseBanner.paragraphs.d
     }) }}
 
-    {# '' Language toggle beside backlink #}
-    {% set fullHrefEn = '?lang=en' %}
-    {% set fullHrefCy = '?lang=cy' %}
-    {{
-      dwpLanguageToggle({
-        selectedLang: lang,
-        href: { en: fullHrefEn, cy: fullHrefCy }
-      })
-    }}
-  </div>
-{% endif %}
-  {%if lang == 'cy'%}
-   {% set htmlLang = "cy" %}
-   {% endif %}
+    {% if (page != "Check air quality") and (page != "Gwirio ansawdd aer") %}
+      {% if displayBacklink %}
+        {# '' Backlink logic handled below #}
+      {% else %}
+        {# '' Language toggle for health effects pages #}
+        {% if locationId %}
+          {# '' English: /location/{id}/health-effects?lang=en '' #}
+          {# '' Welsh: /lleoliad/{id}/effeithiau-iechyd?lang=cy '' #}
+          {% if locationId %}
+            {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/health-effects?lang=en&locationName=" + (locationName | urlencode) %}
+            {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd?lang=cy&locationName=" + (locationName | urlencode) %}
+          {% else %}
+            {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/health-effects?lang=en" %}
+            {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd?lang=cy" %}
+          {% endif %}
+        {% else %}
+          {# '' Fallback for pages without locationId '' #}
+          {% set fullHrefEn = "/health-effects?lang=en" %}
+          {% set fullHrefCy = "/effeithiau-iechyd/cy?lang=cy" %}
+        {% endif %}
+        {% if statusCode != 500 %}
+          {{
+            dwpLanguageToggle({
+              selectedLang: lang,
+              href: {
+                en: fullHrefEn,
+                cy: fullHrefCy
+              }
+            })
+          }}
+        {% endif %}
+      {% endif %}
+    {% endif %}
   {% endif %}
- {%if (page != "home") and (page != "Check air quality") %}
-  {%if lang == "en"%}
-  {% set htmlLang = "en" %}
+  {{ super() }}
+  {% if page != "Check air quality" and displayBacklink %}
+    {# '' Dynamic backlink block #}
+    <div class='top-nav'>
+      {% if customBackLink %}
+        {{ govukBackLink({
+          text: backLinkText,
+          href: backLinkUrl
+        }) }}
+      {% else %}
+        {% if htmlLang == "en" %}
+          {% set queryhrefSearchEn %}/search-location?lang=en{% endset %}
+          {{ govukBackLink({
+            text: backlink.text,
+            href: queryhrefSearchEn
+          }) }}
+        {% endif %}
+        {% if htmlLang == "cy" %}
+          {% set queryhrefSearchCy %}/chwilio-lleoliad/cy?lang=cy{% endset %}
+          {{ govukBackLink({
+            text: backlink.text,
+            href: queryhrefSearchCy
+          }) }}
+        {% endif %}
+      {% endif %}
+      {# '' Language toggle for health effects pages in backlink block #}
+      {% if locationId %}
+        {% if locationName %}
+          {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/health-effects?lang=en&locationName=" + (locationName | urlencode) %}
+          {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd?lang=cy&locationName=" + (locationName | urlencode) %}
+        {% else %}
+          {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/health-effects?lang=en" %}
+          {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd?lang=cy" %}
+        {% endif %}
+      {% else %}
+        {% set fullHrefEn = "/health-effects?lang=en" %}
+        {% set fullHrefCy = "/effeithiau-iechyd/cy?lang=cy" %}
+      {% endif %}
+      {{
+        dwpLanguageToggle({
+          selectedLang: lang,
+          href: { en: fullHrefEn, cy: fullHrefCy }
+        })
+      }}
+    </div>
+  {% endif %}
+  {% if lang == 'cy' %}
+    {% set htmlLang = "cy" %}
+  {% endif %}
+{% endif %}
+{% if (page != "home") and (page != "Check air quality") %}
+  {% if lang == "en" %}
+    {% set htmlLang = "en" %}
   {% elif lang == "cy" %}
-  {% set htmlLang = "cy" %}
+    {% set htmlLang = "cy" %}
   {% else %}
-  {% set htmlLang = "en" %}
-  {%endif%}
-
-{%endif%}
+    {% set htmlLang = "en" %}
+  {% endif %}
+{% endif %}
 {% endblock %}
 
 {% block content %}

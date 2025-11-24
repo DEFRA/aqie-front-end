@@ -1,59 +1,87 @@
-// '' Health effects controller (EN)
-import { english } from '../data/en/en.js' // '' English copy
-import { welsh } from '../data/cy/cy.js' // '' Welsh copy for redirect
-import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js' // '' Site URL helper
-import { createLogger } from '../common/helpers/logging/logger.js' // '' Logger
+// '' Unified health effects controller (EN & CY)
+import { english } from '../data/en/en.js' // ''
+import { welsh } from '../data/cy/cy.js' // ''
+import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js' // ''
+import { createLogger } from '../common/helpers/logging/logger.js' // ''
 import {
   getReadableLocationName,
   buildHealthEffectsViewModel
-} from './helpers/index.js' // '' Extracted helpers
+} from './helpers/index.js' // ''
 
-const LANG_EN = 'en' // '' Language constants
+const LANG_EN = 'en' // ''
 const LANG_CY = 'cy'
 const REDIRECT_STATUS_CODE = 302
 
-const logger = createLogger() // '' Logger instance
+const logger = createLogger() // ''
 
-// '' Handler (EN)
-const healthEffectsHandler = (request, h, content = english) => {
+// '' Unified handler for both languages
+const healthEffectsHandler = (request, h, customContent = undefined) => {
   try {
-    const { query, params } = request
-    const metaSiteUrl = getAirQualitySiteUrl(request) // '' Build canonical site URL
+    const { query = {}, params = {} } = request // ''
+    const metaSiteUrl = getAirQualitySiteUrl(request) // ''
+    const lang = (query.lang || '').toLowerCase() // ''
 
-    // '' Optional redirect to Welsh variant
-    if ((query?.lang || '').toLowerCase() === LANG_CY) {
-      const readableNameRedirect = getReadableLocationName(query, params, logger)
-      const redirectUrl = readableNameRedirect
-        ? `/effeithiau-iechyd/cy?lang=cy&locationName=${encodeURIComponent(readableNameRedirect)}`
-        : `/effeithiau-iechyd/cy?lang=cy`
-      logger.debug({ redirectUrl }, "'' Redirecting to Welsh health effects")
-      return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE)
+    // '' Only render the page for the matching route and language
+    const isWelshRoute = request.path.startsWith('/lleoliad/')
+    const isEnglishRoute = request.path.startsWith('/location/')
+
+    // '' If Welsh route, always render Welsh page
+    if (isWelshRoute) {
+      const readableName = getReadableLocationName(query, params, logger) // ''
+      const selectedContent = customContent || welsh // ''
+      const viewModel = buildHealthEffectsViewModel({
+        content: selectedContent,
+        metaSiteUrl,
+        readableName,
+        lang: LANG_CY, // ''
+        locationId: params.id // ''
+      }) // ''
+      viewModel.page = 'Effaith llygredd aer ar iechyd' // ''
+      viewModel.pageTitle = 'Effaith llygredd aer ar iechyd' // ''
+      viewModel.backLinkText = `Llygredd aer yn ${readableName || 'y lleoliad hwn'}` // ''
+      viewModel.backlink = { text: viewModel.backLinkText, href: viewModel.backLinkUrl } // ''
+      logger.debug(
+        {
+          routePath: request.path,
+          readableName,
+          backLinkUrl: viewModel.backLinkUrl
+        },
+        "'' Rendering health-effects CY" // ''
+      )
+      return h.view('health-effects/cy/index', viewModel) // ''
     }
 
-    const readableName = getReadableLocationName(query, params, logger)
-    const viewModel = buildHealthEffectsViewModel({
-      content,
-      metaSiteUrl,
-      readableName,
-      lang: (query.lang || LANG_EN)
-    })
-
-    logger.debug(
-      {
-        routePath: request.path,
+    // '' If English route, always render English page
+    if (isEnglishRoute) {
+      const readableName = getReadableLocationName(query, params, logger) // ''
+      const selectedContent = customContent || english // ''
+      const viewModel = buildHealthEffectsViewModel({
+        content: selectedContent,
+        metaSiteUrl,
         readableName,
-        backLinkUrl: viewModel.backLinkUrl
-      },
-      "'' Rendering health-effects EN"
-    )
+        lang: LANG_EN, // ''
+        locationId: params.id // ''
+      }) // ''
+      logger.debug(
+        {
+          routePath: request.path,
+          readableName,
+          backLinkUrl: viewModel.backLinkUrl
+        },
+        "'' Rendering health-effects EN" // ''
+      )
+      return h.view('health-effects/index', viewModel) // ''
+    }
 
-    return h.view('health-effects/index', viewModel)
+    // '' If route does not match, return 404
+    logger.warn({ routePath: request.path }, "'' Health effects route not found") // ''
+    return h.response('Page Not Found').code(404) // ''
   } catch (err) {
-    logger.error(err, "'' Failed to render health-effects EN")
-    return h.response('Internal Server Error').code(500)
+    logger.error(err, "'' Failed to render health-effects") // ''
+    return h.response('Internal Server Error').code(500) // ''
   }
 }
 
-const healthEffectsController = { handler: healthEffectsHandler } // '' Export
+const healthEffectsController = { handler: healthEffectsHandler } // ''
 
-export { healthEffectsController, healthEffectsHandler }
+export { healthEffectsController, healthEffectsHandler } // ''

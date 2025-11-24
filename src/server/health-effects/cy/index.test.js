@@ -2,9 +2,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest' // '' Vitest API
 import { Server } from '@hapi/hapi' // '' Hapi server
 
-// '' Mock controller and logger before importing the plugin so module-level imports use the mocks
-vi.mock('./controller.js', () => ({
-  healthEffectsControllerCy: { handler: vi.fn((req, h) => h.response('ok').code(200)) } // '' Mock handler
+// '' Mock unified controller and logger before importing the plugin so module-level imports use the mocks
+vi.mock('../controller.js', () => ({
+  healthEffectsController: { handler: vi.fn((req, h) => h.response('ok').code(200)) } // '' Mock unified handler
 }))
 
 vi.mock('../../common/helpers/logging/logger.js', () => ({
@@ -16,7 +16,7 @@ vi.mock('../../common/helpers/logging/logger.js', () => ({
 }))
 
 import { healthEffectsCy } from './index.js' // '' Welsh plugin
-import { healthEffectsControllerCy } from './controller.js' // '' Welsh controller
+import { healthEffectsController } from '../controller.js' // '' Unified controller
 
 describe("'' healthEffectsCy plugin", () => {
   let server
@@ -33,12 +33,11 @@ describe("'' healthEffectsCy plugin", () => {
   it("'' registers Welsh dynamic route", async () => {
     const res = await server.inject('/lleoliad/caerdydd/effeithiau-iechyd')
     expect(res.statusCode).toBe(200)
-    expect(healthEffectsControllerCy.handler).toHaveBeenCalledTimes(1)
+    expect(healthEffectsController.handler).toHaveBeenCalledTimes(1)
   })
 
   it("'' redirects legacy English path to Welsh dynamic route when lang=cy", async () => {
     // '' Provide lang=cy query so onPreHandler will perform the redirect when the plugin registers it.
-    // Accept either a 302 redirect (when onPreHandler intercepts) or 404 (if route not present in this test env).
     const res = await server.inject('/location/locationName/health-effects?lang=cy')
     if (res.statusCode === 302) {
       expect(res.headers.location).toBe('/lleoliad/locationName/effeithiau-iechyd')
