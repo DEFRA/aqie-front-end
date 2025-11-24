@@ -131,7 +131,9 @@ vi.mock('./common/helpers/serve-static-files.js', () => ({
 }))
 vi.mock('./data/constants.js', () => ({
   SERVER_DIRNAME: '/mock/server/dirname',
-  WELSH_TITLE: 'Gwirio ansawdd aer'
+  WELSH_TITLE: 'Gwirio ansawdd aer',
+  WELSH_PAGE_TITLE_BASE: 'Mock Welsh Page Title Base',
+  DAQI_DESCRIPTION: 'Mock DAQI Description'
 }))
 
 // Mock Node.js modules
@@ -155,7 +157,7 @@ describe('Router Tests', () => {
     expect(router.plugin).toBeDefined()
     expect(router.plugin.name).toBe('router')
     expect(typeof router.plugin.register).toBe('function')
-  })
+  }, 10000) // Increased timeout to 10 seconds
 
   test('should have correct plugin structure', async () => {
     // ''

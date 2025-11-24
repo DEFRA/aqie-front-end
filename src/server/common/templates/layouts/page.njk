@@ -102,13 +102,8 @@
   {% if displayBacklink %}
    {%else%}
    {% set queryhref = "" %}
-   {% if locationName %}
-     {% set fullHrefEn = queryhref + "?lang=en&locationName=" + (locationName | urlencode) %}
-     {% set fullHrefCy = queryhref + "?lang=cy&locationName=" + (locationName | urlencode) %}
-   {% else %}
-     {% set fullHrefEn = queryhref + "?lang=en" %}
-     {% set fullHrefCy = queryhref + "?lang=cy" %}
-   {% endif %}
+   {% set fullHrefEn = queryhref + "?lang=en" %}
+   {% set fullHrefCy = queryhref + "?lang=cy" %}
    {% if statusCode != 500 %}
        {{
         dwpLanguageToggle({
@@ -124,50 +119,35 @@
   {%endif%}
 {% endif %}
  {{ super() }}
-{%if page != "Check air quality"%}
-  {%if displayBacklink %}
+{%if page != "Check air quality" and displayBacklink %}  {# '' Dynamic backlink block #}
   <div class='top-nav'>
-  {%if customBackLink %}
-    {{ govukBackLink({
-    text: backLinkText,
-    href: backLinkUrl
-  }) }}
-  {%else%}
-  {%if htmlLang == "en"%}
-  {% set queryhrefSearchEn %}/search-location?lang=en{% endset %}
-    {{ govukBackLink({
-    text: backlink.text,
-    href: queryhrefSearchEn
-  }) }}
-  {% endif %}
-  {%if htmlLang == "cy"%}
-  {% set queryhrefSearchCy %}/chwilio-lleoliad/cy?lang=cy{% endset %}
-    {{ govukBackLink({
-    text: backlink.text,
-    href: queryhrefSearchCy
-  }) }}
-  {% endif %}
-  {%endif%}
-    {% set queryhref = "" %}
-    {% if locationName %}
-      {% set fullHrefEn = queryhref + "?lang=en&locationName=" + (locationName | urlencode) %}
-      {% set fullHrefCy = queryhref + "?lang=cy&locationName=" + (locationName | urlencode) %}
-    {% else %}
-      {% set fullHrefEn = queryhref + "?lang=en" %}
-      {% set fullHrefCy = queryhref + "?lang=cy" %}
+    {# '' Get href and text from controller (fall back to search if missing) #}
+    {% set backHref = backLinkUrl or backLinkHref or (backlink and backlink.href) %}
+    {% set backText = backLinkText or (backlink and backlink.text) or 'Back' %}
+    {% if not backHref %}
+      {% if htmlLang == 'cy' %}
+        {% set backHref = '/chwilio-lleoliad/cy?lang=cy' %}
+      {% else %}
+        {% set backHref = '/search-location?lang=en' %}
+      {% endif %}
     {% endif %}
+
+    {{ govukBackLink({
+      text: backText,
+      href: backHref
+    }) }}
+
+    {# '' Language toggle beside backlink #}
+    {% set fullHrefEn = '?lang=en' %}
+    {% set fullHrefCy = '?lang=cy' %}
     {{
       dwpLanguageToggle({
-          selectedLang: lang,
-          href: {
-              en: fullHrefEn,
-              cy: fullHrefCy
-          }
+        selectedLang: lang,
+        href: { en: fullHrefEn, cy: fullHrefCy }
       })
     }}
   </div>
-  {% endif %}
-  {% endif %}
+{% endif %}
   {%if lang == 'cy'%}
    {% set htmlLang = "cy" %}
    {% endif %}

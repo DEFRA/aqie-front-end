@@ -34,6 +34,8 @@ import { actionsReduceExposureCy } from './actions-reduce-exposure/cy/index.js'
 import path from 'node:path'
 import { createLogger } from './common/helpers/logging/logger.js'
 import { SERVER_DIRNAME } from './data/constants.js'
+import { healthEffects } from './health-effects/index.js'
+import { healthEffectsCy } from './health-effects/cy/index.js'
 
 const logger = createLogger()
 
@@ -75,7 +77,9 @@ const router = {
         health,
         actionsReduceExposure,
         actionsReduceExposureCy,
-        testRoutes
+        testRoutes,
+        healthEffects,
+        healthEffectsCy
       ]
 
       for (const plugin of plugins) {
@@ -84,7 +88,7 @@ const router = {
         logger.info(`Registering plugin 2: ${pluginName}`)
         await server.register(plugin)
       }
-      // Serve static files from .well-known directory
+
       server.route({
         method: 'GET',
         path: '/.well-known/{param*}',
@@ -97,11 +101,9 @@ const router = {
         }
       })
 
-      // Check for duplicate route registration
       const existingRoutes = server.table().map((route) => route.path)
 
       if (!existingRoutes.includes('/public/{param*}')) {
-        // Serve static files from public directory
         server.route({
           method: 'GET',
           path: '/public/{param*}',

@@ -8,7 +8,7 @@ import {
 } from '../../../server/data/constants.js'
 import { createLogger } from '../../../server/common/helpers/logging/logger.js'
 
-const logger = createLogger('moment-date-filters')
+const logger = createLogger('moment-date-filters') // ''
 
 /**
  * Formats a moment date with lowercase 'am/pm'.
@@ -147,5 +147,6 @@ export {
   addDaysToTodayAbrev,
   addDaysToTodayAbrevWelsh,
   addDaysToTodayFull,
-  addDaysToTodayFullWelsh
+  addDaysToTodayFullWelsh,
+  logger as __logger // ''
 }
