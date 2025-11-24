@@ -1,0 +1,81 @@
+{# '' English health effects page #}
+{% extends "layouts/page.njk" %}
+
+{% set description = "Poor air quality is one of the largest environmental risks to public health in the UK." %}
+
+{% block pageTitle %}Health effects of air pollution - Check air quality{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row health-effects-page">
+  <div class="govuk-grid-column-two-thirds-from-desktop language-toggle">
+
+    {# '' Inline back link removed; layout renders backlink #}
+
+    <style>
+      /* '' Scoped heading spacing adjustments */
+      .health-effects-page .health-effects-subheading.govuk-heading-l {
+        margin-top: 0;
+        margin-bottom: 0;
+        padding-top: 10px;
+        padding-bottom: 20px;
+      }
+    </style>
+
+    <h1 class="govuk-heading-xl govuk-!-margin-top-0">Health effects of air pollution</h1>
+
+    {# '' Removed location line #}
+
+    <p class="govuk-body">
+      Poor air quality is one of the largest environmental risks to public health in the UK.
+    </p>
+    <p class="govuk-body">
+      There is no safe level of air pollution, but there are actions you can take to reduce your exposure to air pollution.
+    </p>
+
+    <h2 class="govuk-heading-l health-effects-subheading">How air pollution impacts the body</h2>
+    <p class="govuk-body">
+      Air pollution (particles and gases) enter our bodies and can damage our cells in different ways. They usually enter our lungs first and can then move into our blood to reach our organs, such as the heart and brain.
+    </p>
+    <p class="govuk-body">
+      Any amount of pollution can be damaging to our health, but the more pollution you are exposed to, the bigger the risk and the bigger the effect it can have on you. In some cases, damage can be gradual and you may not notice it for many years.
+    </p>
+
+    <h2 class="govuk-heading-l health-effects-subheading">Short term air pollution exposure</h2>
+    <p class="govuk-body">
+      Short term exposure (over hours or days) can cause a range of health impacts, including:
+    </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>coughing</li>
+      <li>eye, nose and throat irritation</li>
+      <li>chest tightness and pain</li>
+      <li>difficulty breathing</li>
+      <li>worsening of asthma symptoms</li>
+      <li>worsening of heart-related symptoms, such as heart palpitations</li>
+      <li>worsening of chronic obstructive pulmonary disease (COPD) symptoms</li>
+    </ul>
+
+    <h2 class="govuk-heading-l health-effects-subheading">Long term air pollution exposure</h2>
+    <p class="govuk-body">
+      Long term exposure to air pollution (over years), can increase the risk of getting certain health conditions.
+    </p>
+    <p class="govuk-body">
+      This risk depends on what's in the air and how long you breathe it for.
+    </p>
+    <p class="govuk-body">
+      Long term exposure to air pollution, even at low levels, has been linked to:
+    </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>poorer lung function in children</li>
+      <li>increase in respiratory illnesses</li>
+      <li>heart disease</li>
+      <li>stroke</li>
+      <li>cancer</li>
+      <li>dementia</li>
+      <li>diabetes</li>
+      <li>chronic obstructive pulmonary disease (COPD)</li>
+      <li>Parkinson's disease</li>
+      <li>Alzheimer's disease</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}
