@@ -116,8 +116,11 @@
   {% endif %}
   {% set day2TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day2.value | default(0) | string) %}
   {% set day2Panel %}
-    {# '' Day name heading - screen reader reads full day name, visual shows abbreviation #}
-    <h3 class="govuk-heading-m govuk-!-margin-bottom-4" aria-label="{{ day2LabelFull }}">{{ day2Label }}</h3>
+    {# '' Day name heading - shows full name on mobile, abbreviated on tablet+ #}
+    <h3 class="govuk-heading-m govuk-!-margin-bottom-4 daqi-day-heading" aria-label="{{ day2LabelFull }}">
+      <span class="daqi-day-abbrev">{{ day2Label }}</span>
+      <span class="daqi-day-full">{{ day2LabelFull }}</span>
+    </h3>
     <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day2.value | default(0) }}, {{ airQuality.day2.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
     {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X, [band]" #}
     {{ daqiNumberedBar(airQuality.day2.value | default(0), airQuality.day2.readableBand | capitalize | default('')) }}
@@ -177,8 +180,11 @@
   {% endif %}
   {% set day3TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day3.value | default(0) | string) %}
   {% set day3Panel %}
-    {# '' Day name heading - screen reader reads full day name, visual shows abbreviation #}
-    <h3 class="govuk-heading-m govuk-!-margin-bottom-4" aria-label="{{ day3LabelFull }}">{{ day3Label }}</h3>
+    {# '' Day name heading - shows full name on mobile, abbreviated on tablet+ #}
+    <h3 class="govuk-heading-m govuk-!-margin-bottom-4 daqi-day-heading" aria-label="{{ day3LabelFull }}">
+      <span class="daqi-day-abbrev">{{ day3Label }}</span>
+      <span class="daqi-day-full">{{ day3LabelFull }}</span>
+    </h3>
     <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day3.value | default(0) }}, {{ airQuality.day3.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
     {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X, [band]" #}
     {{ daqiNumberedBar(airQuality.day3.value | default(0), airQuality.day3.readableBand | capitalize | default('')) }}
@@ -238,8 +244,11 @@
   {% endif %}
   {% set day4TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day4.value | default(0) | string) %}
   {% set day4Panel %}
-    {# '' Day name heading - screen reader reads full day name, visual shows abbreviation #}
-    <h3 class="govuk-heading-m govuk-!-margin-bottom-4" aria-label="{{ day4LabelFull }}">{{ day4Label }}</h3>
+    {# '' Day name heading - shows full name on mobile, abbreviated on tablet+ #}
+    <h3 class="govuk-heading-m govuk-!-margin-bottom-4 daqi-day-heading" aria-label="{{ day4LabelFull }}">
+      <span class="daqi-day-abbrev">{{ day4Label }}</span>
+      <span class="daqi-day-full">{{ day4LabelFull }}</span>
+    </h3>
     <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day4.value | default(0) }}, {{ airQuality.day4.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
     {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X, [band]" #}
     {{ daqiNumberedBar(airQuality.day4.value | default(0), airQuality.day4.readableBand | capitalize | default('')) }}
@@ -299,8 +308,11 @@
   {% endif %}
   {% set day5TabClass = "govuk-tabs__tab daqi-tab--" + (airQuality.day5.value | default(0) | string) %}
   {% set day5Panel %}
-    {# '' Day name heading - screen reader reads full day name, visual shows abbreviation #}
-    <h3 class="govuk-heading-m govuk-!-margin-bottom-4" aria-label="{{ day5LabelFull }}">{{ day5Label }}</h3>
+    {# '' Day name heading - shows full name on mobile, abbreviated on tablet+ #}
+    <h3 class="govuk-heading-m govuk-!-margin-bottom-4 daqi-day-heading" aria-label="{{ day5LabelFull }}">
+      <span class="daqi-day-abbrev">{{ day5Label }}</span>
+      <span class="daqi-day-full">{{ day5LabelFull }}</span>
+    </h3>
     <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day5.value | default(0) }}, {{ airQuality.day5.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
     {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X, [band]" #}
     {{ daqiNumberedBar(airQuality.day5.value | default(0), airQuality.day5.readableBand | capitalize | default('')) }}

@@ -64,6 +64,7 @@ const searchLocationController = {
         phaseBanner: welsh.phaseBanner,
         backlink: welsh.backlink,
         cookieBanner: welsh.cookieBanner,
+        currentPath: '/chwilio-lleoliad/cy',
         lang
       })
     } else {
