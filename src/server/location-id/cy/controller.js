@@ -23,8 +23,83 @@ import {
   renderNotFoundView,
   optimizeLocationDataInSession
 } from '../../common/helpers/location-controller-helper.js'
+// '' Import mock pollutant helpers
+import {
+  mockPollutantBand as generateMockPollutantBand,
+  applyMockPollutantsToSites
+} from '../../common/helpers/mock-pollutant-level.js'
 
 const logger = createLogger()
+
+/**
+ * Check if mock pollutant band is requested and override pollutant data in monitoring sites
+ * '' - Non-intrusive: only applies mock if explicitly enabled
+ */
+function applyMockPollutants(request, monitoringSites) {
+  // '' Disable mock functionality when configured (production by default)
+  const mocksDisabled = config.get('disableTestMocks')
+  if (mocksDisabled) {
+    logger.info(`🚫 Mock pollutant bands disabled (disableTestMocks=true)`)
+    return monitoringSites
+  }
+
+  // Check session for mockPollutantBand (preserved across redirects)
+  const mockPollutantBandFromSession = request.yar.get('mockPollutantBand')
+
+  logger.info(
+    `🔍 [Welsh] applyMockPollutants called - mockPollutantBand from session:`,
+    mockPollutantBandFromSession,
+    `(type: ${typeof mockPollutantBandFromSession})`
+  )
+
+  if (
+    mockPollutantBandFromSession !== undefined &&
+    mockPollutantBandFromSession !== null
+  ) {
+    const bandStr = mockPollutantBandFromSession.toString().toLowerCase()
+
+    logger.info(`🔍 [Welsh] Parsed band:`, bandStr)
+
+    // Validate band
+    const validBands = ['low', 'moderate', 'high', 'very-high', 'very high']
+    if (
+      validBands.includes(bandStr) ||
+      validBands.includes(bandStr.replace('-', ' '))
+    ) {
+      logger.info(
+        `🎨 [Welsh] Mock Pollutant Band '${bandStr}' applied from session`
+      )
+
+      // Generate mock pollutants using the renamed import with Welsh language
+      const mockPollutants = generateMockPollutantBand(bandStr, {
+        logDetails: false,
+        lang: 'cy'
+      })
+
+      // Apply to all monitoring sites
+      const modifiedSites = applyMockPollutantsToSites(
+        monitoringSites,
+        mockPollutants,
+        {
+          applyToAllSites: true,
+          logDetails: false
+        }
+      )
+
+      return modifiedSites
+    } else {
+      logger.warn(
+        `[Welsh] Invalid mock pollutant band: ${mockPollutantBandFromSession}. Must be one of: low, moderate, high, very-high.`
+      )
+    }
+  }
+
+  // Return original data if no mock band (default behavior unchanged)
+  logger.info(
+    `🔍 [Welsh] Returning original monitoringSites (no mock pollutants)`
+  )
+  return monitoringSites
+}
 
 function shouldRedirectToEnglish(query) {
   return query?.lang && query?.lang === LANG_EN && !query?.searchTerms
@@ -80,6 +155,69 @@ const getLocationDetailsController = {
       const useNewRicardoMeasurementsEnabled = config.get(
         'useNewRicardoMeasurementsEnabled'
       )
+
+      // '' Store mock parameters in session (mockLevel, mockDay, mockPollutantBand, testMode)
+      const mocksDisabled = config.get('disableTestMocks')
+
+      // Store mockLevel in session if provided
+      if (query?.mockLevel !== undefined && !mocksDisabled) {
+        if (query.mockLevel === '' || query.mockLevel === 'clear') {
+          request.yar.set('mockLevel', null)
+          logger.info(`🎨 Mock level explicitly cleared from session`)
+        } else {
+          request.yar.set('mockLevel', query.mockLevel)
+          logger.info(`🎨 Mock level ${query.mockLevel} stored in session`)
+        }
+      } else if (mocksDisabled && query?.mockLevel !== undefined) {
+        logger.warn(
+          `🚫 Attempted to set mock level when mocks disabled (disableTestMocks=true) - ignoring parameter`
+        )
+      }
+
+      // Store mockDay in session if provided
+      if (query?.mockDay !== undefined && !mocksDisabled) {
+        if (query.mockDay === '' || query.mockDay === 'clear') {
+          request.yar.set('mockDay', null)
+          logger.info(`🎨 Mock day explicitly cleared from session`)
+        } else {
+          request.yar.set('mockDay', query.mockDay)
+          logger.info(`🎨 Mock day ${query.mockDay} stored in session`)
+        }
+      } else if (mocksDisabled && query?.mockDay !== undefined) {
+        logger.warn(
+          `🚫 Attempted to set mock day when mocks disabled (disableTestMocks=true) - ignoring parameter`
+        )
+      }
+
+      // Store mockPollutantBand in session if provided
+      if (query?.mockPollutantBand !== undefined && !mocksDisabled) {
+        if (
+          query.mockPollutantBand === '' ||
+          query.mockPollutantBand === 'clear'
+        ) {
+          request.yar.set('mockPollutantBand', null)
+          logger.info(`🎨 Mock pollutant band explicitly cleared from session`)
+        } else {
+          request.yar.set('mockPollutantBand', query.mockPollutantBand)
+          logger.info(
+            `🎨 Mock pollutant band '${query.mockPollutantBand}' stored in session`
+          )
+        }
+      } else if (mocksDisabled && query?.mockPollutantBand !== undefined) {
+        logger.warn(
+          `🚫 Attempted to set mock pollutant band when mocks disabled (disableTestMocks=true) - ignoring parameter`
+        )
+      }
+
+      // Store testMode in session if provided
+      if (query?.testMode !== undefined && !mocksDisabled) {
+        request.yar.set('testMode', query.testMode)
+        logger.info(`🧪 Test mode ${query.testMode} stored in session`)
+      } else if (mocksDisabled && query?.testMode !== undefined) {
+        logger.warn(
+          `🚫 Attempted to set test mode when mocks disabled (disableTestMocks=true) - ignoring parameter`
+        )
+      }
 
       if (shouldRedirectToEnglish(query)) {
         return h.redirect(`/location/${locationId}/?lang=en`)
@@ -145,10 +283,16 @@ const getLocationDetailsController = {
           )
         }
 
+        // '' Apply mock pollutant bands if requested
+        const modifiedMonitoringSites = applyMockPollutants(
+          request,
+          processedData.nearestLocationsRange
+        )
+
         // Build view data using helper
         const viewData = buildLocationViewData({
           locationDetails: processedData.locationDetails,
-          nearestLocationsRange: processedData.nearestLocationsRange,
+          nearestLocationsRange: modifiedMonitoringSites,
           locationData,
           forecastNum: processedData.forecastNum,
           lang: LANG_CY,
