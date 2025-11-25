@@ -1,3 +1,5 @@
+import { ACTIONS_REDUCE_EXPOSURE_ROUTE_CY } from '../constants.js'
+
 export const warningMessages = {
   forecastWarning:
     'Rhagwelir lefelau {level} o lygredd aer yn y lleoliad hwn o {weekday}.'
@@ -64,9 +66,9 @@ export const commonMessages = {
     values: [7, 8, 9],
     advice:
       "Dylai unrhyw un sy'n profi anghysur fel dolur llygaid, peswch neu ddolur gwddf ystyried lleihau eu gweithgareddau, yn enwedig yn yr awyr agored.",
-    insetText: `<h3 class="govuk-heading-s">Amlygiad byrdymor i lygredd aer</h3>
+    insetText: `<p>Ceisiwch <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_CY}?lang=cy">leihau'ch amlygiad i lygredd aer</a>, yn enwedig os byddwch chi'n profi symptomau.</p>
+<h3 class="govuk-heading-s">Amlygiad byrdymor i lygredd aer</h3>
 <p>Gall amlygiad byrdymor (dros oriau neu ddyddiau) achosi ystod o effeithiau ar iechyd, gan gynnwys:</p>
-<p>Gallai'r symptomau gynnwys:</p>
 <ul class="govuk-list govuk-list--bullet">
     <li>pesychu</li>
     <li>llid ar y llygaid, y trwyn a'r gwddf</li>
@@ -76,9 +78,14 @@ export const commonMessages = {
     <li>symptomau gwaeth yn gysylltiedig â'r galon, fel crychguriadau'r galon</li>
     <li>symptomau gwaeth clefyd rhwystrol cronig yr ysgyfaint (COPD)</li>
 </ul>
-<p>Os ydych chi'n profi symptomau, ystyriwch leihau gweithgareddau sy'n heriol yn gorfforol, yn enwedig yn yr awyr agored. Cysylltwch â'ch meddyg os yw'ch symptomau yn parhau.</p>
-<p>Os oes gennych gyflwr ar yr ysgyfaint neu'r galon, dylech leihau ymdrech gorfforol egnïol, yn arbennig yn yr awyr agored. Dilynwch gyngor arferol eich meddyg neu'ch nyrs am weithgareddau sy'n heriol yn gorfforol a rheoli'ch cyflwr.</p>
-<p>Dilynwch eich cynllun rheoli cytûn os oes un gennych – er enghraifft, cynllun gweithredu asthma. Gofynnwch i’ch meddyg neu’ch nyrs am gynllun os nad oes un gennych.</p>`,
+<p>Gallai'r symptomau ddechrau o fewn oriau neu sawl diwrnod ar ôl amlygiad i lygredd aer.</p>
+<p>Siaradwch â'ch meddyg neu'ch nyrs:</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>os oes gennych chi symptomau newydd</li>
+    <li>os bydd eich symptomau'n gwaethygu</li>
+    <li>os na fydd eich symptomau'n gwella ar ôl wythnos</li>
+</ul>
+<p>Ystyriwch effaith sbardunau eraill ar eich symptomau hefyd – er enghraifft, paill uchel y tu allan neu ansawdd aer gwael dan do.</p>`,
     atrisk: {
       adults:
         'Dylai oedolion sydd â phroblemau’r galon leihau ymdrech gorfforol egnïol, yn arbennig yn yr awyr agored, yn enwedig os ydynt yn profi symptomau.',
@@ -93,9 +100,9 @@ export const commonMessages = {
     values: [10],
     advice:
       "Lleihewch ymdrech gorfforol, yn arbennig yn yr awyr agored, yn enwedig os ydych chi'n profi symptomau fel peswch neu ddolur gwddf.",
-    insetText: `<h3 class="govuk-heading-s">Amlygiad byrdymor i lygredd aer</h3>
+    insetText: `<p>Ceisiwch <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_CY}?lang=cy">leihau'ch amlygiad i lygredd aer</a>, yn enwedig os byddwch chi'n profi symptomau.</p>
+<h3 class="govuk-heading-s">Amlygiad byrdymor i lygredd aer</h3>
 <p>Gall amlygiad byrdymor (dros oriau neu ddyddiau) achosi ystod o effeithiau ar iechyd, gan gynnwys:</p>
-<p>Gallai'r symptomau gynnwys:</p>
 <ul class="govuk-list govuk-list--bullet">
     <li>pesychu</li>
     <li>llid ar eich llygaid, trwyn a gwddf</li>
@@ -104,9 +111,14 @@ export const commonMessages = {
     <li>symptomau gwaeth yn gysylltiedig â’r galon, fel crychguriadau’r galon</li>
     <li>symptomau gwaeth clefyd rhwystrol cronig yr ysgyfaint (COPD)</li>
 </ul>
-<p>Os ydych chi’n profi symptomau, ystyriwch leihau gweithgareddau sy’n heriol yn gorfforol, yn enwedig yn yr awyr agored. Cysylltwch â’ch meddyg os yw’ch symptomau yn parhau.</p>
-<p>Os oes gennych gyflwr ar yr ysgyfaint neu’r galon, dylech leihau ymdrech gorfforol egnïol, yn arbennig yn yr awyr agored. Dilynwch gyngor arferol eich meddyg neu’ch nyrs am weithgareddau sy’n heriol yn gorfforol a rheoli'ch cyflwr.</p>
-<p>Dilynwch eich cynllun rheoli cytûn os oes un gennych – er enghraifft, cynllun gweithredu asthma. Gofynnwch i’ch meddyg neu’ch nyrs am gynllun os nad oes un gennych.</p>`,
+<p>Gallai'r symptomau ddechrau o fewn oriau neu sawl diwrnod ar ôl amlygiad i lygredd aer.</p>
+<p>Siaradwch â'ch meddyg neu'ch nyrs:</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>os oes gennych chi symptomau newydd</li>
+    <li>os bydd eich symptomau'n gwaethygu</li>
+    <li>os na fydd eich symptomau'n gwella ar ôl wythnos</li>
+</ul>
+<p>Ystyriwch effaith sbardunau eraill ar eich symptomau hefyd – er enghraifft, paill uchel y tu allan neu ansawdd aer gwael dan do.</p>`,
     atrisk: {
       adults:
         'Dylai oedolion sydd â phroblemau’r galon osgoi gweithgareddau corfforol egnïol.',

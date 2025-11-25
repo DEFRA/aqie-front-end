@@ -24,7 +24,7 @@ const DAQI_LEVELS = {
   0: { band: 'No data', color: 'light-grey', description: 'No data available' },
   1: { band: 'Low', color: '#9CFF9C', description: 'Low - Light green' },
   2: { band: 'Low', color: '#31FF00', description: 'Low - Bright green' },
-  3: { band: 'Low', color: '#00703c', description: 'Low - Medium green' },
+  3: { band: 'Low', color: '#31CF00', description: 'Low - Medium green' },
   4: { band: 'Moderate', color: '#FFFF00', description: 'Moderate - Yellow' },
   5: {
     band: 'Moderate',

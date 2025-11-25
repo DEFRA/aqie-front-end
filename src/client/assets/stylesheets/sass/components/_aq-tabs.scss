@@ -375,3 +375,20 @@
         @include govuk-responsive-margin(4, 'bottom');
     }
 }
+
+// '' Day name display control - show full names on mobile, abbreviated on tablet+
+.daqi-day-heading {
+    .daqi-day-abbrev {
+        display: none; // '' Hidden on mobile
+        @include govuk-media-query($from: tablet) {
+            display: inline; // '' Show abbreviated on tablet+
+        }
+    }
+
+    .daqi-day-full {
+        display: inline; // '' Show full name on mobile
+        @include govuk-media-query($from: tablet) {
+            display: none; // '' Hidden on tablet+
+        }
+    }
+}

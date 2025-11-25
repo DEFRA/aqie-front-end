@@ -348,20 +348,28 @@
 {% block bodyEnd %}
   {{ super() }}
   {# '' Inject air quality health messages from server to eliminate data duplication #}
+  {# '' Process air quality data to replace {locationId} placeholder and add query params #}
+  {% set queryParams = '' %}
+  {% if searchTerms %}
+    {% set queryParams = queryParams + '&searchTerms=' + (searchTerms | urlencode) %}
+  {% endif %}
+  {% if locationName %}
+    {% set queryParams = queryParams + '&locationName=' + (locationName | urlencode) %}
+  {% endif %}
   <script>
     window.airQualityMessages = {
       {% if lang == 'cy' %}
       {# Welsh messages - map Welsh keys to English keys for JavaScript compatibility #}
-      'low': {{ airQualityData.isel | dump | safe }},
-      'moderate': {{ airQualityData.cymedrol | dump | safe }},
-      'high': {{ airQualityData.uchel | dump | safe }},
-      'very high': {{ airQualityData.uchelIawn | dump | safe }}
+      'low': {{ airQualityData.isel | dump | safe | replace('{locationId}', locationId) | replace('camau-lleihau-amlygiad/cy?lang=cy', 'camau-lleihau-amlygiad/cy?lang=cy' + queryParams) | replace('effeithiau-iechyd?lang=cy', 'effeithiau-iechyd?lang=cy' + queryParams) }},
+      'moderate': {{ airQualityData.cymedrol | dump | safe | replace('{locationId}', locationId) | replace('camau-lleihau-amlygiad/cy?lang=cy', 'camau-lleihau-amlygiad/cy?lang=cy' + queryParams) | replace('effeithiau-iechyd?lang=cy', 'effeithiau-iechyd?lang=cy' + queryParams) }},
+      'high': {{ airQualityData.uchel | dump | safe | replace('{locationId}', locationId) | replace('camau-lleihau-amlygiad/cy?lang=cy', 'camau-lleihau-amlygiad/cy?lang=cy' + queryParams) | replace('effeithiau-iechyd?lang=cy', 'effeithiau-iechyd?lang=cy' + queryParams) }},
+      'very high': {{ airQualityData.uchelIawn | dump | safe | replace('{locationId}', locationId) | replace('camau-lleihau-amlygiad/cy?lang=cy', 'camau-lleihau-amlygiad/cy?lang=cy' + queryParams) | replace('effeithiau-iechyd?lang=cy', 'effeithiau-iechyd?lang=cy' + queryParams) }}
       {% else %}
       {# English messages - map veryHigh to 'very high' for JavaScript compatibility #}
-      'low': {{ airQualityData.low | dump | safe }},
-      'moderate': {{ airQualityData.moderate | dump | safe }},
-      'high': {{ airQualityData.high | dump | safe }},
-      'very high': {{ airQualityData.veryHigh | dump | safe }}
+      'low': {{ airQualityData.low | dump | safe | replace('{locationId}', locationId) | replace('actions-reduce-exposure?lang=en', 'actions-reduce-exposure?lang=en' + queryParams) | replace('health-effects?lang=en', 'health-effects?lang=en' + queryParams) }},
+      'moderate': {{ airQualityData.moderate | dump | safe | replace('{locationId}', locationId) | replace('actions-reduce-exposure?lang=en', 'actions-reduce-exposure?lang=en' + queryParams) | replace('health-effects?lang=en', 'health-effects?lang=en' + queryParams) }},
+      'high': {{ airQualityData.high | dump | safe | replace('{locationId}', locationId) | replace('actions-reduce-exposure?lang=en', 'actions-reduce-exposure?lang=en' + queryParams) | replace('health-effects?lang=en', 'health-effects?lang=en' + queryParams) }},
+      'very high': {{ airQualityData.veryHigh | dump | safe | replace('{locationId}', locationId) | replace('actions-reduce-exposure?lang=en', 'actions-reduce-exposure?lang=en' + queryParams) | replace('health-effects?lang=en', 'health-effects?lang=en' + queryParams) }}
       {% endif %}
     };
   </script>
