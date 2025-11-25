@@ -45,7 +45,8 @@ describe('getForecastWarning', () => {
     expect(result.level).toBe('High')
     expect(result.dayKey).toBe('today')
     expect(result.text).toContain('High')
-    expect(result.weekday).toBe('Monday')
+    expect(result.weekday).toBe('today')
+    expect(result.text).toContain('today')
   })
 
   it('should detect "veryHigh" band on day2 (English)', () => {
@@ -84,6 +85,8 @@ describe('getForecastWarning', () => {
     expect(result).toBeDefined()
     expect(result.level).toBe('Uchel Iawn')
     expect(result.dayKey).toBe('today')
+    expect(result.weekday).toBe('heddiw')
+    expect(result.text).toContain('heddiw')
   })
 
   it('should return first high/very high occurrence when multiple exist', () => {
@@ -199,7 +202,7 @@ describe('getForecastWarning', () => {
   it('should calculate correct weekday for each day offset', () => {
     // Test each day to ensure weekday calculation is correct
     const days = [
-      { key: 'today', expectedDay: 'Monday', offset: 0 },
+      { key: 'today', expectedDay: 'today', offset: 0 },
       { key: 'day2', expectedDay: 'Tuesday', offset: 1 },
       { key: 'day3', expectedDay: 'Wednesday', offset: 2 },
       { key: 'day4', expectedDay: 'Thursday', offset: 3 },

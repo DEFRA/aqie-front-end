@@ -8,6 +8,7 @@ import {
   addDaysToTodayFullWelsh
 } from './moment-date-filters.js'
 import { addToSentenceCase } from './format-sentence.js'
+import { normalizeBandClass } from './normalize-band-class.js'
 
 export {
   formatDate,
@@ -17,5 +18,6 @@ export {
   addDaysToTodayAbrevWelsh,
   addDaysToTodayFull,
   addDaysToTodayFullWelsh,
-  addToSentenceCase
+  addToSentenceCase,
+  normalizeBandClass
 }

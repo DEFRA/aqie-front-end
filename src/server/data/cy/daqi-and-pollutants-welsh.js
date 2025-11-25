@@ -102,10 +102,10 @@ export const actionsReduceExposureTranslationsWelsh = {
     description:
       'Dysgwch gamau ymarferol i leihau eich amlygiad i lygredd aer mewn ardaloedd trefol, ardaloedd gwledig, dan do ac yn yr awyr agored.',
     intro:
-      'Does dim lefel ddiogel o lygredd aer, ond mae yna gamau y gallwch eu cymryd i leihau’ch amlygiad i lygredd aer.',
+      "Does dim lefel ddiogel o lygredd aer, ond mae yna gamau y gallwch eu cymryd i leihau'ch amlygiad i lygredd aer.",
     mainAdvice:
-      'Dylech chi geisio lleihau’ch amlygiad i lygredd aer lle gallwch chi, hyd yn oed pan fo’r lefelau’n isel. Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer',
-    healthConditionsLink: '/effeithiau-iechyd/cy',
+      "Dylech chi geisio lleihau'ch amlygiad i lygredd aer lle gallwch chi, hyd yn oed pan fo'r lefelau'n isel. Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer",
+    healthConditionsLink: HEALTH_EFFECTS_ROUTE_CY,
     healthConditionsLinkText:
       'o wahanol gyflyrau iechyd a lleihau disgwyliad oes',
     urbanAreas: {

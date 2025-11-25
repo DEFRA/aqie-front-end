@@ -186,8 +186,8 @@
       {% endif %}
       {% if pollutant.band is defined %}
         {% set pollutantBand = pollutant.band %}
-        {# '' - Convert band to lowercase for CSS class (e.g., "Low" -> "low", "Very High" -> "very-high") #}
-        {% set pollutantBandClass = pollutant.band | lower | replace(" ", "-") %}
+        {# '' - Normalize band for CSS class (handles both English and Welsh band names) #}
+        {% set pollutantBandClass = pollutant.band | normalizeBandClass %}
       {% else %}
         {% set pollutantBand = '' %}
         {% set pollutantBandClass = '' %}
@@ -295,8 +295,8 @@
       {% endif %}
       {% if pollutant.band is defined %}
         {% set pollutantBand = pollutant.band %}
-        {# '' - Convert band to lowercase for CSS class (e.g., "Low" -> "low", "Very High" -> "very-high") #}
-        {% set pollutantBandClass = pollutant.band | lower | replace(" ", "-") %}
+        {# '' - Normalize band for CSS class (handles both English and Welsh band names) #}
+        {% set pollutantBandClass = pollutant.band | normalizeBandClass %}
       {% else %}
         {% set pollutantBand = '' %}
         {% set pollutantBandClass = '' %}

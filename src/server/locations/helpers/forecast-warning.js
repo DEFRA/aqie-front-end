@@ -49,9 +49,14 @@ export function getForecastWarning(airQuality, lang = LANG_EN) {
       // This ensures the weekday matches the tab labels exactly
       const targetDate = moment().locale(lang).add(day.dayOffset, 'days')
 
-      // Use full weekday name (dddd) to match tab labels
-      // For day2-day5, tabs show abbreviated (ddd), but warning should show full name
-      const weekday = targetDate.format('dddd')
+      // Use "today" or "heddiw" for today, otherwise use full weekday name
+      let weekday
+      if (day.key === 'today') {
+        weekday = lang === LANG_CY ? 'heddiw' : 'today'
+      } else {
+        // For day2-day5, use full weekday name
+        weekday = targetDate.format('dddd')
+      }
 
       // Get warning message template
       const warningMessages =

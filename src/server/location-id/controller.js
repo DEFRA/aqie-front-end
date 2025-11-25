@@ -393,6 +393,40 @@ function buildLocationViewData({
         processedAirQualityData[key] = message
       }
     })
+
+    // Also process exposureHtml in daqi object if it exists
+    if (airQualityData?.daqi?.exposureHtml) {
+      if (!processedAirQualityData.daqi) {
+        processedAirQualityData.daqi = { ...airQualityData.daqi }
+      }
+      let exposureHtml = airQualityData.daqi.exposureHtml.replace(
+        /{locationId}/g,
+        locationId
+      )
+      // Add query parameters to links in exposureHtml
+      if (queryString) {
+        if (lang === LANG_CY) {
+          exposureHtml = exposureHtml.replace(
+            /effeithiau-iechyd\?lang=cy/g,
+            `effeithiau-iechyd?lang=cy${queryString}`
+          )
+          exposureHtml = exposureHtml.replace(
+            /camau-lleihau-amlygiad\/cy\?lang=cy/g,
+            `camau-lleihau-amlygiad/cy?lang=cy${queryString}`
+          )
+        } else {
+          exposureHtml = exposureHtml.replace(
+            /health-effects\?lang=en/g,
+            `health-effects?lang=en${queryString}`
+          )
+          exposureHtml = exposureHtml.replace(
+            /actions-reduce-exposure\?lang=en/g,
+            `actions-reduce-exposure?lang=en${queryString}`
+          )
+        }
+      }
+      processedAirQualityData.daqi.exposureHtml = exposureHtml
+    }
   }
 
   return {
