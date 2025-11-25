@@ -101,10 +101,10 @@
       {% if displayBacklink %}
         {# '' Backlink logic handled below #}
       {% else %}
-        {# '' Language toggle for health effects and actions-reduce-exposure pages #}
+        {# '' Language toggle for location, health effects and actions-reduce-exposure pages #}
         {% if locationId %}
           {# '' Check page type to build correct URLs '' #}
-          {% if page == 'Actions to reduce exposure' or page == 'Camau i leihau amlygiad' %}
+          {% if page == 'Actions to reduce exposure' or page == 'Camau i leihau amlygiad' or page == 'Camau i leihau amlygiad' %}
             {# '' Actions to reduce exposure pages '' #}
             {% if locationName %}
               {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/actions-reduce-exposure?lang=en&locationName=" + (locationName | urlencode) %}
@@ -113,14 +113,23 @@
               {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/actions-reduce-exposure?lang=en" %}
               {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/camau-lleihau-amlygiad/cy?lang=cy" %}
             {% endif %}
-          {% else %}
-            {# '' Health effects pages (default) '' #}
+          {% elif page == 'Health effects' or page == 'Health effects of air pollution' or page == 'Effeithiau iechyd' or page == 'Effaith llygredd aer ar iechyd' %}
+            {# '' Health effects pages '' #}
             {% if locationName %}
               {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/health-effects?lang=en&locationName=" + (locationName | urlencode) %}
-              {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd?locationName=" + (locationName | urlencode) %}
+              {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd?lang=cy&locationName=" + (locationName | urlencode) %}
             {% else %}
               {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/health-effects?lang=en" %}
-              {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd" %}
+              {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd?lang=cy" %}
+            {% endif %}
+          {% else %}
+            {# '' Location pages (default) '' #}
+            {% if locationName %}
+              {% set fullHrefEn = "/location/" + (locationId | urlencode) + "?lang=en&locationName=" + (locationName | urlencode) %}
+              {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "?lang=cy&locationName=" + (locationName | urlencode) %}
+            {% else %}
+              {% set fullHrefEn = "/location/" + (locationId | urlencode) + "?lang=en" %}
+              {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "?lang=cy" %}
             {% endif %}
           {% endif %}
         {% else %}
@@ -128,9 +137,16 @@
           {% if page == 'Actions to reduce exposure' or page == 'Camau i leihau amlygiad' %}
             {% set fullHrefEn = "/actions-reduce-exposure?lang=en" %}
             {% set fullHrefCy = "/camau-lleihau-amlygiad/cy?lang=cy" %}
-          {% else %}
+          {% elif page == 'Health effects' or page == 'Effeithiau iechyd' %}
             {% set fullHrefEn = "/health-effects?lang=en" %}
-            {% set fullHrefCy = "/effeithiau-iechyd/cy" %}
+            {% set fullHrefCy = "/effeithiau-iechyd/cy?lang=cy" %}
+          {% elif page == 'search-location' or page == 'chwilio-lleoliad' %}
+            {% set fullHrefEn = "/search-location?lang=en" %}
+            {% set fullHrefCy = "/chwilio-lleoliad/cy?lang=cy" %}
+          {% else %}
+            {# '' Default fallback '' #}
+            {% set fullHrefEn = "/?lang=en" %}
+            {% set fullHrefCy = "/cy?lang=cy" %}
           {% endif %}
         {% endif %}
         {% if statusCode != 500 %}
@@ -172,10 +188,10 @@
           }) }}
         {% endif %}
       {% endif %}
-      {# '' Language toggle for health effects and actions-reduce-exposure pages in backlink block #}
+      {# '' Language toggle for location, health effects and actions-reduce-exposure pages in backlink block #}
       {% if locationId %}
         {# '' Check page type to build correct URLs '' #}
-        {% if page == 'Actions to reduce exposure' or page == 'Camau i leihau amlygiad' %}
+        {% if page == 'Actions to reduce exposure' or page == 'Camau i leihau amlygiad' or page == 'Camau i leihau amlygiad' %}
           {# '' Actions to reduce exposure pages '' #}
           {% if locationName %}
             {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/actions-reduce-exposure?lang=en&locationName=" + (locationName | urlencode) %}
@@ -184,14 +200,23 @@
             {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/actions-reduce-exposure?lang=en" %}
             {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/camau-lleihau-amlygiad/cy?lang=cy" %}
           {% endif %}
-        {% else %}
-          {# '' Health effects pages (default) '' #}
+        {% elif page == 'Health effects' or page == 'Health effects of air pollution' or page == 'Effeithiau iechyd' or page == 'Effaith llygredd aer ar iechyd' %}
+          {# '' Health effects pages '' #}
           {% if locationName %}
             {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/health-effects?lang=en&locationName=" + (locationName | urlencode) %}
-            {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd?locationName=" + (locationName | urlencode) %}
+            {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd?lang=cy&locationName=" + (locationName | urlencode) %}
           {% else %}
             {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/health-effects?lang=en" %}
-            {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd" %}
+            {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd?lang=cy" %}
+          {% endif %}
+        {% else %}
+          {# '' Location pages (default) '' #}
+          {% if locationName %}
+            {% set fullHrefEn = "/location/" + (locationId | urlencode) + "?lang=en&locationName=" + (locationName | urlencode) %}
+            {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "?lang=cy&locationName=" + (locationName | urlencode) %}
+          {% else %}
+            {% set fullHrefEn = "/location/" + (locationId | urlencode) + "?lang=en" %}
+            {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "?lang=cy" %}
           {% endif %}
         {% endif %}
       {% else %}
@@ -199,9 +224,16 @@
         {% if page == 'Actions to reduce exposure' or page == 'Camau i leihau amlygiad' %}
           {% set fullHrefEn = "/actions-reduce-exposure?lang=en" %}
           {% set fullHrefCy = "/camau-lleihau-amlygiad/cy?lang=cy" %}
-        {% else %}
+        {% elif page == 'Health effects' or page == 'Effeithiau iechyd' %}
           {% set fullHrefEn = "/health-effects?lang=en" %}
-          {% set fullHrefCy = "/effeithiau-iechyd/cy" %}
+          {% set fullHrefCy = "/effeithiau-iechyd/cy?lang=cy" %}
+        {% elif page == 'search-location' or page == 'chwilio-lleoliad' %}
+          {% set fullHrefEn = "/search-location?lang=en" %}
+          {% set fullHrefCy = "/chwilio-lleoliad/cy?lang=cy" %}
+        {% else %}
+          {# '' Default fallback '' #}
+          {% set fullHrefEn = "/?lang=en" %}
+          {% set fullHrefCy = "/cy?lang=cy" %}
         {% endif %}
       {% endif %}
       {{

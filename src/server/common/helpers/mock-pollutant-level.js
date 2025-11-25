@@ -25,24 +25,28 @@ const logger = createLogger()
 const POLLUTANT_BANDS = {
   low: {
     label: 'Low',
+    labelCy: 'Isel',
     description: 'Low pollution level',
     cssClass: 'low',
     daqi: 1
   },
   moderate: {
     label: 'Moderate',
+    labelCy: 'Cymedrol',
     description: 'Moderate pollution level',
     cssClass: 'moderate',
     daqi: 4
   },
   high: {
     label: 'High',
+    labelCy: 'Uchel',
     description: 'High pollution level',
     cssClass: 'high',
     daqi: 7
   },
   'very-high': {
     label: 'Very High',
+    labelCy: 'Uchel iawn',
     description: 'Very high pollution level',
     cssClass: 'very-high',
     daqi: 10
@@ -95,8 +99,11 @@ const POLLUTANT_VALUE_RANGES = {
 /**
  * Get mock pollutant data for a specific band
  * '' - Returns pollutant object with value, band, daqi, and time
+ * @param {string} pollutantType - The pollutant type (NO2, PM25, etc.)
+ * @param {string} band - The band level (low, moderate, high, very-high)
+ * @param {string} lang - Language code ('en' or 'cy')
  */
-function getMockPollutantData(pollutantType, band) {
+function getMockPollutantData(pollutantType, band, lang = 'en') {
   const bandInfo = POLLUTANT_BANDS[band]
   const value = POLLUTANT_VALUE_RANGES[pollutantType][band]
 
@@ -113,9 +120,12 @@ function getMockPollutantData(pollutantType, band) {
   const month = now.toLocaleString('en-GB', { month: 'long' })
   const year = now.getFullYear()
 
+  // '' Use Welsh label if lang is 'cy', otherwise English
+  const bandLabel = lang === 'cy' ? bandInfo.labelCy : bandInfo.label
+
   return {
     value: value,
-    band: bandInfo.label,
+    band: bandLabel,
     daqi: bandInfo.daqi,
     time: {
       hour: hour + ':00',
@@ -132,10 +142,12 @@ function getMockPollutantData(pollutantType, band) {
  *
  * @param {string} band - The band level: 'low', 'moderate', 'high', 'very-high'
  * @param {object} options - Configuration options
+ *   @param {boolean} options.logDetails - Whether to log details
+ *   @param {string} options.lang - Language code ('en' or 'cy')
  * @returns {object} Mock monitoring sites with pollutant data
  */
 export function mockPollutantBand(band = 'moderate', options = {}) {
-  const { logDetails = false } = options
+  const { logDetails = false, lang = 'en' } = options
 
   // Normalize band to lowercase with hyphen
   const normalizedBand = band.toLowerCase().replace(/\s+/g, '-')
@@ -148,16 +160,18 @@ export function mockPollutantBand(band = 'moderate', options = {}) {
   }
 
   if (logDetails) {
-    logger.info(
-      `🧪 Mocking all pollutants with band: ${POLLUTANT_BANDS[normalizedBand].label}`
-    )
+    const bandLabel =
+      lang === 'cy'
+        ? POLLUTANT_BANDS[normalizedBand].labelCy
+        : POLLUTANT_BANDS[normalizedBand].label
+    logger.info(`🧪 Mocking all pollutants with band: ${bandLabel}`)
   }
 
   const pollutantTypes = ['NO2', 'PM25', 'PM10', 'O3', 'SO2']
   const mockPollutants = {}
 
   pollutantTypes.forEach((type) => {
-    const pollutantData = getMockPollutantData(type, normalizedBand)
+    const pollutantData = getMockPollutantData(type, normalizedBand, lang)
     if (pollutantData) {
       mockPollutants[type] = pollutantData
     }

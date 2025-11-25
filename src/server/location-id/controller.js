@@ -393,6 +393,40 @@ function buildLocationViewData({
         processedAirQualityData[key] = message
       }
     })
+
+    // Also process exposureHtml in daqi object if it exists
+    if (airQualityData?.daqi?.exposureHtml) {
+      if (!processedAirQualityData.daqi) {
+        processedAirQualityData.daqi = { ...airQualityData.daqi }
+      }
+      let exposureHtml = airQualityData.daqi.exposureHtml.replace(
+        /{locationId}/g,
+        locationId
+      )
+      // Add query parameters to links in exposureHtml
+      if (queryString) {
+        if (lang === LANG_CY) {
+          exposureHtml = exposureHtml.replace(
+            /effeithiau-iechyd\?lang=cy/g,
+            `effeithiau-iechyd?lang=cy${queryString}`
+          )
+          exposureHtml = exposureHtml.replace(
+            /camau-lleihau-amlygiad\/cy\?lang=cy/g,
+            `camau-lleihau-amlygiad/cy?lang=cy${queryString}`
+          )
+        } else {
+          exposureHtml = exposureHtml.replace(
+            /health-effects\?lang=en/g,
+            `health-effects?lang=en${queryString}`
+          )
+          exposureHtml = exposureHtml.replace(
+            /actions-reduce-exposure\?lang=en/g,
+            `actions-reduce-exposure?lang=en${queryString}`
+          )
+        }
+      }
+      processedAirQualityData.daqi.exposureHtml = exposureHtml
+    }
   }
 
   return {
@@ -825,22 +859,28 @@ async function processLocationWorkflow({
         }
         break
 
-      case 'todayDate':
+      case 'todayDate': {
         // '' Set date to today (date SHOULD show)
         logger.info('🧪 TEST: Setting today issue_date')
-        if (locationData.dailySummary) {
-          const today = moment()
-          locationData.dailySummary.issue_date = today.format(
-            'YYYY-MM-DD HH:mm:ss'
-          )
-          locationData.englishDate = today.format('DD MMMM YYYY')
-          locationData.welshDate = today.format('DD MMMM YYYY')
+        const today = moment()
+        // Create dailySummary if it doesn't exist (only for test mode - real app should have API data)
+        if (!locationData.dailySummary) {
           logger.info(
-            `🧪 Changed issue_date to: ${locationData.dailySummary.issue_date}`
+            '🧪 TEST: Creating dailySummary object (test mode only - not production data)'
           )
-          logger.info(`🧪 Changed englishDate to: ${locationData.englishDate}`)
+          locationData.dailySummary = {}
         }
+        locationData.dailySummary.issue_date = today.format(
+          'YYYY-MM-DD HH:mm:ss'
+        )
+        locationData.englishDate = today.format('DD MMMM YYYY')
+        locationData.welshDate = today.format('DD MMMM YYYY')
+        logger.info(
+          `🧪 Changed issue_date to: ${locationData.dailySummary.issue_date}`
+        )
+        logger.info(`🧪 Changed englishDate to: ${locationData.englishDate}`)
         break
+      }
 
       case 'noDataOldDate': {
         // '' Remove daily summary AND set old date (nothing should show)

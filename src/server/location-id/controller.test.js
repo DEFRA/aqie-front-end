@@ -23,7 +23,17 @@ vi.mock('../data/en/air-quality.js', () => ({
   commonMessages: {
     moderate: 'Moderate air quality',
     high: 'High air quality'
-  }
+  },
+  daqi: {
+    description: {
+      a: 'Current air quality data for ',
+      b: ' and surrounding areas'
+    }
+  },
+  getAirQuality: vi.fn(() => ({
+    today: { band: 'moderate', value: 4 },
+    day2: { band: 'moderate', value: 5 }
+  }))
 }))
 
 vi.mock('../common/helpers/get-site-url.js', () => ({
@@ -424,9 +434,15 @@ describe('Location ID Controller Tests', () => {
         welshDate: '15 Hydref 2025'
       }
 
-      mockRequest.yar.get
+      mockRequest.yar.get = vi
+        .fn()
         .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
+        .mockReturnValueOnce(mockLocationData) // locationData
+        .mockReturnValueOnce(null) // testMode
+        .mockReturnValueOnce(null) // mockLevel
+        .mockReturnValueOnce(null) // mockDay
+        .mockReturnValueOnce(null) // mockPollutantBand
+        .mockReturnValue(null) // Any additional calls
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
@@ -468,7 +484,11 @@ describe('Location ID Controller Tests', () => {
 
       mockRequest.yar.get
         .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
+        .mockReturnValueOnce(mockLocationData) // locationData
+        .mockReturnValueOnce(null) // testMode
+        .mockReturnValueOnce(null) // mockLevel
+        .mockReturnValueOnce(null) // mockDay
+        .mockReturnValueOnce(null) // mockPollutantBand
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
@@ -644,7 +664,11 @@ describe('Location ID Controller Tests', () => {
 
       mockRequest.yar.get
         .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
+        .mockReturnValueOnce(null) // mockLevel
+        .mockReturnValueOnce(null) // mockDay
+        .mockReturnValueOnce(null) // mockPollutantBand
+        .mockReturnValueOnce(null) // testMode
+        .mockReturnValueOnce(mockLocationData) // locationData
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
@@ -681,7 +705,11 @@ describe('Location ID Controller Tests', () => {
 
       mockRequest.yar.get
         .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
+        .mockReturnValueOnce(null) // mockLevel
+        .mockReturnValueOnce(null) // mockDay
+        .mockReturnValueOnce(null) // mockPollutantBand
+        .mockReturnValueOnce(null) // testMode
+        .mockReturnValueOnce(mockLocationData) // locationData
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
@@ -714,7 +742,11 @@ describe('Location ID Controller Tests', () => {
 
       mockRequest.yar.get
         .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
+        .mockReturnValueOnce(null) // mockLevel
+        .mockReturnValueOnce(null) // mockDay
+        .mockReturnValueOnce(null) // mockPollutantBand
+        .mockReturnValueOnce(null) // testMode
+        .mockReturnValueOnce(mockLocationData) // locationData
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
@@ -801,9 +833,15 @@ describe('Location ID Controller Tests', () => {
         showSummaryDate: undefined
       }
 
-      mockRequest.yar.get
+      mockRequest.yar.get = vi
+        .fn()
         .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
+        .mockReturnValueOnce(mockLocationData) // locationData
+        .mockReturnValueOnce(null) // testMode
+        .mockReturnValueOnce(null) // mockLevel
+        .mockReturnValueOnce(null) // mockDay
+        .mockReturnValueOnce(null) // mockPollutantBand
+        .mockReturnValue(null) // Any additional calls
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
@@ -845,9 +883,15 @@ describe('Location ID Controller Tests', () => {
         issueTime: '10:00' // already set
       }
 
-      mockRequest.yar.get
+      mockRequest.yar.get = vi
+        .fn()
         .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
+        .mockReturnValueOnce(mockLocationData) // locationData
+        .mockReturnValueOnce(null) // testMode
+        .mockReturnValueOnce(null) // mockLevel
+        .mockReturnValueOnce(null) // mockDay
+        .mockReturnValueOnce(null) // mockPollutantBand
+        .mockReturnValue(null) // Any additional calls
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
@@ -887,7 +931,11 @@ describe('Location ID Controller Tests', () => {
 
       mockRequest.yar.get
         .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
+        .mockReturnValueOnce(null) // mockLevel
+        .mockReturnValueOnce(null) // mockDay
+        .mockReturnValueOnce(null) // mockPollutantBand
+        .mockReturnValueOnce(null) // testMode
+        .mockReturnValueOnce(mockLocationData) // locationData
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
@@ -917,10 +965,15 @@ describe('Location ID Controller Tests', () => {
         locationType: 'uk'
       }
 
-      mockRequest.yar.get
+      mockRequest.yar.get = vi
+        .fn()
         .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
-        .mockReturnValueOnce('7') // mockLevel from session
+        .mockReturnValueOnce(mockLocationData) // locationData
+        .mockReturnValueOnce(null) // testMode
+        .mockReturnValueOnce('7') // mockLevel (from session)
+        .mockReturnValueOnce(null) // mockDay
+        .mockReturnValueOnce(null) // mockPollutantBand
+        .mockReturnValue(null) // Any additional calls
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
@@ -1119,9 +1172,11 @@ describe('Location ID Controller Tests', () => {
 
       mockRequest.yar.get
         .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
         .mockReturnValueOnce(null) // mockLevel
-        .mockReturnValueOnce('very-high') // mockPollutantBand from session
+        .mockReturnValueOnce(null) // mockDay
+        .mockReturnValueOnce('very-high') // mockPollutantBand
+        .mockReturnValueOnce(null) // testMode
+        .mockReturnValueOnce(mockLocationData) // locationData
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
@@ -1371,8 +1426,11 @@ describe('Location ID Controller Tests', () => {
 
       mockRequest.yar.get
         .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
-        .mockReturnValueOnce('unknownMode') // unknown testMode from session
+        .mockReturnValueOnce(null) // mockLevel
+        .mockReturnValueOnce(null) // mockDay
+        .mockReturnValueOnce(null) // mockPollutantBand
+        .mockReturnValueOnce('unknownMode') // testMode
+        .mockReturnValueOnce(mockLocationData) // locationData
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
@@ -1457,9 +1515,15 @@ describe('Location ID Controller Tests', () => {
         issueTime: '10:00' // already set
       }
 
-      mockRequest.yar.get
+      mockRequest.yar.get = vi
+        .fn()
         .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
+        .mockReturnValueOnce(mockLocationData) // locationData
+        .mockReturnValueOnce(null) // testMode
+        .mockReturnValueOnce(null) // mockLevel
+        .mockReturnValueOnce(null) // mockDay
+        .mockReturnValueOnce(null) // mockPollutantBand
+        .mockReturnValue(null) // Any additional calls
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,

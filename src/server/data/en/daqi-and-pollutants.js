@@ -38,6 +38,7 @@ export const daqiTranslations = {
       c: 'How air pollutants can affect your health',
       d: 'Air pollutants monitored near by',
       e: '',
+      on: 'on',
       ukForecast: 'UK forecast'
     },
     headings: {
@@ -105,7 +106,7 @@ export const actionsReduceExposureTranslations = {
       'There is no safe level of air pollution, but there are actions you can take to reduce your exposure.',
     mainAdvice:
       'You should try to reduce your exposure to air pollution where you can, even when levels are low. Long term exposure to air pollution (over years) can lead to',
-    healthConditionsLink: '/health-effects',
+    healthConditionsLink: HEALTH_EFFECTS_ROUTE_EN,
     healthConditionsLinkText:
       'many different health conditions and reduce life expectancy',
     urbanAreas: {
@@ -135,11 +136,12 @@ export const actionsReduceExposureTranslations = {
       ]
     },
     allOutdoorAreas: {
-      heading: 'All outdoor areas',
+      heading: 'General advice',
       advice: 'Consider the following actions in any area:',
       actions: [
         'take routes where there is less traffic, especially at busy times of day',
-        'commute, walk or exercise in parks or other green spaces, if you are not affected by pollen'
+        'commute, walk or exercise in parks or other green spaces, if you are not affected by pollen',
+        'if you exercise indoors, make sure the room is well ventilated'
       ]
     },
     indoorAirPollution: {
@@ -150,9 +152,8 @@ export const actionsReduceExposureTranslations = {
         'Consider the following actions to improve your indoor air quality:',
       actions: [
         'avoid smoking or vaping indoors',
-        'ventilate when cooking, showering, bathing and washing and drying laundry – for example, use an extractor fan or open windows',
+        'ventilate when cooking – for example, use an extractor fan or open windows',
         'avoid burning on a stove or open fire if you can',
-        'if you exercise indoors, make sure the room is well ventilated',
         'check labels on cleaning products, aerosols and paints – look for products labelled as low emission or "low VOC"'
       ],
       additionalAdvice:

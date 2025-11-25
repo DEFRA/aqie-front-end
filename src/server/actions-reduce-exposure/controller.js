@@ -56,11 +56,20 @@ const actionsReduceExposureController = {
       backLinkUrl = `/location/${locationId}?lang=en`
     }
 
+    // Replace {locationId} placeholder in healthConditionsLink
+    const processedActionsReduceExposure = {
+      ...actionsReduceExposure,
+      healthConditionsLink: actionsReduceExposure.healthConditionsLink.replace(
+        '{locationId}',
+        locationId
+      )
+    }
+
     return h.view('actions-reduce-exposure/index', {
       pageTitle: actionsReduceExposure.pageTitle,
       description: actionsReduceExposure.description,
       metaSiteUrl,
-      actionsReduceExposure,
+      actionsReduceExposure: processedActionsReduceExposure,
       page: 'Actions to reduce exposure',
       displayBacklink: !!locationId,
       customBackLink: !!locationId,

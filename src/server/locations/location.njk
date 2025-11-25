@@ -38,7 +38,7 @@
       
       {# '' Display summary date only if it's today's date #}
       {% if showSummaryDate and summaryDate %}
-        <p class="govuk-caption-s daqi-health-summary-date">{{ daqi.pageTexts.b }} {{ issueTime | default('5:00') }} on {{ summaryDate }}</p>
+        <p class="govuk-caption-s daqi-health-summary-date">{{ daqi.pageTexts.b }} {{ issueTime | default('5:00') }} {{ daqi.pageTexts.on }} {{ summaryDate }}</p>
         <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l govuk-!-margin-bottom-6" data-daqi-tabs-separator>
       {% endif %}
 
@@ -186,8 +186,8 @@
       {% endif %}
       {% if pollutant.band is defined %}
         {% set pollutantBand = pollutant.band %}
-        {# '' - Convert band to lowercase for CSS class (e.g., "Low" -> "low", "Very High" -> "very-high") #}
-        {% set pollutantBandClass = pollutant.band | lower | replace(" ", "-") %}
+        {# '' - Normalize band for CSS class (handles both English and Welsh band names) #}
+        {% set pollutantBandClass = pollutant.band | normalizeBandClass %}
       {% else %}
         {% set pollutantBand = '' %}
         {% set pollutantBandClass = '' %}
@@ -295,8 +295,8 @@
       {% endif %}
       {% if pollutant.band is defined %}
         {% set pollutantBand = pollutant.band %}
-        {# '' - Convert band to lowercase for CSS class (e.g., "Low" -> "low", "Very High" -> "very-high") #}
-        {% set pollutantBandClass = pollutant.band | lower | replace(" ", "-") %}
+        {# '' - Normalize band for CSS class (handles both English and Welsh band names) #}
+        {% set pollutantBandClass = pollutant.band | normalizeBandClass %}
       {% else %}
         {% set pollutantBand = '' %}
         {% set pollutantBandClass = '' %}
