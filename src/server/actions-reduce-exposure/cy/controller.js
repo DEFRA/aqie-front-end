@@ -1,6 +1,7 @@
 import { welsh } from '../../data/cy/cy.js'
 import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
+import { formatUKPostcode } from '../../locations/helpers/convert-string.js'
 
 const actionsReduceExposureCyController = {
   handler: (request, h) => {
@@ -35,20 +36,23 @@ const actionsReduceExposureCyController = {
       return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE)
     }
 
-    // Create dynamic back link - simple now with nested routes
+    // Restore original context-specific back link text logic
     let backLinkText = backlink.text
     let backLinkUrl = '/chwilio-lleoliad/cy?lang=cy'
 
     if (locationId) {
-      // Build back link text: "Llygredd aer yn {postcode}, {location}" or just one if only one available
-      if (hasSearchTerms && hasLocationName) {
-        backLinkText = `Llygredd aer yn ${searchTerms}, ${locationName}`
-      } else if (hasSearchTerms) {
-        backLinkText = `Llygredd aer yn ${searchTerms}`
+      // Format postcode if provided
+      const formattedPostcode = hasSearchTerms
+        ? formatUKPostcode(searchTerms)
+        : ''
+
+      if (formattedPostcode && hasLocationName) {
+        backLinkText = `Llygredd aer yn ${formattedPostcode}, ${locationName}`
+      } else if (formattedPostcode) {
+        backLinkText = `Llygredd aer yn ${formattedPostcode}`
       } else if (hasLocationName) {
         backLinkText = `Llygredd aer yn ${locationName}`
       }
-      // Back link is simply the parent location page
       backLinkUrl = `/lleoliad/${locationId}?lang=cy`
     }
 

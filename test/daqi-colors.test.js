@@ -7,14 +7,14 @@ const { JSDOM } = require('jsdom')
 const expectedColors = [
   '#9cff9c', // 1
   '#31ff00', // 2
-  '#31cf00', // 3
+  '#00703c', // 3
   '#ffff00', // 4
   '#ffcf00', // 5
-  '#ff9a00', // 6
+  '#ffdd00', // 6
   '#ff6464', // 7
   '#ff0000', // 8
   '#990000', // 9
-  '#ce30ff' // 10
+  '#4c2c92' // 10
 ]
 
 describe('DAQI Cell Colors', () => {

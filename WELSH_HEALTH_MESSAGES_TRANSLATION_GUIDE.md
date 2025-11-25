@@ -134,7 +134,7 @@ For most people, short term exposure to moderate levels of air pollution is not 
 </p>
 
 <h3 class="govuk-heading-s">
-  Advice for adults and children with lung or heart conditions
+  Advice for adults and children with lung or heart conditions, and older people
 </h3>
 
 <p>
@@ -200,7 +200,7 @@ Anyone experiencing discomfort such as sore eyes, cough or sore throat should co
 <p>If you experience symptoms, try to reduce your outdoor activities.</p>
 
 <h3 class="govuk-heading-s">
-  Advice for adults and children with lung or heart conditions
+  Advice for adults and children with lung or heart conditions, and older people
 </h3>
 
 <p>

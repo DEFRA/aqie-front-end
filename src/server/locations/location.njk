@@ -57,13 +57,49 @@
       {# '' For Low levels (1-3): show advice paragraph + regular text content without inset box #}
       {% if todayValue <= 3 %}
         <p>{{ airQuality.today.advice }}</p>
+        {# '' Replace {locationId} placeholder and add query parameters for proper back link context #}
+        {% set processedInsetText = airQuality.today.insetText | replace('{locationId}', locationId) %}
+        {% set queryParams = '' %}
+        {% if searchTerms %}
+          {% set queryParams = queryParams + '&searchTerms=' + (searchTerms | urlencode) %}
+        {% endif %}
+        {% if locationName %}
+          {% set queryParams = queryParams + '&locationName=' + (locationName | urlencode) %}
+        {% endif %}
+        {% if queryParams %}
+          {% if lang == 'en' %}
+            {% set processedInsetText = processedInsetText | replace('actions-reduce-exposure?lang=en', 'actions-reduce-exposure?lang=en' + queryParams) %}
+            {% set processedInsetText = processedInsetText | replace('health-effects?lang=en', 'health-effects?lang=en' + queryParams) %}
+          {% elif lang == 'cy' %}
+            {% set processedInsetText = processedInsetText | replace('camau-lleihau-amlygiad/cy?lang=cy', 'camau-lleihau-amlygiad/cy?lang=cy' + queryParams) %}
+            {% set processedInsetText = processedInsetText | replace('effeithiau-iechyd?lang=cy', 'effeithiau-iechyd?lang=cy' + queryParams) %}
+          {% endif %}
+        {% endif %}
         <div class="daqi-health-content daqi-health-content--low" data-daqi-band="low">
-          {{ airQuality.today.insetText | safe }}
+          {{ processedInsetText | safe }}
         </div>
       {% else %}
         {# '' For Moderate+ levels (4-10): advice is included in inset text, show colored inset text box only #}
+        {# '' Replace {locationId} placeholder and add query parameters for proper back link context #}
+        {% set processedInsetText = airQuality.today.insetText | replace('{locationId}', locationId) %}
+        {% set queryParams = '' %}
+        {% if searchTerms %}
+          {% set queryParams = queryParams + '&searchTerms=' + (searchTerms | urlencode) %}
+        {% endif %}
+        {% if locationName %}
+          {% set queryParams = queryParams + '&locationName=' + (locationName | urlencode) %}
+        {% endif %}
+        {% if queryParams %}
+          {% if lang == 'en' %}
+            {% set processedInsetText = processedInsetText | replace('actions-reduce-exposure?lang=en', 'actions-reduce-exposure?lang=en' + queryParams) %}
+            {% set processedInsetText = processedInsetText | replace('health-effects?lang=en', 'health-effects?lang=en' + queryParams) %}
+          {% elif lang == 'cy' %}
+            {% set processedInsetText = processedInsetText | replace('camau-lleihau-amlygiad/cy?lang=cy', 'camau-lleihau-amlygiad/cy?lang=cy' + queryParams) %}
+            {% set processedInsetText = processedInsetText | replace('effeithiau-iechyd?lang=cy', 'effeithiau-iechyd?lang=cy' + queryParams) %}
+          {% endif %}
+        {% endif %}
         {{ govukInsetText({
-          html: airQuality.today.insetText,
+          html: processedInsetText,
           classes: 'daqi-health-inset daqi-health-inset--' + airQuality.today.band,
           attributes: {
             'data-daqi-band': airQuality.today.band

@@ -316,8 +316,9 @@ export function buildLocationViewData({
 
   const components = UI_COMPONENTS[lang]
 
-  // '' Get searchTerms from request query for back link context
+  // '' Get searchTerms and locationName from request query for back link context
   const searchTerms = request?.query?.searchTerms || ''
+  const locationNameFromQuery = request?.query?.locationName || ''
 
   return {
     result: locationDetails,
@@ -331,7 +332,7 @@ export function buildLocationViewData({
     metaSiteUrl,
     description: `${components.daqi.description.a} ${headerTitle}${components.daqi.description.b}`,
     title: `${components.multipleLocations.titlePrefix} ${headerTitle}`,
-    locationName: headerTitle,
+    locationName: locationNameFromQuery || headerTitle,
     locationId,
     searchTerms,
     displayBacklink: true,

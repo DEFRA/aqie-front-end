@@ -708,14 +708,14 @@ svg|foreignObject {
   
   &.daqi-health-inset--high,
   &.daqi-health-inset--uchel {
-    border-left: 10px solid #990000; // '' DAQI red (high)
+    border-left: 10px solid #FF0000; // '' DAQI red (high)
   }
   
   // stylelint-disable-next-line selector-class-pattern
   &.daqi-health-inset--veryHigh,
   // stylelint-disable-next-line selector-class-pattern
   &.daqi-health-inset--uchelIawn {
-    border-left: 10px solid #CE30FF; // '' AQC-657: Updated DAQI very high (10) border colour
+    border-left: 10px solid #4c2c92; // '' AQC-657: Updated DAQI very high (10) border colour
   }
 }
 

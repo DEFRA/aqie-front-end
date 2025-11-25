@@ -24,18 +24,18 @@ const DAQI_LEVELS = {
   0: { band: 'No data', color: 'light-grey', description: 'No data available' },
   1: { band: 'Low', color: '#9CFF9C', description: 'Low - Light green' },
   2: { band: 'Low', color: '#31FF00', description: 'Low - Bright green' },
-  3: { band: 'Low', color: '#31CF00', description: 'Low - Medium green' },
+  3: { band: 'Low', color: '#00703c', description: 'Low - Medium green' },
   4: { band: 'Moderate', color: '#FFFF00', description: 'Moderate - Yellow' },
   5: {
     band: 'Moderate',
     color: '#FFCF00',
     description: 'Moderate - Orange-yellow'
   },
-  6: { band: 'Moderate', color: '#FF9A00', description: 'Moderate - Orange' },
+  6: { band: 'Moderate', color: '#ffdd00', description: 'Moderate - Orange' },
   7: { band: 'High', color: '#FF6464', description: 'High - Light red' },
   8: { band: 'High', color: '#FF0000', description: 'High - Red' },
   9: { band: 'High', color: '#990000', description: 'High - Dark red' },
-  10: { band: 'Very High', color: '#CE30FF', description: 'Very High - Purple' }
+  10: { band: 'Very High', color: '#4c2c92', description: 'Very High - Purple' }
 }
 
 /**

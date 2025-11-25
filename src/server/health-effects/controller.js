@@ -5,7 +5,8 @@ import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js' // ''
 import { createLogger } from '../common/helpers/logging/logger.js' // ''
 import {
   getReadableLocationName,
-  buildHealthEffectsViewModel
+  buildHealthEffectsViewModel,
+  buildBackLinkModel
 } from './helpers/index.js' // ''
 
 const LANG_EN = 'en' // ''
@@ -36,16 +37,17 @@ const healthEffectsHandler = (request, h, customContent = undefined) => {
       }) // ''
       viewModel.page = 'Effaith llygredd aer ar iechyd' // ''
       viewModel.pageTitle = 'Effaith llygredd aer ar iechyd' // ''
-      viewModel.backLinkText = `Llygredd aer yn ${readableName || 'y lleoliad hwn'}` // ''
+      // Restore original context-specific back link text
+      viewModel.backLinkText = `Llygredd aer yn ${readableName || 'y lleoliad hwn'}`
       viewModel.backlink = {
         text: viewModel.backLinkText,
         href: viewModel.backLinkUrl
-      } // ''
+      }
       logger.debug(
         {
           routePath: request.path,
           readableName,
-          backLinkUrl: viewModel.backLinkUrl
+          backLinkUrl: viewModel.backlink.href
         },
         "'' Rendering health-effects CY" // ''
       )
@@ -63,11 +65,18 @@ const healthEffectsHandler = (request, h, customContent = undefined) => {
         lang: LANG_EN, // ''
         locationId: params.id // ''
       }) // ''
+      // Use helper to build back link for EN
+      viewModel.backLinkText = `Air pollution in ${readableName || 'this location'}`
+      // viewModel.backLinkUrl is already set by buildHealthEffectsViewModel
+      viewModel.backlink = buildBackLinkModel({
+        backLinkText: viewModel.backLinkText,
+        backLinkUrl: viewModel.backLinkUrl
+      })
       logger.debug(
         {
           routePath: request.path,
           readableName,
-          backLinkUrl: viewModel.backLinkUrl
+          backLinkUrl: viewModel.backlink.href
         },
         "'' Rendering health-effects EN" // ''
       )
