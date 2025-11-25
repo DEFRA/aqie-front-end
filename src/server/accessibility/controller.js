@@ -26,6 +26,10 @@ const accessibilityHandler = (request, h, content = english) => {
   if (lang !== LANG_CY && lang !== LANG_EN && path === '/accessibility') {
     lang = LANG_EN
   }
+  // Ensure lang defaults to EN for /accessibility path
+  if (!lang && path === '/accessibility') {
+    lang = LANG_EN
+  }
   if (lang === LANG_EN) {
     content = english
   } else {
@@ -63,6 +67,7 @@ const accessibilityHandler = (request, h, content = english) => {
     footerTxt,
     serviceName,
     cookieBanner,
+    currentPath: lang === LANG_EN ? '/accessibility' : '/hygyrchedd/cy',
     lang
   })
 }

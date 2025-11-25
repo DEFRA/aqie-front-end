@@ -57,7 +57,8 @@ describe('sulphurDioxide Controller - Welsh', () => {
       footerTxt: mockContent.footerTxt,
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
-      lang: mockRequest.query.lang
+      lang: mockRequest.query.lang,
+      currentPath: '/llygryddion/sylffwr-deuocsid/cy'
     })
   })
 
@@ -81,7 +82,8 @@ describe('sulphurDioxide Controller - Welsh', () => {
       footerTxt: mockContent.footerTxt,
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
-      lang: LANG_CY
+      lang: LANG_CY,
+      currentPath: '/llygryddion/sylffwr-deuocsid/cy'
     })
   })
 })

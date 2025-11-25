@@ -40,6 +40,10 @@ const cookiesHandler = (request, h, content = english) => {
   if (lang !== LANG_CY && lang !== LANG_EN && path === '/cookies') {
     lang = LANG_EN
   }
+  // Ensure lang defaults to EN for /cookies path
+  if (!lang && path === '/cookies') {
+    lang = LANG_EN
+  }
 
   // Render the cookies page with the necessary data
   return h.view('cookies/index', {
@@ -57,6 +61,7 @@ const cookiesHandler = (request, h, content = english) => {
     footerTxt,
     serviceName,
     cookieBanner,
+    currentPath: '/cookies',
     lang
   })
 }

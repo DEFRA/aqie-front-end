@@ -32,6 +32,10 @@ const privacyController = {
     if (lang !== LANG_CY && lang !== LANG_EN && path === '/preifatrwydd/cy') {
       lang = LANG_CY
     }
+    // Ensure lang defaults to CY for Welsh privacy path
+    if (!lang && path === '/preifatrwydd/cy') {
+      lang = LANG_CY
+    }
     return h.view('privacy/index', {
       pageTitle,
       description,
@@ -46,6 +50,7 @@ const privacyController = {
       cookieBanner,
       serviceName,
       page: 'privacy',
+      currentPath: '/preifatrwydd/cy',
       lang
     })
   }

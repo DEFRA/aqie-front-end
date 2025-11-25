@@ -100,6 +100,7 @@ const prepareViewModel = ({
     phaseBanner,
     backlink,
     cookieBanner,
+    currentPath: '/search-location',
     lang
   }
 }

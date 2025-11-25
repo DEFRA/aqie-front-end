@@ -70,7 +70,8 @@ describe('privacy controller - English', () => {
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
       page: 'privacy',
-      lang: mockRequest.query.lang
+      lang: mockRequest.query.lang,
+      currentPath: '/privacy'
     })
   })
 })

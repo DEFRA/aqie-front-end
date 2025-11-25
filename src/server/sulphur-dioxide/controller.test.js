@@ -64,7 +64,8 @@ describe('sulphurDioxide Controller - English', () => {
       footerTxt: mockContent.footerTxt,
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
-      lang: mockRequest.query.lang
+      lang: mockRequest.query.lang,
+      currentPath: '/pollutants/sulphur-dioxide'
     })
   })
 })

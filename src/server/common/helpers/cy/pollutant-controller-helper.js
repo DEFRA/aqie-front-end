@@ -75,6 +75,7 @@ export function createWelshPollutantController(config) {
         footerTxt,
         cookieBanner,
         serviceName: multipleLocations.serviceName,
+        currentPath: expectedWelshPath,
         lang,
         ...COMMON_VIEW_PROPERTIES
       }

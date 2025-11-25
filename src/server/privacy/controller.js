@@ -42,7 +42,8 @@ const privacyController = {
       cookieBanner,
       serviceName,
       page: 'privacy',
-      lang
+      currentPath: '/privacy',
+      lang: lang || 'en'
     })
   }
 }

@@ -37,6 +37,7 @@ const handleHomeRequest = (request, h, content = welsh) => {
     backlink,
     cookieBanner,
     serviceName: '',
+    currentPath: '/cy',
     lang: LANG_CY
   })
 }

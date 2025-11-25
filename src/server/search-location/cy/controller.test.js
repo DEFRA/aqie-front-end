@@ -87,7 +87,8 @@ describe('searchLocationController - welsh', () => {
       phaseBanner: mockContent.phaseBanner,
       backlink: mockContent.backlink,
       cookieBanner: mockContent.cookieBanner,
-      lang: 'cy'
+      lang: 'cy',
+      currentPath: '/chwilio-lleoliad/cy'
     })
   })
 
@@ -133,7 +134,8 @@ describe('searchLocationController - welsh', () => {
       phaseBanner: mockContent.phaseBanner,
       backlink: mockContent.backlink,
       cookieBanner: mockContent.cookieBanner,
-      lang: mockRequest.query.lang
+      lang: mockRequest.query.lang,
+      currentPath: '/chwilio-lleoliad/cy'
     })
   })
 

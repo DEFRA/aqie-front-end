@@ -82,7 +82,8 @@ describe('Accessibility Handler', () => {
       footerTxt: mockContent.footerTxt,
       serviceName: mockContent.multipleLocations.serviceName,
       cookieBanner: mockContent.cookieBanner,
-      lang: mockRequest.query.lang
+      lang: mockRequest.query.lang,
+      currentPath: '/accessibility'
     })
   })
 
@@ -117,7 +118,8 @@ describe('Accessibility Handler', () => {
       footerTxt: mockContent.footerTxt,
       serviceName: mockContent.multipleLocations.serviceName,
       cookieBanner: mockContent.cookieBanner,
-      lang: LANG_EN
+      lang: LANG_EN,
+      currentPath: '/accessibility'
     })
   })
 
@@ -153,7 +155,8 @@ describe('Accessibility Handler', () => {
       footerTxt: mockContentCy.footerTxt,
       serviceName: mockContentCy.multipleLocations.serviceName,
       cookieBanner: mockContentCy.cookieBanner,
-      lang: 'fr'
+      lang: 'fr',
+      currentPath: '/hygyrchedd/cy'
     })
   })
 

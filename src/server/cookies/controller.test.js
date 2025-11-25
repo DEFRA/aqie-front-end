@@ -65,7 +65,8 @@ describe('Cookies Handler', () => {
       footerTxt: mockContent.footerTxt,
       serviceName: mockContent.multipleLocations.serviceName,
       cookieBanner: mockContent.cookieBanner,
-      lang: mockRequest.query.lang
+      lang: mockRequest.query.lang,
+      currentPath: '/cookies'
     })
   })
 
@@ -93,7 +94,8 @@ describe('Cookies Handler', () => {
       footerTxt: mockContent.footerTxt,
       serviceName: mockContent.multipleLocations.serviceName,
       cookieBanner: mockContent.cookieBanner,
-      lang: LANG_EN
+      lang: LANG_EN,
+      currentPath: '/cookies'
     })
   })
 })

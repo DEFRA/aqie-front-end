@@ -34,6 +34,7 @@ const handleHomeRequest = (request, h, content = english) => {
     backlink,
     cookieBanner,
     serviceName: '',
+    currentPath: '/',
     lang: LANG_EN
   })
 }

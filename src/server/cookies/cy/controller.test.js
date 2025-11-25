@@ -68,7 +68,8 @@ describe('Cookies Handler', () => {
       footerTxt: mockContent.footerTxt,
       serviceName: mockContent.multipleLocations.serviceName,
       cookieBanner: mockContent.cookieBanner,
-      lang: mockRequest.query.lang
+      lang: mockRequest.query.lang,
+      currentPath: '/briwsion/cy'
     })
   })
 
@@ -102,7 +103,8 @@ describe('Cookies Handler', () => {
       footerTxt: mockContent.footerTxt,
       serviceName: mockContent.multipleLocations.serviceName,
       cookieBanner: mockContent.cookieBanner,
-      lang: 'cy'
+      lang: 'cy',
+      currentPath: '/briwsion/cy'
     })
   })
 })

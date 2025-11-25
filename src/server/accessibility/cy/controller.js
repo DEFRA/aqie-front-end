@@ -1,5 +1,5 @@
 import { welsh } from '../../data/cy/cy.js'
-import { LANG_EN, LANG_CY } from '../../data/constants.js'
+import { LANG_EN, LANG_CY, REDIRECT_STATUS_CODE } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
 // Define the handler function
@@ -52,7 +52,8 @@ const accessibilityHandler = (request, h, content = welsh) => {
     footerTxt,
     serviceName,
     cookieBanner,
-    lang: effectiveLang
+    currentPath: '/hygyrchedd/cy',
+    lang: effectiveLang || LANG_CY
   })
 }
 
@@ -61,6 +62,4 @@ const accessibilityController = {
   handler: accessibilityHandler
 }
 
-const REDIRECT_STATUS_CODE = 301
-
-export { accessibilityController, accessibilityHandler, REDIRECT_STATUS_CODE }
+export { accessibilityController, accessibilityHandler }

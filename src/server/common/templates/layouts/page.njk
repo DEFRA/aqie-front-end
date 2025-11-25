@@ -101,10 +101,10 @@
       {% if displayBacklink %}
         {# '' Backlink logic handled below #}
       {% else %}
-        {# '' Language toggle for location, health effects and actions-reduce-exposure pages #}
+        {# '' General language toggle - works for all pages by translating the current path '' #}
         {% if locationId %}
-          {# '' Check page type to build correct URLs '' #}
-          {% if page == 'Actions to reduce exposure' or page == 'Camau i leihau amlygiad' or page == 'Camau i leihau amlygiad' %}
+          {# '' Pages with locationId (location-based pages) '' #}
+          {% if page == 'Actions to reduce exposure' or page == 'Camau i leihau amlygiad' %}
             {# '' Actions to reduce exposure pages '' #}
             {% if locationName %}
               {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/actions-reduce-exposure?lang=en&locationName=" + (locationName | urlencode) %}
@@ -133,20 +133,60 @@
             {% endif %}
           {% endif %}
         {% else %}
-          {# '' Fallback for pages without locationId '' #}
-          {% if page == 'Actions to reduce exposure' or page == 'Camau i leihau amlygiad' %}
-            {% set fullHrefEn = "/actions-reduce-exposure?lang=en" %}
-            {% set fullHrefCy = "/camau-lleihau-amlygiad/cy?lang=cy" %}
-          {% elif page == 'Health effects' or page == 'Effeithiau iechyd' %}
-            {% set fullHrefEn = "/health-effects?lang=en" %}
-            {% set fullHrefCy = "/effeithiau-iechyd/cy?lang=cy" %}
-          {% elif page == 'search-location' or page == 'chwilio-lleoliad' %}
-            {% set fullHrefEn = "/search-location?lang=en" %}
-            {% set fullHrefCy = "/chwilio-lleoliad/cy?lang=cy" %}
+          {# '' Pages without locationId - use general path-based mapping '' #}
+          {# '' Define path mappings for English to Welsh '' #}
+          {% set pathMappings = {
+            '/': '/cy',
+            '/search-location': '/chwilio-lleoliad/cy',
+            '/privacy': '/preifatrwydd/cy',
+            '/cookies': '/briwsion/cy',
+            '/accessibility': '/hygyrchedd/cy',
+            '/actions-reduce-exposure': '/camau-lleihau-amlygiad/cy',
+            '/health-effects': '/effeithiau-iechyd/cy',
+            '/multiple-results': '/canlyniadau-lluosog/cy',
+            '/pollutants/ozone': '/llygryddion/oson/cy',
+            '/pollutants/nitrogen-dioxide': '/llygryddion/nitrogen-deuocsid/cy',
+            '/pollutants/sulphur-dioxide': '/llygryddion/sylffwr-deuocsid/cy',
+            '/pollutants/particulate-matter-10': '/llygryddion/mater-gronynnol-10/cy',
+            '/pollutants/particulate-matter-25': '/llygryddion/mater-gronynnol-25/cy'
+          } %}
+          {# '' Reverse mappings for Welsh to English '' #}
+          {% set reversePathMappings = {
+            '/cy': '/',
+            '/chwilio-lleoliad/cy': '/search-location',
+            '/preifatrwydd/cy': '/privacy',
+            '/briwsion/cy': '/cookies',
+            '/hygyrchedd/cy': '/accessibility',
+            '/camau-lleihau-amlygiad/cy': '/actions-reduce-exposure',
+            '/effeithiau-iechyd/cy': '/health-effects',
+            '/canlyniadau-lluosog/cy': '/multiple-results',
+            '/llygryddion/oson/cy': '/pollutants/ozone',
+            '/llygryddion/nitrogen-deuocsid/cy': '/pollutants/nitrogen-dioxide',
+            '/llygryddion/sylffwr-deuocsid/cy': '/pollutants/sulphur-dioxide',
+            '/llygryddion/mater-gronynnol-10/cy': '/pollutants/particulate-matter-10',
+            '/llygryddion/mater-gronynnol-25/cy': '/pollutants/particulate-matter-25'
+          } %}
+          
+          {# '' Determine the current path (without query string) '' #}
+          {% set currentPath = currentPath or '/' %}
+          
+          {# '' Map the current path to the alternate language path '' #}
+          {% if lang == 'en' %}
+            {% set welshPath = pathMappings[currentPath] %}
+            {% if welshPath %}
+              {% set fullHrefCy = welshPath + "?lang=cy" %}
+            {% else %}
+              {% set fullHrefCy = "/cy?lang=cy" %}
+            {% endif %}
+            {% set fullHrefEn = currentPath + "?lang=en" %}
           {% else %}
-            {# '' Default fallback '' #}
-            {% set fullHrefEn = "/?lang=en" %}
-            {% set fullHrefCy = "/cy?lang=cy" %}
+            {% set englishPath = reversePathMappings[currentPath] %}
+            {% if englishPath %}
+              {% set fullHrefEn = englishPath + "?lang=en" %}
+            {% else %}
+              {% set fullHrefEn = "/?lang=en" %}
+            {% endif %}
+            {% set fullHrefCy = currentPath + "?lang=cy" %}
           {% endif %}
         {% endif %}
         {% if statusCode != 500 %}

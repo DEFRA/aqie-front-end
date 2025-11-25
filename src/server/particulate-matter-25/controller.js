@@ -26,6 +26,7 @@ const particulateMatter25Controller = {
       footerTxt,
       cookieBanner,
       serviceName: multipleLocations.serviceName,
+      currentPath: '/pollutants/particulate-matter-25',
       lang: query.lang ?? lang
     })
   }

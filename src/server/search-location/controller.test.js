@@ -103,7 +103,8 @@ describe('searchLocationController - english', () => {
       phaseBanner: mockContent.phaseBanner,
       backlink: mockContent.backlink,
       cookieBanner: mockContent.cookieBanner,
-      lang: mockRequest.query.lang
+      lang: mockRequest.query.lang,
+      currentPath: '/search-location'
     })
     // ''
   })
@@ -154,7 +155,8 @@ describe('searchLocationController - english', () => {
       phaseBanner: mockContent.phaseBanner,
       backlink: mockContent.backlink,
       cookieBanner: mockContent.cookieBanner,
-      lang: 'en'
+      lang: 'en',
+      currentPath: '/search-location'
     })
     // ''
   })
@@ -218,7 +220,8 @@ describe('searchLocationController - english', () => {
       phaseBanner: mockContent.phaseBanner,
       backlink: mockContent.backlink,
       cookieBanner: mockContent.cookieBanner,
-      lang: mockRequest.query.lang
+      lang: mockRequest.query.lang,
+      currentPath: '/search-location'
     })
   })
 

@@ -62,7 +62,8 @@ const validateRender = (mockRequest, expectedUrl, lang, mockH, mockContent) => {
     footerTxt: mockContent.footerTxt,
     serviceName: mockContent.multipleLocations.serviceName,
     cookieBanner: mockContent.cookieBanner,
-    lang
+    lang,
+    currentPath: '/hygyrchedd/cy'
   })
 }
 

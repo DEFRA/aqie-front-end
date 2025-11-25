@@ -67,6 +67,7 @@ const getLocationDataController = {
           lang === LANG_CY
             ? (welshDate ?? summaryDate)
             : (englishDate ?? summaryDate),
+        currentPath: '/canlyniadau-lluosog/cy',
         lang: LANG_CY
       })
     } catch (error) {

@@ -26,6 +26,7 @@ const sulphurDioxideController = {
       footerTxt,
       cookieBanner,
       serviceName: multipleLocations.serviceName,
+      currentPath: '/pollutants/sulphur-dioxide',
       lang: query.lang ?? lang
     })
   }
