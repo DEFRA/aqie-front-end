@@ -64,7 +64,11 @@ describe('actions reduce exposure controller - Welsh', () => {
       pageTitle: mockContent.actionsReduceExposure.pageTitle,
       description: mockContent.actionsReduceExposure.description,
       metaSiteUrl: actualUrl,
-      actionsReduceExposure: mockContent.actionsReduceExposure,
+      actionsReduceExposure: expect.objectContaining({
+        pageTitle: mockContent.actionsReduceExposure.pageTitle,
+        description: mockContent.actionsReduceExposure.description,
+        healthConditionsLink: '/lleoliad/n87ge/effeithiau-iechyd'
+      }),
       page: 'Camau i leihau amlygiad',
       displayBacklink: true,
       customBackLink: true,

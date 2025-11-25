@@ -65,7 +65,11 @@ describe('actions reduce exposure controller - English', () => {
       pageTitle: mockContent.actionsReduceExposure.pageTitle,
       description: mockContent.actionsReduceExposure.description,
       metaSiteUrl: actualUrl,
-      actionsReduceExposure: mockContent.actionsReduceExposure,
+      actionsReduceExposure: expect.objectContaining({
+        pageTitle: mockContent.actionsReduceExposure.pageTitle,
+        description: mockContent.actionsReduceExposure.description,
+        healthConditionsLink: '/location/n87ge/health-effects'
+      }),
       page: 'Actions to reduce exposure',
       displayBacklink: true,
       customBackLink: true,
@@ -78,7 +82,7 @@ describe('actions reduce exposure controller - English', () => {
       cookieBanner: mockContent.cookieBanner,
       backlink: mockContent.backlink,
       serviceName: mockContent.multipleLocations.serviceName,
-      lang: mockRequest.query.lang
+      lang: LANG_EN
     })
   })
 
