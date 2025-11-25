@@ -104,4 +104,53 @@ describe('actions reduce exposure controller - Welsh', () => {
       })
     )
   })
+
+  it('should format postcode and include location name in back link text', () => {
+    mockRequest = {
+      query: {
+        lang: LANG_CY,
+        searchTerms: 'n8 7ge',
+        locationName: 'Hornsey'
+      },
+      params: { locationId: 'n87ge' },
+      path: '/lleoliad/n87ge/camau-lleihau-amlygiad/cy'
+    }
+    const result = actionsReduceExposureCyController.handler(mockRequest, mockH)
+    expect(result).toBe('view rendered')
+    expect(mockH.view).toHaveBeenCalledWith(
+      'actions-reduce-exposure/index',
+      expect.objectContaining({
+        displayBacklink: true,
+        customBackLink: true,
+        backLinkText: 'Llygredd aer yn N8 7GE, Hornsey',
+        backLinkUrl: '/lleoliad/n87ge?lang=cy',
+        locationName: 'Hornsey',
+        locationId: 'n87ge'
+      })
+    )
+  })
+
+  it('should format postcode without location name in back link text', () => {
+    mockRequest = {
+      query: {
+        lang: LANG_CY,
+        searchTerms: 'n87ge'
+      },
+      params: { locationId: 'n87ge' },
+      path: '/lleoliad/n87ge/camau-lleihau-amlygiad/cy'
+    }
+    const result = actionsReduceExposureCyController.handler(mockRequest, mockH)
+    expect(result).toBe('view rendered')
+    expect(mockH.view).toHaveBeenCalledWith(
+      'actions-reduce-exposure/index',
+      expect.objectContaining({
+        displayBacklink: true,
+        customBackLink: true,
+        backLinkText: 'Llygredd aer yn N8 7GE',
+        backLinkUrl: '/lleoliad/n87ge?lang=cy',
+        locationName: '',
+        locationId: 'n87ge'
+      })
+    )
+  })
 })

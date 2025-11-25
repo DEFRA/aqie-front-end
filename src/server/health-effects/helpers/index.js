@@ -1,29 +1,47 @@
+// '' Import postcode formatter
+import { formatUKPostcode } from '../../locations/helpers/convert-string.js' // ''
+
+// '' Build a context-aware back link model using only provided content
+// Params: { backLinkText, backLinkUrl } from controller logic or content
+function buildBackLinkModel({ backLinkText, backLinkUrl }) {
+  return {
+    text: backLinkText,
+    href: backLinkUrl
+  }
+}
 // '' Pure helpers for health-effects feature
 
-// '' Derive readable location name (query wins; fallback normalises params.id)
+// '' Derive readable location name with postcode and place name
 const getReadableLocationName = (query = {}, params = {}, logger) => {
   try {
-    const rawQuery = (query.locationName || query.searchTerms || '').trim() // ''
-    if (rawQuery) return rawQuery // ''
+    const searchTerms = (query.searchTerms || '').trim() // '' Postcode
+    const locationName = (query.locationName || '').trim() // '' Place name
+
+    // '' Format postcode properly (uppercase with space separator)
+    const formattedPostcode = searchTerms ? formatUKPostcode(searchTerms) : '' // ''
+
+    // '' Build formatted string: "N8 7GE, Hornsey" or fallback
+    if (formattedPostcode && locationName) {
+      return `${formattedPostcode}, ${locationName}` // ''
+    }
+    if (formattedPostcode) {
+      return formattedPostcode // ''
+    }
+    if (locationName) {
+      return locationName // ''
+    }
+
+    // '' Fallback: normalize params.id and format
     const rawId = (params.id || '').trim() // ''
     if (!rawId) return '' // ''
-    // '' Replace underscores / hyphens with spaces; collapse whitespace
-    return rawId
+    const normalized = rawId
       .replace(/[_-]+/gi, ' ') // '' Convert delimiters to space
       .replace(/\s+/g, ' ') // '' Collapse multiple spaces
       .trim() // ''
+    return formatUKPostcode(normalized) // '' Format as postcode if possible
   } catch (e) {
     logger && logger.warn(e, "'' Failed to derive readable locationName")
     return ''
-  }
-}
-
-// '' Build backlink model (history-based navigation)
-const buildBackLinkModel = (readableName = '') => {
-  const safeName = readableName || 'this location' // '' Fallback descriptor
-  return {
-    backLinkUrl: 'javascript:history.back()', // '' Use browser history
-    backLinkText: `Air pollution in ${safeName}` // ''
   }
 }
 
@@ -43,7 +61,14 @@ const buildHealthEffectsViewModel = ({
     multipleLocations: { serviceName = '' } = {}
   } = content || {}
 
-  const { backLinkUrl, backLinkText } = buildBackLinkModel(readableName) // ''
+  // Generate back link URL based on locationId and language
+  const backLinkUrl = locationId
+    ? lang === 'cy'
+      ? `/lleoliad/${locationId}?lang=cy`
+      : `/location/${locationId}?lang=en`
+    : lang === 'cy'
+      ? '/chwilio-lleoliad/cy?lang=cy'
+      : '/search-location?lang=en'
 
   return {
     pageTitle: healthEffects?.pageTitle || 'Health effects of air pollution', // ''
@@ -53,10 +78,8 @@ const buildHealthEffectsViewModel = ({
     page: 'Health effects of air pollution', // ''
     displayBacklink: true, // ''
     customBackLink: !!readableName, // '' Add for template compatibility
-    backLinkText, // ''
     backLinkUrl, // ''
     backLinkHref: backLinkUrl, // ''
-    backlink: { text: backLinkText, href: backLinkUrl }, // ''
     locationName: readableName, // ''
     locationId, // '' Include locationId for template use
     phaseBanner, // ''
@@ -69,6 +92,6 @@ const buildHealthEffectsViewModel = ({
 
 export {
   getReadableLocationName,
-  buildBackLinkModel,
-  buildHealthEffectsViewModel
+  buildHealthEffectsViewModel,
+  buildBackLinkModel
 } // ''

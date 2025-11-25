@@ -5,7 +5,8 @@ import { english } from '../data/en/en.js' // ''
 import { welsh } from '../data/cy/cy.js'
 import {
   getReadableLocationName,
-  buildHealthEffectsViewModel
+  buildHealthEffectsViewModel,
+  buildBackLinkModel
 } from './helpers/index.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js' // ''
 
@@ -16,12 +17,16 @@ vi.mock('../common/helpers/get-site-url.js', () => ({
 vi.mock('./helpers/index.js', () => ({
   getReadableLocationName: vi.fn(() => 'Mock Location'), // ''
   buildHealthEffectsViewModel: vi.fn((opts = {}) => ({
-    backLinkUrl: 'javascript:history.back()',
+    backLinkUrl: '/search-location?lang=en',
     pageTitle:
       opts?.content?.healthEffects?.pageTitle ||
       'Health effects of air pollution',
     locationName: opts.readableName || 'Mock Location',
     lang: opts.lang || 'en'
+  })),
+  buildBackLinkModel: vi.fn((opts = {}) => ({
+    text: opts.backLinkText || '',
+    href: opts.backLinkUrl || ''
   }))
 }))
 
@@ -87,10 +92,15 @@ describe("'' healthEffectsHandler", () => {
   it("'' renders English view model for English route", () => {
     getReadableLocationName.mockReturnValueOnce('Leeds')
     buildHealthEffectsViewModel.mockReturnValueOnce({
-      backLinkUrl: 'javascript:history.back()',
+      backLinkUrl: '/location/leeds?lang=en',
       pageTitle: 'Health effects of air pollution',
       locationName: 'Leeds',
-      lang: 'en'
+      lang: 'en',
+      locationId: 'leeds'
+    })
+    buildBackLinkModel.mockReturnValueOnce({
+      text: 'Air pollution in Leeds',
+      href: '/location/leeds?lang=en'
     })
     const request = {
       query: {},
@@ -114,12 +124,21 @@ describe("'' healthEffectsHandler", () => {
         locationId: 'leeds'
       })
     )
+    expect(buildBackLinkModel).toHaveBeenCalledWith({
+      backLinkText: 'Air pollution in Leeds',
+      backLinkUrl: '/location/leeds?lang=en'
+    })
     expect(h.view).toHaveBeenCalledWith(
       'health-effects/index',
       expect.objectContaining({
         locationName: 'Leeds',
         pageTitle: 'Health effects of air pollution',
-        lang: 'en'
+        lang: 'en',
+        backLinkText: 'Air pollution in Leeds',
+        backlink: {
+          text: 'Air pollution in Leeds',
+          href: '/location/leeds?lang=en'
+        }
       })
     )
     expect(result.template).toBe('health-effects/index')
@@ -129,10 +148,15 @@ describe("'' healthEffectsHandler", () => {
     const customContent = { healthEffects: { pageTitle: 'Custom Title' } }
     getReadableLocationName.mockReturnValueOnce('York')
     buildHealthEffectsViewModel.mockReturnValueOnce({
-      backLinkUrl: 'javascript:history.back()',
+      backLinkUrl: '/location/york?lang=en',
       pageTitle: 'Custom Title',
       locationName: 'York',
-      lang: 'en'
+      lang: 'en',
+      locationId: 'york'
+    })
+    buildBackLinkModel.mockReturnValueOnce({
+      text: 'Air pollution in York',
+      href: '/location/york?lang=en'
     })
     const request = {
       query: { lang: 'en' },

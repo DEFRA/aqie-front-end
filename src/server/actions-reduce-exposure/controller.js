@@ -1,6 +1,7 @@
 import { english } from '../data/en/en.js'
 import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
+import { formatUKPostcode } from '../locations/helpers/convert-string.js'
 
 const actionsReduceExposureController = {
   handler: (request, h) => {
@@ -35,20 +36,23 @@ const actionsReduceExposureController = {
       return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE)
     }
 
-    // Create dynamic back link - simple now with nested routes
+    // Restore original context-specific back link text logic
     let backLinkText = backlink.text
     let backLinkUrl = '/search-location?lang=en'
 
     if (locationId) {
-      // Build back link text: "Air pollution in {postcode}, {location}" or just one if only one available
-      if (hasSearchTerms && hasLocationName) {
-        backLinkText = `Air pollution in ${searchTerms}, ${locationName}`
-      } else if (hasSearchTerms) {
-        backLinkText = `Air pollution in ${searchTerms}`
+      // Format postcode if provided
+      const formattedPostcode = hasSearchTerms
+        ? formatUKPostcode(searchTerms)
+        : ''
+
+      if (formattedPostcode && hasLocationName) {
+        backLinkText = `Air pollution in ${formattedPostcode}, ${locationName}`
+      } else if (formattedPostcode) {
+        backLinkText = `Air pollution in ${formattedPostcode}`
       } else if (hasLocationName) {
         backLinkText = `Air pollution in ${locationName}`
       }
-      // Back link is simply the parent location page
       backLinkUrl = `/location/${locationId}?lang=en`
     }
 

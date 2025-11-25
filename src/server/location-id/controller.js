@@ -326,13 +326,79 @@ function buildLocationViewData({
   // '' Get forecast warning for high/very high pollution levels
   const forecastWarning = getForecastWarning(airQuality, lang)
 
-  // '' Get searchTerms from request query for back link context
+  // '' Get searchTerms and locationName from request query for back link context
   const searchTerms = request?.query?.searchTerms || ''
+  const locationNameFromQuery = request?.query?.locationName || ''
+  const locationNameForTemplate = locationNameFromQuery || headerTitle
+
+  logger.info('🔍 DEBUG - Location view data:', {
+    searchTerms,
+    locationNameFromQuery,
+    headerTitle,
+    locationNameForTemplate,
+    locationId
+  })
+
+  // '' Process air quality messages to replace {locationId} placeholder and add query params
+  const processedAirQualityData = {}
+  if (airQualityData?.commonMessages) {
+    // Build query parameters for back link context
+    const queryParams = []
+    if (searchTerms) {
+      queryParams.push(`searchTerms=${encodeURIComponent(searchTerms)}`)
+    }
+    if (locationNameForTemplate) {
+      queryParams.push(
+        `locationName=${encodeURIComponent(locationNameForTemplate)}`
+      )
+    }
+    const queryString =
+      queryParams.length > 0 ? `&${queryParams.join('&')}` : ''
+
+    Object.keys(airQualityData.commonMessages).forEach((key) => {
+      const message = airQualityData.commonMessages[key]
+      if (message && typeof message === 'object') {
+        processedAirQualityData[key] = { ...message }
+        // Replace {locationId} in insetText if it exists
+        if (message.insetText && typeof message.insetText === 'string') {
+          let processedText = message.insetText.replace(
+            /{locationId}/g,
+            locationId
+          )
+          // Add query parameters to action links for proper back link context
+          if (queryString) {
+            if (lang === LANG_CY) {
+              processedText = processedText.replace(
+                /effeithiau-iechyd\?lang=cy/g,
+                `effeithiau-iechyd?lang=cy${queryString}`
+              )
+              processedText = processedText.replace(
+                /camau-lleihau-amlygiad\/cy\?lang=cy/g,
+                `camau-lleihau-amlygiad/cy?lang=cy${queryString}`
+              )
+            } else {
+              processedText = processedText.replace(
+                /health-effects\?lang=en/g,
+                `health-effects?lang=en${queryString}`
+              )
+              processedText = processedText.replace(
+                /actions-reduce-exposure\?lang=en/g,
+                `actions-reduce-exposure?lang=en${queryString}`
+              )
+            }
+          }
+          processedAirQualityData[key].insetText = processedText
+        }
+      } else {
+        processedAirQualityData[key] = message
+      }
+    })
+  }
 
   return {
     result: locationDetails,
     airQuality,
-    airQualityData: airQualityData.commonMessages,
+    airQualityData: processedAirQualityData,
     monitoringSites: modifiedMonitoringSites,
     siteTypeDescriptions,
     pollutantTypes,
@@ -340,7 +406,7 @@ function buildLocationViewData({
     metaSiteUrl,
     description: `${english.daqi.description.a} ${headerTitle}${english.daqi.description.b}`,
     title: `${english.multipleLocations.titlePrefix} ${headerTitle}`,
-    locationName: headerTitle,
+    locationName: locationNameForTemplate,
     locationId,
     searchTerms,
     displayBacklink: true,

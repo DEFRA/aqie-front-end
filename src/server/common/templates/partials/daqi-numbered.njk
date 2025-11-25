@@ -62,8 +62,27 @@
 
   {# '' Forecast text - no heading, screen reader continues reading #}
   {% if showSummaryDate and transformedDailySummary and transformedDailySummary[excludeTodayKey] %}
+    {# '' Replace {locationId} placeholder and add query parameters for proper back link context #}
+    {% set todayValue = transformedDailySummary[excludeTodayKey] %}
+    {% set processedTodayValue = todayValue | replace('{locationId}', locationId) %}
+    {% set queryParams = '' %}
+    {% if searchTerms %}
+      {% set queryParams = queryParams + '&searchTerms=' + (searchTerms | urlencode) %}
+    {% endif %}
+    {% if locationName %}
+      {% set queryParams = queryParams + '&locationName=' + (locationName | urlencode) %}
+    {% endif %}
+    {% if queryParams %}
+      {% if lang == 'en' %}
+        {% set processedTodayValue = processedTodayValue | replace('actions-reduce-exposure?lang=en', 'actions-reduce-exposure?lang=en' + queryParams) %}
+        {% set processedTodayValue = processedTodayValue | replace('health-effects?lang=en', 'health-effects?lang=en' + queryParams) %}
+      {% elif lang == 'cy' %}
+        {% set processedTodayValue = processedTodayValue | replace('camau-lleihau-amlygiad/cy?lang=cy', 'camau-lleihau-amlygiad/cy?lang=cy' + queryParams) %}
+        {% set processedTodayValue = processedTodayValue | replace('effeithiau-iechyd?lang=cy', 'effeithiau-iechyd?lang=cy' + queryParams) %}
+      {% endif %}
+    {% endif %}
     <div class="daqitab-summary govuk-!-margin-top-6">
-      <p>{{ transformedDailySummary[excludeTodayKey] }}</p>
+      <p>{{ processedTodayValue | safe }}</p>
     </div>
   {% endif %}
   {# '' Horizontal rule should NOT be inside tab panel per clarified requirement; removed here #}
@@ -108,8 +127,26 @@
       {% for key, value in transformedDailySummary %}
         {% if key != 'issue_date' and key != 'isCurrentDate' and key != excludeTodayKey %}
           {% if not (' to ' in key) and not (' i ' in key) %}
+            {# '' Replace {locationId} placeholder and add query parameters for proper back link context #}
+            {% set processedValue = value | replace('{locationId}', locationId) %}
+            {% set queryParams = '' %}
+            {% if searchTerms %}
+              {% set queryParams = queryParams + '&searchTerms=' + (searchTerms | urlencode) %}
+            {% endif %}
+            {% if locationName %}
+              {% set queryParams = queryParams + '&locationName=' + (locationName | urlencode) %}
+            {% endif %}
+            {% if queryParams %}
+              {% if lang == 'en' %}
+                {% set processedValue = processedValue | replace('actions-reduce-exposure?lang=en', 'actions-reduce-exposure?lang=en' + queryParams) %}
+                {% set processedValue = processedValue | replace('health-effects?lang=en', 'health-effects?lang=en' + queryParams) %}
+              {% elif lang == 'cy' %}
+                {% set processedValue = processedValue | replace('camau-lleihau-amlygiad/cy?lang=cy', 'camau-lleihau-amlygiad/cy?lang=cy' + queryParams) %}
+                {% set processedValue = processedValue | replace('effeithiau-iechyd?lang=cy', 'effeithiau-iechyd?lang=cy' + queryParams) %}
+              {% endif %}
+            {% endif %}
             <div class="daqitab-summary govuk-!-margin-top-6">
-              <p>{{ value }}</p>
+              <p>{{ processedValue | safe }}</p>
             </div>
           {% endif %}
         {% endif %}
@@ -151,8 +188,26 @@
       {% for key, value in transformedDailySummary %}
         {% if key != 'issue_date' and key != 'isCurrentDate' and key != excludeTodayKey %}
           {% if (' to ' in key) or (' i ' in key) %}
+            {# '' Replace {locationId} placeholder and add query parameters for proper back link context #}
+            {% set processedValue = value | replace('{locationId}', locationId) %}
+            {% set queryParams = '' %}
+            {% if searchTerms %}
+              {% set queryParams = queryParams + '&searchTerms=' + (searchTerms | urlencode) %}
+            {% endif %}
+            {% if locationName %}
+              {% set queryParams = queryParams + '&locationName=' + (locationName | urlencode) %}
+            {% endif %}
+            {% if queryParams %}
+              {% if lang == 'en' %}
+                {% set processedValue = processedValue | replace('actions-reduce-exposure?lang=en', 'actions-reduce-exposure?lang=en' + queryParams) %}
+                {% set processedValue = processedValue | replace('health-effects?lang=en', 'health-effects?lang=en' + queryParams) %}
+              {% elif lang == 'cy' %}
+                {% set processedValue = processedValue | replace('camau-lleihau-amlygiad/cy?lang=cy', 'camau-lleihau-amlygiad/cy?lang=cy' + queryParams) %}
+                {% set processedValue = processedValue | replace('effeithiau-iechyd?lang=cy', 'effeithiau-iechyd?lang=cy' + queryParams) %}
+              {% endif %}
+            {% endif %}
             <div class="daqitab-summary govuk-!-margin-top-6">
-              <p>{{ value }}</p>
+              <p>{{ processedValue | safe }}</p>
             </div>
           {% endif %}
         {% endif %}
@@ -194,8 +249,26 @@
       {% for key, value in transformedDailySummary %}
         {% if key != 'issue_date' and key != 'isCurrentDate' and key != excludeTodayKey %}
           {% if (' to ' in key) or (' i ' in key) %}
+            {# '' Replace {locationId} placeholder and add query parameters for proper back link context #}
+            {% set processedValue = value | replace('{locationId}', locationId) %}
+            {% set queryParams = '' %}
+            {% if searchTerms %}
+              {% set queryParams = queryParams + '&searchTerms=' + (searchTerms | urlencode) %}
+            {% endif %}
+            {% if locationName %}
+              {% set queryParams = queryParams + '&locationName=' + (locationName | urlencode) %}
+            {% endif %}
+            {% if queryParams %}
+              {% if lang == 'en' %}
+                {% set processedValue = processedValue | replace('actions-reduce-exposure?lang=en', 'actions-reduce-exposure?lang=en' + queryParams) %}
+                {% set processedValue = processedValue | replace('health-effects?lang=en', 'health-effects?lang=en' + queryParams) %}
+              {% elif lang == 'cy' %}
+                {% set processedValue = processedValue | replace('camau-lleihau-amlygiad/cy?lang=cy', 'camau-lleihau-amlygiad/cy?lang=cy' + queryParams) %}
+                {% set processedValue = processedValue | replace('effeithiau-iechyd?lang=cy', 'effeithiau-iechyd?lang=cy' + queryParams) %}
+              {% endif %}
+            {% endif %}
             <div class="daqitab-summary govuk-!-margin-top-6">
-              <p>{{ value }}</p>
+              <p>{{ processedValue | safe }}</p>
             </div>
           {% endif %}
         {% endif %}
@@ -237,8 +310,26 @@
       {% for key, value in transformedDailySummary %}
         {% if key != 'issue_date' and key != 'isCurrentDate' and key != excludeTodayKey %}
           {% if (' to ' in key) or (' i ' in key) %}
+            {# '' Replace {locationId} placeholder and add query parameters for proper back link context #}
+            {% set processedValue = value | replace('{locationId}', locationId) %}
+            {% set queryParams = '' %}
+            {% if searchTerms %}
+              {% set queryParams = queryParams + '&searchTerms=' + (searchTerms | urlencode) %}
+            {% endif %}
+            {% if locationName %}
+              {% set queryParams = queryParams + '&locationName=' + (locationName | urlencode) %}
+            {% endif %}
+            {% if queryParams %}
+              {% if lang == 'en' %}
+                {% set processedValue = processedValue | replace('actions-reduce-exposure?lang=en', 'actions-reduce-exposure?lang=en' + queryParams) %}
+                {% set processedValue = processedValue | replace('health-effects?lang=en', 'health-effects?lang=en' + queryParams) %}
+              {% elif lang == 'cy' %}
+                {% set processedValue = processedValue | replace('camau-lleihau-amlygiad/cy?lang=cy', 'camau-lleihau-amlygiad/cy?lang=cy' + queryParams) %}
+                {% set processedValue = processedValue | replace('effeithiau-iechyd?lang=cy', 'effeithiau-iechyd?lang=cy' + queryParams) %}
+              {% endif %}
+            {% endif %}
             <div class="daqitab-summary govuk-!-margin-top-6">
-              <p>{{ value }}</p>
+              <p>{{ processedValue | safe }}</p>
             </div>
           {% endif %}
         {% endif %}

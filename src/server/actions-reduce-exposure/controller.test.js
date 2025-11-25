@@ -105,4 +105,53 @@ describe('actions reduce exposure controller - English', () => {
       })
     )
   })
+
+  it('should format postcode and include location name in back link text', () => {
+    mockRequest = {
+      query: {
+        lang: LANG_EN,
+        searchTerms: 'n8 7ge',
+        locationName: 'Hornsey'
+      },
+      params: { locationId: 'n87ge' },
+      path: '/location/n87ge/actions-reduce-exposure'
+    }
+    const result = actionsReduceExposureController.handler(mockRequest, mockH)
+    expect(result).toBe('view rendered')
+    expect(mockH.view).toHaveBeenCalledWith(
+      'actions-reduce-exposure/index',
+      expect.objectContaining({
+        displayBacklink: true,
+        customBackLink: true,
+        backLinkText: 'Air pollution in N8 7GE, Hornsey',
+        backLinkUrl: '/location/n87ge?lang=en',
+        locationName: 'Hornsey',
+        locationId: 'n87ge'
+      })
+    )
+  })
+
+  it('should format postcode without location name in back link text', () => {
+    mockRequest = {
+      query: {
+        lang: LANG_EN,
+        searchTerms: 'n87ge'
+      },
+      params: { locationId: 'n87ge' },
+      path: '/location/n87ge/actions-reduce-exposure'
+    }
+    const result = actionsReduceExposureController.handler(mockRequest, mockH)
+    expect(result).toBe('view rendered')
+    expect(mockH.view).toHaveBeenCalledWith(
+      'actions-reduce-exposure/index',
+      expect.objectContaining({
+        displayBacklink: true,
+        customBackLink: true,
+        backLinkText: 'Air pollution in N8 7GE',
+        backLinkUrl: '/location/n87ge?lang=en',
+        locationName: '',
+        locationId: 'n87ge'
+      })
+    )
+  })
 })

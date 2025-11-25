@@ -48,15 +48,22 @@ describe("'' getReadableLocationName", () => {
 })
 
 describe("'' buildBackLinkModel", () => {
-  it("'' builds with provided readableName", () => {
-    const m = buildBackLinkModel('Leeds')
-    expect(m.backLinkText).toBe('Air pollution in Leeds')
-    expect(m.backLinkUrl).toBe('javascript:history.back()')
+  it("'' builds with provided backLinkText and backLinkUrl", () => {
+    const m = buildBackLinkModel({
+      backLinkText: 'Air pollution in Leeds',
+      backLinkUrl: '/location/leeds?lang=en'
+    })
+    expect(m.text).toBe('Air pollution in Leeds')
+    expect(m.href).toBe('/location/leeds?lang=en')
   })
 
-  it("'' falls back to 'this location' when empty", () => {
-    const m = buildBackLinkModel('')
-    expect(m.backLinkText).toBe('Air pollution in this location')
+  it("'' handles empty backLinkText", () => {
+    const m = buildBackLinkModel({
+      backLinkText: '',
+      backLinkUrl: '/search-location?lang=en'
+    })
+    expect(m.text).toBe('')
+    expect(m.href).toBe('/search-location?lang=en')
   })
 })
 
@@ -68,8 +75,8 @@ describe("'' buildHealthEffectsViewModel", () => {
     expect(vm.locationName).toBe('Leeds')
     expect(vm.serviceName).toBe('')
     expect(vm.lang).toBe('en')
-    expect(vm.backLinkUrl).toBe('javascript:history.back()')
-    expect(vm.backLinkText).toBe('Air pollution in Leeds')
+    expect(vm.backLinkUrl).toBe('/search-location?lang=en') // '' No locationId defaults to search page
+    expect(vm.backLinkHref).toBe(vm.backLinkUrl)
   })
 
   it("'' uses content overrides", () => {
@@ -100,9 +107,13 @@ describe("'' buildHealthEffectsViewModel", () => {
   })
 
   it("'' backlink props are consistent", () => {
-    const vm = buildHealthEffectsViewModel({ readableName: 'York' })
-    expect(vm.backLinkText).toBe('Air pollution in York')
+    const vm = buildHealthEffectsViewModel({
+      readableName: 'York',
+      locationId: 'york123'
+    })
+    expect(vm.backLinkUrl).toBe('/location/york123?lang=en') // '' With locationId
     expect(vm.backLinkHref).toBe(vm.backLinkUrl)
-    expect(vm.backlink).toEqual({ text: vm.backLinkText, href: vm.backLinkUrl })
+    expect(vm.locationName).toBe('York')
+    expect(vm.locationId).toBe('york123')
   })
 })
