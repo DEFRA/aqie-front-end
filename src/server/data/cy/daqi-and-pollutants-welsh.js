@@ -37,6 +37,7 @@ export const daqiTranslationsWelsh = {
       b: 'Y diweddaraf am',
       c: 'Sut y gall llygryddion aer effeithio ar eich iechyd',
       d: "Llygryddion aer sy'n cael eu monitro gerllaw",
+      on: 'ymlaen',
       ukForecast: 'Rhagolwg y DU'
     },
     headings: {

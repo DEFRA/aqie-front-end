@@ -859,22 +859,28 @@ async function processLocationWorkflow({
         }
         break
 
-      case 'todayDate':
+      case 'todayDate': {
         // '' Set date to today (date SHOULD show)
         logger.info('🧪 TEST: Setting today issue_date')
-        if (locationData.dailySummary) {
-          const today = moment()
-          locationData.dailySummary.issue_date = today.format(
-            'YYYY-MM-DD HH:mm:ss'
-          )
-          locationData.englishDate = today.format('DD MMMM YYYY')
-          locationData.welshDate = today.format('DD MMMM YYYY')
+        const today = moment()
+        // Create dailySummary if it doesn't exist (only for test mode - real app should have API data)
+        if (!locationData.dailySummary) {
           logger.info(
-            `🧪 Changed issue_date to: ${locationData.dailySummary.issue_date}`
+            '🧪 TEST: Creating dailySummary object (test mode only - not production data)'
           )
-          logger.info(`🧪 Changed englishDate to: ${locationData.englishDate}`)
+          locationData.dailySummary = {}
         }
+        locationData.dailySummary.issue_date = today.format(
+          'YYYY-MM-DD HH:mm:ss'
+        )
+        locationData.englishDate = today.format('DD MMMM YYYY')
+        locationData.welshDate = today.format('DD MMMM YYYY')
+        logger.info(
+          `🧪 Changed issue_date to: ${locationData.dailySummary.issue_date}`
+        )
+        logger.info(`🧪 Changed englishDate to: ${locationData.englishDate}`)
         break
+      }
 
       case 'noDataOldDate': {
         // '' Remove daily summary AND set old date (nothing should show)

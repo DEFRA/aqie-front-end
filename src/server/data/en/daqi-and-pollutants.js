@@ -38,6 +38,7 @@ export const daqiTranslations = {
       c: 'How air pollutants can affect your health',
       d: 'Air pollutants monitored near by',
       e: '',
+      on: 'on',
       ukForecast: 'UK forecast'
     },
     headings: {
