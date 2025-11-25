@@ -26,6 +26,7 @@ const ozoneController = {
       footerTxt,
       cookieBanner,
       serviceName: multipleLocations.serviceName,
+      currentPath: '/pollutants/ozone',
       lang: query.lang ?? lang
     })
   }

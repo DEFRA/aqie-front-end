@@ -21,6 +21,10 @@ const searchLocationController = {
     ) {
       lang = LANG_CY
     }
+    // Ensure lang defaults to CY for Welsh search-location path
+    if (!lang && path === '/chwilio-lleoliad/cy') {
+      lang = LANG_CY
+    }
     if (lang === LANG_EN) {
       return h.redirect(SEARCH_LOCATION_ROUTE_EN).code(REDIRECT_STATUS_CODE)
     }
@@ -88,6 +92,7 @@ const searchLocationController = {
         phaseBanner: welsh.phaseBanner,
         backlink: welsh.backlink,
         cookieBanner: welsh.cookieBanner,
+        currentPath: '/chwilio-lleoliad/cy',
         lang
       })
     }

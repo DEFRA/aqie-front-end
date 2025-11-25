@@ -38,6 +38,10 @@ const cookiesHandler = (request, h, content = welsh) => {
   if (lang !== LANG_CY && lang !== LANG_EN && path === '/briwsion/cy') {
     lang = LANG_CY
   }
+  // Ensure lang defaults to CY for /briwsion/cy path
+  if (!lang && path === '/briwsion/cy') {
+    lang = LANG_CY
+  }
 
   // Render the cookies page with the necessary data
   return h.view('cookies/index', {
@@ -55,6 +59,7 @@ const cookiesHandler = (request, h, content = welsh) => {
     footerTxt,
     serviceName,
     cookieBanner,
+    currentPath: '/briwsion/cy',
     lang
   })
 }

@@ -65,7 +65,8 @@ describe('privacy controller - Welsh', () => {
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
       page: 'privacy',
-      lang: mockRequest.query.lang
+      lang: mockRequest.query.lang,
+      currentPath: '/preifatrwydd/cy'
     })
   })
 
@@ -92,7 +93,8 @@ describe('privacy controller - Welsh', () => {
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
       page: 'privacy',
-      lang: LANG_CY
+      lang: LANG_CY,
+      currentPath: '/preifatrwydd/cy'
     })
   })
 })

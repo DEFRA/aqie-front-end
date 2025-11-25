@@ -61,6 +61,7 @@ const getLocationDataController = {
         cookieBanner,
         welshMonth: calendarWelsh[getMonth],
         summaryDate: lang === LANG_CY ? welshDate : englishDate,
+        currentPath: '/multiple-results',
         lang: 'en'
       })
     } catch (error) {

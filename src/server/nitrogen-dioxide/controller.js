@@ -26,6 +26,7 @@ const nitrogenDioxideController = {
       footerTxt,
       cookieBanner,
       serviceName: multipleLocations.serviceName,
+      currentPath: '/pollutants/nitrogen-dioxide',
       lang: query.lang ?? lang
     })
   }

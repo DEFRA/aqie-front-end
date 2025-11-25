@@ -54,7 +54,8 @@ describe('Particular matter25 Controller - English', () => {
       footerTxt: mockContent.footerTxt,
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
-      lang: mockRequest.query.lang
+      lang: mockRequest.query.lang,
+      currentPath: '/llygryddion/mater-gronynnol-25/cy'
     })
   })
 
@@ -78,7 +79,8 @@ describe('Particular matter25 Controller - English', () => {
       footerTxt: mockContent.footerTxt,
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
-      lang: LANG_CY
+      lang: LANG_CY,
+      currentPath: '/llygryddion/mater-gronynnol-25/cy'
     })
   })
 })

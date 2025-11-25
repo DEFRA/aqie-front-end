@@ -33,20 +33,21 @@ export const commonMessages = {
   cymedrol: {
     values: [4, 5, 6],
     advice:
-      'I’r rhan fwyaf o bobl, dyw amlygiad byrdymor i lefelau cymedrol o lygredd aer ddim yn broblem.',
-    insetText: `<h3 class="govuk-heading-s">Amlygiad byrdymor</h3>
-<p>Gallai rhai pobl brofi symptomau oherwydd llygredd aer. Mae oedolion a phlant sydd â chyflyrau’r ysgyfaint neu’r galon yn wynebu mwy o risg o brofi symptomau.</p>
-<p>Gallai’r symptomau gynnwys:</p>
+      "I'r rhan fwyaf o bobl, dyw amlygiad byrdymor i lefelau cymedrol o lygredd aer ddim yn broblem.",
+    insetText: `<h3 class="govuk-heading-s">Amlygiad byrdymor i lygredd aer</h3>
+<p>Gall amlygiad byrdymor (dros oriau neu ddyddiau) achosi ystod o effeithiau ar iechyd, gan gynnwys:</p>
+<p>Gallai'r symptomau gynnwys:</p>
 <ul class="govuk-list govuk-list--bullet">
     <li>pesychu</li>
-    <li>llid ar eich llygaid, trwyn a gwddf</li>
+    <li>llid ar y llygaid, y trwyn a'r gwddf</li>
+    <li>tyndra a phoen yn y frest</li>
     <li>anhawster anadlu</li>
     <li>symptomau asthma gwaeth</li>
-    <li>symptomau gwaeth yn gysylltiedig â’r galon, fel crychguriadau’r galon</li>
+    <li>symptomau gwaeth yn gysylltiedig â'r galon, fel crychguriadau'r galon</li>
     <li>symptomau gwaeth clefyd rhwystrol cronig yr ysgyfaint (COPD)</li>
 </ul>
-<p>Os ydych chi’n profi symptomau, ystyriwch leihau gweithgareddau sy’n heriol yn gorfforol, yn enwedig yn yr awyr agored. Cysylltwch â’ch meddyg os yw’ch symptomau yn parhau.</p>
-<p>Os oes gennych gyflwr ar yr ysgyfaint neu’r galon, dilynwch gyngor arferol eich meddyg neu’ch nyrs am weithgareddau sy’n heriol yn gorfforol a rheoli’ch cyflwr.</p>
+<p>Os ydych chi'n profi symptomau, ystyriwch leihau gweithgareddau sy'n heriol yn gorfforol, yn enwedig yn yr awyr agored. Cysylltwch â'ch meddyg os yw'ch symptomau yn parhau.</p>
+<p>Os oes gennych gyflwr ar yr ysgyfaint neu'r galon, dilynwch gyngor arferol eich meddyg neu'ch nyrs am weithgareddau sy'n heriol yn gorfforol a rheoli'ch cyflwr.</p>
 <p>Dilynwch eich cynllun rheoli cytûn os oes un gennych – er enghraifft, cynllun gweithredu asthma. Gofynnwch i’ch meddyg neu’ch nyrs am gynllun os nad oes un gennych.</p>`,
     atrisk: {
       adults:
@@ -62,20 +63,21 @@ export const commonMessages = {
   uchel: {
     values: [7, 8, 9],
     advice:
-      'Dylai unrhyw un sy’n profi anghysur fel dolur llygaid, peswch neu ddolur gwddf ystyried lleihau eu gweithgareddau, yn enwedig yn yr awyr agored.',
-    insetText: `<h3 class="govuk-heading-s">Amlygiad byrdymor</h3>
-<p>Gallai rhai pobl brofi symptomau oherwydd llygredd aer. Mae oedolion a phlant sydd â chyflyrau’r ysgyfaint neu’r galon yn wynebu mwy o risg o brofi symptomau.</p>
+      "Dylai unrhyw un sy'n profi anghysur fel dolur llygaid, peswch neu ddolur gwddf ystyried lleihau eu gweithgareddau, yn enwedig yn yr awyr agored.",
+    insetText: `<h3 class="govuk-heading-s">Amlygiad byrdymor i lygredd aer</h3>
+<p>Gall amlygiad byrdymor (dros oriau neu ddyddiau) achosi ystod o effeithiau ar iechyd, gan gynnwys:</p>
 <p>Gallai'r symptomau gynnwys:</p>
 <ul class="govuk-list govuk-list--bullet">
     <li>pesychu</li>
-    <li>llid ar eich llygaid, trwyn a gwddf</li>
+    <li>llid ar y llygaid, y trwyn a'r gwddf</li>
+    <li>tyndra a phoen yn y frest</li>
     <li>anhawster anadlu</li>
     <li>symptomau asthma gwaeth</li>
-    <li>symptomau gwaeth yn gysylltiedig â’r galon, fel crychguriadau’r galon</li>
+    <li>symptomau gwaeth yn gysylltiedig â'r galon, fel crychguriadau'r galon</li>
     <li>symptomau gwaeth clefyd rhwystrol cronig yr ysgyfaint (COPD)</li>
 </ul>
-<p>Os ydych chi’n profi symptomau, ystyriwch leihau gweithgareddau sy’n heriol yn gorfforol, yn enwedig yn yr awyr agored. Cysylltwch â’ch meddyg os yw’ch symptomau yn parhau.</p>
-<p>Os oes gennych gyflwr ar yr ysgyfaint neu’r galon, dylech leihau ymdrech gorfforol egnïol, yn arbennig yn yr awyr agored. Dilynwch gyngor arferol eich meddyg neu’ch nyrs am weithgareddau sy’n heriol yn gorfforol a rheoli'ch cyflwr.</p>
+<p>Os ydych chi'n profi symptomau, ystyriwch leihau gweithgareddau sy'n heriol yn gorfforol, yn enwedig yn yr awyr agored. Cysylltwch â'ch meddyg os yw'ch symptomau yn parhau.</p>
+<p>Os oes gennych gyflwr ar yr ysgyfaint neu'r galon, dylech leihau ymdrech gorfforol egnïol, yn arbennig yn yr awyr agored. Dilynwch gyngor arferol eich meddyg neu'ch nyrs am weithgareddau sy'n heriol yn gorfforol a rheoli'ch cyflwr.</p>
 <p>Dilynwch eich cynllun rheoli cytûn os oes un gennych – er enghraifft, cynllun gweithredu asthma. Gofynnwch i’ch meddyg neu’ch nyrs am gynllun os nad oes un gennych.</p>`,
     atrisk: {
       adults:
@@ -90,9 +92,9 @@ export const commonMessages = {
   uchelIawn: {
     values: [10],
     advice:
-      'Ewch ati i leihau’ch ymdrech gorfforol, yn enwedig yn yr awyr agored, yn arbennig os ydych chi’n profi symptomau fel peswch neu ddolur gwddf.',
-    insetText: `<h3 class="govuk-heading-s">Amlygiad byrdymor</h3>
-<p>Gallai rhai pobl brofi symptomau oherwydd llygredd aer. Mae oedolion a phlant sydd â chyflyrau’r ysgyfaint neu’r galon yn wynebu mwy o risg o brofi symptomau.</p>
+      "Lleihewch ymdrech gorfforol, yn arbennig yn yr awyr agored, yn enwedig os ydych chi'n profi symptomau fel peswch neu ddolur gwddf.",
+    insetText: `<h3 class="govuk-heading-s">Amlygiad byrdymor i lygredd aer</h3>
+<p>Gall amlygiad byrdymor (dros oriau neu ddyddiau) achosi ystod o effeithiau ar iechyd, gan gynnwys:</p>
 <p>Gallai'r symptomau gynnwys:</p>
 <ul class="govuk-list govuk-list--bullet">
     <li>pesychu</li>

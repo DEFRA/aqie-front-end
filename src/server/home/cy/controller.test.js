@@ -67,7 +67,8 @@ describe('Home Controller', () => {
       backlink: mockContent.backlink,
       cookieBanner: mockContent.cookieBanner,
       serviceName: '',
-      lang: 'cy'
+      lang: 'cy',
+      currentPath: '/cy'
     })
   })
 

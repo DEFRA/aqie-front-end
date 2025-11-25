@@ -101,7 +101,8 @@ describe('getLocationDataController', () => {
       cookieBanner: welsh.cookieBanner,
       welshMonth: 'Chwefror',
       summaryDate: '2025-02-04',
-      lang: LANG_CY
+      lang: LANG_CY,
+      currentPath: '/canlyniadau-lluosog/cy'
     })
   })
 
