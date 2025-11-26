@@ -108,12 +108,79 @@ function updateExposureSection(band) {
   const normalizedBand = band.toLowerCase().trim()
 
   // Get the exposure HTML content based on band
-  const exposureHtml = getExposureHtmlForBand(normalizedBand)
+  let exposureHtml = getExposureHtmlForBand(normalizedBand)
   if (!exposureHtml) return
+
+  // '' Add locationName and searchTerms parameters to links (same as Nunjucks template does)
+  exposureHtml = addQueryParametersToLinks(exposureHtml)
 
   // Update the exposure section content
   exposureSection.innerHTML = exposureHtml
   console.log(`Exposure section updated for band: ${normalizedBand}`)
+}
+
+function addQueryParametersToLinks(html) {
+  // '' Get locationId, locationName and searchTerms from data attributes on exposure-section div
+  const exposureSection = document.getElementById('exposure-section')
+  const locationId = exposureSection
+    ? exposureSection.getAttribute('data-location-id')
+    : null
+  const locationName = exposureSection
+    ? exposureSection.getAttribute('data-location-name')
+    : null
+  const searchTerms = exposureSection
+    ? exposureSection.getAttribute('data-search-terms')
+    : null
+
+  console.log('addQueryParametersToLinks - locationId:', locationId)
+  console.log('addQueryParametersToLinks - locationName:', locationName)
+  console.log('addQueryParametersToLinks - searchTerms:', searchTerms)
+
+  // '' First, replace {locationId} placeholder in the HTML (same as Nunjucks does)
+  if (locationId) {
+    html = html.replace(/{locationId}/g, locationId)
+  }
+
+  // '' Build query parameters string
+  let queryParams = ''
+  if (searchTerms) {
+    queryParams += '&searchTerms=' + encodeURIComponent(searchTerms)
+  }
+  if (locationName) {
+    queryParams += '&locationName=' + encodeURIComponent(locationName)
+  }
+
+  console.log('addQueryParametersToLinks - queryParams:', queryParams)
+
+  // '' Add query parameters to links if we have any
+  if (queryParams) {
+    // Determine language from page
+    const isWelsh = document.documentElement.lang === 'cy'
+
+    if (isWelsh) {
+      // Welsh links
+      html = html.replace(
+        /effeithiau-iechyd\?lang=cy/g,
+        'effeithiau-iechyd?lang=cy' + queryParams
+      )
+      html = html.replace(
+        /camau-lleihau-amlygiad\/cy\?lang=cy/g,
+        'camau-lleihau-amlygiad/cy?lang=cy' + queryParams
+      )
+    } else {
+      // English links
+      html = html.replace(
+        /health-effects\?lang=en/g,
+        'health-effects?lang=en' + queryParams
+      )
+      html = html.replace(
+        /actions-reduce-exposure\?lang=en/g,
+        'actions-reduce-exposure?lang=en' + queryParams
+      )
+    }
+  }
+
+  return html
 }
 
 function getExposureHtmlForBand(band) {
@@ -124,7 +191,7 @@ function getExposureHtmlForBand(band) {
     // Welsh exposure HTML templates
     const welshExposureTemplates = {
       isel: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">Sut gallwch chi leihau'ch amlygiad i lygredd aer</h2>
-<p>Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer o wahanol <a class="govuk-link" href="/effeithiau-iechyd?lang=cy">gyflyrau iechyd</a> a gall leihau disgwyliad oes.</p>
+<p>Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer o wahanol <a class="govuk-link" href="/lleoliad/{locationId}/effeithiau-iechyd?lang=cy">gyflyrau iechyd</a> a gall leihau disgwyliad oes.</p>
 <p>Dylech chi geisio lleihau'ch amlygiad i lygredd aer lle gallwch chi, hyd yn oed pan fo'r lefelau'n isel.</p>
 <p>Ystyriwch y camau canlynol:</p>
 <ul class="govuk-list govuk-list--bullet">
@@ -132,7 +199,7 @@ function getExposureHtmlForBand(band) {
   <li>cymudo, cerdded neu ymarfer corff mewn parciau neu fannau gwyrdd eraill, os nad yw paill yn effeithio arnoch chi</li>
   <li>os ydych chi'n ymarfer corff dan do, gofalwch fod yr ystafell wedi'i hawyru'n dda</li>
 </ul>
-<p>Rhagor o gyngor ar <a class="govuk-link" href="/camau-lleihau-amlygiad/cy?lang=cy">gamau y gallwch eu cymryd i leihau'ch amlygiad i lygredd aer</a>.</p>`,
+<p>Rhagor o gyngor ar <a class="govuk-link" href="/lleoliad/{locationId}/camau-lleihau-amlygiad/cy?lang=cy">gamau y gallwch eu cymryd i leihau'ch amlygiad i lygredd aer</a>.</p>`,
       cymedrol: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">Sut gallwch chi leihau'ch amlygiad i lygredd aer</h2>
 <p>Ystyriwch y camau canlynol:</p>
 <ul class="govuk-list govuk-list--bullet">
@@ -140,8 +207,8 @@ function getExposureHtmlForBand(band) {
   <li>cymudo, cerdded neu ymarfer corff mewn parciau neu fannau gwyrdd eraill, os nad yw paill yn effeithio arnoch chi</li>
   <li>os ydych chi'n ymarfer corff dan do, gofalwch fod yr ystafell wedi'i hawyru'n dda</li>
 </ul>
-<p>Rhagor o gyngor ar <a class="govuk-link" href="/camau-lleihau-amlygiad/cy?lang=cy">gamau y gallwch eu cymryd i leihau'ch amlygiad i lygredd aer</a>.</p>
-<p>Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer o wahanol <a class="govuk-link" href="/effeithiau-iechyd?lang=cy">gyflyrau iechyd</a> a gall leihau disgwyliad oes.</p>`,
+<p>Rhagor o gyngor ar <a class="govuk-link" href="/lleoliad/{locationId}/camau-lleihau-amlygiad/cy?lang=cy">gamau y gallwch eu cymryd i leihau'ch amlygiad i lygredd aer</a>.</p>
+<p>Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer o wahanol <a class="govuk-link" href="/lleoliad/{locationId}/effeithiau-iechyd?lang=cy">gyflyrau iechyd</a> a gall leihau disgwyliad oes.</p>`,
       uchel: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">Sut gallwch chi leihau'ch amlygiad i lygredd aer</h2>
 <p>Ystyriwch y camau canlynol:</p>
 <ul class="govuk-list govuk-list--bullet">
@@ -149,8 +216,8 @@ function getExposureHtmlForBand(band) {
   <li>cymudo, cerdded neu ymarfer corff mewn parciau neu fannau gwyrdd eraill, os nad yw paill yn effeithio arnoch chi</li>
   <li>os ydych chi'n ymarfer corff dan do, gofalwch fod yr ystafell wedi'i hawyru'n dda</li>
 </ul>
-<p>Rhagor o gyngor ar <a class="govuk-link" href="/camau-lleihau-amlygiad/cy?lang=cy">gamau y gallwch eu cymryd i leihau'ch amlygiad i lygredd aer</a>.</p>
-<p>Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer o wahanol <a class="govuk-link" href="/effeithiau-iechyd?lang=cy">gyflyrau iechyd</a> a gall leihau disgwyliad oes.</p>`,
+<p>Rhagor o gyngor ar <a class="govuk-link" href="/lleoliad/{locationId}/camau-lleihau-amlygiad/cy?lang=cy">gamau y gallwch eu cymryd i leihau'ch amlygiad i lygredd aer</a>.</p>
+<p>Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer o wahanol <a class="govuk-link" href="/lleoliad/{locationId}/effeithiau-iechyd?lang=cy">gyflyrau iechyd</a> a gall leihau disgwyliad oes.</p>`,
       'uchel iawn': `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">Sut gallwch chi leihau'ch amlygiad i lygredd aer</h2>
 <p>Ystyriwch y camau canlynol:</p>
 <ul class="govuk-list govuk-list--bullet">
@@ -158,8 +225,8 @@ function getExposureHtmlForBand(band) {
   <li>cymudo, cerdded neu ymarfer corff mewn parciau neu fannau gwyrdd eraill, os nad yw paill yn effeithio arnoch chi</li>
   <li>os ydych chi'n ymarfer corff dan do, gofalwch fod yr ystafell wedi'i hawyru'n dda</li>
 </ul>
-<p>Rhagor o gyngor ar <a class="govuk-link" href="/camau-lleihau-amlygiad/cy?lang=cy">gamau y gallwch eu cymryd i leihau'ch amlygiad i lygredd aer</a>.</p>
-<p>Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer o wahanol <a class="govuk-link" href="/effeithiau-iechyd?lang=cy">gyflyrau iechyd</a> a gall leihau disgwyliad oes.</p>`
+<p>Rhagor o gyngor ar <a class="govuk-link" href="/lleoliad/{locationId}/camau-lleihau-amlygiad/cy?lang=cy">gamau y gallwch eu cymryd i leihau'ch amlygiad i lygredd aer</a>.</p>
+<p>Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer o wahanol <a class="govuk-link" href="/lleoliad/{locationId}/effeithiau-iechyd?lang=cy">gyflyrau iechyd</a> a gall leihau disgwyliad oes.</p>`
     }
 
     return welshExposureTemplates[band] || null
@@ -168,14 +235,14 @@ function getExposureHtmlForBand(band) {
   // English exposure HTML templates
   const exposureTemplates = {
     low: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">How you can reduce your exposure to air pollution</h2>
-<p>Long term exposure to air pollution (over years) can lead to many different <a class="govuk-link" href="/health-effects?lang=en">health conditions</a> and can reduce life expectancy.</p>
+<p>Long term exposure to air pollution (over years) can lead to many different <a class="govuk-link" href="/location/{locationId}/health-effects?lang=en">health conditions</a> and can reduce life expectancy.</p>
 <p>You should try to reduce your exposure to air pollution where you can, even when levels are low. Consider the following actions:</p>
 <ul class="govuk-list govuk-list--bullet">
   <li>take routes where there is less traffic, especially at busy times of day</li>
   <li>commute, walk or exercise in parks or other green spaces, if you are not affected by pollen</li>
   <li>if you exercise indoors, make sure the room is well ventilated</li>
 </ul>
-<p>Get more advice on <a class="govuk-link" href="/actions-reduce-exposure?lang=en">actions you can take to reduce your exposure to air pollution</a>.</p>`,
+<p>Get more advice on <a class="govuk-link" href="/location/{locationId}/actions-reduce-exposure?lang=en">actions you can take to reduce your exposure to air pollution</a>.</p>`,
     moderate: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">How you can reduce your exposure to air pollution</h2>
 <p>Consider the following actions:</p>
 <ul class="govuk-list govuk-list--bullet">
@@ -183,8 +250,8 @@ function getExposureHtmlForBand(band) {
   <li>commute, walk or exercise in parks or other green spaces, if you are not affected by pollen</li>
   <li>if you exercise indoors, make sure the room is well ventilated</li>
 </ul>
-<p>Get more advice on <a class="govuk-link" href="/actions-reduce-exposure?lang=en">actions you can take to reduce your exposure to air pollution</a>.</p>
-<p>Long term exposure to air pollution (over years) can lead to many different <a class="govuk-link" href="/health-effects?lang=en">health conditions</a> and can reduce life expectancy.</p>`,
+<p>Get more advice on <a class="govuk-link" href="/location/{locationId}/actions-reduce-exposure?lang=en">actions you can take to reduce your exposure to air pollution</a>.</p>
+<p>Long term exposure to air pollution (over years) can lead to many different <a class="govuk-link" href="/location/{locationId}/health-effects?lang=en">health conditions</a> and can reduce life expectancy.</p>`,
     high: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">How you can reduce your exposure to air pollution</h2>
 <p>Consider the following actions:</p>
 <ul class="govuk-list govuk-list--bullet">
@@ -192,8 +259,8 @@ function getExposureHtmlForBand(band) {
   <li>commute, walk or exercise in parks or other green spaces, if you are not affected by pollen</li>
   <li>if you exercise indoors, make sure the room is well ventilated</li>
 </ul>
-<p>Get more advice on <a class="govuk-link" href="/actions-reduce-exposure?lang=en">actions you can take to reduce your exposure to air pollution</a>.</p>
-<p>Long term exposure to air pollution (over years) can lead to many different <a class="govuk-link" href="/health-effects?lang=en">health conditions</a> and can reduce life expectancy.</p>`,
+<p>Get more advice on <a class="govuk-link" href="/location/{locationId}/actions-reduce-exposure?lang=en">actions you can take to reduce your exposure to air pollution</a>.</p>
+<p>Long term exposure to air pollution (over years) can lead to many different <a class="govuk-link" href="/location/{locationId}/health-effects?lang=en">health conditions</a> and can reduce life expectancy.</p>`,
     'very high': `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">How you can reduce your exposure to air pollution</h2>
 <p>Consider the following actions:</p>
 <ul class="govuk-list govuk-list--bullet">
@@ -201,8 +268,8 @@ function getExposureHtmlForBand(band) {
   <li>commute, walk or exercise in parks or other green spaces, if you are not affected by pollen</li>
   <li>if you exercise indoors, make sure the room is well ventilated</li>
 </ul>
-<p>Get more advice on <a class="govuk-link" href="/actions-reduce-exposure?lang=en">actions you can take to reduce your exposure to air pollution</a>.</p>
-<p>Long term exposure to air pollution (over years) can lead to many different <a class="govuk-link" href="/health-effects?lang=en">health conditions</a> and can reduce life expectancy.</p>`
+<p>Get more advice on <a class="govuk-link" href="/location/{locationId}/actions-reduce-exposure?lang=en">actions you can take to reduce your exposure to air pollution</a>.</p>
+<p>Long term exposure to air pollution (over years) can lead to many different <a class="govuk-link" href="/location/{locationId}/health-effects?lang=en">health conditions</a> and can reduce life expectancy.</p>`
   }
 
   return exposureTemplates[band] || null
