@@ -236,7 +236,8 @@ function getExposureHtmlForBand(band) {
   const exposureTemplates = {
     low: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">How you can reduce your exposure to air pollution</h2>
 <p>Long term exposure to air pollution (over years) can lead to many different <a class="govuk-link" href="/location/{locationId}/health-effects?lang=en">health conditions</a> and can reduce life expectancy.</p>
-<p>You should try to reduce your exposure to air pollution where you can, even when levels are low. Consider the following actions:</p>
+<p>You should try to reduce your exposure to air pollution where you can, even when levels are low.</p>
+<p>Consider the following actions:</p>
 <ul class="govuk-list govuk-list--bullet">
   <li>take routes where there is less traffic, especially at busy times of day</li>
   <li>commute, walk or exercise in parks or other green spaces, if you are not affected by pollen</li>
