@@ -70,7 +70,9 @@ describe("'' buildBackLinkModel", () => {
 describe("'' buildHealthEffectsViewModel", () => {
   it("'' sets defaults when content empty", () => {
     const vm = buildHealthEffectsViewModel({ readableName: 'Leeds' })
-    expect(vm.pageTitle).toBe('Health effects of air pollution')
+    expect(vm.pageTitle).toBe(
+      'How you can reduce your exposure to air pollution'
+    )
     expect(vm.description).toBe('')
     expect(vm.locationName).toBe('Leeds')
     expect(vm.serviceName).toBe('')

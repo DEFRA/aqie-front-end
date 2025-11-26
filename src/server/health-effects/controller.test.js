@@ -20,7 +20,7 @@ vi.mock('./helpers/index.js', () => ({
     backLinkUrl: '/search-location?lang=en',
     pageTitle:
       opts?.content?.healthEffects?.pageTitle ||
-      'Health effects of air pollution',
+      'How you can reduce your exposure to air pollution',
     locationName: opts.readableName || 'Mock Location',
     lang: opts.lang || 'en'
   })),
@@ -93,7 +93,7 @@ describe("'' healthEffectsHandler", () => {
     getReadableLocationName.mockReturnValueOnce('Leeds')
     buildHealthEffectsViewModel.mockReturnValueOnce({
       backLinkUrl: '/location/leeds?lang=en',
-      pageTitle: 'Health effects of air pollution',
+      pageTitle: 'How you can reduce your exposure to air pollution',
       locationName: 'Leeds',
       lang: 'en',
       locationId: 'leeds'
@@ -132,7 +132,7 @@ describe("'' healthEffectsHandler", () => {
       'health-effects/index',
       expect.objectContaining({
         locationName: 'Leeds',
-        pageTitle: 'Health effects of air pollution',
+        pageTitle: 'How you can reduce your exposure to air pollution',
         lang: 'en',
         backLinkText: 'Air pollution in Leeds',
         backlink: {

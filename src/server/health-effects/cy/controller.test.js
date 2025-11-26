@@ -27,7 +27,7 @@ vi.mock('../helpers/index.js', () => ({
   getReadableLocationName: vi.fn(() => 'Caerdydd'), // '' Default Welsh location name
   buildHealthEffectsViewModel: vi.fn(
     ({ readableName = 'Caerdydd', lang = 'cy' } = {}) => ({
-      pageTitle: 'Health effects of air pollution',
+      pageTitle: 'How you can reduce your exposure to air pollution',
       backLinkUrl: 'javascript:history.back()',
       backLinkText: `Air pollution in ${readableName}`,
       locationName: readableName,

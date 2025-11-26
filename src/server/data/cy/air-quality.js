@@ -105,10 +105,11 @@ export const commonMessages = {
 <p>Gall amlygiad byrdymor (dros oriau neu ddyddiau) achosi ystod o effeithiau ar iechyd, gan gynnwys:</p>
 <ul class="govuk-list govuk-list--bullet">
     <li>pesychu</li>
-    <li>llid ar eich llygaid, trwyn a gwddf</li>
+    <li>llid ar y llygaid, y trwyn a'r gwddf</li>
+    <li>tyndra a phoen yn y frest</li>
     <li>anhawster anadlu</li>
     <li>symptomau asthma gwaeth</li>
-    <li>symptomau gwaeth yn gysylltiedig â’r galon, fel crychguriadau’r galon</li>
+    <li>symptomau gwaeth yn gysylltiedig â'r galon, fel crychguriadau'r galon</li>
     <li>symptomau gwaeth clefyd rhwystrol cronig yr ysgyfaint (COPD)</li>
 </ul>
 <p>Gallai'r symptomau ddechrau o fewn oriau neu sawl diwrnod ar ôl amlygiad i lygredd aer.</p>
@@ -121,10 +122,10 @@ export const commonMessages = {
 <p>Ystyriwch effaith sbardunau eraill ar eich symptomau hefyd – er enghraifft, paill uchel y tu allan neu ansawdd aer gwael dan do.</p>`,
     atrisk: {
       adults:
-        'Dylai oedolion sydd â phroblemau’r galon osgoi gweithgareddau corfforol egnïol.',
+        "Dylai oedolion sydd â phroblemau'r galon leihau ymdrech gorfforol egnïol, yn arbennig yn yr awyr agored, yn enwedig os ydynt yn profi symptomau.",
       asthma:
-        'Efallai y bydd angen i bobl sydd ag asthma ddefnyddio’u hanadlydd lliniaru yn amlach.',
-      oldPeople: 'Dylai pobl hŷn osgoi gweithgareddau corfforol egnïol.'
+        "Efallai y bydd pobl sydd ag asthma yn gweld bod angen defnyddio'u hnanadlydd llliniaru yn amlach.",
+      oldPeople: 'Dylai pobl hŷn leihau eu hymdrech gorfforol.'
     },
     outlook:
       'The current heatwave shows no signs of relenting, causing air pollution levels to remain very high across many areas today.'
