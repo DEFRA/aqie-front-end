@@ -1,6 +1,6 @@
 {# '' AQC-657: Exposure reduction advice section. Rendered in different positions depending on DAQI level #}
 {# '' Wrapped with stable id for dynamic reordering when active forecast tab changes #}
-<div id="exposure-section" class="daqiexposure{% if needsTopMargin %} govuk-!-margin-top-6{% endif %}" data-daqi-exposure>
+<div id="exposure-section" class="daqiexposure{% if needsTopMargin %} govuk-!-margin-top-6{% endif %}" data-daqi-exposure{% if locationId %} data-location-id="{{ locationId }}"{% endif %}{% if locationName %} data-location-name="{{ locationName }}"{% endif %}{% if searchTerms %} data-search-terms="{{ searchTerms }}"{% endif %}>
   {# DEBUG: Show template variables #}
   <!-- DEBUG: locationId={{ locationId }}, locationName={{ locationName }}, searchTerms={{ searchTerms }}, lang={{ lang }}, band={{ airQuality.today.band }} -->
   {# '' Select appropriate exposure HTML based on DAQI level #}
