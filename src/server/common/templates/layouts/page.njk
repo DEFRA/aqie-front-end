@@ -113,7 +113,7 @@
               {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/actions-reduce-exposure?lang=en" %}
               {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/camau-lleihau-amlygiad/cy?lang=cy" %}
             {% endif %}
-          {% elif page == 'Health effects' or page == 'Health effects of air pollution' or page == 'Effeithiau iechyd' or page == 'Effaith llygredd aer ar iechyd' %}
+          {% elif page == 'Health effects' or page == 'How you can reduce your exposure to air pollution' or page == 'Effeithiau iechyd' or page == 'Effaith llygredd aer ar iechyd' %}
             {# '' Health effects pages '' #}
             {% if locationName %}
               {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/health-effects?lang=en&locationName=" + (locationName | urlencode) %}
@@ -240,7 +240,7 @@
             {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/actions-reduce-exposure?lang=en" %}
             {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/camau-lleihau-amlygiad/cy?lang=cy" %}
           {% endif %}
-        {% elif page == 'Health effects' or page == 'Health effects of air pollution' or page == 'Effeithiau iechyd' or page == 'Effaith llygredd aer ar iechyd' %}
+        {% elif page == 'Health effects' or page == 'Health effects of air pollution' or page == 'How you can reduce your exposure to air pollution' or page == 'Effeithiau iechyd' or page == 'Effaith llygredd aer ar iechyd' %}
           {# '' Health effects pages '' #}
           {% if locationName %}
             {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/health-effects?lang=en&locationName=" + (locationName | urlencode) %}

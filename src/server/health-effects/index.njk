@@ -3,7 +3,7 @@
 
 {% set description = "Poor air quality is one of the largest environmental risks to public health in the UK." %}
 
-{% block pageTitle %}Health effects of air pollution - Check air quality{% endblock %}
+{% block pageTitle %}How you can reduce your exposure to air pollution - Check air quality{% endblock %}
 
 {% block content %}
 <div class="govuk-grid-row health-effects-page">
@@ -21,7 +21,7 @@
       }
     </style>
 
-    <h1 class="govuk-heading-xl govuk-!-margin-top-0 odd-page">Health effects of air pollution</h1>
+    <h1 class="govuk-heading-xl govuk-!-margin-top-0 odd-page">How you can reduce your exposure to air pollution</h1>
 
     {# '' Removed location line #}
 
@@ -29,7 +29,10 @@
       Poor air quality is one of the largest environmental risks to public health in the UK.
     </p>
     <p class="govuk-body">
-      There is no safe level of air pollution, but there are actions you can take to reduce your exposure to air pollution.
+      It is a particular threat to vulnerable groups, including adults and children with lung or heart conditions, and older people.
+    </p>
+    <p class="govuk-body">
+      There is no safe level of air pollution, but there are <a class="govuk-link" href="/location/{{ locationId }}/actions-reduce-exposure?lang=en{% if locationName %}&locationName={{ locationName | urlencode }}{% endif %}">actions you can take to reduce your exposure to air pollution</a>.
     </p>
 
     <h2 class="govuk-heading-l health-effects-subheading">How air pollution impacts the body</h2>
