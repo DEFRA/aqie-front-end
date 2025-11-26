@@ -20,10 +20,14 @@
   {% set todayFull = 0 | addDaysToTodayFullWelsh %}
 {% endif %}
 
-{% macro daqiNumberedBar(value, readableBand) %}
+{% macro daqiNumberedBar(value, readableBand, language) %}
   {% set safeValue = value | default(0) %}
-  {# '' Screen reader reads: "Daily Air Quality Index, level [number], [level] pollution" #}
-  {% set ariaLabel = "Daily Air Quality Index, level " + (safeValue | string) + ", " + (readableBand | default('unknown') | lower) + " pollution" %}
+  {# '' Screen reader reads: "Daily Air Quality Index, level [number] out of 10, [level] pollution" or Welsh equivalent #}
+  {% if language == 'cy' %}
+    {% set ariaLabel = "Mynegai Ansawdd Aer Dyddiol, lefel " + (safeValue | string) + " allan o 10, " + (readableBand | default('anhysbys') | lower) + " llygredd" %}
+  {% else %}
+    {% set ariaLabel = "Daily Air Quality Index, level " + (safeValue | string) + " out of 10, " + (readableBand | default('unknown') | lower) + " pollution" %}
+  {% endif %}
   <div class="daqi-numbered" role="img" aria-label="{{ ariaLabel }}">
     <div class="daqi-bar" aria-hidden="true">
       {% for i in range(1, 11) %}
@@ -56,9 +60,13 @@
 {% set todayPanel %}
   {# '' Day name heading - screen reader reads full day name, visual shows "Today" or translated version #}
   <h3 class="govuk-heading-m govuk-!-margin-bottom-4" aria-label="{{ todayFull }}">{{ todayAbbrev }}</h3>
-  <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.today.value | default(0) }}, {{ airQuality.today.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
-  {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level 3, low" #}
-  {{ daqiNumberedBar(airQuality.today.value | default(0), airQuality.today.readableBand | default('')) }}
+  {% if lang == 'cy' %}
+    <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, lefel {{ airQuality.today.value | default(0) }} allan o 10, {{ airQuality.today.readableBand | default('anhysbys') | lower }} llygredd">{{ daqi.headings.main }}</span>
+  {% else %}
+    <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.today.value | default(0) }} out of 10, {{ airQuality.today.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
+  {% endif %}
+  {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level [number] out of 10, [band]" or Welsh equivalent #}
+  {{ daqiNumberedBar(airQuality.today.value | default(0), airQuality.today.readableBand | default(''), lang) }}
 
   {# '' Forecast text - no heading, screen reader continues reading #}
   {% if showSummaryDate and transformedDailySummary and transformedDailySummary[excludeTodayKey] %}
@@ -101,7 +109,7 @@
     class: todayTabClass,
     'data-daqi-value': airQuality.today.value | default(0),
     'data-daqi-band': airQuality.today.readableBand | default(''),
-    'aria-label': todayFull
+    'aria-label': todayAbbrev
   }
 }) %}
 
@@ -121,9 +129,13 @@
       <span class="daqi-day-abbrev">{{ day2Label }}</span>
       <span class="daqi-day-full">{{ day2LabelFull }}</span>
     </h3>
-    <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day2.value | default(0) }}, {{ airQuality.day2.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
-    {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X, [band]" #}
-    {{ daqiNumberedBar(airQuality.day2.value | default(0), airQuality.day2.readableBand | capitalize | default('')) }}
+    {% if lang == 'cy' %}
+      <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, lefel {{ airQuality.day2.value | default(0) }} allan o 10, {{ airQuality.day2.readableBand | default('anhysbys') | lower }} llygredd">{{ daqi.headings.main }}</span>
+    {% else %}
+      <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day2.value | default(0) }} out of 10, {{ airQuality.day2.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
+    {% endif %}
+    {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X out of 10, [band]" or Welsh equivalent #}
+    {{ daqiNumberedBar(airQuality.day2.value | default(0), airQuality.day2.readableBand | capitalize | default(''), lang) }}
 
     {# '' Forecast text - no heading, screen reader continues reading #}
     {% if showSummaryDate and transformedDailySummary %}
@@ -185,9 +197,13 @@
       <span class="daqi-day-abbrev">{{ day3Label }}</span>
       <span class="daqi-day-full">{{ day3LabelFull }}</span>
     </h3>
-    <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day3.value | default(0) }}, {{ airQuality.day3.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
-    {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X, [band]" #}
-    {{ daqiNumberedBar(airQuality.day3.value | default(0), airQuality.day3.readableBand | capitalize | default('')) }}
+    {% if lang == 'cy' %}
+      <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, lefel {{ airQuality.day3.value | default(0) }} allan o 10, {{ airQuality.day3.readableBand | default('anhysbys') | lower }} llygredd">{{ daqi.headings.main }}</span>
+    {% else %}
+      <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day3.value | default(0) }} out of 10, {{ airQuality.day3.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
+    {% endif %}
+    {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X out of 10, [band]" or Welsh equivalent #}
+    {{ daqiNumberedBar(airQuality.day3.value | default(0), airQuality.day3.readableBand | capitalize | default(''), lang) }}
 
     {# '' Forecast text - no heading, screen reader continues reading #}
     {% if showSummaryDate and transformedDailySummary %}
@@ -249,9 +265,13 @@
       <span class="daqi-day-abbrev">{{ day4Label }}</span>
       <span class="daqi-day-full">{{ day4LabelFull }}</span>
     </h3>
-    <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day4.value | default(0) }}, {{ airQuality.day4.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
-    {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X, [band]" #}
-    {{ daqiNumberedBar(airQuality.day4.value | default(0), airQuality.day4.readableBand | capitalize | default('')) }}
+    {% if lang == 'cy' %}
+      <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, lefel {{ airQuality.day4.value | default(0) }} allan o 10, {{ airQuality.day4.readableBand | default('anhysbys') | lower }} llygredd">{{ daqi.headings.main }}</span>
+    {% else %}
+      <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day4.value | default(0) }} out of 10, {{ airQuality.day4.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
+    {% endif %}
+    {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X out of 10, [band]" or Welsh equivalent #}
+    {{ daqiNumberedBar(airQuality.day4.value | default(0), airQuality.day4.readableBand | capitalize | default(''), lang) }}
 
     {# '' Forecast text - no heading, screen reader continues reading #}
     {% if showSummaryDate and transformedDailySummary %}
@@ -313,9 +333,13 @@
       <span class="daqi-day-abbrev">{{ day5Label }}</span>
       <span class="daqi-day-full">{{ day5LabelFull }}</span>
     </h3>
-    <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day5.value | default(0) }}, {{ airQuality.day5.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
-    {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X, [band]" #}
-    {{ daqiNumberedBar(airQuality.day5.value | default(0), airQuality.day5.readableBand | capitalize | default('')) }}
+    {% if lang == 'cy' %}
+      <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, lefel {{ airQuality.day5.value | default(0) }} allan o 10, {{ airQuality.day5.readableBand | default('anhysbys') | lower }} llygredd">{{ daqi.headings.main }}</span>
+    {% else %}
+      <span class="govuk-caption-s govuk-!-margin-bottom-4" aria-label="{{ daqi.headings.main }}, level {{ airQuality.day5.value | default(0) }} out of 10, {{ airQuality.day5.readableBand | default('unknown') | lower }} pollution">{{ daqi.headings.main }}</span>
+    {% endif %}
+    {# '' DAQI bar with aria-label reads: "Daily Air Quality Index, level X out of 10, [band]" or Welsh equivalent #}
+    {{ daqiNumberedBar(airQuality.day5.value | default(0), airQuality.day5.readableBand | capitalize | default(''), lang) }}
 
     {# '' Forecast text - no heading, screen reader continues reading #}
     {% if showSummaryDate and transformedDailySummary %}

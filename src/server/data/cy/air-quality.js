@@ -36,7 +36,9 @@ export const commonMessages = {
     values: [4, 5, 6],
     advice:
       "I'r rhan fwyaf o bobl, dyw amlygiad byrdymor i lefelau cymedrol o lygredd aer ddim yn broblem.",
-    insetText: `<h3 class="govuk-heading-s">Amlygiad byrdymor i lygredd aer</h3>
+    insetText: `<p>I'r rhan fwyaf o bobl, dyw amlygiad byrdymor i lefelau cymedrol o lygredd aer ddim yn broblem. Ewch ymlaen â'ch gweithgareddau awyr agored arferol. Ond, os byddwch chi'n profi symptomau, ceisiwch leihau'ch amlygiad i lygredd aer.</p>
+
+<h3 class="govuk-heading-s">Amlygiad byrdymor i lygredd aer</h3>
 <p>Gall amlygiad byrdymor (dros oriau neu ddyddiau) achosi ystod o effeithiau ar iechyd, gan gynnwys:</p>
 <p>Gallai'r symptomau gynnwys:</p>
 <ul class="govuk-list govuk-list--bullet">
@@ -48,9 +50,22 @@ export const commonMessages = {
     <li>symptomau gwaeth yn gysylltiedig â'r galon, fel crychguriadau'r galon</li>
     <li>symptomau gwaeth clefyd rhwystrol cronig yr ysgyfaint (COPD)</li>
 </ul>
-<p>Os ydych chi'n profi symptomau, ystyriwch leihau gweithgareddau sy'n heriol yn gorfforol, yn enwedig yn yr awyr agored. Cysylltwch â'ch meddyg os yw'ch symptomau yn parhau.</p>
-<p>Os oes gennych gyflwr ar yr ysgyfaint neu'r galon, dilynwch gyngor arferol eich meddyg neu'ch nyrs am weithgareddau sy'n heriol yn gorfforol a rheoli'ch cyflwr.</p>
-<p>Dilynwch eich cynllun rheoli cytûn os oes un gennych – er enghraifft, cynllun gweithredu asthma. Gofynnwch i’ch meddyg neu’ch nyrs am gynllun os nad oes un gennych.</p>`,
+
+<p>Gallai'r symptomau ddechrau o fewn oriau neu sawl diwrnod ar ôl amlygiad i lygredd aer.</p>
+
+<p>Siaradwch â'ch meddyg neu'ch nyrs:</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>os oes gennych chi symptomau newydd</li>
+    <li>os bydd eich symptomau'n gwaethygu</li>
+    <li>os na fydd eich symptomau'n gwella ar ôl wythnos</li>
+</ul>
+
+<p>Ystyriwch effaith sbardunau eraill ar eich symptomau hefyd – er enghraifft, paill uchel y tu allan neu ansawdd aer gwael dan do.</p>
+
+<h3 class="govuk-heading-s">Cyngor i oedolion a phlant sydd â chyflyrau'r ysgyfaint neu'r galon</h3>
+
+<p>Ceisiwch addasu gweithgareddau heriol yn yr awyr agored, yn enwedig os bydd eich symptomau'n gwaethygu.</p>
+<p>Dilynwch eich cynllun rheoli cytûn os oes un gennych – er enghraifft, cynllun gweithredu asthma. Gofynnwch i'ch meddyg neu'ch nyrs am gynllun os nad oes un gennych.</p>`,
     atrisk: {
       adults:
         'Dylai oedolion sydd â phroblemau’r galon ac sy’n teimlo’n sâl ystyried gwneud ymarfer corff llai egnïol, yn enwedig y tu allan.',
@@ -85,12 +100,15 @@ export const commonMessages = {
     <li>os bydd eich symptomau'n gwaethygu</li>
     <li>os na fydd eich symptomau'n gwella ar ôl wythnos</li>
 </ul>
-<p>Ystyriwch effaith sbardunau eraill ar eich symptomau hefyd – er enghraifft, paill uchel y tu allan neu ansawdd aer gwael dan do.</p>`,
+<p>Ystyriwch effaith sbardunau eraill ar eich symptomau hefyd – er enghraifft, paill uchel y tu allan neu ansawdd aer gwael dan do.</p>
+<h3 class="govuk-heading-s">Cyngor i oedolion a phlant sydd â chyflyrau'r ysgyfaint neu'r galon, a phobl hŷn</h3>
+<p>Dilynwch eich cynllun rheoli cytûn os oes un gennych – er enghraifft, cynllun gweithredu asthma.</p>
+<p>Gofynnwch i'ch meddyg neu'ch nyrs am gynllun os nad oes un gennych.</p>`,
     atrisk: {
       adults:
-        'Dylai oedolion sydd â phroblemau’r galon leihau ymdrech gorfforol egnïol, yn arbennig yn yr awyr agored, yn enwedig os ydynt yn profi symptomau.',
+        "Dylai oedolion sydd â phroblemau'r galon leihau ymdrech gorfforol egnïol, yn arbennig yn yr awyr agored, yn enwedig os ydynt yn profi symptomau.",
       asthma:
-        'Efallai y bydd pobl sydd ag asthma yn gweld bod angen defnyddio’u hnanadlydd llliniaru yn amlach.',
+        "Efallai y bydd pobl sydd ag asthma yn gweld bod angen defnyddio'u hnanadlydd llliniaru yn amlach.",
       oldPeople: 'Dylai pobl hŷn leihau eu hymdrech gorfforol.'
     },
     outlook:
@@ -119,7 +137,10 @@ export const commonMessages = {
     <li>os bydd eich symptomau'n gwaethygu</li>
     <li>os na fydd eich symptomau'n gwella ar ôl wythnos</li>
 </ul>
-<p>Ystyriwch effaith sbardunau eraill ar eich symptomau hefyd – er enghraifft, paill uchel y tu allan neu ansawdd aer gwael dan do.</p>`,
+<p>Ystyriwch effaith sbardunau eraill ar eich symptomau hefyd – er enghraifft, paill uchel y tu allan neu ansawdd aer gwael dan do.</p>
+<h3 class="govuk-heading-s">Cyngor i oedolion a phlant sydd â chyflyrau'r ysgyfaint neu'r galon, a phobl hŷn</h3>
+<p>Dilynwch eich cynllun rheoli cytûn os oes un gennych – er enghraifft, cynllun gweithredu asthma.</p>
+<p>Gofynnwch i'ch meddyg neu'ch nyrs am gynllun os nad oes un gennych.</p>`,
     atrisk: {
       adults:
         "Dylai oedolion sydd â phroblemau'r galon leihau ymdrech gorfforol egnïol, yn arbennig yn yr awyr agored, yn enwedig os ydynt yn profi symptomau.",

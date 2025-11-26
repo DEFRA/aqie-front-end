@@ -475,7 +475,7 @@ svg|foreignObject {
   background-color: $daqi-colour-7;
 
   .daqi-number {
-    color: govuk-colour("white");
+    color: govuk-colour("black");
   }
 }
 
@@ -483,7 +483,7 @@ svg|foreignObject {
   background-color: $daqi-colour-8;
 
   .daqi-number {
-    color: govuk-colour("white");
+    color: govuk-colour("black");
   }
 }
 
@@ -499,7 +499,7 @@ svg|foreignObject {
   background-color: $daqi-colour-10;
 
   .daqi-number {
-    color: govuk-colour("white");
+    color: govuk-colour("black");
   }
 }
 
@@ -715,7 +715,7 @@ svg|foreignObject {
   &.daqi-health-inset--veryHigh,
   // stylelint-disable-next-line selector-class-pattern
   &.daqi-health-inset--uchelIawn {
-    border-left: 10px solid #4c2c92; // '' AQC-657: Updated DAQI very high (10) border colour
+    border-left: 10px solid #CE30FF; // '' Updated DAQI very high (10) border colour for production release
   }
 }
 

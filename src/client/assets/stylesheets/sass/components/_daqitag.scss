@@ -87,23 +87,23 @@ mark {
   background: $daqi-colour-10;
 }
 
-// '' - Pollutant band colors (separate from DAQI 1-10 scale)
+// '' - Pollutant band colors (using DAQI color variables)
 .daqi-tag--low {
-  color: govuk-colour("white");
-  background: govuk-colour("green");
+  color: govuk-colour("black");
+  background: $daqi-colour-2; // '' - #31FF00 (Low)
 }
 
 .daqi-tag--moderate {
   color: govuk-colour("black");
-  background: govuk-colour("yellow");
+  background: $daqi-colour-5; // '' - #FFCF00 (Moderate)
 }
 
 .daqi-tag--high {
-  color: govuk-colour("white");
-  background: #FF0000; // '' - Red (matches DAQI 8 color for high pollution)
+  color: govuk-colour("black");
+  background: $daqi-colour-8; // '' - #FF0000 (High)
 }
 
 .daqi-tag--very-high {
-  color: govuk-colour("white");
-  background: #4c2c92; // '' - Purple (matches DAQI 10 color for very high pollution)
+  color: govuk-colour("black");
+  background: $daqi-colour-10; // '' - #CE30FF (Very High)
 }

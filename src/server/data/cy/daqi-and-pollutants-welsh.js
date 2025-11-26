@@ -83,15 +83,56 @@ export const daqiTranslationsWelsh = {
         ' yn sefyll am ficrogramau (miliynfed o gram) am bob metr ciwbig o aer.'
     },
     // '' AQC-657: Adran cyngor ar leihau amlygiad (HTML trwy'r partial) - TODO: adolygu cyfieithiad
-    exposureHtml: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">Sut y gallwch leihau eich amlygiad i lygredd aer</h2>
-<p>Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer o wahanol <a class="govuk-link" href="${HEALTH_EFFECTS_ROUTE_CY}?lang=cy">gyflyrau iechyd</a> ac ostwng disgwyliad oes.</p>
-<p>Dylech geisio lleihau eich amlygiad i lygredd aer i ddiogelu eich iechyd. Ystyriwch y camau canlynol:</p>
+    // '' Low level keeps original text with "protect your health" equivalent
+    exposureHtmlLow: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">Sut gallwch chi leihau'ch amlygiad i lygredd aer</h2>
+<p>Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer o wahanol <a class="govuk-link" href="${HEALTH_EFFECTS_ROUTE_CY}?lang=cy">gyflyrau iechyd</a> a gall leihau disgwyliad oes.</p>
+<p>Dylech chi geisio lleihau'ch amlygiad i lygredd aer lle gallwch chi, hyd yn oed pan fo'r lefelau'n isel.</p>
+<p>Ystyriwch y camau canlynol:</p>
 <ul class="govuk-list govuk-list--bullet">
-  <li>dewiswch lwybrau gyda llai o draffig, yn enwedig ar adegau prysur o'r diwrnod</li>
-  <li>teithiwch i'r gwaith, cerddwch neu ymarferwch mewn parciau neu leoedd gwyrdd eraill, os nad ydych yn cael eich effeithio gan baill</li>
-  <li>os ydych yn ymarfer dan do, gwnewch yn siŵr bod yr ystafell wedi'i hawyru'n dda</li>
+  <li>cymryd llwybrau lle mae llai o draffig, yn enwedig ar adegau prysur o'r dydd</li>
+  <li>cymudo, cerdded neu ymarfer corff mewn parciau neu fannau gwyrdd eraill, os nad yw paill yn effeithio arnoch chi</li>
+  <li>os ydych chi'n ymarfer corff dan do, gofalwch fod yr ystafell wedi'i hawyru'n dda</li>
 </ul>
-<p>Cael mwy o gyngor ar <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_CY}?lang=cy">gamau y gallwch eu cymryd i leihau eich amlygiad i lygredd aer</a>.</p>`
+<p>Rhagor o gyngor ar <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_CY}?lang=cy">gamau y gallwch eu cymryd i leihau'ch amlygiad i lygredd aer</a>.</p>`,
+    // '' Moderate/High/Very High: Remove "protect your health" text, move long-term exposure to bottom
+    exposureHtmlModerate: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">Sut gallwch chi leihau'ch amlygiad i lygredd aer</h2>
+<p>Ystyriwch y camau canlynol:</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>cymryd llwybrau lle mae llai o draffig, yn enwedig ar adegau prysur o'r dydd</li>
+  <li>cymudo, cerdded neu ymarfer corff mewn parciau neu fannau gwyrdd eraill, os nad yw paill yn effeithio arnoch chi</li>
+  <li>os ydych chi'n ymarfer corff dan do, gofalwch fod yr ystafell wedi'i hawyru'n dda</li>
+</ul>
+<p>Rhagor o gyngor ar <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_CY}?lang=cy">gamau y gallwch eu cymryd i leihau'ch amlygiad i lygredd aer</a>.</p>
+<p>Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer o wahanol <a class="govuk-link" href="${HEALTH_EFFECTS_ROUTE_CY}?lang=cy">gyflyrau iechyd</a> a gall leihau disgwyliad oes.</p>`,
+    exposureHtmlHigh: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">Sut gallwch chi leihau'ch amlygiad i lygredd aer</h2>
+<p>Ystyriwch y camau canlynol:</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>cymryd llwybrau lle mae llai o draffig, yn enwedig ar adegau prysur o'r dydd</li>
+  <li>cymudo, cerdded neu ymarfer corff mewn parciau neu fannau gwyrdd eraill, os nad yw paill yn effeithio arnoch chi</li>
+  <li>os ydych chi'n ymarfer corff dan do, gofalwch fod yr ystafell wedi'i hawyru'n dda</li>
+</ul>
+<p>Rhagor o gyngor ar <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_CY}?lang=cy">gamau y gallwch eu cymryd i leihau'ch amlygiad i lygredd aer</a>.</p>
+<p>Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer o wahanol <a class="govuk-link" href="${HEALTH_EFFECTS_ROUTE_CY}?lang=cy">gyflyrau iechyd</a> a gall leihau disgwyliad oes.</p>`,
+    exposureHtmlVeryHigh: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">Sut gallwch chi leihau'ch amlygiad i lygredd aer</h2>
+<p>Ystyriwch y camau canlynol:</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>cymryd llwybrau lle mae llai o draffig, yn enwedig ar adegau prysur o'r dydd</li>
+  <li>cymudo, cerdded neu ymarfer corff mewn parciau neu fannau gwyrdd eraill, os nad yw paill yn effeithio arnoch chi</li>
+  <li>os ydych chi'n ymarfer corff dan do, gofalwch fod yr ystafell wedi'i hawyru'n dda</li>
+</ul>
+<p>Rhagor o gyngor ar <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_CY}?lang=cy">gamau y gallwch eu cymryd i leihau'ch amlygiad i lygredd aer</a>.</p>
+<p>Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer o wahanol <a class="govuk-link" href="${HEALTH_EFFECTS_ROUTE_CY}?lang=cy">gyflyrau iechyd</a> a gall leihau disgwyliad oes.</p>`,
+    // '' Default fallback (keep original for backward compatibility)
+    exposureHtml: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">Sut gallwch chi leihau'ch amlygiad i lygredd aer</h2>
+<p>Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer o wahanol <a class="govuk-link" href="${HEALTH_EFFECTS_ROUTE_CY}?lang=cy">gyflyrau iechyd</a> a gall leihau disgwyliad oes.</p>
+<p>Dylech chi geisio lleihau'ch amlygiad i lygredd aer lle gallwch chi, hyd yn oed pan fo'r lefelau'n isel.</p>
+<p>Ystyriwch y camau canlynol:</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>cymryd llwybrau lle mae llai o draffig, yn enwedig ar adegau prysur o'r dydd</li>
+  <li>cymudo, cerdded neu ymarfer corff mewn parciau neu fannau gwyrdd eraill, os nad yw paill yn effeithio arnoch chi</li>
+  <li>os ydych chi'n ymarfer corff dan do, gofalwch fod yr ystafell wedi'i hawyru'n dda</li>
+</ul>
+<p>Rhagor o gyngor ar <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_CY}?lang=cy">gamau y gallwch eu cymryd i leihau'ch amlygiad i lygredd aer</a>.</p>`
   }
 }
 

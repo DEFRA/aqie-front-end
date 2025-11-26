@@ -12,7 +12,11 @@ export const commonMessages = {
     // '' AQC-657: Removed redundant legacy phrase "Enjoy your usual outdoor activities." after rebase; updated copy for low level
     advice:
       'For most people, short term exposure to low levels of air pollution is not an issue.',
-    insetText: `<p>Adults and children with lung or heart conditions are at greater risk of experiencing symptoms.</p>
+    insetText: `<p>For most people, short term exposure to low levels of air pollution is not an issue. Continue your usual outdoor activities.</p>
+
+<p>Some people might experience symptoms due to air pollution, even when levels are low.</p>
+
+<p>Adults and children with lung or heart conditions are at greater risk of experiencing symptoms.</p>
 <p>Symptoms could include:</p>
 <ul class="govuk-list govuk-list--bullet">
     <li>coughing</li>
@@ -65,7 +69,7 @@ export const commonMessages = {
 
 <p>Also consider the impact of other triggers on your symptoms – for example, high pollen outside or poor air quality indoors.</p>
 
-<h3 class="govuk-heading-s">Advice for adults and children with lung or heart conditions, and older people</h3>
+<h3 class="govuk-heading-s">Advice for adults and children with lung or heart conditions</h3>
 
 <p>Try to adapt physically demanding activities outdoors, especially if your symptoms get worse.</p>
 <p>Follow your agreed management plan if you have one – for example, an asthma action plan. Ask your doctor or nurse for a plan if you do not have one.</p>`,

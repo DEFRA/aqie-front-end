@@ -2,8 +2,20 @@
 {# '' Wrapped with stable id for dynamic reordering when active forecast tab changes #}
 <div id="exposure-section" class="daqiexposure{% if needsTopMargin %} govuk-!-margin-top-6{% endif %}" data-daqi-exposure>
   {# DEBUG: Show template variables #}
-  <!-- DEBUG: locationId={{ locationId }}, locationName={{ locationName }}, searchTerms={{ searchTerms }}, lang={{ lang }} -->
-  {% set exposureContent = daqi.exposureHtml %}
+  <!-- DEBUG: locationId={{ locationId }}, locationName={{ locationName }}, searchTerms={{ searchTerms }}, lang={{ lang }}, band={{ airQuality.today.band }} -->
+  {# '' Select appropriate exposure HTML based on DAQI level #}
+  {% if airQuality.today.band == 'low' %}
+    {% set exposureContent = daqi.exposureHtmlLow %}
+  {% elif airQuality.today.band == 'moderate' %}
+    {% set exposureContent = daqi.exposureHtmlModerate %}
+  {% elif airQuality.today.band == 'high' %}
+    {% set exposureContent = daqi.exposureHtmlHigh %}
+  {% elif airQuality.today.band == 'very high' %}
+    {% set exposureContent = daqi.exposureHtmlVeryHigh %}
+  {% else %}
+    {# '' Fallback to default #}
+    {% set exposureContent = daqi.exposureHtml %}
+  {% endif %}
   {% if locationId %}
     {# Replace the {locationId} placeholder in the URL with the actual location ID #}
     {% set exposureContent = exposureContent | replace('{locationId}', locationId) %}
