@@ -40,7 +40,6 @@ export const commonMessages = {
 
 <h3 class="govuk-heading-s">Amlygiad byrdymor i lygredd aer</h3>
 <p>Gall amlygiad byrdymor (dros oriau neu ddyddiau) achosi ystod o effeithiau ar iechyd, gan gynnwys:</p>
-<p>Gallai'r symptomau gynnwys:</p>
 <ul class="govuk-list govuk-list--bullet">
     <li>pesychu</li>
     <li>llid ar y llygaid, y trwyn a'r gwddf</li>
