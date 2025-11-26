@@ -3,6 +3,7 @@ import {
   pollutantTypes
 } from '../../data/cy/monitoring-sites.js'
 import * as airQualityData from '../../data/cy/air-quality.js'
+import { calendarWelsh } from '../../data/cy/navigation-welsh.js'
 import { createLogger } from '../../common/helpers/logging/logger.js'
 import {
   LANG_CY,
@@ -280,7 +281,8 @@ const getLocationDetailsController = {
                 'YYYY-MM-DD HH:mm:ss'
               )
               locationData.englishDate = yesterday.format('DD MMMM YYYY')
-              locationData.welshDate = yesterday.format('DD MMMM YYYY')
+              const welshMonth = calendarWelsh[yesterday.month()]
+              locationData.welshDate = `${yesterday.format('DD')} ${welshMonth} ${yesterday.format('YYYY')}`
               logger.info(
                 `🧪 [CY] Changed issue_date to: ${locationData.dailySummary.issue_date}`
               )
@@ -302,7 +304,8 @@ const getLocationDetailsController = {
               'YYYY-MM-DD HH:mm:ss'
             )
             locationData.englishDate = today.format('DD MMMM YYYY')
-            locationData.welshDate = today.format('DD MMMM YYYY')
+            const welshMonth = calendarWelsh[today.month()]
+            locationData.welshDate = `${today.format('DD')} ${welshMonth} ${today.format('YYYY')}`
             logger.info(
               `🧪 [CY] Changed issue_date to: ${locationData.dailySummary.issue_date}`
             )
@@ -320,7 +323,8 @@ const getLocationDetailsController = {
               issue_date: yesterday.format('YYYY-MM-DD HH:mm:ss')
             }
             locationData.englishDate = yesterday.format('DD MMMM YYYY')
-            locationData.welshDate = yesterday.format('DD MMMM YYYY')
+            const welshMonth = calendarWelsh[yesterday.month()]
+            locationData.welshDate = `${yesterday.format('DD')} ${welshMonth} ${yesterday.format('YYYY')}`
             logger.info(
               `🧪 [CY] Changed issue_date to: ${locationData.dailySummary.issue_date}`
             )

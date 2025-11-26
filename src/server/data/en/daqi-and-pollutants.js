@@ -84,9 +84,48 @@ export const daqiTranslations = {
         ' stands for micrograms (one millionth of a gram) per cubic metre of air.'
     },
     // '' AQC-657: Exposure reduction advice section (HTML rendered via partial)
+    // '' Low level keeps original text with "protect your health"
+    exposureHtmlLow: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">How you can reduce your exposure to air pollution</h2>
+<p>Long term exposure to air pollution (over years) can lead to many different <a class="govuk-link" href="${HEALTH_EFFECTS_ROUTE_EN}?lang=en">health conditions</a> and can reduce life expectancy.</p>
+<p>You should try to reduce your exposure to air pollution where you can, even when levels are low. Consider the following actions:</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>take routes where there is less traffic, especially at busy times of day</li>
+  <li>commute, walk or exercise in parks or other green spaces, if you are not affected by pollen</li>
+  <li>if you exercise indoors, make sure the room is well ventilated</li>
+</ul>
+<p>Get more advice on <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_EN}?lang=en">actions you can take to reduce your exposure to air pollution</a>.</p>`,
+    // '' Moderate/High/Very High: Remove "protect your health" text, move long-term exposure to bottom
+    exposureHtmlModerate: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">How you can reduce your exposure to air pollution</h2>
+<p>Consider the following actions:</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>take routes where there is less traffic, especially at busy times of day</li>
+  <li>commute, walk or exercise in parks or other green spaces, if you are not affected by pollen</li>
+  <li>if you exercise indoors, make sure the room is well ventilated</li>
+</ul>
+<p>Get more advice on <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_EN}?lang=en">actions you can take to reduce your exposure to air pollution</a>.</p>
+<p>Long term exposure to air pollution (over years) can lead to many different <a class="govuk-link" href="${HEALTH_EFFECTS_ROUTE_EN}?lang=en">health conditions</a> and can reduce life expectancy.</p>`,
+    exposureHtmlHigh: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">How you can reduce your exposure to air pollution</h2>
+<p>Consider the following actions:</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>take routes where there is less traffic, especially at busy times of day</li>
+  <li>commute, walk or exercise in parks or other green spaces, if you are not affected by pollen</li>
+  <li>if you exercise indoors, make sure the room is well ventilated</li>
+</ul>
+<p>Get more advice on <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_EN}?lang=en">actions you can take to reduce your exposure to air pollution</a>.</p>
+<p>Long term exposure to air pollution (over years) can lead to many different <a class="govuk-link" href="${HEALTH_EFFECTS_ROUTE_EN}?lang=en">health conditions</a> and can reduce life expectancy.</p>`,
+    exposureHtmlVeryHigh: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">How you can reduce your exposure to air pollution</h2>
+<p>Consider the following actions:</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>take routes where there is less traffic, especially at busy times of day</li>
+  <li>commute, walk or exercise in parks or other green spaces, if you are not affected by pollen</li>
+  <li>if you exercise indoors, make sure the room is well ventilated</li>
+</ul>
+<p>Get more advice on <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_EN}?lang=en">actions you can take to reduce your exposure to air pollution</a>.</p>
+<p>Long term exposure to air pollution (over years) can lead to many different <a class="govuk-link" href="${HEALTH_EFFECTS_ROUTE_EN}?lang=en">health conditions</a> and can reduce life expectancy.</p>`,
+    // '' Default fallback (keep original for backward compatibility)
     exposureHtml: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">How you can reduce your exposure to air pollution</h2>
 <p>Long term exposure to air pollution (over years) can lead to many different <a class="govuk-link" href="${HEALTH_EFFECTS_ROUTE_EN}?lang=en">health conditions</a> and can reduce life expectancy.</p>
-<p>You should try to reduce your exposure to air pollution to protect your health. Consider the following actions:</p>
+<p>You should try to reduce your exposure to air pollution where you can, even when levels are low. Consider the following actions:</p>
 <ul class="govuk-list govuk-list--bullet">
   <li>take routes where there is less traffic, especially at busy times of day</li>
   <li>commute, walk or exercise in parks or other green spaces, if you are not affected by pollen</li>

@@ -31,11 +31,11 @@ const DAQI_LEVELS = {
     color: '#FFCF00',
     description: 'Moderate - Orange-yellow'
   },
-  6: { band: 'Moderate', color: '#ffdd00', description: 'Moderate - Orange' },
+  6: { band: 'Moderate', color: '#FF9A00', description: 'Moderate - Orange' },
   7: { band: 'High', color: '#FF6464', description: 'High - Light red' },
   8: { band: 'High', color: '#FF0000', description: 'High - Red' },
   9: { band: 'High', color: '#990000', description: 'High - Dark red' },
-  10: { band: 'Very High', color: '#4c2c92', description: 'Very High - Purple' }
+  10: { band: 'Very High', color: '#CE30FF', description: 'Very High - Purple' }
 }
 
 /**

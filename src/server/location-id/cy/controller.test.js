@@ -145,7 +145,8 @@ vi.mock('../../data/constants.js', () => ({
   LOCATION_TYPE_NI: 'NI',
   LOCATION_NOT_FOUND: 'location-not-found/index',
   REDIRECT_STATUS_CODE: 302,
-  HTTP_STATUS_INTERNAL_SERVER_ERROR: 500
+  HTTP_STATUS_INTERNAL_SERVER_ERROR: 500,
+  WELSH_TITLE: 'Gwirio ansawdd aer'
 }))
 
 vi.mock('../../common/helpers/get-site-url.js', () => ({
