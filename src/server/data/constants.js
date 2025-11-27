@@ -32,6 +32,7 @@ export const ACTIONS_REDUCE_EXPOSURE_ROUTE_CY =
 export const HEALTH_EFFECTS_ROUTE_EN = '/location/{locationId}/health-effects'
 export const HEALTH_EFFECTS_ROUTE_CY =
   '/lleoliad/{locationId}/effeithiau-iechyd'
+export const OZONE_PATH_CY = '/llygryddion/oson/cy'
 export const STATUS_UNAUTHORIZED = 401
 export const STATUS_NOT_FOUND = 404
 export const STATUS_INTERNAL_SERVER_ERROR = 500

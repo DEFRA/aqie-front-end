@@ -9,8 +9,8 @@ import {
   isValidPartialPostcodeUK
 } from './convert-string.js'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const filename = fileURLToPath(import.meta.url)
+const dirname = path.dirname(filename)
 const logger = createLogger()
 const STATUS_CODE_SUCCESS = 200 // Define constant for success status code
 
@@ -49,14 +49,15 @@ async function getOSPlaces(
   )}&fq=${encodeURIComponent(filters)}&key=${osNamesApiKey}`
   logger.info(`osPlace data requested osNamesApiUrlFull: ${osNamesApiUrlFull}`)
   let isLocal = false
-  if (request && request.headers && request.headers.host) {
+  // ''
+  if (request?.headers?.host) {
     const host = request.headers.host
     isLocal = host.includes('localhost') || host.includes('127.0.0.1')
   }
   if (isLocal) {
     let cdpXApiKey = process.env.CDP_X_API_KEY
     if (!cdpXApiKey) {
-      const configPath = path.resolve(__dirname, '../../../config/local.json')
+      const configPath = path.resolve(dirname, '../../../config/local.json')
       const localConfigRaw = fs.readFileSync(configPath, 'utf-8')
       const localConfig = JSON.parse(localConfigRaw)
       cdpXApiKey = localConfig.cdpXApiKey
@@ -69,7 +70,7 @@ async function getOSPlaces(
       }
     }
   } else {
-    if (updatedOptions.headers && updatedOptions.headers['x-api-key']) {
+    if (updatedOptions.headers?.['x-api-key']) {
       const rest = { ...updatedOptions.headers }
       delete rest['x-api-key']
       updatedOptions = {
@@ -88,14 +89,14 @@ async function getOSPlaces(
     updatedOptions,
     shouldCallApi
   )
-  if (statusCodeOSPlace !== STATUS_CODE_SUCCESS) {
-    logger.error(`Error fetching statusCodeOSPlace data: ${statusCodeOSPlace}`)
-    // Always return a defined object, even on error
-    return { results: [] }
-  } else {
+  if (statusCodeOSPlace === STATUS_CODE_SUCCESS) {
     logger.info(`osPlacesData fetched:`)
     // Defensive: always return a defined object
     return osPlacesData || { results: [] }
+  } else {
+    logger.error(`Error fetching statusCodeOSPlace data: ${statusCodeOSPlace}`)
+    // Always return a defined object, even on error
+    return { results: [] }
   }
 }
 

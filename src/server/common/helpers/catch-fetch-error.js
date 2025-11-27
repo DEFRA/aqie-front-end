@@ -36,6 +36,8 @@ async function catchFetchError(url, options) {
       try {
         errorText = await response.text()
       } catch (e) {
+        // Log the error when unable to read response body
+        logger.error(`Unable to read response body from ${url}:`, e)
         errorText = '[unable to read response body]'
       }
       logger.error(

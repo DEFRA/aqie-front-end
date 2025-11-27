@@ -1,6 +1,6 @@
 import { welsh } from '../../data/cy/cy.js'
 import { ozoneController } from './controller.js'
-import { LANG_CY } from '../../data/constants.js'
+import { LANG_CY, OZONE_PATH_CY } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
 describe('Ozone Controller - Welsh', () => {
@@ -53,7 +53,7 @@ describe('Ozone Controller - Welsh', () => {
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
       lang: mockRequest.query.lang,
-      currentPath: '/llygryddion/oson/cy'
+      currentPath: OZONE_PATH_CY
     })
   })
 
