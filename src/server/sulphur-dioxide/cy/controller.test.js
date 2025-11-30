@@ -4,6 +4,9 @@ import { sulphurDioxideController } from './controller.js'
 import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
+const SO2_PATH_CY = SO2_PATH_CY
+const VIEW_RENDERED = VIEW_RENDERED
+
 describe('sulphurDioxide Controller - Welsh', () => {
   let mockRequest
   let mockH
@@ -13,11 +16,11 @@ describe('sulphurDioxide Controller - Welsh', () => {
   beforeEach(() => {
     mockRequest = {
       query: {},
-      path: '/llygryddion/sylffwr-deuocsid/cy'
+      path: SO2_PATH_CY
     }
     mockH = {
       redirect: vi.fn(() => ({ code: vi.fn() })),
-      view: vi.fn().mockReturnValue('view rendered')
+      view: vi.fn().mockReturnValue(VIEW_RENDERED)
     }
   })
 
@@ -38,14 +41,14 @@ describe('sulphurDioxide Controller - Welsh', () => {
       query: {
         lang: LANG_CY
       },
-      path: '/llygryddion/sylffwr-deuocsid/cy'
+      path: SO2_PATH_CY
     }
     const expectedUrl =
       'https://check-air-quality.service.gov.uk/llygryddion/sylffwr-deuocsid/cy?lang=cy'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = sulphurDioxideController.handler(mockRequest, mockH)
-    expect(result).toBe('view rendered')
+    expect(result).toBe(VIEW_RENDERED)
     expect(mockH.view).toHaveBeenCalledWith('sulphur-dioxide/index', {
       pageTitle: mockContent.pollutants.sulphurDioxide.pageTitle,
       description: mockContent.pollutants.sulphurDioxide.description,
@@ -58,19 +61,19 @@ describe('sulphurDioxide Controller - Welsh', () => {
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
       lang: mockRequest.query.lang,
-      currentPath: '/llygryddion/sylffwr-deuocsid/cy'
+      currentPath: SO2_PATH_CY
     })
   })
 
   it('should render by default to sulphurDioxide welsh page if lang is not cy or en', () => {
     mockRequest.query.lang = 'fr'
-    mockRequest.path = '/llygryddion/sylffwr-deuocsid/cy'
+    mockRequest.path = SO2_PATH_CY
     const expectedUrl =
       'https://check-air-quality.service.gov.uk/llygryddion/sylffwr-deuocsid/cy?lang=fr'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = sulphurDioxideController.handler(mockRequest, mockH)
-    expect(result).toBe('view rendered')
+    expect(result).toBe(VIEW_RENDERED)
     expect(mockH.view).toHaveBeenCalledWith('sulphur-dioxide/index', {
       pageTitle: mockContent.pollutants.sulphurDioxide.pageTitle,
       description: mockContent.pollutants.sulphurDioxide.description,
@@ -83,7 +86,7 @@ describe('sulphurDioxide Controller - Welsh', () => {
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
       lang: LANG_CY,
-      currentPath: '/llygryddion/sylffwr-deuocsid/cy'
+      currentPath: SO2_PATH_CY
     })
   })
 })

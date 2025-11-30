@@ -5,6 +5,8 @@ import {
   HEALTH_EFFECTS_ROUTE_CY
 } from '../constants.js'
 
+const HEALTH_EFFECTS_HEADING_CY = 'Effeithiau ar iechyd'
+
 /**
  * Welsh translations for DAQI display and pollutant information pages
  */
@@ -82,8 +84,6 @@ export const daqiTranslationsWelsh = {
       latest2:
         ' yn sefyll am ficrogramau (miliynfed o gram) am bob metr ciwbig o aer.'
     },
-    // '' AQC-657: Adran cyngor ar leihau amlygiad (HTML trwy'r partial) - TODO: adolygu cyfieithiad
-    // '' Low level keeps original text with "protect your health" equivalent
     exposureHtmlLow: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">Sut gallwch chi leihau'ch amlygiad i lygredd aer</h2>
 <p>Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer o wahanol <a class="govuk-link" href="${HEALTH_EFFECTS_ROUTE_CY}?lang=cy">gyflyrau iechyd</a> a gall leihau disgwyliad oes.</p>
 <p>Dylech chi geisio lleihau'ch amlygiad i lygredd aer lle gallwch chi, hyd yn oed pan fo'r lefelau'n isel.</p>
@@ -223,7 +223,7 @@ export const pollutantTranslationsWelsh = {
       headerText: `${WELSH_TITLE}`,
       headings: {
         a: 'Ffynonellau osôn',
-        b: 'Effeithiau ar iechyd'
+        b: HEALTH_EFFECTS_HEADING_CY
       },
       paragraphs: {
         a: "Does dim ffynonellau allyriadau mawr o osôn ei hun. Mae osôn yn yr aer yn cael ei ffurfio gan adweithiau rhwng llygryddion eraill, er enghraifft, pan fydd llygryddion o geir, gorsafoedd pŵer a ffatrïoedd yn adweithio gyda golau'r haul.",
@@ -248,7 +248,7 @@ export const pollutantTranslationsWelsh = {
       headerText: `${WELSH_TITLE}`,
       headings: {
         a: 'Ffynonellau nitrogen deuocsid',
-        b: 'Effeithiau ar iechyd'
+        b: HEALTH_EFFECTS_HEADING_CY
       },
       paragraphs: {
         a: "Mae nitrogen deuocsid yn nwy di-liw. Mae'n cael ei gynhyrchu'n bennaf yn sgil:",
@@ -275,7 +275,7 @@ export const pollutantTranslationsWelsh = {
       headerText: `${WELSH_TITLE}`,
       headings: {
         a: 'Ffynonellau sylffwr deuocsid',
-        b: 'Effeithiau ar iechyd'
+        b: HEALTH_EFFECTS_HEADING_CY
       },
       paragraphs: {
         a: "Mae sylffwr deuocsid yn nwy di-liw sydd ag arogl cryf. Mae'n cael ei gynhyrchu'n bennaf yn sgil:",
@@ -302,7 +302,7 @@ export const pollutantTranslationsWelsh = {
       headerText: `${WELSH_TITLE}`,
       headings: {
         a: 'Ffynonellau PM10',
-        b: 'Effeithiau ar iechyd'
+        b: HEALTH_EFFECTS_HEADING_CY
       },
       paragraphs: {
         a: "Mae mater gronynnol (PM) yn ronynnau mân iawn o solidau neu hylifau yn yr aer. Dim ond 10 micrometr mewn diamedr yw'r gronynnau.O ran cyd- destun, mae lled blewyn o wallt dynol yn 50 i 70 micrometr.",
@@ -335,7 +335,7 @@ export const pollutantTranslationsWelsh = {
       headerText: 'Gwirio ansawdd aer',
       headings: {
         a: 'Ffynonellau PM2.5',
-        b: 'Effeithiau ar iechyd'
+        b: HEALTH_EFFECTS_HEADING_CY
       },
       paragraphs: {
         a: "Mae mater gronynnol (PM) yn ronynnau mân iawn o solidau neu hylifau sydd yn yr aer. Dim ond 2.5 micrometr mewn diamedr yw'r gronynnau.O ran cyd- destun, mae lled blewyn o wallt dynol yn 50 i 70 micrometr.",

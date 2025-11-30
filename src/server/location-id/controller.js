@@ -37,6 +37,10 @@ import { getForecastWarning } from '../locations/helpers/forecast-warning.js'
 import { getIssueTime } from '../locations/helpers/middleware-helpers.js'
 
 const logger = createLogger()
+const DATE_FORMAT = 'DD MMMM YYYY'
+const DAILY_SUMMARY_KEY = 'dailySummary'
+const ISSUE_DATE_FORMAT = 'YYYY-MM-DD'
+const DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss'
 
 /**
  * Check if mock level is requested and override air quality data
@@ -62,12 +66,12 @@ function applyMockLevel(request, airQuality) {
   )
 
   if (mockLevel !== undefined && mockLevel !== null) {
-    const level = parseInt(mockLevel, 10)
+    const level = Number.parseInt(mockLevel, 10)
 
-    logger.info(`🔍 Parsed level:`, level, `isNaN:`, isNaN(level))
+    logger.info(`🔍 Parsed level:`, level, `isNaN:`, Number.isNaN(level))
 
     // Validate level
-    if (!isNaN(level) && level >= 0 && level <= 10) {
+    if (!Number.isNaN(level) && level >= 0 && level <= 10) {
       logger.info(`🎨 Mock DAQI Level ${level} applied from session`)
 
       // If mockDay is specified, apply mock level only to that specific day
@@ -160,10 +164,10 @@ function applyMockPollutants(request, monitoringSites) {
     logger.info(`🔍 Parsed band:`, bandStr)
 
     // Validate band
-    const validBands = ['low', 'moderate', 'high', 'very-high', 'very high']
+    const validBands = new Set(['low', 'moderate', 'high', 'very-high', 'very high'])
     if (
-      validBands.includes(bandStr) ||
-      validBands.includes(bandStr.replace('-', ' '))
+      validBands.has(bandStr) ||
+      validBands.has(bandStr.replace('-', ' '))
     ) {
       logger.info(`🎨 Mock Pollutant Band '${bandStr}' applied from session`)
 
@@ -202,27 +206,27 @@ function handleWelshRedirect(query, locationId, h) {
     const mocksDisabled = config.get('disableTestMocks')
 
     // Preserve mock parameters in redirect (only when mocks enabled)
-    const mockLevel = !mocksDisabled ? query?.mockLevel : undefined
+    const mockLevel = mocksDisabled ? null : query?.mockLevel
     const mockLevelParam =
-      mockLevel !== undefined
+      mockLevel !== null && mockLevel !== undefined
         ? `&mockLevel=${encodeURIComponent(mockLevel)}`
         : ''
 
-    const mockDay = !mocksDisabled ? query?.mockDay : undefined
+    const mockDay = mocksDisabled ? null : query?.mockDay
     const mockDayParam =
-      mockDay !== undefined ? `&mockDay=${encodeURIComponent(mockDay)}` : ''
+      mockDay !== null && mockDay !== undefined ? `&mockDay=${encodeURIComponent(mockDay)}` : ''
 
-    const mockPollutantBand = !mocksDisabled
-      ? query?.mockPollutantBand
-      : undefined
+    const mockPollutantBand = mocksDisabled
+      ? null
+      : query?.mockPollutantBand
     const mockPollutantParam =
-      mockPollutantBand !== undefined
+      mockPollutantBand !== null && mockPollutantBand !== undefined
         ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
         : ''
 
-    const testMode = !mocksDisabled ? query?.testMode : undefined
+    const testMode = mocksDisabled ? null : query?.testMode
     const testModeParam =
-      testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
+      testMode !== null && testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
 
     return h
       .redirect(
@@ -259,27 +263,27 @@ function handleSearchTermsRedirect(
     const mocksDisabled = config.get('disableTestMocks')
 
     // Preserve mock parameters in redirect if present (only when mocks enabled)
-    const mockLevel = !mocksDisabled ? request.query?.mockLevel : undefined
+    const mockLevel = mocksDisabled ? null : request.query?.mockLevel
     const mockLevelParam =
-      mockLevel !== undefined
+      mockLevel !== null && mockLevel !== undefined
         ? `&mockLevel=${encodeURIComponent(mockLevel)}`
         : ''
 
-    const mockDay = !mocksDisabled ? request.query?.mockDay : undefined
+    const mockDay = mocksDisabled ? null : request.query?.mockDay
     const mockDayParam =
-      mockDay !== undefined ? `&mockDay=${encodeURIComponent(mockDay)}` : ''
+      mockDay !== null && mockDay !== undefined ? `&mockDay=${encodeURIComponent(mockDay)}` : ''
 
-    const mockPollutantBand = !mocksDisabled
-      ? request.query?.mockPollutantBand
-      : undefined
+    const mockPollutantBand = mocksDisabled
+      ? null
+      : request.query?.mockPollutantBand
     const mockPollutantParam =
-      mockPollutantBand !== undefined
+      mockPollutantBand !== null && mockPollutantBand !== undefined
         ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
         : ''
 
-    const testMode = !mocksDisabled ? request.query?.testMode : undefined
+    const testMode = mocksDisabled ? null : request.query?.testMode
     const testModeParam =
-      testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
+      testMode !== null && testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
 
     return h
       .redirect(
@@ -310,9 +314,9 @@ function buildLocationViewData({
   // '' Handle case where dailySummary might be undefined (e.g., in test mode)
   let { airQuality } = airQualityValues(forecastNum, lang)
   const highestAQ = Math.max(...forecastNum)
-  const { transformedDailySummary } = locationData.dailySummary
-    ? transformKeys(locationData.dailySummary, lang, highestAQ)
-    : { transformedDailySummary: undefined }
+  const { transformedDailySummary } = locationData[DAILY_SUMMARY_KEY]
+    ? transformKeys(locationData[DAILY_SUMMARY_KEY], lang, highestAQ)
+    : { transformedDailySummary: null }
 
   // Apply mock level if requested
   airQuality = applyMockLevel(request, airQuality)
@@ -355,34 +359,34 @@ function buildLocationViewData({
     const queryString =
       queryParams.length > 0 ? `&${queryParams.join('&')}` : ''
 
-    Object.keys(airQualityData.commonMessages).forEach((key) => {
+    for (const key of Object.keys(airQualityData.commonMessages)) {
       const message = airQualityData.commonMessages[key]
       if (message && typeof message === 'object') {
         processedAirQualityData[key] = { ...message }
         // Replace {locationId} in insetText if it exists
         if (message.insetText && typeof message.insetText === 'string') {
-          let processedText = message.insetText.replace(
-            /{locationId}/g,
+          let processedText = message.insetText.replaceAll(
+            '{locationId}',
             locationId
           )
           // Add query parameters to action links for proper back link context
           if (queryString) {
             if (lang === LANG_CY) {
-              processedText = processedText.replace(
-                /effeithiau-iechyd\?lang=cy/g,
+              processedText = processedText.replaceAll(
+                'effeithiau-iechyd?lang=cy',
                 `effeithiau-iechyd?lang=cy${queryString}`
               )
-              processedText = processedText.replace(
-                /camau-lleihau-amlygiad\/cy\?lang=cy/g,
+              processedText = processedText.replaceAll(
+                'camau-lleihau-amlygiad/cy?lang=cy',
                 `camau-lleihau-amlygiad/cy?lang=cy${queryString}`
               )
             } else {
-              processedText = processedText.replace(
-                /health-effects\?lang=en/g,
+              processedText = processedText.replaceAll(
+                'health-effects?lang=en',
                 `health-effects?lang=en${queryString}`
               )
-              processedText = processedText.replace(
-                /actions-reduce-exposure\?lang=en/g,
+              processedText = processedText.replaceAll(
+                'actions-reduce-exposure?lang=en',
                 `actions-reduce-exposure?lang=en${queryString}`
               )
             }
@@ -392,35 +396,35 @@ function buildLocationViewData({
       } else {
         processedAirQualityData[key] = message
       }
-    })
+    }
 
     // Also process exposureHtml in daqi object if it exists
     if (airQualityData?.daqi?.exposureHtml) {
       if (!processedAirQualityData.daqi) {
         processedAirQualityData.daqi = { ...airQualityData.daqi }
       }
-      let exposureHtml = airQualityData.daqi.exposureHtml.replace(
-        /{locationId}/g,
+      let exposureHtml = airQualityData.daqi.exposureHtml.replaceAll(
+        '{locationId}',
         locationId
       )
       // Add query parameters to links in exposureHtml
       if (queryString) {
         if (lang === LANG_CY) {
-          exposureHtml = exposureHtml.replace(
-            /effeithiau-iechyd\?lang=cy/g,
+          exposureHtml = exposureHtml.replaceAll(
+            'effeithiau-iechyd?lang=cy',
             `effeithiau-iechyd?lang=cy${queryString}`
           )
-          exposureHtml = exposureHtml.replace(
-            /camau-lleihau-amlygiad\/cy\?lang=cy/g,
+          exposureHtml = exposureHtml.replaceAll(
+            'camau-lleihau-amlygiad/cy?lang=cy',
             `camau-lleihau-amlygiad/cy?lang=cy${queryString}`
           )
         } else {
-          exposureHtml = exposureHtml.replace(
-            /health-effects\?lang=en/g,
+          exposureHtml = exposureHtml.replaceAll(
+            'health-effects?lang=en',
             `health-effects?lang=en${queryString}`
           )
-          exposureHtml = exposureHtml.replace(
-            /actions-reduce-exposure\?lang=en/g,
+          exposureHtml = exposureHtml.replaceAll(
+            'actions-reduce-exposure?lang=en',
             `actions-reduce-exposure?lang=en${queryString}`
           )
         }
@@ -563,19 +567,19 @@ function validateAndProcessSessionData(
     // Preserve mock parameters in redirect
     const mockLevel = request.query?.mockLevel
     const mockLevelParam =
-      mockLevel !== undefined
+      mockLevel !== null && mockLevel !== undefined
         ? `&mockLevel=${encodeURIComponent(mockLevel)}`
         : ''
 
     const mockPollutantBand = request.query?.mockPollutantBand
     const mockPollutantParam =
-      mockPollutantBand !== undefined
+      mockPollutantBand !== null && mockPollutantBand !== undefined
         ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
         : ''
 
     const testMode = request.query?.testMode
     const testModeParam =
-      testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
+      testMode !== null && testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
 
     return h
       .redirect(
@@ -628,8 +632,9 @@ function initializeRequestData(request) {
     logger.warn(
       `🚫 Attempted to set mock level when mocks disabled (disableTestMocks=true) - ignoring parameter`
     )
+  } else {
+    // If parameter is not present, preserve existing session value (don't clear)
   }
-  // If parameter is not present, preserve existing session value (don't clear)
 
   // '' Store mockDay in session if provided (optional: specific day for mock level)
   // Valid values: today, day2, day3, day4, day5
@@ -646,8 +651,9 @@ function initializeRequestData(request) {
     logger.warn(
       `🚫 Attempted to set mock day when mocks disabled (disableTestMocks=true) - ignoring parameter`
     )
+  } else {
+    // If parameter is not present, preserve existing session value (don't clear)
   }
-  // If parameter is not present, preserve existing session value (don't clear)
 
   // '' Store mockPollutantBand in session if provided
   // Note: We preserve mockPollutantBand in session across redirects
@@ -680,8 +686,9 @@ function initializeRequestData(request) {
     logger.warn(
       `🚫 Attempted to set mock pollutant band when mocks disabled (disableTestMocks=true) - ignoring parameter`
     )
+  } else {
+    // If parameter is not present, preserve existing session value (don't clear)
   }
-  // If parameter is not present, preserve existing session value (don't clear)
 
   // '' Store testMode in session if provided (but DON'T clear it if not present - let it persist)
   // Disable when mocks are disabled
@@ -692,6 +699,8 @@ function initializeRequestData(request) {
     logger.warn(
       `🚫 Attempted to set test mode when mocks disabled (disableTestMocks=true) - ignoring parameter`
     )
+  } else {
+    // If parameter is not present, preserve existing session value (don't clear)
   }
   // Note: We don't clear testMode automatically - it persists across requests (when mocks enabled)
   // To clear it, user must explicitly visit with ?testMode=clear or restart session
@@ -710,9 +719,9 @@ function initializeRequestData(request) {
 // Helper to initialize common variables
 function initializeCommonVariables(request) {
   request.yar.clear('searchTermsSaved')
-  const formattedDate = moment().format('DD MMMM YYYY').split(' ')
+  const formattedDate = moment().format(DATE_FORMAT).split(' ')
   const getMonth = calendarEnglish.findIndex(
-    (item) => item.indexOf(formattedDate[1]) !== -1
+    (item) => item.includes(formattedDate[1])
   )
   const metaSiteUrl = getAirQualitySiteUrl(request)
   const locationData = request.yar.get('locationData') || {}
@@ -832,7 +841,6 @@ async function processLocationWorkflow({
   logger.info(`🔍 final testMode:`, testMode)
 
   // 🧪 TESTING: Temporary test modes for visual verification
-  // TODO: REMOVE THIS CODE AFTER TESTING!
   if (testMode) {
     logger.info(`🧪 TEST MODE ACTIVE: ${testMode}`)
 
@@ -840,21 +848,21 @@ async function processLocationWorkflow({
       case 'noDailySummary':
         // '' Remove daily summary text only (keep date if today)
         logger.info('🧪 TEST: Removing daily summary data')
-        locationData.dailySummary = undefined
+        locationData[DAILY_SUMMARY_KEY] = null
         break
 
       case 'oldDate':
         // '' Set date to yesterday (date should NOT show)
         logger.info('🧪 TEST: Setting old issue_date (yesterday)')
-        if (locationData.dailySummary) {
+        if (locationData[DAILY_SUMMARY_KEY]) {
           const yesterday = moment().subtract(1, 'days')
-          locationData.dailySummary.issue_date = yesterday.format(
-            'YYYY-MM-DD HH:mm:ss'
+          locationData[DAILY_SUMMARY_KEY].issue_date = yesterday.format(
+            DATETIME_FORMAT
           )
-          locationData.englishDate = yesterday.format('DD MMMM YYYY')
-          locationData.welshDate = yesterday.format('DD MMMM YYYY')
+          locationData.englishDate = yesterday.format(DATE_FORMAT)
+          locationData.welshDate = yesterday.format(DATE_FORMAT)
           logger.info(
-            `🧪 Changed issue_date to: ${locationData.dailySummary.issue_date}`
+            `🧪 Changed issue_date to: ${locationData[DAILY_SUMMARY_KEY].issue_date}`
           )
         }
         break
@@ -864,19 +872,19 @@ async function processLocationWorkflow({
         logger.info('🧪 TEST: Setting today issue_date')
         const today = moment()
         // Create dailySummary if it doesn't exist (only for test mode - real app should have API data)
-        if (!locationData.dailySummary) {
+        if (!locationData[DAILY_SUMMARY_KEY]) {
           logger.info(
             '🧪 TEST: Creating dailySummary object (test mode only - not production data)'
           )
-          locationData.dailySummary = {}
+          locationData[DAILY_SUMMARY_KEY] = {}
         }
-        locationData.dailySummary.issue_date = today.format(
-          'YYYY-MM-DD HH:mm:ss'
+        locationData[DAILY_SUMMARY_KEY].issue_date = today.format(
+          DATETIME_FORMAT
         )
-        locationData.englishDate = today.format('DD MMMM YYYY')
-        locationData.welshDate = today.format('DD MMMM YYYY')
+        locationData.englishDate = today.format(DATE_FORMAT)
+        locationData.welshDate = today.format(DATE_FORMAT)
         logger.info(
-          `🧪 Changed issue_date to: ${locationData.dailySummary.issue_date}`
+          `🧪 Changed issue_date to: ${locationData[DAILY_SUMMARY_KEY].issue_date}`
         )
         logger.info(`🧪 Changed englishDate to: ${locationData.englishDate}`)
         break
@@ -886,13 +894,13 @@ async function processLocationWorkflow({
         // '' Remove daily summary AND set old date (nothing should show)
         logger.info('🧪 TEST: Removing summary AND setting old date')
         const yesterday = moment().subtract(1, 'days')
-        locationData.dailySummary = {
-          issue_date: yesterday.format('YYYY-MM-DD HH:mm:ss')
+        locationData[DAILY_SUMMARY_KEY] = {
+          issue_date: yesterday.format(DATETIME_FORMAT)
         }
-        locationData.englishDate = yesterday.format('DD MMMM YYYY')
-        locationData.welshDate = yesterday.format('DD MMMM YYYY')
+        locationData.englishDate = yesterday.format(DATE_FORMAT)
+        locationData.welshDate = yesterday.format(DATE_FORMAT)
         logger.info(
-          `🧪 Changed issue_date to: ${locationData.dailySummary.issue_date}`
+          `🧪 Changed issue_date to: ${locationData[DAILY_SUMMARY_KEY].issue_date}`
         )
         logger.info(`🧪 Removed daily summary data (only kept issue_date)`)
         break
@@ -904,16 +912,18 @@ async function processLocationWorkflow({
 
     // Re-calculate showSummaryDate after any changes
     const isSummaryDateToday = (issueDate) => {
-      if (!issueDate) return false
-      const today = moment().format('YYYY-MM-DD')
-      const issueDateFormatted = moment(issueDate).format('YYYY-MM-DD')
+      if (!issueDate) {
+        return false
+      }
+      const today = moment().format(ISSUE_DATE_FORMAT)
+      const issueDateFormatted = moment(issueDate).format(ISSUE_DATE_FORMAT)
       return today === issueDateFormatted
     }
 
     locationData.showSummaryDate = isSummaryDateToday(
-      locationData.dailySummary?.issue_date
+      locationData[DAILY_SUMMARY_KEY]?.issue_date
     )
-    locationData.issueTime = getIssueTime(locationData.dailySummary?.issue_date)
+    locationData.issueTime = getIssueTime(locationData[DAILY_SUMMARY_KEY]?.issue_date)
 
     // Update session with modified data
     request.yar.set('locationData', locationData)
@@ -945,57 +955,57 @@ async function processLocationWorkflow({
   logger.info(
     `🔍 showSummaryDate (from session): ${locationData.showSummaryDate}`
   )
-  logger.info(`🔍 dailySummary object exists: ${!!locationData.dailySummary}`)
+  logger.info(`🔍 dailySummary object exists: ${!!locationData[DAILY_SUMMARY_KEY]}`)
   logger.info(
-    `🔍 dailySummary.issue_date (raw): ${locationData.dailySummary?.issue_date}`
+    `🔍 dailySummary.issue_date (raw): ${locationData[DAILY_SUMMARY_KEY]?.issue_date}`
   )
   logger.info(
-    `🔍 dailySummary.today exists: ${!!locationData.dailySummary?.today}`
+    `🔍 dailySummary.today exists: ${!!locationData[DAILY_SUMMARY_KEY]?.today}`
   )
-  logger.info(`🔍 dailySummary.today value:`, locationData.dailySummary?.today)
+  logger.info(`🔍 dailySummary.today value:`, locationData[DAILY_SUMMARY_KEY]?.today)
   logger.info(
-    `🔍 dailySummary.issue_date (type): ${typeof locationData.dailySummary?.issue_date}`
+    `🔍 dailySummary.issue_date (type): ${typeof locationData[DAILY_SUMMARY_KEY]?.issue_date}`
   )
-  logger.info(`🔍 Today's date: ${moment().format('YYYY-MM-DD')}`)
+  logger.info(`🔍 Today's date: ${moment().format(ISSUE_DATE_FORMAT)}`)
 
   // '' Calculate showSummaryDate if not already set (for direct access to location pages)
   if (
     locationData.showSummaryDate === undefined &&
-    locationData.dailySummary?.issue_date
+    locationData[DAILY_SUMMARY_KEY]?.issue_date
   ) {
-    const today = moment().format('YYYY-MM-DD')
-    const issueDate = moment(locationData.dailySummary.issue_date).format(
-      'YYYY-MM-DD'
+    const today = moment().format(ISSUE_DATE_FORMAT)
+    const issueDate = moment(locationData[DAILY_SUMMARY_KEY].issue_date).format(
+      ISSUE_DATE_FORMAT
     )
     locationData.showSummaryDate = today === issueDate
-    locationData.issueTime = getIssueTime(locationData.dailySummary.issue_date)
+    locationData.issueTime = getIssueTime(locationData[DAILY_SUMMARY_KEY].issue_date)
     logger.info(`🔍 CALCULATED showSummaryDate:`)
     logger.info(`🔍   - today: ${today}`)
     logger.info(`🔍   - issueDate: ${issueDate}`)
     logger.info(`🔍   - match: ${today === issueDate}`)
     logger.info(`🔍   - result: ${locationData.showSummaryDate}`)
     logger.info(`🔍   - issueTime: ${locationData.issueTime}`)
-  } else if (locationData.showSummaryDate !== undefined) {
+  } else if (locationData.showSummaryDate === undefined) {
+    logger.info(
+      `🔍 showSummaryDate not set yet, will calculate later`
+    )
+  } else {
     logger.info(
       `🔍 showSummaryDate already set to: ${locationData.showSummaryDate}`
     )
     // '' Ensure issueTime is also set
     logger.info(
-      `🔍   - checking issueTime: ${locationData.issueTime}, has issue_date: ${!!locationData.dailySummary?.issue_date}`
+      `🔍   - checking issueTime: ${locationData.issueTime}, has issue_date: ${!!locationData[DAILY_SUMMARY_KEY]?.issue_date}`
     )
-    if (!locationData.issueTime && locationData.dailySummary?.issue_date) {
+    if (!locationData.issueTime && locationData[DAILY_SUMMARY_KEY]?.issue_date) {
       locationData.issueTime = getIssueTime(
-        locationData.dailySummary.issue_date
+        locationData[DAILY_SUMMARY_KEY].issue_date
       )
       logger.info(`🔍   - issueTime calculated: ${locationData.issueTime}`)
       // '' Update session with the calculated issueTime
       request.yar.set('locationData', locationData)
       logger.info(`🔍   - issueTime saved to session`)
     }
-  } else {
-    logger.info(
-      `🔍 No issue_date available, showSummaryDate will be false/undefined`
-    )
   }
   logger.info(`🔍 FINAL showSummaryDate: ${locationData.showSummaryDate}`)
   logger.info(`🔍 FINAL issueTime: ${locationData.issueTime}`)

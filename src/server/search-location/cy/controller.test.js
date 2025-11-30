@@ -9,6 +9,10 @@ vi.mock('../../common/helpers/get-site-url.js', () => ({
   })
 }))
 
+const SEARCH_LOCATION_PATH_CY = '/chwilio-lleoliad/cy'
+const VIEW_RENDERED = 'view rendered'
+const SEARCH_LOCATION_VIEW = 'search-location/index'
+
 describe('searchLocationController - welsh', () => {
   let mockRequest
   let mockH
@@ -28,7 +32,7 @@ describe('searchLocationController - welsh', () => {
       redirect: vi.fn(() => ({
         code: vi.fn(() => 'redirected')
       })),
-      view: vi.fn(() => 'view rendered')
+      view: vi.fn(() => VIEW_RENDERED)
     }
   })
 
@@ -50,7 +54,7 @@ describe('searchLocationController - welsh', () => {
       query: {
         lang: 'fr'
       },
-      path: '/chwilio-lleoliad/cy',
+      path: SEARCH_LOCATION_PATH_CY,
       yar: {
         set: vi.fn(),
         get: vi.fn()
@@ -61,8 +65,8 @@ describe('searchLocationController - welsh', () => {
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = searchLocationController.handler(mockRequest, mockH)
-    expect(result).toBe('view rendered')
-    expect(mockH.view).toHaveBeenCalledWith('search-location/index', {
+    expect(result).toBe(VIEW_RENDERED)
+    expect(mockH.view).toHaveBeenCalledWith(SEARCH_LOCATION_VIEW, {
       pageTitle: mockContent.searchLocation.pageTitle,
       description: mockContent.searchLocation.description,
       metaSiteUrl: actualUrl,
@@ -88,7 +92,7 @@ describe('searchLocationController - welsh', () => {
       backlink: mockContent.backlink,
       cookieBanner: mockContent.cookieBanner,
       lang: 'cy',
-      currentPath: '/chwilio-lleoliad/cy'
+      currentPath: SEARCH_LOCATION_PATH_CY
     })
   })
 
@@ -97,7 +101,7 @@ describe('searchLocationController - welsh', () => {
       query: {
         lang: 'cy'
       },
-      path: '/chwilio-lleoliad/cy',
+      path: SEARCH_LOCATION_PATH_CY,
       yar: {
         set: vi.fn(),
         get: vi.fn()
@@ -108,8 +112,8 @@ describe('searchLocationController - welsh', () => {
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = searchLocationController.handler(mockRequest, mockH)
-    expect(result).toBe('view rendered')
-    expect(mockH.view).toHaveBeenCalledWith('search-location/index', {
+    expect(result).toBe(VIEW_RENDERED)
+    expect(mockH.view).toHaveBeenCalledWith(SEARCH_LOCATION_VIEW, {
       pageTitle: mockContent.searchLocation.pageTitle,
       description: mockContent.searchLocation.description,
       metaSiteUrl: actualUrl,
@@ -135,7 +139,7 @@ describe('searchLocationController - welsh', () => {
       backlink: mockContent.backlink,
       cookieBanner: mockContent.cookieBanner,
       lang: mockRequest.query.lang,
-      currentPath: '/chwilio-lleoliad/cy'
+      currentPath: SEARCH_LOCATION_PATH_CY
     })
   })
 
@@ -149,21 +153,27 @@ describe('searchLocationController - welsh', () => {
     }
 
     mockRequest.query.lang = 'cy'
-    mockRequest.path = '/chwilio-lleoliad/cy'
+    mockRequest.path = SEARCH_LOCATION_PATH_CY
     mockRequest.yar.get = vi.fn((key) => {
-      if (key === 'errors') return mockErrors
-      if (key === 'errorMessage') return mockErrorMessage
-      if (key === 'locationType') return 'test-type'
+      if (key === 'errors') {
+        return mockErrors
+      }
+      if (key === 'errorMessage') {
+        return mockErrorMessage
+      }
+      if (key === 'locationType') {
+        return 'test-type'
+      }
       return null
     })
 
     const result = searchLocationController.handler(mockRequest, mockH)
 
-    expect(result).toBe('view rendered')
+    expect(result).toBe(VIEW_RENDERED)
     expect(mockRequest.yar.set).toHaveBeenCalledWith('errors', null)
     expect(mockRequest.yar.set).toHaveBeenCalledWith('errorMessage', null)
     expect(mockH.view).toHaveBeenCalledWith(
-      'search-location/index',
+      SEARCH_LOCATION_VIEW,
       expect.objectContaining({
         pageTitle: `Gwall: ${mockContent.searchLocation.pageTitle}`,
         errors: mockErrors.errors,

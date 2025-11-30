@@ -318,7 +318,16 @@ vi.mock('object-sizeof', () => ({
 
 vi.mock('../../../config/index.js', () => ({
   config: {
-    get: vi.fn().mockReturnValue(true)
+    get: vi.fn((key) => {
+      // Return appropriate values for different config keys
+      if (key === 'disableTestMocks') {
+        return false // Allow test mocks to work
+      }
+      if (key === 'useNewRicardoMeasurementsEnabled') {
+        return true
+      }
+      return undefined
+    })
   }
 }))
 

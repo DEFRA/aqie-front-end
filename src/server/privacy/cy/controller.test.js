@@ -4,6 +4,9 @@ import { privacyController } from './controller.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 import { LANG_CY, LANG_EN } from '../../data/constants.js'
 
+const PRIVACY_PATH_CY = PRIVACY_PATH_CY
+const VIEW_RENDERED = VIEW_RENDERED
+
 describe('privacy controller - Welsh', () => {
   let mockRequest
   let mockH
@@ -22,7 +25,7 @@ describe('privacy controller - Welsh', () => {
       redirect: vi.fn(() => ({
         code: vi.fn(() => 'redirected')
       })),
-      view: vi.fn(() => 'view rendered')
+      view: vi.fn(() => VIEW_RENDERED)
     }
   })
 
@@ -44,13 +47,13 @@ describe('privacy controller - Welsh', () => {
 
   it('should render the privacy page with the necessary data', () => {
     mockRequest.query.lang = LANG_CY
-    mockRequest.path = '/preifatrwydd/cy'
+    mockRequest.path = PRIVACY_PATH_CY
     const expectedUrl =
       'https://check-air-quality.service.gov.uk/preifatrwydd/cy?lang=cy'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = privacyController.handler(mockRequest, mockH)
-    expect(result).toBe('view rendered')
+    expect(result).toBe(VIEW_RENDERED)
     expect(mockH.view).toHaveBeenCalledWith('privacy/index', {
       pageTitle: mockContent.footer.privacy.pageTitle,
       description: mockContent.footer.privacy.description,
@@ -66,19 +69,19 @@ describe('privacy controller - Welsh', () => {
       serviceName: mockContent.multipleLocations.serviceName,
       page: 'privacy',
       lang: mockRequest.query.lang,
-      currentPath: '/preifatrwydd/cy'
+      currentPath: PRIVACY_PATH_CY
     })
   })
 
   it('should render the privacy page by default when lang is not cy/en and the path is there', () => {
     mockRequest.query.lang = 'fr'
-    mockRequest.path = '/preifatrwydd/cy'
+    mockRequest.path = PRIVACY_PATH_CY
     const expectedUrl =
       'https://check-air-quality.service.gov.uk/preifatrwydd/cy?lang=fr'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = privacyController.handler(mockRequest, mockH)
-    expect(result).toBe('view rendered')
+    expect(result).toBe(VIEW_RENDERED)
     expect(mockH.view).toHaveBeenCalledWith('privacy/index', {
       pageTitle: mockContent.footer.privacy.pageTitle,
       description: mockContent.footer.privacy.description,
@@ -94,7 +97,7 @@ describe('privacy controller - Welsh', () => {
       serviceName: mockContent.multipleLocations.serviceName,
       page: 'privacy',
       lang: LANG_CY,
-      currentPath: '/preifatrwydd/cy'
+      currentPath: PRIVACY_PATH_CY
     })
   })
 })

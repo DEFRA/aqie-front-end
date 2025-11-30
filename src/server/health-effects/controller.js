@@ -11,6 +11,8 @@ import {
 
 const LANG_EN = 'en' // ''
 const LANG_CY = 'cy'
+const HTTP_NOT_FOUND = 404
+const HTTP_INTERNAL_SERVER_ERROR = 500
 
 const logger = createLogger() // ''
 
@@ -88,10 +90,10 @@ const healthEffectsHandler = (request, h, customContent = undefined) => {
       { routePath: request.path },
       "'' Health effects route not found"
     ) // ''
-    return h.response('Page Not Found').code(404) // ''
+    return h.response('Page Not Found').code(HTTP_NOT_FOUND) // ''
   } catch (err) {
     logger.error(err, "'' Failed to render health-effects") // ''
-    return h.response('Internal Server Error').code(500) // ''
+    return h.response('Internal Server Error').code(HTTP_INTERNAL_SERVER_ERROR) // ''
   }
 }
 

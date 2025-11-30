@@ -1,6 +1,17 @@
 ''
 import { ACTIONS_REDUCE_EXPOSURE_ROUTE_EN } from '../constants.js'
 
+const DAQI_INDEX_LOW = 1
+const DAQI_INDEX_LOW_MID = 2
+const DAQI_INDEX_MID = 3
+const DAQI_INDEX_MODERATE_START = 4
+const DAQI_INDEX_MODERATE_MID = 5
+const DAQI_INDEX_MODERATE_END = 6
+const DAQI_INDEX_HIGH_START = 7
+const DAQI_INDEX_HIGH_MID = 8
+const DAQI_INDEX_HIGH_END = 9
+const DAQI_INDEX_VERY_HIGH = 10
+
 export const warningMessages = {
   forecastWarning:
     '{level} levels of air pollution are predicted in this location from {weekday}.'
@@ -8,7 +19,7 @@ export const warningMessages = {
 
 export const commonMessages = {
   low: {
-    values: [1, 2, 3],
+    values: [DAQI_INDEX_LOW, DAQI_INDEX_LOW_MID, DAQI_INDEX_MID],
     // '' AQC-657: Removed redundant legacy phrase "Enjoy your usual outdoor activities." after rebase; updated copy for low level
     advice:
       'For most people, short term exposure to low levels of air pollution is not an issue.',
@@ -40,7 +51,7 @@ export const commonMessages = {
       'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.'
   },
   moderate: {
-    values: [4, 5, 6],
+    values: [DAQI_INDEX_MODERATE_START, DAQI_INDEX_MODERATE_MID, DAQI_INDEX_MODERATE_END],
     advice:
       'For most people, short term exposure to moderate levels of air pollution is not an issue.',
     insetText: `<p>For most people, short term exposure to moderate levels of air pollution is not an issue. Continue your usual outdoor activities. However, if you are experiencing symptoms, try to reduce your exposure to air pollution.</p>
@@ -85,7 +96,7 @@ export const commonMessages = {
       'The influx of warm air from the continent is resulting in moderate air pollution levels throughout many areas today.'
   },
   high: {
-    values: [7, 8, 9],
+    values: [DAQI_INDEX_HIGH_START, DAQI_INDEX_HIGH_MID, DAQI_INDEX_HIGH_END],
     advice:
       'Anyone experiencing discomfort such as sore eyes, cough or sore throat should consider reducing activity, particularly outdoors.',
     insetText: `<p>Try to <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_EN}?lang=en">reduce your exposure to air pollution</a>, especially if you're experiencing symptoms.</p>
@@ -129,7 +140,7 @@ export const commonMessages = {
       'Warm temperatures are expected to increase pollution levels to high across many areas today.'
   },
   veryHigh: {
-    values: [10],
+    values: [DAQI_INDEX_VERY_HIGH],
     advice:
       'Reduce physical exertion, particularly outdoors, especially if you experience symptoms such as cough or sore throat.',
     insetText: `<p>Try to <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_EN}?lang=en">reduce your exposure to air pollution</a>, especially if you're experiencing symptoms.</p>
@@ -182,8 +193,8 @@ export function getCommonMessage(band) {
   return commonMessages[band] || commonMessages.unknown
 }
 
-export function getDetailedInfo(aqValue) {
-  const value = aqValue || '4'
+export function getDetailedInfo(aqValue = '4') {
+  const value = aqValue
 
   const lookup = {
     1: { band: 'low', readableBand: 'low' },

@@ -20,9 +20,9 @@ describe('Particular matter10 Controller - English', () => {
       })
     }))
     mockH = {
-      redirect: vi.fn().mockImplementation((url) => {
+      redirect: vi.fn().mockImplementation((_url) => {
         return {
-          code: vi.fn().mockImplementation((statusCode) => {
+          code: vi.fn().mockImplementation((_statusCode) => {
             return 'redirected'
           })
         }

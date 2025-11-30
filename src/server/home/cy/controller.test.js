@@ -14,6 +14,8 @@ vi.mock('../../common/helpers/logging/logger.js', () => ({
   }))
 }))
 
+const VIEW_RENDERED = 'view rendered'
+
 describe('Home Controller', () => {
   let mockRequest
   const mockContent = welsh
@@ -53,7 +55,7 @@ describe('Home Controller', () => {
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = handleHomeRequest(mockRequest, mockH, mockContent)
-    expect(result).toBe('view rendered')
+    expect(result).toBe(VIEW_RENDERED)
     expect(mockH.view).toHaveBeenCalledWith('home/index', {
       pageTitle: mockContent.home.pageTitle,
       description: mockContent.home.description,
@@ -88,7 +90,7 @@ describe('Home Controller', () => {
     expect(typeof requestWithoutYarSet.yar.set).toBe('undefined')
 
     const result = handleHomeRequest(requestWithoutYarSet, mockH, mockContent)
-    expect(result).toBe('view rendered')
+    expect(result).toBe(VIEW_RENDERED)
   })
 
   it('should log a warning when yar is completely missing', () => {
@@ -106,7 +108,7 @@ describe('Home Controller', () => {
     expect(requestWithoutYar.yar).toBeUndefined()
 
     const result = handleHomeRequest(requestWithoutYar, mockH, mockContent)
-    expect(result).toBe('view rendered')
+    expect(result).toBe(VIEW_RENDERED)
   })
 
   it('should set locationType when yar is properly available', () => {
@@ -126,6 +128,6 @@ describe('Home Controller', () => {
 
     // Verify yar.set was called
     expect(requestWithYar.yar.set).toHaveBeenCalledWith('locationType', '')
-    expect(result).toBe('view rendered')
+    expect(result).toBe(VIEW_RENDERED)
   })
 })

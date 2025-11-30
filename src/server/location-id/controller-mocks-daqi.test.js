@@ -1,6 +1,9 @@
 // '' Tests for mock DAQI level and pollutant band functionality
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
+const TEST_LOCATION_NAME = TEST_LOCATION_NAME
+const MAX_OBJECT_SIZE = 2048576
+
 // Mock all dependencies before any imports
 vi.mock('../data/en/monitoring-sites.js', () => ({
   siteTypeDescriptions: {
@@ -99,7 +102,7 @@ vi.mock('../locations/helpers/convert-first-letter-into-upper-case.js', () => ({
 vi.mock('../locations/helpers/gazetteer-util.js', () => ({
   gazetteerEntryFilter: vi.fn(() => ({
     title: 'test location',
-    headerTitle: 'Test Location'
+    headerTitle: TEST_LOCATION_NAME
   }))
 }))
 vi.mock('../common/helpers/logging/logger.js', () => ({
@@ -163,7 +166,7 @@ vi.mock('../locations/helpers/get-ni-single-data.js', () => ({
 vi.mock('../locations/helpers/convert-string.js', () => ({
   compareLastElements: vi.fn(() => false)
 }))
-vi.mock('object-sizeof', () => ({ default: vi.fn(() => 2048576) }))
+vi.mock('object-sizeof', () => ({ default: vi.fn(() => MAX_OBJECT_SIZE) }))
 vi.mock('../../config/index.js', () => ({
   config: {
     get: vi.fn(
@@ -198,7 +201,7 @@ import {
 // Get the mocked modules
 const { getNearestLocation, getIdMatch } = await getMockedModules()
 
-describe('Location ID Controller - Mock DAQI and Pollutants', () => {
+describe('Location ID Controller - Mock DAQI Level', () => {
   let mockRequest, mockH
 
   beforeEach(() => {
@@ -208,7 +211,7 @@ describe('Location ID Controller - Mock DAQI and Pollutants', () => {
     mockH = mocks.mockH
   })
 
-  describe('Mock DAQI level functionality', () => {
+  describe('Session storage', () => {
     it('should apply mock level from session when provided', async () => {
       // ''
       const mockLocationData = {
@@ -229,7 +232,7 @@ describe('Location ID Controller - Mock DAQI and Pollutants', () => {
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
-        locationDetails: { id: 'test', name: 'Test Location' }
+        locationDetails: { id: 'test', name: TEST_LOCATION_NAME }
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
@@ -245,7 +248,9 @@ describe('Location ID Controller - Mock DAQI and Pollutants', () => {
       expect(mockH.view).toHaveBeenCalled()
       // The airQuality will be mocked to level 7
     })
+  })
 
+  describe('Query parameters', () => {
     it('should store mockLevel in session when query parameter provided', async () => {
       // ''
       mockRequest.query = { lang: 'en', mockLevel: '8' }
@@ -262,7 +267,7 @@ describe('Location ID Controller - Mock DAQI and Pollutants', () => {
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
-        locationDetails: { id: 'test', name: 'Test Location' }
+        locationDetails: { id: 'test', name: TEST_LOCATION_NAME }
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
@@ -277,7 +282,9 @@ describe('Location ID Controller - Mock DAQI and Pollutants', () => {
 
       expect(mockRequest.yar.set).toHaveBeenCalledWith('mockLevel', '8')
     })
+  })
 
+  describe('Clear functionality', () => {
     it('should clear mockLevel when explicitly requested', async () => {
       // ''
       mockRequest.query = { lang: 'en', mockLevel: 'clear' }
@@ -294,7 +301,7 @@ describe('Location ID Controller - Mock DAQI and Pollutants', () => {
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
-        locationDetails: { id: 'test', name: 'Test Location' }
+        locationDetails: { id: 'test', name: TEST_LOCATION_NAME }
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
@@ -309,7 +316,20 @@ describe('Location ID Controller - Mock DAQI and Pollutants', () => {
 
       expect(mockRequest.yar.set).toHaveBeenCalledWith('mockLevel', null)
     })
+  })
+})
 
+describe('Location ID Controller - Mock Day Selection', () => {
+  let mockRequest, mockH
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    const mocks = createMockRequestResponse()
+    mockRequest = mocks.mockRequest
+    mockH = mocks.mockH
+  })
+
+  describe('Mock day selection', () => {
     it('should store mockDay in session when query parameter provided', async () => {
       // ''
       mockRequest.query = { lang: 'en', mockDay: 'day3' }
@@ -326,7 +346,7 @@ describe('Location ID Controller - Mock DAQI and Pollutants', () => {
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
-        locationDetails: { id: 'test', name: 'Test Location' }
+        locationDetails: { id: 'test', name: TEST_LOCATION_NAME }
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
@@ -342,8 +362,19 @@ describe('Location ID Controller - Mock DAQI and Pollutants', () => {
       expect(mockRequest.yar.set).toHaveBeenCalledWith('mockDay', 'day3')
     })
   })
+})
 
-  describe('Mock pollutant band functionality', () => {
+describe('Location ID Controller - Mock Pollutants', () => {
+  let mockRequest, mockH
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    const mocks = createMockRequestResponse()
+    mockRequest = mocks.mockRequest
+    mockH = mocks.mockH
+  })
+
+  describe('Session storage', () => {
     it('should store mockPollutantBand in session when query parameter provided', async () => {
       // ''
       mockRequest.query = { lang: 'en', mockPollutantBand: 'high' }
@@ -360,7 +391,7 @@ describe('Location ID Controller - Mock DAQI and Pollutants', () => {
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
-        locationDetails: { id: 'test', name: 'Test Location' }
+        locationDetails: { id: 'test', name: TEST_LOCATION_NAME }
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
@@ -378,7 +409,9 @@ describe('Location ID Controller - Mock DAQI and Pollutants', () => {
         'high'
       )
     })
+  })
 
+  describe('Clear functionality', () => {
     it('should clear mockPollutantBand when explicitly requested', async () => {
       // ''
       mockRequest.query = { lang: 'en', mockPollutantBand: 'clear' }
@@ -395,7 +428,7 @@ describe('Location ID Controller - Mock DAQI and Pollutants', () => {
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
-        locationDetails: { id: 'test', name: 'Test Location' }
+        locationDetails: { id: 'test', name: TEST_LOCATION_NAME }
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
@@ -413,7 +446,9 @@ describe('Location ID Controller - Mock DAQI and Pollutants', () => {
         null
       )
     })
+  })
 
+  describe('Application to monitoring sites', () => {
     it('should apply mockPollutantBand from session to monitoring sites', async () => {
       // ''
       const mockLocationData = {
@@ -432,7 +467,7 @@ describe('Location ID Controller - Mock DAQI and Pollutants', () => {
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
-        locationDetails: { id: 'test', name: 'Test Location' }
+        locationDetails: { id: 'test', name: TEST_LOCATION_NAME }
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({

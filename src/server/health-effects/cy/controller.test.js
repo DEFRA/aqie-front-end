@@ -49,6 +49,16 @@ const createH = () => {
   return { view, redirect, response }
 }
 
+// '' Helper to verify common expectations
+const verifyCommonCalls = () => {
+  expect(getReadableLocationName).toHaveBeenCalled()
+}
+
+const HEALTH_EFFECTS_PATH_CY = '/effeithiau-iechyd/cy'
+const HTTP_REDIRECT = 302
+const HTTP_ERROR = 500
+const HEALTH_EFFECTS_PAGE_CY = 'Effaith llygredd aer ar iechyd'
+
 describe("'' healthEffectsHandlerCy", () => {
   beforeEach(() => {
     vi.clearAllMocks() // '' Reset mocks
@@ -59,15 +69,15 @@ describe("'' healthEffectsHandlerCy", () => {
     const request = {
       query: { lang: 'en' },
       params: { id: 'caerdydd' },
-      path: '/effeithiau-iechyd/cy'
+      path: HEALTH_EFFECTS_PATH_CY
     }
     const h = createH()
     const result = healthEffectsHandlerCy(request, h)
-    expect(getReadableLocationName).toHaveBeenCalled()
+    verifyCommonCalls()
     expect(h.redirect).toHaveBeenCalledTimes(1)
     const url = h.redirect.mock.calls[0][0]
     expect(url).toBe('/health-effects?lang=en&locationName=Caerdydd')
-    expect(result.statusCode).toBe(302)
+    expect(result.statusCode).toBe(HTTP_REDIRECT)
   })
 
   it("'' redirects to English when lang=EN (case-insensitive)", () => {
@@ -75,13 +85,13 @@ describe("'' healthEffectsHandlerCy", () => {
     const request = {
       query: { lang: 'EN' },
       params: { id: 'abertawe' },
-      path: '/effeithiau-iechyd/cy'
+      path: HEALTH_EFFECTS_PATH_CY
     }
     const h = createH()
     const result = healthEffectsHandlerCy(request, h)
     const url = h.redirect.mock.calls[0][0]
     expect(url).toBe('/health-effects?lang=en&locationName=Abertawe')
-    expect(result.statusCode).toBe(302)
+    expect(result.statusCode).toBe(HTTP_REDIRECT)
   })
 
   it("'' redirects to English without locationName when helper empty", () => {
@@ -89,13 +99,13 @@ describe("'' healthEffectsHandlerCy", () => {
     const request = {
       query: { lang: 'en' },
       params: { id: '' },
-      path: '/effeithiau-iechyd/cy'
+      path: HEALTH_EFFECTS_PATH_CY
     }
     const h = createH()
     const result = healthEffectsHandlerCy(request, h)
     const url = h.redirect.mock.calls[0][0]
     expect(url).toBe('/health-effects?lang=en')
-    expect(result.statusCode).toBe(302)
+    expect(result.statusCode).toBe(HTTP_REDIRECT)
   })
 
   it("'' renders Welsh view model normally", () => {
@@ -103,10 +113,11 @@ describe("'' healthEffectsHandlerCy", () => {
     const request = {
       query: { lang: 'cy' },
       params: { id: 'caerdydd' },
-      path: '/effeithiau-iechyd/cy'
+      path: HEALTH_EFFECTS_PATH_CY
     }
     const h = createH()
     const result = healthEffectsHandlerCy(request, h)
+    verifyCommonCalls()
     expect(getAirQualitySiteUrl).toHaveBeenCalled()
     expect(buildHealthEffectsViewModel).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -118,8 +129,8 @@ describe("'' healthEffectsHandlerCy", () => {
     const [template, ctx] = h.view.mock.calls[0]
     expect(template).toBe('health-effects/cy/index')
     expect(ctx.locationName).toBe('Caerdydd')
-    expect(ctx.page).toBe('Effaith llygredd aer ar iechyd')
-    expect(ctx.pageTitle).toBe('Effaith llygredd aer ar iechyd')
+    expect(ctx.page).toBe(HEALTH_EFFECTS_PAGE_CY)
+    expect(ctx.pageTitle).toBe(HEALTH_EFFECTS_PAGE_CY)
     expect(ctx.backLinkText).toBe('Llygredd aer yn Caerdydd')
     expect(result.template).toBe('health-effects/cy/index')
   })
@@ -139,27 +150,27 @@ describe("'' healthEffectsHandlerCy", () => {
     const request = {
       query: { lang: 'cy' },
       params: { id: 'casnewydd' },
-      path: '/effeithiau-iechyd/cy'
+      path: HEALTH_EFFECTS_PATH_CY
     }
     const h = createH()
     healthEffectsHandlerCy(request, h, customContent)
     const ctx = h.view.mock.calls[0][1]
-    expect(ctx.pageTitle).toBe('Effaith llygredd aer ar iechyd')
+    expect(ctx.pageTitle).toBe(HEALTH_EFFECTS_PAGE_CY)
     expect(ctx.locationName).toBe('Casnewydd')
   })
 
-  it("'' returns 500 when helper throws", () => {
+  it("'' returns HTTP_ERROR when helper throws", () => {
     buildHealthEffectsViewModel.mockImplementationOnce(() => {
       throw new Error('Boom') // '' Force failure
     })
     const request = {
       query: { lang: 'cy' },
       params: { id: 'caerdydd' },
-      path: '/effeithiau-iechyd/cy'
+      path: HEALTH_EFFECTS_PATH_CY
     }
     const h = createH()
     const result = healthEffectsHandlerCy(request, h)
-    expect(result.statusCode).toBe(500)
+    expect(result.statusCode).toBe(HTTP_ERROR)
     expect(result.payload).toBe('Internal Server Error')
   })
 })

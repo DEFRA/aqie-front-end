@@ -79,7 +79,7 @@ const getLocationDataController = {
         error.message ===
         "Cannot read properties of undefined (reading 'access_token')"
       ) {
-        statusCode = 401
+        const HTTP_UNAUTHORIZED = 401; statusCode = HTTP_UNAUTHORIZED
       }
       return h.view('error/index', {
         pageTitle: english.notFoundUrl.serviceAPI.pageTitle,

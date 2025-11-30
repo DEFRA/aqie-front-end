@@ -4,7 +4,9 @@
 // This script dynamically updates health advice based on active tab
 
 function initDAQIAccessibility() {
-  if (typeof document === 'undefined') return
+  if (typeof document === 'undefined') {
+    return
+  }
 
   console.log('DAQI Accessibility: Initializing dynamic health advice updates')
 
@@ -26,15 +28,16 @@ function initHealthAdviceUpdates() {
     return
   }
 
+  const TAB_SWITCH_DELAY = 50
   // Listen for clicks on tab buttons
-  tabButtons.forEach((tabButton) => {
+  for (const tabButton of tabButtons) {
     tabButton.addEventListener('click', () => {
       // Small delay to let GovUK tabs finish switching
       setTimeout(() => {
         updateHealthAdviceForActiveTab()
-      }, 50)
+      }, TAB_SWITCH_DELAY)
     })
-  })
+  }
 
   // '' Initial load: keep default (Today) tab even if mockDay param present
   // '' Requirement update: do NOT auto-switch tab based on mockDay query param
@@ -70,21 +73,25 @@ function updateHealthAdviceForActiveTab() {
   // '' Get the aria-label which contains: "Daily Air Quality Index, level 7 out of 10, high pollution"
   // '' or Welsh: "Mynegai Ansawdd Aer Dyddiol, lefel 7 allan o 10, uchel llygredd"
   const ariaLabel = daqiBar.getAttribute('aria-label')
-  if (!ariaLabel) return
+  if (!ariaLabel) {
+    return
+  }
 
   // '' Parse the level and band from aria-label
   // '' English: "level 7 out of 10" or Welsh: "lefel 7 allan o 10"
-  const levelMatch = ariaLabel.match(/(?:level|lefel) (\d+)/i)
+  const levelRegex = /(?:level|lefel) (\d+)/i
+  const levelMatch = levelRegex.exec(ariaLabel)
   // '' English: "out of 10, high pollution" or "out of 10, very high pollution"
   // '' Welsh: "allan o 10, uchel llygredd" or "allan o 10, uchel iawn llygredd"
   // '' Extract everything between "10, " and " pollution"/" llygredd"
-  const bandMatch = ariaLabel.match(
-    /(?:out of|allan o) \d+,\s*(.+?)\s+(?:pollution|llygredd)/i
-  )
+  const bandRegex = /(?:out of|allan o) \d+,\s*(.+?)\s+(?:pollution|llygredd)/i
+  const bandMatch = bandRegex.exec(ariaLabel)
 
-  if (!levelMatch || !bandMatch) return
+  if (!levelMatch || !bandMatch) {
+    return
+  }
 
-  const level = parseInt(levelMatch[1], 10)
+  const level = Number.parseInt(levelMatch[1], 10)
   // '' Band is already extracted without "pollution" or "llygredd" suffix
   const band = bandMatch[1].trim() // "low", "high", "cymedrol", "uchel", etc.
 
@@ -100,16 +107,22 @@ function updateHealthAdviceForActiveTab() {
   reorderExposureAndHealth(level)
 }
 
+const EXPOSURE_SECTION_ID = 'exposure-section'
+
 function updateExposureSection(band) {
-  const exposureSection = document.getElementById('exposure-section')
-  if (!exposureSection) return
+  const exposureSection = document.getElementById(EXPOSURE_SECTION_ID)
+  if (!exposureSection) {
+    return
+  }
 
   // Normalize band name
   const normalizedBand = band.toLowerCase().trim()
 
   // Get the exposure HTML content based on band
   let exposureHtml = getExposureHtmlForBand(normalizedBand)
-  if (!exposureHtml) return
+  if (!exposureHtml) {
+    return
+  }
 
   // '' Add locationName and searchTerms parameters to links (same as Nunjucks template does)
   exposureHtml = addQueryParametersToLinks(exposureHtml)
@@ -121,16 +134,10 @@ function updateExposureSection(band) {
 
 function addQueryParametersToLinks(html) {
   // '' Get locationId, locationName and searchTerms from data attributes on exposure-section div
-  const exposureSection = document.getElementById('exposure-section')
-  const locationId = exposureSection
-    ? exposureSection.getAttribute('data-location-id')
-    : null
-  const locationName = exposureSection
-    ? exposureSection.getAttribute('data-location-name')
-    : null
-  const searchTerms = exposureSection
-    ? exposureSection.getAttribute('data-search-terms')
-    : null
+  const exposureSection = document.getElementById(EXPOSURE_SECTION_ID)
+  const locationId = exposureSection?.dataset.locationId ?? null
+  const locationName = exposureSection?.dataset.locationName ?? null
+  const searchTerms = exposureSection?.dataset.searchTerms ?? null
 
   console.log('addQueryParametersToLinks - locationId:', locationId)
   console.log('addQueryParametersToLinks - locationName:', locationName)
@@ -138,7 +145,7 @@ function addQueryParametersToLinks(html) {
 
   // '' First, replace {locationId} placeholder in the HTML (same as Nunjucks does)
   if (locationId) {
-    html = html.replace(/{locationId}/g, locationId)
+    html = html.replaceAll('{locationId}', locationId)
   }
 
   // '' Build query parameters string
@@ -159,22 +166,22 @@ function addQueryParametersToLinks(html) {
 
     if (isWelsh) {
       // Welsh links
-      html = html.replace(
-        /effeithiau-iechyd\?lang=cy/g,
+      html = html.replaceAll(
+        'effeithiau-iechyd?lang=cy',
         'effeithiau-iechyd?lang=cy' + queryParams
       )
-      html = html.replace(
-        /camau-lleihau-amlygiad\/cy\?lang=cy/g,
+      html = html.replaceAll(
+        'camau-lleihau-amlygiad/cy?lang=cy',
         'camau-lleihau-amlygiad/cy?lang=cy' + queryParams
       )
     } else {
       // English links
-      html = html.replace(
-        /health-effects\?lang=en/g,
+      html = html.replaceAll(
+        'health-effects?lang=en',
         'health-effects?lang=en' + queryParams
       )
-      html = html.replace(
-        /actions-reduce-exposure\?lang=en/g,
+      html = html.replaceAll(
+        'actions-reduce-exposure?lang=en',
         'actions-reduce-exposure?lang=en' + queryParams
       )
     }
@@ -276,6 +283,10 @@ function getExposureHtmlForBand(band) {
   return exposureTemplates[band] || null
 }
 
+const DAQI_HEALTH_INSET_SELECTOR = '.daqi-health-inset'
+const DAQI_HEALTH_CONTENT_SELECTOR = '.daqi-health-content'
+const LOW_POLLUTION_MAX_LEVEL = 3
+
 function updateHealthAdvice(level, band) {
   // Get advice data based on level/band
   const adviceData = getAdviceForBand(band, level)
@@ -286,7 +297,7 @@ function updateHealthAdvice(level, band) {
   // Find health advice elements (look for the heading that contains "Health advice for" or Welsh "Cyngor iechyd ar gyfer")
   const allHeadings = document.querySelectorAll('h2.govuk-heading-m')
   let healthHeading = null
-  let isWelsh = false
+  let isWelsh = true
 
   for (const heading of allHeadings) {
     const headingText = heading.textContent
@@ -294,9 +305,9 @@ function updateHealthAdvice(level, band) {
       healthHeading = heading
       isWelsh = false
       break
-    } else if (headingText.includes('Cyngor iechyd ar gyfer')) {
+    }
+    if (headingText.includes('Cyngor iechyd ar gyfer')) {
       healthHeading = heading
-      isWelsh = true
       break
     }
   }
@@ -316,59 +327,59 @@ function updateHealthAdvice(level, band) {
   }
 
   // Handle Low level (1-3): show advice paragraph + regular text div, no inset box
-  if (level <= 3) {
+  if (level <= LOW_POLLUTION_MAX_LEVEL) {
     // '' Structural refinement (AQC-657): Remove standalone low-level advice paragraph to prevent duplication of first sentence
     // Hide/remove any existing paragraph created during previous state transitions
-    let existingParagraph = healthHeading.nextElementSibling
-    if (existingParagraph && existingParagraph.tagName === 'P') {
+    const existingParagraph = healthHeading.nextElementSibling
+    if (existingParagraph?.tagName === 'P') {
       existingParagraph.style.display = 'none'
       existingParagraph.textContent = ''
     }
 
     // Hide any existing inset text
-    const insetText = document.querySelector('.daqi-health-inset')
+    const insetText = document.querySelector(DAQI_HEALTH_INSET_SELECTOR)
     if (insetText) {
       insetText.style.display = 'none'
     }
 
     // Show or update the regular content div
-    let contentDiv = document.querySelector('.daqi-health-content')
+    let contentDiv = document.querySelector(DAQI_HEALTH_CONTENT_SELECTOR)
     if (!contentDiv) {
       // Create the content div if it doesn't exist
       contentDiv = document.createElement('div')
       contentDiv.className = 'daqi-health-content daqi-health-content--low'
       // Insert directly after the heading (paragraph removed to avoid duplication)
-      healthHeading.insertAdjacentElement('afterend', contentDiv)
+      healthHeading.after(contentDiv)
     }
     contentDiv.innerHTML = adviceData.insetText
     contentDiv.style.display = 'block'
-    contentDiv.setAttribute('data-daqi-band', 'low')
+    contentDiv.dataset.daqiBand = 'low'
     console.log('Low level: regular text content updated (no colored box)')
   } else {
     // Handle Moderate/High/Very High (4-10): hide advice paragraph, show colored inset box only
     // Hide the main advice paragraph (advice is included in insetText for Moderate+)
-    let mainAdviceParagraph = healthHeading.nextElementSibling
-    if (mainAdviceParagraph && mainAdviceParagraph.tagName === 'P') {
+    const mainAdviceParagraph = healthHeading.nextElementSibling
+    if (mainAdviceParagraph?.tagName === 'P') {
       mainAdviceParagraph.style.display = 'none'
       console.log('Main advice paragraph hidden for Moderate+ level')
     }
 
     // Hide the regular content div
-    const contentDiv = document.querySelector('.daqi-health-content')
+    const contentDiv = document.querySelector(DAQI_HEALTH_CONTENT_SELECTOR)
     if (contentDiv) {
       contentDiv.style.display = 'none'
     }
 
     // Update inset text content and border color
-    let insetText = document.querySelector('.daqi-health-inset')
+    let insetText = document.querySelector(DAQI_HEALTH_INSET_SELECTOR)
     if (!insetText) {
       // Create the inset text element if it doesn't exist
       insetText = document.createElement('div')
       insetText.className =
         'govuk-inset-text daqi-health-inset daqi-health-inset--moderate'
       // Insert after the heading (and hidden paragraph if it exists)
-      let insertAfter = mainAdviceParagraph || healthHeading
-      insertAfter.insertAdjacentElement('afterend', insetText)
+      const insertAfter = mainAdviceParagraph || healthHeading
+      insertAfter.after(insetText)
       console.log('Created new inset text element')
     }
 
@@ -391,7 +402,7 @@ function updateHealthAdvice(level, band) {
 
       const bandClass = getBandClassName(band)
       insetText.classList.add(`daqi-health-inset--${bandClass}`)
-      insetText.setAttribute('data-daqi-band', bandClass)
+      insetText.dataset.daqiBand = bandClass
       console.log(`Border color updated to ${bandClass}`)
     }
   }
@@ -403,9 +414,13 @@ function updateHealthAdvice(level, band) {
 function getBandClassName(band) {
   const normalized = band.toLowerCase().trim()
   // Handle English band names
-  if (normalized === 'very high') return 'veryHigh'
+  if (normalized === 'very high') {
+    return 'veryHigh'
+  }
   // Handle Welsh band names
-  if (normalized === 'uchel iawn') return 'uchelIawn'
+  if (normalized === 'uchel iawn') {
+    return 'uchelIawn'
+  }
   return normalized
 }
 
@@ -420,7 +435,7 @@ function getWelshBandName(englishBand) {
   return welshBands[englishBand.toLowerCase().trim()] || englishBand
 }
 
-function getAdviceForBand(band, level) {
+function getAdviceForBand(band, _level) {
   // Normalize band name
   let normalizedBand = band.toLowerCase().trim()
 
@@ -440,11 +455,11 @@ function getAdviceForBand(band, level) {
 
   // '' Use server-injected data if available, otherwise fall back to hardcoded data
   if (
-    typeof window.airQualityMessages !== 'undefined' &&
-    window.airQualityMessages[normalizedBand]
+    globalThis.airQualityMessages !== undefined &&
+    globalThis.airQualityMessages[normalizedBand]
   ) {
     console.log(`Using server-injected data for band: ${normalizedBand}`)
-    return window.airQualityMessages[normalizedBand]
+    return globalThis.airQualityMessages[normalizedBand]
   }
 
   console.log(`Using hardcoded fallback data for band: ${normalizedBand}`)
@@ -606,11 +621,54 @@ function getAdviceForBand(band, level) {
   return advice[normalizedBand] || advice.low
 }
 
+// Helper to place nodes sequentially - exposure first
+function placeExposureFirst(healthHeading, exposure, separator, healthContent) {
+  // Exposure -> HR -> HealthHeading -> HealthContent
+  // If current order differs, rebuild sequence
+  const parent = healthHeading.parentNode
+  if (exposure.nextElementSibling !== separator) {
+    parent.insertBefore(separator, exposure.nextSibling)
+  }
+  // Ensure healthHeading comes after separator
+  if (separator.nextElementSibling !== healthHeading) {
+    parent.insertBefore(healthHeading, separator.nextSibling)
+  }
+  if (healthContent && healthHeading.nextElementSibling !== healthContent) {
+    parent.insertBefore(healthContent, healthHeading.nextSibling)
+  }
+}
+
+function placeHealthFirst(healthHeading, exposure, separator, healthContent) {
+  // HealthHeading -> HealthContent -> HR -> Exposure
+  const parent = healthHeading.parentNode
+  // Move health heading before exposure if needed
+  if (
+    healthHeading.compareDocumentPosition(exposure) &
+    Node.DOCUMENT_POSITION_FOLLOWING
+  ) {
+    exposure.before(healthHeading)
+  }
+  if (healthContent && healthHeading.nextElementSibling !== healthContent) {
+    parent.insertBefore(healthContent, healthHeading.nextSibling)
+  }
+  // Ensure separator after healthContent
+  const afterHealth = healthContent || healthHeading
+  if (afterHealth.nextElementSibling !== separator) {
+    parent.insertBefore(separator, afterHealth.nextSibling)
+  }
+  // Exposure after separator
+  if (separator.nextElementSibling !== exposure) {
+    parent.insertBefore(exposure, separator.nextSibling)
+  }
+}
+
 // '' Reorder exposure section and health advice block depending on DAQI level
 function reorderExposureAndHealth(level) {
   try {
-    const exposure = document.getElementById('exposure-section')
-    if (!exposure) return
+    const exposure = document.getElementById(EXPOSURE_SECTION_ID)
+    if (!exposure) {
+      return
+    }
     // Identify health heading (English or Welsh)
     const allHeadings = document.querySelectorAll('h2.govuk-heading-m')
     let healthHeading = null
@@ -623,17 +681,19 @@ function reorderExposureAndHealth(level) {
         break
       }
     }
-    if (!healthHeading) return
+    if (!healthHeading) {
+      return
+    }
 
     // Find visible health content element (inset for Moderate+, content div for Low)
-    const inset = document.querySelector('.daqi-health-inset')
-    const lowContent = document.querySelector('.daqi-health-content')
-    const healthContent =
-      inset && inset.style.display !== 'none'
-        ? inset
-        : lowContent && lowContent.style.display !== 'none'
-          ? lowContent
-          : null
+    const inset = document.querySelector(DAQI_HEALTH_INSET_SELECTOR)
+    const lowContent = document.querySelector(DAQI_HEALTH_CONTENT_SELECTOR)
+    let healthContent = null
+    if (inset && inset.style.display !== 'none') {
+      healthContent = inset
+    } else if (lowContent && lowContent.style.display !== 'none') {
+      healthContent = lowContent
+    }
 
     // Separator HR (between-health-exposure)
     let separator = document.querySelector(
@@ -643,60 +703,19 @@ function reorderExposureAndHealth(level) {
       separator = document.createElement('hr')
       separator.className =
         'govuk-section-break govuk-section-break--visible govuk-!-margin-top-6 govuk-!-margin-bottom-6'
-      separator.setAttribute('data-daqi-separator', 'between-health-exposure')
+      separator.dataset.daqiSeparator = 'between-health-exposure'
     }
 
     // Determine desired order: Low => exposure first; Moderate+ => health first
-    const wantExposureFirst = level <= 3
-
-    // Helper to place nodes sequentially
-    function placeExposureFirst() {
-      // Exposure -> HR -> HealthHeading -> HealthContent
-      // If current order differs, rebuild sequence
-      const parent = healthHeading.parentNode
-      if (exposure.nextElementSibling !== separator) {
-        parent.insertBefore(separator, exposure.nextSibling)
-      }
-      // Ensure healthHeading comes after separator
-      if (separator.nextElementSibling !== healthHeading) {
-        parent.insertBefore(healthHeading, separator.nextSibling)
-      }
-      if (healthContent && healthHeading.nextElementSibling !== healthContent) {
-        parent.insertBefore(healthContent, healthHeading.nextSibling)
-      }
-    }
-
-    function placeHealthFirst() {
-      // HealthHeading -> HealthContent -> HR -> Exposure
-      const parent = healthHeading.parentNode
-      // Move health heading before exposure if needed
-      if (
-        healthHeading.compareDocumentPosition(exposure) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-      ) {
-        parent.insertBefore(healthHeading, exposure)
-      }
-      if (healthContent && healthHeading.nextElementSibling !== healthContent) {
-        parent.insertBefore(healthContent, healthHeading.nextSibling)
-      }
-      // Ensure separator after healthContent
-      const afterHealth = healthContent || healthHeading
-      if (afterHealth.nextElementSibling !== separator) {
-        parent.insertBefore(separator, afterHealth.nextSibling)
-      }
-      // Exposure after separator
-      if (separator.nextElementSibling !== exposure) {
-        parent.insertBefore(exposure, separator.nextSibling)
-      }
-    }
+    const wantExposureFirst = level <= LOW_POLLUTION_MAX_LEVEL
 
     if (wantExposureFirst) {
-      placeExposureFirst()
+      placeExposureFirst(healthHeading, exposure, separator, healthContent)
       console.log(
         'Reordered: exposure section placed before health advice (Low level)'
       )
     } else {
-      placeHealthFirst()
+      placeHealthFirst(healthHeading, exposure, separator, healthContent)
       console.log(
         'Reordered: health advice placed before exposure section (Moderate+ level)'
       )

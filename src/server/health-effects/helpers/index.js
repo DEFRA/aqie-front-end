@@ -11,38 +11,62 @@ function buildBackLinkModel({ backLinkText, backLinkUrl }) {
 }
 // '' Pure helpers for health-effects feature
 
-// '' Derive readable location name with postcode and place name
-const getReadableLocationName = (query = {}, params = {}, logger) => {
-  try {
-    const searchTerms = (query.searchTerms || '').trim() // '' Postcode
-    const locationName = (query.locationName || '').trim() // '' Place name
+// '' Helper to build formatted name from postcode and location
+const buildFormattedName = (formattedPostcode, locationName) => {
+  if (formattedPostcode && locationName) {
+    return `${formattedPostcode}, ${locationName}`
+  }
+  if (formattedPostcode) {
+    return formattedPostcode
+  }
+  if (locationName) {
+    return locationName
+  }
+  return null
+}
 
-    // '' Format postcode properly (uppercase with space separator)
-    const formattedPostcode = searchTerms ? formatUKPostcode(searchTerms) : '' // ''
-
-    // '' Build formatted string: "N8 7GE, Hornsey" or fallback
-    if (formattedPostcode && locationName) {
-      return `${formattedPostcode}, ${locationName}` // ''
-    }
-    if (formattedPostcode) {
-      return formattedPostcode // ''
-    }
-    if (locationName) {
-      return locationName // ''
-    }
-
-    // '' Fallback: normalize params.id and format
-    const rawId = (params.id || '').trim() // ''
-    if (!rawId) return '' // ''
-    const normalized = rawId
-      .replace(/[_-]+/gi, ' ') // '' Convert delimiters to space
-      .replace(/\s+/g, ' ') // '' Collapse multiple spaces
-      .trim() // ''
-    return formatUKPostcode(normalized) // '' Format as postcode if possible
-  } catch (e) {
-    logger && logger.warn(e, "'' Failed to derive readable locationName")
+// '' Helper to normalize and format ID as fallback
+const normalizeIdAsFallback = (params) => {
+  const rawId = (params.id || '').trim()
+  if (!rawId) {
     return ''
   }
+  const normalized = rawId
+    .replaceAll(/[_-]+/gi, ' ')
+    .replaceAll(/\s+/g, ' ')
+    .trim()
+  return formatUKPostcode(normalized)
+}
+
+// '' Derive readable location name with postcode and place name
+const getReadableLocationName = (query = {}, params = {}, logger = null) => {
+  try {
+    const searchTerms = (query.searchTerms || '').trim()
+    const locationName = (query.locationName || '').trim()
+    const formattedPostcode = searchTerms ? formatUKPostcode(searchTerms) : ''
+    
+    const result = buildFormattedName(formattedPostcode, locationName)
+    if (result) {
+      return result
+    }
+    
+    return normalizeIdAsFallback(params)
+  } catch (e) {
+    logger?.warn(e, "'' Failed to derive readable locationName")
+    return ''
+  }
+}
+
+// '' Helper to generate back link URL based on locationId and language
+const generateBackLinkUrl = (locationId, lang) => {
+  if (locationId) {
+    return lang === 'cy'
+      ? `/lleoliad/${locationId}?lang=cy`
+      : `/location/${locationId}?lang=en`
+  }
+  return lang === 'cy'
+    ? '/chwilio-lleoliad/cy?lang=cy'
+    : '/search-location?lang=en'
 }
 
 // '' Compose view model for template
@@ -61,14 +85,8 @@ const buildHealthEffectsViewModel = ({
     multipleLocations: { serviceName = '' } = {}
   } = content || {}
 
-  // Generate back link URL based on locationId and language
-  const backLinkUrl = locationId
-    ? lang === 'cy'
-      ? `/lleoliad/${locationId}?lang=cy`
-      : `/location/${locationId}?lang=en`
-    : lang === 'cy'
-      ? '/chwilio-lleoliad/cy?lang=cy'
-      : '/search-location?lang=en'
+  // '' Generate back link URL based on locationId and language
+  const backLinkUrl = generateBackLinkUrl(locationId, lang)
 
   return {
     pageTitle:

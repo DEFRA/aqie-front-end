@@ -1,3 +1,4 @@
+/* global vi */
 import { getLocationDataController } from './controller.js'
 import { welsh } from '../../data/cy/cy.js'
 import {
@@ -5,6 +6,9 @@ import {
   LANG_EN,
   MULTIPLE_LOCATIONS_ROUTE_EN
 } from '../../data/constants.js'
+
+const TEST_DATE = '2025-02-04'
+const TEST_PATH = '/test-path'
 
 vi.mock('../../common/helpers/logging/logger.js', () => ({
   createLogger: vi.fn(() => ({
@@ -22,7 +26,8 @@ vi.mock('../../common/helpers/get-site-url.js', () => ({
 }))
 
 describe('getLocationDataController', () => {
-  it('should redirect to English multiple locations route when lang is set to English', async () => {
+  describe('Language redirects', () => {
+    it('should redirect to English multiple locations route when lang is set to English', async () => {
     const request = {
       yar: {
         get: vi.fn().mockReturnValue({
@@ -30,10 +35,10 @@ describe('getLocationDataController', () => {
           monitoringSites: [],
           transformedDailySummary: [],
           calendarWelsh: [],
-          englishDate: '2025-02-04',
-          welshDate: '2025-02-04',
+          englishDate: TEST_DATE,
+          welshDate: TEST_DATE,
           getMonth: 'February',
-          summaryDate: '2025-02-04',
+          summaryDate: TEST_DATE,
           lang: LANG_EN,
           userLocation: 'London'
         })
@@ -41,7 +46,7 @@ describe('getLocationDataController', () => {
       query: {
         lang: LANG_EN
       },
-      path: '/test-path'
+      path: TEST_PATH
     }
     const h = {
       redirect: vi.fn(() => ({
@@ -53,8 +58,10 @@ describe('getLocationDataController', () => {
 
     expect(h.redirect).toHaveBeenCalledWith(MULTIPLE_LOCATIONS_ROUTE_EN)
   })
+  })
 
-  it('should return multiple locations view with correct data when lang is set to Welsh', async () => {
+  describe('Welsh content rendering', () => {
+    it('should return multiple locations view with correct data when lang is set to Welsh', async () => {
     const request = {
       yar: {
         get: vi.fn().mockReturnValue({
@@ -62,10 +69,10 @@ describe('getLocationDataController', () => {
           monitoringSites: [],
           transformedDailySummary: [],
           calendarWelsh: { February: 'Chwefror' },
-          englishDate: '2025-02-04',
-          welshDate: '2025-02-04',
+          englishDate: TEST_DATE,
+          welshDate: TEST_DATE,
           getMonth: 'February',
-          summaryDate: '2025-02-04',
+          summaryDate: TEST_DATE,
           lang: LANG_CY,
           userLocation: 'London'
         })
@@ -73,7 +80,7 @@ describe('getLocationDataController', () => {
       query: {
         lang: LANG_CY
       },
-      path: '/test-path'
+      path: TEST_PATH
     }
     const h = {
       view: vi.fn()
@@ -100,13 +107,15 @@ describe('getLocationDataController', () => {
       backlink: welsh.backlink,
       cookieBanner: welsh.cookieBanner,
       welshMonth: 'Chwefror',
-      summaryDate: '2025-02-04',
+      summaryDate: TEST_DATE,
       lang: LANG_CY,
       currentPath: '/canlyniadau-lluosog/cy'
     })
   })
+  })
 
-  it('should handle error and return error view with 500 status code', async () => {
+  describe('Error handling', () => {
+    it('should handle error and return error view with 500 status code', async () => {
     // ''
     const mockError = new Error('Unexpected error')
     const mockLocationData = {
@@ -114,10 +123,10 @@ describe('getLocationDataController', () => {
       monitoringSites: [],
       transformedDailySummary: [],
       calendarWelsh: [],
-      englishDate: '2025-02-04',
-      welshDate: '2025-02-04',
+      englishDate: TEST_DATE,
+      welshDate: TEST_DATE,
       getMonth: 'February',
-      summaryDate: '2025-02-04',
+      summaryDate: TEST_DATE,
       lang: LANG_CY,
       userLocation: 'London'
     }
@@ -129,7 +138,7 @@ describe('getLocationDataController', () => {
       query: {
         lang: LANG_CY
       },
-      path: '/test-path'
+      path: TEST_PATH
     }
 
     const h = {
@@ -161,10 +170,10 @@ describe('getLocationDataController', () => {
       monitoringSites: [],
       transformedDailySummary: [],
       calendarWelsh: [],
-      englishDate: '2025-02-04',
-      welshDate: '2025-02-04',
+      englishDate: TEST_DATE,
+      welshDate: TEST_DATE,
       getMonth: 'February',
-      summaryDate: '2025-02-04',
+      summaryDate: TEST_DATE,
       lang: LANG_CY,
       userLocation: 'London'
     }
@@ -176,7 +185,7 @@ describe('getLocationDataController', () => {
       query: {
         lang: LANG_CY
       },
-      path: '/test-path'
+      path: TEST_PATH
     }
 
     const h = {
@@ -206,7 +215,7 @@ describe('getLocationDataController', () => {
       query: {
         lang: LANG_CY
       },
-      path: '/test-path'
+      path: TEST_PATH
     }
     const h = {
       view: vi.fn().mockReturnValue('error-view')
@@ -227,10 +236,10 @@ describe('getLocationDataController', () => {
           monitoringSites: [],
           transformedDailySummary: [],
           calendarWelsh: { February: 'Chwefror' },
-          englishDate: undefined,
-          welshDate: undefined,
+          englishDate: null,
+          welshDate: null,
           getMonth: 'February',
-          summaryDate: '2025-02-04',
+          summaryDate: TEST_DATE,
           lang: LANG_CY,
           userLocation: 'Cardiff'
         })
@@ -238,7 +247,7 @@ describe('getLocationDataController', () => {
       query: {
         lang: LANG_CY
       },
-      path: '/test-path'
+      path: TEST_PATH
     }
     const h = {
       view: vi.fn()
@@ -249,9 +258,10 @@ describe('getLocationDataController', () => {
     expect(h.view).toHaveBeenCalledWith(
       'multiple-results/multiple-locations',
       expect.objectContaining({
-        summaryDate: '2025-02-04',
+        summaryDate: TEST_DATE,
         lang: LANG_CY
       })
     )
+  })
   })
 })

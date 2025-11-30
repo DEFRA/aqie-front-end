@@ -1,7 +1,11 @@
+/* global vi */
 import { welsh } from '../../data/cy/cy.js'
 import { particulateMatter10Controller } from '../../particulate-matter-10/cy/controller.js'
 import { LANG_CY, LANG_EN } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
+
+const PM10_PATH_CY = PM10_PATH_CY
+const VIEW_RENDERED = VIEW_RENDERED
 
 describe('Particular matter10 Controller - Welsh', () => {
   let mockRequest
@@ -11,7 +15,7 @@ describe('Particular matter10 Controller - Welsh', () => {
   beforeEach(() => {
     mockRequest = {
       query: {},
-      path: '/llygryddion/mater-gronynnol-10/cy'
+      path: PM10_PATH_CY
     }
     vi.mock('../../common/helpers/get-site-url.js', () => ({
       getAirQualitySiteUrl: vi.fn((request) => {
@@ -22,7 +26,7 @@ describe('Particular matter10 Controller - Welsh', () => {
       redirect: vi.fn(() => ({
         code: vi.fn().mockReturnValue('redirected')
       })),
-      view: vi.fn().mockReturnValue('view rendered')
+      view: vi.fn().mockReturnValue(VIEW_RENDERED)
     }
   })
 
@@ -42,7 +46,7 @@ describe('Particular matter10 Controller - Welsh', () => {
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = particulateMatter10Controller.handler(mockRequest, mockH)
-    expect(result).toBe('view rendered')
+    expect(result).toBe(VIEW_RENDERED)
     expect(mockH.view).toHaveBeenCalledWith('particulate-matter-10/index', {
       pageTitle: mockContent.pollutants.particulateMatter10.pageTitle,
       description: mockContent.pollutants.particulateMatter10.description,
@@ -55,7 +59,7 @@ describe('Particular matter10 Controller - Welsh', () => {
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
       lang: mockRequest.query.lang,
-      currentPath: '/llygryddion/mater-gronynnol-10/cy'
+      currentPath: PM10_PATH_CY
     })
   })
 
@@ -66,7 +70,7 @@ describe('Particular matter10 Controller - Welsh', () => {
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = particulateMatter10Controller.handler(mockRequest, mockH)
-    expect(result).toBe('view rendered')
+    expect(result).toBe(VIEW_RENDERED)
     expect(mockH.view).toHaveBeenCalledWith('particulate-matter-10/index', {
       pageTitle: mockContent.pollutants.particulateMatter10.pageTitle,
       description: mockContent.pollutants.particulateMatter10.description,
@@ -79,7 +83,7 @@ describe('Particular matter10 Controller - Welsh', () => {
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
       lang: LANG_CY,
-      currentPath: '/llygryddion/mater-gronynnol-10/cy'
+      currentPath: PM10_PATH_CY
     })
   })
 })

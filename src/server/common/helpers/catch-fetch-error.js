@@ -4,23 +4,20 @@ const logger = createLogger()
 async function catchFetchError(url, options) {
   try {
     // Force Accept-Encoding: identity for all requests to avoid decompression issues
-    let safeOptions = options
-    if (options && options.headers) {
-      safeOptions = {
-        ...options,
-        headers: {
-          ...options.headers,
-          'Accept-Encoding': 'identity'
+    const safeOptions = options?.headers
+      ? {
+          ...options,
+          headers: {
+            ...options.headers,
+            'Accept-Encoding': 'identity'
+          }
         }
-      }
-    } else {
-      safeOptions = {
-        ...options,
-        headers: {
-          'Accept-Encoding': 'identity'
+      : {
+          ...options,
+          headers: {
+            'Accept-Encoding': 'identity'
+          }
         }
-      }
-    }
     const startTime = performance.now()
     const date = new Date().toUTCString()
     const response = await fetch(url, safeOptions)
@@ -55,7 +52,7 @@ async function catchFetchError(url, options) {
     if (contentType.includes('application/json')) {
       try {
         const data = await response.json()
-        if (typeof data === 'undefined') {
+        if (data === undefined) {
           logger.error(`Parsed JSON is undefined from ${url}`)
         }
         return [status, data]
