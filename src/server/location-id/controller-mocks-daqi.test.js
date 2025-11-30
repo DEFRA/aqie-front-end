@@ -1,7 +1,7 @@
 // '' Tests for mock DAQI level and pollutant band functionality
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-const TEST_LOCATION_NAME = TEST_LOCATION_NAME
+const TEST_LOCATION_NAME = 'Cardiff'
 const MAX_OBJECT_SIZE = 2048576
 
 // Mock all dependencies before any imports
@@ -283,39 +283,48 @@ describe('Location ID Controller - Mock DAQI Level', () => {
       expect(mockRequest.yar.set).toHaveBeenCalledWith('mockLevel', '8')
     })
   })
+})
 
-  describe('Clear functionality', () => {
-    it('should clear mockLevel when explicitly requested', async () => {
-      // ''
-      mockRequest.query = { lang: 'en', mockLevel: 'clear' }
+describe('Location ID Controller - Mock DAQI Clear Functionality', () => {
+  let mockRequest, mockH
 
-      const mockLocationData = {
-        results: [{ id: 'test' }],
-        getForecasts: [{ locationId: 'test' }],
-        locationType: 'uk'
-      }
+  beforeEach(() => {
+    vi.clearAllMocks()
+    const mocks = createMockRequestResponse()
+    mockRequest = mocks.mockRequest
+    mockH = mocks.mockH
+  })
 
-      mockRequest.yar.get
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
+  it('should clear mockLevel when explicitly requested', async () => {
+    // ''
+    mockRequest.query = { lang: 'en', mockLevel: 'clear' }
 
-      vi.mocked(getIdMatch).mockReturnValue({
-        locationIndex: 0,
-        locationDetails: { id: 'test', name: TEST_LOCATION_NAME }
-      })
+    const mockLocationData = {
+      results: [{ id: 'test' }],
+      getForecasts: [{ locationId: 'test' }],
+      locationType: 'uk'
+    }
 
-      vi.mocked(getNearestLocation).mockResolvedValue({
-        forecastNum: [
-          [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
-        ],
-        nearestLocationsRange: [],
-        nearestLocation: { id: 'test' }
-      })
+    mockRequest.yar.get
+      .mockReturnValueOnce(true) // searchTermsSaved
+      .mockReturnValueOnce(mockLocationData)
 
-      await getLocationDetailsController.handler(mockRequest, mockH)
-
-      expect(mockRequest.yar.set).toHaveBeenCalledWith('mockLevel', null)
+    vi.mocked(getIdMatch).mockReturnValue({
+      locationIndex: 0,
+      locationDetails: { id: 'test', name: TEST_LOCATION_NAME }
     })
+
+    vi.mocked(getNearestLocation).mockResolvedValue({
+      forecastNum: [
+        [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
+      ],
+      nearestLocationsRange: [],
+      nearestLocation: { id: 'test' }
+    })
+
+    await getLocationDetailsController.handler(mockRequest, mockH)
+
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('mockLevel', null)
   })
 })
 
@@ -410,119 +419,143 @@ describe('Location ID Controller - Mock Pollutants', () => {
       )
     })
   })
+})
 
-  describe('Clear functionality', () => {
-    it('should clear mockPollutantBand when explicitly requested', async () => {
-      // ''
-      mockRequest.query = { lang: 'en', mockPollutantBand: 'clear' }
+describe('Location ID Controller - Mock Pollutants Clear Functionality', () => {
+  let mockRequest, mockH
 
-      const mockLocationData = {
-        results: [{ id: 'test' }],
-        getForecasts: [{ locationId: 'test' }],
-        locationType: 'uk'
-      }
-
-      mockRequest.yar.get
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
-
-      vi.mocked(getIdMatch).mockReturnValue({
-        locationIndex: 0,
-        locationDetails: { id: 'test', name: TEST_LOCATION_NAME }
-      })
-
-      vi.mocked(getNearestLocation).mockResolvedValue({
-        forecastNum: [
-          [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
-        ],
-        nearestLocationsRange: [],
-        nearestLocation: { id: 'test' }
-      })
-
-      await getLocationDetailsController.handler(mockRequest, mockH)
-
-      expect(mockRequest.yar.set).toHaveBeenCalledWith(
-        'mockPollutantBand',
-        null
-      )
-    })
+  beforeEach(() => {
+    vi.clearAllMocks()
+    const mocks = createMockRequestResponse()
+    mockRequest = mocks.mockRequest
+    mockH = mocks.mockH
   })
 
-  describe('Application to monitoring sites', () => {
-    it('should apply mockPollutantBand from session to monitoring sites', async () => {
-      // ''
-      const mockLocationData = {
-        results: [{ id: 'test' }],
-        getForecasts: [{ locationId: 'test' }],
-        locationType: 'uk'
-      }
+  it('should clear mockPollutantBand when explicitly requested', async () => {
+    // ''
+    mockRequest.query = { lang: 'en', mockPollutantBand: 'clear' }
 
-      mockRequest.yar.get
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(null) // mockLevel
-        .mockReturnValueOnce(null) // mockDay
-        .mockReturnValueOnce('very-high') // mockPollutantBand
-        .mockReturnValueOnce(null) // testMode
-        .mockReturnValueOnce(mockLocationData) // locationData
+    const mockLocationData = {
+      results: [{ id: 'test' }],
+      getForecasts: [{ locationId: 'test' }],
+      locationType: 'uk'
+    }
 
-      vi.mocked(getIdMatch).mockReturnValue({
-        locationIndex: 0,
-        locationDetails: { id: 'test', name: TEST_LOCATION_NAME }
-      })
+    mockRequest.yar.get
+      .mockReturnValueOnce(true) // searchTermsSaved
+      .mockReturnValueOnce(mockLocationData)
 
-      vi.mocked(getNearestLocation).mockResolvedValue({
-        forecastNum: [
-          [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
-        ],
-        nearestLocationsRange: [
-          { id: 'site1', pollutants: { no2: 30, pm25: 15 } }
-        ],
-        nearestLocation: { id: 'test' }
-      })
-
-      await getLocationDetailsController.handler(mockRequest, mockH)
-
-      expect(mockH.view).toHaveBeenCalled()
-      // Monitoring sites will have mocked pollutant bands
+    vi.mocked(getIdMatch).mockReturnValue({
+      locationIndex: 0,
+      locationDetails: { id: 'test', name: TEST_LOCATION_NAME }
     })
+
+    vi.mocked(getNearestLocation).mockResolvedValue({
+      forecastNum: [
+        [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
+      ],
+      nearestLocationsRange: [],
+      nearestLocation: { id: 'test' }
+    })
+
+    await getLocationDetailsController.handler(mockRequest, mockH)
+
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('mockPollutantBand', null)
+  })
+})
+
+describe('Location ID Controller - Mock Pollutants Application', () => {
+  let mockRequest, mockH
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    const mocks = createMockRequestResponse()
+    mockRequest = mocks.mockRequest
+    mockH = mocks.mockH
   })
 
-  describe('Mock parameter preservation in redirects', () => {
-    it('should preserve mockLevel in Welsh redirect', async () => {
-      // ''
-      mockRequest.query = { lang: 'cy', mockLevel: '5' }
-      mockRequest.yar.get.mockReturnValue(true)
+  it('should apply mockPollutantBand from session to monitoring sites', async () => {
+    // ''
+    const mockLocationData = {
+      results: [{ id: 'test' }],
+      getForecasts: [{ locationId: 'test' }],
+      locationType: 'uk'
+    }
 
-      await getLocationDetailsController.handler(mockRequest, mockH)
+    mockRequest.yar.get
+      .mockReturnValueOnce(true) // searchTermsSaved
+      .mockReturnValueOnce(null) // mockLevel
+      .mockReturnValueOnce(null) // mockDay
+      .mockReturnValueOnce('very-high') // mockPollutantBand
+      .mockReturnValueOnce(null) // testMode
+      .mockReturnValueOnce(mockLocationData) // locationData
 
-      expect(mockH.redirect).toHaveBeenCalledWith(
-        '/lleoliad/test-location-123/?lang=cy&mockLevel=5'
-      )
+    vi.mocked(getIdMatch).mockReturnValue({
+      locationIndex: 0,
+      locationDetails: { id: 'test', name: TEST_LOCATION_NAME }
     })
 
-    it('should preserve mockPollutantBand in Welsh redirect', async () => {
-      // ''
-      mockRequest.query = { lang: 'cy', mockPollutantBand: 'moderate' }
-      mockRequest.yar.get.mockReturnValue(true)
-
-      await getLocationDetailsController.handler(mockRequest, mockH)
-
-      expect(mockH.redirect).toHaveBeenCalledWith(
-        '/lleoliad/test-location-123/?lang=cy&mockPollutantBand=moderate'
-      )
+    vi.mocked(getNearestLocation).mockResolvedValue({
+      forecastNum: [
+        [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
+      ],
+      nearestLocationsRange: [
+        { id: 'site1', pollutants: { no2: 30, pm25: 15 } }
+      ],
+      nearestLocation: { id: 'test' }
     })
 
-    it('should preserve multiple mock parameters in search terms redirect', async () => {
-      // ''
-      mockRequest.headers = {}
-      mockRequest.query = { lang: 'en', mockLevel: '6', mockDay: 'day2' }
-      mockRequest.yar.get.mockReturnValueOnce(false) // searchTermsSaved
+    await getLocationDetailsController.handler(mockRequest, mockH)
 
-      await getLocationDetailsController.handler(mockRequest, mockH)
+    expect(mockH.view).toHaveBeenCalled()
+    // Monitoring sites will have mocked pollutant bands
+  })
+})
 
-      const redirectCall = mockH.redirect.mock.calls[0][0]
-      expect(redirectCall).toContain('mockLevel=6')
-      expect(redirectCall).toContain('mockDay=day2')
-    })
+describe('Location ID Controller - Mock Parameter Preservation', () => {
+  let mockRequest, mockH
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    const mocks = createMockRequestResponse()
+    mockRequest = mocks.mockRequest
+    mockH = mocks.mockH
+  })
+
+  it('should preserve mockLevel in Welsh redirect', async () => {
+    // ''
+    mockRequest.query = { lang: 'cy', mockLevel: '5' }
+    mockRequest.yar.get.mockReturnValue(true)
+
+    await getLocationDetailsController.handler(mockRequest, mockH)
+
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      '/lleoliad/test-location-123/?lang=cy&mockLevel=5'
+    )
+  })
+
+  it('should preserve mockPollutantBand in Welsh redirect', async () => {
+    // ''
+    mockRequest.query = { lang: 'cy', mockPollutantBand: 'moderate' }
+    mockRequest.yar.get.mockReturnValue(true)
+
+    await getLocationDetailsController.handler(mockRequest, mockH)
+
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      '/lleoliad/test-location-123/?lang=cy&mockPollutantBand=moderate'
+    )
+  })
+
+  it('should preserve multiple mock parameters in search terms redirect', async () => {
+    // ''
+    mockRequest.headers = {}
+    mockRequest.query = { lang: 'en', mockLevel: '6', mockDay: 'day2' }
+    mockRequest.yar.get.mockReturnValueOnce(false) // searchTermsSaved
+
+    await getLocationDetailsController.handler(mockRequest, mockH)
+
+    const redirectCall = mockH.redirect.mock.calls[0][0]
+    expect(redirectCall).toContain('mockLevel=6')
+    expect(redirectCall).toContain('mockDay=day2')
   })
 })

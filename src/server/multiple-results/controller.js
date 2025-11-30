@@ -11,7 +11,11 @@ import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
 const logger = createLogger()
 
-const buildMultipleLocationsViewModel = (locationData, languageData, metaSiteUrl) => {
+const buildMultipleLocationsViewModel = (
+  locationData,
+  languageData,
+  metaSiteUrl
+) => {
   const {
     results,
     monitoringSites,
@@ -60,7 +64,13 @@ const buildMultipleLocationsViewModel = (locationData, languageData, metaSiteUrl
 }
 
 const buildErrorViewModel = (languageData, request, lang, statusCode) => {
-  const { footerTxt, phaseBanner, cookieBanner, multipleLocations, notFoundUrl } = languageData
+  const {
+    footerTxt,
+    phaseBanner,
+    cookieBanner,
+    multipleLocations,
+    notFoundUrl
+  } = languageData
   return {
     pageTitle: notFoundUrl.serviceAPI.pageTitle,
     footerTxt,
@@ -87,17 +97,27 @@ const getLocationDataController = {
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     try {
-      const viewModel = buildMultipleLocationsViewModel(locationData, english, metaSiteUrl)
+      const viewModel = buildMultipleLocationsViewModel(
+        locationData,
+        english,
+        metaSiteUrl
+      )
       return h.view('multiple-results/multiple-locations', viewModel)
     } catch (error) {
       logger.error(
         `error from location refresh outside fetch APIs: ${error.message}`
       )
       const statusCode =
-        error.message === "Cannot read properties of undefined (reading 'access_token')"
+        error.message ===
+        "Cannot read properties of undefined (reading 'access_token')"
           ? STATUS_UNAUTHORIZED
           : STATUS_INTERNAL_SERVER_ERROR
-      const errorViewModel = buildErrorViewModel(english, request, locationData.lang, statusCode)
+      const errorViewModel = buildErrorViewModel(
+        english,
+        request,
+        locationData.lang,
+        statusCode
+      )
       return h.view('error/index', errorViewModel)
     }
   }

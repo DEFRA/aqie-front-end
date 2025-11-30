@@ -3,7 +3,13 @@ import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 import { formatUKPostcode } from '../locations/helpers/convert-string.js'
 
-function buildWelshRedirectUrl(locationId, searchTerms, locationName, hasSearchTerms, hasLocationName) {
+function buildWelshRedirectUrl(
+  locationId,
+  searchTerms,
+  locationName,
+  hasSearchTerms,
+  hasLocationName
+) {
   let redirectUrl = `/lleoliad/${locationId}/camau-lleihau-amlygiad/cy?lang=cy`
   if (hasSearchTerms) {
     redirectUrl += `&searchTerms=${encodeURIComponent(searchTerms)}`
@@ -14,7 +20,12 @@ function buildWelshRedirectUrl(locationId, searchTerms, locationName, hasSearchT
   return redirectUrl
 }
 
-function buildBackLinkText(formattedPostcode, locationName, hasLocationName, defaultText) {
+function buildBackLinkText(
+  formattedPostcode,
+  locationName,
+  hasLocationName,
+  defaultText
+) {
   if (formattedPostcode && hasLocationName) {
     return `Air pollution in ${formattedPostcode}, ${locationName}`
   }
@@ -49,7 +60,13 @@ const actionsReduceExposureController = {
     const hasLocationName = locationName.trim() !== ''
 
     if (query?.lang && query?.lang === LANG_CY) {
-      const redirectUrl = buildWelshRedirectUrl(locationId, searchTerms, locationName, hasSearchTerms, hasLocationName)
+      const redirectUrl = buildWelshRedirectUrl(
+        locationId,
+        searchTerms,
+        locationName,
+        hasSearchTerms,
+        hasLocationName
+      )
       return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE)
     }
 
@@ -63,7 +80,12 @@ const actionsReduceExposureController = {
         ? formatUKPostcode(searchTerms)
         : ''
 
-      backLinkText = buildBackLinkText(formattedPostcode, locationName, hasLocationName, backlink.text)
+      backLinkText = buildBackLinkText(
+        formattedPostcode,
+        locationName,
+        hasLocationName,
+        backlink.text
+      )
       backLinkUrl = `/location/${locationId}?lang=en`
     }
 

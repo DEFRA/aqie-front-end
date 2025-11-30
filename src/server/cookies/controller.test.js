@@ -74,7 +74,11 @@ describe('Cookies Handler', () => {
     expect(actualUrl).toBe(expectedUrl)
     const result = cookiesController.handler(mockRequest, mockH, mockContent)
     expect(result).toBe(VIEW_RENDERED)
-    const expectedViewData = createCookiesViewData(mockContent, actualUrl, mockRequest.query.lang)
+    const expectedViewData = createCookiesViewData(
+      mockContent,
+      actualUrl,
+      mockRequest.query.lang
+    )
     expect(mockH.view).toHaveBeenCalledWith(COOKIES_INDEX, expectedViewData)
   })
 
@@ -87,7 +91,11 @@ describe('Cookies Handler', () => {
     expect(actualUrl).toBe(expectedUrl)
     const result = cookiesHandler(mockRequest, mockH, mockContent)
     expect(result).toBe(VIEW_RENDERED)
-    const expectedViewData = createCookiesViewData(mockContent, actualUrl, LANG_EN)
+    const expectedViewData = createCookiesViewData(
+      mockContent,
+      actualUrl,
+      LANG_EN
+    )
     expect(mockH.view).toHaveBeenCalledWith(COOKIES_INDEX, expectedViewData)
   })
 })

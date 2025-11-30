@@ -49,7 +49,13 @@ const createRequestWithYar = (lang, path) => ({
   }
 })
 
-const createErrorViewData = (mockContent, actualUrl, lang, errors, errorMessage) => ({
+const createErrorViewData = (
+  mockContent,
+  actualUrl,
+  lang,
+  errors,
+  errorMessage
+) => ({
   pageTitle: `Error: ${mockContent.searchLocation.pageTitle}`,
   description: mockContent.searchLocation.description,
   metaSiteUrl: actualUrl,
@@ -89,7 +95,10 @@ const verifyRedirect = (result, mockH, expectedPath) => {
 
 const verifyView = (result, mockH, expectedViewData) => {
   expect(result).toBe(VIEW_RENDERED)
-  expect(mockH.view).toHaveBeenCalledWith(SEARCH_LOCATION_INDEX, expectedViewData)
+  expect(mockH.view).toHaveBeenCalledWith(
+    SEARCH_LOCATION_INDEX,
+    expectedViewData
+  )
 }
 
 const verifyUrlMatch = (request, expectedUrl) => {
@@ -145,24 +154,43 @@ describe('searchLocationController - language handling', function () {
 
   it('should redirect to the Welsh version if the language is "cy"', () => {
     mockRequest = createRequestWithYar(LANG_CY, WELSH_SEARCH_PATH)
-    verifyUrlMatch(mockRequest, `${BASE_URL}${WELSH_SEARCH_PATH}?lang=${LANG_CY}`)
+    verifyUrlMatch(
+      mockRequest,
+      `${BASE_URL}${WELSH_SEARCH_PATH}?lang=${LANG_CY}`
+    )
     const result = searchLocationController.handler(mockRequest, mockH)
     verifyRedirect(result, mockH, `${WELSH_SEARCH_PATH}?lang=${LANG_CY}`)
   })
 
   it('should render the search location index page for English', () => {
     mockRequest = createRequestWithYar(LANG_EN, SEARCH_LOCATION_PATH)
-    const actualUrl = verifyUrlMatch(mockRequest, `${BASE_URL}${SEARCH_LOCATION_PATH}?lang=${LANG_EN}`)
+    const actualUrl = verifyUrlMatch(
+      mockRequest,
+      `${BASE_URL}${SEARCH_LOCATION_PATH}?lang=${LANG_EN}`
+    )
     const result = searchLocationController.handler(mockRequest, mockH)
-    const expectedViewData = createViewData(mockContent, actualUrl, LANG_EN, SEARCH_LOCATION_PATH)
+    const expectedViewData = createViewData(
+      mockContent,
+      actualUrl,
+      LANG_EN,
+      SEARCH_LOCATION_PATH
+    )
     verifyView(result, mockH, expectedViewData)
   })
 
   it('should default to English if lang is not "cy" or "en"', () => {
     mockRequest = createRequestWithYar('fr', SEARCH_LOCATION_PATH)
-    const actualUrl = verifyUrlMatch(mockRequest, `${BASE_URL}${SEARCH_LOCATION_PATH}?lang=fr`)
+    const actualUrl = verifyUrlMatch(
+      mockRequest,
+      `${BASE_URL}${SEARCH_LOCATION_PATH}?lang=fr`
+    )
     const result = searchLocationController.handler(mockRequest, mockH)
-    const expectedViewData = createViewData(mockContent, actualUrl, LANG_EN, SEARCH_LOCATION_PATH)
+    const expectedViewData = createViewData(
+      mockContent,
+      actualUrl,
+      LANG_EN,
+      SEARCH_LOCATION_PATH
+    )
     verifyView(result, mockH, expectedViewData)
   })
 
@@ -188,7 +216,9 @@ describe('searchLocationController - error handling', function () {
 
   it('should render the search location index page with errors', () => {
     const errors = { errors: { titleText: 'There is a problem' } }
-    const errorMessage = { errorMessage: { text: 'Select where you want to check' } }
+    const errorMessage = {
+      errorMessage: { text: 'Select where you want to check' }
+    }
     const mrequest = {
       query: { lang: LANG_EN },
       path: SEARCH_LOCATION_PATH,
@@ -205,9 +235,18 @@ describe('searchLocationController - error handling', function () {
         set: vi.fn()
       }
     }
-    const actualUrl = verifyUrlMatch(mrequest, `${BASE_URL}${SEARCH_LOCATION_PATH}?lang=${LANG_EN}`)
+    const actualUrl = verifyUrlMatch(
+      mrequest,
+      `${BASE_URL}${SEARCH_LOCATION_PATH}?lang=${LANG_EN}`
+    )
     const result = searchLocationController.handler(mrequest, mockH)
-    const expectedViewData = createErrorViewData(mockContent, actualUrl, LANG_EN, errors, errorMessage)
+    const expectedViewData = createErrorViewData(
+      mockContent,
+      actualUrl,
+      LANG_EN,
+      errors,
+      errorMessage
+    )
     verifyView(result, mockH, expectedViewData)
   })
 

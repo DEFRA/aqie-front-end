@@ -12,28 +12,36 @@ vi.mock('../../common/helpers/get-site-url.js', () => ({
 const SEARCH_LOCATION_PATH_CY = '/chwilio-lleoliad/cy'
 const VIEW_RENDERED = 'view rendered'
 const SEARCH_LOCATION_VIEW = 'search-location/index'
+const REDIRECT_STATUS_CODE = 301
+const MOCK_CONTENT = welsh
 
-describe('searchLocationController - welsh', () => {
+function createMockRequest() {
+  return {
+    query: {},
+    path: '',
+    yar: {
+      set: vi.fn(),
+      get: vi.fn()
+    }
+  }
+}
+
+function createMockH() {
+  return {
+    redirect: vi.fn(() => ({
+      code: vi.fn(() => 'redirected')
+    })),
+    view: vi.fn(() => VIEW_RENDERED)
+  }
+}
+
+describe('searchLocationController - Welsh Redirects', () => {
   let mockRequest
   let mockH
-  const mockContent = welsh
-  const REDIRECT_STATUS_CODE = 301
 
   beforeEach(() => {
-    mockRequest = {
-      query: {},
-      path: '',
-      yar: {
-        set: vi.fn(),
-        get: vi.fn()
-      }
-    }
-    mockH = {
-      redirect: vi.fn(() => ({
-        code: vi.fn(() => 'redirected')
-      })),
-      view: vi.fn(() => VIEW_RENDERED)
-    }
+    mockRequest = createMockRequest()
+    mockH = createMockH()
   })
 
   it('should redirect to the Welsh version if the language is "en"', () => {
@@ -47,6 +55,16 @@ describe('searchLocationController - welsh', () => {
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith('/search-location?lang=en')
     expect(codeSpy).toHaveBeenCalledWith(REDIRECT_STATUS_CODE)
+  })
+})
+
+describe('searchLocationController - Welsh Content', () => {
+  let mockRequest
+  let mockH
+
+  beforeEach(() => {
+    mockRequest = createMockRequest()
+    mockH = createMockH()
   })
 
   it('should redirect by default to search location index page with welsh version if lang is not cy/en', () => {
@@ -67,33 +85,43 @@ describe('searchLocationController - welsh', () => {
     const result = searchLocationController.handler(mockRequest, mockH)
     expect(result).toBe(VIEW_RENDERED)
     expect(mockH.view).toHaveBeenCalledWith(SEARCH_LOCATION_VIEW, {
-      pageTitle: mockContent.searchLocation.pageTitle,
-      description: mockContent.searchLocation.description,
+      pageTitle: MOCK_CONTENT.searchLocation.pageTitle,
+      description: MOCK_CONTENT.searchLocation.description,
       metaSiteUrl: actualUrl,
-      heading: mockContent.searchLocation.heading,
-      page: mockContent.searchLocation.page,
-      serviceName: mockContent.searchLocation.serviceName,
+      heading: MOCK_CONTENT.searchLocation.heading,
+      page: MOCK_CONTENT.searchLocation.page,
+      serviceName: MOCK_CONTENT.searchLocation.serviceName,
       searchParams: {
         label: {
-          text: mockContent.searchLocation.searchParams.label.text,
+          text: MOCK_CONTENT.searchLocation.searchParams.label.text,
           classes: 'govuk-label--l govuk-!-margin-bottom-6',
           isPageHeading: true
         },
         hint: {
-          text: mockContent.searchLocation.searchParams.hint.text2
+          text: MOCK_CONTENT.searchLocation.searchParams.hint.text2
         },
         id: 'location',
         name: 'location'
       },
-      locations: mockContent.searchLocation.searchParams.locations,
-      button: mockContent.searchLocation.button,
-      footerTxt: mockContent.footerTxt,
-      phaseBanner: mockContent.phaseBanner,
-      backlink: mockContent.backlink,
-      cookieBanner: mockContent.cookieBanner,
+      locations: MOCK_CONTENT.searchLocation.searchParams.locations,
+      button: MOCK_CONTENT.searchLocation.button,
+      footerTxt: MOCK_CONTENT.footerTxt,
+      phaseBanner: MOCK_CONTENT.phaseBanner,
+      backlink: MOCK_CONTENT.backlink,
+      cookieBanner: MOCK_CONTENT.cookieBanner,
       lang: 'cy',
       currentPath: SEARCH_LOCATION_PATH_CY
     })
+  })
+})
+
+describe('searchLocationController - Welsh Language Handling', () => {
+  let mockRequest
+  let mockH
+
+  beforeEach(() => {
+    mockRequest = createMockRequest()
+    mockH = createMockH()
   })
 
   it('should redirect to search location index page', () => {
@@ -114,33 +142,43 @@ describe('searchLocationController - welsh', () => {
     const result = searchLocationController.handler(mockRequest, mockH)
     expect(result).toBe(VIEW_RENDERED)
     expect(mockH.view).toHaveBeenCalledWith(SEARCH_LOCATION_VIEW, {
-      pageTitle: mockContent.searchLocation.pageTitle,
-      description: mockContent.searchLocation.description,
+      pageTitle: MOCK_CONTENT.searchLocation.pageTitle,
+      description: MOCK_CONTENT.searchLocation.description,
       metaSiteUrl: actualUrl,
-      heading: mockContent.searchLocation.heading,
-      page: mockContent.searchLocation.page,
-      serviceName: mockContent.searchLocation.serviceName,
+      heading: MOCK_CONTENT.searchLocation.heading,
+      page: MOCK_CONTENT.searchLocation.page,
+      serviceName: MOCK_CONTENT.searchLocation.serviceName,
       searchParams: {
         label: {
-          text: mockContent.searchLocation.searchParams.label.text,
+          text: MOCK_CONTENT.searchLocation.searchParams.label.text,
           classes: 'govuk-label--l govuk-!-margin-bottom-6',
           isPageHeading: true
         },
         hint: {
-          text: mockContent.searchLocation.searchParams.hint.text2
+          text: MOCK_CONTENT.searchLocation.searchParams.hint.text2
         },
         id: 'location',
         name: 'location'
       },
-      locations: mockContent.searchLocation.searchParams.locations,
-      button: mockContent.searchLocation.button,
-      footerTxt: mockContent.footerTxt,
-      phaseBanner: mockContent.phaseBanner,
-      backlink: mockContent.backlink,
-      cookieBanner: mockContent.cookieBanner,
+      locations: MOCK_CONTENT.searchLocation.searchParams.locations,
+      button: MOCK_CONTENT.searchLocation.button,
+      footerTxt: MOCK_CONTENT.footerTxt,
+      phaseBanner: MOCK_CONTENT.phaseBanner,
+      backlink: MOCK_CONTENT.backlink,
+      cookieBanner: MOCK_CONTENT.cookieBanner,
       lang: mockRequest.query.lang,
       currentPath: SEARCH_LOCATION_PATH_CY
     })
+  })
+})
+
+describe('searchLocationController - Welsh Error Handling', () => {
+  let mockRequest
+  let mockH
+
+  beforeEach(() => {
+    mockRequest = createMockRequest()
+    mockH = createMockH()
   })
 
   it('should display error view when errors exist', () => {
@@ -154,18 +192,16 @@ describe('searchLocationController - welsh', () => {
 
     mockRequest.query.lang = 'cy'
     mockRequest.path = SEARCH_LOCATION_PATH_CY
-    mockRequest.yar.get = vi.fn((key) => {
-      if (key === 'errors') {
-        return mockErrors
+    const mockYarGet = vi.fn()
+    mockYarGet.mockImplementation((key) => {
+      const values = {
+        errors: mockErrors,
+        errorMessage: mockErrorMessage,
+        locationType: 'test-type'
       }
-      if (key === 'errorMessage') {
-        return mockErrorMessage
-      }
-      if (key === 'locationType') {
-        return 'test-type'
-      }
-      return null
+      return values[key] || null
     })
+    mockRequest.yar.get = mockYarGet
 
     const result = searchLocationController.handler(mockRequest, mockH)
 
@@ -175,7 +211,7 @@ describe('searchLocationController - welsh', () => {
     expect(mockH.view).toHaveBeenCalledWith(
       SEARCH_LOCATION_VIEW,
       expect.objectContaining({
-        pageTitle: `Gwall: ${mockContent.searchLocation.pageTitle}`,
+        pageTitle: `Gwall: ${MOCK_CONTENT.searchLocation.pageTitle}`,
         errors: mockErrors.errors,
         errorMessage: mockErrorMessage.errorMessage,
         errorMessageRadio: mockErrorMessage.errorMessage,

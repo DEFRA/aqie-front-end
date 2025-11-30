@@ -28,7 +28,7 @@ vi.mock('../helpers/index.js', () => ({
   buildHealthEffectsViewModel: vi.fn(
     ({ readableName = 'Caerdydd', lang = 'cy' } = {}) => ({
       pageTitle: 'How you can reduce your exposure to air pollution',
-      backLinkUrl: 'javascript:history.back()',
+      backLinkUrl: '#',
       backLinkText: `Air pollution in ${readableName}`,
       locationName: readableName,
       lang
@@ -59,9 +59,9 @@ const HTTP_REDIRECT = 302
 const HTTP_ERROR = 500
 const HEALTH_EFFECTS_PAGE_CY = 'Effaith llygredd aer ar iechyd'
 
-describe("'' healthEffectsHandlerCy", () => {
+describe("'' healthEffectsHandlerCy - Language Redirects", () => {
   beforeEach(() => {
-    vi.clearAllMocks() // '' Reset mocks
+    vi.clearAllMocks()
   })
 
   it("'' redirects to English when lang=en (lowercase)", () => {
@@ -107,6 +107,12 @@ describe("'' healthEffectsHandlerCy", () => {
     expect(url).toBe('/health-effects?lang=en')
     expect(result.statusCode).toBe(HTTP_REDIRECT)
   })
+})
+
+describe("'' healthEffectsHandlerCy - Welsh Content Rendering", () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
   it("'' renders Welsh view model normally", () => {
     getReadableLocationName.mockReturnValueOnce('Caerdydd')
@@ -120,10 +126,7 @@ describe("'' healthEffectsHandlerCy", () => {
     verifyCommonCalls()
     expect(getAirQualitySiteUrl).toHaveBeenCalled()
     expect(buildHealthEffectsViewModel).toHaveBeenCalledWith(
-      expect.objectContaining({
-        readableName: 'Caerdydd',
-        lang: 'cy'
-      })
+      expect.objectContaining({ readableName: 'Caerdydd', lang: 'cy' })
     )
     expect(h.view).toHaveBeenCalledTimes(1)
     const [template, ctx] = h.view.mock.calls[0]
@@ -138,15 +141,13 @@ describe("'' healthEffectsHandlerCy", () => {
   it("'' applies custom content overrides", () => {
     getReadableLocationName.mockReturnValueOnce('Casnewydd')
     buildHealthEffectsViewModel.mockImplementationOnce(({ readableName }) => ({
-      pageTitle: 'Custom EN Title', // '' Will be overridden to Welsh
-      backLinkUrl: 'javascript:history.back()',
+      pageTitle: 'Custom EN Title',
+      backLinkUrl: '#',
       backLinkText: `Air pollution in ${readableName}`,
       locationName: readableName,
       lang: 'cy'
     }))
-    const customContent = {
-      healthEffects: { pageTitle: 'Ignored EN Title' }
-    }
+    const customContent = { healthEffects: { pageTitle: 'Ignored EN Title' } }
     const request = {
       query: { lang: 'cy' },
       params: { id: 'casnewydd' },
@@ -158,10 +159,16 @@ describe("'' healthEffectsHandlerCy", () => {
     expect(ctx.pageTitle).toBe(HEALTH_EFFECTS_PAGE_CY)
     expect(ctx.locationName).toBe('Casnewydd')
   })
+})
+
+describe("'' healthEffectsHandlerCy - Error Handling", () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
   it("'' returns HTTP_ERROR when helper throws", () => {
     buildHealthEffectsViewModel.mockImplementationOnce(() => {
-      throw new Error('Boom') // '' Force failure
+      throw new Error('Boom')
     })
     const request = {
       query: { lang: 'cy' },

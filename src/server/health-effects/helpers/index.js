@@ -44,12 +44,12 @@ const getReadableLocationName = (query = {}, params = {}, logger = null) => {
     const searchTerms = (query.searchTerms || '').trim()
     const locationName = (query.locationName || '').trim()
     const formattedPostcode = searchTerms ? formatUKPostcode(searchTerms) : ''
-    
+
     const result = buildFormattedName(formattedPostcode, locationName)
     if (result) {
       return result
     }
-    
+
     return normalizeIdAsFallback(params)
   } catch (e) {
     logger?.warn(e, "'' Failed to derive readable locationName")

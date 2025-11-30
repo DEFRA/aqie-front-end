@@ -422,7 +422,7 @@ export function shouldRedirectToEnglish(query) {
  * Get previous URL from request headers
  */
 export function getPreviousUrl(request) {
-  return request.headers.referer || request.headers.referrer
+  return request.headers?.referer || request.headers?.referrer
 }
 
 /**

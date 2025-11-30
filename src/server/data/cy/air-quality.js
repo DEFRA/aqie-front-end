@@ -10,7 +10,8 @@ const DAQI_VALUE_HIGH_MID = 8
 const DAQI_VALUE_HIGH_MAX = 9
 const DAQI_VALUE_VERY_HIGH = 10
 const DEFAULT_DAQI_VALUE = '4'
-const ENJOY_OUTDOOR_ACTIVITIES = 'Mwynhewch eich gweithgareddau awyr agored arferol.'
+const ENJOY_OUTDOOR_ACTIVITIES =
+  'Mwynhewch eich gweithgareddau awyr agored arferol.'
 
 export const warningMessages = {
   forecastWarning:
@@ -45,7 +46,11 @@ export const commonMessages = {
       'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.'
   },
   cymedrol: {
-    values: [DAQI_VALUE_MODERATE_MIN, DAQI_VALUE_MODERATE_MID, DAQI_VALUE_MODERATE_MAX],
+    values: [
+      DAQI_VALUE_MODERATE_MIN,
+      DAQI_VALUE_MODERATE_MID,
+      DAQI_VALUE_MODERATE_MAX
+    ],
     advice:
       "I'r rhan fwyaf o bobl, dyw amlygiad byrdymor i lefelau cymedrol o lygredd aer ddim yn broblem.",
     insetText: `<p>I'r rhan fwyaf o bobl, dyw amlygiad byrdymor i lefelau cymedrol o lygredd aer ddim yn broblem. Ewch ymlaen â'ch gweithgareddau awyr agored arferol. Ond, os byddwch chi'n profi symptomau, ceisiwch leihau'ch amlygiad i lygredd aer.</p>

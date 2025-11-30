@@ -16,18 +16,12 @@ vi.mock('../../common/helpers/logging/logger.js', () => ({
 
 const VIEW_RENDERED = 'view rendered'
 
-describe('Home Controller', () => {
+describe('Home Controller - Welsh Redirects', () => {
   let mockRequest
   const mockContent = welsh
 
   beforeEach(() => {
-    mockRequest = {
-      query: {},
-      path: '/',
-      headers: {
-        host: ''
-      }
-    }
+    mockRequest = { query: {}, path: '/', headers: { host: '' } }
     vi.mock('../../common/helpers/get-site-url.js', () => ({
       getAirQualitySiteUrl: vi.fn((request) => {
         return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
@@ -35,99 +29,105 @@ describe('Home Controller', () => {
     }))
   })
 
-  it('should redirect to the English version if the language is "en"', () => {
-    const mockH = createMockH()
-
-    mockRequest.query.lang = 'en'
-    const expectedUrl = 'https://check-air-quality.service.gov.uk/?lang=en'
-    const actualUrl = getAirQualitySiteUrl(mockRequest)
-    expect(actualUrl).toBe(expectedUrl)
-    const result = homeController.handler(mockRequest, mockH, mockContent)
-    expect(result.takeover()).toBe('redirected')
-    expect(mockH.redirect).toHaveBeenCalledWith('/?lang=en')
-  })
-
-  it('should render the home page with the necessary data', () => {
-    const mockH = createMockH()
-
-    mockRequest.query.lang = 'cy'
-    const expectedUrl = 'https://check-air-quality.service.gov.uk/?lang=cy'
-    const actualUrl = getAirQualitySiteUrl(mockRequest)
-    expect(actualUrl).toBe(expectedUrl)
-    const result = handleHomeRequest(mockRequest, mockH, mockContent)
-    expect(result).toBe(VIEW_RENDERED)
-    expect(mockH.view).toHaveBeenCalledWith('home/index', {
-      pageTitle: mockContent.home.pageTitle,
-      description: mockContent.home.description,
-      metaSiteUrl: actualUrl,
-      heading: mockContent.home.heading,
-      page: mockContent.home.page,
-      paragraphs: mockContent.home.paragraphs,
-      label: mockContent.home.button,
-      footerTxt: mockContent.footerTxt,
-      phaseBanner: mockContent.phaseBanner,
-      backlink: mockContent.backlink,
-      cookieBanner: mockContent.cookieBanner,
-      serviceName: '',
-      lang: 'cy',
-      currentPath: '/cy'
+  describe('Welsh redirects', () => {
+    it('should redirect to the English version if the language is "en"', () => {
+      const mockH = createMockH()
+      mockRequest.query.lang = 'en'
+      const expectedUrl = 'https://check-air-quality.service.gov.uk/?lang=en'
+      const actualUrl = getAirQualitySiteUrl(mockRequest)
+      expect(actualUrl).toBe(expectedUrl)
+      const result = homeController.handler(mockRequest, mockH, mockContent)
+      expect(result.takeover()).toBe('redirected')
+      expect(mockH.redirect).toHaveBeenCalledWith('/?lang=en')
     })
   })
+})
 
-  it('should log a warning when yar session is not available', () => {
-    const mockH = createMockH()
+describe('Home Controller - Page Rendering', () => {
+  let mockRequest
+  const mockContent = welsh
 
-    // Create a mock request with yar but without the set method
-    const requestWithoutYarSet = {
-      query: { lang: 'cy' },
-      path: '/',
-      headers: { host: '' },
-      yar: {} // yar exists but without set method
-    }
-
-    // Verify yar exists but doesn't have set method
-    expect(requestWithoutYarSet.yar).toBeDefined()
-    expect(typeof requestWithoutYarSet.yar.set).toBe('undefined')
-
-    const result = handleHomeRequest(requestWithoutYarSet, mockH, mockContent)
-    expect(result).toBe(VIEW_RENDERED)
+  beforeEach(() => {
+    mockRequest = { query: {}, path: '/', headers: { host: '' } }
   })
 
-  it('should log a warning when yar is completely missing', () => {
-    const mockH = createMockH()
-
-    // Create a mock request without any yar property
-    const requestWithoutYar = {
-      query: { lang: 'cy' },
-      path: '/',
-      headers: { host: '' }
-      // Completely omitting yar
-    }
-
-    // Verify yar is undefined
-    expect(requestWithoutYar.yar).toBeUndefined()
-
-    const result = handleHomeRequest(requestWithoutYar, mockH, mockContent)
-    expect(result).toBe(VIEW_RENDERED)
+  describe('Page rendering', () => {
+    it('should render the home page with the necessary data', () => {
+      const mockH = createMockH()
+      mockRequest.query.lang = 'cy'
+      const expectedUrl = 'https://check-air-quality.service.gov.uk/?lang=cy'
+      const actualUrl = getAirQualitySiteUrl(mockRequest)
+      expect(actualUrl).toBe(expectedUrl)
+      const result = handleHomeRequest(mockRequest, mockH, mockContent)
+      expect(result).toBe(VIEW_RENDERED)
+      expect(mockH.view).toHaveBeenCalledWith('home/index', {
+        pageTitle: mockContent.home.pageTitle,
+        description: mockContent.home.description,
+        metaSiteUrl: actualUrl,
+        heading: mockContent.home.heading,
+        page: mockContent.home.page,
+        paragraphs: mockContent.home.paragraphs,
+        label: mockContent.home.button,
+        footerTxt: mockContent.footerTxt,
+        phaseBanner: mockContent.phaseBanner,
+        backlink: mockContent.backlink,
+        cookieBanner: mockContent.cookieBanner,
+        serviceName: '',
+        lang: 'cy',
+        currentPath: '/cy'
+      })
+    })
   })
+})
 
-  it('should set locationType when yar is properly available', () => {
-    const mockH = createMockH()
+describe('Home Controller - Session Handling', () => {
+  const mockContent = welsh
 
-    // Create a mock request with proper yar
-    const requestWithYar = {
-      query: { lang: 'cy' },
-      path: '/',
-      headers: { host: '' },
-      yar: {
-        set: vi.fn() // Mock the set method
+  describe('Session handling', () => {
+    it('should log a warning when yar session is not available', () => {
+      const mockH = createMockH()
+      const requestWithoutYarSet = {
+        query: { lang: 'cy' },
+        path: '/',
+        headers: { host: '' },
+        yar: {}
       }
-    }
+      expect(requestWithoutYarSet.yar).toBeDefined()
+      expect(typeof requestWithoutYarSet.yar.set).toBe('undefined')
+      const result = handleHomeRequest(requestWithoutYarSet, mockH, mockContent)
+      expect(result).toBe(VIEW_RENDERED)
+    })
 
-    const result = handleHomeRequest(requestWithYar, mockH, mockContent)
+    it('should log a warning when yar is completely missing', () => {
+      const mockH = createMockH()
+      const requestWithoutYar = {
+        query: { lang: 'cy' },
+        path: '/',
+        headers: { host: '' }
+      }
+      expect(requestWithoutYar.yar).toBeUndefined()
+      const result = handleHomeRequest(requestWithoutYar, mockH, mockContent)
+      expect(result).toBe(VIEW_RENDERED)
+    })
 
-    // Verify yar.set was called
-    expect(requestWithYar.yar.set).toHaveBeenCalledWith('locationType', '')
-    expect(result).toBe(VIEW_RENDERED)
+    it('should set locationType when yar is properly available', () => {
+      const mockH = createMockH()
+
+      // Create a mock request with proper yar
+      const requestWithYar = {
+        query: { lang: 'cy' },
+        path: '/',
+        headers: { host: '' },
+        yar: {
+          set: vi.fn() // Mock the set method
+        }
+      }
+
+      const result = handleHomeRequest(requestWithYar, mockH, mockContent)
+
+      // Verify yar.set was called
+      expect(requestWithYar.yar.set).toHaveBeenCalledWith('locationType', '')
+      expect(result).toBe(VIEW_RENDERED)
+    })
   })
 })

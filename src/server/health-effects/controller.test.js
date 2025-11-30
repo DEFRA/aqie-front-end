@@ -16,7 +16,8 @@ import {
 
 const MOCK_SITE_URL = 'https://example.test'
 // '' Define constant for duplicated string literal
-const HEALTH_EFFECTS_PAGE_TITLE = 'How you can reduce your exposure to air pollution'
+const HEALTH_EFFECTS_PAGE_TITLE =
+  'How you can reduce your exposure to air pollution'
 const MOCK_LOCATION = 'Mock Location'
 const LANG_EN = 'en'
 const LANG_CY = 'cy'
@@ -43,8 +44,7 @@ vi.mock('./helpers/index.js', () => ({
   getReadableLocationName: vi.fn(() => MOCK_LOCATION), // ''
   buildHealthEffectsViewModel: vi.fn((opts = {}) => ({
     pageTitle:
-      opts?.content?.healthEffects?.pageTitle ||
-      HEALTH_EFFECTS_PAGE_TITLE,
+      opts?.content?.healthEffects?.pageTitle || HEALTH_EFFECTS_PAGE_TITLE,
     locationName: opts.readableName || MOCK_LOCATION,
     lang: opts.lang || LANG_EN
   })),
@@ -95,7 +95,10 @@ const verifyViewModelCall = (content, readableName, lang, locationId) => {
 
 // '' Helper to verify view call
 const verifyViewCall = (h, template, expectedContext) => {
-  expect(h.view).toHaveBeenCalledWith(template, expect.objectContaining(expectedContext))
+  expect(h.view).toHaveBeenCalledWith(
+    template,
+    expect.objectContaining(expectedContext)
+  )
 }
 
 // '' Helper to setup Welsh mocks
@@ -148,7 +151,11 @@ describe("'' healthEffectsHandler", () => {
 
   it("'' renders Welsh view model for Welsh route", () => {
     setupWelshMocks(ABERTAWE, WELSH_HEALTH_EFFECTS_TITLE)
-    const request = createRequest({ lang: LANG_CY }, { id: ABERTAWE_LOWER }, '/lleoliad/abertawe/effeithiau-iechyd')
+    const request = createRequest(
+      { lang: LANG_CY },
+      { id: ABERTAWE_LOWER },
+      '/lleoliad/abertawe/effeithiau-iechyd'
+    )
     const h = createH()
     const result = healthEffectsHandler(request, h)
     verifyCommonCalls(request)
@@ -163,7 +170,11 @@ describe("'' healthEffectsHandler", () => {
 
   it("'' renders English view model for English route", () => {
     setupEnglishMocks(LEEDS, AIR_POLLUTION_IN_LEEDS)
-    const request = createRequest({}, { id: LEEDS_LOWER }, '/location/leeds/health-effects')
+    const request = createRequest(
+      {},
+      { id: LEEDS_LOWER },
+      '/location/leeds/health-effects'
+    )
     const h = createH()
     const result = healthEffectsHandler(request, h)
     verifyCommonCalls(request)
@@ -185,7 +196,11 @@ describe("'' healthEffectsHandler", () => {
   it("'' uses provided customContent when passed", () => {
     const customContent = { healthEffects: { pageTitle: CUSTOM_TITLE } }
     setupCustomContentMocks(YORK, CUSTOM_TITLE)
-    const request = createRequest({ lang: LANG_EN }, { id: 'york' }, '/location/york/health-effects')
+    const request = createRequest(
+      { lang: LANG_EN },
+      { id: 'york' },
+      '/location/york/health-effects'
+    )
     const h = createH()
     healthEffectsHandler(request, h, customContent)
     expect(h.view.mock.calls[0][1].pageTitle).toBe(CUSTOM_TITLE)
@@ -206,7 +221,11 @@ describe("'' healthEffectsHandler", () => {
     buildHealthEffectsViewModel.mockImplementationOnce(() => {
       throw new Error('Boom') // ''
     })
-    const request = createRequest({}, { id: 'anything' }, '/location/anything/health-effects')
+    const request = createRequest(
+      {},
+      { id: 'anything' },
+      '/location/anything/health-effects'
+    )
     const h = createH()
     const result = healthEffectsHandler(request, h)
     expect(h.response).toHaveBeenCalledWith(INTERNAL_SERVER_ERROR)

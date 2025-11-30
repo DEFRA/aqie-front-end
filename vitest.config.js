@@ -6,7 +6,6 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     clearMocks: true,
-    threads: false, // Disable worker threads to avoid EPERM errors
     exclude: [
       ...configDefaults.exclude,
       GOVUK_SRC_EXCLUDE, // Ignore files inside src/src/govuk from testing
@@ -15,7 +14,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reportsDirectory: './coverage',
-      reporter: ['text', 'lcov'], // Display coverage in the terminal and generate an HTML report
+      reporter: ['text', 'json-summary', 'html'], // Display coverage in the terminal and generate reports
       include: ['src/**'],
       exclude: [
         GOVUK_SRC_EXCLUDE,

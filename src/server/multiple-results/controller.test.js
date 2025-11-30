@@ -193,7 +193,10 @@ describe('Multiple Results Controller - Error Handling', function () {
     mockRequest.yar.get.mockReturnValue(mockLocationData)
     mockRequest.query = {} // No cy lang to avoid redirect
 
-    setupErrorMock(mockH, "Cannot read properties of undefined (reading 'access_token')")
+    setupErrorMock(
+      mockH,
+      "Cannot read properties of undefined (reading 'access_token')"
+    )
 
     const module = await import('./controller.js')
     const result = await module.getLocationDataController.handler(

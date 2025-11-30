@@ -25,9 +25,8 @@ vi.mock('../../common/helpers/get-site-url.js', () => ({
   getAirQualitySiteUrl: vi.fn(() => mockMetaSiteUrl)
 }))
 
-describe('getLocationDataController', () => {
-  describe('Language redirects', () => {
-    it('should redirect to English multiple locations route when lang is set to English', async () => {
+describe('getLocationDataController - Language Redirects', () => {
+  it('should redirect to English multiple locations route when lang is set to English', async () => {
     const request = {
       yar: {
         get: vi.fn().mockReturnValue({
@@ -58,10 +57,10 @@ describe('getLocationDataController', () => {
 
     expect(h.redirect).toHaveBeenCalledWith(MULTIPLE_LOCATIONS_ROUTE_EN)
   })
-  })
+})
 
-  describe('Welsh content rendering', () => {
-    it('should return multiple locations view with correct data when lang is set to Welsh', async () => {
+describe('getLocationDataController - Welsh Content Rendering', () => {
+  it('should return multiple locations view with correct data when lang is set to Welsh', async () => {
     const request = {
       yar: {
         get: vi.fn().mockReturnValue({
@@ -112,10 +111,10 @@ describe('getLocationDataController', () => {
       currentPath: '/canlyniadau-lluosog/cy'
     })
   })
-  })
+})
 
-  describe('Error handling', () => {
-    it('should handle error and return error view with 500 status code', async () => {
+describe('getLocationDataController - 500 Error Handling', () => {
+  it('should handle error and return error view with 500 status code', async () => {
     // ''
     const mockError = new Error('Unexpected error')
     const mockLocationData = {
@@ -154,12 +153,14 @@ describe('getLocationDataController', () => {
       'error/index',
       expect.objectContaining({
         statusCode: 500,
-        url: '/test-path',
+        url: TEST_PATH,
         lang: LANG_CY
       })
     )
   })
+})
 
+describe('getLocationDataController - 401 Error Handling', () => {
   it('should handle access_token error and return error view with 401 status code', async () => {
     // ''
     const mockError = new Error(
@@ -201,12 +202,14 @@ describe('getLocationDataController', () => {
       'error/index',
       expect.objectContaining({
         statusCode: 401,
-        url: '/test-path',
+        url: TEST_PATH,
         lang: LANG_CY
       })
     )
   })
+})
 
+describe('getLocationDataController - Data Validation', () => {
   it('should handle missing locationData and return error view', async () => {
     const request = {
       yar: {
@@ -262,6 +265,5 @@ describe('getLocationDataController', () => {
         lang: LANG_CY
       })
     )
-  })
   })
 })

@@ -51,7 +51,11 @@ export const commonMessages = {
       'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.'
   },
   moderate: {
-    values: [DAQI_INDEX_MODERATE_START, DAQI_INDEX_MODERATE_MID, DAQI_INDEX_MODERATE_END],
+    values: [
+      DAQI_INDEX_MODERATE_START,
+      DAQI_INDEX_MODERATE_MID,
+      DAQI_INDEX_MODERATE_END
+    ],
     advice:
       'For most people, short term exposure to moderate levels of air pollution is not an issue.',
     insetText: `<p>For most people, short term exposure to moderate levels of air pollution is not an issue. Continue your usual outdoor activities. However, if you are experiencing symptoms, try to reduce your exposure to air pollution.</p>
