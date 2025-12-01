@@ -5,10 +5,10 @@ import { config } from '../../config/index.js'
 const logger = createLogger()
 
 /**
- * Process air quality messages to replace placeholders and add query params
- */
-/**
  * Build query string from search parameters
+ * @param {string} searchTerms - Search terms to include
+ * @param {string} locationNameForTemplate - Location name for template
+ * @returns {string} Query string with parameters
  */
 function buildQueryString(searchTerms, locationNameForTemplate) {
   const queryParams = []
@@ -25,6 +25,11 @@ function buildQueryString(searchTerms, locationNameForTemplate) {
 
 /**
  * Process common messages for air quality data
+ * @param {object} commonMessages - Common messages object
+ * @param {string} locationId - Location identifier
+ * @param {string} lang - Language code
+ * @param {string} queryString - Query string parameters
+ * @returns {object} Processed messages
  */
 function processCommonMessages(commonMessages, locationId, lang, queryString) {
   const processed = {}
@@ -49,6 +54,12 @@ function processCommonMessages(commonMessages, locationId, lang, queryString) {
 
 /**
  * Process air quality messages to replace placeholders and add query params
+ * @param {object} airQualityData - Air quality data object
+ * @param {string} locationId - Location identifier
+ * @param {string} lang - Language code
+ * @param {string} searchTerms - Search terms
+ * @param {string} locationNameForTemplate - Location name for template
+ * @returns {object} Processed air quality data
  */
 export function processAirQualityMessages(
   airQualityData,
@@ -86,6 +97,11 @@ export function processAirQualityMessages(
 
 /**
  * Process inset text by replacing placeholders and adding query params to links
+ * @param {string} text - Text to process
+ * @param {string} locationId - Location identifier
+ * @param {string} lang - Language code
+ * @param {string} queryString - Query string parameters
+ * @returns {string} Processed text
  */
 function processInsetText(text, locationId, lang, queryString) {
   let processedText = text.replaceAll('{locationId}', locationId)
@@ -121,6 +137,9 @@ function processInsetText(text, locationId, lang, queryString) {
 
 /**
  * Add query parameter if value exists
+ * @param {Array} params - Array of parameters
+ * @param {string} name - Parameter name
+ * @param {*} value - Parameter value
  */
 function addParamIfExists(params, name, value) {
   if (value !== null && value !== undefined) {
@@ -130,6 +149,9 @@ function addParamIfExists(params, name, value) {
 
 /**
  * Build query parameters for mock features
+ * @param {object} request - Request object
+ * @param {boolean} mocksDisabled - Whether mocks are disabled
+ * @returns {string} Query parameters string
  */
 export function buildMockQueryParams(request, mocksDisabled) {
   if (mocksDisabled) {
@@ -149,6 +171,9 @@ export function buildMockQueryParams(request, mocksDisabled) {
 
 /**
  * Check if Welsh redirect is needed
+ * @param {object} query - Query parameters
+ * @param {string} locationId - Location identifier
+ * @returns {boolean} True if redirect needed
  */
 export function shouldRedirectToWelsh(query, locationId) {
   const lang = query?.lang?.slice(0, 2)
@@ -157,6 +182,8 @@ export function shouldRedirectToWelsh(query, locationId) {
 
 /**
  * Check if English redirect is needed (from Welsh path)
+ * @param {object} query - Query parameters
+ * @returns {boolean} True if redirect needed
  */
 export function shouldRedirectToEnglish(query) {
   const lang = query?.lang?.slice(0, 2)
@@ -165,6 +192,8 @@ export function shouldRedirectToEnglish(query) {
 
 /**
  * Validate mock parameters
+ * @param {*} mockLevel - Mock level to validate
+ * @returns {object} Validation result with valid flag and level
  */
 export function validateMockLevel(mockLevel) {
   if (mockLevel === undefined || mockLevel === null) {
@@ -179,6 +208,8 @@ export function validateMockLevel(mockLevel) {
 
 /**
  * Validate mock pollutant band value
+ * @param {*} mockPollutantBand - Pollutant band to validate
+ * @returns {object} Validation result with valid flag and band
  */
 export function validateMockPollutantBand(mockPollutantBand) {
   if (mockPollutantBand === undefined || mockPollutantBand === null) {
@@ -201,6 +232,10 @@ export function validateMockPollutantBand(mockPollutantBand) {
 
 /**
  * Apply mock level to specific day or all days
+ * @param {object} airQuality - Air quality data
+ * @param {number} level - Mock level value
+ * @param {string} mockDay - Day to apply mock to
+ * @returns {object} Modified air quality data
  */
 export function applyMockToDay(airQuality, level, mockDay) {
   if (mockDay && ['today', 'day2', 'day3', 'day4', 'day5'].includes(mockDay)) {
@@ -219,6 +254,11 @@ export function applyMockToDay(airQuality, level, mockDay) {
 
 /**
  * Apply mock pollutant band to monitoring sites
+ * @param {object} request - Request object
+ * @param {Array} monitoringSites - Monitoring sites data
+ * @param {Function} generateMockPollutantBand - Function to generate mock pollutant band
+ * @param {Function} applyMockPollutantsToSites - Function to apply pollutants to sites
+ * @returns {Array} Modified monitoring sites
  */
 export function applyMockPollutants(
   request,
@@ -280,6 +320,11 @@ export function applyMockPollutants(
 
 /**
  * Store session parameter with mocks disabled check
+ * @param {object} request - Request object
+ * @param {string} paramName - Parameter name
+ * @param {*} paramValue - Parameter value
+ * @param {boolean} mocksDisabled - Whether mocks are disabled
+ * @param {string} paramLabel - Parameter label for logging
  */
 function storeSessionParameter(
   request,
@@ -307,6 +352,8 @@ function storeSessionParameter(
 
 /**
  * Initialize request data and handle session storage
+ * @param {object} request - Request object
+ * @returns {object} Initialized request data
  */
 export function initializeRequestData(request) {
   const { query, headers = {} } = request
@@ -384,6 +431,10 @@ export function initializeRequestData(request) {
 
 /**
  * Build redirect URL with search terms and mock parameters
+ * @param {string} lang - Language code
+ * @param {string} searchParams - Search parameters string
+ * @param {object} request - Request object
+ * @returns {string} Redirect URL
  */
 function buildRedirectUrl(lang, searchParams, request) {
   const mockLevel = request.query?.mockLevel
@@ -409,6 +460,14 @@ function buildRedirectUrl(lang, searchParams, request) {
 
 /**
  * Validate and process session data, redirect if invalid
+ * @param {object} locationData - Location data from session
+ * @param {string} currentUrl - Current URL
+ * @param {string} lang - Language code
+ * @param {object} h - Hapi response toolkit
+ * @param {object} request - Request object
+ * @param {Function} getSearchTermsFromUrl - Function to extract search terms from URL
+ * @param {number} REDIRECT_STATUS_CODE - HTTP status code for redirect
+ * @returns {object|null} Redirect response or null if valid
  */
 export function validateAndProcessSessionData(
   locationData,

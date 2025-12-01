@@ -102,7 +102,7 @@ describe('actions reduce exposure controller - Welsh', () => {
         displayBacklink: true,
         customBackLink: true,
         backLinkText: 'Llygredd aer yn Abertawe',
-        backLinkUrl: '/lleoliad/xyz789?lang=cy',
+        backLinkUrl: '/lleoliad/xyz789?lang=cy&locationName=Abertawe',
         locationName: 'Abertawe',
         locationId: 'xyz789'
       })
@@ -127,7 +127,7 @@ describe('actions reduce exposure controller - Welsh', () => {
         displayBacklink: true,
         customBackLink: true,
         backLinkText: 'Llygredd aer yn N8 7GE, Hornsey',
-        backLinkUrl: '/lleoliad/n87ge?lang=cy',
+        backLinkUrl: '/lleoliad/n87ge?lang=cy&locationName=Hornsey',
         locationName: 'Hornsey',
         locationId: 'n87ge'
       })

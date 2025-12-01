@@ -118,37 +118,48 @@ function getPreviousUrl(request) {
   return request.headers?.referer || request.headers?.referrer
 }
 
+// '' - Helper to extract mock parameters from request
+function extractMockParameters(request) {
+  const mocksDisabled = config.get('disableTestMocks')
+  return {
+    mockLevel: mocksDisabled ? undefined : request.query?.mockLevel,
+    mockDay: mocksDisabled ? undefined : request.query?.mockDay,
+    mockPollutantBand: mocksDisabled
+      ? undefined
+      : request.query?.mockPollutantBand,
+    testMode: mocksDisabled ? undefined : request.query?.testMode
+  }
+}
+
+// '' - Helper to build query string from mock parameters
+function buildMockParamsString(mockParams) {
+  const params = []
+  if (mockParams.mockLevel !== null && mockParams.mockLevel !== undefined) {
+    params.push(`mockLevel=${encodeURIComponent(mockParams.mockLevel)}`)
+  }
+  if (mockParams.mockDay !== null && mockParams.mockDay !== undefined) {
+    params.push(`mockDay=${encodeURIComponent(mockParams.mockDay)}`)
+  }
+  if (
+    mockParams.mockPollutantBand !== null &&
+    mockParams.mockPollutantBand !== undefined
+  ) {
+    params.push(
+      `mockPollutantBand=${encodeURIComponent(mockParams.mockPollutantBand)}`
+    )
+  }
+  if (mockParams.testMode !== null && mockParams.testMode !== undefined) {
+    params.push(`testMode=${encodeURIComponent(mockParams.testMode)}`)
+  }
+  return params.length > 0 ? `&${params.join('&')}` : ''
+}
+
 function buildRedirectUrl(currentUrl, request) {
   const { searchTerms, secondSearchTerm, searchTermsLocationType } =
     getSearchTermsFromUrl(currentUrl)
 
-  // '' Preserve mock parameters from query string
-  const mocksDisabled = config.get('disableTestMocks')
-  const mockLevel = mocksDisabled ? undefined : request.query?.mockLevel
-  const mockDay = mocksDisabled ? undefined : request.query?.mockDay
-  const mockPollutantBand = mocksDisabled
-    ? undefined
-    : request.query?.mockPollutantBand
-  const testMode = mocksDisabled ? undefined : request.query?.testMode
-
-  const mockParams = []
-  if (mockLevel !== null && mockLevel !== undefined) {
-    mockParams.push(`mockLevel=${encodeURIComponent(mockLevel)}`)
-  }
-  if (mockDay !== null && mockDay !== undefined) {
-    mockParams.push(`mockDay=${encodeURIComponent(mockDay)}`)
-  }
-  if (mockPollutantBand !== null && mockPollutantBand !== undefined) {
-    mockParams.push(
-      `mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
-    )
-  }
-  if (testMode !== null && testMode !== undefined) {
-    mockParams.push(`testMode=${encodeURIComponent(testMode)}`)
-  }
-
-  const mockParamsString =
-    mockParams.length > 0 ? `&${mockParams.join('&')}` : ''
+  const mockParams = extractMockParameters(request)
+  const mockParamsString = buildMockParamsString(mockParams)
 
   return `/lleoliad?lang=cy&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}${mockParamsString}`
 }
@@ -308,6 +319,42 @@ function calculateSummaryDateIfNeeded(locationData) {
   }
 }
 
+// '' - Helper to handle successful location data processing
+function handleSuccessfulLocationData(
+  processedData,
+  request,
+  locationData,
+  initData,
+  h
+) {
+  optimizeLocationDataInSession(
+    request,
+    locationData,
+    processedData.nearestLocation,
+    processedData.nearestLocationsRange
+  )
+  calculateSummaryDateIfNeeded(locationData)
+  const modifiedMonitoringSites = applyMockPollutants(
+    request,
+    processedData.nearestLocationsRange
+  )
+  const viewData = buildLocationViewData({
+    locationDetails: processedData.locationDetails,
+    nearestLocationsRange: modifiedMonitoringSites,
+    locationData,
+    forecastNum: processedData.forecastNum,
+    lang: LANG_CY,
+    getMonth: initData.getMonth,
+    metaSiteUrl: initData.metaSiteUrl,
+    airQualityData,
+    siteTypeDescriptions,
+    pollutantTypes,
+    request,
+    locationId: processedData.locationDetails.id
+  })
+  return renderLocationView(h, viewData)
+}
+
 async function processLocationRequest(request, h) {
   const { query } = request
   const locationId = request.params.id
@@ -363,32 +410,13 @@ async function processLocationRequest(request, h) {
   )
 
   if (processedData.locationDetails) {
-    optimizeLocationDataInSession(
+    return handleSuccessfulLocationData(
+      processedData,
       request,
       locationData,
-      processedData.nearestLocation,
-      processedData.nearestLocationsRange
+      initData,
+      h
     )
-    calculateSummaryDateIfNeeded(locationData)
-    const modifiedMonitoringSites = applyMockPollutants(
-      request,
-      processedData.nearestLocationsRange
-    )
-    const viewData = buildLocationViewData({
-      locationDetails: processedData.locationDetails,
-      nearestLocationsRange: modifiedMonitoringSites,
-      locationData,
-      forecastNum: processedData.forecastNum,
-      lang: LANG_CY,
-      getMonth: initData.getMonth,
-      metaSiteUrl: initData.metaSiteUrl,
-      airQualityData,
-      siteTypeDescriptions,
-      pollutantTypes,
-      request,
-      locationId
-    })
-    return renderLocationView(h, viewData)
   } else {
     return renderNotFoundView(h, LANG_CY)
   }

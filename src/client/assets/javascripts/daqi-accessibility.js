@@ -142,9 +142,23 @@ function updateExposureSection(band) {
 function addQueryParametersToLinks(html) {
   // '' Get locationId, locationName and searchTerms from data attributes on exposure-section div
   const exposureSection = document.getElementById(EXPOSURE_SECTION_ID)
-  const locationId = exposureSection?.dataset.locationId ?? null
+  let locationId = exposureSection?.dataset.locationId ?? null
   const locationName = exposureSection?.dataset.locationName ?? null
   const searchTerms = exposureSection?.dataset.searchTerms ?? null
+
+  // '' Fallback: extract locationId from URL if not in data attribute
+  if (!locationId) {
+    const urlPath = window.location.pathname
+    // Match both English /location/{id} and Welsh /lleoliad/{id} patterns
+    const match = urlPath.match(/\/(location|lleoliad)\/([^/]+)/)
+    if (match && match[2]) {
+      locationId = match[2]
+      console.log(
+        'addQueryParametersToLinks - locationId extracted from URL:',
+        locationId
+      )
+    }
+  }
 
   console.log('addQueryParametersToLinks - locationId:', locationId)
   console.log('addQueryParametersToLinks - locationName:', locationName)
@@ -256,7 +270,8 @@ function handleLowPollution(healthHeading, adviceData) {
     contentDiv.className = 'daqi-health-content daqi-health-content--low'
     healthHeading.after(contentDiv)
   }
-  contentDiv.innerHTML = adviceData.insetText
+  // '' Replace {locationId} placeholder and add query parameters to links
+  contentDiv.innerHTML = addQueryParametersToLinks(adviceData.insetText)
   contentDiv.style.display = 'block'
   contentDiv.dataset.daqiBand = 'low'
   console.log('Low level: regular text content updated (no colored box)')
@@ -287,7 +302,8 @@ function handleHighPollution(healthHeading, adviceData, band) {
 
   if (adviceData.insetText) {
     insetText.style.display = 'block'
-    insetText.innerHTML = adviceData.insetText
+    // '' Replace {locationId} placeholder and add query parameters to links
+    insetText.innerHTML = addQueryParametersToLinks(adviceData.insetText)
     console.log('Inset text content updated')
 
     insetText.classList.remove(

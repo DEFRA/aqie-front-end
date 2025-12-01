@@ -1,6 +1,10 @@
 // '' Tests for language/date handling, session management, and showSummaryDate/issueTime calculations
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
+// Test constants - Note: Can't be used in vi.mock() due to hoisting
+const MOCK_TEST_LOCATION = 'Test Location'
+const MOCK_LOCATIONS_VIEW = 'locations/location'
+
 // Mock all dependencies before any imports
 vi.mock('../data/en/monitoring-sites.js', () => ({
   siteTypeDescriptions: {
@@ -243,7 +247,7 @@ describe('Location ID Controller - Sessions and Dates', () => {
       await getLocationDetailsController.handler(mockRequest, mockH)
 
       expect(mockH.view).toHaveBeenCalledWith(
-        'locations/location',
+        MOCK_LOCATIONS_VIEW,
         expect.objectContaining({
           lang: 'cy'
         })
@@ -270,7 +274,7 @@ describe('Location ID Controller - Sessions and Dates', () => {
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
-        locationDetails: { id: 'test', name: 'Test Location' }
+        locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
@@ -284,7 +288,7 @@ describe('Location ID Controller - Sessions and Dates', () => {
       await getLocationDetailsController.handler(mockRequest, mockH)
 
       expect(mockH.view).toHaveBeenCalledWith(
-        'locations/location',
+        MOCK_LOCATIONS_VIEW,
         expect.objectContaining({
           lang: 'en'
         })
@@ -311,7 +315,7 @@ describe('Location ID Controller - Sessions and Dates', () => {
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
-        locationDetails: { id: 'test', name: 'Test Location' }
+        locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
@@ -348,7 +352,7 @@ describe('Location ID Controller - Sessions and Dates', () => {
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
-        locationDetails: { id: 'test', name: 'Test Location' }
+        locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
@@ -386,7 +390,7 @@ describe('Location ID Controller - Sessions and Dates', () => {
           no2: 30,
           pm25: 15
         },
-        showSummaryDate: undefined // explicitly undefined
+        showSummaryDate: undefined // undefined so calculation happens
       }
 
       mockRequest.yar.get
@@ -395,7 +399,7 @@ describe('Location ID Controller - Sessions and Dates', () => {
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
-        locationDetails: { id: 'test', name: 'Test Location' }
+        locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
@@ -409,7 +413,7 @@ describe('Location ID Controller - Sessions and Dates', () => {
       await getLocationDetailsController.handler(mockRequest, mockH)
 
       expect(mockH.view).toHaveBeenCalledWith(
-        'locations/location',
+        MOCK_LOCATIONS_VIEW,
         expect.objectContaining({
           showSummaryDate: true
         })
@@ -428,7 +432,7 @@ describe('Location ID Controller - Sessions and Dates', () => {
           issue_date: yesterdayStr,
           no2: 30
         },
-        showSummaryDate: undefined
+        showSummaryDate: undefined // undefined so calculation happens
       }
 
       mockRequest.yar.get = vi
@@ -443,7 +447,7 @@ describe('Location ID Controller - Sessions and Dates', () => {
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
-        locationDetails: { id: 'test', name: 'Test Location' }
+        locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
@@ -457,7 +461,7 @@ describe('Location ID Controller - Sessions and Dates', () => {
       await getLocationDetailsController.handler(mockRequest, mockH)
 
       expect(mockH.view).toHaveBeenCalledWith(
-        'locations/location',
+        MOCK_LOCATIONS_VIEW,
         expect.objectContaining({
           showSummaryDate: false
         })
@@ -493,7 +497,7 @@ describe('Location ID Controller - Sessions and Dates', () => {
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
-        locationDetails: { id: 'test', name: 'Test Location' }
+        locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
@@ -507,7 +511,7 @@ describe('Location ID Controller - Sessions and Dates', () => {
       await getLocationDetailsController.handler(mockRequest, mockH)
 
       expect(mockH.view).toHaveBeenCalledWith(
-        'locations/location',
+        MOCK_LOCATIONS_VIEW,
         expect.objectContaining({
           showSummaryDate: true,
           issueTime: '10:00'
@@ -537,7 +541,7 @@ describe('Location ID Controller - Sessions and Dates', () => {
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
-        locationDetails: { id: 'test', name: 'Test Location' }
+        locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({

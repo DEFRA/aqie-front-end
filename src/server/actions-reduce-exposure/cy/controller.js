@@ -53,7 +53,11 @@ const actionsReduceExposureCyController = {
       } else if (hasLocationName) {
         backLinkText = `Llygredd aer yn ${locationName}`
       }
+      // Build back link URL with query parameters to preserve context
       backLinkUrl = `/lleoliad/${locationId}?lang=cy`
+      if (hasLocationName) {
+        backLinkUrl += `&locationName=${encodeURIComponent(locationName)}`
+      }
     }
 
     // Replace {locationId} placeholder in healthConditionsLink

@@ -1,6 +1,10 @@
 // '' Tests for Welsh redirects, search term redirects, session validation, UK/NI location processing
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
+// Test constants - Note: Can't be used in vi.mock() due to hoisting
+const MOCK_TEST_LOCATION = 'Test Location'
+const HTTP_STATUS_SERVER_ERROR = 500
+
 // Mock all dependencies before any imports
 vi.mock('../data/en/monitoring-sites.js', () => ({
   siteTypeDescriptions: {
@@ -232,14 +236,14 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
       mockRequest.yar.get
         .mockReturnValueOnce(true) // searchTermsSaved
         .mockReturnValueOnce({
-          results: [{ id: 'test', name: 'Test Location' }],
+          results: [{ id: 'test', name: MOCK_TEST_LOCATION }],
           getForecasts: [{ locationId: 'test' }],
           locationType: 'uk'
         })
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
-        locationDetails: { id: 'test', name: 'Test Location' }
+        locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
@@ -506,7 +510,7 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: -1,
-        locationDetails: undefined
+        locationDetails: null
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
@@ -534,7 +538,7 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
       await getLocationDetailsController.handler(mockRequest, mockH)
 
       expect(mockH.response).toHaveBeenCalledWith('Internal Server Error')
-      expect(mockH.code).toHaveBeenCalledWith(500)
+      expect(mockH.code).toHaveBeenCalledWith(HTTP_STATUS_SERVER_ERROR)
     })
 
     it('should handle async errors in getNearestLocationData', async () => {
@@ -552,7 +556,7 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
       await getLocationDetailsController.handler(mockRequest, mockH)
 
       expect(mockH.response).toHaveBeenCalledWith('Internal Server Error')
-      expect(mockH.code).toHaveBeenCalledWith(500)
+      expect(mockH.code).toHaveBeenCalledWith(HTTP_STATUS_SERVER_ERROR)
     })
   })
 })

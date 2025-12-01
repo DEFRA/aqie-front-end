@@ -3,8 +3,7 @@ import {
   LANG_EN,
   LOCATION_NOT_FOUND,
   LOCATION_TYPE_NI,
-  LOCATION_TYPE_UK,
-  REDIRECT_STATUS_CODE
+  LOCATION_TYPE_UK
 } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from './get-site-url.js'
 import { english, calendarEnglish } from '../../data/en/en.js'
@@ -19,7 +18,6 @@ import { getIdMatch } from '../../locations/helpers/get-id-match.js'
 import { getNIData } from '../../locations/helpers/get-ni-single-data.js'
 import { createLogger } from './logging/logger.js'
 import sizeof from 'object-sizeof'
-import { mockLevelColor } from './mock-daqi-level.js'
 import { config } from '../../../config/index.js'
 import { getForecastWarning } from '../../locations/helpers/forecast-warning.js'
 import { getDetailedInfo as getDetailedInfoEn } from '../../data/en/air-quality.js'
@@ -105,6 +103,8 @@ export function initializeMockParameters(request) {
     logger.warn(
       `🚫 Attempted to set mock level when mocks disabled (disableTestMocks=true) - ignoring parameter`
     )
+  } else {
+    // No action needed - mocks disabled or mockLevel not provided
   }
 
   // Store mockDay in session if provided
@@ -121,6 +121,8 @@ export function initializeMockParameters(request) {
     logger.warn(
       `🚫 Attempted to set mock day when mocks disabled (disableTestMocks=true) - ignoring parameter`
     )
+  } else {
+    // No action needed - mocks disabled or mockDay not provided
   }
 }
 
@@ -211,12 +213,12 @@ export function applyMockLevel(request, airQuality, lang = LANG_EN) {
   )
 
   if (mockLevel !== undefined && mockLevel !== null) {
-    const level = parseInt(mockLevel, 10)
+    const level = Number.parseInt(mockLevel, 10)
 
-    logger.info(`🔍 Parsed level:`, level, `isNaN:`, isNaN(level))
+    logger.info(`🔍 Parsed level:`, level, `isNaN:`, Number.isNaN(level))
 
     // Validate level
-    if (!isNaN(level) && level >= 0 && level <= 10) {
+    if (!Number.isNaN(level) && level >= 0 && level <= 10) {
       logger.info(`🎨 Mock DAQI Level ${level} applied from session`)
 
       // If mockDay is specified, apply mock level only to that specific day
