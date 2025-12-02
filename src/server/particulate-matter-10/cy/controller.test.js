@@ -20,7 +20,10 @@ function createExpectedViewData(
     metaSiteUrl: actualUrl,
     particulateMatter10,
     page: 'particulate matter 10',
-    displayBacklink: false,
+    displayBacklink: true,
+    backLinkText: 'Llygredd aer yn Test Location',
+    backLinkUrl: '/lleoliad/123?lang=cy',
+    customBackLink: true,
     phaseBanner: mockContent.phaseBanner,
     footerTxt: mockContent.footerTxt,
     cookieBanner: mockContent.cookieBanner,
@@ -67,6 +70,8 @@ describe('Particular matter10 Controller - Welsh', () => {
   describe('Welsh content rendering', () => {
     it('should render the particulateMatter10 cy page with the necessary data', () => {
       mockRequest.query.lang = LANG_CY
+      mockRequest.query.locationId = '123'
+      mockRequest.query.locationName = 'Test Location'
       const expectedUrl =
         'https://check-air-quality.service.gov.uk/llygryddion/mater-gronynnol-10/cy?lang=cy'
       const actualUrl = getAirQualitySiteUrl(mockRequest)
@@ -87,6 +92,8 @@ describe('Particular matter10 Controller - Welsh', () => {
 
     it('should render by default to particulateMatter10 cy page if lang is not cy or en', () => {
       mockRequest.query.lang = 'test'
+      mockRequest.query.locationId = '123'
+      mockRequest.query.locationName = 'Test Location'
       const expectedUrl =
         'https://check-air-quality.service.gov.uk/llygryddion/mater-gronynnol-10/cy?lang=test'
       const actualUrl = getAirQualitySiteUrl(mockRequest)

@@ -60,6 +60,8 @@ describe('Particular matter25 Controller - Welsh Content', () => {
   describe('Welsh content rendering', () => {
     it('should render the particulateMatter25 page with the necessary data', () => {
       mockRequest.query.lang = LANG_CY
+      mockRequest.query.locationId = '123'
+      mockRequest.query.locationName = 'Test Location'
       const expectedUrl =
         'https://check-air-quality.service.gov.uk/llygryddion/mater-gronynnol-25/cy?lang=cy'
       const actualUrl = getAirQualitySiteUrl(mockRequest)
@@ -72,7 +74,10 @@ describe('Particular matter25 Controller - Welsh Content', () => {
         metaSiteUrl: actualUrl,
         particulateMatter25,
         page: 'particulate matter 25',
-        displayBacklink: false,
+        displayBacklink: true,
+        backLinkText: 'Llygredd aer yn Test Location',
+        backLinkUrl: '/lleoliad/123?lang=cy',
+        customBackLink: true,
         phaseBanner: mockContent.phaseBanner,
         footerTxt: mockContent.footerTxt,
         cookieBanner: mockContent.cookieBanner,
@@ -84,6 +89,8 @@ describe('Particular matter25 Controller - Welsh Content', () => {
 
     it('should render by default to particulateMatter25 page if lang is not cy or en', () => {
       mockRequest.query.lang = 'test'
+      mockRequest.query.locationId = '123'
+      mockRequest.query.locationName = 'Test Location'
       mockRequest.path = PM25_PATH_CY
       const expectedUrl =
         'https://check-air-quality.service.gov.uk/llygryddion/mater-gronynnol-25/cy?lang=test'
@@ -97,7 +104,10 @@ describe('Particular matter25 Controller - Welsh Content', () => {
         metaSiteUrl: actualUrl,
         particulateMatter25,
         page: 'particulate matter 25',
-        displayBacklink: false,
+        displayBacklink: true,
+        backLinkText: 'Llygredd aer yn Test Location',
+        backLinkUrl: '/lleoliad/123?lang=cy',
+        customBackLink: true,
         phaseBanner: mockContent.phaseBanner,
         footerTxt: mockContent.footerTxt,
         cookieBanner: mockContent.cookieBanner,

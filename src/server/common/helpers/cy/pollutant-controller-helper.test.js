@@ -13,7 +13,10 @@ describe('createWelshPollutantController', () => {
   }
 
   const mockRequest = {
-    query: {},
+    query: {
+      locationId: '123',
+      locationName: 'Test Location'
+    },
     path: '/llygryddion/sylffwr-deuocsid/cy'
   }
 
@@ -40,7 +43,10 @@ describe('createWelshPollutantController', () => {
         description: welsh.pollutants.sulphurDioxide.description,
         sulphurDioxide: welsh.pollutants.sulphurDioxide,
         page: 'Sulphur dioxide (SO₂)',
-        displayBacklink: false,
+        displayBacklink: true,
+        backLinkText: 'Llygredd aer yn Test Location',
+        backLinkUrl: '/lleoliad/123?lang=cy',
+        customBackLink: true,
         serviceName: welsh.multipleLocations.serviceName,
         lang: LANG_CY
       })

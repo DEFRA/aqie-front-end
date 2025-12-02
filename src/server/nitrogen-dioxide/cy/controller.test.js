@@ -15,7 +15,10 @@ function createExpectedViewData(content, actualUrl, lang, currentPath) {
     metaSiteUrl: actualUrl,
     nitrogenDioxide: content.pollutants.nitrogenDioxide,
     page: 'Nitrogen dioxide (NO₂)',
-    displayBacklink: false,
+    displayBacklink: true,
+    backLinkText: 'Llygredd aer yn Test Location',
+    backLinkUrl: '/lleoliad/123?lang=cy',
+    customBackLink: true,
     phaseBanner: content.phaseBanner,
     footerTxt: content.footerTxt,
     cookieBanner: content.cookieBanner,
@@ -62,6 +65,8 @@ describe('Nitrogen Dioxide Controller - Welsh', () => {
   describe('Welsh content rendering', () => {
     it('should render the nitrogen dioxide Welsh page with correct data', async () => {
       mockRequest.query.lang = LANG_CY
+      mockRequest.query.locationId = '123'
+      mockRequest.query.locationName = 'Test Location'
       const expectedUrl =
         'https://check-air-quality.service.gov.uk/llygryddion/nitrogen-deuocsid/cy?lang=cy'
       const actualUrl = getAirQualitySiteUrl(mockRequest)
@@ -82,6 +87,8 @@ describe('Nitrogen Dioxide Controller - Welsh', () => {
 
     it('should redirect to the welsh version if the language is not equal to "en" and "cy"', () => {
       mockRequest.query.lang = 'test'
+      mockRequest.query.locationId = '123'
+      mockRequest.query.locationName = 'Test Location'
       const expectedUrl =
         'https://check-air-quality.service.gov.uk/llygryddion/nitrogen-deuocsid/cy?lang=test'
       const actualUrl = getAirQualitySiteUrl(mockRequest)

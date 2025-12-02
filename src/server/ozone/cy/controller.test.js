@@ -47,6 +47,8 @@ describe('Ozone Controller - Welsh', () => {
 
   it('should render the ozone cy page with the necessary data', () => {
     mockRequest.query.lang = LANG_CY
+    mockRequest.query.locationId = '123'
+    mockRequest.query.locationName = 'Test Location'
     const expectedUrl =
       'https://check-air-quality.service.gov.uk/llygryddion/oson/cy?lang=cy'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
@@ -59,7 +61,10 @@ describe('Ozone Controller - Welsh', () => {
       metaSiteUrl: actualUrl,
       ozone,
       page: 'ozone-cy',
-      displayBacklink: false,
+      displayBacklink: true,
+      backLinkText: 'Llygredd aer yn Test Location',
+      backLinkUrl: '/lleoliad/123?lang=cy',
+      customBackLink: true,
       phaseBanner: mockContent.phaseBanner,
       footerTxt: mockContent.footerTxt,
       cookieBanner: mockContent.cookieBanner,
@@ -71,6 +76,8 @@ describe('Ozone Controller - Welsh', () => {
 
   it('should render the ozone cy page with the necessary data if lang is not cy | en', () => {
     mockRequest.query.lang = 'test'
+    mockRequest.query.locationId = '123'
+    mockRequest.query.locationName = 'Test Location'
     const expectedUrl =
       'https://check-air-quality.service.gov.uk/llygryddion/oson/cy?lang=test'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
@@ -83,13 +90,16 @@ describe('Ozone Controller - Welsh', () => {
       metaSiteUrl: actualUrl,
       ozone,
       page: 'ozone-cy',
-      displayBacklink: false,
+      displayBacklink: true,
+      backLinkText: 'Llygredd aer yn Test Location',
+      backLinkUrl: '/lleoliad/123?lang=cy',
+      customBackLink: true,
       phaseBanner: mockContent.phaseBanner,
       footerTxt: mockContent.footerTxt,
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
-      lang: 'cy',
-      currentPath: '/llygryddion/oson/cy'
+      lang: LANG_CY,
+      currentPath: OZONE_PATH_CY
     })
   })
 })

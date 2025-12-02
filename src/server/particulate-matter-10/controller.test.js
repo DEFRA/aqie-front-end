@@ -42,6 +42,8 @@ describe('Particular matter10 Controller - English', () => {
 
   it('should render the particulateMatter10 page with the necessary data', () => {
     mockRequest.query.lang = LANG_EN
+    mockRequest.query.locationId = '123'
+    mockRequest.query.locationName = 'Test Location'
     const expectedUrl =
       'https://check-air-quality.service.gov.uk/pollutants/particulate-matter-10?lang=en'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
@@ -54,7 +56,10 @@ describe('Particular matter10 Controller - English', () => {
       metaSiteUrl: actualUrl,
       particulateMatter10,
       page: 'particulate matter 10',
-      displayBacklink: false,
+      displayBacklink: true,
+      backLinkText: 'Air pollution in Test Location',
+      backLinkUrl: '/location/123?lang=en',
+      customBackLink: true,
       phaseBanner: mockContent.phaseBanner,
       footerTxt: mockContent.footerTxt,
       cookieBanner: mockContent.cookieBanner,

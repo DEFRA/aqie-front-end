@@ -15,7 +15,10 @@ function createExpectedViewData(content, actualUrl, lang, currentPath) {
     metaSiteUrl: actualUrl,
     sulphurDioxide: content.pollutants.sulphurDioxide,
     page: 'Sulphur dioxide (SO₂)',
-    displayBacklink: false,
+    displayBacklink: true,
+    backLinkText: 'Llygredd aer yn Test Location',
+    backLinkUrl: '/lleoliad/123?lang=cy',
+    customBackLink: true,
     phaseBanner: content.phaseBanner,
     footerTxt: content.footerTxt,
     cookieBanner: content.cookieBanner,
@@ -56,12 +59,14 @@ describe('sulphurDioxide Controller - Welsh', () => {
 
     mockRequest = {
       query: {
-        lang: LANG_CY
+        lang: LANG_CY,
+        locationId: '123',
+        locationName: 'Test Location'
       },
       path: SO2_PATH_CY
     }
     const expectedUrl =
-      'https://check-air-quality.service.gov.uk/llygryddion/sylffwr-deuocsid/cy?lang=cy'
+      'https://check-air-quality.service.gov.uk/llygryddion/sylffwr-deuocsid/cy?lang=cy&locationId=123&locationName=Test+Location'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = sulphurDioxideController.handler(mockRequest, mockH)
@@ -80,9 +85,11 @@ describe('sulphurDioxide Controller - Welsh', () => {
 
   it('should render by default to sulphurDioxide welsh page if lang is not cy or en', () => {
     mockRequest.query.lang = 'fr'
+    mockRequest.query.locationId = '123'
+    mockRequest.query.locationName = 'Test Location'
     mockRequest.path = SO2_PATH_CY
     const expectedUrl =
-      'https://check-air-quality.service.gov.uk/llygryddion/sylffwr-deuocsid/cy?lang=fr'
+      'https://check-air-quality.service.gov.uk/llygryddion/sylffwr-deuocsid/cy?lang=fr&locationId=123&locationName=Test+Location'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = sulphurDioxideController.handler(mockRequest, mockH)
