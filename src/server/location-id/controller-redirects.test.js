@@ -1,9 +1,13 @@
+// NOSONAR
 // '' Tests for Welsh redirects, search term redirects, session validation, UK/NI location processing
+
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Test constants - Note: Can't be used in vi.mock() due to hoisting
 const MOCK_TEST_LOCATION = 'Test Location'
-const HTTP_STATUS_SERVER_ERROR = 500
+const REDIRECT_URL_PATTERN = '/location?lang=en&searchTerms='
+const TEST_LOCATION_ID = 'test-location'
+const TEST_NI_LOCATION_ID = 'test-ni-location' // NOSONAR - Used in NI location mocks
 const MOCK_OBJECT_SIZE = 2048576 // 2MB in bytes
 
 // Mock all dependencies before any imports
@@ -108,7 +112,7 @@ vi.mock('../locations/helpers/convert-first-letter-into-upper-case.js', () => ({
 vi.mock('../locations/helpers/gazetteer-util.js', () => ({
   gazetteerEntryFilter: vi.fn(() => ({
     title: 'test location',
-    headerTitle: 'Test Location'
+    headerTitle: MOCK_TEST_LOCATION
   }))
 }))
 vi.mock('../common/helpers/logging/logger.js', () => ({
@@ -208,7 +212,7 @@ import {
 const { getNearestLocation, getIdMatch, compareLastElements } =
   await getMockedModules()
 
-describe('Location ID Controller - Redirects and Location Processing', () => {
+describe('Location ID Controller - Welsh Redirects', () => {
   let mockRequest, mockH
 
   beforeEach(() => {
@@ -218,7 +222,7 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
     mockH = mocks.mockH
   })
 
-  describe('Welsh redirect functionality', () => {
+  describe('Welsh redirect - with lang=cy', () => {
     it('should redirect to Welsh URL when lang=cy and no search terms', async () => {
       // ''
       mockRequest.query = { lang: 'cy' }
@@ -230,7 +234,9 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
         '/lleoliad/test-location-123/?lang=cy'
       )
     })
+  })
 
+  describe('Welsh redirect - with search terms', () => {
     it('should not redirect to Welsh URL when search terms present', async () => {
       // ''
       mockRequest.query = { lang: 'cy', searchTerms: 'london' }
@@ -262,6 +268,17 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
       )
     })
   })
+})
+
+describe('Location ID Controller - Search Term Redirects', () => {
+  let mockRequest, mockH
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    const mocks = createMockRequestResponse()
+    mockRequest = mocks.mockRequest
+    mockH = mocks.mockH
+  })
 
   describe('Search terms redirect functionality', () => {
     it('should redirect when no referer and no saved search terms', async () => {
@@ -272,7 +289,7 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
       await getLocationDetailsController.handler(mockRequest, mockH)
 
       expect(mockH.redirect).toHaveBeenCalledWith(
-        expect.stringContaining('/location?lang=en&searchTerms=')
+        expect.stringContaining(REDIRECT_URL_PATTERN)
       )
     })
 
@@ -285,7 +302,7 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
       await getLocationDetailsController.handler(mockRequest, mockH)
 
       expect(mockH.redirect).toHaveBeenCalledWith(
-        expect.stringContaining('/location?lang=en&searchTerms=')
+        expect.stringContaining(REDIRECT_URL_PATTERN)
       )
     })
 
@@ -301,7 +318,7 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
         .mockReturnValueOnce(null) // mockLevel (first call in initializeRequestData)
         .mockReturnValueOnce(null) // mockLevel (second call in initializeRequestData)
         .mockReturnValueOnce({
-          results: [{ id: 'test', name: 'Test Location' }],
+          results: [{ id: 'test', name: MOCK_TEST_LOCATION }],
           getForecasts: [{ locationId: 'test' }],
           locationType: 'uk'
         })
@@ -309,7 +326,7 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
-        locationDetails: { id: 'test', name: 'Test Location' }
+        locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
@@ -325,6 +342,17 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
       expect(mockH.redirect).not.toHaveBeenCalled()
     })
   })
+})
+
+describe('Location ID Controller - Session Validation', () => {
+  let mockRequest, mockH
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    const mocks = createMockRequestResponse()
+    mockRequest = mocks.mockRequest
+    mockH = mocks.mockH
+  })
 
   describe('Session data validation', () => {
     it('should redirect when locationData.results is not an array', async () => {
@@ -339,7 +367,7 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
       await getLocationDetailsController.handler(mockRequest, mockH)
 
       expect(mockH.redirect).toHaveBeenCalledWith(
-        expect.stringContaining('/location?lang=en&searchTerms=')
+        expect.stringContaining(REDIRECT_URL_PATTERN)
       )
     })
 
@@ -355,7 +383,7 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
       await getLocationDetailsController.handler(mockRequest, mockH)
 
       expect(mockH.redirect).toHaveBeenCalledWith(
-        expect.stringContaining('/location?lang=en&searchTerms=')
+        expect.stringContaining(REDIRECT_URL_PATTERN)
       )
     })
 
@@ -368,17 +396,28 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
       await getLocationDetailsController.handler(mockRequest, mockH)
 
       expect(mockH.redirect).toHaveBeenCalledWith(
-        expect.stringContaining('/location?lang=en&searchTerms=')
+        expect.stringContaining(REDIRECT_URL_PATTERN)
       )
     })
   })
+})
 
-  describe('Location processing for UK locations', () => {
+describe('Location ID Controller - Location Processing', () => {
+  let mockRequest, mockH
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    const mocks = createMockRequestResponse()
+    mockRequest = mocks.mockRequest
+    mockH = mocks.mockH
+  })
+
+  describe('UK location processing', () => {
     it('should successfully process UK location and return view', async () => {
       // ''
       const mockLocationData = {
-        results: [{ id: 'test-location', name: 'Test Location' }],
-        getForecasts: [{ locationId: 'test-location', forecast: 4 }],
+        results: [{ id: TEST_LOCATION_ID, name: MOCK_TEST_LOCATION }],
+        getForecasts: [{ locationId: TEST_LOCATION_ID, forecast: 4 }],
         locationType: 'uk',
         dailySummary: { no2: 30, pm25: 15 },
         englishDate: '15 October 2025',
@@ -397,7 +436,7 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
-        locationDetails: { id: 'test-location', name: 'Test Location' }
+        locationDetails: { id: TEST_LOCATION_ID, name: MOCK_TEST_LOCATION }
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
@@ -405,7 +444,7 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
           [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
         ],
         nearestLocationsRange: [{ id: 'nearby-1' }],
-        nearestLocation: { id: 'test-location' }
+        nearestLocation: { id: TEST_LOCATION_ID }
       })
 
       await getLocationDetailsController.handler(mockRequest, mockH)
@@ -413,9 +452,9 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
       expect(mockH.view).toHaveBeenCalledWith(
         'locations/location',
         expect.objectContaining({
-          result: expect.objectContaining({ id: 'test-location' }),
+          result: expect.objectContaining({ id: TEST_LOCATION_ID }),
           pageTitle: expect.stringContaining('Air quality in'),
-          locationName: 'Test Location',
+          locationName: MOCK_TEST_LOCATION,
           lang: 'en'
         })
       )
@@ -424,12 +463,25 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
         expect.any(Object)
       )
     })
+  })
+})
 
+describe('Location ID Controller - NI Location Processing', () => {
+  let mockRequest, mockH
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    const mocks = createMockRequestResponse()
+    mockRequest = mocks.mockRequest
+    mockH = mocks.mockH
+  })
+
+  describe('NI location processing', () => {
     it('should successfully process NI location', async () => {
       // ''
       const mockLocationData = {
-        results: [{ id: 'test-ni-location', name: 'Belfast Location' }],
-        getForecasts: [{ locationId: 'test-ni-location', forecast: 3 }],
+        results: [{ id: TEST_NI_LOCATION_ID, name: 'Belfast Location' }],
+        getForecasts: [{ locationId: TEST_NI_LOCATION_ID, forecast: 3 }],
         locationType: 'ni'
       }
 
@@ -443,7 +495,7 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
-        locationDetails: { id: 'test-ni-location', name: 'Belfast Location' }
+        locationDetails: { id: TEST_NI_LOCATION_ID, name: 'Belfast Location' }
       })
 
       vi.mocked(getNearestLocation).mockResolvedValue({
@@ -451,7 +503,7 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
           [{ today: 3 }, { day2: 4 }, { day3: 2 }, { day4: 2 }, { day5: 3 }]
         ],
         nearestLocationsRange: [{ id: 'ni-nearby-1' }],
-        nearestLocation: { id: 'test-ni-location' }
+        nearestLocation: { id: TEST_NI_LOCATION_ID }
       })
 
       await getLocationDetailsController.handler(mockRequest, mockH)
@@ -459,105 +511,6 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
         'locations/location',
         expect.any(Object)
       )
-    })
-  })
-
-  describe('Location not found handling', () => {
-    it('should return location not found view when location details is null', async () => {
-      // ''
-      const mockLocationData = {
-        results: [{ id: 'different-location' }],
-        getForecasts: [{ locationId: 'different-location' }],
-        locationType: 'uk'
-      }
-
-      mockRequest.yar.get
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
-
-      vi.mocked(getIdMatch).mockReturnValue({
-        locationIndex: -1,
-        locationDetails: null
-      })
-
-      vi.mocked(getNearestLocation).mockResolvedValue({
-        forecastNum: null,
-        nearestLocationsRange: [],
-        nearestLocation: null
-      })
-
-      await getLocationDetailsController.handler(mockRequest, mockH)
-
-      expect(mockH.view).toHaveBeenCalledWith(
-        'location-not-found',
-        expect.objectContaining({
-          paragraph: 'Location not found',
-          lang: 'en'
-        })
-      )
-    })
-
-    it('should return location not found view when location details is undefined', async () => {
-      // ''
-      const mockLocationData = {
-        results: [{ id: 'different-location' }],
-        getForecasts: [{ locationId: 'different-location' }],
-        locationType: 'uk'
-      }
-
-      mockRequest.yar.get
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
-
-      vi.mocked(getIdMatch).mockReturnValue({
-        locationIndex: -1,
-        locationDetails: null
-      })
-
-      vi.mocked(getNearestLocation).mockResolvedValue({
-        forecastNum: null,
-        nearestLocationsRange: [],
-        nearestLocation: null
-      })
-
-      await getLocationDetailsController.handler(mockRequest, mockH)
-
-      expect(mockH.view).toHaveBeenCalledWith(
-        'location-not-found',
-        expect.any(Object)
-      )
-    })
-  })
-
-  describe('Error handling', () => {
-    it('should return 500 error when an exception occurs', async () => {
-      // ''
-      mockRequest.yar.get.mockImplementation(() => {
-        throw new Error('Session error')
-      })
-
-      await getLocationDetailsController.handler(mockRequest, mockH)
-
-      expect(mockH.response).toHaveBeenCalledWith('Internal Server Error')
-      expect(mockH.code).toHaveBeenCalledWith(HTTP_STATUS_SERVER_ERROR)
-    })
-
-    it('should handle async errors in getNearestLocationData', async () => {
-      // ''
-      mockRequest.yar.get
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce({
-          results: [{ id: 'test' }],
-          getForecasts: [{ locationId: 'test' }],
-          locationType: 'uk'
-        })
-
-      vi.mocked(getNearestLocation).mockRejectedValue(new Error('API error'))
-
-      await getLocationDetailsController.handler(mockRequest, mockH)
-
-      expect(mockH.response).toHaveBeenCalledWith('Internal Server Error')
-      expect(mockH.code).toHaveBeenCalledWith(HTTP_STATUS_SERVER_ERROR)
     })
   })
 })

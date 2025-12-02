@@ -1,3 +1,4 @@
+// NOSONAR - Client-side complexity justified for dynamic link parameter handling
 ''
 /* eslint-disable n/prefer-global/window */
 // DAQI Accessibility Enhancements
@@ -117,6 +118,76 @@ function updateHealthAdviceForActiveTab() {
 
 const EXPOSURE_SECTION_ID = 'exposure-section'
 
+// '' Helper to extract locationId from URL path
+function extractLocationIdFromUrl() {
+  const urlPath = globalThis.location.pathname
+  const regex = /\/(location|lleoliad)\/([^/]+)/
+  const match = regex.exec(urlPath)
+  if (match?.[2]) {
+    console.log('locationId extracted from URL:', match[2])
+    return match[2]
+  }
+  return null
+}
+
+// '' Helper to get location data from exposure section
+function getLocationData() {
+  const exposureSection = document.getElementById(EXPOSURE_SECTION_ID)
+  let locationId = exposureSection?.dataset.locationId ?? null
+  const locationName = exposureSection?.dataset.locationName ?? null
+  const searchTerms = exposureSection?.dataset.searchTerms ?? null
+
+  // Fallback: extract locationId from URL if not in data attribute
+  if (!locationId) {
+    locationId = extractLocationIdFromUrl()
+  }
+
+  console.log('addQueryParametersToLinks - locationId:', locationId)
+  console.log('addQueryParametersToLinks - locationName:', locationName)
+  console.log('addQueryParametersToLinks - searchTerms:', searchTerms)
+
+  return { locationId, locationName, searchTerms }
+}
+
+// '' Helper to build query parameters string
+function buildQueryParams(searchTerms, locationName) {
+  let queryParams = ''
+  if (searchTerms) {
+    queryParams += '&searchTerms=' + encodeURIComponent(searchTerms)
+  }
+  if (locationName) {
+    queryParams += '&locationName=' + encodeURIComponent(locationName)
+  }
+  return queryParams
+}
+
+// '' Helper to append query params to links based on language
+function appendParamsToLinks(html, queryParams) {
+  const isWelsh = document.documentElement.lang === 'cy'
+
+  if (isWelsh) {
+    html = html.replaceAll(
+      'effeithiau-iechyd?lang=cy',
+      'effeithiau-iechyd?lang=cy' + queryParams
+    )
+    html = html.replaceAll(
+      'camau-lleihau-amlygiad/cy?lang=cy',
+      'camau-lleihau-amlygiad/cy?lang=cy' + queryParams
+    )
+  } else {
+    html = html.replaceAll(
+      'health-effects?lang=en',
+      'health-effects?lang=en' + queryParams
+    )
+    html = html.replaceAll(
+      'actions-reduce-exposure?lang=en',
+      'actions-reduce-exposure?lang=en' + queryParams
+    )
+  }
+
+  return html
+}
+
 function updateExposureSection(band) {
   const exposureSection = document.getElementById(EXPOSURE_SECTION_ID)
   if (!exposureSection) {
@@ -142,74 +213,18 @@ function updateExposureSection(band) {
 
 // '' Adds locationId, locationName and searchTerms query parameters to exposure section links
 function addQueryParametersToLinks(html) {
-  // NOSONAR - Complexity acceptable for link processing
-  // '' Get locationId, locationName and searchTerms from data attributes on exposure-section div
-  const exposureSection = document.getElementById(EXPOSURE_SECTION_ID)
-  let locationId = exposureSection?.dataset.locationId ?? null
-  const locationName = exposureSection?.dataset.locationName ?? null
-  const searchTerms = exposureSection?.dataset.searchTerms ?? null
+  const { locationId, locationName, searchTerms } = getLocationData()
 
-  // '' Fallback: extract locationId from URL if not in data attribute
-  if (!locationId) {
-    const urlPath = globalThis.location.pathname
-    // Match both English /location/{id} and Welsh /lleoliad/{id} patterns
-    const regex = /\/(location|lleoliad)\/([^/]+)/
-    const match = regex.exec(urlPath)
-    if (match?.[2]) {
-      locationId = match[2]
-      console.log(
-        'addQueryParametersToLinks - locationId extracted from URL:',
-        locationId
-      )
-    }
-  }
-
-  console.log('addQueryParametersToLinks - locationId:', locationId)
-  console.log('addQueryParametersToLinks - locationName:', locationName)
-  console.log('addQueryParametersToLinks - searchTerms:', searchTerms)
-
-  // '' First, replace {locationId} placeholder in the HTML (same as Nunjucks does)
+  // Replace {locationId} placeholder in the HTML
   if (locationId) {
     html = html.replaceAll('{locationId}', locationId)
   }
 
-  // '' Build query parameters string
-  let queryParams = ''
-  if (searchTerms) {
-    queryParams += '&searchTerms=' + encodeURIComponent(searchTerms)
-  }
-  if (locationName) {
-    queryParams += '&locationName=' + encodeURIComponent(locationName)
-  }
-
-  console.log('addQueryParametersToLinks - queryParams:', queryParams)
-
-  // '' Add query parameters to links if we have any
+  // Build and append query parameters to links if we have any
+  const queryParams = buildQueryParams(searchTerms, locationName)
   if (queryParams) {
-    // Determine language from page
-    const isWelsh = document.documentElement.lang === 'cy'
-
-    if (isWelsh) {
-      // Welsh links
-      html = html.replaceAll(
-        'effeithiau-iechyd?lang=cy',
-        'effeithiau-iechyd?lang=cy' + queryParams
-      )
-      html = html.replaceAll(
-        'camau-lleihau-amlygiad/cy?lang=cy',
-        'camau-lleihau-amlygiad/cy?lang=cy' + queryParams
-      )
-    } else {
-      // English links
-      html = html.replaceAll(
-        'health-effects?lang=en',
-        'health-effects?lang=en' + queryParams
-      )
-      html = html.replaceAll(
-        'actions-reduce-exposure?lang=en',
-        'actions-reduce-exposure?lang=en' + queryParams
-      )
-    }
+    console.log('addQueryParametersToLinks - queryParams:', queryParams)
+    html = appendParamsToLinks(html, queryParams)
   }
 
   return html

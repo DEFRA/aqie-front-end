@@ -1,14 +1,15 @@
-// '' Tests for session management (searchTermsSaved clearing and locationData updates)
+// NOSONAR
+// '' Tests for location not found handling and error cases
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-// Test constants that are used in vi.mock() - must be declared before any vi.mock() calls
+const MOCK_TEST_LOCATION = 'Test Location'
+const LOCATION_NOT_FOUND_TEXT = 'Location not found' // NOSONAR - Used for test validation and mock setup
+const LOCATION_NOT_FOUND_PATH = 'location-not-found'
+const DIFFERENT_LOCATION_ID = 'different-location'
+const HTTP_STATUS_SERVER_ERROR = 500
 const MOCK_OBJECT_SIZE = 2048576
 
-// Test constants - Note: Can't be used in vi.mock() due to hoisting
-const MOCK_TEST_LOCATION = 'Test Location'
-
-// Mock all dependencies before any imports
 vi.mock('../data/en/monitoring-sites.js', () => ({
   siteTypeDescriptions: {
     'background-urban': 'Urban background',
@@ -62,7 +63,7 @@ vi.mock('../data/en/en.js', () => ({
     notFoundLocation: {
       paragraphs: 'Location not found',
       heading: 'Location not found'
-    }
+    } // NOSONAR - Mock data for error handling tests
   },
   calendarEnglish: [
     'January',
@@ -106,7 +107,7 @@ vi.mock('../locations/helpers/convert-first-letter-into-upper-case.js', () => ({
 vi.mock('../locations/helpers/gazetteer-util.js', () => ({
   gazetteerEntryFilter: vi.fn(() => ({
     title: 'test location',
-    headerTitle: 'Test Location'
+    headerTitle: MOCK_TEST_LOCATION
   }))
 }))
 vi.mock('../common/helpers/logging/logger.js', () => ({
@@ -194,18 +195,17 @@ vi.mock('../data/constants.js', () => ({
   STATUS_INTERNAL_SERVER_ERROR: 500
 }))
 
-// eslint-disable-next-line import-x/first -- vi.mock() must be before imports for Vitest hoisting
+// eslint-disable-next-line import-x/first
 import { getLocationDetailsController } from './controller.js'
-// eslint-disable-next-line import-x/first -- vi.mock() must be before imports for Vitest hoisting
+// eslint-disable-next-line import-x/first
 import {
   getMockedModules,
   createMockRequestResponse
 } from './helpers/tests/test-setup.js'
 
-// Get the mocked modules
 const { getNearestLocation, getIdMatch } = await getMockedModules()
 
-describe('Location ID Controller - Session Management', () => {
+describe('Location ID Controller - Location Not Found', () => {
   let mockRequest, mockH
 
   beforeEach(() => {
@@ -215,84 +215,111 @@ describe('Location ID Controller - Session Management', () => {
     mockH = mocks.mockH
   })
 
-  describe('Session management - searchTermsSaved', () => {
-    it('should clear searchTermsSaved from session', async () => {
+  describe('Location not found - null details', () => {
+    it('should return location not found view when location details is null', async () => {
       // ''
       const mockLocationData = {
-        results: [{ id: 'test' }],
-        getForecasts: [{ locationId: 'test' }],
+        results: [{ id: DIFFERENT_LOCATION_ID }],
+        getForecasts: [{ locationId: DIFFERENT_LOCATION_ID }],
         locationType: 'uk'
       }
 
       mockRequest.yar.get
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(null) // mockLevel
-        .mockReturnValueOnce(null) // mockDay
-        .mockReturnValueOnce(null) // mockPollutantBand
-        .mockReturnValueOnce(null) // testMode
-        .mockReturnValueOnce(mockLocationData) // locationData
+        .mockReturnValueOnce(true)
+        .mockReturnValueOnce(mockLocationData)
 
       vi.mocked(getIdMatch).mockReturnValue({
-        locationIndex: 0,
-        locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
+        locationIndex: -1,
+        locationDetails: null
       })
-
       vi.mocked(getNearestLocation).mockResolvedValue({
-        forecastNum: [
-          [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
-        ],
+        forecastNum: null,
         nearestLocationsRange: [],
-        nearestLocation: { id: 'test' }
+        nearestLocation: null
       })
 
       await getLocationDetailsController.handler(mockRequest, mockH)
 
-      expect(mockRequest.yar.clear).toHaveBeenCalledWith('searchTermsSaved')
+      expect(mockH.view).toHaveBeenCalledWith(
+        LOCATION_NOT_FOUND_PATH,
+        expect.objectContaining({
+          paragraph: LOCATION_NOT_FOUND_TEXT,
+          lang: 'en'
+        })
+      )
     })
   })
 
-  describe('Session management - locationData updates', () => {
-    it('should update locationData in session with nearest location info', async () => {
+  describe('Location not found - undefined details', () => {
+    it('should return location not found view when location details is undefined', async () => {
       // ''
       const mockLocationData = {
-        results: [{ id: 'test' }],
-        getForecasts: [{ locationId: 'test' }],
+        results: [{ id: DIFFERENT_LOCATION_ID }],
+        getForecasts: [{ locationId: DIFFERENT_LOCATION_ID }],
         locationType: 'uk'
       }
 
-      const nearestLocation = { id: 'test', forecast: 4 }
-      const nearestLocationsRange = [{ id: 'nearby-1' }]
-
       mockRequest.yar.get
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(null) // mockLevel
-        .mockReturnValueOnce(null) // mockDay
-        .mockReturnValueOnce(null) // mockPollutantBand
-        .mockReturnValueOnce(null) // testMode
-        .mockReturnValueOnce(mockLocationData) // locationData
+        .mockReturnValueOnce(true)
+        .mockReturnValueOnce(mockLocationData)
 
       vi.mocked(getIdMatch).mockReturnValue({
-        locationIndex: 0,
-        locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
+        locationIndex: -1,
+        locationDetails: null
       })
-
       vi.mocked(getNearestLocation).mockResolvedValue({
-        forecastNum: [
-          [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
-        ],
-        nearestLocationsRange,
-        nearestLocation
+        forecastNum: null,
+        nearestLocationsRange: [],
+        nearestLocation: null
       })
 
       await getLocationDetailsController.handler(mockRequest, mockH)
 
-      expect(mockRequest.yar.set).toHaveBeenCalledWith(
-        'locationData',
-        expect.objectContaining({
-          getForecasts: nearestLocation,
-          getMeasurements: nearestLocationsRange
-        })
+      expect(mockH.view).toHaveBeenCalledWith(
+        LOCATION_NOT_FOUND_PATH,
+        expect.any(Object)
       )
+    })
+  })
+})
+
+describe('Location ID Controller - Error Handling', () => {
+  let mockRequest, mockH
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    const mocks = createMockRequestResponse()
+    mockRequest = mocks.mockRequest
+    mockH = mocks.mockH
+  })
+
+  describe('Exception handling', () => {
+    it('should return 500 error when an exception occurs', async () => {
+      // ''
+      mockRequest.yar.get.mockImplementation(() => {
+        throw new Error('Session error')
+      })
+
+      await getLocationDetailsController.handler(mockRequest, mockH)
+
+      expect(mockH.response).toHaveBeenCalledWith('Internal Server Error')
+      expect(mockH.code).toHaveBeenCalledWith(HTTP_STATUS_SERVER_ERROR)
+    })
+
+    it('should handle async errors in getNearestLocationData', async () => {
+      // ''
+      mockRequest.yar.get.mockReturnValueOnce(true).mockReturnValueOnce({
+        results: [{ id: 'test' }],
+        getForecasts: [{ locationId: 'test' }],
+        locationType: 'uk'
+      })
+
+      vi.mocked(getNearestLocation).mockRejectedValue(new Error('API error'))
+
+      await getLocationDetailsController.handler(mockRequest, mockH)
+
+      expect(mockH.response).toHaveBeenCalledWith('Internal Server Error')
+      expect(mockH.code).toHaveBeenCalledWith(HTTP_STATUS_SERVER_ERROR)
     })
   })
 })

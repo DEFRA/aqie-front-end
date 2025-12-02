@@ -1,14 +1,14 @@
-// '' Tests for session management (searchTermsSaved clearing and locationData updates)
+// NOSONAR
+// '' Tests for Welsh and English language handling
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-// Test constants that are used in vi.mock() - must be declared before any vi.mock() calls
+// Test constants
+const MOCK_TEST_LOCATION = 'Test Location'
+const MOCK_LOCATIONS_VIEW = 'locations/location'
 const MOCK_OBJECT_SIZE = 2048576
 
-// Test constants - Note: Can't be used in vi.mock() due to hoisting
-const MOCK_TEST_LOCATION = 'Test Location'
-
-// Mock all dependencies before any imports
+// Mock all dependencies
 vi.mock('../data/en/monitoring-sites.js', () => ({
   siteTypeDescriptions: {
     'background-urban': 'Urban background',
@@ -106,7 +106,7 @@ vi.mock('../locations/helpers/convert-first-letter-into-upper-case.js', () => ({
 vi.mock('../locations/helpers/gazetteer-util.js', () => ({
   gazetteerEntryFilter: vi.fn(() => ({
     title: 'test location',
-    headerTitle: 'Test Location'
+    headerTitle: MOCK_TEST_LOCATION
   }))
 }))
 vi.mock('../common/helpers/logging/logger.js', () => ({
@@ -194,18 +194,17 @@ vi.mock('../data/constants.js', () => ({
   STATUS_INTERNAL_SERVER_ERROR: 500
 }))
 
-// eslint-disable-next-line import-x/first -- vi.mock() must be before imports for Vitest hoisting
+// eslint-disable-next-line import-x/first
 import { getLocationDetailsController } from './controller.js'
-// eslint-disable-next-line import-x/first -- vi.mock() must be before imports for Vitest hoisting
+// eslint-disable-next-line import-x/first
 import {
   getMockedModules,
   createMockRequestResponse
 } from './helpers/tests/test-setup.js'
 
-// Get the mocked modules
 const { getNearestLocation, getIdMatch } = await getMockedModules()
 
-describe('Location ID Controller - Session Management', () => {
+describe('Location ID Controller - Welsh Language Handling', () => {
   let mockRequest, mockH
 
   beforeEach(() => {
@@ -215,84 +214,92 @@ describe('Location ID Controller - Session Management', () => {
     mockH = mocks.mockH
   })
 
-  describe('Session management - searchTermsSaved', () => {
-    it('should clear searchTermsSaved from session', async () => {
-      // ''
-      const mockLocationData = {
-        results: [{ id: 'test' }],
-        getForecasts: [{ locationId: 'test' }],
-        locationType: 'uk'
-      }
+  it('should handle Welsh language correctly', async () => {
+    // ''
+    mockRequest.query = { lang: 'cy', searchTerms: 'caerdydd' }
 
-      mockRequest.yar.get
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(null) // mockLevel
-        .mockReturnValueOnce(null) // mockDay
-        .mockReturnValueOnce(null) // mockPollutantBand
-        .mockReturnValueOnce(null) // testMode
-        .mockReturnValueOnce(mockLocationData) // locationData
+    const mockLocationData = {
+      results: [{ id: 'cardiff' }],
+      getForecasts: [{ locationId: 'cardiff' }],
+      locationType: 'uk',
+      welshDate: '15 Hydref 2025'
+    }
 
-      vi.mocked(getIdMatch).mockReturnValue({
-        locationIndex: 0,
-        locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
-      })
+    mockRequest.yar.get
+      .mockReturnValueOnce(true) // searchTermsSaved
+      .mockReturnValueOnce(null) // mockLevel (first call)
+      .mockReturnValueOnce(null) // mockLevel (second call)
+      .mockReturnValueOnce(mockLocationData)
+      .mockReturnValueOnce(null) // mockLevel in applyMockLevel
 
-      vi.mocked(getNearestLocation).mockResolvedValue({
-        forecastNum: [
-          [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
-        ],
-        nearestLocationsRange: [],
-        nearestLocation: { id: 'test' }
-      })
-
-      await getLocationDetailsController.handler(mockRequest, mockH)
-
-      expect(mockRequest.yar.clear).toHaveBeenCalledWith('searchTermsSaved')
+    vi.mocked(getIdMatch).mockReturnValue({
+      locationIndex: 0,
+      locationDetails: { id: 'cardiff', name: 'Caerdydd' }
     })
+
+    vi.mocked(getNearestLocation).mockResolvedValue({
+      forecastNum: [
+        [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
+      ],
+      nearestLocationsRange: [],
+      nearestLocation: { id: 'cardiff' }
+    })
+
+    await getLocationDetailsController.handler(mockRequest, mockH)
+
+    expect(mockH.view).toHaveBeenCalledWith(
+      MOCK_LOCATIONS_VIEW,
+      expect.objectContaining({ lang: 'cy' })
+    )
+  })
+})
+
+describe('Location ID Controller - English Language Default', () => {
+  let mockRequest, mockH
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    const mocks = createMockRequestResponse()
+    mockRequest = mocks.mockRequest
+    mockH = mocks.mockH
   })
 
-  describe('Session management - locationData updates', () => {
-    it('should update locationData in session with nearest location info', async () => {
-      // ''
-      const mockLocationData = {
-        results: [{ id: 'test' }],
-        getForecasts: [{ locationId: 'test' }],
-        locationType: 'uk'
-      }
+  it('should default to English when no lang parameter', async () => {
+    // ''
+    mockRequest.query = {}
 
-      const nearestLocation = { id: 'test', forecast: 4 }
-      const nearestLocationsRange = [{ id: 'nearby-1' }]
+    const mockLocationData = {
+      results: [{ id: 'test' }],
+      getForecasts: [{ locationId: 'test' }],
+      locationType: 'uk'
+    }
 
-      mockRequest.yar.get
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(null) // mockLevel
-        .mockReturnValueOnce(null) // mockDay
-        .mockReturnValueOnce(null) // mockPollutantBand
-        .mockReturnValueOnce(null) // testMode
-        .mockReturnValueOnce(mockLocationData) // locationData
+    mockRequest.yar.get
+      .mockReturnValueOnce(true) // searchTermsSaved
+      .mockReturnValueOnce(null) // mockLevel
+      .mockReturnValueOnce(null) // mockDay
+      .mockReturnValueOnce(null) // mockPollutantBand
+      .mockReturnValueOnce(null) // testMode
+      .mockReturnValueOnce(mockLocationData)
 
-      vi.mocked(getIdMatch).mockReturnValue({
-        locationIndex: 0,
-        locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
-      })
-
-      vi.mocked(getNearestLocation).mockResolvedValue({
-        forecastNum: [
-          [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
-        ],
-        nearestLocationsRange,
-        nearestLocation
-      })
-
-      await getLocationDetailsController.handler(mockRequest, mockH)
-
-      expect(mockRequest.yar.set).toHaveBeenCalledWith(
-        'locationData',
-        expect.objectContaining({
-          getForecasts: nearestLocation,
-          getMeasurements: nearestLocationsRange
-        })
-      )
+    vi.mocked(getIdMatch).mockReturnValue({
+      locationIndex: 0,
+      locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
     })
+
+    vi.mocked(getNearestLocation).mockResolvedValue({
+      forecastNum: [
+        [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
+      ],
+      nearestLocationsRange: [],
+      nearestLocation: { id: 'test' }
+    })
+
+    await getLocationDetailsController.handler(mockRequest, mockH)
+
+    expect(mockH.view).toHaveBeenCalledWith(
+      MOCK_LOCATIONS_VIEW,
+      expect.objectContaining({ lang: 'en' })
+    )
   })
 })

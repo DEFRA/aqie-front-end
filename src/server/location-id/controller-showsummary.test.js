@@ -1,14 +1,14 @@
-// '' Tests for session management (searchTermsSaved clearing and locationData updates)
+// NOSONAR
+// '' Tests for showSummaryDate calculations and preservation
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-// Test constants that are used in vi.mock() - must be declared before any vi.mock() calls
+// Test constants
+const MOCK_TEST_LOCATION = 'Test Location'
+const MOCK_LOCATIONS_VIEW = 'locations/location'
 const MOCK_OBJECT_SIZE = 2048576
 
-// Test constants - Note: Can't be used in vi.mock() due to hoisting
-const MOCK_TEST_LOCATION = 'Test Location'
-
-// Mock all dependencies before any imports
+// Mock all dependencies (same as other test files)
 vi.mock('../data/en/monitoring-sites.js', () => ({
   siteTypeDescriptions: {
     'background-urban': 'Urban background',
@@ -106,7 +106,7 @@ vi.mock('../locations/helpers/convert-first-letter-into-upper-case.js', () => ({
 vi.mock('../locations/helpers/gazetteer-util.js', () => ({
   gazetteerEntryFilter: vi.fn(() => ({
     title: 'test location',
-    headerTitle: 'Test Location'
+    headerTitle: MOCK_TEST_LOCATION
   }))
 }))
 vi.mock('../common/helpers/logging/logger.js', () => ({
@@ -194,18 +194,17 @@ vi.mock('../data/constants.js', () => ({
   STATUS_INTERNAL_SERVER_ERROR: 500
 }))
 
-// eslint-disable-next-line import-x/first -- vi.mock() must be before imports for Vitest hoisting
+// eslint-disable-next-line import-x/first
 import { getLocationDetailsController } from './controller.js'
-// eslint-disable-next-line import-x/first -- vi.mock() must be before imports for Vitest hoisting
+// eslint-disable-next-line import-x/first
 import {
   getMockedModules,
   createMockRequestResponse
 } from './helpers/tests/test-setup.js'
 
-// Get the mocked modules
 const { getNearestLocation, getIdMatch } = await getMockedModules()
 
-describe('Location ID Controller - Session Management', () => {
+describe('Location ID Controller - ShowSummaryDate Calculations', () => {
   let mockRequest, mockH
 
   beforeEach(() => {
@@ -215,84 +214,175 @@ describe('Location ID Controller - Session Management', () => {
     mockH = mocks.mockH
   })
 
-  describe('Session management - searchTermsSaved', () => {
-    it('should clear searchTermsSaved from session', async () => {
-      // ''
-      const mockLocationData = {
-        results: [{ id: 'test' }],
-        getForecasts: [{ locationId: 'test' }],
-        locationType: 'uk'
-      }
+  it('should calculate showSummaryDate when undefined and issue_date is today', async () => {
+    // ''
+    const today = new Date()
+    const todayStr = today.toISOString().split('T')[0] + ' 10:00:00'
 
-      mockRequest.yar.get
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(null) // mockLevel
-        .mockReturnValueOnce(null) // mockDay
-        .mockReturnValueOnce(null) // mockPollutantBand
-        .mockReturnValueOnce(null) // testMode
-        .mockReturnValueOnce(mockLocationData) // locationData
+    const mockLocationData = {
+      results: [{ id: 'test' }],
+      getForecasts: [{ locationId: 'test' }],
+      locationType: 'uk',
+      dailySummary: { issue_date: todayStr, no2: 30, pm25: 15 },
+      showSummaryDate: undefined // NOSONAR
+    }
 
-      vi.mocked(getIdMatch).mockReturnValue({
-        locationIndex: 0,
-        locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
-      })
+    mockRequest.yar.get
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(mockLocationData)
 
-      vi.mocked(getNearestLocation).mockResolvedValue({
-        forecastNum: [
-          [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
-        ],
-        nearestLocationsRange: [],
-        nearestLocation: { id: 'test' }
-      })
-
-      await getLocationDetailsController.handler(mockRequest, mockH)
-
-      expect(mockRequest.yar.clear).toHaveBeenCalledWith('searchTermsSaved')
+    vi.mocked(getIdMatch).mockReturnValue({
+      locationIndex: 0,
+      locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
     })
+
+    vi.mocked(getNearestLocation).mockResolvedValue({
+      forecastNum: [
+        [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
+      ],
+      nearestLocationsRange: [],
+      nearestLocation: { id: 'test' }
+    })
+
+    await getLocationDetailsController.handler(mockRequest, mockH)
+
+    expect(mockH.view).toHaveBeenCalledWith(
+      MOCK_LOCATIONS_VIEW,
+      expect.objectContaining({ showSummaryDate: true })
+    )
   })
 
-  describe('Session management - locationData updates', () => {
-    it('should update locationData in session with nearest location info', async () => {
-      // ''
-      const mockLocationData = {
-        results: [{ id: 'test' }],
-        getForecasts: [{ locationId: 'test' }],
-        locationType: 'uk'
-      }
+  it('should calculate showSummaryDate as false when issue_date is not today', async () => {
+    // ''
+    const yesterdayStr = '2020-01-01 10:00:00'
 
-      const nearestLocation = { id: 'test', forecast: 4 }
-      const nearestLocationsRange = [{ id: 'nearby-1' }]
+    const mockLocationData = {
+      results: [{ id: 'test' }],
+      getForecasts: [{ locationId: 'test' }],
+      locationType: 'uk',
+      dailySummary: { issue_date: yesterdayStr, no2: 30 },
+      showSummaryDate: undefined // NOSONAR
+    }
 
-      mockRequest.yar.get
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(null) // mockLevel
-        .mockReturnValueOnce(null) // mockDay
-        .mockReturnValueOnce(null) // mockPollutantBand
-        .mockReturnValueOnce(null) // testMode
-        .mockReturnValueOnce(mockLocationData) // locationData
+    mockRequest.yar.get = vi
+      .fn()
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(mockLocationData)
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce(null)
+      .mockReturnValue(null)
 
-      vi.mocked(getIdMatch).mockReturnValue({
-        locationIndex: 0,
-        locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
-      })
-
-      vi.mocked(getNearestLocation).mockResolvedValue({
-        forecastNum: [
-          [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
-        ],
-        nearestLocationsRange,
-        nearestLocation
-      })
-
-      await getLocationDetailsController.handler(mockRequest, mockH)
-
-      expect(mockRequest.yar.set).toHaveBeenCalledWith(
-        'locationData',
-        expect.objectContaining({
-          getForecasts: nearestLocation,
-          getMeasurements: nearestLocationsRange
-        })
-      )
+    vi.mocked(getIdMatch).mockReturnValue({
+      locationIndex: 0,
+      locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
     })
+
+    vi.mocked(getNearestLocation).mockResolvedValue({
+      forecastNum: [
+        [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
+      ],
+      nearestLocationsRange: [],
+      nearestLocation: { id: 'test' }
+    })
+
+    await getLocationDetailsController.handler(mockRequest, mockH)
+
+    expect(mockH.view).toHaveBeenCalledWith(
+      MOCK_LOCATIONS_VIEW,
+      expect.objectContaining({ showSummaryDate: false })
+    )
+  })
+})
+
+describe('Location ID Controller - ShowSummaryDate Preservation', () => {
+  let mockRequest, mockH
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    const mocks = createMockRequestResponse()
+    mockRequest = mocks.mockRequest
+    mockH = mocks.mockH
+  })
+
+  it('should preserve showSummaryDate when already set', async () => {
+    // ''
+    const today = new Date()
+    const todayStr = today.toISOString().split('T')[0] + ' 10:00:00'
+
+    const mockLocationData = {
+      results: [{ id: 'test' }],
+      getForecasts: [{ locationId: 'test' }],
+      locationType: 'uk',
+      dailySummary: { issue_date: todayStr, no2: 30 },
+      showSummaryDate: true,
+      issueTime: '10:00'
+    }
+
+    mockRequest.yar.get = vi
+      .fn()
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(mockLocationData)
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce(null)
+      .mockReturnValue(null)
+
+    vi.mocked(getIdMatch).mockReturnValue({
+      locationIndex: 0,
+      locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
+    })
+
+    vi.mocked(getNearestLocation).mockResolvedValue({
+      forecastNum: [
+        [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
+      ],
+      nearestLocationsRange: [],
+      nearestLocation: { id: 'test' }
+    })
+
+    await getLocationDetailsController.handler(mockRequest, mockH)
+
+    expect(mockH.view).toHaveBeenCalledWith(
+      MOCK_LOCATIONS_VIEW,
+      expect.objectContaining({ showSummaryDate: true, issueTime: '10:00' })
+    )
+  })
+
+  it('should handle missing issue_date gracefully', async () => {
+    // ''
+    const mockLocationData = {
+      results: [{ id: 'test' }],
+      getForecasts: [{ locationId: 'test' }],
+      locationType: 'uk',
+      dailySummary: { no2: 30 }
+    }
+
+    mockRequest.yar.get
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce(mockLocationData)
+
+    vi.mocked(getIdMatch).mockReturnValue({
+      locationIndex: 0,
+      locationDetails: { id: 'test', name: MOCK_TEST_LOCATION }
+    })
+
+    vi.mocked(getNearestLocation).mockResolvedValue({
+      forecastNum: [
+        [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
+      ],
+      nearestLocationsRange: [],
+      nearestLocation: { id: 'test' }
+    })
+
+    await getLocationDetailsController.handler(mockRequest, mockH)
+
+    expect(mockH.view).toHaveBeenCalled()
   })
 })
