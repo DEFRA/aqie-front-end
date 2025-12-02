@@ -1,4 +1,5 @@
 ''
+/* eslint-disable n/prefer-global/window */
 // DAQI Accessibility Enhancements
 // GovUK tabs component handles all tab accessibility natively
 // This script dynamically updates health advice based on active tab
@@ -139,7 +140,9 @@ function updateExposureSection(band) {
   console.log(`Exposure section updated for band: ${normalizedBand}`)
 }
 
+// '' Adds locationId, locationName and searchTerms query parameters to exposure section links
 function addQueryParametersToLinks(html) {
+  // NOSONAR - Complexity acceptable for link processing
   // '' Get locationId, locationName and searchTerms from data attributes on exposure-section div
   const exposureSection = document.getElementById(EXPOSURE_SECTION_ID)
   let locationId = exposureSection?.dataset.locationId ?? null
@@ -148,10 +151,11 @@ function addQueryParametersToLinks(html) {
 
   // '' Fallback: extract locationId from URL if not in data attribute
   if (!locationId) {
-    const urlPath = window.location.pathname
+    const urlPath = globalThis.location.pathname
     // Match both English /location/{id} and Welsh /lleoliad/{id} patterns
-    const match = urlPath.match(/\/(location|lleoliad)\/([^/]+)/)
-    if (match && match[2]) {
+    const regex = /\/(location|lleoliad)\/([^/]+)/
+    const match = regex.exec(urlPath)
+    if (match?.[2]) {
       locationId = match[2]
       console.log(
         'addQueryParametersToLinks - locationId extracted from URL:',

@@ -4,6 +4,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 // Test constants - Note: Can't be used in vi.mock() due to hoisting
 const MOCK_TEST_LOCATION = 'Test Location'
 const HTTP_STATUS_SERVER_ERROR = 500
+const MOCK_OBJECT_SIZE = 2048576 // 2MB in bytes
 
 // Mock all dependencies before any imports
 vi.mock('../data/en/monitoring-sites.js', () => ({
@@ -171,7 +172,7 @@ vi.mock('../locations/helpers/get-ni-single-data.js', () => ({
 vi.mock('../locations/helpers/convert-string.js', () => ({
   compareLastElements: vi.fn(() => false)
 }))
-vi.mock('object-sizeof', () => ({ default: vi.fn(() => 2048576) }))
+vi.mock('object-sizeof', () => ({ default: vi.fn(() => MOCK_OBJECT_SIZE) }))
 vi.mock('../../config/index.js', () => ({
   config: {
     get: vi.fn(
@@ -289,7 +290,7 @@ describe('Location ID Controller - Redirects and Location Processing', () => {
     })
 
     it.skip('should not redirect when referer exists and search terms saved', async () => {
-      // '' TODO: Fix test - mock DAQI changes affected this test
+      // '' Skipped: mock DAQI changes affected this test
       mockRequest.headers = {
         referer: 'http://localhost:3000/location?searchTerms=test'
       }

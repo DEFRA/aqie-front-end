@@ -21,9 +21,9 @@ describe('actions reduce exposure controller - Welsh', () => {
       })
     }))
     mockH = {
-      redirect: vi.fn().mockImplementation((url) => {
+      redirect: vi.fn().mockImplementation(() => {
         return {
-          code: vi.fn().mockImplementation((statusCode) => {
+          code: vi.fn().mockImplementation(() => {
             return 'redirected'
           })
         }

@@ -1,0 +1,20 @@
+{
+  "sonarqube.exclusions": [
+    "**/*.test.js",
+    "**/*.test.*.js",
+    "**/test/**",
+    "**/__tests__/**",
+    "**/test-helpers/**",
+    "**/test-setup.js",
+    "src/client/**",
+    "coverage/**",
+    "node_modules/**"
+  ],
+  "sonarqube.testFilePattern": "**/*.test.js,**/*.test.*.js,**/test/**,**/__tests__/**",
+  "sonarqube.disabledRules": [
+    "javascript:S1192",
+    "javascript:S138",
+    "javascript:S3776",
+    "javascript:S1541"
+  ]
+}

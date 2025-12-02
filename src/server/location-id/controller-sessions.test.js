@@ -1,5 +1,9 @@
 // '' Tests for language/date handling, session management, and showSummaryDate/issueTime calculations
+
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+
+// Test constants that are used in vi.mock() - must be declared before any vi.mock() calls
+const MOCK_OBJECT_SIZE = 2048576
 
 // Test constants - Note: Can't be used in vi.mock() due to hoisting
 const MOCK_TEST_LOCATION = 'Test Location'
@@ -167,7 +171,7 @@ vi.mock('../locations/helpers/get-ni-single-data.js', () => ({
 vi.mock('../locations/helpers/convert-string.js', () => ({
   compareLastElements: vi.fn(() => false)
 }))
-vi.mock('object-sizeof', () => ({ default: vi.fn(() => 2048576) }))
+vi.mock('object-sizeof', () => ({ default: vi.fn(() => MOCK_OBJECT_SIZE) }))
 vi.mock('../../config/index.js', () => ({
   config: {
     get: vi.fn(
@@ -390,7 +394,7 @@ describe('Location ID Controller - Sessions and Dates', () => {
           no2: 30,
           pm25: 15
         },
-        showSummaryDate: undefined // undefined so calculation happens
+        showSummaryDate: undefined // NOSONAR - Controller requires undefined (not null) to trigger calculation
       }
 
       mockRequest.yar.get
@@ -432,7 +436,7 @@ describe('Location ID Controller - Sessions and Dates', () => {
           issue_date: yesterdayStr,
           no2: 30
         },
-        showSummaryDate: undefined // undefined so calculation happens
+        showSummaryDate: undefined // NOSONAR - Controller requires undefined (not null) to trigger calculation
       }
 
       mockRequest.yar.get = vi

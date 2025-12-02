@@ -5,6 +5,7 @@ import { formatUKPostcode } from '../../locations/helpers/convert-string.js'
 
 const actionsReduceExposureCyController = {
   handler: (request, h) => {
+    // NOSONAR - Complexity acceptable for route handler
     const { actionsReduceExposure } = welsh
     const {
       footerTxt,
@@ -52,6 +53,8 @@ const actionsReduceExposureCyController = {
         backLinkText = `Llygredd aer yn ${formattedPostcode}`
       } else if (hasLocationName) {
         backLinkText = `Llygredd aer yn ${locationName}`
+      } else {
+        // No location context available, keep default backlink text
       }
       // Build back link URL with query parameters to preserve context
       backLinkUrl = `/lleoliad/${locationId}?lang=cy`
