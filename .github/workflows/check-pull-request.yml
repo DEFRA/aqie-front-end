@@ -61,7 +61,6 @@ jobs:
             -Dsonar.pullrequest.branch=${{ github.head_ref }}
             -Dsonar.pullrequest.base=${{ github.base_ref }}
             -Dsonar.pullrequest.key=${{ github.event.number }}
-            -Dsonar.coverage.overallExclusions=src/client/**,coverage/**,node_modules/**,**/test/**,**/*.test.js
             -Dsonar.cpd.exclusions=src/server/data/**/daqi-and-pollutants*.js,src/server/data/**/navigation*.js,src/server/data/**/footer-and-ui*.js,src/server/data/**/en.js,src/server/data/**/cy.js
             -Dsonar.issue.exclusions.multicriteria=e1,e2,e3,e4,e5
             -Dsonar.issue.exclusions.multicriteria.e1.ruleKey=javascript:S1192
