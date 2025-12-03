@@ -159,6 +159,62 @@ describe('getOSPlaces', () => {
     }
   })
 
+  it('should handle local requests without CDP_X_API_KEY env var', async () => {
+    vi.clearAllMocks()
+    const { config } = await import('../../config/index.js')
+    config.get.mockImplementation((key) => {
+      if (key === 'osNamesApiUrl') {
+        return MOCK_API_URL
+      }
+      if (key === 'osNamesApiKey') {
+        return MOCK_API_KEY
+      }
+      return ''
+    })
+    const { isValidFullPostcodeUK, isValidPartialPostcodeUK } = await import(
+      './convert-string.js'
+    )
+    isValidFullPostcodeUK.mockReturnValue(false)
+    isValidPartialPostcodeUK.mockReturnValue(false)
+    const { catchProxyFetchError } = await import(
+      '../common/helpers/catch-proxy-fetch-error.js'
+    )
+    catchProxyFetchError.mockResolvedValue([
+      STATUS_CODE_SUCCESS,
+      { results: [{ data: 'local test' }] }
+    ])
+
+    // Ensure CDP_X_API_KEY is NOT set to test file reading path
+    const originalEnv = process.env.CDP_X_API_KEY
+    delete process.env.CDP_X_API_KEY
+
+    const { getOSPlaces } = await import('./get-os-places.js')
+    const mockRequest = {
+      headers: {
+        host: 'localhost:3000'
+      }
+    }
+    const result = await getOSPlaces(
+      'London',
+      'London',
+      'England',
+      true,
+      {},
+      mockRequest,
+      catchProxyFetchError
+    )
+    expect(result).toBeDefined()
+    expect(catchProxyFetchError).toHaveBeenCalled()
+    // Verify x-api-key was added from local.json file
+    const callArgs = catchProxyFetchError.mock.calls[0]
+    expect(callArgs[1].headers).toHaveProperty('x-api-key')
+
+    // Restore environment variable
+    if (originalEnv) {
+      process.env.CDP_X_API_KEY = originalEnv
+    }
+  })
+
   it('should handle local requests with 127.0.0.1 host', async () => {
     vi.clearAllMocks()
     const { config } = await import('../../config/index.js')
