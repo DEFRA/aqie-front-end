@@ -38,40 +38,64 @@ describe('Ozone Controller - Welsh', () => {
     }))
   })
 
-  it('should redirect to the English version if the language is "en"', () => {
-    mockRequest.query.lang = 'en'
-    const result = ozoneController.handler(mockRequest, mockH)
-    expect(result).toBe('redirected')
-    expect(mockH.redirect).toHaveBeenCalledWith('/pollutants/ozone?lang=en')
+  describe('redirects', () => {
+    it('should redirect to the English version if the language is "en"', () => {
+      mockRequest.query.lang = 'en'
+      const result = ozoneController.handler(mockRequest, mockH)
+      expect(result).toBe('redirected')
+      expect(mockH.redirect).toHaveBeenCalledWith('/pollutants/ozone?lang=en')
+    })
   })
 
-  it('should render the ozone cy page with the necessary data', () => {
-    mockRequest.query.lang = LANG_CY
-    mockRequest.query.locationId = '123'
-    mockRequest.query.locationName = 'Test Location'
-    const expectedUrl =
-      'https://check-air-quality.service.gov.uk/llygryddion/oson/cy?lang=cy'
-    const actualUrl = getAirQualitySiteUrl(mockRequest)
-    expect(actualUrl).toBe(expectedUrl)
-    const result = ozoneController.handler(mockRequest, mockH)
-    expect(result).toBe(VIEW_RENDERED)
-    expect(mockH.view).toHaveBeenCalledWith('ozone/index', {
-      pageTitle: mockContent.pollutants.ozone.pageTitle,
-      description: mockContent.pollutants.ozone.description,
-      metaSiteUrl: actualUrl,
-      ozone,
-      page: 'ozone-cy',
-      displayBacklink: true,
-      backLinkText: 'Llygredd aer yn Test Location',
-      backLinkUrl: '/lleoliad/123?lang=cy',
-      customBackLink: true,
-      phaseBanner: mockContent.phaseBanner,
-      footerTxt: mockContent.footerTxt,
-      cookieBanner: mockContent.cookieBanner,
-      serviceName: mockContent.multipleLocations.serviceName,
-      lang: mockRequest.query.lang,
-      currentPath: OZONE_PATH_CY
+  describe('rendering Welsh content', () => {
+    it('should render the ozone cy page with the necessary data', () => {
+      mockRequest.query.lang = LANG_CY
+      mockRequest.query.locationId = '123'
+      mockRequest.query.locationName = 'Test Location'
+      const expectedUrl =
+        'https://check-air-quality.service.gov.uk/llygryddion/oson/cy?lang=cy'
+      const actualUrl = getAirQualitySiteUrl(mockRequest)
+      expect(actualUrl).toBe(expectedUrl)
+      const result = ozoneController.handler(mockRequest, mockH)
+      expect(result).toBe(VIEW_RENDERED)
+      expect(mockH.view).toHaveBeenCalledWith('ozone/index', {
+        pageTitle: mockContent.pollutants.ozone.pageTitle,
+        description: mockContent.pollutants.ozone.description,
+        metaSiteUrl: actualUrl,
+        ozone,
+        page: 'ozone-cy',
+        displayBacklink: true,
+        backLinkText: 'Llygredd aer yn Test Location',
+        backLinkUrl: '/lleoliad/123?lang=cy',
+        customBackLink: true,
+        phaseBanner: mockContent.phaseBanner,
+        footerTxt: mockContent.footerTxt,
+        cookieBanner: mockContent.cookieBanner,
+        serviceName: mockContent.multipleLocations.serviceName,
+        lang: mockRequest.query.lang,
+        currentPath: OZONE_PATH_CY
+      })
     })
+  })
+})
+
+describe('Ozone Controller - Welsh - default language', () => {
+  let mockRequest
+  let mockH
+  let VIEW_RENDERED
+  const mockContent = welsh
+  const { ozone } = welsh.pollutants
+
+  beforeEach(() => {
+    const mocks = createMockRequestResponse()
+    mockRequest = mocks.mockRequest
+    mockH = mocks.mockH
+    VIEW_RENDERED = mocks.VIEW_RENDERED
+    vi.mock('../../common/helpers/get-site-url.js', () => ({
+      getAirQualitySiteUrl: vi.fn((request) => {
+        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+      })
+    }))
   })
 
   it('should render the ozone cy page with the necessary data if lang is not cy | en', () => {

@@ -338,6 +338,8 @@ function handleSuccessfulLocationData(
     request,
     processedData.nearestLocationsRange
   )
+  // '' Use locationId from path params (request.params.id), not from locationDetails
+  const locationId = request.params.id
   const viewData = buildLocationViewData({
     locationDetails: processedData.locationDetails,
     nearestLocationsRange: modifiedMonitoringSites,
@@ -350,7 +352,7 @@ function handleSuccessfulLocationData(
     siteTypeDescriptions,
     pollutantTypes,
     request,
-    locationId: processedData.locationDetails.id
+    locationId
   })
   return renderLocationView(h, viewData)
 }

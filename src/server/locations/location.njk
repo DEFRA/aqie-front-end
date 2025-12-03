@@ -175,8 +175,11 @@
       {# '' Add query parameters for back link context #}
       {% if pollutantHref != '#' %}
         {% set pollutantHref = pollutantHref + '?lang=' + lang %}
-        {% if locationId and locationName %}
-          {% set pollutantHref = pollutantHref + '&locationId=' + locationId + '&locationName=' + (locationName | urlencode) %}
+        {% if locationId %}
+          {% set pollutantHref = pollutantHref + '&locationId=' + locationId %}
+          {% if locationName %}
+            {% set pollutantHref = pollutantHref + '&locationName=' + (locationName | urlencode) %}
+          {% endif %}
           {% if searchTerms %}
             {% set pollutantHref = pollutantHref + '&searchTerms=' + (searchTerms | urlencode) %}
           {% endif %}
@@ -294,8 +297,11 @@
       {# '' Add query parameters for back link context #}
       {% if pollutantHref != '#' %}
         {% set pollutantHref = pollutantHref + '?lang=' + lang %}
-        {% if locationId and locationName %}
-          {% set pollutantHref = pollutantHref + '&locationId=' + locationId + '&locationName=' + (locationName | urlencode) %}
+        {% if locationId %}
+          {% set pollutantHref = pollutantHref + '&locationId=' + locationId %}
+          {% if locationName %}
+            {% set pollutantHref = pollutantHref + '&locationName=' + (locationName | urlencode) %}
+          {% endif %}
           {% if searchTerms %}
             {% set pollutantHref = pollutantHref + '&searchTerms=' + (searchTerms | urlencode) %}
           {% endif %}

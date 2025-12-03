@@ -6,18 +6,23 @@ import {
   createLocationBackLink
 } from '../../../../src/server/common/helpers/back-link-helper.js'
 
+const PREVIOUS_PAGE_URL = '/previous-page'
+const SEARCH_LOCATION_EN_URL = '/search-location?lang=en'
+const LOCATION_EN_URL = '/location/abc123?lang=en'
+const LOCATION_CY_URL = '/lleoliad/abc123?lang=cy'
+
 describe('createBackLink', () => {
   it('should create a back link with provided text and url', () => {
     // ''
     const result = createBackLink({
       text: 'Go back',
-      url: '/previous-page'
+      url: PREVIOUS_PAGE_URL
     })
 
     expect(result).toEqual({
       displayBacklink: true,
       backLinkText: 'Go back',
-      backLinkUrl: '/previous-page',
+      backLinkUrl: PREVIOUS_PAGE_URL,
       customBackLink: true
     })
   })
@@ -25,7 +30,7 @@ describe('createBackLink', () => {
   it('should return disabled back link when text is missing', () => {
     // ''
     const result = createBackLink({
-      url: '/previous-page'
+      url: PREVIOUS_PAGE_URL
     })
 
     expect(result).toEqual({
@@ -82,7 +87,7 @@ describe('createSearchLocationBackLink', () => {
     const result = createSearchLocationBackLink()
 
     expect(result.displayBacklink).toBe(true)
-    expect(result.backLinkUrl).toBe('/search-location?lang=en')
+    expect(result.backLinkUrl).toBe(SEARCH_LOCATION_EN_URL)
     expect(result.customBackLink).toBe(true)
     expect(result.backLinkText).toBeTruthy()
   })
@@ -92,7 +97,7 @@ describe('createSearchLocationBackLink', () => {
     const result = createSearchLocationBackLink('en')
 
     expect(result.displayBacklink).toBe(true)
-    expect(result.backLinkUrl).toBe('/search-location?lang=en')
+    expect(result.backLinkUrl).toBe(SEARCH_LOCATION_EN_URL)
     expect(result.customBackLink).toBe(true)
   })
 
@@ -107,15 +112,17 @@ describe('createSearchLocationBackLink', () => {
   })
 })
 
-describe('createLocationBackLink', () => {
+describe('fallback to search location', () => {
   it('should fallback to search location when locationId is missing', () => {
     // ''
     const result = createLocationBackLink({})
 
-    expect(result.backLinkUrl).toBe('/search-location?lang=en')
+    expect(result.backLinkUrl).toBe(SEARCH_LOCATION_EN_URL)
     expect(result.displayBacklink).toBe(true)
   })
+})
 
+describe('basic location links', () => {
   it('should create English location back link with locationId only', () => {
     // ''
     const result = createLocationBackLink({
@@ -124,7 +131,7 @@ describe('createLocationBackLink', () => {
     })
 
     expect(result.displayBacklink).toBe(true)
-    expect(result.backLinkUrl).toBe('/location/abc123?lang=en')
+    expect(result.backLinkUrl).toBe(LOCATION_EN_URL)
     expect(result.customBackLink).toBe(true)
   })
 
@@ -136,10 +143,12 @@ describe('createLocationBackLink', () => {
     })
 
     expect(result.displayBacklink).toBe(true)
-    expect(result.backLinkUrl).toBe('/lleoliad/abc123?lang=cy')
+    expect(result.backLinkUrl).toBe(LOCATION_CY_URL)
     expect(result.customBackLink).toBe(true)
   })
+})
 
+describe('location links with search terms', () => {
   it('should create back link with locationId and searchTerms in English', () => {
     // ''
     const result = createLocationBackLink({
@@ -149,7 +158,7 @@ describe('createLocationBackLink', () => {
     })
 
     expect(result.displayBacklink).toBe(true)
-    expect(result.backLinkUrl).toBe('/location/abc123?lang=en')
+    expect(result.backLinkUrl).toBe(LOCATION_EN_URL)
     expect(result.backLinkText).toContain('Air pollution in SW1A 1AA')
     expect(result.customBackLink).toBe(true)
   })
@@ -163,11 +172,13 @@ describe('createLocationBackLink', () => {
     })
 
     expect(result.displayBacklink).toBe(true)
-    expect(result.backLinkUrl).toBe('/lleoliad/abc123?lang=cy')
+    expect(result.backLinkUrl).toBe(LOCATION_CY_URL)
     expect(result.backLinkText).toContain('Llygredd aer yn CF10 1AA')
     expect(result.customBackLink).toBe(true)
   })
+})
 
+describe('location links with location names', () => {
   it('should create back link with locationId and locationName in English', () => {
     // ''
     const result = createLocationBackLink({
@@ -177,7 +188,7 @@ describe('createLocationBackLink', () => {
     })
 
     expect(result.displayBacklink).toBe(true)
-    expect(result.backLinkUrl).toBe('/location/abc123?lang=en')
+    expect(result.backLinkUrl).toBe(LOCATION_EN_URL)
     expect(result.backLinkText).toContain('Air pollution in London')
     expect(result.customBackLink).toBe(true)
   })
@@ -191,11 +202,13 @@ describe('createLocationBackLink', () => {
     })
 
     expect(result.displayBacklink).toBe(true)
-    expect(result.backLinkUrl).toBe('/lleoliad/abc123?lang=cy')
+    expect(result.backLinkUrl).toBe(LOCATION_CY_URL)
     expect(result.backLinkText).toContain('Llygredd aer yn Caerdydd')
     expect(result.customBackLink).toBe(true)
   })
+})
 
+describe('location links with full details', () => {
   it('should create back link with locationId, searchTerms and locationName in English', () => {
     // ''
     const result = createLocationBackLink({
@@ -206,7 +219,7 @@ describe('createLocationBackLink', () => {
     })
 
     expect(result.displayBacklink).toBe(true)
-    expect(result.backLinkUrl).toBe('/location/abc123?lang=en')
+    expect(result.backLinkUrl).toBe(LOCATION_EN_URL)
     expect(result.backLinkText).toBe('Air pollution in SW1A 1AA, Westminster')
     expect(result.customBackLink).toBe(true)
   })

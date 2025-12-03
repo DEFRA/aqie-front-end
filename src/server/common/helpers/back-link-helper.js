@@ -1,17 +1,14 @@
 // '' Modular back link helper for creating consistent back link configurations
-import { english } from '../../data/en/en.js'
-import { welsh } from '../../data/cy/cy.js'
 
 /**
  * Creates a back link configuration object
  * @param {Object} options - Configuration options
  * @param {string} options.text - The text to display for the back link
  * @param {string} options.url - The URL the back link should point to
- * @param {string} [options.lang='en'] - Language code ('en' or 'cy')
  * @returns {Object} Back link configuration with text, url, and display flag
  */
 function createBackLink(options = {}) {
-  const { text, url, lang = 'en' } = options
+  const { text, url } = options
 
   // '' Validate inputs
   if (!text || !url) {
@@ -50,6 +47,32 @@ function createSearchLocationBackLink(lang = 'en') {
 }
 
 /**
+ * Generates back link text based on search terms and location name
+ * @param {string} searchTerms - Search terms (e.g., postcode)
+ * @param {string} locationName - Location name
+ * @param {string} lang - Language code
+ * @returns {string} Back link text
+ */
+function generateBackLinkText(searchTerms, locationName, lang) {
+  if (searchTerms && locationName) {
+    return lang === 'cy'
+      ? `Llygredd aer yn ${searchTerms}, ${locationName}`
+      : `Air pollution in ${searchTerms}, ${locationName}`
+  }
+  if (searchTerms) {
+    return lang === 'cy'
+      ? `Llygredd aer yn ${searchTerms}`
+      : `Air pollution in ${searchTerms}`
+  }
+  if (locationName) {
+    return lang === 'cy'
+      ? `Llygredd aer yn ${locationName}`
+      : `Air pollution in ${locationName}`
+  }
+  return lang === 'cy' ? 'Chwilio am leoliad' : 'Search for a location'
+}
+
+/**
  * Creates a back link to a location page
  * @param {Object} options - Configuration options
  * @param {string} options.locationId - The location ID
@@ -65,27 +88,8 @@ function createLocationBackLink(options = {}) {
     return createSearchLocationBackLink(lang)
   }
 
-  // '' Build back link text based on available information
-  let backLinkText
-  if (searchTerms && locationName) {
-    backLinkText =
-      lang === 'cy'
-        ? `Llygredd aer yn ${searchTerms}, ${locationName}`
-        : `Air pollution in ${searchTerms}, ${locationName}`
-  } else if (searchTerms) {
-    backLinkText =
-      lang === 'cy'
-        ? `Llygredd aer yn ${searchTerms}`
-        : `Air pollution in ${searchTerms}`
-  } else if (locationName) {
-    backLinkText =
-      lang === 'cy'
-        ? `Llygredd aer yn ${locationName}`
-        : `Air pollution in ${locationName}`
-  } else {
-    backLinkText =
-      lang === 'cy' ? 'Chwilio am leoliad' : 'Search for a location'
-  }
+  // '' Build back link text using helper
+  const backLinkText = generateBackLinkText(searchTerms, locationName, lang)
 
   // '' Build back link URL
   const locationPath =
@@ -95,8 +99,7 @@ function createLocationBackLink(options = {}) {
 
   return createBackLink({
     text: backLinkText,
-    url: backLinkUrl,
-    lang
+    url: backLinkUrl
   })
 }
 

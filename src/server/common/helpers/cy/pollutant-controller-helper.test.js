@@ -6,38 +6,38 @@ import {
   REDIRECT_STATUS_CODE
 } from '../../../data/constants.js'
 
-describe('createWelshPollutantController', () => {
-  const mockH = {
-    view: jest.fn(),
-    redirect: jest.fn(() => ({ code: jest.fn() }))
-  }
+// '' Shared test data
+const VIEW_TEMPLATE = 'sulphur-dioxide/index'
+const mockH = {
+  view: jest.fn(),
+  redirect: jest.fn(() => ({ code: jest.fn() }))
+}
+const mockRequest = {
+  query: {
+    locationId: '123',
+    locationName: 'Test Location'
+  },
+  path: '/llygryddion/sylffwr-deuocsid/cy'
+}
+const testConfig = {
+  pollutantKey: 'sulphurDioxide',
+  englishPath: '/pollutants/sulphur-dioxide',
+  viewTemplate: VIEW_TEMPLATE,
+  welshPathKey: 'sylffwr-deuocsid',
+  pageIdentifier: 'Sulphur dioxide (SO₂)'
+}
 
-  const mockRequest = {
-    query: {
-      locationId: '123',
-      locationName: 'Test Location'
-    },
-    path: '/llygryddion/sylffwr-deuocsid/cy'
-  }
-
-  const testConfig = {
-    pollutantKey: 'sulphurDioxide',
-    englishPath: '/pollutants/sulphur-dioxide',
-    viewTemplate: 'sulphur-dioxide/index',
-    welshPathKey: 'sylffwr-deuocsid',
-    pageIdentifier: 'Sulphur dioxide (SO₂)'
-  }
-
+describe('createWelshPollutantController - Welsh content', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
   test('should create controller with Welsh content for Welsh path', () => {
     const controller = createWelshPollutantController(testConfig)
-    const result = controller.handler(mockRequest, mockH)
+    controller.handler(mockRequest, mockH)
 
     expect(mockH.view).toHaveBeenCalledWith(
-      'sulphur-dioxide/index',
+      VIEW_TEMPLATE,
       expect.objectContaining({
         pageTitle: welsh.pollutants.sulphurDioxide.pageTitle,
         description: welsh.pollutants.sulphurDioxide.description,
@@ -51,6 +51,12 @@ describe('createWelshPollutantController', () => {
         lang: LANG_CY
       })
     )
+  })
+})
+
+describe('createWelshPollutantController - redirects', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
   })
 
   test('should redirect to English when lang=en', () => {
@@ -67,6 +73,12 @@ describe('createWelshPollutantController', () => {
     )
     expect(mockH.redirect().code).toHaveBeenCalledWith(REDIRECT_STATUS_CODE)
   })
+})
+
+describe('createWelshPollutantController - default behavior', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
 
   test('should default to Welsh for matching Welsh path', () => {
     const requestWithoutLang = {
@@ -78,11 +90,17 @@ describe('createWelshPollutantController', () => {
     controller.handler(requestWithoutLang, mockH)
 
     expect(mockH.view).toHaveBeenCalledWith(
-      'sulphur-dioxide/index',
+      VIEW_TEMPLATE,
       expect.objectContaining({
         lang: LANG_CY
       })
     )
+  })
+})
+
+describe('createWelshPollutantController - different pollutants', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
   })
 
   test('should handle different pollutant configurations', () => {

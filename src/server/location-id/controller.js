@@ -438,6 +438,42 @@ async function initializeAndValidateRequest(request, h) {
   }
 }
 
+// Helper to apply test mode and log debug info
+function applyTestModeAndLogDebug(request, locationData) {
+  const testModeFromQuery = request.query?.testMode
+  const testModeFromSession = request.yar.get('testMode')
+  const testMode = testModeFromQuery || testModeFromSession
+
+  logger.info(`🔍 request.query.testMode:`, testModeFromQuery)
+  logger.info(`🔍 session testMode:`, testModeFromSession)
+  logger.info(`🔍 final testMode:`, testMode)
+
+  if (testMode) {
+    applyTestModeChanges(locationData, testMode, logger)
+    request.yar.set('locationData', locationData)
+  }
+}
+
+// Helper to log and calculate summary date
+function logAndCalculateSummaryDate(locationData) {
+  logger.info(`🔍 ========== SUMMARY DATE DEBUG ==========`)
+  logger.info(
+    `🔍 showSummaryDate (from session): ${locationData.showSummaryDate}`
+  )
+  logger.info(
+    `🔍 dailySummary object exists: ${!!locationData[DAILY_SUMMARY_KEY]}`
+  )
+  logger.info(
+    `🔍 dailySummary.issue_date (raw): ${locationData[DAILY_SUMMARY_KEY]?.issue_date}`
+  )
+
+  calculateSummaryDate(locationData, logger)
+
+  logger.info(`🔍 FINAL showSummaryDate: ${locationData.showSummaryDate}`)
+  logger.info(`🔍 FINAL issueTime: ${locationData.issueTime}`)
+  logger.info(`🔍 ========================================`)
+}
+
 // Helper to process location data and return appropriate response
 async function processLocationWorkflow({
   locationData,
@@ -449,26 +485,11 @@ async function processLocationWorkflow({
   request,
   h
 }) {
-  // Process location data
   const { getForecasts } = locationData
   const locationType = determineLocationType(locationData)
 
-  // 🔍 DEBUG: Check if query params or session testMode are present
-  const testModeFromQuery = request.query?.testMode
-  const testModeFromSession = request.yar.get('testMode')
-  const testMode = testModeFromQuery || testModeFromSession
+  applyTestModeAndLogDebug(request, locationData)
 
-  logger.info(`🔍 request.query.testMode:`, testModeFromQuery)
-  logger.info(`🔍 session testMode:`, testModeFromSession)
-  logger.info(`🔍 final testMode:`, testMode)
-
-  // '' Apply test mode changes if requested
-  if (testMode) {
-    applyTestModeChanges(locationData, testMode, logger)
-    request.yar.set('locationData', locationData)
-  }
-
-  // Get nearest location and related data
   const {
     locationDetails,
     forecastNum,
@@ -484,31 +505,12 @@ async function processLocationWorkflow({
     request
   )
 
-  // '' Log summary date debug info
-  logger.info(`🔍 ========== SUMMARY DATE DEBUG ==========`)
-  logger.info(
-    `🔍 showSummaryDate (from session): ${locationData.showSummaryDate}`
-  )
-  logger.info(
-    `🔍 dailySummary object exists: ${!!locationData[DAILY_SUMMARY_KEY]}`
-  )
-  logger.info(
-    `🔍 dailySummary.issue_date (raw): ${locationData[DAILY_SUMMARY_KEY]?.issue_date}`
-  )
+  logAndCalculateSummaryDate(locationData)
 
-  // '' Calculate summary date if needed
-  calculateSummaryDate(locationData, logger)
-
-  // '' Update session if needed
   if (locationData.issueTime && !request.yar.get('locationData')?.issueTime) {
     request.yar.set('locationData', locationData)
   }
 
-  logger.info(`🔍 FINAL showSummaryDate: ${locationData.showSummaryDate}`)
-  logger.info(`🔍 FINAL issueTime: ${locationData.issueTime}`)
-  logger.info(`🔍 ========================================`)
-
-  // Process result
   if (locationDetails) {
     const viewData = buildLocationViewData({
       locationDetails,

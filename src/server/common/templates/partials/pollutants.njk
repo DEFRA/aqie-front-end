@@ -1,6 +1,6 @@
 
 <h2 class="govuk-heading-s">{{daqi.pollutantText.a}}</h2>
-{% set queryParams %}{% if locationId and locationName %}&locationId={{locationId}}&locationName={{locationName | urlencode}}{% if searchTerms %}&searchTerms={{searchTerms | urlencode}}{% endif %}{% endif %}{% endset %}
+{% set queryParams %}{% if locationId %}&locationId={{locationId}}{% if locationName %}&locationName={{locationName | urlencode}}{% endif %}{% if searchTerms %}&searchTerms={{searchTerms | urlencode}}{% endif %}{% endif %}{% endset %}
 <p>{{daqi.pollutantText.b}}</p>
 {%if htmlLang == 'en'%}
 <ul class="govuk-list">

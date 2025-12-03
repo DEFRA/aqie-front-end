@@ -319,21 +319,14 @@ export function applyMockPollutants(
 }
 
 /**
- * Store session parameter with mocks disabled check
+ * Store session parameter (assumes mocks are enabled - caller must check)
  * @param {object} request - Request object
  * @param {string} paramName - Parameter name
  * @param {*} paramValue - Parameter value
- * @param {boolean} mocksDisabled - Whether mocks are disabled
  * @param {string} paramLabel - Parameter label for logging
  */
-function storeSessionParameter(
-  request,
-  paramName,
-  paramValue,
-  mocksDisabled,
-  paramLabel
-) {
-  if (paramValue !== undefined && !mocksDisabled) {
+function storeSessionParameter(request, paramName, paramValue, paramLabel) {
+  if (paramValue !== undefined) {
     if (paramValue === '' || paramValue === 'clear') {
       request.yar.set(paramName, null)
       logger.info(`🎨 ${paramLabel} explicitly cleared from session`)
@@ -341,13 +334,17 @@ function storeSessionParameter(
       request.yar.set(paramName, paramValue)
       logger.info(`🎨 ${paramLabel} ${paramValue} stored in session`)
     }
-  } else if (mocksDisabled && paramValue !== undefined) {
-    logger.warn(
-      `🚫 Attempted to set ${paramLabel.toLowerCase()} when mocks disabled (disableTestMocks=true) - ignoring parameter`
-    )
-  } else {
-    // Parameter not present, preserve existing session value
   }
+}
+
+/**
+ * Log warning when attempting to set mock parameter while mocks are disabled
+ * @param {string} paramLabel - Parameter label for logging
+ */
+function logMocksDisabledWarning(paramLabel) {
+  logger.warn(
+    `🚫 Attempted to set ${paramLabel.toLowerCase()} when mocks disabled (disableTestMocks=true) - ignoring parameter`
+  )
 }
 
 /**
@@ -365,57 +362,55 @@ export function initializeRequestData(request) {
   const currentUrl = request.url.href
   const lang = query?.lang ?? LANG_EN
   const mocksDisabled = config.get('disableTestMocks')
+  const mocksEnabled = !mocksDisabled
 
-  // '' Store mock parameters in session
-  storeSessionParameter(
-    request,
-    'mockLevel',
-    query?.mockLevel,
-    mocksDisabled,
-    'Mock level'
-  )
-  storeSessionParameter(
-    request,
-    'mockDay',
-    query?.mockDay,
-    mocksDisabled,
-    'Mock day'
-  )
+  // '' Store mock parameters in session (only if mocks enabled)
+  if (mocksEnabled) {
+    storeSessionParameter(request, 'mockLevel', query?.mockLevel, 'Mock level')
+    storeSessionParameter(request, 'mockDay', query?.mockDay, 'Mock day')
 
-  // '' Debug logging for mockPollutantBand
-  if (query?.mockPollutantBand !== undefined) {
-    logger.info(
-      `🔍 DEBUG mockPollutantBand - query.mockPollutantBand:`,
-      query?.mockPollutantBand
-    )
-    logger.info(
-      `🔍 DEBUG mockPollutantBand - type:`,
-      typeof query?.mockPollutantBand
-    )
-    logger.info(
-      `🔍 DEBUG mockPollutantBand - full query object:`,
-      JSON.stringify(query)
-    )
-  }
+    // '' Debug logging for mockPollutantBand
+    if (query?.mockPollutantBand !== undefined) {
+      logger.info(
+        `🔍 DEBUG mockPollutantBand - query.mockPollutantBand:`,
+        query?.mockPollutantBand
+      )
+      logger.info(
+        `🔍 DEBUG mockPollutantBand - type:`,
+        typeof query?.mockPollutantBand
+      )
+      logger.info(
+        `🔍 DEBUG mockPollutantBand - full query object:`,
+        JSON.stringify(query)
+      )
+    }
 
-  storeSessionParameter(
-    request,
-    'mockPollutantBand',
-    query?.mockPollutantBand,
-    mocksDisabled,
-    'Mock pollutant band'
-  )
-
-  // '' Store testMode (persists across requests when mocks enabled)
-  if (query?.testMode !== undefined && !mocksDisabled) {
-    request.yar.set('testMode', query.testMode)
-    logger.info(`🧪 Test mode ${query.testMode} stored in session`)
-  } else if (mocksDisabled && query?.testMode !== undefined) {
-    logger.warn(
-      `🚫 Attempted to set test mode when mocks disabled (disableTestMocks=true) - ignoring parameter`
+    storeSessionParameter(
+      request,
+      'mockPollutantBand',
+      query?.mockPollutantBand,
+      'Mock pollutant band'
     )
+
+    // '' Store testMode (persists across requests when mocks enabled)
+    if (query?.testMode !== undefined) {
+      request.yar.set('testMode', query.testMode)
+      logger.info(`🧪 Test mode ${query.testMode} stored in session`)
+    }
   } else {
-    // Parameter not present, preserve existing session value
+    // '' Log warnings if mock parameters provided when mocks are disabled
+    if (query?.mockLevel !== undefined) {
+      logMocksDisabledWarning('Mock level')
+    }
+    if (query?.mockDay !== undefined) {
+      logMocksDisabledWarning('Mock day')
+    }
+    if (query?.mockPollutantBand !== undefined) {
+      logMocksDisabledWarning('Mock pollutant band')
+    }
+    if (query?.testMode !== undefined) {
+      logMocksDisabledWarning('Test mode')
+    }
   }
 
   return {
