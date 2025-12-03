@@ -69,15 +69,16 @@ async function getOSPlaces(
         'x-api-key': cdpXApiKey
       }
     }
-  } else {
-    if (updatedOptions.headers?.['x-api-key']) {
-      const rest = { ...updatedOptions.headers }
-      delete rest['x-api-key']
-      updatedOptions = {
-        ...updatedOptions,
-        headers: rest
-      }
+  } else if (updatedOptions.headers?.['x-api-key']) {
+    // Remove x-api-key header for non-local environments
+    const rest = { ...updatedOptions.headers }
+    delete rest['x-api-key']
+    updatedOptions = {
+      ...updatedOptions,
+      headers: rest
     }
+  } else {
+    // Non-local environment without x-api-key - use options as-is
   }
   logger.info(
     `[DEBUG] Calling catchProxyFetchError with URL: ${osNamesApiUrlFull}`
