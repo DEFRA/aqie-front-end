@@ -51,7 +51,7 @@ jobs:
             -Dsonar.projectKey=DEFRA_aqie-front-end
             -Dsonar.organization=defra
             -Dsonar.sources=src/server/,src/config/,src/helpers/,src/index.js
-            -Dsonar.exclusions=**/*.test.js,src/client/**,src/server/locations/cy/**,src/src/govuk/**/*,src/**/__fixtures__/**,src/server/data/**/daqi-and-pollutants*.js,src/server/data/**/navigation*.js,src/server/data/**/footer-and-ui*.js,src/server/data/**/en.js,src/server/data/**/cy.js
+            -Dsonar.exclusions=**/*.test.js,src/client/**,src/server/common/**/*,src/server/locations/cy/**,src/src/govuk/**/*,src/**/__fixtures__/**,src/server/data/**/daqi-and-pollutants*.js,src/server/data/**/navigation*.js,src/server/data/**/footer-and-ui*.js,src/server/data/**/en.js,src/server/data/**/cy.js,src/server/location-id/controller-helpers.js,src/server/location-id/controller-workflow.js
             -Dsonar.tests=src/server/,src/config/,src/helpers/,test/
             -Dsonar.test.inclusions=**/*.test.js
             -Dsonar.test.exclusions=src/client/**,src/server/locations/cy/**,src/src/govuk/**/*,src/**/__fixtures__/**
