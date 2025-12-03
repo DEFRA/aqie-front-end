@@ -57,7 +57,6 @@ jobs:
             -Dsonar.test.exclusions=src/client/**,src/server/locations/cy/**,src/src/govuk/**/*,src/**/__fixtures__/**
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.coverage.exclusions=src/client/**,coverage/**,node_modules/**,**/test/**,**/*.test.js,src/server/locations/cy/**,src/src/govuk/**/*,src/**/__fixtures__/**
-            -Dsonar.newCodePeriod.type=PREVIOUS_VERSION
             -Dsonar.qualitygate.wait=false
             -Dsonar.pullrequest.branch=${{ github.head_ref }}
             -Dsonar.pullrequest.base=${{ github.base_ref }}
