@@ -90,14 +90,9 @@ function fetchForecastsTestMode(injectedIsTestMode, injectedLogger) {
   return null
 }
 
+// ''
 function isMockEnabled() {
   const mockValue = config.get('enabledMock')
-  console.log(
-    '[DEBUG test-mode-helpers] isMockEnabled called, value:',
-    mockValue,
-    'type:',
-    typeof mockValue
-  )
   return mockValue
 }
 
