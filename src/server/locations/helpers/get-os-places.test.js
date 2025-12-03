@@ -22,6 +22,11 @@ vi.mock('../../config/index.js', () => ({
     get: vi.fn()
   }
 }))
+vi.mock('node:fs', () => ({
+  default: {
+    readFileSync: vi.fn()
+  }
+}))
 vi.mock('./convert-string.js', () => ({
   isValidFullPostcodeUK: vi.fn(),
   isValidPartialPostcodeUK: vi.fn()
@@ -183,6 +188,12 @@ describe('getOSPlaces', () => {
       STATUS_CODE_SUCCESS,
       { results: [{ data: 'local test' }] }
     ])
+
+    // Mock fs.readFileSync to simulate reading from local.json
+    const fs = await import('node:fs')
+    fs.default.readFileSync.mockReturnValue(
+      JSON.stringify({ cdpXApiKey: 'test-key-from-file' })
+    )
 
     // Ensure CDP_X_API_KEY is NOT set to test file reading path
     const originalEnv = process.env.CDP_X_API_KEY
