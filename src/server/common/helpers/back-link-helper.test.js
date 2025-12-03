@@ -92,102 +92,100 @@ describe('createSearchLocationBackLink', () => {
   })
 })
 
-describe('createLocationBackLink', () => {
-  describe('fallback behavior', () => {
-    it('falls back to search location link when locationId is missing', () => {
-      const result = createLocationBackLink({
-        lang: 'en'
-      })
-
-      expect(result.backLinkUrl).toBe(SEARCH_LOCATION_EN_URL)
+describe('createLocationBackLink - fallback behavior', () => {
+  it('falls back to search location link when locationId is missing', () => {
+    const result = createLocationBackLink({
+      lang: 'en'
     })
+
+    expect(result.backLinkUrl).toBe(SEARCH_LOCATION_EN_URL)
+  })
+})
+
+describe('createLocationBackLink - basic location links', () => {
+  it('creates English location back link with only locationId', () => {
+    const result = createLocationBackLink({
+      locationId: 'abc123',
+      lang: 'en'
+    })
+
+    expect(result.displayBacklink).toBe(true)
+    expect(result.backLinkUrl).toBe(LOCATION_EN_URL)
+    expect(result.customBackLink).toBe(true)
+    expect(result.backLinkText).toBeTruthy()
   })
 
-  describe('basic location links', () => {
-    it('creates English location back link with only locationId', () => {
-      const result = createLocationBackLink({
-        locationId: 'abc123',
-        lang: 'en'
-      })
-
-      expect(result.displayBacklink).toBe(true)
-      expect(result.backLinkUrl).toBe(LOCATION_EN_URL)
-      expect(result.customBackLink).toBe(true)
-      expect(result.backLinkText).toBeTruthy()
+  it('creates Welsh location back link with only locationId', () => {
+    const result = createLocationBackLink({
+      locationId: 'abc123',
+      lang: 'cy'
     })
 
-    it('creates Welsh location back link with only locationId', () => {
-      const result = createLocationBackLink({
-        locationId: 'abc123',
-        lang: 'cy'
-      })
+    expect(result.displayBacklink).toBe(true)
+    expect(result.backLinkUrl).toBe('/lleoliad/abc123?lang=cy')
+    expect(result.customBackLink).toBe(true)
+    expect(result.backLinkText).toBeTruthy()
+  })
+})
 
-      expect(result.displayBacklink).toBe(true)
-      expect(result.backLinkUrl).toBe('/lleoliad/abc123?lang=cy')
-      expect(result.customBackLink).toBe(true)
-      expect(result.backLinkText).toBeTruthy()
+describe('createLocationBackLink - with search terms and location names', () => {
+  it('creates back link with locationId and searchTerms', () => {
+    const result = createLocationBackLink({
+      locationId: 'abc123',
+      searchTerms: 'SW1A 1AA',
+      lang: 'en'
     })
+
+    expect(result.displayBacklink).toBe(true)
+    expect(result.backLinkUrl).toBe(LOCATION_EN_URL)
+    expect(result.backLinkText).toBe('Air pollution in SW1A 1AA')
   })
 
-  describe('location links with search terms and location names', () => {
-    it('creates back link with locationId and searchTerms', () => {
-      const result = createLocationBackLink({
-        locationId: 'abc123',
-        searchTerms: 'SW1A 1AA',
-        lang: 'en'
-      })
-
-      expect(result.displayBacklink).toBe(true)
-      expect(result.backLinkUrl).toBe('/location/abc123?lang=en')
-      expect(result.backLinkText).toBe('Air pollution in SW1A 1AA')
+  it('creates back link with locationId and locationName', () => {
+    const result = createLocationBackLink({
+      locationId: 'abc123',
+      locationName: 'Westminster',
+      lang: 'en'
     })
 
-    it('creates back link with locationId and locationName', () => {
-      const result = createLocationBackLink({
-        locationId: 'abc123',
-        locationName: 'Westminster',
-        lang: 'en'
-      })
+    expect(result.displayBacklink).toBe(true)
+    expect(result.backLinkUrl).toBe(LOCATION_EN_URL)
+    expect(result.backLinkText).toBe('Air pollution in Westminster')
+  })
 
-      expect(result.displayBacklink).toBe(true)
-      expect(result.backLinkUrl).toBe('/location/abc123?lang=en')
-      expect(result.backLinkText).toBe('Air pollution in Westminster')
+  it('creates back link with locationId, searchTerms, and locationName', () => {
+    const result = createLocationBackLink({
+      locationId: 'abc123',
+      searchTerms: 'SW1A 1AA',
+      locationName: 'Westminster',
+      lang: 'en'
     })
 
-    it('creates back link with locationId, searchTerms, and locationName', () => {
-      const result = createLocationBackLink({
-        locationId: 'abc123',
-        searchTerms: 'SW1A 1AA',
-        locationName: 'Westminster',
-        lang: 'en'
-      })
+    expect(result.displayBacklink).toBe(true)
+    expect(result.backLinkUrl).toBe(LOCATION_EN_URL)
+    expect(result.backLinkText).toBe('Air pollution in SW1A 1AA, Westminster')
+  })
 
-      expect(result.displayBacklink).toBe(true)
-      expect(result.backLinkUrl).toBe('/location/abc123?lang=en')
-      expect(result.backLinkText).toBe('Air pollution in SW1A 1AA, Westminster')
+  it('creates Welsh back link with locationId, searchTerms, and locationName', () => {
+    const result = createLocationBackLink({
+      locationId: 'abc123',
+      searchTerms: 'CF10 1AA',
+      locationName: 'Caerdydd',
+      lang: 'cy'
     })
 
-    it('creates Welsh back link with locationId, searchTerms, and locationName', () => {
-      const result = createLocationBackLink({
-        locationId: 'abc123',
-        searchTerms: 'CF10 1AA',
-        locationName: 'Caerdydd',
-        lang: 'cy'
-      })
+    expect(result.displayBacklink).toBe(true)
+    expect(result.backLinkUrl).toBe('/lleoliad/abc123?lang=cy')
+    expect(result.backLinkText).toBe('Llygredd aer yn CF10 1AA, Caerdydd')
+  })
 
-      expect(result.displayBacklink).toBe(true)
-      expect(result.backLinkUrl).toBe('/lleoliad/abc123?lang=cy')
-      expect(result.backLinkText).toBe('Llygredd aer yn CF10 1AA, Caerdydd')
+  it('defaults to English when lang is not specified', () => {
+    const result = createLocationBackLink({
+      locationId: 'abc123',
+      searchTerms: 'SW1A 1AA'
     })
 
-    it('defaults to English when lang is not specified', () => {
-      const result = createLocationBackLink({
-        locationId: 'abc123',
-        searchTerms: 'SW1A 1AA'
-      })
-
-      expect(result.backLinkUrl).toBe('/location/abc123?lang=en')
-      expect(result.backLinkText).toBe('Air pollution in SW1A 1AA')
-    })
+    expect(result.backLinkUrl).toBe(LOCATION_EN_URL)
+    expect(result.backLinkText).toBe('Air pollution in SW1A 1AA')
   })
 })
