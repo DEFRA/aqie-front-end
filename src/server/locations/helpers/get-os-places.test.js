@@ -240,6 +240,58 @@ describe('getOSPlaces', () => {
     expect(catchProxyFetchError).toHaveBeenCalled()
   })
 
+  it('should pass through options unchanged for non-local requests without x-api-key', async () => {
+    vi.clearAllMocks()
+    const { config } = await import('../../config/index.js')
+    config.get.mockImplementation((key) => {
+      if (key === 'osNamesApiUrl') return 'https://api.test.com/'
+      if (key === 'osNamesApiKey') return 'test-key'
+      return ''
+    })
+    const { isValidFullPostcodeUK, isValidPartialPostcodeUK } = await import(
+      './convert-string.js'
+    )
+    isValidFullPostcodeUK.mockReturnValue(false)
+    isValidPartialPostcodeUK.mockReturnValue(false)
+    const { catchProxyFetchError } = await import(
+      '../common/helpers/catch-proxy-fetch-error.js'
+    )
+    catchProxyFetchError.mockResolvedValue([
+      200,
+      { results: [{ data: 'remote test' }] }
+    ])
+
+    const { getOSPlaces } = await import('./get-os-places.js')
+    const mockRequest = {
+      headers: {
+        host: 'production.example.com'
+      }
+    }
+    const optionsWithoutApiKey = {
+      headers: {
+        'content-type': 'application/json',
+        'other-header': 'should-remain'
+      }
+    }
+    const result = await getOSPlaces(
+      'London',
+      'London',
+      'England',
+      true,
+      optionsWithoutApiKey,
+      mockRequest,
+      catchProxyFetchError
+    )
+    expect(result).toBeDefined()
+    expect(catchProxyFetchError).toHaveBeenCalled()
+    // Verify that catchProxyFetchError was called with options that still have the original headers
+    const callArgs = catchProxyFetchError.mock.calls[0]
+    expect(callArgs[1].headers).toEqual({
+      'content-type': 'application/json',
+      'other-header': 'should-remain'
+    })
+  })
+
   it('should return empty results on error status code', async () => {
     vi.clearAllMocks()
     const { config } = await import('../../config/index.js')
