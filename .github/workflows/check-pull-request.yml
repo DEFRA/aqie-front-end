@@ -57,7 +57,7 @@ jobs:
             -Dsonar.test.exclusions=src/client/**,src/server/locations/cy/**,src/src/govuk/**/*,src/**/__fixtures__/**
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.coverage.exclusions=src/client/**,coverage/**,node_modules/**,**/test/**,**/*.test.js,src/server/common/**/*,src/server/locations/cy/**,src/src/govuk/**/*,src/config/nunjucks/filters/format-currency.js,src/**/__fixtures__/**,src/server/location-id/controller-helpers.js,src/server/location-id/controller-workflow.js
-            -Dsonar.qualitygate.wait=false
+            -Dsonar.qualitygate.wait=true
             -Dsonar.pullrequest.branch=${{ github.head_ref }}
             -Dsonar.pullrequest.base=${{ github.base_ref }}
             -Dsonar.pullrequest.key=${{ github.event.number }}
@@ -74,7 +74,6 @@ jobs:
             -Dsonar.issue.exclusions.multicriteria.e4.resourceKey=src/server/data/**/footer-and-ui*.js
             -Dsonar.issue.exclusions.multicriteria.e5.ruleKey=javascript:S1192
             -Dsonar.issue.exclusions.multicriteria.e5.resourceKey=src/server/data/**/*content*.js
-            -Dsonar.qualitygate.skip=true
             -Dsonar.verbose=true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
