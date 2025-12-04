@@ -17,9 +17,6 @@
 import { createLogger } from './logging/logger.js'
 const logger = createLogger()
 
-// Message constants
-const ENJOY_USUAL_ACTIVITIES = 'Enjoy your usual outdoor activities.'
-
 /**
  * DAQI Level definitions with their corresponding bands and colors
  */
@@ -64,11 +61,11 @@ function getFullDetailedInfo(level) {
   // Mock messages
   const messages = {
     low: {
-      advice: ENJOY_USUAL_ACTIVITIES,
+      advice: 'Enjoy your usual outdoor activities.',
       atrisk: {
-        adults: ENJOY_USUAL_ACTIVITIES,
-        asthma: ENJOY_USUAL_ACTIVITIES,
-        oldPeople: ENJOY_USUAL_ACTIVITIES
+        adults: 'Enjoy your usual outdoor activities.',
+        asthma: 'Enjoy your usual outdoor activities.',
+        oldPeople: 'Enjoy your usual outdoor activities.'
       },
       outlook: 'Air pollution levels are low.'
     },
