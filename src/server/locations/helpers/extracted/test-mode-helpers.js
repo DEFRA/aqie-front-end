@@ -1,5 +1,9 @@
 import { config } from '../../../../config/index.js'
 import { LOCATION_TYPE_UK, LOCATION_TYPE_NI } from '../../../data/constants.js'
+
+// ''
+const HTTP_BAD_REQUEST = 400
+
 function handleTestModeFetchData({
   locationType,
   userLocation,
@@ -30,15 +34,19 @@ function handleTestModeFetchData({
       return result.then((getNIPlaces) => buildNITestModeResult(getNIPlaces))
     }
     return buildNITestModeResult(result)
-  }
-  // fallback for unsupported types
-  if (injectedLogger && typeof injectedLogger.error === 'function') {
-    injectedLogger.error(
-      'Unsupported location type in test mode:',
-      locationType
+  } else {
+    // fallback for unsupported types
+    if (injectedLogger && typeof injectedLogger.error === 'function') {
+      injectedLogger.error(
+        'Unsupported location type in test mode:',
+        locationType
+      )
+    }
+    return injectedErrorResponse(
+      'Unsupported location type in test mode',
+      HTTP_BAD_REQUEST
     )
   }
-  return injectedErrorResponse('Unsupported location type in test mode', 400)
 }
 function buildNITestModeResult(getNIPlaces) {
   return {

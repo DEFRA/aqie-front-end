@@ -6,6 +6,7 @@ const MOCK_API_KEY = 'test-key'
 const STATUS_CODE_SUCCESS = 200
 const STATUS_CODE_NOT_FOUND = 404
 const HEADER_OTHER = 'should-remain'
+const LOCAL_TEST_DATA = { data: 'local test' }
 
 // Use doMock to ensure mocks are hoisted before imports
 vi.mock('../common/helpers/catch-proxy-fetch-error.js', () => ({
@@ -32,7 +33,7 @@ vi.mock('./convert-string.js', () => ({
   isValidPartialPostcodeUK: vi.fn()
 }))
 
-describe('getOSPlaces', () => {
+describe('getOSPlaces - basic functionality', () => {
   beforeEach(async () => {
     vi.clearAllMocks()
   })
@@ -74,6 +75,12 @@ describe('getOSPlaces', () => {
     expect(result).toBeDefined()
     expect(catchProxyFetchError).toHaveBeenCalled()
   })
+})
+
+describe('getOSPlaces - postcode handling', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('should handle postcode input', async () => {
     vi.clearAllMocks()
@@ -112,13 +119,23 @@ describe('getOSPlaces', () => {
     expect(result).toBeDefined()
     expect(catchProxyFetchError).toHaveBeenCalled()
   })
+})
+
+describe('getOSPlaces - local requests', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('should handle local requests with localhost host', async () => {
     vi.clearAllMocks()
     const { config } = await import('../../config/index.js')
     config.get.mockImplementation((key) => {
-      if (key === 'osNamesApiUrl') return 'https://api.test.com/'
-      if (key === 'osNamesApiKey') return 'test-key'
+      if (key === 'osNamesApiUrl') {
+        return MOCK_API_URL
+      }
+      if (key === 'osNamesApiKey') {
+        return MOCK_API_KEY
+      }
       return ''
     })
     const { isValidFullPostcodeUK, isValidPartialPostcodeUK } = await import(
@@ -130,8 +147,8 @@ describe('getOSPlaces', () => {
       '../common/helpers/catch-proxy-fetch-error.js'
     )
     catchProxyFetchError.mockResolvedValue([
-      200,
-      { results: [{ data: 'local test' }] }
+      STATUS_CODE_SUCCESS,
+      { results: [LOCAL_TEST_DATA] }
     ])
 
     // Set up environment variable for CDP X-API key
@@ -163,6 +180,12 @@ describe('getOSPlaces', () => {
       delete process.env.CDP_X_API_KEY
     }
   })
+})
+
+describe('getOSPlaces - CDP X-API key from file', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('should handle local requests without CDP_X_API_KEY env var', async () => {
     vi.clearAllMocks()
@@ -186,7 +209,7 @@ describe('getOSPlaces', () => {
     )
     catchProxyFetchError.mockResolvedValue([
       STATUS_CODE_SUCCESS,
-      { results: [{ data: 'local test' }] }
+      { results: [LOCAL_TEST_DATA] }
     ])
 
     // Mock fs.readFileSync to simulate reading from local.json
@@ -225,6 +248,12 @@ describe('getOSPlaces', () => {
       process.env.CDP_X_API_KEY = originalEnv
     }
   })
+})
+
+describe('getOSPlaces - 127.0.0.1 host', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('should handle local requests with 127.0.0.1 host', async () => {
     vi.clearAllMocks()
@@ -248,7 +277,7 @@ describe('getOSPlaces', () => {
     )
     catchProxyFetchError.mockResolvedValue([
       STATUS_CODE_SUCCESS,
-      { results: [{ data: 'local test' }] }
+      { results: [LOCAL_TEST_DATA] }
     ])
 
     // Set up environment variable for CDP X-API key
@@ -279,6 +308,12 @@ describe('getOSPlaces', () => {
     } else {
       delete process.env.CDP_X_API_KEY
     }
+  })
+})
+
+describe('getOSPlaces - non-local requests', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
   })
 
   it('should remove x-api-key header for non-local requests', async () => {
@@ -329,6 +364,12 @@ describe('getOSPlaces', () => {
     )
     expect(result).toBeDefined()
     expect(catchProxyFetchError).toHaveBeenCalled()
+  })
+})
+
+describe('getOSPlaces - non-local requests without x-api-key', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
   })
 
   it('should pass through options unchanged for non-local requests without x-api-key', async () => {
@@ -386,6 +427,12 @@ describe('getOSPlaces', () => {
       'other-header': HEADER_OTHER
     })
   })
+})
+
+describe('getOSPlaces - error handling', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('should return empty results on error status code', async () => {
     vi.clearAllMocks()
@@ -420,6 +467,12 @@ describe('getOSPlaces', () => {
       catchProxyFetchError
     )
     expect(result).toEqual({ results: [] })
+  })
+})
+
+describe('getOSPlaces - successful response', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
   })
 
   it('should return osPlacesData when successful', async () => {
