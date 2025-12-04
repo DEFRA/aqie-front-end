@@ -23,7 +23,7 @@ const WELSH_PATH_PATTERNS = {
 }
 
 /**
- * '' Builds English redirect URL with query parameters
+ * Builds English redirect URL with query parameters
  */
 function buildEnglishRedirectUrl(englishPath, query) {
   const queryParams = new URLSearchParams({ lang: LANG_EN })
@@ -40,13 +40,13 @@ function buildEnglishRedirectUrl(englishPath, query) {
 }
 
 /**
- * '' Determines language with Welsh path validation
+ * Determines language with Welsh path validation
  */
 function determineLanguage(query, path, welshPathKey) {
   const expectedWelshPath = WELSH_PATH_PATTERNS[welshPathKey]
   const lang = query?.lang?.slice(0, LANG_SLICE_LENGTH)
 
-  // '' Default to Welsh if on Welsh path and language not explicitly set to EN or CY
+  // Default to Welsh if on Welsh path and language not explicitly set to EN or CY
   const shouldDefaultToWelsh =
     lang !== LANG_CY && lang !== LANG_EN && path === expectedWelshPath
   const finalLang = shouldDefaultToWelsh ? LANG_CY : lang
@@ -55,7 +55,7 @@ function determineLanguage(query, path, welshPathKey) {
 }
 
 /**
- * '' Creates view context with all required properties
+ * Creates view context with all required properties
  */
 function createViewContext(options) {
   const {
@@ -116,20 +116,20 @@ export function createWelshPollutantController(config) {
       const { query, path } = request
       const metaSiteUrl = getAirQualitySiteUrl(request)
 
-      // '' Handle English language redirect
+      // Handle English language redirect
       if (query?.lang && query?.lang === LANG_EN) {
         const redirectUrl = buildEnglishRedirectUrl(englishPath, query)
         return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE)
       }
 
-      // '' Determine language with Welsh path validation
+      // Determine language with Welsh path validation
       const { lang, expectedWelshPath } = determineLanguage(
         query,
         path,
         welshPathKey
       )
 
-      // '' Redirect to search location if no locationId (user needs to search for location)
+      // Redirect to search location if no locationId (user needs to search for location)
       const { locationId, locationName, searchTerms } = query || {}
       if (!locationId) {
         return h
@@ -137,7 +137,7 @@ export function createWelshPollutantController(config) {
           .code(REDIRECT_STATUS_CODE)
       }
 
-      // '' Create context-aware back link based on query params
+      // Create context-aware back link based on query params
       const backLinkConfig = createLocationBackLink({
         locationId,
         locationName,
@@ -145,7 +145,7 @@ export function createWelshPollutantController(config) {
         lang
       })
 
-      // '' Create view context with standardized properties
+      // Create view context with standardized properties
       const viewContext = createViewContext({
         pollutantData,
         pollutantKey,
