@@ -9,12 +9,12 @@ export default defineConfig({
     exclude: [
       ...configDefaults.exclude,
       GOVUK_SRC_EXCLUDE, // Ignore files inside src/src/govuk from testing
-      'src/server/common/**/*' // Ignore files inside src/server/common from testing
+      'src/server/common/**/*.test.js' // Ignore test files inside src/server/common (broken legacy tests)
     ],
     coverage: {
       provider: 'v8',
       reportsDirectory: './coverage',
-      reporter: ['text', 'json-summary', 'html'], // Display coverage in the terminal and generate reports
+      reporter: ['text', 'json-summary', 'html', 'lcov'], // Added lcov for SonarCloud
       include: ['src/**'],
       exclude: [
         GOVUK_SRC_EXCLUDE,
@@ -23,7 +23,6 @@ export default defineConfig({
         'postcss.config.js',
         'stylelint.config.js',
         GOVUK_SRC_EXCLUDE, // Ignore files inside src/src/govuk from testing
-        'src/server/common/**/*', // Ignore files inside src/server/common from testing
         'src/client/**',
         'src/**/__fixtures__/**', // Exclude fixture files from coverage
         'src/config/nunjucks/filters/format-currency.js', // Exclude problematic file causing V8 coverage issues
