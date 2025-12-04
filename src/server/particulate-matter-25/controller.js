@@ -12,8 +12,20 @@ const particulateMatter25Controller = {
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     if (query?.lang && query?.lang === LANG_CY) {
+      const queryParams = new URLSearchParams({ lang: LANG_CY })
+      if (query.locationId) {
+        queryParams.append('locationId', query.locationId)
+      }
+      if (query.locationName) {
+        queryParams.append('locationName', query.locationName)
+      }
+      if (query.searchTerms) {
+        queryParams.append('searchTerms', query.searchTerms)
+      }
       return h
-        .redirect(`/llygryddion/mater-gronynnol-25/cy?lang=cy`)
+        .redirect(
+          `/llygryddion/mater-gronynnol-25/cy?${queryParams.toString()}`
+        )
         .code(REDIRECT_STATUS_CODE)
     }
 
@@ -45,6 +57,10 @@ const particulateMatter25Controller = {
       cookieBanner,
       serviceName: multipleLocations.serviceName,
       currentPath: '/pollutants/particulate-matter-25',
+      queryParams: query,
+      locationId,
+      locationName,
+      searchTerms,
       lang: query.lang ?? lang
     })
   }

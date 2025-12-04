@@ -63,7 +63,7 @@ describe('Ozone Controller - Welsh', () => {
         description: mockContent.pollutants.ozone.description,
         metaSiteUrl: actualUrl,
         ozone,
-        page: 'ozone-cy',
+        page: 'ozone',
         displayBacklink: true,
         backLinkText: 'Llygredd aer yn Test Location',
         backLinkUrl: '/lleoliad/123?lang=cy',
@@ -73,7 +73,11 @@ describe('Ozone Controller - Welsh', () => {
         cookieBanner: mockContent.cookieBanner,
         serviceName: mockContent.multipleLocations.serviceName,
         lang: mockRequest.query.lang,
-        currentPath: OZONE_PATH_CY
+        currentPath: OZONE_PATH_CY,
+        queryParams: mockRequest.query,
+        locationId: '123',
+        locationName: 'Test Location',
+        searchTerms: undefined
       })
     })
   })
@@ -113,7 +117,7 @@ describe('Ozone Controller - Welsh - default language', () => {
       description: mockContent.pollutants.ozone.description,
       metaSiteUrl: actualUrl,
       ozone,
-      page: 'ozone-cy',
+      page: 'ozone',
       displayBacklink: true,
       backLinkText: 'Llygredd aer yn Test Location',
       backLinkUrl: '/lleoliad/123?lang=cy',
@@ -123,7 +127,11 @@ describe('Ozone Controller - Welsh - default language', () => {
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
       lang: LANG_CY,
-      currentPath: OZONE_PATH_CY
+      currentPath: OZONE_PATH_CY,
+      queryParams: mockRequest.query,
+      locationId: '123',
+      locationName: 'Test Location',
+      searchTerms: undefined
     })
   })
 })

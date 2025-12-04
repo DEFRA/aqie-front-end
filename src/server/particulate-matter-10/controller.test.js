@@ -16,7 +16,19 @@ describe('Particular matter10 Controller - English', () => {
     }
     vi.mock('../common/helpers/get-site-url.js', () => ({
       getAirQualitySiteUrl: vi.fn((request) => {
-        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+        const queryParams = new URLSearchParams({
+          lang: request.query.lang || 'en'
+        })
+        if (request.query.locationId) {
+          queryParams.append('locationId', request.query.locationId)
+        }
+        if (request.query.locationName) {
+          queryParams.append('locationName', request.query.locationName)
+        }
+        if (request.query.searchTerms) {
+          queryParams.append('searchTerms', request.query.searchTerms)
+        }
+        return `https://check-air-quality.service.gov.uk${request.path}?${queryParams.toString()}`
       })
     }))
     mockH = {
@@ -33,10 +45,12 @@ describe('Particular matter10 Controller - English', () => {
 
   it('should redirect to the Welsh version if the language is "cy"', () => {
     mockRequest.query.lang = LANG_CY
+    mockRequest.query.locationId = '123'
+    mockRequest.query.locationName = 'Test Location'
     const result = particulateMatter10Controller.handler(mockRequest, mockH)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith(
-      '/llygryddion/mater-gronynnol-10/cy?lang=cy'
+      '/llygryddion/mater-gronynnol-10/cy?lang=cy&locationId=123&locationName=Test+Location'
     )
   })
 
@@ -45,7 +59,7 @@ describe('Particular matter10 Controller - English', () => {
     mockRequest.query.locationId = '123'
     mockRequest.query.locationName = 'Test Location'
     const expectedUrl =
-      'https://check-air-quality.service.gov.uk/pollutants/particulate-matter-10?lang=en'
+      'https://check-air-quality.service.gov.uk/pollutants/particulate-matter-10?lang=en&locationId=123&locationName=Test+Location'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = particulateMatter10Controller.handler(mockRequest, mockH)
@@ -65,7 +79,11 @@ describe('Particular matter10 Controller - English', () => {
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
       lang: mockRequest.query.lang,
-      currentPath: '/pollutants/particulate-matter-10'
+      currentPath: '/pollutants/particulate-matter-10',
+      queryParams: mockRequest.query,
+      locationId: '123',
+      locationName: 'Test Location',
+      searchTerms: undefined
     })
   })
 })

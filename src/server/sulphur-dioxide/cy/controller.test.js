@@ -8,13 +8,13 @@ const SO2_PATH_CY = '/llygryddion/sylffwr-deuocsid/cy'
 const VIEW_RENDERED = 'view rendered'
 
 // Helper to create expected view data
-function createExpectedViewData(content, actualUrl, lang, currentPath) {
+function createExpectedViewData(content, actualUrl, lang, currentPath, query) {
   return {
     pageTitle: content.pollutants.sulphurDioxide.pageTitle,
     description: content.pollutants.sulphurDioxide.description,
     metaSiteUrl: actualUrl,
     sulphurDioxide: content.pollutants.sulphurDioxide,
-    page: 'Sulphur dioxide (SO₂)',
+    page: 'sulphur dioxide',
     displayBacklink: true,
     backLinkText: 'Llygredd aer yn Test Location',
     backLinkUrl: '/lleoliad/123?lang=cy',
@@ -24,7 +24,11 @@ function createExpectedViewData(content, actualUrl, lang, currentPath) {
     cookieBanner: content.cookieBanner,
     serviceName: content.multipleLocations.serviceName,
     lang,
-    currentPath
+    currentPath,
+    queryParams: query,
+    locationId: query?.locationId,
+    locationName: query?.locationName,
+    searchTerms: query?.searchTerms
   }
 }
 
@@ -75,7 +79,8 @@ describe('sulphurDioxide Controller - Welsh', () => {
       mockContent,
       actualUrl,
       mockRequest.query.lang,
-      SO2_PATH_CY
+      SO2_PATH_CY,
+      mockRequest.query
     )
     expect(mockH.view).toHaveBeenCalledWith(
       'sulphur-dioxide/index',
@@ -98,7 +103,8 @@ describe('sulphurDioxide Controller - Welsh', () => {
       mockContent,
       actualUrl,
       LANG_CY,
-      SO2_PATH_CY
+      SO2_PATH_CY,
+      mockRequest.query
     )
     expect(mockH.view).toHaveBeenCalledWith(
       'sulphur-dioxide/index',

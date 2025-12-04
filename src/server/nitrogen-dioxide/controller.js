@@ -12,8 +12,18 @@ const nitrogenDioxideController = {
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     if (query?.lang && query?.lang === LANG_CY) {
+      const queryParams = new URLSearchParams({ lang: LANG_CY })
+      if (query.locationId) {
+        queryParams.append('locationId', query.locationId)
+      }
+      if (query.locationName) {
+        queryParams.append('locationName', query.locationName)
+      }
+      if (query.searchTerms) {
+        queryParams.append('searchTerms', query.searchTerms)
+      }
       return h
-        .redirect(`/llygryddion/nitrogen-deuocsid/cy?lang=cy`)
+        .redirect(`/llygryddion/nitrogen-deuocsid/cy?${queryParams.toString()}`)
         .code(REDIRECT_STATUS_CODE)
     }
 
@@ -38,13 +48,17 @@ const nitrogenDioxideController = {
       description: nitrogenDioxide.description,
       metaSiteUrl,
       nitrogenDioxide,
-      page: 'Nitrogen dioxide (NO₂)',
+      page: 'nitrogen dioxide',
       ...backLinkConfig,
       phaseBanner,
       footerTxt,
       cookieBanner,
       serviceName: multipleLocations.serviceName,
       currentPath: '/pollutants/nitrogen-dioxide',
+      queryParams: query,
+      locationId,
+      locationName,
+      searchTerms,
       lang: query.lang ?? lang
     })
   }

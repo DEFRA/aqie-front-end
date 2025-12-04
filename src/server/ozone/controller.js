@@ -12,8 +12,18 @@ const ozoneController = {
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     if (query?.lang && query?.lang === LANG_CY) {
+      const queryParams = new URLSearchParams({ lang: LANG_CY })
+      if (query.locationId) {
+        queryParams.append('locationId', query.locationId)
+      }
+      if (query.locationName) {
+        queryParams.append('locationName', query.locationName)
+      }
+      if (query.searchTerms) {
+        queryParams.append('searchTerms', query.searchTerms)
+      }
       return h
-        .redirect(`/llygryddion/oson/cy?lang=cy`)
+        .redirect(`/llygryddion/oson/cy?${queryParams.toString()}`)
         .code(REDIRECT_STATUS_CODE)
     }
 
@@ -45,6 +55,10 @@ const ozoneController = {
       cookieBanner,
       serviceName: multipleLocations.serviceName,
       currentPath: '/pollutants/ozone',
+      queryParams: query,
+      locationId,
+      locationName,
+      searchTerms,
       lang: query.lang ?? lang
     })
   }

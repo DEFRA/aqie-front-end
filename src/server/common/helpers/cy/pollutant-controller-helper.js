@@ -50,7 +50,19 @@ export function createWelshPollutantController(config) {
 
       // Handle English language redirect
       if (query?.lang && query?.lang === LANG_EN) {
-        return h.redirect(`${englishPath}?lang=en`).code(REDIRECT_STATUS_CODE)
+        const queryParams = new URLSearchParams({ lang: LANG_EN })
+        if (query.locationId) {
+          queryParams.append('locationId', query.locationId)
+        }
+        if (query.locationName) {
+          queryParams.append('locationName', query.locationName)
+        }
+        if (query.searchTerms) {
+          queryParams.append('searchTerms', query.searchTerms)
+        }
+        return h
+          .redirect(`${englishPath}?${queryParams.toString()}`)
+          .code(REDIRECT_STATUS_CODE)
       }
 
       // Determine language with Welsh path validation
@@ -88,6 +100,10 @@ export function createWelshPollutantController(config) {
         cookieBanner,
         serviceName: multipleLocations.serviceName,
         currentPath: expectedWelshPath,
+        queryParams: query,
+        locationId,
+        locationName,
+        searchTerms,
         lang,
         ...backLinkConfig
       }

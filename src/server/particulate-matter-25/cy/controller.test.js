@@ -83,7 +83,11 @@ describe('Particular matter25 Controller - Welsh Content', () => {
         cookieBanner: mockContent.cookieBanner,
         serviceName: mockContent.multipleLocations.serviceName,
         lang: mockRequest.query.lang,
-        currentPath: PM25_PATH_CY
+        currentPath: PM25_PATH_CY,
+        queryParams: mockRequest.query,
+        locationId: '123',
+        locationName: 'Test Location',
+        searchTerms: undefined
       })
     })
 
@@ -113,7 +117,11 @@ describe('Particular matter25 Controller - Welsh Content', () => {
         cookieBanner: mockContent.cookieBanner,
         serviceName: mockContent.multipleLocations.serviceName,
         lang: LANG_CY,
-        currentPath: PM25_PATH_CY
+        currentPath: PM25_PATH_CY,
+        queryParams: mockRequest.query,
+        locationId: '123',
+        locationName: 'Test Location',
+        searchTerms: undefined
       })
     })
   })

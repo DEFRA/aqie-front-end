@@ -8,7 +8,7 @@ const PM10_PATH_CY = '/llygryddion/mater-gronynnol-10/cy'
 const VIEW_RENDERED = 'view rendered'
 
 // Helper to create expected view data
-function createExpectedViewData(content, url, langCode, pollutantData) {
+function createExpectedViewData(content, url, langCode, pollutantData, query) {
   return {
     pageTitle: content.pollutants.particulateMatter10.pageTitle,
     description: content.pollutants.particulateMatter10.description,
@@ -24,7 +24,11 @@ function createExpectedViewData(content, url, langCode, pollutantData) {
     cookieBanner: content.cookieBanner,
     serviceName: content.multipleLocations.serviceName,
     lang: langCode,
-    currentPath: PM10_PATH_CY
+    currentPath: PM10_PATH_CY,
+    queryParams: query,
+    locationId: query?.locationId,
+    locationName: query?.locationName,
+    searchTerms: query?.searchTerms
   }
 }
 
@@ -76,7 +80,8 @@ describe('Welsh content rendering', () => {
       mockContent,
       actualUrl,
       mockRequest.query.lang,
-      particulateMatter10
+      particulateMatter10,
+      mockRequest.query
     )
     expect(mockH.view).toHaveBeenCalledWith(
       'particulate-matter-10/index',
@@ -98,7 +103,8 @@ describe('Welsh content rendering', () => {
       mockContent,
       actualUrl,
       LANG_CY,
-      particulateMatter10
+      particulateMatter10,
+      mockRequest.query
     )
     expect(mockH.view).toHaveBeenCalledWith(
       'particulate-matter-10/index',
