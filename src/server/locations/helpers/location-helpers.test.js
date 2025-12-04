@@ -457,8 +457,8 @@ describe('location-helpers', () => {
       const mockLogger = { error: vi.fn() }
       const result = await fetchApi(
         'https://api.example.com/data',
-        {},
-        mockLogger
+        mockLogger,
+        {}
       )
 
       expect(result).toEqual({
@@ -483,8 +483,8 @@ describe('location-helpers', () => {
       const mockLogger = { error: vi.fn() }
       const result = await fetchApi(
         'https://api.example.com/missing',
-        {},
-        mockLogger
+        mockLogger,
+        {}
       )
 
       expect(result).toEqual({
@@ -502,8 +502,8 @@ describe('location-helpers', () => {
       const mockLogger = { error: vi.fn() }
       const result = await fetchApi(
         'https://api.example.com/error',
-        {},
-        mockLogger
+        mockLogger,
+        {}
       )
 
       expect(result).toEqual({
@@ -529,7 +529,7 @@ describe('location-helpers', () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       }
-      await fetchApi('https://api.example.com/post', options, mockLogger)
+      await fetchApi('https://api.example.com/post', mockLogger, options)
 
       expect(global.fetch).toHaveBeenCalledWith(
         'https://api.example.com/post',

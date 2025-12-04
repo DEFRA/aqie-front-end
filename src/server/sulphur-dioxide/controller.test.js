@@ -4,6 +4,8 @@ import { english } from '../data/en/en.js'
 import { sulphurDioxideController } from './controller.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
+const TEST_LOCATION = 'Test Location'
+
 describe('sulphurDioxide Controller - English', () => {
   let mockRequest
   let mockH
@@ -46,7 +48,7 @@ describe('sulphurDioxide Controller - English', () => {
   it('should redirect to the Welsh version if the language is "cy"', () => {
     mockRequest.query.lang = LANG_CY
     mockRequest.query.locationId = '123'
-    mockRequest.query.locationName = 'Test Location'
+    mockRequest.query.locationName = TEST_LOCATION
     const result = sulphurDioxideController.handler(mockRequest, mockH)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith(
@@ -62,7 +64,7 @@ describe('sulphurDioxide Controller - English', () => {
       path: '/sulphur-dioxide'
     }
     mockRequest.query.locationId = '123'
-    mockRequest.query.locationName = 'Test Location'
+    mockRequest.query.locationName = TEST_LOCATION
     const expectedUrl =
       'https://check-air-quality.service.gov.uk/sulphur-dioxide?lang=en&locationId=123&locationName=Test+Location'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
@@ -87,7 +89,7 @@ describe('sulphurDioxide Controller - English', () => {
       currentPath: '/pollutants/sulphur-dioxide',
       queryParams: mockRequest.query,
       locationId: '123',
-      locationName: 'Test Location',
+      locationName: TEST_LOCATION,
       searchTerms: undefined
     })
   })

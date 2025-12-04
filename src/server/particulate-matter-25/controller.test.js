@@ -4,6 +4,8 @@ import { particulateMatter25Controller } from './controller.js'
 import { LANG_CY, LANG_EN } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
+const TEST_LOCATION = 'Test Location'
+
 describe('Particular matter25 Controller - English', () => {
   let mockRequest
   let mockH
@@ -46,7 +48,7 @@ describe('Particular matter25 Controller - English', () => {
   it('should redirect to the Welsh version if the language is "cy"', () => {
     mockRequest.query.lang = LANG_CY
     mockRequest.query.locationId = '123'
-    mockRequest.query.locationName = 'Test Location'
+    mockRequest.query.locationName = TEST_LOCATION
     const result = particulateMatter25Controller.handler(mockRequest, mockH)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith(
@@ -57,7 +59,7 @@ describe('Particular matter25 Controller - English', () => {
   it('should render the particulateMatter25 page with the necessary data', () => {
     mockRequest.query.lang = LANG_EN
     mockRequest.query.locationId = '123'
-    mockRequest.query.locationName = 'Test Location'
+    mockRequest.query.locationName = TEST_LOCATION
     const expectedUrl =
       'https://check-air-quality.service.gov.uk/pollutants/particulate-matter-25?lang=en&locationId=123&locationName=Test+Location'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
@@ -82,7 +84,7 @@ describe('Particular matter25 Controller - English', () => {
       currentPath: '/pollutants/particulate-matter-25',
       queryParams: mockRequest.query,
       locationId: '123',
-      locationName: 'Test Location',
+      locationName: TEST_LOCATION,
       searchTerms: undefined
     })
   })

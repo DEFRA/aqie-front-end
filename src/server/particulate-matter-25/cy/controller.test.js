@@ -6,6 +6,7 @@ import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
 const PM25_PATH_CY = '/llygryddion/mater-gronynnol-25/cy'
 const VIEW_RENDERED = 'view rendered'
+const TEST_LOCATION = 'Test Location'
 
 describe('Particular matter25 Controller - Welsh Redirects', () => {
   let mockRequest
@@ -61,7 +62,7 @@ describe('Particular matter25 Controller - Welsh Content', () => {
     it('should render the particulateMatter25 page with the necessary data', () => {
       mockRequest.query.lang = LANG_CY
       mockRequest.query.locationId = '123'
-      mockRequest.query.locationName = 'Test Location'
+      mockRequest.query.locationName = TEST_LOCATION
       const expectedUrl =
         'https://check-air-quality.service.gov.uk/llygryddion/mater-gronynnol-25/cy?lang=cy'
       const actualUrl = getAirQualitySiteUrl(mockRequest)
@@ -86,7 +87,7 @@ describe('Particular matter25 Controller - Welsh Content', () => {
         currentPath: PM25_PATH_CY,
         queryParams: mockRequest.query,
         locationId: '123',
-        locationName: 'Test Location',
+        locationName: TEST_LOCATION,
         searchTerms: undefined
       })
     })
@@ -94,7 +95,7 @@ describe('Particular matter25 Controller - Welsh Content', () => {
     it('should render by default to particulateMatter25 page if lang is not cy or en', () => {
       mockRequest.query.lang = 'test'
       mockRequest.query.locationId = '123'
-      mockRequest.query.locationName = 'Test Location'
+      mockRequest.query.locationName = TEST_LOCATION
       mockRequest.path = PM25_PATH_CY
       const expectedUrl =
         'https://check-air-quality.service.gov.uk/llygryddion/mater-gronynnol-25/cy?lang=test'
@@ -120,7 +121,7 @@ describe('Particular matter25 Controller - Welsh Content', () => {
         currentPath: PM25_PATH_CY,
         queryParams: mockRequest.query,
         locationId: '123',
-        locationName: 'Test Location',
+        locationName: TEST_LOCATION,
         searchTerms: undefined
       })
     })

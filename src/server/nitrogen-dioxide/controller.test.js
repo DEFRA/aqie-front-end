@@ -4,6 +4,8 @@ import { english } from '../data/en/en.js'
 import { LANG_CY, LANG_EN } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
+const TEST_LOCATION = 'Test Location'
+
 describe('Nitrogen Dioxide Controller - English', () => {
   let mockRequest
   let mockH
@@ -46,7 +48,7 @@ describe('Nitrogen Dioxide Controller - English', () => {
   it('should redirect to the Welsh version if the language is "cy"', () => {
     mockRequest.query.lang = LANG_CY
     mockRequest.query.locationId = '123'
-    mockRequest.query.locationName = 'Test Location'
+    mockRequest.query.locationName = TEST_LOCATION
     mockRequest.path = '/llygryddion/nitrogen-deuocsid/cy'
     const expectedUrl =
       'https://check-air-quality.service.gov.uk/llygryddion/nitrogen-deuocsid/cy?lang=cy&locationId=123&locationName=Test+Location'
@@ -62,7 +64,7 @@ describe('Nitrogen Dioxide Controller - English', () => {
   it('should render the nitrogen-dioxide page with the necessary data', () => {
     mockRequest.query.lang = LANG_EN
     mockRequest.query.locationId = '123'
-    mockRequest.query.locationName = 'Test Location'
+    mockRequest.query.locationName = TEST_LOCATION
     const expectedUrl =
       'https://check-air-quality.service.gov.uk/pollutants/nitrogen-dioxide?lang=en&locationId=123&locationName=Test+Location'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
@@ -87,7 +89,7 @@ describe('Nitrogen Dioxide Controller - English', () => {
       currentPath: '/pollutants/nitrogen-dioxide',
       queryParams: mockRequest.query,
       locationId: '123',
-      locationName: 'Test Location',
+      locationName: TEST_LOCATION,
       searchTerms: undefined
     })
   })

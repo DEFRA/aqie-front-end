@@ -4,6 +4,8 @@ import { english } from '../data/en/en.js'
 import { LANG_CY, LANG_EN } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
+const TEST_LOCATION = 'Test Location'
+
 describe('Ozone Controller - English', () => {
   let mockRequest
   let mockH
@@ -46,7 +48,7 @@ describe('Ozone Controller - English', () => {
   it('should redirect to the Welsh version if the language is "cy"', () => {
     mockRequest.query.lang = LANG_CY
     mockRequest.query.locationId = '123'
-    mockRequest.query.locationName = 'Test Location'
+    mockRequest.query.locationName = TEST_LOCATION
     const result = ozoneController.handler(mockRequest, mockH)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith(
@@ -57,7 +59,7 @@ describe('Ozone Controller - English', () => {
   it('should render the ozone page with the necessary data', () => {
     mockRequest.query.lang = LANG_EN
     mockRequest.query.locationId = '123'
-    mockRequest.query.locationName = 'Test Location'
+    mockRequest.query.locationName = TEST_LOCATION
     const expectedUrl =
       'https://check-air-quality.service.gov.uk/pollutants/ozone?lang=en&locationId=123&locationName=Test+Location'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
@@ -71,7 +73,7 @@ describe('Ozone Controller - English', () => {
       ozone,
       page: 'ozone',
       displayBacklink: true,
-      backLinkText: 'Air pollution in Test Location',
+      backLinkText: `Air pollution in ${TEST_LOCATION}`,
       backLinkUrl: '/location/123?lang=en',
       customBackLink: true,
       phaseBanner: mockContent.phaseBanner,
@@ -82,7 +84,7 @@ describe('Ozone Controller - English', () => {
       currentPath: '/pollutants/ozone',
       queryParams: mockRequest.query,
       locationId: '123',
-      locationName: 'Test Location',
+      locationName: TEST_LOCATION,
       searchTerms: undefined
     })
   })
