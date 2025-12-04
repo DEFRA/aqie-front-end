@@ -11,11 +11,7 @@ import {
   LANG_SLICE_LENGTH
 } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../get-site-url.js'
-
-// Common view properties that all pollutant controllers use
-const COMMON_VIEW_PROPERTIES = {
-  displayBacklink: false
-}
+import { createLocationBackLink } from '../back-link-helper.js'
 
 // Language redirect patterns for Welsh pollutant pages
 const WELSH_PATH_PATTERNS = {
@@ -64,6 +60,22 @@ export function createWelshPollutantController(config) {
         lang = LANG_CY
       }
 
+      // '' Redirect to search location if no locationId (user needs to search for location)
+      const { locationId, locationName, searchTerms } = query || {}
+      if (!locationId) {
+        return h
+          .redirect(`/chwilio-lleoliad/cy?lang=cy`)
+          .code(REDIRECT_STATUS_CODE)
+      }
+
+      // '' Create context-aware back link based on query params
+      const backLinkConfig = createLocationBackLink({
+        locationId,
+        locationName,
+        searchTerms,
+        lang: LANG_CY
+      })
+
       // Create view context with standardized properties
       const viewContext = {
         pageTitle: pollutantData.pageTitle,
@@ -77,7 +89,7 @@ export function createWelshPollutantController(config) {
         serviceName: multipleLocations.serviceName,
         currentPath: expectedWelshPath,
         lang,
-        ...COMMON_VIEW_PROPERTIES
+        ...backLinkConfig
       }
 
       return h.view(viewTemplate, viewContext)

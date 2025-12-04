@@ -7,6 +7,68 @@ import {
 } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
+const SEARCH_LOCATION_PATH_CY = '/chwilio-lleoliad/cy'
+
+function buildSearchLocationViewData({
+  metaSiteUrl,
+  lang,
+  errors = null,
+  errorMessage = null,
+  locationType = null
+}) {
+  const baseData = {
+    description: welsh.searchLocation.description,
+    metaSiteUrl,
+    heading: welsh.searchLocation.heading,
+    page: welsh.searchLocation.page,
+    serviceName: welsh.searchLocation.serviceName,
+    locations: welsh.searchLocation.searchParams.locations,
+    button: welsh.searchLocation.button,
+    footerTxt: welsh.footerTxt,
+    phaseBanner: welsh.phaseBanner,
+    backlink: welsh.backlink,
+    cookieBanner: welsh.cookieBanner,
+    currentPath: SEARCH_LOCATION_PATH_CY,
+    lang
+  }
+
+  if (errors) {
+    return {
+      ...baseData,
+      pageTitle: `Gwall: ${welsh.searchLocation.pageTitle}`,
+      searchParams: {
+        label: {
+          text: welsh.searchLocation.searchParams.label.text,
+          classes: 'govuk-label--l govuk-!-margin-bottom-6',
+          isPageHeading: true
+        },
+        hint: { text: welsh.searchLocation.searchParams.hint.text1 },
+        id: 'location',
+        name: 'location'
+      },
+      locationType,
+      errors: errors.errors,
+      errorMessage: errorMessage?.errorMessage,
+      errorMessageRadio: errorMessage?.errorMessage
+    }
+  }
+
+  return {
+    ...baseData,
+    pageTitle: welsh.searchLocation.pageTitle,
+    searchParams: {
+      label: {
+        text: welsh.searchLocation.searchParams.label.text,
+        classes: 'govuk-label--l govuk-!-margin-bottom-6',
+        isPageHeading: true
+      },
+      hint: { text: welsh.searchLocation.searchParams.hint.text2 },
+      id: 'location',
+      name: 'location'
+    }
+  }
+}
+
 const searchLocationController = {
   handler: (request, h) => {
     const { query, path } = request
@@ -17,12 +79,12 @@ const searchLocationController = {
     if (
       lang !== LANG_CY &&
       lang !== LANG_EN &&
-      path === '/chwilio-lleoliad/cy'
+      path === SEARCH_LOCATION_PATH_CY
     ) {
       lang = LANG_CY
     }
     // Ensure lang defaults to CY for Welsh search-location path
-    if (!lang && path === '/chwilio-lleoliad/cy') {
+    if (!lang && path === SEARCH_LOCATION_PATH_CY) {
       lang = LANG_CY
     }
     if (lang === LANG_EN) {
@@ -30,73 +92,22 @@ const searchLocationController = {
     }
     const errors = request.yar.get('errors')
     const errorMessage = request.yar.get('errorMessage')
+    const locationType = request.yar.get('locationType')
 
     if (errors) {
-      const locationType = request.yar.get('locationType')
       request.yar.set('errors', null)
       request.yar.set('errorMessage', null)
-      return h.view('search-location/index', {
-        pageTitle: `Gwall: ${welsh.searchLocation.pageTitle}`,
-        description: welsh.searchLocation.description,
-        metaSiteUrl,
-        heading: welsh.searchLocation.heading,
-        page: welsh.searchLocation.page,
-        serviceName: welsh.searchLocation.serviceName,
-        searchParams: {
-          label: {
-            text: welsh.searchLocation.searchParams.label.text,
-            classes: 'govuk-label--l govuk-!-margin-bottom-6',
-            isPageHeading: true
-          },
-          hint: {
-            text: welsh.searchLocation.searchParams.hint.text1
-          },
-          id: 'location',
-          name: 'location'
-        },
-        locations: welsh.searchLocation.searchParams.locations,
-        button: welsh.searchLocation.button,
-        locationType,
-        errors: errors.errors,
-        errorMessage: errorMessage?.errorMessage,
-        errorMessageRadio: errorMessage?.errorMessage,
-        footerTxt: welsh.footerTxt,
-        phaseBanner: welsh.phaseBanner,
-        backlink: welsh.backlink,
-        cookieBanner: welsh.cookieBanner,
-        currentPath: '/chwilio-lleoliad/cy',
-        lang
-      })
-    } else {
-      return h.view('search-location/index', {
-        pageTitle: welsh.searchLocation.pageTitle,
-        description: welsh.searchLocation.description,
-        metaSiteUrl,
-        heading: welsh.searchLocation.heading,
-        page: welsh.searchLocation.page,
-        serviceName: welsh.searchLocation.serviceName,
-        searchParams: {
-          label: {
-            text: welsh.searchLocation.searchParams.label.text,
-            classes: 'govuk-label--l govuk-!-margin-bottom-6',
-            isPageHeading: true
-          },
-          hint: {
-            text: welsh.searchLocation.searchParams.hint.text2
-          },
-          id: 'location',
-          name: 'location'
-        },
-        locations: welsh.searchLocation.searchParams.locations,
-        button: welsh.searchLocation.button,
-        footerTxt: welsh.footerTxt,
-        phaseBanner: welsh.phaseBanner,
-        backlink: welsh.backlink,
-        cookieBanner: welsh.cookieBanner,
-        currentPath: '/chwilio-lleoliad/cy',
-        lang
-      })
     }
+
+    const viewData = buildSearchLocationViewData({
+      metaSiteUrl,
+      lang,
+      errors,
+      errorMessage,
+      locationType
+    })
+
+    return h.view('search-location/index', viewData)
   }
 }
 

@@ -5,6 +5,7 @@ import {
 } from '../constants.js'
 
 const SERVICE_NAME = 'Check air quality'
+const HEALTH_EFFECTS_HEADING = 'Health effects'
 
 /**
  * English translations for DAQI display and pollutant information pages
@@ -224,7 +225,7 @@ export const pollutantTranslations = {
       headerText: `${SERVICE_NAME}`,
       headings: {
         a: 'Sources of ozone',
-        b: 'Health effects'
+        b: HEALTH_EFFECTS_HEADING
       },
       paragraphs: {
         a: 'There are no major emission sources of ozone itself. Reactions between other pollutants form ozone in the air. For example, when pollutants from cars, power stations and factories react with sunlight.',
@@ -249,7 +250,7 @@ export const pollutantTranslations = {
       headerText: `${SERVICE_NAME}`,
       headings: {
         a: 'Sources of nitrogen dioxide',
-        b: 'Health effects'
+        b: HEALTH_EFFECTS_HEADING
       },
       paragraphs: {
         a: "Nitrogen dioxide is a colourless gas. It's mainly produced during:",
@@ -276,7 +277,7 @@ export const pollutantTranslations = {
       headerText: `${SERVICE_NAME}`,
       headings: {
         a: 'Sources of sulphur dioxide',
-        b: 'Health effects'
+        b: HEALTH_EFFECTS_HEADING
       },
       paragraphs: {
         a: "Sulphur dioxide is a colourless gas with a strong odour. It's mainly produced from:",
@@ -303,7 +304,7 @@ export const pollutantTranslations = {
       headerText: `${SERVICE_NAME}`,
       headings: {
         a: 'Sources of PM10',
-        b: 'Health effects'
+        b: HEALTH_EFFECTS_HEADING
       },
       paragraphs: {
         a: 'Particulate matter (PM) are small particles of solids or liquids that are in the air. The particles are only 10 micrometres in diameter. For context, the width of a human hair is 50 to 70 micrometres.',
@@ -336,7 +337,7 @@ export const pollutantTranslations = {
       headerText: `${SERVICE_NAME}`,
       headings: {
         a: 'Sources of PM2.5',
-        b: 'Health effects'
+        b: HEALTH_EFFECTS_HEADING
       },
       paragraphs: {
         a: 'Particulate matter (PM) are small particles of solids or liquids that are in the air. The particles are only 2.5 micrometres in diameter. For context, the width of a human hair is 50 to 70 micrometres.',

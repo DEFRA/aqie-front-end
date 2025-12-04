@@ -5,34 +5,65 @@ import { welsh } from '../data/cy/cy.js'
 import { LANG_CY, LANG_EN } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
-describe('Accessibility Handler', () => {
-  let mockRequest = {
-    query: {},
-    path: '/accessibility'
+const ACCESSIBILITY_PATH = '/accessibility'
+const VIEW_RENDERED = 'view rendered'
+const ACCESSIBILITY_INDEX_VIEW = 'accessibility/index'
+const MOCK_ENGLISH_CONTENT = english
+const MOCK_WELSH_CONTENT = welsh
+
+// Helper to create expected view data
+function createExpectedViewData(content, actualUrl, lang, currentPath) {
+  return {
+    pageTitle: content.footer.accessibility.pageTitle,
+    title: content.footer.accessibility.title,
+    description: content.footer.accessibility.description,
+    metaSiteUrl: actualUrl,
+    heading: content.footer.accessibility.heading,
+    headings: content.footer.accessibility.headings,
+    paragraphs: content.footer.accessibility.paragraphs,
+    displayBacklink: false,
+    phaseBanner: content.phaseBanner,
+    footerTxt: content.footerTxt,
+    serviceName: content.multipleLocations.serviceName,
+    cookieBanner: content.cookieBanner,
+    lang,
+    currentPath
   }
-  const mockContent = english
-  const mockContentCy = welsh
+}
+
+function createMockRequest() {
+  return {
+    query: {},
+    path: ACCESSIBILITY_PATH
+  }
+}
+
+function createMockH() {
+  return {
+    redirect: vi.fn().mockImplementation(() => {
+      return {
+        code: vi.fn().mockImplementation(() => {
+          return 'redirected'
+        })
+      }
+    }),
+    view: vi.fn().mockReturnValue(VIEW_RENDERED)
+  }
+}
+
+describe('Accessibility Handler - Welsh Redirects', () => {
+  let mockRequest
+  let mockH
+
   vi.mock('../../common/helpers/get-site-url.js', () => ({
     getAirQualitySiteUrl: vi.fn((request) => {
       return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
     })
   }))
-  let mockH = {
-    redirect: vi.fn().mockReturnValue('redirected'),
-    view: vi.fn().mockReturnValue('view rendered')
-  }
 
   beforeEach(() => {
-    mockH = {
-      redirect: vi.fn().mockImplementation((url) => {
-        return {
-          code: vi.fn().mockImplementation((statusCode) => {
-            return 'redirected'
-          })
-        }
-      }),
-      view: vi.fn().mockReturnValue('view rendered')
-    }
+    mockRequest = createMockRequest()
+    mockH = createMockH()
   })
 
   it('should redirect to the Welsh version if the language is "cy"', () => {
@@ -45,10 +76,20 @@ describe('Accessibility Handler', () => {
     const result = accessibilityController.handler(
       mockRequest,
       mockH,
-      mockContent
+      MOCK_ENGLISH_CONTENT
     )
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith('/hygyrchedd/cy?lang=cy')
+  })
+})
+
+describe('Accessibility Handler - English Content', () => {
+  let mockRequest
+  let mockH
+
+  beforeEach(() => {
+    mockRequest = createMockRequest()
+    mockH = createMockH()
   })
 
   it('should render the accessibility page with the necessary data', () => {
@@ -56,7 +97,7 @@ describe('Accessibility Handler', () => {
       query: {
         lang: LANG_EN
       },
-      path: '/accessibility'
+      path: ACCESSIBILITY_PATH
     }
     const expectedUrl =
       'https://check-air-quality.service.gov.uk/accessibility?lang=en'
@@ -66,25 +107,19 @@ describe('Accessibility Handler', () => {
     const result = accessibilityController.handler(
       mockRequest,
       mockH,
-      mockContent
+      MOCK_ENGLISH_CONTENT
     )
-    expect(result).toBe('view rendered')
-    expect(mockH.view).toHaveBeenCalledWith('accessibility/index', {
-      pageTitle: mockContent.footer.accessibility.pageTitle,
-      title: mockContent.footer.accessibility.title,
-      description: mockContent.footer.accessibility.description,
-      metaSiteUrl: actualUrl,
-      heading: mockContent.footer.accessibility.heading,
-      headings: mockContent.footer.accessibility.headings,
-      paragraphs: mockContent.footer.accessibility.paragraphs,
-      displayBacklink: false,
-      phaseBanner: mockContent.phaseBanner,
-      footerTxt: mockContent.footerTxt,
-      serviceName: mockContent.multipleLocations.serviceName,
-      cookieBanner: mockContent.cookieBanner,
-      lang: mockRequest.query.lang,
-      currentPath: '/accessibility'
-    })
+    expect(result).toBe(VIEW_RENDERED)
+    const expectedData = createExpectedViewData(
+      MOCK_ENGLISH_CONTENT,
+      actualUrl,
+      mockRequest.query.lang,
+      ACCESSIBILITY_PATH
+    )
+    expect(mockH.view).toHaveBeenCalledWith(
+      ACCESSIBILITY_INDEX_VIEW,
+      expectedData
+    )
   })
 
   it('should render the accessibility page when the lang is not en nor cy and path is /accessibility', () => {
@@ -92,7 +127,7 @@ describe('Accessibility Handler', () => {
       query: {
         lang: 'fr'
       },
-      path: '/accessibility'
+      path: ACCESSIBILITY_PATH
     }
     const expectedUrl =
       'https://check-air-quality.service.gov.uk/accessibility?lang=fr'
@@ -102,25 +137,29 @@ describe('Accessibility Handler', () => {
     const result = accessibilityController.handler(
       mockRequest,
       mockH,
-      mockContent
+      MOCK_ENGLISH_CONTENT
     )
-    expect(result).toBe('view rendered')
-    expect(mockH.view).toHaveBeenCalledWith('accessibility/index', {
-      pageTitle: mockContent.footer.accessibility.pageTitle,
-      title: mockContent.footer.accessibility.title,
-      description: mockContent.footer.accessibility.description,
-      metaSiteUrl: actualUrl,
-      heading: mockContent.footer.accessibility.heading,
-      headings: mockContent.footer.accessibility.headings,
-      paragraphs: mockContent.footer.accessibility.paragraphs,
-      displayBacklink: false,
-      phaseBanner: mockContent.phaseBanner,
-      footerTxt: mockContent.footerTxt,
-      serviceName: mockContent.multipleLocations.serviceName,
-      cookieBanner: mockContent.cookieBanner,
-      lang: LANG_EN,
-      currentPath: '/accessibility'
-    })
+    expect(result).toBe(VIEW_RENDERED)
+    const expectedData = createExpectedViewData(
+      MOCK_ENGLISH_CONTENT,
+      actualUrl,
+      LANG_EN,
+      ACCESSIBILITY_PATH
+    )
+    expect(mockH.view).toHaveBeenCalledWith(
+      ACCESSIBILITY_INDEX_VIEW,
+      expectedData
+    )
+  })
+})
+
+describe('Accessibility Handler - Welsh Content', () => {
+  let mockRequest
+  let mockH
+
+  beforeEach(() => {
+    mockRequest = createMockRequest()
+    mockH = createMockH()
   })
 
   it('should use Welsh content when lang is neither en nor cy', () => {
@@ -138,31 +177,43 @@ describe('Accessibility Handler', () => {
     const result = accessibilityController.handler(
       mockRequest,
       mockH,
-      mockContent // Pass English content to test that it gets replaced with Welsh
+      MOCK_ENGLISH_CONTENT
     )
-    expect(result).toBe('view rendered')
-    // When lang is not 'en' (lines 27-28), the controller uses Welsh content
-    expect(mockH.view).toHaveBeenCalledWith('accessibility/index', {
-      pageTitle: mockContentCy.footer.accessibility.pageTitle,
-      title: mockContentCy.footer.accessibility.title,
-      description: mockContentCy.footer.accessibility.description,
+    expect(result).toBe(VIEW_RENDERED)
+    expect(mockH.view).toHaveBeenCalledWith(ACCESSIBILITY_INDEX_VIEW, {
+      pageTitle: MOCK_WELSH_CONTENT.footer.accessibility.pageTitle,
+      title: MOCK_WELSH_CONTENT.footer.accessibility.title,
+      description: MOCK_WELSH_CONTENT.footer.accessibility.description,
       metaSiteUrl: actualUrl,
-      heading: mockContentCy.footer.accessibility.heading,
-      headings: mockContentCy.footer.accessibility.headings,
-      paragraphs: mockContentCy.footer.accessibility.paragraphs,
+      heading: MOCK_WELSH_CONTENT.footer.accessibility.heading,
+      headings: MOCK_WELSH_CONTENT.footer.accessibility.headings,
+      paragraphs: MOCK_WELSH_CONTENT.footer.accessibility.paragraphs,
       displayBacklink: false,
-      phaseBanner: mockContentCy.phaseBanner,
-      footerTxt: mockContentCy.footerTxt,
-      serviceName: mockContentCy.multipleLocations.serviceName,
-      cookieBanner: mockContentCy.cookieBanner,
+      phaseBanner: MOCK_WELSH_CONTENT.phaseBanner,
+      footerTxt: MOCK_WELSH_CONTENT.footerTxt,
+      serviceName: MOCK_WELSH_CONTENT.multipleLocations.serviceName,
+      cookieBanner: MOCK_WELSH_CONTENT.cookieBanner,
       lang: 'fr',
       currentPath: '/hygyrchedd/cy'
     })
   })
+})
+describe('Accessibility Handler - Direct Handler Function', () => {
+  let mockRequest
+  let mockH
+
+  beforeEach(() => {
+    mockRequest = createMockRequest()
+    mockH = createMockH()
+  })
 
   it('should test accessibilityHandler function directly', () => {
     // ''
-    const result = accessibilityHandler(mockRequest, mockH, mockContent)
-    expect(result).toBe('view rendered')
+    const result = accessibilityHandler(
+      mockRequest,
+      mockH,
+      MOCK_ENGLISH_CONTENT
+    )
+    expect(result).toBe(VIEW_RENDERED)
   })
 })

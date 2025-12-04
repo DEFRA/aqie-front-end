@@ -8,6 +8,8 @@ import {
 } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
+const ACCESSIBILITY_PATH = '/accessibility'
+
 // Define the handler function
 const accessibilityHandler = (request, h, content = english) => {
   // Extract the language query parameter from the request
@@ -23,11 +25,11 @@ const accessibilityHandler = (request, h, content = english) => {
 
   // Determine the language
   let lang = query?.lang?.slice(0, LANG_SLICE_LENGTH)
-  if (lang !== LANG_CY && lang !== LANG_EN && path === '/accessibility') {
+  if (lang !== LANG_CY && lang !== LANG_EN && path === ACCESSIBILITY_PATH) {
     lang = LANG_EN
   }
   // Ensure lang defaults to EN for /accessibility path
-  if (!lang && path === '/accessibility') {
+  if (!lang && path === ACCESSIBILITY_PATH) {
     lang = LANG_EN
   }
   if (lang === LANG_EN) {
@@ -67,7 +69,7 @@ const accessibilityHandler = (request, h, content = english) => {
     footerTxt,
     serviceName,
     cookieBanner,
-    currentPath: lang === LANG_EN ? '/accessibility' : '/hygyrchedd/cy',
+    currentPath: lang === LANG_EN ? ACCESSIBILITY_PATH : '/hygyrchedd/cy',
     lang
   })
 }

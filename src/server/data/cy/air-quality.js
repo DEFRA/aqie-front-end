@@ -1,5 +1,18 @@
 import { ACTIONS_REDUCE_EXPOSURE_ROUTE_CY } from '../constants.js'
 
+const DAQI_VALUE_LOW_MIN = 1
+const DAQI_VALUE_LOW_MAX = 3
+const DAQI_VALUE_MODERATE_MIN = 4
+const DAQI_VALUE_MODERATE_MID = 5
+const DAQI_VALUE_MODERATE_MAX = 6
+const DAQI_VALUE_HIGH_MIN = 7
+const DAQI_VALUE_HIGH_MID = 8
+const DAQI_VALUE_HIGH_MAX = 9
+const DAQI_VALUE_VERY_HIGH = 10
+const DEFAULT_DAQI_VALUE = '4'
+const ENJOY_OUTDOOR_ACTIVITIES =
+  'Mwynhewch eich gweithgareddau awyr agored arferol.'
+
 export const warningMessages = {
   forecastWarning:
     'Rhagwelir lefelau {level} o lygredd aer yn y lleoliad hwn o {weekday}.'
@@ -7,8 +20,8 @@ export const warningMessages = {
 
 export const commonMessages = {
   isel: {
-    values: [1, 2, 3],
-    advice: 'Mwynhewch eich gweithgareddau awyr agored arferol.',
+    values: [DAQI_VALUE_LOW_MIN, 2, DAQI_VALUE_LOW_MAX],
+    advice: ENJOY_OUTDOOR_ACTIVITIES,
     insetText: `<p>I’r rhan fwyaf o bobl, dyw amlygiad byrdymor i lefelau isel o lygredd aer ddim yn broblem. Ewch ymlaen â’ch gweithgareddau awyr agored arferol.</p>
 <p>Gallai rhai pobl brofi symptomau oherwydd llygredd aer, hyd yn oed pan fo’r lefelau’n isel.</p>
 <p>Mae oedolion a phlant sydd â chyflyrau’r ysgyfaint neu’r galon yn wynebu mwy o risg o brofi symptomau.</p>
@@ -25,15 +38,19 @@ export const commonMessages = {
 <p>Dilynwch eich cynllun rheoli cytûn os oes un gennych – er enghraifft, cynllun gweithredu asthma. Gofynnwch i’ch meddyg neu’ch nyrs am gynllun os nad oes un gennych.</p>
 <p>Ystyriwch effaith sbardunau eraill ar eich symptomau hefyd – er enghraifft, paill uchel y tu allan neu ansawdd aer gwael dan do.</p>`,
     atrisk: {
-      adults: 'Mwynhewch eich gweithgareddau awyr agored arferol.',
-      asthma: 'Mwynhewch eich gweithgareddau awyr agored arferol.',
-      oldPeople: 'Mwynhewch eich gweithgareddau awyr agored arferol.'
+      adults: ENJOY_OUTDOOR_ACTIVITIES,
+      asthma: ENJOY_OUTDOOR_ACTIVITIES,
+      oldPeople: ENJOY_OUTDOOR_ACTIVITIES
     },
     outlook:
       'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.'
   },
   cymedrol: {
-    values: [4, 5, 6],
+    values: [
+      DAQI_VALUE_MODERATE_MIN,
+      DAQI_VALUE_MODERATE_MID,
+      DAQI_VALUE_MODERATE_MAX
+    ],
     advice:
       "I'r rhan fwyaf o bobl, dyw amlygiad byrdymor i lefelau cymedrol o lygredd aer ddim yn broblem.",
     insetText: `<p>I'r rhan fwyaf o bobl, dyw amlygiad byrdymor i lefelau cymedrol o lygredd aer ddim yn broblem. Ewch ymlaen â'ch gweithgareddau awyr agored arferol. Ond, os byddwch chi'n profi symptomau, ceisiwch leihau'ch amlygiad i lygredd aer.</p>
@@ -77,7 +94,7 @@ export const commonMessages = {
       'The influx of warm air from the continent is resulting in moderate air pollution levels throughout many areas today.'
   },
   uchel: {
-    values: [7, 8, 9],
+    values: [DAQI_VALUE_HIGH_MIN, DAQI_VALUE_HIGH_MID, DAQI_VALUE_HIGH_MAX],
     advice:
       "Dylai unrhyw un sy'n profi anghysur fel dolur llygaid, peswch neu ddolur gwddf ystyried lleihau eu gweithgareddau, yn enwedig yn yr awyr agored.",
     insetText: `<p>Ceisiwch <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_CY}?lang=cy">leihau'ch amlygiad i lygredd aer</a>, yn enwedig os byddwch chi'n profi symptomau.</p>
@@ -114,7 +131,7 @@ export const commonMessages = {
       'Warm temperatures are expected to increase pollution levels to high across many areas today.'
   },
   uchelIawn: {
-    values: [10],
+    values: [DAQI_VALUE_VERY_HIGH],
     advice:
       "Lleihewch ymdrech gorfforol, yn arbennig yn yr awyr agored, yn enwedig os ydych chi'n profi symptomau fel peswch neu ddolur gwddf.",
     insetText: `<p>Ceisiwch <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_CY}?lang=cy">leihau'ch amlygiad i lygredd aer</a>, yn enwedig os byddwch chi'n profi symptomau.</p>
@@ -159,8 +176,8 @@ export function getCommonMessage(band) {
   return commonMessages[band] || commonMessages.unknown
 }
 
-export function getDetailedInfo(aqValue) {
-  const value = aqValue || '4'
+export function getDetailedInfo(aqValue = DEFAULT_DAQI_VALUE) {
+  const value = aqValue
 
   const lookup = {
     1: { band: 'isel', readableBand: 'isel' },
@@ -189,12 +206,12 @@ export function getDetailedInfo(aqValue) {
     band,
     readableBand,
     advice: message.advice,
-    insetText: message.insetText,
-    atrisk: message.atrisk,
-    outlook: message.outlook,
-    ukToday: message.ukToday, // Consider updating these messages to be relevant for each day
-    ukTomorrow: message.ukTomorrow,
-    ukOutlook: message.ukOutlook
+    insetText: message.insetText ?? null,
+    atrisk: message.atrisk ?? null,
+    outlook: message.outlook ?? null,
+    ukToday: message.ukToday ?? null, // Consider updating these messages to be relevant for each day
+    ukTomorrow: message.ukTomorrow ?? null,
+    ukOutlook: message.ukOutlook ?? null
   }
 }
 

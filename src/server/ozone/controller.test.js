@@ -20,9 +20,9 @@ describe('Ozone Controller - English', () => {
       })
     }))
     mockH = {
-      redirect: vi.fn().mockImplementation((url) => {
+      redirect: vi.fn().mockImplementation(() => {
         return {
-          code: vi.fn().mockImplementation((statusCode) => {
+          code: vi.fn().mockImplementation(() => {
             return 'redirected'
           })
         }
@@ -40,8 +40,10 @@ describe('Ozone Controller - English', () => {
 
   it('should render the ozone page with the necessary data', () => {
     mockRequest.query.lang = LANG_EN
+    mockRequest.query.locationId = '123'
+    mockRequest.query.locationName = 'Test Location'
     const expectedUrl =
-      'https://check-air-quality.service.gov.uk/pollutants/ozone?lang=en'
+      'https://check-air-quality.service.gov.uk/pollutants/ozone?lang=en&locationId=123&locationName=Test+Location'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = ozoneController.handler(mockRequest, mockH)
@@ -52,7 +54,10 @@ describe('Ozone Controller - English', () => {
       metaSiteUrl: actualUrl,
       ozone,
       page: 'ozone',
-      displayBacklink: false,
+      displayBacklink: true,
+      backLinkText: 'Air pollution in Test Location',
+      backLinkUrl: '/location/123?lang=en',
+      customBackLink: true,
       phaseBanner: mockContent.phaseBanner,
       footerTxt: mockContent.footerTxt,
       cookieBanner: mockContent.cookieBanner,

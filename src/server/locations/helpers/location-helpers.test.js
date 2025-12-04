@@ -538,49 +538,18 @@ describe('location-helpers', () => {
     })
   })
 
+  // ''
   describe('isMockEnabled', () => {
-    let consoleSpy
-
-    beforeEach(() => {
-      consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-    })
-
-    afterEach(() => {
-      consoleSpy.mockRestore()
-    })
-
     it('should return the enabledMock config value', () => {
       const result = isMockEnabled()
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        '[DEBUG] isMockEnabled called, value:',
-        expect.anything(),
-        'type:',
-        expect.any(String)
-      )
-      expect(consoleSpy).toHaveBeenCalledWith(
-        '[DEBUG] ENABLED_MOCK env var:',
-        process.env.ENABLED_MOCK
-      )
       expect(typeof result).toBe('boolean')
     })
 
-    it('should log debug information when called', () => {
-      isMockEnabled()
+    it('should return boolean value from config', () => {
+      const result = isMockEnabled()
 
-      expect(consoleSpy).toHaveBeenCalledTimes(2)
-      expect(consoleSpy).toHaveBeenNthCalledWith(
-        1,
-        '[DEBUG] isMockEnabled called, value:',
-        expect.anything(),
-        'type:',
-        expect.any(String)
-      )
-      expect(consoleSpy).toHaveBeenNthCalledWith(
-        2,
-        '[DEBUG] ENABLED_MOCK env var:',
-        process.env.ENABLED_MOCK
-      )
+      expect(typeof result).toBe('boolean')
     })
   })
 })

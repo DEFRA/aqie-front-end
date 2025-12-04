@@ -28,7 +28,7 @@ vi.mock('../helpers/index.js', () => ({
   buildHealthEffectsViewModel: vi.fn(
     ({ readableName = 'Caerdydd', lang = 'cy' } = {}) => ({
       pageTitle: 'How you can reduce your exposure to air pollution',
-      backLinkUrl: 'javascript:history.back()',
+      backLinkUrl: '#',
       backLinkText: `Air pollution in ${readableName}`,
       locationName: readableName,
       lang
@@ -49,9 +49,19 @@ const createH = () => {
   return { view, redirect, response }
 }
 
-describe("'' healthEffectsHandlerCy", () => {
+// '' Helper to verify common expectations
+const verifyCommonCalls = () => {
+  expect(getReadableLocationName).toHaveBeenCalled()
+}
+
+const HEALTH_EFFECTS_PATH_CY = '/effeithiau-iechyd/cy'
+const HTTP_REDIRECT = 302
+const HTTP_ERROR = 500
+const HEALTH_EFFECTS_PAGE_CY = 'Effaith llygredd aer ar iechyd'
+
+describe("'' healthEffectsHandlerCy - Language Redirects", () => {
   beforeEach(() => {
-    vi.clearAllMocks() // '' Reset mocks
+    vi.clearAllMocks()
   })
 
   it("'' redirects to English when lang=en (lowercase)", () => {
@@ -59,15 +69,15 @@ describe("'' healthEffectsHandlerCy", () => {
     const request = {
       query: { lang: 'en' },
       params: { id: 'caerdydd' },
-      path: '/effeithiau-iechyd/cy'
+      path: HEALTH_EFFECTS_PATH_CY
     }
     const h = createH()
     const result = healthEffectsHandlerCy(request, h)
-    expect(getReadableLocationName).toHaveBeenCalled()
+    verifyCommonCalls()
     expect(h.redirect).toHaveBeenCalledTimes(1)
     const url = h.redirect.mock.calls[0][0]
     expect(url).toBe('/health-effects?lang=en&locationName=Caerdydd')
-    expect(result.statusCode).toBe(302)
+    expect(result.statusCode).toBe(HTTP_REDIRECT)
   })
 
   it("'' redirects to English when lang=EN (case-insensitive)", () => {
@@ -75,13 +85,13 @@ describe("'' healthEffectsHandlerCy", () => {
     const request = {
       query: { lang: 'EN' },
       params: { id: 'abertawe' },
-      path: '/effeithiau-iechyd/cy'
+      path: HEALTH_EFFECTS_PATH_CY
     }
     const h = createH()
     const result = healthEffectsHandlerCy(request, h)
     const url = h.redirect.mock.calls[0][0]
     expect(url).toBe('/health-effects?lang=en&locationName=Abertawe')
-    expect(result.statusCode).toBe(302)
+    expect(result.statusCode).toBe(HTTP_REDIRECT)
   })
 
   it("'' redirects to English without locationName when helper empty", () => {
@@ -89,13 +99,19 @@ describe("'' healthEffectsHandlerCy", () => {
     const request = {
       query: { lang: 'en' },
       params: { id: '' },
-      path: '/effeithiau-iechyd/cy'
+      path: HEALTH_EFFECTS_PATH_CY
     }
     const h = createH()
     const result = healthEffectsHandlerCy(request, h)
     const url = h.redirect.mock.calls[0][0]
     expect(url).toBe('/health-effects?lang=en')
-    expect(result.statusCode).toBe(302)
+    expect(result.statusCode).toBe(HTTP_REDIRECT)
+  })
+})
+
+describe("'' healthEffectsHandlerCy - Welsh Content Rendering", () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
   it("'' renders Welsh view model normally", () => {
@@ -103,23 +119,21 @@ describe("'' healthEffectsHandlerCy", () => {
     const request = {
       query: { lang: 'cy' },
       params: { id: 'caerdydd' },
-      path: '/effeithiau-iechyd/cy'
+      path: HEALTH_EFFECTS_PATH_CY
     }
     const h = createH()
     const result = healthEffectsHandlerCy(request, h)
+    verifyCommonCalls()
     expect(getAirQualitySiteUrl).toHaveBeenCalled()
     expect(buildHealthEffectsViewModel).toHaveBeenCalledWith(
-      expect.objectContaining({
-        readableName: 'Caerdydd',
-        lang: 'cy'
-      })
+      expect.objectContaining({ readableName: 'Caerdydd', lang: 'cy' })
     )
     expect(h.view).toHaveBeenCalledTimes(1)
     const [template, ctx] = h.view.mock.calls[0]
     expect(template).toBe('health-effects/cy/index')
     expect(ctx.locationName).toBe('Caerdydd')
-    expect(ctx.page).toBe('Effaith llygredd aer ar iechyd')
-    expect(ctx.pageTitle).toBe('Effaith llygredd aer ar iechyd')
+    expect(ctx.page).toBe(HEALTH_EFFECTS_PAGE_CY)
+    expect(ctx.pageTitle).toBe(HEALTH_EFFECTS_PAGE_CY)
     expect(ctx.backLinkText).toBe('Llygredd aer yn Caerdydd')
     expect(result.template).toBe('health-effects/cy/index')
   })
@@ -127,39 +141,43 @@ describe("'' healthEffectsHandlerCy", () => {
   it("'' applies custom content overrides", () => {
     getReadableLocationName.mockReturnValueOnce('Casnewydd')
     buildHealthEffectsViewModel.mockImplementationOnce(({ readableName }) => ({
-      pageTitle: 'Custom EN Title', // '' Will be overridden to Welsh
-      backLinkUrl: 'javascript:history.back()',
+      pageTitle: 'Custom EN Title',
+      backLinkUrl: '#',
       backLinkText: `Air pollution in ${readableName}`,
       locationName: readableName,
       lang: 'cy'
     }))
-    const customContent = {
-      healthEffects: { pageTitle: 'Ignored EN Title' }
-    }
+    const customContent = { healthEffects: { pageTitle: 'Ignored EN Title' } }
     const request = {
       query: { lang: 'cy' },
       params: { id: 'casnewydd' },
-      path: '/effeithiau-iechyd/cy'
+      path: HEALTH_EFFECTS_PATH_CY
     }
     const h = createH()
     healthEffectsHandlerCy(request, h, customContent)
     const ctx = h.view.mock.calls[0][1]
-    expect(ctx.pageTitle).toBe('Effaith llygredd aer ar iechyd')
+    expect(ctx.pageTitle).toBe(HEALTH_EFFECTS_PAGE_CY)
     expect(ctx.locationName).toBe('Casnewydd')
   })
+})
 
-  it("'' returns 500 when helper throws", () => {
+describe("'' healthEffectsHandlerCy - Error Handling", () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it("'' returns HTTP_ERROR when helper throws", () => {
     buildHealthEffectsViewModel.mockImplementationOnce(() => {
-      throw new Error('Boom') // '' Force failure
+      throw new Error('Boom')
     })
     const request = {
       query: { lang: 'cy' },
       params: { id: 'caerdydd' },
-      path: '/effeithiau-iechyd/cy'
+      path: HEALTH_EFFECTS_PATH_CY
     }
     const h = createH()
     const result = healthEffectsHandlerCy(request, h)
-    expect(result.statusCode).toBe(500)
+    expect(result.statusCode).toBe(HTTP_ERROR)
     expect(result.payload).toBe('Internal Server Error')
   })
 })

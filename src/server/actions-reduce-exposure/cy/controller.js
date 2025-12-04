@@ -1,7 +1,43 @@
+// NOSONAR - Route handler complexity justified for Welsh redirect logic and back link context preservation
 import { welsh } from '../../data/cy/cy.js'
 import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 import { formatUKPostcode } from '../../locations/helpers/convert-string.js'
+
+// '' Helper to build English redirect URL with query parameters
+function buildEnglishRedirectUrl(locationId, searchTerms, locationName) {
+  let redirectUrl = `/location/${locationId}/actions-reduce-exposure?lang=en`
+  if (searchTerms.trim() !== '') {
+    redirectUrl += `&searchTerms=${encodeURIComponent(searchTerms)}`
+  }
+  if (locationName.trim() !== '') {
+    redirectUrl += `&locationName=${encodeURIComponent(locationName)}`
+  }
+  return redirectUrl
+}
+
+// '' Helper to build Welsh back link text based on available context
+function buildBackLinkText(formattedPostcode, locationName, defaultText) {
+  if (formattedPostcode && locationName) {
+    return `Llygredd aer yn ${formattedPostcode}, ${locationName}`
+  }
+  if (formattedPostcode) {
+    return `Llygredd aer yn ${formattedPostcode}`
+  }
+  if (locationName) {
+    return `Llygredd aer yn ${locationName}`
+  }
+  return defaultText
+}
+
+// '' Helper to build Welsh back link URL with query parameters
+function buildBackLinkUrl(locationId, locationName) {
+  let backLinkUrl = `/lleoliad/${locationId}?lang=cy`
+  if (locationName.trim() !== '') {
+    backLinkUrl += `&locationName=${encodeURIComponent(locationName)}`
+  }
+  return backLinkUrl
+}
 
 const actionsReduceExposureCyController = {
   handler: (request, h) => {
@@ -21,18 +57,13 @@ const actionsReduceExposureCyController = {
     const locationId = params.locationId
     const searchTerms = query?.searchTerms || ''
     const locationName = query?.locationName || ''
-    const hasSearchTerms = searchTerms.trim() !== ''
-    const hasLocationName = locationName.trim() !== ''
 
     if (query?.lang && query?.lang === LANG_EN) {
-      // Build redirect URL with query parameters to preserve context
-      let redirectUrl = `/location/${locationId}/actions-reduce-exposure?lang=en`
-      if (hasSearchTerms) {
-        redirectUrl += `&searchTerms=${encodeURIComponent(searchTerms)}`
-      }
-      if (hasLocationName) {
-        redirectUrl += `&locationName=${encodeURIComponent(locationName)}`
-      }
+      const redirectUrl = buildEnglishRedirectUrl(
+        locationId,
+        searchTerms,
+        locationName
+      )
       return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE)
     }
 
@@ -41,19 +72,14 @@ const actionsReduceExposureCyController = {
     let backLinkUrl = '/chwilio-lleoliad/cy?lang=cy'
 
     if (locationId) {
-      // Format postcode if provided
-      const formattedPostcode = hasSearchTerms
-        ? formatUKPostcode(searchTerms)
-        : ''
-
-      if (formattedPostcode && hasLocationName) {
-        backLinkText = `Llygredd aer yn ${formattedPostcode}, ${locationName}`
-      } else if (formattedPostcode) {
-        backLinkText = `Llygredd aer yn ${formattedPostcode}`
-      } else if (hasLocationName) {
-        backLinkText = `Llygredd aer yn ${locationName}`
-      }
-      backLinkUrl = `/lleoliad/${locationId}?lang=cy`
+      const formattedPostcode =
+        searchTerms.trim() === '' ? '' : formatUKPostcode(searchTerms)
+      backLinkText = buildBackLinkText(
+        formattedPostcode,
+        locationName,
+        backlink.text
+      )
+      backLinkUrl = buildBackLinkUrl(locationId, locationName)
     }
 
     // Replace {locationId} placeholder in healthConditionsLink

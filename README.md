@@ -1,6 +1,7 @@
 # aqie-front-end
 
-Core delivery platform Node.js Frontend Template. Test for deploy
+Core delivery platform Node.js Frontend Template. Test for deploy.
+Updated for SonarQube compliance
 
 - [Requirements](#requirements)
   - [Node.js](#nodejs)

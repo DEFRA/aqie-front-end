@@ -172,6 +172,19 @@
       {% endif %}
       {# Defensive assignments for pollutant values #}
       {% set pollutantHref = pollutantDetail.href or '#' %}
+      {# '' Add query parameters for back link context #}
+      {% if pollutantHref != '#' %}
+        {% set pollutantHref = pollutantHref + '?lang=' + lang %}
+        {% if locationId %}
+          {% set pollutantHref = pollutantHref + '&locationId=' + locationId %}
+          {% if locationName %}
+            {% set pollutantHref = pollutantHref + '&locationName=' + (locationName | urlencode) %}
+          {% endif %}
+          {% if searchTerms %}
+            {% set pollutantHref = pollutantHref + '&searchTerms=' + (searchTerms | urlencode) %}
+          {% endif %}
+        {% endif %}
+      {% endif %}
       {% set pollutantTitle = pollutantDetail.title or '' %}
       {% set pollutantLowRange = pollutantDetail.low_range or '' %}
       {% if pollutant.value is defined %}
@@ -281,6 +294,19 @@
       {% endif %}
       {# Defensive assignments for pollutant values #}
       {% set pollutantHref = pollutantDetail.href or '#' %}
+      {# '' Add query parameters for back link context #}
+      {% if pollutantHref != '#' %}
+        {% set pollutantHref = pollutantHref + '?lang=' + lang %}
+        {% if locationId %}
+          {% set pollutantHref = pollutantHref + '&locationId=' + locationId %}
+          {% if locationName %}
+            {% set pollutantHref = pollutantHref + '&locationName=' + (locationName | urlencode) %}
+          {% endif %}
+          {% if searchTerms %}
+            {% set pollutantHref = pollutantHref + '&searchTerms=' + (searchTerms | urlencode) %}
+          {% endif %}
+        {% endif %}
+      {% endif %}
       {% set pollutantTitle = pollutantDetail.title or '' %}
       {% set pollutantLowRange = pollutantDetail.low_range or '' %}
       {% if pollutant.value is defined %}

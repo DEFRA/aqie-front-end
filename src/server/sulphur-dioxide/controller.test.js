@@ -20,9 +20,9 @@ describe('sulphurDioxide Controller - English', () => {
       })
     }))
     mockH = {
-      redirect: vi.fn().mockImplementation((url) => {
+      redirect: vi.fn().mockImplementation((_url) => {
         return {
-          code: vi.fn().mockImplementation((statusCode) => {
+          code: vi.fn().mockImplementation((_statusCode) => {
             return 'redirected'
           })
         }
@@ -47,6 +47,8 @@ describe('sulphurDioxide Controller - English', () => {
       },
       path: '/sulphur-dioxide'
     }
+    mockRequest.query.locationId = '123'
+    mockRequest.query.locationName = 'Test Location'
     const expectedUrl =
       'https://check-air-quality.service.gov.uk/sulphur-dioxide?lang=en'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
@@ -59,7 +61,10 @@ describe('sulphurDioxide Controller - English', () => {
       metaSiteUrl: actualUrl,
       sulphurDioxide,
       page: 'Sulphur dioxide (SO₂)',
-      displayBacklink: false,
+      displayBacklink: true,
+      backLinkText: 'Air pollution in Test Location',
+      backLinkUrl: '/location/123?lang=en',
+      customBackLink: true,
       phaseBanner: mockContent.phaseBanner,
       footerTxt: mockContent.footerTxt,
       cookieBanner: mockContent.cookieBanner,

@@ -5,11 +5,17 @@ import { Server } from '@hapi/hapi'
 import { healthEffectsCy } from './index.js' // '' Welsh plugin
 import { healthEffectsController } from '../controller.js' // '' Hapi server
 
+// '' HTTP status code constants
+const HTTP_OK = 200
+const HTTP_FOUND = 302
+const HTTP_NOT_FOUND = 404
+const HTTP_SERVER_ERROR = 500
+
 // '' Mock unified controller and logger before importing the plugin so module-level imports use the mocks
 // '' Mock unified handler
 vi.mock('../controller.js', () => ({
   healthEffectsController: {
-    handler: vi.fn((req, h) => h.response('ok').code(200))
+    handler: vi.fn((_req, h) => h.response('ok').code(HTTP_OK))
   }
 }))
 
@@ -35,7 +41,7 @@ describe("'' healthEffectsCy plugin", () => {
 
   it("'' registers Welsh dynamic route", async () => {
     const res = await server.inject('/lleoliad/caerdydd/effeithiau-iechyd')
-    expect(res.statusCode).toBe(200)
+    expect(res.statusCode).toBe(HTTP_OK)
     expect(healthEffectsController.handler).toHaveBeenCalledTimes(1)
   })
 
@@ -44,12 +50,12 @@ describe("'' healthEffectsCy plugin", () => {
     const res = await server.inject(
       '/location/locationName/health-effects?lang=cy'
     )
-    if (res.statusCode === 302) {
+    if (res.statusCode === HTTP_FOUND) {
       expect(res.headers.location).toBe(
         '/lleoliad/locationName/effeithiau-iechyd'
       )
     } else {
-      expect(res.statusCode).toBe(404)
+      expect(res.statusCode).toBe(HTTP_NOT_FOUND)
     }
   })
 
@@ -58,12 +64,12 @@ describe("'' healthEffectsCy plugin", () => {
     const res = await server.inject(
       '/location/locationName/health-effects?lang=en'
     )
-    expect(res.statusCode).toBe(404) // '' No route matches / original path continues
+    expect(res.statusCode).toBe(HTTP_NOT_FOUND) // '' No route matches / original path continues
   })
 
   it("'' continues request when legacy path does not match", async () => {
     const res = await server.inject('/location/unknown/path')
-    expect(res.statusCode).toBe(404) // '' No route matches
+    expect(res.statusCode).toBe(HTTP_NOT_FOUND) // '' No route matches
   })
 
   it("'' logs error when onPreHandler fails", async () => {
@@ -71,9 +77,9 @@ describe("'' healthEffectsCy plugin", () => {
     const mockRedirect = vi.fn(() => {
       throw new Error('Simulated onPreHandler error')
     })
-    server.ext('onPreHandler', (request, h) => mockRedirect())
+    server.ext('onPreHandler', (_request, _h) => mockRedirect())
     const res = await server.inject('/location/invalid/health-effects')
-    expect([404, 500]).toContain(res.statusCode) // '' Accept either behavior
+    expect([HTTP_NOT_FOUND, HTTP_SERVER_ERROR]).toContain(res.statusCode) // '' Accept either behavior
 
     // '' Accept logging being optional in this environment.
     // If logging occurred, ensure it includes an Error or mentions onPreHandler.

@@ -269,12 +269,6 @@ export const config = convict({
     default: `https://aqie-back-end.dev.cdp-int.defra.cloud/monitoringStationInfo?`,
     env: 'NEW_RICARDO_MEASUREMENTS_API_URL'
   },
-  forecastSummaryUrl: {
-    doc: 'Summary forecast url',
-    format: String,
-    default: 'https://uk-air.defra.gov.uk/ajax/forecast_text_summary.php',
-    env: 'FORECAST_SUMMARY_URL'
-  },
   postcodeNortherIrelandUrl: {
     doc: 'Search postcode Northern Ireland url',
     format: String,
