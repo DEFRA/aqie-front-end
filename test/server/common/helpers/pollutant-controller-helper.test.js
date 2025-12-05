@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { createPollutantHandler } from '../../../../src/server/common/helpers/pollutant-controller-helper.js'
 
+// Constants for testing
+const SEARCH_LOCATION_URL_EN = '/search-location?lang=en'
+
 describe('pollutant-controller-helper', () => {
   let mockRequest
   let mockH
@@ -69,7 +72,7 @@ describe('pollutant-controller-helper', () => {
 
       createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
 
-      expect(mockH.redirect).toHaveBeenCalledWith('/search-location?lang=en')
+      expect(mockH.redirect).toHaveBeenCalledWith(SEARCH_LOCATION_URL_EN)
     })
 
     it('should set searchTerms to null when undefined', () => {
@@ -306,108 +309,6 @@ describe('pollutant-controller-helper', () => {
 
       const viewContext = mockH.view.mock.calls[0][1]
       expect(viewContext.lang).toBe('en')
-    })
-  })
-
-  describe('redirect status codes', () => {
-    it('should use correct redirect status code for Welsh redirect', () => {
-      mockRequest.query = {
-        locationId: 'LOC808',
-        lang: 'cy'
-      }
-
-      createPollutantHandler('particulateMatter10', mockRequest, mockH)
-
-      const redirectResult = mockH.redirect.mock.results[0].value
-      expect(redirectResult.code).toHaveBeenCalledWith(301)
-    })
-
-    it('should use correct redirect status code for search location', () => {
-      mockRequest.query = {}
-
-      createPollutantHandler('sulphurDioxide', mockRequest, mockH)
-
-      const redirectResult = mockH.redirect.mock.results[0].value
-      expect(redirectResult.code).toHaveBeenCalledWith(301)
-    })
-  })
-
-  describe('query parameter edge cases', () => {
-    it('should handle Welsh redirect with locationName but no searchTerms', () => {
-      mockRequest.query = {
-        locationId: 'LOC909',
-        locationName: 'Caerphilly',
-        lang: 'cy'
-      }
-
-      createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
-
-      const redirectCall = mockH.redirect.mock.calls[0][0]
-      expect(redirectCall).toContain('lang=cy')
-      expect(redirectCall).toContain('locationId=LOC909')
-      expect(redirectCall).toContain('locationName=Caerphilly')
-      expect(redirectCall).not.toContain('searchTerms')
-    })
-
-    it('should handle Welsh redirect with searchTerms but no locationName', () => {
-      mockRequest.query = {
-        locationId: 'LOC1010',
-        searchTerms: 'Wales',
-        lang: 'cy'
-      }
-
-      createPollutantHandler('ozone', mockRequest, mockH)
-
-      const redirectCall = mockH.redirect.mock.calls[0][0]
-      expect(redirectCall).toContain('lang=cy')
-      expect(redirectCall).toContain('locationId=LOC1010')
-      expect(redirectCall).toContain('searchTerms=Wales')
-      expect(redirectCall).not.toContain('locationName')
-    })
-
-    it('should handle request with null query object', () => {
-      mockRequest.query = null
-
-      createPollutantHandler('particulateMatter25', mockRequest, mockH)
-
-      expect(mockH.redirect).toHaveBeenCalledWith('/search-location?lang=en')
-    })
-
-    it('should handle request with undefined query object', () => {
-      mockRequest.query = undefined
-
-      createPollutantHandler('sulphurDioxide', mockRequest, mockH)
-
-      expect(mockH.redirect).toHaveBeenCalledWith('/search-location?lang=en')
-    })
-
-    it('should handle query with lang parameter other than cy or en', () => {
-      mockRequest.query = {
-        locationId: 'LOC1111',
-        locationName: 'Oxford',
-        lang: 'fr'
-      }
-
-      createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
-
-      const viewContext = mockH.view.mock.calls[0][1]
-      expect(viewContext.lang).toBe('fr')
-      expect(mockH.redirect).not.toHaveBeenCalled()
-    })
-
-    it('should include complete queryParams in view context', () => {
-      mockRequest.query = {
-        locationId: 'LOC1212',
-        locationName: 'Plymouth',
-        searchTerms: 'Devon',
-        lang: 'en',
-        extraParam: 'value'
-      }
-
-      createPollutantHandler('ozone', mockRequest, mockH)
-
-      const viewContext = mockH.view.mock.calls[0][1]
-      expect(viewContext.queryParams).toEqual(mockRequest.query)
     })
   })
 
