@@ -1,8 +1,82 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { createPollutantHandler } from '../../../../src/server/common/helpers/pollutant-controller-helper.js'
+import { LANG_EN, LANG_CY, SEARCH_LOCATION_ROUTE_EN } from '../../../../src/server/data/constants.js'
 
-// Constants for testing
-const SEARCH_LOCATION_URL_EN = '/search-location?lang=en'
+// Test-specific constants
+const QUERY_LOCATION_ID = 'locationId'
+const QUERY_LOCATION_NAME = 'locationName'
+const QUERY_SEARCH_TERMS = 'searchTerms'
+const QUERY_LANG = 'lang'
+
+const TEST_LOC_123 = 'LOC123'
+const TEST_LOC_456 = 'LOC456'
+const TEST_LOC_789 = 'LOC789'
+const TEST_LOC_101 = 'LOC101'
+const TEST_LOC_202 = 'LOC202'
+const TEST_LOC_303 = 'LOC303'
+const TEST_LOC_404 = 'LOC404'
+const TEST_LOC_505 = 'LOC505'
+const TEST_LOC_606 = 'LOC606'
+const TEST_LOC_707 = 'LOC707'
+const TEST_LOC_1313 = 'LOC1313'
+const TEST_LOC_1414 = 'LOC1414'
+const TEST_LOC_1515 = 'LOC1515'
+const TEST_LOC_1616 = 'LOC1616'
+const TEST_LOC_1717 = 'LOC1717'
+const TEST_LOC_1818 = 'LOC1818'
+const TEST_LOC_1919 = 'LOC1919'
+const TEST_LOC_2020 = 'LOC2020'
+
+const CITY_CARDIFF = 'Cardiff'
+const CITY_LONDON = 'London'
+const CITY_MANCHESTER = 'Manchester'
+const CITY_BIRMINGHAM = 'Birmingham'
+const CITY_LEEDS = 'Leeds'
+const CITY_SWANSEA = 'Swansea'
+const CITY_BRISTOL = 'Bristol'
+const CITY_NEWCASTLE = 'Newcastle'
+const CITY_YORK = 'York'
+const CITY_SOUTHAMPTON = 'Southampton'
+const CITY_COVENTRY = 'Coventry'
+
+const POLLUTANT_NITROGEN_DIOXIDE = 'nitrogenDioxide'
+const POLLUTANT_OZONE = 'ozone'
+const POLLUTANT_PM10 = 'particulateMatter10'
+const POLLUTANT_PM25 = 'particulateMatter25'
+const POLLUTANT_SULPHUR_DIOXIDE = 'sulphurDioxide'
+const POLLUTANT_UNKNOWN = 'unknownPollutant'
+
+const VIEW_NITROGEN_DIOXIDE = 'nitrogen-dioxide/index'
+const VIEW_OZONE = 'ozone/index'
+const VIEW_PM10 = 'particulate-matter-10/index'
+const VIEW_PM25 = 'particulate-matter-25/index'
+const VIEW_SULPHUR_DIOXIDE = 'sulphur-dioxide/index'
+
+const PATH_NITROGEN_DIOXIDE = '/pollutants/nitrogen-dioxide'
+const PATH_OZONE = '/pollutants/ozone'
+const PATH_PM10 = '/pollutants/particulate-matter-10'
+const PATH_PM25 = '/pollutants/particulate-matter-25'
+const PATH_SULPHUR_DIOXIDE = '/pollutants/sulphur-dioxide'
+
+const WELSH_PATH_NITROGEN_DIOXIDE = '/llygryddion/nitrogen-deuocsid/cy?'
+const WELSH_PATH_OZONE = '/llygryddion/oson/cy?'
+const WELSH_PATH_PM10 = '/llygryddion/mater-gronynnol-10/cy?'
+const WELSH_PATH_PM25 = '/llygryddion/mater-gronynnol-25/cy?'
+const WELSH_PATH_SULPHUR_DIOXIDE = '/llygryddion/sylffwr-deuocsid/cy?'
+
+const PAGE_LABEL_NITROGEN_DIOXIDE = 'nitrogen dioxide'
+const PAGE_LABEL_OZONE = 'ozone'
+const PAGE_LABEL_PM10 = 'particulate matter 10'
+const PAGE_LABEL_PM25 = 'particulate matter 25'
+const PAGE_LABEL_SULPHUR_DIOXIDE = 'sulphur dioxide'
+
+const SEARCH_TERMS_SWANSEA = 'Swansea Wales'
+const SEARCH_TERMS_WEST_MIDLANDS = 'West Midlands'
+
+const ERROR_UNKNOWN_POLLUTANT = 'Unknown pollutant type: unknownPollutant'
+
+const TEST_HOST = 'localhost:3000'
+const TEST_PROTO = 'http'
 
 describe('pollutant-controller-helper', () => {
   let mockRequest
@@ -11,10 +85,10 @@ describe('pollutant-controller-helper', () => {
   beforeEach(() => {
     mockRequest = {
       info: {
-        host: 'localhost:3000'
+        host: TEST_HOST
       },
       headers: {
-        'x-forwarded-proto': 'http'
+        'x-forwarded-proto': TEST_PROTO
       }
     }
 
@@ -29,64 +103,64 @@ describe('pollutant-controller-helper', () => {
   describe('nitrogen dioxide pollutant', () => {
     it('should render nitrogen dioxide view with all required data', () => {
       mockRequest.query = {
-        locationId: 'LOC123',
-        locationName: 'Cardiff',
-        searchTerms: 'Cardiff',
-        lang: 'en'
+        [QUERY_LOCATION_ID]: TEST_LOC_123,
+        [QUERY_LOCATION_NAME]: CITY_CARDIFF,
+        [QUERY_SEARCH_TERMS]: CITY_CARDIFF,
+        [QUERY_LANG]: LANG_EN
       }
 
-      createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_NITROGEN_DIOXIDE, mockRequest, mockH)
 
       expect(mockH.view).toHaveBeenCalledWith(
-        'nitrogen-dioxide/index',
+        VIEW_NITROGEN_DIOXIDE,
         expect.objectContaining({
           pageTitle: expect.any(String),
           description: expect.any(String),
-          page: 'nitrogen dioxide',
-          currentPath: '/pollutants/nitrogen-dioxide',
-          locationId: 'LOC123',
-          locationName: 'Cardiff',
-          searchTerms: 'Cardiff',
-          lang: 'en'
+          page: PAGE_LABEL_NITROGEN_DIOXIDE,
+          currentPath: PATH_NITROGEN_DIOXIDE,
+          [QUERY_LOCATION_ID]: TEST_LOC_123,
+          [QUERY_LOCATION_NAME]: CITY_CARDIFF,
+          [QUERY_SEARCH_TERMS]: CITY_CARDIFF,
+          [QUERY_LANG]: LANG_EN
         })
       )
     })
 
     it('should redirect to Welsh version when lang is cy', () => {
       mockRequest.query = {
-        locationId: 'LOC123',
-        locationName: 'Cardiff',
-        searchTerms: 'Cardiff',
-        lang: 'cy'
+        [QUERY_LOCATION_ID]: TEST_LOC_123,
+        [QUERY_LOCATION_NAME]: CITY_CARDIFF,
+        [QUERY_SEARCH_TERMS]: CITY_CARDIFF,
+        [QUERY_LANG]: LANG_CY
       }
 
-      createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_NITROGEN_DIOXIDE, mockRequest, mockH)
 
       expect(mockH.redirect).toHaveBeenCalledWith(
-        expect.stringContaining('/llygryddion/nitrogen-deuocsid/cy?')
+        expect.stringContaining(WELSH_PATH_NITROGEN_DIOXIDE)
       )
     })
 
     it('should redirect to search when no locationId', () => {
       mockRequest.query = {}
 
-      createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_NITROGEN_DIOXIDE, mockRequest, mockH)
 
-      expect(mockH.redirect).toHaveBeenCalledWith(SEARCH_LOCATION_URL_EN)
+      expect(mockH.redirect).toHaveBeenCalledWith(SEARCH_LOCATION_ROUTE_EN)
     })
 
     it('should set searchTerms to null when undefined', () => {
       mockRequest.query = {
-        locationId: 'LOC123',
-        locationName: 'Cardiff'
+        [QUERY_LOCATION_ID]: TEST_LOC_123,
+        [QUERY_LOCATION_NAME]: CITY_CARDIFF
       }
 
-      createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_NITROGEN_DIOXIDE, mockRequest, mockH)
 
       expect(mockH.view).toHaveBeenCalledWith(
-        'nitrogen-dioxide/index',
+        VIEW_NITROGEN_DIOXIDE,
         expect.objectContaining({
-          searchTerms: null
+          [QUERY_SEARCH_TERMS]: null
         })
       )
     })
@@ -95,31 +169,31 @@ describe('pollutant-controller-helper', () => {
   describe('ozone pollutant', () => {
     it('should render ozone view with correct paths', () => {
       mockRequest.query = {
-        locationId: 'LOC456',
-        locationName: 'London'
+        [QUERY_LOCATION_ID]: TEST_LOC_456,
+        [QUERY_LOCATION_NAME]: CITY_LONDON
       }
 
-      createPollutantHandler('ozone', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_OZONE, mockRequest, mockH)
 
       expect(mockH.view).toHaveBeenCalledWith(
-        'ozone/index',
+        VIEW_OZONE,
         expect.objectContaining({
-          page: 'ozone',
-          currentPath: '/pollutants/ozone'
+          page: PAGE_LABEL_OZONE,
+          currentPath: PATH_OZONE
         })
       )
     })
 
     it('should redirect to Welsh ozone page', () => {
       mockRequest.query = {
-        locationId: 'LOC456',
-        lang: 'cy'
+        [QUERY_LOCATION_ID]: TEST_LOC_456,
+        [QUERY_LANG]: LANG_CY
       }
 
-      createPollutantHandler('ozone', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_OZONE, mockRequest, mockH)
 
       expect(mockH.redirect).toHaveBeenCalledWith(
-        expect.stringContaining('/llygryddion/oson/cy?')
+        expect.stringContaining(WELSH_PATH_OZONE)
       )
     })
   })
@@ -127,31 +201,31 @@ describe('pollutant-controller-helper', () => {
   describe('particulate matter 10 pollutant', () => {
     it('should render PM10 view with correct data', () => {
       mockRequest.query = {
-        locationId: 'LOC789',
-        locationName: 'Manchester'
+        [QUERY_LOCATION_ID]: TEST_LOC_789,
+        [QUERY_LOCATION_NAME]: CITY_MANCHESTER
       }
 
-      createPollutantHandler('particulateMatter10', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_PM10, mockRequest, mockH)
 
       expect(mockH.view).toHaveBeenCalledWith(
-        'particulate-matter-10/index',
+        VIEW_PM10,
         expect.objectContaining({
-          page: 'particulate matter 10',
-          currentPath: '/pollutants/particulate-matter-10'
+          page: PAGE_LABEL_PM10,
+          currentPath: PATH_PM10
         })
       )
     })
 
     it('should redirect to Welsh PM10 page', () => {
       mockRequest.query = {
-        locationId: 'LOC789',
-        lang: 'cy'
+        [QUERY_LOCATION_ID]: TEST_LOC_789,
+        [QUERY_LANG]: LANG_CY
       }
 
-      createPollutantHandler('particulateMatter10', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_PM10, mockRequest, mockH)
 
       expect(mockH.redirect).toHaveBeenCalledWith(
-        expect.stringContaining('/llygryddion/mater-gronynnol-10/cy?')
+        expect.stringContaining(WELSH_PATH_PM10)
       )
     })
   })
@@ -159,31 +233,31 @@ describe('pollutant-controller-helper', () => {
   describe('particulate matter 25 pollutant', () => {
     it('should render PM25 view with correct data', () => {
       mockRequest.query = {
-        locationId: 'LOC101',
-        locationName: 'Birmingham'
+        [QUERY_LOCATION_ID]: TEST_LOC_101,
+        [QUERY_LOCATION_NAME]: CITY_BIRMINGHAM
       }
 
-      createPollutantHandler('particulateMatter25', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_PM25, mockRequest, mockH)
 
       expect(mockH.view).toHaveBeenCalledWith(
-        'particulate-matter-25/index',
+        VIEW_PM25,
         expect.objectContaining({
-          page: 'particulate matter 25',
-          currentPath: '/pollutants/particulate-matter-25'
+          page: PAGE_LABEL_PM25,
+          currentPath: PATH_PM25
         })
       )
     })
 
     it('should redirect to Welsh PM25 page', () => {
       mockRequest.query = {
-        locationId: 'LOC101',
-        lang: 'cy'
+        [QUERY_LOCATION_ID]: TEST_LOC_101,
+        [QUERY_LANG]: LANG_CY
       }
 
-      createPollutantHandler('particulateMatter25', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_PM25, mockRequest, mockH)
 
       expect(mockH.redirect).toHaveBeenCalledWith(
-        expect.stringContaining('/llygryddion/mater-gronynnol-25/cy?')
+        expect.stringContaining(WELSH_PATH_PM25)
       )
     })
   })
@@ -191,31 +265,31 @@ describe('pollutant-controller-helper', () => {
   describe('sulphur dioxide pollutant', () => {
     it('should render sulphur dioxide view with correct data', () => {
       mockRequest.query = {
-        locationId: 'LOC202',
-        locationName: 'Leeds'
+        [QUERY_LOCATION_ID]: TEST_LOC_202,
+        [QUERY_LOCATION_NAME]: CITY_LEEDS
       }
 
-      createPollutantHandler('sulphurDioxide', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_SULPHUR_DIOXIDE, mockRequest, mockH)
 
       expect(mockH.view).toHaveBeenCalledWith(
-        'sulphur-dioxide/index',
+        VIEW_SULPHUR_DIOXIDE,
         expect.objectContaining({
-          page: 'sulphur dioxide',
-          currentPath: '/pollutants/sulphur-dioxide'
+          page: PAGE_LABEL_SULPHUR_DIOXIDE,
+          currentPath: PATH_SULPHUR_DIOXIDE
         })
       )
     })
 
     it('should redirect to Welsh sulphur dioxide page', () => {
       mockRequest.query = {
-        locationId: 'LOC202',
-        lang: 'cy'
+        [QUERY_LOCATION_ID]: TEST_LOC_202,
+        [QUERY_LANG]: LANG_CY
       }
 
-      createPollutantHandler('sulphurDioxide', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_SULPHUR_DIOXIDE, mockRequest, mockH)
 
       expect(mockH.redirect).toHaveBeenCalledWith(
-        expect.stringContaining('/llygryddion/sylffwr-deuocsid/cy?')
+        expect.stringContaining(WELSH_PATH_SULPHUR_DIOXIDE)
       )
     })
   })
@@ -223,66 +297,66 @@ describe('pollutant-controller-helper', () => {
   describe('Welsh redirects with all query params', () => {
     it('should preserve locationId, locationName, and searchTerms in Welsh redirect', () => {
       mockRequest.query = {
-        locationId: 'LOC303',
-        locationName: 'Swansea',
-        searchTerms: 'Swansea Wales',
-        lang: 'cy'
+        [QUERY_LOCATION_ID]: TEST_LOC_303,
+        [QUERY_LOCATION_NAME]: CITY_SWANSEA,
+        [QUERY_SEARCH_TERMS]: SEARCH_TERMS_SWANSEA,
+        [QUERY_LANG]: LANG_CY
       }
 
-      createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_NITROGEN_DIOXIDE, mockRequest, mockH)
 
       const redirectCall = mockH.redirect.mock.calls[0][0]
-      expect(redirectCall).toContain('lang=cy')
-      expect(redirectCall).toContain('locationId=LOC303')
-      expect(redirectCall).toContain('locationName=Swansea')
-      expect(redirectCall).toContain('searchTerms=Swansea')
+      expect(redirectCall).toContain(`lang=${LANG_CY}`)
+      expect(redirectCall).toContain(`locationId=${TEST_LOC_303}`)
+      expect(redirectCall).toContain(`locationName=${CITY_SWANSEA}`)
+      expect(redirectCall).toContain(`searchTerms=${CITY_SWANSEA}`)
     })
 
     it('should handle Welsh redirect with only locationId', () => {
       mockRequest.query = {
-        locationId: 'LOC404',
-        lang: 'cy'
+        [QUERY_LOCATION_ID]: TEST_LOC_404,
+        [QUERY_LANG]: LANG_CY
       }
 
-      createPollutantHandler('ozone', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_OZONE, mockRequest, mockH)
 
       const redirectCall = mockH.redirect.mock.calls[0][0]
-      expect(redirectCall).toContain('lang=cy')
-      expect(redirectCall).toContain('locationId=LOC404')
-      expect(redirectCall).not.toContain('locationName')
-      expect(redirectCall).not.toContain('searchTerms')
+      expect(redirectCall).toContain(`lang=${LANG_CY}`)
+      expect(redirectCall).toContain(`locationId=${TEST_LOC_404}`)
+      expect(redirectCall).not.toContain(QUERY_LOCATION_NAME)
+      expect(redirectCall).not.toContain(QUERY_SEARCH_TERMS)
     })
   })
 
   describe('error handling', () => {
     it('should throw error for unknown pollutant type', () => {
       mockRequest.query = {
-        locationId: 'LOC505'
+        [QUERY_LOCATION_ID]: TEST_LOC_505
       }
 
       expect(() => {
-        createPollutantHandler('unknownPollutant', mockRequest, mockH)
-      }).toThrow('Unknown pollutant type: unknownPollutant')
+        createPollutantHandler(POLLUTANT_UNKNOWN, mockRequest, mockH)
+      }).toThrow(ERROR_UNKNOWN_POLLUTANT)
     })
   })
 
   describe('view context data', () => {
     it('should include all required context properties', () => {
       mockRequest.query = {
-        locationId: 'LOC606',
-        locationName: 'Bristol',
-        searchTerms: 'Bristol',
-        lang: 'en'
+        [QUERY_LOCATION_ID]: TEST_LOC_606,
+        [QUERY_LOCATION_NAME]: CITY_BRISTOL,
+        [QUERY_SEARCH_TERMS]: CITY_BRISTOL,
+        [QUERY_LANG]: LANG_EN
       }
 
-      createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_NITROGEN_DIOXIDE, mockRequest, mockH)
 
       const viewContext = mockH.view.mock.calls[0][1]
 
       expect(viewContext).toHaveProperty('pageTitle')
       expect(viewContext).toHaveProperty('description')
       expect(viewContext).toHaveProperty('metaSiteUrl')
-      expect(viewContext).toHaveProperty('nitrogenDioxide')
+      expect(viewContext).toHaveProperty(POLLUTANT_NITROGEN_DIOXIDE)
       expect(viewContext).toHaveProperty('page')
       expect(viewContext).toHaveProperty('displayBacklink')
       expect(viewContext).toHaveProperty('backLinkText')
@@ -293,84 +367,84 @@ describe('pollutant-controller-helper', () => {
       expect(viewContext).toHaveProperty('serviceName')
       expect(viewContext).toHaveProperty('currentPath')
       expect(viewContext).toHaveProperty('queryParams')
-      expect(viewContext).toHaveProperty('locationId')
-      expect(viewContext).toHaveProperty('locationName')
-      expect(viewContext).toHaveProperty('searchTerms')
-      expect(viewContext).toHaveProperty('lang')
+      expect(viewContext).toHaveProperty(QUERY_LOCATION_ID)
+      expect(viewContext).toHaveProperty(QUERY_LOCATION_NAME)
+      expect(viewContext).toHaveProperty(QUERY_SEARCH_TERMS)
+      expect(viewContext).toHaveProperty(QUERY_LANG)
     })
 
     it('should default lang to en when not specified', () => {
       mockRequest.query = {
-        locationId: 'LOC707',
-        locationName: 'Newcastle'
+        [QUERY_LOCATION_ID]: TEST_LOC_707,
+        [QUERY_LOCATION_NAME]: CITY_NEWCASTLE
       }
 
-      createPollutantHandler('ozone', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_OZONE, mockRequest, mockH)
 
       const viewContext = mockH.view.mock.calls[0][1]
-      expect(viewContext.lang).toBe('en')
+      expect(viewContext.lang).toBe(LANG_EN)
     })
   })
 
   describe('pollutant data validation', () => {
     it('should include correct pollutant data key for nitrogen dioxide', () => {
       mockRequest.query = {
-        locationId: 'LOC1313',
-        locationName: 'York'
+        [QUERY_LOCATION_ID]: TEST_LOC_1313,
+        [QUERY_LOCATION_NAME]: CITY_YORK
       }
 
-      createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_NITROGEN_DIOXIDE, mockRequest, mockH)
 
       const viewContext = mockH.view.mock.calls[0][1]
-      expect(viewContext).toHaveProperty('nitrogenDioxide')
+      expect(viewContext).toHaveProperty(POLLUTANT_NITROGEN_DIOXIDE)
       expect(viewContext.nitrogenDioxide).toBeDefined()
     })
 
     it('should include correct pollutant data key for ozone', () => {
       mockRequest.query = {
-        locationId: 'LOC1414'
+        [QUERY_LOCATION_ID]: TEST_LOC_1414
       }
 
-      createPollutantHandler('ozone', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_OZONE, mockRequest, mockH)
 
       const viewContext = mockH.view.mock.calls[0][1]
-      expect(viewContext).toHaveProperty('ozone')
+      expect(viewContext).toHaveProperty(POLLUTANT_OZONE)
       expect(viewContext.ozone).toBeDefined()
     })
 
     it('should include correct pollutant data key for PM10', () => {
       mockRequest.query = {
-        locationId: 'LOC1515'
+        [QUERY_LOCATION_ID]: TEST_LOC_1515
       }
 
-      createPollutantHandler('particulateMatter10', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_PM10, mockRequest, mockH)
 
       const viewContext = mockH.view.mock.calls[0][1]
-      expect(viewContext).toHaveProperty('particulateMatter10')
+      expect(viewContext).toHaveProperty(POLLUTANT_PM10)
       expect(viewContext.particulateMatter10).toBeDefined()
     })
 
     it('should include correct pollutant data key for PM25', () => {
       mockRequest.query = {
-        locationId: 'LOC1616'
+        [QUERY_LOCATION_ID]: TEST_LOC_1616
       }
 
-      createPollutantHandler('particulateMatter25', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_PM25, mockRequest, mockH)
 
       const viewContext = mockH.view.mock.calls[0][1]
-      expect(viewContext).toHaveProperty('particulateMatter25')
+      expect(viewContext).toHaveProperty(POLLUTANT_PM25)
       expect(viewContext.particulateMatter25).toBeDefined()
     })
 
     it('should include correct pollutant data key for sulphur dioxide', () => {
       mockRequest.query = {
-        locationId: 'LOC1717'
+        [QUERY_LOCATION_ID]: TEST_LOC_1717
       }
 
-      createPollutantHandler('sulphurDioxide', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_SULPHUR_DIOXIDE, mockRequest, mockH)
 
       const viewContext = mockH.view.mock.calls[0][1]
-      expect(viewContext).toHaveProperty('sulphurDioxide')
+      expect(viewContext).toHaveProperty(POLLUTANT_SULPHUR_DIOXIDE)
       expect(viewContext.sulphurDioxide).toBeDefined()
     })
   })
@@ -378,24 +452,24 @@ describe('pollutant-controller-helper', () => {
   describe('back link generation', () => {
     it('should create back link with locationId only', () => {
       mockRequest.query = {
-        locationId: 'LOC1818'
+        [QUERY_LOCATION_ID]: TEST_LOC_1818
       }
 
-      createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_NITROGEN_DIOXIDE, mockRequest, mockH)
 
       const viewContext = mockH.view.mock.calls[0][1]
       expect(viewContext.displayBacklink).toBeDefined()
       expect(viewContext.backLinkUrl).toBeDefined()
-      expect(viewContext.backLinkUrl).toContain('LOC1818')
+      expect(viewContext.backLinkUrl).toContain(TEST_LOC_1818)
     })
 
     it('should create back link with locationId and locationName', () => {
       mockRequest.query = {
-        locationId: 'LOC1919',
-        locationName: 'Southampton'
+        [QUERY_LOCATION_ID]: TEST_LOC_1919,
+        [QUERY_LOCATION_NAME]: CITY_SOUTHAMPTON
       }
 
-      createPollutantHandler('ozone', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_OZONE, mockRequest, mockH)
 
       const viewContext = mockH.view.mock.calls[0][1]
       expect(viewContext.displayBacklink).toBeDefined()
@@ -404,12 +478,12 @@ describe('pollutant-controller-helper', () => {
 
     it('should create back link with all parameters', () => {
       mockRequest.query = {
-        locationId: 'LOC2020',
-        locationName: 'Coventry',
-        searchTerms: 'West Midlands'
+        [QUERY_LOCATION_ID]: TEST_LOC_2020,
+        [QUERY_LOCATION_NAME]: CITY_COVENTRY,
+        [QUERY_SEARCH_TERMS]: SEARCH_TERMS_WEST_MIDLANDS
       }
 
-      createPollutantHandler('particulateMatter10', mockRequest, mockH)
+      createPollutantHandler(POLLUTANT_PM10, mockRequest, mockH)
 
       const viewContext = mockH.view.mock.calls[0][1]
       expect(viewContext.displayBacklink).toBeDefined()
