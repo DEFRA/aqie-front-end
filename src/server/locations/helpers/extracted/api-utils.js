@@ -308,7 +308,7 @@ function buildAndCheckUKApiUrl(
 }
 
 // Helper to call the UK API and handle the response
-async function callAndHandleUKApiResponse(
+async function callAndHandleUKApiResponse({
   osNamesApiUrlFull,
   options,
   optionsEphemeralProtected,
@@ -317,7 +317,7 @@ async function callAndHandleUKApiResponse(
   httpStatusOk,
   logger,
   formatUKApiResponse
-) {
+}) {
   const isLocal =
     String(osNamesApiUrlFull).includes('localhost') ||
     String(osNamesApiUrlFull).includes('127.0.0.1')

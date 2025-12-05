@@ -467,16 +467,16 @@ describe('api-utils', () => {
       const mockFormatUKApiResponse = vi.fn().mockReturnValue(mockFormattedData)
       const mockOptions = { headers: {} }
 
-      const result = await callAndHandleUKApiResponse(
-        'http://osnames.api.com',
-        mockOptions,
-        {},
-        true,
-        mockCatchProxyFetchError,
-        200,
-        mockLogger,
-        mockFormatUKApiResponse
-      )
+      const result = await callAndHandleUKApiResponse({
+        osNamesApiUrlFull: 'http://osnames.api.com',
+        options: mockOptions,
+        optionsEphemeralProtected: {},
+        shouldCallApi: true,
+        catchProxyFetchError: mockCatchProxyFetchError,
+        httpStatusOk: 200,
+        logger: mockLogger,
+        formatUKApiResponse: mockFormatUKApiResponse
+      })
 
       expect(result).toEqual(mockFormattedData)
       expect(mockLogger.info).toHaveBeenCalledWith('getOSPlaces data fetched:')
@@ -493,16 +493,16 @@ describe('api-utils', () => {
       }
       const mockOptions = { headers: {} }
 
-      await callAndHandleUKApiResponse(
-        'http://localhost:3000/api',
-        mockOptions,
-        mockOptionsEphemeralProtected,
-        true,
-        mockCatchProxyFetchError,
-        200,
-        mockLogger,
-        mockFormatUKApiResponse
-      )
+      await callAndHandleUKApiResponse({
+        osNamesApiUrlFull: 'http://localhost:3000/api',
+        options: mockOptions,
+        optionsEphemeralProtected: mockOptionsEphemeralProtected,
+        shouldCallApi: true,
+        catchProxyFetchError: mockCatchProxyFetchError,
+        httpStatusOk: 200,
+        logger: mockLogger,
+        formatUKApiResponse: mockFormatUKApiResponse
+      })
 
       expect(mockCatchProxyFetchError).toHaveBeenCalledWith(
         'http://localhost:3000/api',
@@ -515,16 +515,16 @@ describe('api-utils', () => {
       const mockCatchProxyFetchError = vi.fn().mockResolvedValue([401, null])
       const mockFormatUKApiResponse = vi.fn()
 
-      const result = await callAndHandleUKApiResponse(
-        'http://osnames.api.com',
-        {},
-        {},
-        true,
-        mockCatchProxyFetchError,
-        200,
-        mockLogger,
-        mockFormatUKApiResponse
-      )
+      const result = await callAndHandleUKApiResponse({
+        osNamesApiUrlFull: 'http://osnames.api.com',
+        options: {},
+        optionsEphemeralProtected: {},
+        shouldCallApi: true,
+        catchProxyFetchError: mockCatchProxyFetchError,
+        httpStatusOk: 200,
+        logger: mockLogger,
+        formatUKApiResponse: mockFormatUKApiResponse
+      })
 
       expect(result).toBeNull()
       expect(mockLogger.warn).toHaveBeenCalledWith(
@@ -536,16 +536,16 @@ describe('api-utils', () => {
       const mockCatchProxyFetchError = vi.fn().mockResolvedValue([500, null])
       const mockFormatUKApiResponse = vi.fn()
 
-      const result = await callAndHandleUKApiResponse(
-        'http://osnames.api.com',
-        {},
-        {},
-        true,
-        mockCatchProxyFetchError,
-        200,
-        mockLogger,
-        mockFormatUKApiResponse
-      )
+      const result = await callAndHandleUKApiResponse({
+        osNamesApiUrlFull: 'http://osnames.api.com',
+        options: {},
+        optionsEphemeralProtected: {},
+        shouldCallApi: true,
+        catchProxyFetchError: mockCatchProxyFetchError,
+        httpStatusOk: 200,
+        logger: mockLogger,
+        formatUKApiResponse: mockFormatUKApiResponse
+      })
 
       expect(result).toBeNull()
       expect(mockLogger.error).toHaveBeenCalledWith(
@@ -564,16 +564,16 @@ describe('api-utils', () => {
         headers: { 'x-api-key': 'dev-key' }
       }
 
-      await callAndHandleUKApiResponse(
-        'http://osnames.api.com',
-        mockOptions,
-        mockOptionsEphemeralProtected,
-        true,
-        mockCatchProxyFetchError,
-        200,
-        mockLogger,
-        mockFormatUKApiResponse
-      )
+      await callAndHandleUKApiResponse({
+        osNamesApiUrlFull: 'http://osnames.api.com',
+        options: mockOptions,
+        optionsEphemeralProtected: mockOptionsEphemeralProtected,
+        shouldCallApi: true,
+        catchProxyFetchError: mockCatchProxyFetchError,
+        httpStatusOk: 200,
+        logger: mockLogger,
+        formatUKApiResponse: mockFormatUKApiResponse
+      })
 
       expect(mockCatchProxyFetchError).toHaveBeenCalledWith(
         'http://osnames.api.com',

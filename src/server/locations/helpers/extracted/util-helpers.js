@@ -88,7 +88,6 @@ const handleUKLocationData = async (
   const testIsTestMode = di.isTestMode || isTestMode
   const testSymbolsArray = di.symbolsArray
   const testOptions = di.options
-  const testOptionsEphemeralProtected = di.optionsEphemeralProtected
   const testConfig = di.config
   const request = di.request
   
@@ -130,8 +129,8 @@ const handleUKLocationData = async (
     secondSearchTerm,
     shouldCallApi,
     testOptions,
-    testOptionsEphemeralProtected,
-    request
+    request,
+    undefined // catchProxyFetchErrorFn - will use default
   )
 }
 

@@ -98,7 +98,6 @@ export const fetchMeasurements = async (
   const diCatchFetchError = di.catchFetchError || catchFetchError
   const diOptions = di.optionsEphemeralProtected || buildApiOptions()
   const diExtraOptions = di.options || {}
-  const diNodeEnv = di.nodeEnv || process.env.NODE_ENV
   const diIsTestMode =
     typeof di.isTestMode === 'function' ? di.isTestMode : isTestMode
 
