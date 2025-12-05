@@ -58,7 +58,7 @@ const sulphurDioxideController = {
       queryParams: query,
       locationId,
       locationName,
-      searchTerms,
+      searchTerms: searchTerms || null,
       lang: query.lang ?? lang
     })
   }

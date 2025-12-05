@@ -136,7 +136,6 @@ function getToken(req) {
   return req?.headers?.authorization || null
 }
 
-// ''
 function isMockEnabled() {
   const mockValue = config.get('enabledMock')
   return mockValue

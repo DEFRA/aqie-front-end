@@ -14,7 +14,6 @@ const dirname = path.dirname(filename)
 const logger = createLogger()
 const STATUS_CODE_SUCCESS = 200 // Define constant for success status code
 
-// ''
 // Helper function to check if request is from local environment
 function isLocalRequest(request) {
   if (!request?.headers?.host) {
@@ -24,7 +23,6 @@ function isLocalRequest(request) {
   return host.includes('localhost') || host.includes('127.0.0.1')
 }
 
-// ''
 // Helper function to get CDP X-API key from environment or config file
 function getCdpXApiKey() {
   let cdpXApiKey = process.env.CDP_X_API_KEY
@@ -37,7 +35,6 @@ function getCdpXApiKey() {
   return cdpXApiKey
 }
 
-// ''
 // Helper function to update options based on environment
 function updateOptionsForEnvironment(options, isLocal) {
   const baseOptions = options || {}
@@ -65,7 +62,6 @@ function updateOptionsForEnvironment(options, isLocal) {
   }
 }
 
-// ''
 // Refactored to use the request object for local detection
 async function getOSPlaces(
   userLocation,

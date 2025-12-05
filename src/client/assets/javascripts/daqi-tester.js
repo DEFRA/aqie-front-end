@@ -19,8 +19,6 @@
  * - Current responsive behavior
  */
 
-// ''
-
 /**
  * Test DAQI implementation by directly manipulating the current DOM structure
  */
@@ -442,7 +440,6 @@ class DAQICurrentImplementationTester {
 // Create global instance
 const daqiTester = new DAQICurrentImplementationTester()
 
-// ''
 // Utility: Only select DAQI bar segments inside the main DAQI bar (application, not test/demo)
 function getMainDaqiBarSegments() {
   // Prefer the main DAQI bar inside .daqi-numbered > .daqi-bar

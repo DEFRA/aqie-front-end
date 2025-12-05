@@ -1,11 +1,9 @@
-// ''
 import { createLogger } from './logging/logger.js'
 import { catchFetchError } from './catch-fetch-error.js'
 import { config } from '../../../config/index.js'
 
 const logger = createLogger()
 
-// ''
 const tokenUrl = config.get('oauthTokenUrlNIreland')
 const oauthTokenNorthernIrelandTenantId = config.get(
   'oauthTokenNorthernIrelandTenantId'

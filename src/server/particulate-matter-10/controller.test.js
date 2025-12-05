@@ -92,7 +92,7 @@ describe('Particular matter10 Controller - English', () => {
         queryParams: mockRequest.query,
         locationId: '123',
         locationName: TEST_LOCATION,
-        searchTerms: undefined
+        searchTerms: null
       })
     })
   })

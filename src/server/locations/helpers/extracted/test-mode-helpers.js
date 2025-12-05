@@ -1,7 +1,6 @@
 import { config } from '../../../../config/index.js'
 import { LOCATION_TYPE_UK, LOCATION_TYPE_NI } from '../../../data/constants.js'
 
-// ''
 const HTTP_BAD_REQUEST = 400
 
 function handleTestModeFetchData({
@@ -98,7 +97,6 @@ function fetchForecastsTestMode(injectedIsTestMode, injectedLogger) {
   return null
 }
 
-// ''
 function isMockEnabled() {
   const mockValue = config.get('enabledMock')
   return mockValue

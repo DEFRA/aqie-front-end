@@ -37,7 +37,7 @@ function createExpectedViewData(mockContent, actualUrl, lang, query) {
     queryParams: query,
     locationId: query.locationId,
     locationName: query.locationName,
-    searchTerms: undefined
+    searchTerms: query.searchTerms || null
   }
 }
 

@@ -190,7 +190,6 @@ function handleUnsupportedLocationType(/* params */) {
   }
 }
 
-// ''
 // Builds a Northern Ireland postcode URL (stub implementation)
 function buildNIPostcodeUrl(postcode, config = {}) {
   // TODO: Replace with real URL logic if needed
@@ -205,7 +204,6 @@ function formatUKApiResponse(response) {
   return response
 }
 
-// ''
 // Formats a Northern Ireland postcode (stub implementation)
 function formatNorthernIrelandPostcode(postcode) {
   // TODO: Replace with real formatting logic if needed
@@ -213,7 +211,6 @@ function formatNorthernIrelandPostcode(postcode) {
   return postcode.trim().toUpperCase().replace(/\s+/g, '')
 }
 
-// ''
 // Combines UK search terms (stub implementation)
 function combineUKSearchTerms(term1, term2) {
   // TODO: Replace with real logic if needed
@@ -223,7 +220,6 @@ function combineUKSearchTerms(term1, term2) {
   return `${term1} ${term2}`
 }
 
-// ''
 // Builds UK location filters (stub implementation)
 function buildUKLocationFilters(location, config = {}) {
   // TODO: Replace with real filter logic if needed
@@ -231,7 +227,6 @@ function buildUKLocationFilters(location, config = {}) {
   return { filter: `location=${encodeURIComponent(location)}` }
 }
 
-// ''
 // Builds a UK API URL (stub implementation)
 function buildUKApiUrl(location, config = {}) {
   // TODO: Replace with real URL logic if needed

@@ -79,7 +79,7 @@ describe('Ozone Controller - Welsh', () => {
         queryParams: mockRequest.query,
         locationId: '123',
         locationName: TEST_LOCATION,
-        searchTerms: undefined
+        searchTerms: null
       })
     })
   })
@@ -133,7 +133,7 @@ describe('Ozone Controller - Welsh - default language', () => {
       queryParams: mockRequest.query,
       locationId: '123',
       locationName: TEST_LOCATION,
-      searchTerms: undefined
+      searchTerms: null
     })
   })
 })

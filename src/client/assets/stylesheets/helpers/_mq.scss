@@ -1,8 +1,6 @@
-// ''
 // Simple mq (media query) mixin for common breakpoints
 // Usage: @include mq($from: desktop) { ... }
 
-// ''
 // mq mixin supporting $from and $until for responsive breakpoints
 // Usage: @include mq($from: tablet, $until: desktop) { ... }
 // Breakpoints: mobile (0-767px), tablet (768-1023px), desktop (1024px+)

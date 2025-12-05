@@ -85,7 +85,7 @@ function createViewContext(options) {
     queryParams: query,
     locationId,
     locationName,
-    searchTerms,
+    searchTerms: searchTerms || null,
     lang,
     ...backLinkConfig
   }

@@ -28,7 +28,7 @@ function createExpectedViewData(content, actualUrl, lang, currentPath, query) {
     queryParams: query,
     locationId: query?.locationId,
     locationName: query?.locationName,
-    searchTerms: query?.searchTerms
+    searchTerms: query?.searchTerms || null
   }
 }
 
