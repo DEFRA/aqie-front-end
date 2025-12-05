@@ -193,7 +193,9 @@ function handleUnsupportedLocationType(/* params */) {
 // Builds a Northern Ireland postcode URL (stub implementation)
 function buildNIPostcodeUrl(postcode, config = {}) {
   // TODO: Replace with real URL logic if needed
-  if (!postcode) return ''
+  if (!postcode) {
+    return ''
+  }
   const baseUrl = config.niApiBaseUrl || 'https://api.ni.example.com/postcode'
   return `${baseUrl}/${encodeURIComponent(postcode)}`
 }
@@ -207,30 +209,42 @@ function formatUKApiResponse(response) {
 // Formats a Northern Ireland postcode (stub implementation)
 function formatNorthernIrelandPostcode(postcode) {
   // TODO: Replace with real formatting logic if needed
-  if (!postcode) return ''
+  if (!postcode) {
+    return ''
+  }
   return postcode.trim().toUpperCase().replace(/\s+/g, '')
 }
 
 // Combines UK search terms (stub implementation)
 function combineUKSearchTerms(term1, term2) {
   // TODO: Replace with real logic if needed
-  if (!term1 && !term2) return ''
-  if (!term1) return term2
-  if (!term2) return term1
+  if (!term1 && !term2) {
+    return ''
+  }
+  if (!term1) {
+    return term2
+  }
+  if (!term2) {
+    return term1
+  }
   return `${term1} ${term2}`
 }
 
 // Builds UK location filters (stub implementation)
 function buildUKLocationFilters(location, config = {}) {
   // TODO: Replace with real filter logic if needed
-  if (!location) return {}
+  if (!location) {
+    return {}
+  }
   return { filter: `location=${encodeURIComponent(location)}` }
 }
 
 // Builds a UK API URL (stub implementation)
 function buildUKApiUrl(location, config = {}) {
   // TODO: Replace with real URL logic if needed
-  if (!location) return ''
+  if (!location) {
+    return ''
+  }
   const baseUrl = config.ukApiBaseUrl || 'https://api.uk.example.com/location'
   return `${baseUrl}/${encodeURIComponent(location)}`
 }

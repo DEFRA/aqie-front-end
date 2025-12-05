@@ -16,6 +16,12 @@ import {
   getAvailableBands
 } from '../common/helpers/mock-pollutant-level.js'
 
+// Constants for duplicated string literals
+const BAND_LOW = 'low'
+const BAND_MODERATE = 'moderate'
+const BAND_HIGH = 'high'
+const BAND_VERY_HIGH = 'very-high'
+
 export default [
   {
     method: 'GET',
@@ -27,13 +33,13 @@ export default [
       tags: ['api', 'testing', 'pollutants']
     },
     handler: async (request, h) => {
-      const band = request.query.band || 'moderate'
+      const band = request.query.band || BAND_MODERATE
 
       // Normalize band
       const normalizedBand = band.toLowerCase().replace(/\s+/g, '-')
 
       // Validate band
-      const validBands = ['low', 'moderate', 'high', 'very-high']
+      const validBands = [BAND_LOW, BAND_MODERATE, BAND_HIGH, BAND_VERY_HIGH]
       if (!validBands.includes(normalizedBand)) {
         return h
           .response({
@@ -42,10 +48,10 @@ export default [
             validBands,
             usage: {
               examples: [
-                '/test-pollutants?band=low',
-                '/test-pollutants?band=moderate',
-                '/test-pollutants?band=high',
-                '/test-pollutants?band=very-high'
+                `/test-pollutants?band=${BAND_LOW}`,
+                `/test-pollutants?band=${BAND_MODERATE}`,
+                `/test-pollutants?band=${BAND_HIGH}`,
+                `/test-pollutants?band=${BAND_VERY_HIGH}`
               ]
             }
           })
@@ -119,10 +125,10 @@ export default [
     
     <div class="band-selector">
         <h3>Quick Band Selection:</h3>
-        <a href="/test-pollutants?band=low" ${normalizedBand === 'low' ? 'class="active"' : ''}>Low</a>
-        <a href="/test-pollutants?band=moderate" ${normalizedBand === 'moderate' ? 'class="active"' : ''}>Moderate</a>
-        <a href="/test-pollutants?band=high" ${normalizedBand === 'high' ? 'class="active"' : ''}>High</a>
-        <a href="/test-pollutants?band=very-high" ${normalizedBand === 'very-high' ? 'class="active"' : ''}>Very High</a>
+        <a href="/test-pollutants?band=${BAND_LOW}" ${normalizedBand === BAND_LOW ? 'class="active"' : ''}>Low</a>
+        <a href="/test-pollutants?band=${BAND_MODERATE}" ${normalizedBand === BAND_MODERATE ? 'class="active"' : ''}>Moderate</a>
+        <a href="/test-pollutants?band=${BAND_HIGH}" ${normalizedBand === BAND_HIGH ? 'class="active"' : ''}>High</a>
+        <a href="/test-pollutants?band=${BAND_VERY_HIGH}" ${normalizedBand === BAND_VERY_HIGH ? 'class="active"' : ''}>Very High</a>
     </div>
 
     <h2>Mock Pollutant Data</h2>

@@ -324,7 +324,9 @@ const getFormattedDateSummary = (issueDate, calendarEnglish) => {
 
 // Helper function to check if date is today
 const isSummaryDateToday = (issueDate) => {
-  if (!issueDate) return false
+  if (!issueDate) {
+    return false
+  }
   const today = moment().format('YYYY-MM-DD')
   const issueDateFormatted = moment(issueDate).format('YYYY-MM-DD')
   return today === issueDateFormatted
@@ -332,9 +334,13 @@ const isSummaryDateToday = (issueDate) => {
 
 // '' Helper function to extract time from issue_date in H:mm format
 const getIssueTime = (issueDate) => {
-  if (!issueDate) return '5:00am' // Default fallback
+  if (!issueDate) {
+    return '5:00am'
+  }
   const issueMoment = moment(issueDate)
-  if (!issueMoment.isValid()) return '5:00am' // Default fallback for invalid dates
+  if (!issueMoment.isValid()) {
+    return '5:00am'
+  }
   return issueMoment.format('h:mma') // Format as h:mma (e.g., "5:34am", "2:05pm")
 }
 
