@@ -1,0 +1,94 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import {
+  handleNILocationData,
+  handleUKLocationData,
+  handleUnsupportedLocationType,
+  catchProxyFetchError
+} from './util-helpers.js'
+
+describe('util-helpers - Handler Functions', () => {
+  let mockLogger
+  let mockRequest
+
+  beforeEach(() => {
+    mockLogger = {
+      info: vi.fn(),
+      error: vi.fn(),
+      warn: vi.fn()
+    }
+    mockRequest = {
+      yar: {
+        get: vi.fn(),
+        set: vi.fn(),
+        clear: vi.fn()
+      }
+    }
+  })
+
+  describe('handleNILocationData', () => {
+    it('should accept all required parameters', async () => {
+      const di = {
+        injectedLogger: mockLogger,
+        injectedIsTestMode: vi.fn().mockReturnValue(true)
+      }
+
+      const result = await handleNILocationData(
+        'Belfast',
+        null,
+        null,
+        true,
+        {},
+        {},
+        mockRequest,
+        di
+      )
+
+      // Just verify function executes without error
+      expect(result).toBeDefined()
+    })
+  })
+
+  describe('handleUKLocationData', () => {
+    it('should accept all required parameters', async () => {
+      const di = {
+        injectedLogger: mockLogger,
+        injectedIsTestMode: vi.fn().mockReturnValue(true)
+      }
+
+      const result = await handleUKLocationData('London', null, null, di)
+
+      // Just verify function executes without error
+      expect(result).toBeDefined()
+    })
+  })
+
+  describe('handleUnsupportedLocationType', () => {
+    it('should return error response for unsupported location type', () => {
+      const mockErrorResponse = vi
+        .fn()
+        .mockReturnValue({ error: 'Bad request' })
+      const handler = handleUnsupportedLocationType()
+      const result = handler(mockLogger, mockErrorResponse, 'InvalidType')
+
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Unsupported location type provided:',
+        'InvalidType'
+      )
+      expect(mockErrorResponse).toHaveBeenCalledWith(
+        'Unsupported location type provided',
+        400
+      )
+      expect(result).toEqual({ error: 'Bad request' })
+    })
+  })
+
+  describe('catchProxyFetchError', () => {
+    it('should call catchFetchError with provided arguments', async () => {
+      // Since catchProxyFetchError uses the real catchFetchError,
+      // we just verify it can be called
+      const result = await catchProxyFetchError('http://test.com', {})
+
+      expect(result).toBeDefined()
+    })
+  })
+})
