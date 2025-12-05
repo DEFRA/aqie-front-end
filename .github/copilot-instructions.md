@@ -4,8 +4,6 @@ This file contains specific instructions for GitHub Copilot to follow when gener
 
 ## General Guidelines
 
-## - Always add a comment: `''`.
-
 - Follow the existing coding style and conventions used in this repository.
 - Use descriptive variable and function names.
 - Ensure code is well-documented with inline comments where necessary.

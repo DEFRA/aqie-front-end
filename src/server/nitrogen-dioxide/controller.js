@@ -27,7 +27,7 @@ const nitrogenDioxideController = {
         .code(REDIRECT_STATUS_CODE)
     }
 
-    // '' Redirect to search location if no locationId (user needs to search for location)
+    // Redirect to search location if no locationId (user needs to search for location)
     const { locationId, locationName, searchTerms } = query || {}
     if (!locationId) {
       return h
@@ -35,7 +35,7 @@ const nitrogenDioxideController = {
         .code(REDIRECT_STATUS_CODE)
     }
 
-    // '' Create context-aware back link based on query params
+    // Create context-aware back link based on query params
     const backLinkConfig = createLocationBackLink({
       locationId,
       locationName,
