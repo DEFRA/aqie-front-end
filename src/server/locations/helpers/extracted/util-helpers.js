@@ -5,7 +5,6 @@ import {
   isValidFullPostcodeNI,
   isValidPartialPostcodeNI
 } from '../convert-string.js'
-import { setupNILocationDataDI, setupUKLocationDataDI } from './di-helpers.js'
 import { getNIPlaces } from '../get-ni-places.js'
 import { handleUKLocationDataTestMode } from './test-mode-helpers.js'
 import { buildAndCheckUKApiUrl } from './api-utils.js'
@@ -59,7 +58,9 @@ const handleNILocationData = async (
   request,
   di = {}
 ) => {
-  const { injectedLogger, injectedIsTestMode } = setupNILocationDataDI(di)
+  const injectedLogger = di.logger || logger
+  const injectedIsTestMode = di.isTestMode || isTestMode
+  
   if (injectedIsTestMode?.()) {
     if (injectedLogger && typeof injectedLogger.info === 'function') {
       injectedLogger.info('Test mode: handleNILocationData returning mock data')
@@ -76,21 +77,21 @@ const handleUKLocationData = async (
   secondSearchTerm,
   di = {}
 ) => {
-  const {
-    injectedLogger,
-    injectedBuildUKLocationFilters,
-    injectedCombineUKSearchTerms,
-    injectedIsValidFullPostcodeUK,
-    injectedIsValidPartialPostcodeUK,
-    injectedBuildUKApiUrl,
-    injectedShouldCallUKApi,
-    injectedIsTestMode,
-    injectedSymbolsArray,
-    injectedOptions,
-    injectedOptionsEphemeralProtected,
-    injectedConfig,
-    request
-  } = setupUKLocationDataDI(di)
+  // ''  Simple DI with fallbacks
+  const injectedLogger = di.logger || logger
+  const injectedBuildUKLocationFilters = di.buildUKLocationFilters
+  const injectedCombineUKSearchTerms = di.combineUKSearchTerms
+  const injectedIsValidFullPostcodeUK = di.isValidFullPostcodeUK
+  const injectedIsValidPartialPostcodeUK = di.isValidPartialPostcodeUK
+  const injectedBuildUKApiUrl = di.buildUKApiUrl
+  const injectedShouldCallUKApi = di.shouldCallUKApi
+  const injectedIsTestMode = di.isTestMode || isTestMode
+  const injectedSymbolsArray = di.symbolsArray
+  const injectedOptions = di.options
+  const injectedOptionsEphemeralProtected = di.optionsEphemeralProtected
+  const injectedConfig = di.config
+  const request = di.request
+  
   const testModeResult = handleUKLocationDataTestMode(
     injectedIsTestMode,
     injectedLogger
