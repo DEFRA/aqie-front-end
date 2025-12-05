@@ -104,13 +104,13 @@ describe('api-utils', () => {
       mockConfig.get.mockReturnValue('http://api.test.com')
 
       const result = await callForecastsApi({
-        injectedConfig: mockConfig,
-        injectedOptionsEphemeralProtected: mockOptionsEphemeralProtected,
-        injectedOptions: mockOptions,
-        injectedCatchFetchError: mockCatchFetchError,
-        injectedHttpStatusOk: 200,
-        injectedLogger: mockLogger,
-        injectedErrorResponse: mockErrorResponse,
+        config: mockConfig,
+        optionsEphemeralProtected: mockOptionsEphemeralProtected,
+        options: mockOptions,
+        catchFetchError: mockCatchFetchError,
+        httpStatusOk: 200,
+        logger: mockLogger,
+        errorResponse: mockErrorResponse,
         request: mockRequest
       })
 
@@ -217,10 +217,10 @@ describe('api-utils', () => {
       const mockRequest = { headers: { host: 'example.com' } }
 
       const result = selectMeasurementsUrlAndOptions(51.5074, -0.1278, true, {
-        injectedConfig: mockConfig,
-        injectedLogger: mockLogger,
-        injectedOptionsEphemeralProtected: mockOptionsEphemeralProtected,
-        injectedOptions: mockOptions,
+        config: mockConfig,
+        logger: mockLogger,
+        optionsEphemeralProtected: mockOptionsEphemeralProtected,
+        options: mockOptions,
         request: mockRequest
       })
 
@@ -237,10 +237,10 @@ describe('api-utils', () => {
       const mockOptions = { headers: {} }
 
       const result = selectMeasurementsUrlAndOptions(51.5074, -0.1278, false, {
-        injectedConfig: mockConfig,
-        injectedLogger: mockLogger,
-        injectedOptionsEphemeralProtected: {},
-        injectedOptions: mockOptions,
+        config: mockConfig,
+        logger: mockLogger,
+        optionsEphemeralProtected: {},
+        options: mockOptions,
         request: {}
       })
 
@@ -261,10 +261,10 @@ describe('api-utils', () => {
         -0.12781234567,
         true,
         {
-          injectedConfig: mockConfig,
-          injectedLogger: mockLogger,
-          injectedOptionsEphemeralProtected: {},
-          injectedOptions: mockOptions,
+          config: mockConfig,
+          logger: mockLogger,
+          optionsEphemeralProtected: {},
+          options: mockOptions,
           request: mockRequest
         }
       )
@@ -281,10 +281,10 @@ describe('api-utils', () => {
       const mockRequest = { headers: { host: 'localhost:3000' } }
 
       const result = selectMeasurementsUrlAndOptions(51.5074, -0.1278, true, {
-        injectedConfig: mockConfig,
-        injectedLogger: mockLogger,
-        injectedOptionsEphemeralProtected: mockOptionsEphemeralProtected,
-        injectedOptions: {},
+        config: mockConfig,
+        logger: mockLogger,
+        optionsEphemeralProtected: mockOptionsEphemeralProtected,
+        options: {},
         request: mockRequest
       })
 
@@ -298,10 +298,10 @@ describe('api-utils', () => {
 
       expect(() =>
         selectMeasurementsUrlAndOptions(51.5074, -0.1278, true, {
-          injectedConfig: mockConfig,
-          injectedLogger: mockLogger,
-          injectedOptionsEphemeralProtected: {},
-          injectedOptions: {},
+          config: mockConfig,
+          logger: mockLogger,
+          optionsEphemeralProtected: {},
+          options: {},
           request: {}
         })
       ).toThrow('URLSearchParams is not available in this environment')
@@ -317,10 +317,10 @@ describe('api-utils', () => {
 
       expect(() =>
         selectMeasurementsUrlAndOptions(51.5074, -0.1278, true, {
-          injectedConfig: mockConfig,
-          injectedLogger: mockLogger,
-          injectedOptionsEphemeralProtected: {},
-          injectedOptions: {},
+          config: mockConfig,
+          logger: mockLogger,
+          optionsEphemeralProtected: {},
+          options: {},
           request: mockRequest
         })
       ).toThrow(

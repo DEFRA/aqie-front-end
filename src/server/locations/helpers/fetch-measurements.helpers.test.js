@@ -33,18 +33,18 @@ describe('selectMeasurementsUrlAndOptions', () => {
   const injectedLogger = { info: vi.fn() }
   it('returns new Ricardo API url and opts in production', () => {
     const result = selectMeasurementsUrlAndOptions(51.5, -0.1, true, {
-      injectedConfig,
-      injectedLogger,
-      injectedOptions: { headers: {} }
+      config: injectedConfig,
+      logger: injectedLogger,
+      options: { headers: {} }
     })
     expect(result.url).toContain('ricardo-url?')
     expect(result.opts).toBeDefined()
   })
   it('returns dev url and opts in development', () => {
     const result = selectMeasurementsUrlAndOptions(51.5, -0.1, true, {
-      injectedConfig,
-      injectedLogger,
-      injectedOptionsEphemeralProtected: 'dev-opts',
+      config: injectedConfig,
+      logger: injectedLogger,
+      optionsEphemeralProtected: 'dev-opts',
       request: { headers: { host: 'localhost' } }
     })
     expect(result.url).toContain('dev-url')
@@ -52,9 +52,9 @@ describe('selectMeasurementsUrlAndOptions', () => {
   })
   it('returns old API url and opts if not using new Ricardo', () => {
     const result = selectMeasurementsUrlAndOptions(51.5, -0.1, false, {
-      injectedConfig,
-      injectedLogger,
-      injectedOptions: { headers: {} }
+      config: injectedConfig,
+      logger: injectedLogger,
+      options: { headers: {} }
     })
     expect(result.url).toBe('old-url')
     expect(result.opts).toBeDefined()

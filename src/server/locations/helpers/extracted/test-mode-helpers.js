@@ -9,14 +9,14 @@ function handleTestModeFetchData({
   searchTerms,
   secondSearchTerm,
   optionsOAuth,
-  injectedHandleUKLocationData,
-  injectedHandleNILocationData,
-  injectedLogger,
-  injectedErrorResponse,
+  handleUKLocationData,
+  handleNILocationData,
+  logger,
+  errorResponse,
   args
 }) {
   if (locationType === LOCATION_TYPE_UK) {
-    const osPlacesResult = injectedHandleUKLocationData(
+    const osPlacesResult = handleUKLocationData(
       userLocation,
       searchTerms,
       secondSearchTerm,
@@ -24,7 +24,7 @@ function handleTestModeFetchData({
     )
     return buildUKTestModeResult(osPlacesResult)
   } else if (locationType === LOCATION_TYPE_NI) {
-    const result = injectedHandleNILocationData(
+    const result = handleNILocationData(
       userLocation,
       optionsOAuth,
       args || {}
@@ -35,13 +35,13 @@ function handleTestModeFetchData({
     return buildNITestModeResult(result)
   } else {
     // fallback for unsupported types
-    if (injectedLogger && typeof injectedLogger.error === 'function') {
-      injectedLogger.error(
+    if (logger && typeof logger.error === 'function') {
+      logger.error(
         'Unsupported location type in test mode:',
         locationType
       )
     }
-    return injectedErrorResponse(
+    return errorResponse(
       'Unsupported location type in test mode',
       HTTP_BAD_REQUEST
     )
@@ -65,19 +65,19 @@ function buildUKTestModeResult(getOSPlaces) {
     }
   }
 }
-function handleUKLocationDataTestMode(injectedIsTestMode, injectedLogger) {
-  if (injectedIsTestMode?.()) {
-    if (injectedLogger && typeof injectedLogger.info === 'function') {
-      injectedLogger.info('Test mode: handleUKLocationData returning mock data')
+function handleUKLocationDataTestMode(isTestMode, logger) {
+  if (isTestMode?.()) {
+    if (logger && typeof logger.info === 'function') {
+      logger.info('Test mode: handleUKLocationData returning mock data')
     }
     return { results: ['ukData'] }
   }
   return null
 }
-function fetchMeasurementsTestMode(injectedIsTestMode, injectedLogger) {
-  if (injectedIsTestMode?.()) {
-    if (injectedLogger && typeof injectedLogger.info === 'function') {
-      injectedLogger.info(
+function fetchMeasurementsTestMode(isTestMode, logger) {
+  if (isTestMode?.()) {
+    if (logger && typeof logger.info === 'function') {
+      logger.info(
         'Test mode: fetchMeasurements returning mock measurements'
       )
     }
@@ -87,10 +87,10 @@ function fetchMeasurementsTestMode(injectedIsTestMode, injectedLogger) {
 }
 // Test mode helpers extracted from fetch-data.js
 
-function fetchForecastsTestMode(injectedIsTestMode, injectedLogger) {
-  if (injectedIsTestMode?.()) {
-    if (injectedLogger && typeof injectedLogger.info === 'function') {
-      injectedLogger.info('Test mode: fetchForecasts returning mock forecasts')
+function fetchForecastsTestMode(isTestMode, logger) {
+  if (isTestMode?.()) {
+    if (logger && typeof logger.info === 'function') {
+      logger.info('Test mode: fetchForecasts returning mock forecasts')
     }
     return { forecasts: 'mock-forecasts' }
   }

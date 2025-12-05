@@ -70,7 +70,7 @@ async function getOSPlaces(
   shouldCallApi,
   options,
   request,
-  injectedCatchProxyFetchError
+  catchProxyFetchErrorFn
 ) {
   const filters = [
     'LOCAL_TYPE:City',
@@ -102,7 +102,7 @@ async function getOSPlaces(
     `[DEBUG] Calling catchProxyFetchError with URL: ${osNamesApiUrlFull}`
   )
   logger.info(`[DEBUG] Options: ${JSON.stringify(updatedOptions)}`)
-  const fetchErrorFn = injectedCatchProxyFetchError || catchProxyFetchError
+  const fetchErrorFn = catchProxyFetchErrorFn || catchProxyFetchError
   const [statusCodeOSPlace, osPlacesData] = await fetchErrorFn(
     osNamesApiUrlFull,
     updatedOptions,

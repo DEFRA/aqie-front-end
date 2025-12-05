@@ -30,16 +30,16 @@ async function catchProxyFetchError(url, options, ...args) {
 }
 
 const refreshOAuthToken = async (request, di = {}) => {
-  const injectedLogger = di.logger || logger
-  const injectedFetchOAuthToken = di.fetchOAuthToken || fetchOAuthToken
-  const injectedIsTestMode = di.isTestMode || isTestMode
-  if (injectedIsTestMode?.()) {
-    if (injectedLogger && typeof injectedLogger.info === 'function') {
-      injectedLogger.info('Test mode: refreshOAuthToken returning mock token')
+  const testLogger = di.logger || logger
+  const testFetchOAuthToken = di.fetchOAuthToken || fetchOAuthToken
+  const testIsTestMode = di.isTestMode || isTestMode
+  if (testIsTestMode?.()) {
+    if (testLogger && typeof testLogger.info === 'function') {
+      testLogger.info('Test mode: refreshOAuthToken returning mock token')
     }
     return { accessToken: 'mock-token' }
   }
-  const accessToken = await injectedFetchOAuthToken({ logger: injectedLogger })
+  const accessToken = await testFetchOAuthToken({ logger: testLogger })
   if (accessToken?.error) {
     return accessToken
   }
@@ -53,17 +53,17 @@ const handleNILocationData = async (
   searchTerms,
   secondSearchTerm,
   shouldCallApi,
-  injectedOptions,
-  injectedOptionsEphemeralProtected,
+  options,
+  optionsEphemeralProtected,
   request,
   di = {}
 ) => {
-  const injectedLogger = di.logger || logger
-  const injectedIsTestMode = di.isTestMode || isTestMode
+  const testLogger = di.logger || logger
+  const testIsTestMode = di.isTestMode || isTestMode
   
-  if (injectedIsTestMode?.()) {
-    if (injectedLogger && typeof injectedLogger.info === 'function') {
-      injectedLogger.info('Test mode: handleNILocationData returning mock data')
+  if (testIsTestMode?.()) {
+    if (testLogger && typeof testLogger.info === 'function') {
+      testLogger.info('Test mode: handleNILocationData returning mock data')
     }
     return { results: ['niData'] }
   }
@@ -78,73 +78,73 @@ const handleUKLocationData = async (
   di = {}
 ) => {
   // ''  Simple DI with fallbacks
-  const injectedLogger = di.logger || logger
-  const injectedBuildUKLocationFilters = di.buildUKLocationFilters
-  const injectedCombineUKSearchTerms = di.combineUKSearchTerms
-  const injectedIsValidFullPostcodeUK = di.isValidFullPostcodeUK
-  const injectedIsValidPartialPostcodeUK = di.isValidPartialPostcodeUK
-  const injectedBuildUKApiUrl = di.buildUKApiUrl
-  const injectedShouldCallUKApi = di.shouldCallUKApi
-  const injectedIsTestMode = di.isTestMode || isTestMode
-  const injectedSymbolsArray = di.symbolsArray
-  const injectedOptions = di.options
-  const injectedOptionsEphemeralProtected = di.optionsEphemeralProtected
-  const injectedConfig = di.config
+  const testLogger = di.logger || logger
+  const testBuildUKLocationFilters = di.buildUKLocationFilters
+  const testCombineUKSearchTerms = di.combineUKSearchTerms
+  const testIsValidFullPostcodeUK = di.isValidFullPostcodeUK
+  const testIsValidPartialPostcodeUK = di.isValidPartialPostcodeUK
+  const testBuildUKApiUrl = di.buildUKApiUrl
+  const testShouldCallUKApi = di.shouldCallUKApi
+  const testIsTestMode = di.isTestMode || isTestMode
+  const testSymbolsArray = di.symbolsArray
+  const testOptions = di.options
+  const testOptionsEphemeralProtected = di.optionsEphemeralProtected
+  const testConfig = di.config
   const request = di.request
   
   const testModeResult = handleUKLocationDataTestMode(
-    injectedIsTestMode,
-    injectedLogger
+    testIsTestMode,
+    testLogger
   )
   if (testModeResult) {
     return testModeResult
   }
-  const injected = {
-    buildUKLocationFilters: injectedBuildUKLocationFilters,
-    combineUKSearchTerms: injectedCombineUKSearchTerms,
-    isValidFullPostcodeUK: injectedIsValidFullPostcodeUK,
-    isValidPartialPostcodeUK: injectedIsValidPartialPostcodeUK,
-    buildUKApiUrl: injectedBuildUKApiUrl,
-    config: injectedConfig
+  const deps = {
+    buildUKLocationFilters: testBuildUKLocationFilters,
+    combineUKSearchTerms: testCombineUKSearchTerms,
+    isValidFullPostcodeUK: testIsValidFullPostcodeUK,
+    isValidPartialPostcodeUK: testIsValidPartialPostcodeUK,
+    buildUKApiUrl: testBuildUKApiUrl,
+    config: testConfig
   }
   const { hasOsKey, combinedLocation } = buildAndCheckUKApiUrl(
     userLocation,
     searchTerms,
     secondSearchTerm,
-    injected
+    deps
   )
   if (!hasOsKey) {
-    injectedLogger.warn(
+    testLogger.warn(
       'OS_NAMES_API_KEY not set; skipping OS Names API call and returning empty results.'
     )
     return { results: [] }
   }
   const finalUserLocation = combinedLocation
-  const shouldCallApi = injectedShouldCallUKApi(
+  const shouldCallApi = testShouldCallUKApi(
     finalUserLocation,
-    injectedSymbolsArray
+    testSymbolsArray
   )
   return getOSPlacesHelper(
     finalUserLocation,
     searchTerms,
     secondSearchTerm,
     shouldCallApi,
-    injectedOptions,
-    injectedOptionsEphemeralProtected,
+    testOptions,
+    testOptionsEphemeralProtected,
     request
   )
 }
 
 const buildNIOptionsOAuth = async ({
   request,
-  injectedIsMockEnabled,
-  injectedRefreshOAuthToken
+  isMockEnabled,
+  refreshOAuthTokenFn
 }) => {
-  // Check if injectedIsMockEnabled is a function and call it, otherwise use as boolean
+  // Check if isMockEnabled is a function and call it, otherwise use as boolean
   const isMock =
-    typeof injectedIsMockEnabled === 'function'
-      ? injectedIsMockEnabled()
-      : !!injectedIsMockEnabled
+    typeof isMockEnabled === 'function'
+      ? isMockEnabled()
+      : !!isMockEnabled
 
   logger.info(`buildNIOptionsOAuth called - isMockEnabled: ${isMock}`)
   let optionsOAuth = {}
@@ -153,7 +153,7 @@ const buildNIOptionsOAuth = async ({
     logger.info('Mock is disabled, fetching OAuth token...')
     const savedAccessToken = request.yar.get('savedAccessToken')
     logger.info(`Saved access token exists: ${!!savedAccessToken}`)
-    accessToken = savedAccessToken || (await injectedRefreshOAuthToken(request))
+    accessToken = savedAccessToken || (await refreshOAuthTokenFn(request))
     logger.info(`Access token obtained: ${!!accessToken}`)
     optionsOAuth = {
       method: 'GET',
@@ -171,12 +171,12 @@ const buildNIOptionsOAuth = async ({
 
 function handleUnsupportedLocationType(/* params */) {
   return function handleUnsupportedLocationType(
-    injectedLogger,
-    injectedErrorResponse,
+    logger,
+    errorResponse,
     locationType
   ) {
-    injectedLogger.error('Unsupported location type provided:', locationType)
-    return injectedErrorResponse('Unsupported location type provided', 400)
+    logger.error('Unsupported location type provided:', locationType)
+    return errorResponse('Unsupported location type provided', 400)
   }
 }
 

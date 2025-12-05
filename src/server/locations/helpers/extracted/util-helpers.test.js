@@ -135,8 +135,8 @@ describe('util-helpers', () => {
 
       const result = await buildNIOptionsOAuth({
         request: mockRequest,
-        injectedIsMockEnabled: false,
-        injectedRefreshOAuthToken: mockRefreshOAuthToken
+        isMockEnabled: false,
+        refreshOAuthTokenFn: mockRefreshOAuthToken
       })
 
       expect(result.optionsOAuth).toEqual({
@@ -155,8 +155,8 @@ describe('util-helpers', () => {
 
       const result = await buildNIOptionsOAuth({
         request: mockRequest,
-        injectedIsMockEnabled: false,
-        injectedRefreshOAuthToken: mockRefreshOAuthToken
+        isMockEnabled: false,
+        refreshOAuthTokenFn: mockRefreshOAuthToken
       })
 
       expect(result.accessToken).toBe('saved-token-456')
@@ -166,8 +166,8 @@ describe('util-helpers', () => {
     it('should return empty options when mock is enabled', async () => {
       const result = await buildNIOptionsOAuth({
         request: mockRequest,
-        injectedIsMockEnabled: true,
-        injectedRefreshOAuthToken: vi.fn()
+        isMockEnabled: true,
+        refreshOAuthTokenFn: vi.fn()
       })
 
       expect(result.optionsOAuth).toEqual({})
@@ -177,8 +177,8 @@ describe('util-helpers', () => {
     it('should handle isMockEnabled as function', async () => {
       const result = await buildNIOptionsOAuth({
         request: mockRequest,
-        injectedIsMockEnabled: () => true,
-        injectedRefreshOAuthToken: vi.fn()
+        isMockEnabled: () => true,
+        refreshOAuthTokenFn: vi.fn()
       })
 
       expect(result.optionsOAuth).toEqual({})

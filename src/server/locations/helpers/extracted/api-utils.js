@@ -9,54 +9,54 @@ import { config } from '../../../../config/index.js'
 async function callAndHandleForecastsResponse(
   url,
   opts,
-  injectedCatchFetchError,
-  injectedHttpStatusOk,
-  injectedLogger,
-  injectedErrorResponse
+  catchFetchError,
+  httpStatusOk,
+  logger,
+  errorResponse
 ) {
-  const [forecastStatus, getForecasts] = await injectedCatchFetchError(
+  const [forecastStatus, getForecasts] = await catchFetchError(
     url,
     opts
   )
-  if (forecastStatus !== injectedHttpStatusOk) {
-    injectedLogger.error(
+  if (forecastStatus !== httpStatusOk) {
+    logger.error(
       'Error fetching forecasts data: status code',
       forecastStatus
     )
-    return injectedErrorResponse(
+    return errorResponse(
       'Forecasts fetch failed',
       forecastStatus || 500
     )
   }
-  injectedLogger.info('Forecasts data fetched')
+  logger.info('Forecasts data fetched')
 
   return getForecasts
 }
 
 async function callForecastsApi({
-  injectedConfig,
-  injectedOptionsEphemeralProtected,
-  injectedOptions,
-  injectedCatchFetchError,
-  injectedHttpStatusOk,
-  injectedLogger,
-  injectedErrorResponse,
+  config,
+  optionsEphemeralProtected,
+  options,
+  catchFetchError,
+  httpStatusOk,
+  logger,
+  errorResponse,
   request
 }) {
-  const forecastsApiUrl = injectedConfig.get('forecastsApiUrl')
+  const forecastsApiUrl = config.get('forecastsApiUrl')
   const { url, opts } = selectForecastsUrlAndOptions({
     request,
     forecastsApiUrl,
-    optionsEphemeralProtected: injectedOptionsEphemeralProtected,
-    options: injectedOptions
+    optionsEphemeralProtected,
+    options
   })
   return callAndHandleForecastsResponse(
     url,
     opts,
-    injectedCatchFetchError,
-    injectedHttpStatusOk,
-    injectedLogger,
-    injectedErrorResponse
+    catchFetchError,
+    httpStatusOk,
+    logger,
+    errorResponse
   )
 }
 
@@ -178,10 +178,10 @@ function buildMeasurementsQueryParams(latitude, longitude) {
 // Helper to build local measurements URL and options
 function buildLocalMeasurementsUrlAndOpts(
   queryParams,
-  injectedConfig,
-  injectedOptionsEphemeralProtected
+  config,
+  optionsEphemeralProtected
 ) {
-  const ephemeralProtectedDevApiUrl = injectedConfig.get(
+  const ephemeralProtectedDevApiUrl = config.get(
     'ephemeralProtectedDevApiUrl'
   )
   const measurementsApiPath = MEASUREMENTS_API_PATH || ''
@@ -199,18 +199,18 @@ function buildLocalMeasurementsUrlAndOpts(
   
   return {
     url: `${ephemeralProtectedDevApiUrl}${measurementsApiPath}${queryParams.toString()}`,
-    opts: injectedOptionsEphemeralProtected
+    opts: optionsEphemeralProtected
   }
 }
 
 // Helper to build remote measurements URL and options
-function buildRemoteMeasurementsUrlAndOpts(url, injectedOptions) {
+function buildRemoteMeasurementsUrlAndOpts(url, options) {
   return {
     url,
     opts: {
-      ...injectedOptions,
+      ...options,
       headers: {
-        ...(injectedOptions.headers || {}),
+        ...(options.headers || {}),
         'Content-Type': 'application/json'
       }
     }
@@ -225,42 +225,42 @@ function selectMeasurementsUrlAndOptions(
   di = {}
 ) {
   const {
-    injectedConfig,
-    injectedLogger,
-    injectedOptionsEphemeralProtected,
-    injectedOptions,
+    config,
+    logger,
+    optionsEphemeralProtected,
+    options,
     request
   } = di
   
   if (useNewRicardoMeasurementsEnabled) {
-    injectedLogger.info(
+    logger.info(
       `Using mock measurements with latitude: ${latitude}, longitude: ${longitude}`
     )
     
     const queryParams = buildMeasurementsQueryParams(latitude, longitude)
-    const baseUrl = injectedConfig.get('ricardoMeasurementsApiUrl')
+    const baseUrl = config.get('ricardoMeasurementsApiUrl')
     const newRicardoMeasurementsApiUrl = `${baseUrl}?${queryParams.toString()}`
     
-    injectedLogger.info(
+    logger.info(
       `New Ricardo measurements API URL: ${newRicardoMeasurementsApiUrl}`
     )
     
     if (isLocalRequest(request)) {
       return buildLocalMeasurementsUrlAndOpts(
         queryParams,
-        injectedConfig,
-        injectedOptionsEphemeralProtected
+        config,
+        optionsEphemeralProtected
       )
     } else {
       return buildRemoteMeasurementsUrlAndOpts(
         newRicardoMeasurementsApiUrl,
-        injectedOptions
+        options
       )
     }
   } else {
-    const measurementsAPIurl = injectedConfig.get('measurementsApiUrl')
-    injectedLogger.info(`Old measurements API URL: ${measurementsAPIurl}`)
-    return buildRemoteMeasurementsUrlAndOpts(measurementsAPIurl, injectedOptions)
+    const measurementsAPIurl = config.get('measurementsApiUrl')
+    logger.info(`Old measurements API URL: ${measurementsAPIurl}`)
+    return buildRemoteMeasurementsUrlAndOpts(measurementsAPIurl, options)
   }
 }
 
@@ -268,15 +268,15 @@ function selectMeasurementsUrlAndOptions(
 async function callAndHandleMeasurementsResponse(
   url,
   opts,
-  injectedCatchFetchError,
-  injectedLogger
+  catchFetchError,
+  logger
 ) {
-  const [status, data] = await injectedCatchFetchError(url, opts)
+  const [status, data] = await catchFetchError(url, opts)
   if (status !== 200) {
-    injectedLogger.error(`Error fetching data: ${data && data.message}`)
+    logger.error(`Error fetching data: ${data && data.message}`)
     return []
   }
-  injectedLogger.info('Data fetched successfully.')
+  logger.info('Data fetched successfully.')
   return data || []
 }
 
@@ -285,20 +285,20 @@ function buildAndCheckUKApiUrl(
   userLocation,
   searchTerms,
   secondSearchTerm,
-  injected
+  deps
 ) {
-  const filters = injected.buildUKLocationFilters()
-  const osNamesApiUrl = injected.config.get('osNamesApiUrl')
-  const osNamesApiKey = injected.config.get('osNamesApiKey')
+  const filters = deps.buildUKLocationFilters()
+  const osNamesApiUrl = deps.config.get('osNamesApiUrl')
+  const osNamesApiKey = deps.config.get('osNamesApiKey')
   const hasOsKey = Boolean(osNamesApiKey && String(osNamesApiKey).trim() !== '')
-  const combinedLocation = injected.combineUKSearchTerms(
+  const combinedLocation = deps.combineUKSearchTerms(
     userLocation,
     searchTerms,
     secondSearchTerm,
-    injected.isValidFullPostcodeUK,
-    injected.isValidPartialPostcodeUK
+    deps.isValidFullPostcodeUK,
+    deps.isValidPartialPostcodeUK
   )
-  const osNamesApiUrlFull = injected.buildUKApiUrl(
+  const osNamesApiUrlFull = deps.buildUKApiUrl(
     combinedLocation,
     filters,
     osNamesApiUrl,
@@ -310,40 +310,40 @@ function buildAndCheckUKApiUrl(
 // Helper to call the UK API and handle the response
 async function callAndHandleUKApiResponse(
   osNamesApiUrlFull,
-  injectedOptions,
-  injectedOptionsEphemeralProtected,
+  options,
+  optionsEphemeralProtected,
   shouldCallApi,
-  injectedCatchProxyFetchError,
-  injectedHttpStatusOk,
-  injectedLogger,
-  injectedFormatUKApiResponse
+  catchProxyFetchError,
+  httpStatusOk,
+  logger,
+  formatUKApiResponse
 ) {
   const isLocal =
     String(osNamesApiUrlFull).includes('localhost') ||
     String(osNamesApiUrlFull).includes('127.0.0.1')
   const selectedOptions = isLocal
-    ? injectedOptionsEphemeralProtected
-    : injectedOptions
-  injectedLogger.info(
+    ? optionsEphemeralProtected
+    : options
+  logger.info(
     `[DEBUG] Calling catchProxyFetchError with URL: ${osNamesApiUrlFull}`
   )
-  injectedLogger.info('[DEBUG] Options:', JSON.stringify(selectedOptions))
-  const [statusCodeOSPlace, getOSPlaces] = await injectedCatchProxyFetchError(
+  logger.info('[DEBUG] Options:', JSON.stringify(selectedOptions))
+  const [statusCodeOSPlace, getOSPlaces] = await catchProxyFetchError(
     osNamesApiUrlFull,
     selectedOptions,
     shouldCallApi
   )
-  if (statusCodeOSPlace === injectedHttpStatusOk) {
-    injectedLogger.info('getOSPlaces data fetched:')
-    return injectedFormatUKApiResponse(getOSPlaces)
+  if (statusCodeOSPlace === httpStatusOk) {
+    logger.info('getOSPlaces data fetched:')
+    return formatUKApiResponse(getOSPlaces)
   } else {
     if (statusCodeOSPlace === STATUS_UNAUTHORIZED) {
-      injectedLogger.warn(
+      logger.warn(
         `OS Names API returned 401 (unauthorized). Check OS_NAMES_API_KEY. URL was suppressed in logs.`
       )
       return null
     } else {
-      injectedLogger.error(
+      logger.error(
         'Error fetching statusCodeOSPlace data:',
         statusCodeOSPlace
       )

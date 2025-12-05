@@ -65,18 +65,15 @@ const fetchForecasts = async (di = {}) => {
 
   // ''  Call forecasts API
   const forecastsResult = await callForecastsApi({
-    injectedConfig: di.config || config,
-    injectedForecastsApiPath:
-      di.FORECASTS_API_PATH || config.get('forecastsApiUrl'),
-    injectedOptionsEphemeralProtected:
+    config: di.config || config,
+    optionsEphemeralProtected:
       di.optionsEphemeralProtected || buildApiOptions(),
-    injectedOptions: di.options || {},
-    injectedCatchFetchError: di.catchFetchError || catchFetchError,
-    injectedHttpStatusOk: di.HTTP_STATUS_OK || 200,
-    injectedLogger: testLogger,
-    injectedErrorResponse: di.errorResponse || errorResponse,
-    request: di.request,
-    nodeEnv: di.nodeEnv
+    options: di.options || {},
+    catchFetchError: di.catchFetchError || catchFetchError,
+    httpStatusOk: di.HTTP_STATUS_OK || 200,
+    logger: testLogger,
+    errorResponse: di.errorResponse || errorResponse,
+    request: di.request
   })
   
   if (
@@ -119,11 +116,10 @@ export const fetchMeasurements = async (
       longitude,
       useNewRicardoMeasurementsEnabled,
       {
-        injectedConfig: diConfig,
-        injectedLogger: diLogger,
-        injectedNodeEnv: diNodeEnv,
-        injectedOptionsEphemeralProtected: diOptions,
-        injectedOptions: diExtraOptions,
+        config: diConfig,
+        logger: diLogger,
+        optionsEphemeralProtected: diOptions,
+        options: diExtraOptions,
         request: di.request
       }
     )
@@ -192,8 +188,8 @@ async function fetchData(
   if (locationType === LOCATION_TYPE_NI) {
     const niOptions = await buildNIOptionsOAuth({
       request,
-      injectedIsMockEnabled: diIsMockEnabled,
-      injectedRefreshOAuthToken: diRefreshOAuthToken
+      isMockEnabled: diIsMockEnabled,
+      refreshOAuthTokenFn: diRefreshOAuthToken
     })
     optionsOAuth = niOptions.optionsOAuth
   }
@@ -221,10 +217,10 @@ async function fetchData(
       optionsOAuth,
       getDailySummary,
       getForecasts,
-      injectedHandleUKLocationData: diHandleUKLocationData,
-      injectedHandleNILocationData: diHandleNILocationData,
-      injectedLogger: diLogger,
-      injectedErrorResponse: diErrorResponse,
+      handleUKLocationData: diHandleUKLocationData,
+      handleNILocationData: diHandleNILocationData,
+      logger: diLogger,
+      errorResponse: diErrorResponse,
       args: diOverrides
     })
   }
