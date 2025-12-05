@@ -59,26 +59,15 @@ const handleNILocationData = async (
   request,
   di = {}
 ) => {
-  const { injectedLogger, injectedIsTestMode, injectedIsMockEnabled } =
-    setupNILocationDataDI(di)
+  const { injectedLogger, injectedIsTestMode } = setupNILocationDataDI(di)
   if (injectedIsTestMode?.()) {
     if (injectedLogger && typeof injectedLogger.info === 'function') {
       injectedLogger.info('Test mode: handleNILocationData returning mock data')
     }
     return { results: ['niData'] }
   }
-  // Use getNIPlaces for NI lookups
-  // Pass userLocation, isMockEnabled, optionsOAuth, request
-  // isMockEnabled: use injectedIsMockEnabled (from DI or config)
-  // optionsOAuth: prefer injectedOptions (OAuth headers)
-  return getNIPlaces(
-    userLocation,
-    typeof injectedIsMockEnabled === 'function'
-      ? injectedIsMockEnabled()
-      : !!injectedIsMockEnabled,
-    injectedOptions,
-    request
-  )
+  // ''  Use getNIPlaces for NI lookups - simplified, no DI parameters needed
+  return getNIPlaces(userLocation)
 }
 
 const handleUKLocationData = async (
