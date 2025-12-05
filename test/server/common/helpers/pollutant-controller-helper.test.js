@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { createPollutantHandler } from './pollutant-controller-helper.js'
+import { createPollutantHandler } from '../../../../src/server/common/helpers/pollutant-controller-helper.js'
 
 describe('pollutant-controller-helper', () => {
   let mockRequest
@@ -32,11 +32,7 @@ describe('pollutant-controller-helper', () => {
         lang: 'en'
       }
 
-      const result = createPollutantHandler(
-        'nitrogenDioxide',
-        mockRequest,
-        mockH
-      )
+      createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
 
       expect(mockH.view).toHaveBeenCalledWith(
         'nitrogen-dioxide/index',
@@ -82,11 +78,7 @@ describe('pollutant-controller-helper', () => {
         locationName: 'Cardiff'
       }
 
-      const result = createPollutantHandler(
-        'nitrogenDioxide',
-        mockRequest,
-        mockH
-      )
+      createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
 
       expect(mockH.view).toHaveBeenCalledWith(
         'nitrogen-dioxide/index',
@@ -289,7 +281,9 @@ describe('pollutant-controller-helper', () => {
       expect(viewContext).toHaveProperty('metaSiteUrl')
       expect(viewContext).toHaveProperty('nitrogenDioxide')
       expect(viewContext).toHaveProperty('page')
-      expect(viewContext).toHaveProperty('backLink')
+      expect(viewContext).toHaveProperty('displayBacklink')
+      expect(viewContext).toHaveProperty('backLinkText')
+      expect(viewContext).toHaveProperty('backLinkUrl')
       expect(viewContext).toHaveProperty('phaseBanner')
       expect(viewContext).toHaveProperty('footerTxt')
       expect(viewContext).toHaveProperty('cookieBanner')
@@ -322,25 +316,203 @@ describe('pollutant-controller-helper', () => {
         lang: 'cy'
       }
 
-      const result = createPollutantHandler(
-        'particulateMatter10',
-        mockRequest,
-        mockH
-      )
+      createPollutantHandler('particulateMatter10', mockRequest, mockH)
 
-      expect(result.code).toHaveBeenCalledWith(301)
+      const redirectResult = mockH.redirect.mock.results[0].value
+      expect(redirectResult.code).toHaveBeenCalledWith(301)
     })
 
     it('should use correct redirect status code for search location', () => {
       mockRequest.query = {}
 
-      const result = createPollutantHandler(
-        'sulphurDioxide',
-        mockRequest,
-        mockH
-      )
+      createPollutantHandler('sulphurDioxide', mockRequest, mockH)
 
-      expect(result.code).toHaveBeenCalledWith(301)
+      const redirectResult = mockH.redirect.mock.results[0].value
+      expect(redirectResult.code).toHaveBeenCalledWith(301)
+    })
+  })
+
+  describe('query parameter edge cases', () => {
+    it('should handle Welsh redirect with locationName but no searchTerms', () => {
+      mockRequest.query = {
+        locationId: 'LOC909',
+        locationName: 'Caerphilly',
+        lang: 'cy'
+      }
+
+      createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
+
+      const redirectCall = mockH.redirect.mock.calls[0][0]
+      expect(redirectCall).toContain('lang=cy')
+      expect(redirectCall).toContain('locationId=LOC909')
+      expect(redirectCall).toContain('locationName=Caerphilly')
+      expect(redirectCall).not.toContain('searchTerms')
+    })
+
+    it('should handle Welsh redirect with searchTerms but no locationName', () => {
+      mockRequest.query = {
+        locationId: 'LOC1010',
+        searchTerms: 'Wales',
+        lang: 'cy'
+      }
+
+      createPollutantHandler('ozone', mockRequest, mockH)
+
+      const redirectCall = mockH.redirect.mock.calls[0][0]
+      expect(redirectCall).toContain('lang=cy')
+      expect(redirectCall).toContain('locationId=LOC1010')
+      expect(redirectCall).toContain('searchTerms=Wales')
+      expect(redirectCall).not.toContain('locationName')
+    })
+
+    it('should handle request with null query object', () => {
+      mockRequest.query = null
+
+      createPollutantHandler('particulateMatter25', mockRequest, mockH)
+
+      expect(mockH.redirect).toHaveBeenCalledWith('/search-location?lang=en')
+    })
+
+    it('should handle request with undefined query object', () => {
+      mockRequest.query = undefined
+
+      createPollutantHandler('sulphurDioxide', mockRequest, mockH)
+
+      expect(mockH.redirect).toHaveBeenCalledWith('/search-location?lang=en')
+    })
+
+    it('should handle query with lang parameter other than cy or en', () => {
+      mockRequest.query = {
+        locationId: 'LOC1111',
+        locationName: 'Oxford',
+        lang: 'fr'
+      }
+
+      createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
+
+      const viewContext = mockH.view.mock.calls[0][1]
+      expect(viewContext.lang).toBe('fr')
+      expect(mockH.redirect).not.toHaveBeenCalled()
+    })
+
+    it('should include complete queryParams in view context', () => {
+      mockRequest.query = {
+        locationId: 'LOC1212',
+        locationName: 'Plymouth',
+        searchTerms: 'Devon',
+        lang: 'en',
+        extraParam: 'value'
+      }
+
+      createPollutantHandler('ozone', mockRequest, mockH)
+
+      const viewContext = mockH.view.mock.calls[0][1]
+      expect(viewContext.queryParams).toEqual(mockRequest.query)
+    })
+  })
+
+  describe('pollutant data validation', () => {
+    it('should include correct pollutant data key for nitrogen dioxide', () => {
+      mockRequest.query = {
+        locationId: 'LOC1313',
+        locationName: 'York'
+      }
+
+      createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
+
+      const viewContext = mockH.view.mock.calls[0][1]
+      expect(viewContext).toHaveProperty('nitrogenDioxide')
+      expect(viewContext.nitrogenDioxide).toBeDefined()
+    })
+
+    it('should include correct pollutant data key for ozone', () => {
+      mockRequest.query = {
+        locationId: 'LOC1414'
+      }
+
+      createPollutantHandler('ozone', mockRequest, mockH)
+
+      const viewContext = mockH.view.mock.calls[0][1]
+      expect(viewContext).toHaveProperty('ozone')
+      expect(viewContext.ozone).toBeDefined()
+    })
+
+    it('should include correct pollutant data key for PM10', () => {
+      mockRequest.query = {
+        locationId: 'LOC1515'
+      }
+
+      createPollutantHandler('particulateMatter10', mockRequest, mockH)
+
+      const viewContext = mockH.view.mock.calls[0][1]
+      expect(viewContext).toHaveProperty('particulateMatter10')
+      expect(viewContext.particulateMatter10).toBeDefined()
+    })
+
+    it('should include correct pollutant data key for PM25', () => {
+      mockRequest.query = {
+        locationId: 'LOC1616'
+      }
+
+      createPollutantHandler('particulateMatter25', mockRequest, mockH)
+
+      const viewContext = mockH.view.mock.calls[0][1]
+      expect(viewContext).toHaveProperty('particulateMatter25')
+      expect(viewContext.particulateMatter25).toBeDefined()
+    })
+
+    it('should include correct pollutant data key for sulphur dioxide', () => {
+      mockRequest.query = {
+        locationId: 'LOC1717'
+      }
+
+      createPollutantHandler('sulphurDioxide', mockRequest, mockH)
+
+      const viewContext = mockH.view.mock.calls[0][1]
+      expect(viewContext).toHaveProperty('sulphurDioxide')
+      expect(viewContext.sulphurDioxide).toBeDefined()
+    })
+  })
+
+  describe('back link generation', () => {
+    it('should create back link with locationId only', () => {
+      mockRequest.query = {
+        locationId: 'LOC1818'
+      }
+
+      createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
+
+      const viewContext = mockH.view.mock.calls[0][1]
+      expect(viewContext.displayBacklink).toBeDefined()
+      expect(viewContext.backLinkUrl).toBeDefined()
+      expect(viewContext.backLinkUrl).toContain('LOC1818')
+    })
+
+    it('should create back link with locationId and locationName', () => {
+      mockRequest.query = {
+        locationId: 'LOC1919',
+        locationName: 'Southampton'
+      }
+
+      createPollutantHandler('ozone', mockRequest, mockH)
+
+      const viewContext = mockH.view.mock.calls[0][1]
+      expect(viewContext.displayBacklink).toBeDefined()
+      expect(viewContext.backLinkUrl).toBeDefined()
+    })
+
+    it('should create back link with all parameters', () => {
+      mockRequest.query = {
+        locationId: 'LOC2020',
+        locationName: 'Coventry',
+        searchTerms: 'West Midlands'
+      }
+
+      createPollutantHandler('particulateMatter10', mockRequest, mockH)
+
+      const viewContext = mockH.view.mock.calls[0][1]
+      expect(viewContext.displayBacklink).toBeDefined()
+      expect(viewContext.backLinkUrl).toBeDefined()
     })
   })
 })
