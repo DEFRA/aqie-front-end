@@ -99,7 +99,37 @@
 
     {% if (page != "Check air quality") and (page != "Gwirio ansawdd aer") %}
       {% if displayBacklink %}
-        {# '' Backlink logic handled below #}
+        {# '' Backlink logic handled below - but still need language toggle URLs '' #}
+        {% if page == 'nitrogen dioxide' or page == 'ozone' or page == 'sulphur dioxide' or page == 'particulate matter 10' or page == 'particulate matter 25' %}
+          {# '' Pollutant pages with backlink '' #}
+          {% set pathMappings = {
+            '/pollutants/ozone': '/llygryddion/oson/cy',
+            '/pollutants/nitrogen-dioxide': '/llygryddion/nitrogen-deuocsid/cy',
+            '/pollutants/sulphur-dioxide': '/llygryddion/sylffwr-deuocsid/cy',
+            '/pollutants/particulate-matter-10': '/llygryddion/mater-gronynnol-10/cy',
+            '/pollutants/particulate-matter-25': '/llygryddion/mater-gronynnol-25/cy'
+          } %}
+          {% set reversePathMappings = {
+            '/llygryddion/oson/cy': '/pollutants/ozone',
+            '/llygryddion/nitrogen-deuocsid/cy': '/pollutants/nitrogen-dioxide',
+            '/llygryddion/sylffwr-deuocsid/cy': '/pollutants/sulphur-dioxide',
+            '/llygryddion/mater-gronynnol-10/cy': '/pollutants/particulate-matter-10',
+            '/llygryddion/mater-gronynnol-25/cy': '/pollutants/particulate-matter-25'
+          } %}
+          {% set queryString = '&locationId=' + (locationId | urlencode) + '&locationName=' + (locationName | urlencode) %}
+          {% if searchTerms %}
+            {% set queryString = queryString + '&searchTerms=' + (searchTerms | urlencode) %}
+          {% endif %}
+          {% if lang == 'en' %}
+            {% set welshPath = pathMappings[currentPath] %}
+            {% set fullHrefEn = currentPath + "?lang=en" + queryString %}
+            {% set fullHrefCy = welshPath + "?lang=cy" + queryString %}
+          {% else %}
+            {% set englishPath = reversePathMappings[currentPath] %}
+            {% set fullHrefEn = englishPath + "?lang=en" + queryString %}
+            {% set fullHrefCy = currentPath + "?lang=cy" + queryString %}
+          {% endif %}
+        {% endif %}
       {% else %}
         {# '' General language toggle - works for all pages by translating the current path '' #}
         {% if locationId %}
@@ -121,6 +151,35 @@
             {% else %}
               {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/health-effects?lang=en" %}
               {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd?lang=cy" %}
+            {% endif %}
+          {% elif page == 'nitrogen dioxide' or page == 'ozone' or page == 'sulphur dioxide' or page == 'particulate matter 10' or page == 'particulate matter 25' %}
+            {# '' Pollutant pages '' #}
+            {% set pathMappings = {
+              '/pollutants/ozone': '/llygryddion/oson/cy',
+              '/pollutants/nitrogen-dioxide': '/llygryddion/nitrogen-deuocsid/cy',
+              '/pollutants/sulphur-dioxide': '/llygryddion/sylffwr-deuocsid/cy',
+              '/pollutants/particulate-matter-10': '/llygryddion/mater-gronynnol-10/cy',
+              '/pollutants/particulate-matter-25': '/llygryddion/mater-gronynnol-25/cy'
+            } %}
+            {% set reversePathMappings = {
+              '/llygryddion/oson/cy': '/pollutants/ozone',
+              '/llygryddion/nitrogen-deuocsid/cy': '/pollutants/nitrogen-dioxide',
+              '/llygryddion/sylffwr-deuocsid/cy': '/pollutants/sulphur-dioxide',
+              '/llygryddion/mater-gronynnol-10/cy': '/pollutants/particulate-matter-10',
+              '/llygryddion/mater-gronynnol-25/cy': '/pollutants/particulate-matter-25'
+            } %}
+            {% set queryString = '&locationId=' + (locationId | urlencode) + '&locationName=' + (locationName | urlencode) %}
+            {% if searchTerms %}
+              {% set queryString = queryString + '&searchTerms=' + (searchTerms | urlencode) %}
+            {% endif %}
+            {% if lang == 'en' %}
+              {% set welshPath = pathMappings[currentPath] %}
+              {% set fullHrefEn = currentPath + "?lang=en" + queryString %}
+              {% set fullHrefCy = welshPath + "?lang=cy" + queryString %}
+            {% else %}
+              {% set englishPath = reversePathMappings[currentPath] %}
+              {% set fullHrefEn = englishPath + "?lang=en" + queryString %}
+              {% set fullHrefCy = currentPath + "?lang=cy" + queryString %}
             {% endif %}
           {% else %}
             {# '' Location pages (default) '' #}
@@ -170,23 +229,37 @@
           {# '' Determine the current path (without query string) '' #}
           {% set currentPath = currentPath or '/' %}
           
+          {# '' Build query string preserving locationId, locationName, searchTerms '' #}
+          {% set queryString = '' %}
+          {% if queryParams %}
+            {% if queryParams.locationId %}
+              {% set queryString = queryString + '&locationId=' + queryParams.locationId %}
+            {% endif %}
+            {% if queryParams.locationName %}
+              {% set queryString = queryString + '&locationName=' + queryParams.locationName %}
+            {% endif %}
+            {% if queryParams.searchTerms %}
+              {% set queryString = queryString + '&searchTerms=' + queryParams.searchTerms %}
+            {% endif %}
+          {% endif %}
+          
           {# '' Map the current path to the alternate language path '' #}
           {% if lang == 'en' %}
             {% set welshPath = pathMappings[currentPath] %}
             {% if welshPath %}
-              {% set fullHrefCy = welshPath + "?lang=cy" %}
+              {% set fullHrefCy = welshPath + "?lang=cy" + queryString %}
             {% else %}
               {% set fullHrefCy = "/cy?lang=cy" %}
             {% endif %}
-            {% set fullHrefEn = currentPath + "?lang=en" %}
+            {% set fullHrefEn = currentPath + "?lang=en" + queryString %}
           {% else %}
             {% set englishPath = reversePathMappings[currentPath] %}
             {% if englishPath %}
-              {% set fullHrefEn = englishPath + "?lang=en" %}
+              {% set fullHrefEn = englishPath + "?lang=en" + queryString %}
             {% else %}
               {% set fullHrefEn = "/?lang=en" %}
             {% endif %}
-            {% set fullHrefCy = currentPath + "?lang=cy" %}
+            {% set fullHrefCy = currentPath + "?lang=cy" + queryString %}
           {% endif %}
         {% endif %}
         {% if statusCode != 500 %}
@@ -248,6 +321,35 @@
           {% else %}
             {% set fullHrefEn = "/location/" + (locationId | urlencode) + "/health-effects?lang=en" %}
             {% set fullHrefCy = "/lleoliad/" + (locationId | urlencode) + "/effeithiau-iechyd?lang=cy" %}
+          {% endif %}
+        {% elif page == 'nitrogen dioxide' or page == 'ozone' or page == 'sulphur dioxide' or page == 'particulate matter 10' or page == 'particulate matter 25' %}
+          {# '' Pollutant pages '' #}
+          {% set pathMappings = {
+            '/pollutants/ozone': '/llygryddion/oson/cy',
+            '/pollutants/nitrogen-dioxide': '/llygryddion/nitrogen-deuocsid/cy',
+            '/pollutants/sulphur-dioxide': '/llygryddion/sylffwr-deuocsid/cy',
+            '/pollutants/particulate-matter-10': '/llygryddion/mater-gronynnol-10/cy',
+            '/pollutants/particulate-matter-25': '/llygryddion/mater-gronynnol-25/cy'
+          } %}
+          {% set reversePathMappings = {
+            '/llygryddion/oson/cy': '/pollutants/ozone',
+            '/llygryddion/nitrogen-deuocsid/cy': '/pollutants/nitrogen-dioxide',
+            '/llygryddion/sylffwr-deuocsid/cy': '/pollutants/sulphur-dioxide',
+            '/llygryddion/mater-gronynnol-10/cy': '/pollutants/particulate-matter-10',
+            '/llygryddion/mater-gronynnol-25/cy': '/pollutants/particulate-matter-25'
+          } %}
+          {% set queryString = '&locationId=' + (locationId | urlencode) + '&locationName=' + (locationName | urlencode) %}
+          {% if searchTerms %}
+            {% set queryString = queryString + '&searchTerms=' + (searchTerms | urlencode) %}
+          {% endif %}
+          {% if lang == 'en' %}
+            {% set welshPath = pathMappings[currentPath] %}
+            {% set fullHrefEn = currentPath + "?lang=en" + queryString %}
+            {% set fullHrefCy = welshPath + "?lang=cy" + queryString %}
+          {% else %}
+            {% set englishPath = reversePathMappings[currentPath] %}
+            {% set fullHrefEn = englishPath + "?lang=en" + queryString %}
+            {% set fullHrefCy = currentPath + "?lang=cy" + queryString %}
           {% endif %}
         {% else %}
           {# '' Location pages (default) '' #}

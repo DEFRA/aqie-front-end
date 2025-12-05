@@ -4,7 +4,6 @@ const gazetteerEntryFilter = (locationDetails) => {
   let title = ''
   let headerTitle = ''
   let formattedPostcode = ''
-  // ''
 
   if (locationDetails?.GAZETTEER_ENTRY?.LOCAL_TYPE === 'Postcode') {
     if (!locationDetails.GAZETTEER_ENTRY.POPULATED_PLACE) {

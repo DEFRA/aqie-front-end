@@ -5,7 +5,7 @@ const sulphurDioxideController = createWelshPollutantController({
   englishPath: '/pollutants/sulphur-dioxide',
   viewTemplate: 'sulphur-dioxide/index',
   welshPathKey: 'sylffwr-deuocsid',
-  pageIdentifier: 'Sulphur dioxide (SO₂)'
+  pageIdentifier: 'sulphur dioxide'
 })
 
 export { sulphurDioxideController }

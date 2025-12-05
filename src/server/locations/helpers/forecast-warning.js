@@ -12,7 +12,6 @@ import { LANG_CY, LANG_EN } from '../../data/constants.js'
  * @returns {Object|null} - { text: string, level: string, weekday: string } or null if no warning needed
  */
 export function getForecastWarning(airQuality, lang = LANG_EN) {
-  // ''
   if (!airQuality) {
     return null
   }

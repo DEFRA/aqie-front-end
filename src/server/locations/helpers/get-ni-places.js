@@ -6,7 +6,6 @@ import { formatNorthernIrelandPostcode } from './convert-string.js' // Updated i
 const logger = createLogger()
 const STATUS_CODE_SUCCESS = 200 // Define constant for success status code
 
-// ''
 // Refactored to use the request object for local detection
 async function getNIPlaces(userLocation, isMockEnabled, optionsOAuth, request) {
   const osPlacesApiPostcodeNorthernIrelandUrl = config.get(

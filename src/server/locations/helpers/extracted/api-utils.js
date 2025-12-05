@@ -44,7 +44,6 @@ async function callForecastsApi({
   request
 }) {
   const forecastsApiUrl = injectedConfig.get('forecastsApiUrl')
-  // ''
   const { url, opts } = selectForecastsUrlAndOptions({
     request,
     forecastsApiUrl,

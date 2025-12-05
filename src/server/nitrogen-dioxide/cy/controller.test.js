@@ -8,13 +8,13 @@ const NO2_PATH_CY = '/llygryddion/nitrogen-deuocsid/cy'
 const VIEW_RENDERED = 'view rendered'
 
 // Helper to create expected view data
-function createExpectedViewData(content, actualUrl, lang, currentPath) {
+function createExpectedViewData(content, actualUrl, lang, currentPath, query) {
   return {
     pageTitle: content.pollutants.nitrogenDioxide.pageTitle,
     description: content.pollutants.nitrogenDioxide.description,
     metaSiteUrl: actualUrl,
     nitrogenDioxide: content.pollutants.nitrogenDioxide,
-    page: 'Nitrogen dioxide (NO₂)',
+    page: 'nitrogen dioxide',
     displayBacklink: true,
     backLinkText: 'Llygredd aer yn Test Location',
     backLinkUrl: '/lleoliad/123?lang=cy',
@@ -24,7 +24,11 @@ function createExpectedViewData(content, actualUrl, lang, currentPath) {
     cookieBanner: content.cookieBanner,
     serviceName: content.multipleLocations.serviceName,
     lang,
-    currentPath
+    currentPath,
+    queryParams: query,
+    locationId: query?.locationId,
+    locationName: query?.locationName,
+    searchTerms: query?.searchTerms || null
   }
 }
 
@@ -76,7 +80,8 @@ describe('Welsh content rendering', () => {
       mockContent,
       actualUrl,
       mockRequest.query.lang,
-      NO2_PATH_CY
+      NO2_PATH_CY,
+      mockRequest.query
     )
     expect(mockH.view).toHaveBeenCalledWith(
       'nitrogen-dioxide/index',
@@ -98,7 +103,8 @@ describe('Welsh content rendering', () => {
       mockContent,
       actualUrl,
       LANG_CY,
-      NO2_PATH_CY
+      NO2_PATH_CY,
+      mockRequest.query
     )
     expect(mockH.view).toHaveBeenCalledWith(
       'nitrogen-dioxide/index',

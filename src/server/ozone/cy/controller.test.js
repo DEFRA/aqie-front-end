@@ -4,6 +4,8 @@ import { ozoneController } from './controller.js'
 import { LANG_CY, OZONE_PATH_CY } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
+const TEST_LOCATION = 'Test Location'
+
 const createMockRequestResponse = () => {
   const VIEW_RENDERED = 'view rendered'
   const mockRequest = {
@@ -51,7 +53,7 @@ describe('Ozone Controller - Welsh', () => {
     it('should render the ozone cy page with the necessary data', () => {
       mockRequest.query.lang = LANG_CY
       mockRequest.query.locationId = '123'
-      mockRequest.query.locationName = 'Test Location'
+      mockRequest.query.locationName = TEST_LOCATION
       const expectedUrl =
         'https://check-air-quality.service.gov.uk/llygryddion/oson/cy?lang=cy'
       const actualUrl = getAirQualitySiteUrl(mockRequest)
@@ -63,9 +65,9 @@ describe('Ozone Controller - Welsh', () => {
         description: mockContent.pollutants.ozone.description,
         metaSiteUrl: actualUrl,
         ozone,
-        page: 'ozone-cy',
+        page: 'ozone',
         displayBacklink: true,
-        backLinkText: 'Llygredd aer yn Test Location',
+        backLinkText: `Llygredd aer yn ${TEST_LOCATION}`,
         backLinkUrl: '/lleoliad/123?lang=cy',
         customBackLink: true,
         phaseBanner: mockContent.phaseBanner,
@@ -73,7 +75,11 @@ describe('Ozone Controller - Welsh', () => {
         cookieBanner: mockContent.cookieBanner,
         serviceName: mockContent.multipleLocations.serviceName,
         lang: mockRequest.query.lang,
-        currentPath: OZONE_PATH_CY
+        currentPath: OZONE_PATH_CY,
+        queryParams: mockRequest.query,
+        locationId: '123',
+        locationName: TEST_LOCATION,
+        searchTerms: null
       })
     })
   })
@@ -101,7 +107,7 @@ describe('Ozone Controller - Welsh - default language', () => {
   it('should render the ozone cy page with the necessary data if lang is not cy | en', () => {
     mockRequest.query.lang = 'test'
     mockRequest.query.locationId = '123'
-    mockRequest.query.locationName = 'Test Location'
+    mockRequest.query.locationName = TEST_LOCATION
     const expectedUrl =
       'https://check-air-quality.service.gov.uk/llygryddion/oson/cy?lang=test'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
@@ -113,9 +119,9 @@ describe('Ozone Controller - Welsh - default language', () => {
       description: mockContent.pollutants.ozone.description,
       metaSiteUrl: actualUrl,
       ozone,
-      page: 'ozone-cy',
+      page: 'ozone',
       displayBacklink: true,
-      backLinkText: 'Llygredd aer yn Test Location',
+      backLinkText: `Llygredd aer yn ${TEST_LOCATION}`,
       backLinkUrl: '/lleoliad/123?lang=cy',
       customBackLink: true,
       phaseBanner: mockContent.phaseBanner,
@@ -123,7 +129,11 @@ describe('Ozone Controller - Welsh - default language', () => {
       cookieBanner: mockContent.cookieBanner,
       serviceName: mockContent.multipleLocations.serviceName,
       lang: LANG_CY,
-      currentPath: OZONE_PATH_CY
+      currentPath: OZONE_PATH_CY,
+      queryParams: mockRequest.query,
+      locationId: '123',
+      locationName: TEST_LOCATION,
+      searchTerms: null
     })
   })
 })
