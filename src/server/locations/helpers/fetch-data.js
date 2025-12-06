@@ -7,6 +7,12 @@ import {
   fetchMeasurementsTestMode
 } from './extracted/test-mode-helpers.js'
 import {
+  STATUS_BAD_REQUEST,
+  STATUS_OK,
+  LOCATION_TYPE_NI,
+  LOCATION_TYPE_UK
+} from '../../data/constants.js'
+import {
   callForecastsApi,
   callAndHandleForecastsResponse,
   selectMeasurementsUrlAndOptions,
@@ -15,7 +21,6 @@ import {
 /* eslint-env node */
 import { config } from '../../../config/index.js'
 import { catchFetchError } from '../../common/helpers/catch-fetch-error.js'
-import { LOCATION_TYPE_NI, LOCATION_TYPE_UK } from '../../data/constants.js'
 import {
   handleUnsupportedLocationType,
   handleUKLocationData,
@@ -50,17 +55,28 @@ function buildApiOptions() {
   return {}
 }
 
+/**
+ * ''  Ensure forecast-summary field exists
+ */
+function ensureForecastSummary(forecastData) {
+  if (
+    forecastData &&
+    typeof forecastData === 'object' &&
+    !('forecast-summary' in forecastData)
+  ) {
+    forecastData['forecast-summary'] = { today: null }
+  }
+  return forecastData
+}
+
 const fetchForecasts = async (di = {}) => {
   // ''  Simple DI with fallbacks
   const testModeChecker = di.isTestMode || isTestMode
   const testLogger = di.logger || logger
-  
+
   const testModeResult = fetchForecastsTestMode(testModeChecker, testLogger)
   if (testModeResult) {
-    if (!testModeResult['forecast-summary']) {
-      testModeResult['forecast-summary'] = { today: null }
-    }
-    return testModeResult
+    return ensureForecastSummary(testModeResult)
   }
 
   // ''  Call forecasts API
@@ -70,20 +86,13 @@ const fetchForecasts = async (di = {}) => {
       di.optionsEphemeralProtected || buildApiOptions(),
     options: di.options || {},
     catchFetchError: di.catchFetchError || catchFetchError,
-    httpStatusOk: di.HTTP_STATUS_OK || 200,
+    httpStatusOk: di.HTTP_STATUS_OK || STATUS_OK,
     logger: testLogger,
     errorResponse: di.errorResponse || errorResponse,
     request: di.request
   })
-  
-  if (
-    forecastsResult &&
-    typeof forecastsResult === 'object' &&
-    !('forecast-summary' in forecastsResult)
-  ) {
-    forecastsResult['forecast-summary'] = { today: null }
-  }
-  return forecastsResult
+
+  return ensureForecastSummary(forecastsResult)
 }
 
 export const fetchMeasurements = async (
@@ -139,20 +148,9 @@ export const fetchMeasurements = async (
 }
 
 /**
- * ''  Fetch air quality data for a location
+ * ''  Extract and set up dependency injection defaults
  */
-async function fetchData(
-  request,
-  { locationType, userLocation, searchTerms, secondSearchTerm },
-  diOverrides = {}
-) {
-  if (!request) {
-    throw new Error(
-      "fetchData: 'request' argument is required and was not provided."
-    )
-  }
-
-  // ''  Simple DI with defaults
+function setupDependencies(diOverrides) {
   const {
     fetchForecasts: diFetchForecasts = fetchForecasts,
     handleUKLocationData: diHandleUKLocationData = handleUKLocationData,
@@ -173,11 +171,116 @@ async function fetchData(
     config: diConfig = config
   } = diOverrides
 
-  // Input validation
-  const validationError = diValidateParams(
-    { locationType, userLocation },
-    ['locationType', 'userLocation']
+  return {
+    fetchForecasts: diFetchForecasts,
+    handleUKLocationData: diHandleUKLocationData,
+    handleNILocationData: diHandleNILocationData,
+    isTestMode: diIsTestMode,
+    validateParams: diValidateParams,
+    logger: diLogger,
+    errorResponse: diErrorResponse,
+    isMockEnabled: diIsMockEnabled,
+    refreshOAuthToken: diRefreshOAuthToken,
+    buildUKLocationFilters: diBuildUKLocationFilters,
+    combineUKSearchTerms: diCombineUKSearchTerms,
+    isValidFullPostcodeUK: diIsValidFullPostcodeUK,
+    isValidPartialPostcodeUK: diIsValidPartialPostcodeUK,
+    buildUKApiUrl: diBuildUKApiUrl,
+    shouldCallUKApi: diShouldCallUKApi,
+    config: diConfig
+  }
+}
+
+/**
+ * ''  Handle UK location data fetching
+ */
+async function handleUKLocation(
+  userLocation,
+  searchTerms,
+  secondSearchTerm,
+  di,
+  diRequest
+) {
+  const ukDi = {
+    ...di.overrides,
+    request: diRequest || {},
+    buildUKLocationFilters: di.buildUKLocationFilters,
+    combineUKSearchTerms: di.combineUKSearchTerms,
+    isValidFullPostcodeUK: di.isValidFullPostcodeUK,
+    isValidPartialPostcodeUK: di.isValidPartialPostcodeUK,
+    buildUKApiUrl: di.buildUKApiUrl,
+    shouldCallUKApi: (...args) =>
+      di.shouldCallUKApi(...args.map((arg) => (Array.isArray(arg) ? arg : []))),
+    config: di.config,
+    searchTerms,
+    secondSearchTerm
+  }
+  const osPlacesResult = await di.handleUKLocationData(userLocation, ukDi)
+  return osPlacesResult
+}
+
+/**
+ * ''  Handle NI location data fetching
+ */
+async function handleNILocation(
+  userLocation,
+  searchTerms,
+  secondSearchTerm,
+  optionsOAuth,
+  di,
+  diRequest
+) {
+  const niDi = { ...di.overrides, request: diRequest || {} }
+  const isMock =
+    typeof di.isMockEnabled === 'function'
+      ? di.isMockEnabled()
+      : !!di.isMockEnabled
+  const getNIPlaces = await di.handleNILocationData(
+    userLocation,
+    searchTerms,
+    secondSearchTerm,
+    isMock,
+    optionsOAuth,
+    undefined,
+    diRequest,
+    niDi
   )
+  return getNIPlaces
+}
+
+/**
+ * ''  Extract daily summary from forecast data
+ */
+function extractDailySummary(getForecasts) {
+  let getDailySummary = getForecasts?.['forecast-summary']
+  if (!getDailySummary || typeof getDailySummary !== 'object') {
+    getDailySummary = { today: null }
+  }
+  return getDailySummary
+}
+
+/**
+ * ''  Fetch air quality data for a location
+ */
+async function fetchData(
+  request,
+  { locationType, userLocation, searchTerms, secondSearchTerm },
+  diOverrides = {}
+) {
+  if (!request) {
+    throw new Error(
+      "fetchData: 'request' argument is required and was not provided."
+    )
+  }
+
+  // ''  Simple DI with defaults
+  const deps = setupDependencies(diOverrides)
+
+  // Input validation
+  const validationError = deps.validateParams({ locationType, userLocation }, [
+    'locationType',
+    'userLocation'
+  ])
   if (validationError) {
     return validationError
   }
@@ -187,27 +290,22 @@ async function fetchData(
   if (locationType === LOCATION_TYPE_NI) {
     const niOptions = await buildNIOptionsOAuth({
       request,
-      isMockEnabled: diIsMockEnabled,
-      refreshOAuthTokenFn: diRefreshOAuthToken
+      isMockEnabled: deps.isMockEnabled,
+      refreshOAuthTokenFn: deps.refreshOAuthToken
     })
     optionsOAuth = niOptions.optionsOAuth
   }
 
-  // ''  Fetch forecasts data
+  // ''  Fetch forecasts data and extract daily summary
   const diRequest = diOverrides?.request ?? request
-  const getForecasts = await diFetchForecasts({
+  const getForecasts = await deps.fetchForecasts({
     ...diOverrides,
     request: diRequest
   })
-
-  // ''  Extract daily summary from forecasts
-  let getDailySummary = getForecasts?.['forecast-summary']
-  if (!getDailySummary || typeof getDailySummary !== 'object') {
-    getDailySummary = { today: null }
-  }
+  const getDailySummary = extractDailySummary(getForecasts)
 
   // ''  Test mode handling
-  if (diIsTestMode()) {
+  if (deps.isTestMode()) {
     return handleTestModeFetchData({
       locationType,
       userLocation,
@@ -216,62 +314,45 @@ async function fetchData(
       optionsOAuth,
       getDailySummary,
       getForecasts,
-      handleUKLocationData: diHandleUKLocationData,
-      handleNILocationData: diHandleNILocationData,
-      logger: diLogger,
-      errorResponse: diErrorResponse,
+      handleUKLocationData: deps.handleUKLocationData,
+      handleNILocationData: deps.handleNILocationData,
+      logger: deps.logger,
+      errorResponse: deps.errorResponse,
       args: diOverrides
     })
   }
 
   // ''  Handle UK locations
   if (locationType === LOCATION_TYPE_UK) {
-    const di = {
-      ...diOverrides,
-      request: diRequest || {},
-      buildUKLocationFilters: diBuildUKLocationFilters,
-      combineUKSearchTerms: diCombineUKSearchTerms,
-      isValidFullPostcodeUK: diIsValidFullPostcodeUK,
-      isValidPartialPostcodeUK: diIsValidPartialPostcodeUK,
-      buildUKApiUrl: diBuildUKApiUrl,
-      shouldCallUKApi: (...args) =>
-        diShouldCallUKApi(
-          ...args.map((arg) => (Array.isArray(arg) ? arg : []))
-        ),
-      config: diConfig
-    }
-    const osPlacesResult = await diHandleUKLocationData(
+    const osPlacesResult = await handleUKLocation(
       userLocation,
       searchTerms,
       secondSearchTerm,
-      di
+      deps,
+      diRequest
     )
     return { getDailySummary, getForecasts, getOSPlaces: osPlacesResult }
   }
 
   // ''  Handle NI locations
   if (locationType === LOCATION_TYPE_NI) {
-    const di = { ...diOverrides, request: diRequest || {} }
-    const isMock =
-      typeof diIsMockEnabled === 'function'
-        ? diIsMockEnabled()
-        : !!diIsMockEnabled
-    const getNIPlaces = await diHandleNILocationData(
+    const getNIPlaces = await handleNILocation(
       userLocation,
       searchTerms,
       secondSearchTerm,
-      isMock,
       optionsOAuth,
-      undefined,
-      diRequest,
-      di
+      deps,
+      diRequest
     )
     return { getDailySummary, getForecasts, getNIPlaces }
   }
 
   // ''  Unsupported location type
-  diLogger.error('Unsupported location type provided:', locationType)
-  return diErrorResponse('Unsupported location type provided', 400)
+  deps.logger.error('Unsupported location type provided:', locationType)
+  return deps.errorResponse(
+    'Unsupported location type provided',
+    STATUS_BAD_REQUEST
+  )
 }
 
 export {

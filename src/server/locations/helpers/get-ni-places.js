@@ -55,20 +55,20 @@ async function getNIPlaces(userLocation) {
     niPlacesData = {
       results: Array.isArray(niPlacesData) ? niPlacesData : [niPlacesData]
     }
-  } else if (!niPlacesData || !niPlacesData.results) {
-    niPlacesData = { results: [] }
-  } else {
+  } else if (niPlacesData?.results) {
     niPlacesData = {
       results: Array.isArray(niPlacesData.results)
         ? niPlacesData.results
         : [niPlacesData.results]
     }
+  } else {
+    niPlacesData = { results: [] }
   }
 
-  if (statusCodeNI !== STATUS_CODE_SUCCESS) {
-    logger.error(`Error fetching statusCodeNI data: ${statusCodeNI}`)
-  } else {
+  if (statusCodeNI === STATUS_CODE_SUCCESS) {
     logger.info(`niPlacesData fetched:`)
+  } else {
+    logger.error(`Error fetching statusCodeNI data: ${statusCodeNI}`)
   }
 
   return niPlacesData

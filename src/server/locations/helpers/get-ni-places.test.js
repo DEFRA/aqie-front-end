@@ -1,26 +1,36 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { STATUS_OK } from '../../data/constants.js'
 
 // Mock config FIRST before any imports that use it
-vi.mock('../../../config/index.js', () => ({
-  config: {
-    get: vi.fn((key) => {
-      if (key === 'enabledMock') {
-        return false
-      }
-      if (key === 'osPlacesApiPostcodeNorthernIrelandUrl') {
-        return 'https://api.example.com/ni/'
-      }
-      if (key === 'mockOsPlacesApiPostcodeNorthernIrelandUrl') {
-        return 'https://mock.example.com/ni/'
-      }
-      // Logger config
-      if (key === 'log') {
-        return { enabled: true }
-      }
-      return null
-    })
+vi.mock('../../../config/index.js', () => {
+  const configValues = {
+    enabledMock: 'false',
+    osPlacesApiPostcodeNorthernIrelandUrl: 'https://api.example.com/ni/',
+    mockOsPlacesApiPostcodeNorthernIrelandUrl: 'https://mock.example.com/ni/',
+    log: '{ "enabled": true }'
   }
-}))
+
+  return {
+    config: {
+      get: vi.fn((key) => {
+        const value = configValues[key] ?? ''
+        // Parse JSON strings back to objects for 'log'
+        if (key === 'log' && typeof value === 'string') {
+          try {
+            return JSON.parse(value)
+          } catch {
+            return value
+          }
+        }
+        // Convert string 'false'/'true' to boolean for enabledMock
+        if (key === 'enabledMock') {
+          return value === 'true'
+        }
+        return value
+      })
+    }
+  }
+})
 
 // Mock the dependencies
 vi.mock('../../common/helpers/catch-proxy-fetch-error.js', () => {
@@ -36,7 +46,7 @@ vi.mock('../../common/helpers/logging/logger.js', () => ({
 }))
 
 vi.mock('./convert-string.js', () => ({
-  formatNorthernIrelandPostcode: vi.fn((pc) => pc.replace(/\s/g, ''))
+  formatNorthernIrelandPostcode: vi.fn((pc) => pc.replaceAll(/\s/g, ''))
 }))
 
 vi.mock('./extracted/util-helpers.js', () => ({
@@ -55,7 +65,10 @@ describe('getNIPlaces', () => {
       '../../common/helpers/catch-proxy-fetch-error.js'
     ))
     ;({ config } = await import('../../../config/index.js'))
-    catchProxyFetchError.mockResolvedValue([200, { results: [{ id: 'test' }] }])
+    catchProxyFetchError.mockResolvedValue([
+      STATUS_OK,
+      { results: [{ id: 'test' }] }
+    ])
   })
 
   it('should call getNIPlaces function without errors', async () => {
@@ -66,20 +79,30 @@ describe('getNIPlaces', () => {
 
   it('should handle mock mode', async () => {
     // Override config to enable mock mode
+    const mockConfigValues = {
+      enabledMock: 'true',
+      mockOsPlacesApiPostcodeNorthernIrelandUrl: 'https://mock.example.com/ni/',
+      log: '{ "enabled": true }'
+    }
+
     config.get.mockImplementation((key) => {
+      const value = mockConfigValues[key] ?? ''
+      // Parse JSON strings back to objects for 'log'
+      if (key === 'log' && typeof value === 'string') {
+        try {
+          return JSON.parse(value)
+        } catch {
+          return value
+        }
+      }
+      // Convert string to boolean for enabledMock
       if (key === 'enabledMock') {
-        return true
+        return value === 'true'
       }
-      if (key === 'mockOsPlacesApiPostcodeNorthernIrelandUrl') {
-        return 'https://mock.example.com/ni/'
-      }
-      if (key === 'log') {
-        return { enabled: true }
-      }
-      return null
+      return value
     })
 
-    catchProxyFetchError.mockResolvedValue([200, [{ id: 'mock test' }]])
+    catchProxyFetchError.mockResolvedValue([STATUS_OK, [{ id: 'mock test' }]])
     const result = await getNIPlaces('BT1 1AA')
     expect(result).toBeDefined()
     expect(catchProxyFetchError).toHaveBeenCalled()
@@ -87,7 +110,10 @@ describe('getNIPlaces', () => {
   })
 
   it('should call catchProxyFetchError and return defined result', async () => {
-    catchProxyFetchError.mockResolvedValue([200, { results: [{ id: 'test' }] }])
+    catchProxyFetchError.mockResolvedValue([
+      STATUS_OK,
+      { results: [{ id: 'test' }] }
+    ])
     const result = await getNIPlaces('BT1 1AA')
     expect(catchProxyFetchError).toHaveBeenCalled()
     expect(result).toBeDefined()

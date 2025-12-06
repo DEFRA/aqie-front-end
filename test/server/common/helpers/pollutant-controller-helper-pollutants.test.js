@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { createPollutantHandler } from '../../../../src/server/common/helpers/pollutant-controller-helper.js'
-import { LANG_EN, LANG_CY } from '../../../../src/server/data/constants.js'
+import { LANG_CY } from '../../../../src/server/data/constants.js'
 
 // Test-specific constants
 const QUERY_LOCATION_ID = 'locationId'
@@ -73,7 +73,7 @@ function createMocks() {
   return { mockRequest, mockH }
 }
 
-describe('pollutant-controller-helper - Individual Pollutants', () => {
+describe('pollutant-controller-helper - nitrogen dioxide pollutant', () => {
   let mockRequest
   let mockH
 
@@ -83,163 +83,197 @@ describe('pollutant-controller-helper - Individual Pollutants', () => {
     mockH = mocks.mockH
   })
 
-  describe('nitrogen dioxide pollutant', () => {
-    it('should render nitrogen dioxide view with correct paths', () => {
-      mockRequest.query = {
-        [QUERY_LOCATION_ID]: TEST_LOC_123,
-        [QUERY_LOCATION_NAME]: CITY_CARDIFF
-      }
+  it('should render nitrogen dioxide view with correct paths', () => {
+    mockRequest.query = {
+      [QUERY_LOCATION_ID]: TEST_LOC_123,
+      [QUERY_LOCATION_NAME]: CITY_CARDIFF
+    }
 
-      createPollutantHandler(POLLUTANT_NITROGEN_DIOXIDE, mockRequest, mockH)
+    createPollutantHandler(POLLUTANT_NITROGEN_DIOXIDE, mockRequest, mockH)
 
-      expect(mockH.view).toHaveBeenCalledWith(
-        VIEW_NITROGEN_DIOXIDE,
-        expect.objectContaining({
-          page: PAGE_LABEL_NITROGEN_DIOXIDE,
-          currentPath: PATH_NITROGEN_DIOXIDE
-        })
-      )
-    })
-
-    it('should redirect to Welsh nitrogen dioxide page', () => {
-      mockRequest.query = {
-        [QUERY_LOCATION_ID]: TEST_LOC_123,
-        [QUERY_LANG]: LANG_CY
-      }
-
-      createPollutantHandler(POLLUTANT_NITROGEN_DIOXIDE, mockRequest, mockH)
-
-      expect(mockH.redirect).toHaveBeenCalledWith(
-        expect.stringContaining(WELSH_PATH_NITROGEN_DIOXIDE)
-      )
-    })
+    expect(mockH.view).toHaveBeenCalledWith(
+      VIEW_NITROGEN_DIOXIDE,
+      expect.objectContaining({
+        page: PAGE_LABEL_NITROGEN_DIOXIDE,
+        currentPath: PATH_NITROGEN_DIOXIDE
+      })
+    )
   })
 
-  describe('ozone pollutant', () => {
-    it('should render ozone view with correct paths', () => {
-      mockRequest.query = {
-        [QUERY_LOCATION_ID]: TEST_LOC_456,
-        [QUERY_LOCATION_NAME]: CITY_LONDON
-      }
+  it('should redirect to Welsh nitrogen dioxide page', () => {
+    mockRequest.query = {
+      [QUERY_LOCATION_ID]: TEST_LOC_123,
+      [QUERY_LANG]: LANG_CY
+    }
 
-      createPollutantHandler(POLLUTANT_OZONE, mockRequest, mockH)
+    createPollutantHandler(POLLUTANT_NITROGEN_DIOXIDE, mockRequest, mockH)
 
-      expect(mockH.view).toHaveBeenCalledWith(
-        VIEW_OZONE,
-        expect.objectContaining({
-          page: PAGE_LABEL_OZONE,
-          currentPath: PATH_OZONE
-        })
-      )
-    })
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      expect.stringContaining(WELSH_PATH_NITROGEN_DIOXIDE)
+    )
+  })
+})
 
-    it('should redirect to Welsh ozone page', () => {
-      mockRequest.query = {
-        [QUERY_LOCATION_ID]: TEST_LOC_456,
-        [QUERY_LANG]: LANG_CY
-      }
+describe('pollutant-controller-helper - ozone pollutant', () => {
+  let mockRequest
+  let mockH
 
-      createPollutantHandler(POLLUTANT_OZONE, mockRequest, mockH)
-
-      expect(mockH.redirect).toHaveBeenCalledWith(
-        expect.stringContaining(WELSH_PATH_OZONE)
-      )
-    })
+  beforeEach(() => {
+    const mocks = createMocks()
+    mockRequest = mocks.mockRequest
+    mockH = mocks.mockH
   })
 
-  describe('particulate matter 10 pollutant', () => {
-    it('should render PM10 view with correct data', () => {
-      mockRequest.query = {
-        [QUERY_LOCATION_ID]: TEST_LOC_789,
-        [QUERY_LOCATION_NAME]: CITY_MANCHESTER
-      }
+  it('should render ozone view with correct paths', () => {
+    mockRequest.query = {
+      [QUERY_LOCATION_ID]: TEST_LOC_456,
+      [QUERY_LOCATION_NAME]: CITY_LONDON
+    }
 
-      createPollutantHandler(POLLUTANT_PM10, mockRequest, mockH)
+    createPollutantHandler(POLLUTANT_OZONE, mockRequest, mockH)
 
-      expect(mockH.view).toHaveBeenCalledWith(
-        VIEW_PM10,
-        expect.objectContaining({
-          page: PAGE_LABEL_PM10,
-          currentPath: PATH_PM10
-        })
-      )
-    })
-
-    it('should redirect to Welsh PM10 page', () => {
-      mockRequest.query = {
-        [QUERY_LOCATION_ID]: TEST_LOC_789,
-        [QUERY_LANG]: LANG_CY
-      }
-
-      createPollutantHandler(POLLUTANT_PM10, mockRequest, mockH)
-
-      expect(mockH.redirect).toHaveBeenCalledWith(
-        expect.stringContaining(WELSH_PATH_PM10)
-      )
-    })
+    expect(mockH.view).toHaveBeenCalledWith(
+      VIEW_OZONE,
+      expect.objectContaining({
+        page: PAGE_LABEL_OZONE,
+        currentPath: PATH_OZONE
+      })
+    )
   })
 
-  describe('particulate matter 25 pollutant', () => {
-    it('should render PM25 view with correct data', () => {
-      mockRequest.query = {
-        [QUERY_LOCATION_ID]: TEST_LOC_101,
-        [QUERY_LOCATION_NAME]: CITY_BIRMINGHAM
-      }
+  it('should redirect to Welsh ozone page', () => {
+    mockRequest.query = {
+      [QUERY_LOCATION_ID]: TEST_LOC_456,
+      [QUERY_LANG]: LANG_CY
+    }
 
-      createPollutantHandler(POLLUTANT_PM25, mockRequest, mockH)
+    createPollutantHandler(POLLUTANT_OZONE, mockRequest, mockH)
 
-      expect(mockH.view).toHaveBeenCalledWith(
-        VIEW_PM25,
-        expect.objectContaining({
-          page: PAGE_LABEL_PM25,
-          currentPath: PATH_PM25
-        })
-      )
-    })
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      expect.stringContaining(WELSH_PATH_OZONE)
+    )
+  })
+})
 
-    it('should redirect to Welsh PM25 page', () => {
-      mockRequest.query = {
-        [QUERY_LOCATION_ID]: TEST_LOC_101,
-        [QUERY_LANG]: LANG_CY
-      }
+describe('pollutant-controller-helper - particulate matter 10 pollutant', () => {
+  let mockRequest
+  let mockH
 
-      createPollutantHandler(POLLUTANT_PM25, mockRequest, mockH)
-
-      expect(mockH.redirect).toHaveBeenCalledWith(
-        expect.stringContaining(WELSH_PATH_PM25)
-      )
-    })
+  beforeEach(() => {
+    const mocks = createMocks()
+    mockRequest = mocks.mockRequest
+    mockH = mocks.mockH
   })
 
-  describe('sulphur dioxide pollutant', () => {
-    it('should render sulphur dioxide view with correct data', () => {
-      mockRequest.query = {
-        [QUERY_LOCATION_ID]: TEST_LOC_202,
-        [QUERY_LOCATION_NAME]: CITY_LEEDS
-      }
+  it('should render PM10 view with correct data', () => {
+    mockRequest.query = {
+      [QUERY_LOCATION_ID]: TEST_LOC_789,
+      [QUERY_LOCATION_NAME]: CITY_MANCHESTER
+    }
 
-      createPollutantHandler(POLLUTANT_SULPHUR_DIOXIDE, mockRequest, mockH)
+    createPollutantHandler(POLLUTANT_PM10, mockRequest, mockH)
 
-      expect(mockH.view).toHaveBeenCalledWith(
-        VIEW_SULPHUR_DIOXIDE,
-        expect.objectContaining({
-          page: PAGE_LABEL_SULPHUR_DIOXIDE,
-          currentPath: PATH_SULPHUR_DIOXIDE
-        })
-      )
-    })
+    expect(mockH.view).toHaveBeenCalledWith(
+      VIEW_PM10,
+      expect.objectContaining({
+        page: PAGE_LABEL_PM10,
+        currentPath: PATH_PM10
+      })
+    )
+  })
 
-    it('should redirect to Welsh sulphur dioxide page', () => {
-      mockRequest.query = {
-        [QUERY_LOCATION_ID]: TEST_LOC_202,
-        [QUERY_LANG]: LANG_CY
-      }
+  it('should redirect to Welsh PM10 page', () => {
+    mockRequest.query = {
+      [QUERY_LOCATION_ID]: TEST_LOC_789,
+      [QUERY_LANG]: LANG_CY
+    }
 
-      createPollutantHandler(POLLUTANT_SULPHUR_DIOXIDE, mockRequest, mockH)
+    createPollutantHandler(POLLUTANT_PM10, mockRequest, mockH)
 
-      expect(mockH.redirect).toHaveBeenCalledWith(
-        expect.stringContaining(WELSH_PATH_SULPHUR_DIOXIDE)
-      )
-    })
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      expect.stringContaining(WELSH_PATH_PM10)
+    )
+  })
+})
+
+describe('pollutant-controller-helper - particulate matter 25 pollutant', () => {
+  let mockRequest
+  let mockH
+
+  beforeEach(() => {
+    const mocks = createMocks()
+    mockRequest = mocks.mockRequest
+    mockH = mocks.mockH
+  })
+
+  it('should render PM25 view with correct data', () => {
+    mockRequest.query = {
+      [QUERY_LOCATION_ID]: TEST_LOC_101,
+      [QUERY_LOCATION_NAME]: CITY_BIRMINGHAM
+    }
+
+    createPollutantHandler(POLLUTANT_PM25, mockRequest, mockH)
+
+    expect(mockH.view).toHaveBeenCalledWith(
+      VIEW_PM25,
+      expect.objectContaining({
+        page: PAGE_LABEL_PM25,
+        currentPath: PATH_PM25
+      })
+    )
+  })
+
+  it('should redirect to Welsh PM25 page', () => {
+    mockRequest.query = {
+      [QUERY_LOCATION_ID]: TEST_LOC_101,
+      [QUERY_LANG]: LANG_CY
+    }
+
+    createPollutantHandler(POLLUTANT_PM25, mockRequest, mockH)
+
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      expect.stringContaining(WELSH_PATH_PM25)
+    )
+  })
+})
+
+describe('pollutant-controller-helper - sulphur dioxide pollutant', () => {
+  let mockRequest
+  let mockH
+
+  beforeEach(() => {
+    const mocks = createMocks()
+    mockRequest = mocks.mockRequest
+    mockH = mocks.mockH
+  })
+
+  it('should render sulphur dioxide view with correct data', () => {
+    mockRequest.query = {
+      [QUERY_LOCATION_ID]: TEST_LOC_202,
+      [QUERY_LOCATION_NAME]: CITY_LEEDS
+    }
+
+    createPollutantHandler(POLLUTANT_SULPHUR_DIOXIDE, mockRequest, mockH)
+
+    expect(mockH.view).toHaveBeenCalledWith(
+      VIEW_SULPHUR_DIOXIDE,
+      expect.objectContaining({
+        page: PAGE_LABEL_SULPHUR_DIOXIDE,
+        currentPath: PATH_SULPHUR_DIOXIDE
+      })
+    )
+  })
+
+  it('should redirect to Welsh sulphur dioxide page', () => {
+    mockRequest.query = {
+      [QUERY_LOCATION_ID]: TEST_LOC_202,
+      [QUERY_LANG]: LANG_CY
+    }
+
+    createPollutantHandler(POLLUTANT_SULPHUR_DIOXIDE, mockRequest, mockH)
+
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      expect.stringContaining(WELSH_PATH_SULPHUR_DIOXIDE)
+    )
   })
 })

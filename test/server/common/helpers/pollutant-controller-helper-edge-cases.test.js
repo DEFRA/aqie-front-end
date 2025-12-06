@@ -4,6 +4,7 @@ import { createPollutantHandler } from '../../../../src/server/common/helpers/po
 // Constants for testing
 const SEARCH_LOCATION_URL_EN = '/search-location?lang=en'
 const HTTP_MOVED_PERMANENTLY = 301
+const TEST_HOST = 'localhost:3000'
 
 describe('pollutant-controller-helper edge cases', () => {
   let mockRequest
@@ -12,7 +13,7 @@ describe('pollutant-controller-helper edge cases', () => {
   beforeEach(() => {
     mockRequest = {
       info: {
-        host: 'localhost:3000'
+        host: TEST_HOST
       },
       headers: {
         'x-forwarded-proto': 'http'
@@ -49,85 +50,175 @@ describe('pollutant-controller-helper edge cases', () => {
       expect(redirectResult.code).toHaveBeenCalledWith(HTTP_MOVED_PERMANENTLY)
     })
   })
+})
 
-  describe('query parameter edge cases', () => {
-    it('should handle Welsh redirect with locationName but no searchTerms', () => {
-      mockRequest.query = {
-        locationId: 'LOC909',
-        locationName: 'Caerphilly',
-        lang: 'cy'
+describe('pollutant-controller-helper Welsh redirect with locationName', () => {
+  let mockRequest
+  let mockH
+
+  beforeEach(() => {
+    mockRequest = {
+      info: {
+        host: TEST_HOST
+      },
+      headers: {
+        'x-forwarded-proto': 'http'
       }
+    }
 
-      createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
+    mockH = {
+      view: vi.fn((template, context) => ({ template, context })),
+      redirect: vi.fn((url) => ({
+        code: vi.fn((statusCode) => ({ url, statusCode }))
+      }))
+    }
+  })
 
-      const redirectCall = mockH.redirect.mock.calls[0][0]
-      expect(redirectCall).toContain('lang=cy')
-      expect(redirectCall).toContain('locationId=LOC909')
-      expect(redirectCall).toContain('locationName=Caerphilly')
-      expect(redirectCall).not.toContain('searchTerms')
-    })
+  it('should handle Welsh redirect with locationName but no searchTerms', () => {
+    mockRequest.query = {
+      locationId: 'LOC909',
+      locationName: 'Caerphilly',
+      lang: 'cy'
+    }
 
-    it('should handle Welsh redirect with searchTerms but no locationName', () => {
-      mockRequest.query = {
-        locationId: 'LOC1010',
-        searchTerms: 'Wales',
-        lang: 'cy'
+    createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
+
+    const redirectCall = mockH.redirect.mock.calls[0][0]
+    expect(redirectCall).toContain('lang=cy')
+    expect(redirectCall).toContain('locationId=LOC909')
+    expect(redirectCall).toContain('locationName=Caerphilly')
+    expect(redirectCall).not.toContain('searchTerms')
+  })
+})
+
+describe('pollutant-controller-helper Welsh redirect with searchTerms', () => {
+  let mockRequest
+  let mockH
+
+  beforeEach(() => {
+    mockRequest = {
+      info: {
+        host: TEST_HOST
+      },
+      headers: {
+        'x-forwarded-proto': 'http'
       }
+    }
 
-      createPollutantHandler('ozone', mockRequest, mockH)
+    mockH = {
+      view: vi.fn((template, context) => ({ template, context })),
+      redirect: vi.fn((url) => ({
+        code: vi.fn((statusCode) => ({ url, statusCode }))
+      }))
+    }
+  })
 
-      const redirectCall = mockH.redirect.mock.calls[0][0]
-      expect(redirectCall).toContain('lang=cy')
-      expect(redirectCall).toContain('locationId=LOC1010')
-      expect(redirectCall).toContain('searchTerms=Wales')
-      expect(redirectCall).not.toContain('locationName')
-    })
+  it('should handle Welsh redirect with searchTerms but no locationName', () => {
+    mockRequest.query = {
+      locationId: 'LOC1010',
+      searchTerms: 'Wales',
+      lang: 'cy'
+    }
 
-    it('should handle request with null query object', () => {
-      mockRequest.query = null
+    createPollutantHandler('ozone', mockRequest, mockH)
 
-      createPollutantHandler('particulateMatter25', mockRequest, mockH)
+    const redirectCall = mockH.redirect.mock.calls[0][0]
+    expect(redirectCall).toContain('lang=cy')
+    expect(redirectCall).toContain('locationId=LOC1010')
+    expect(redirectCall).toContain('searchTerms=Wales')
+    expect(redirectCall).not.toContain('locationName')
+  })
+})
 
-      expect(mockH.redirect).toHaveBeenCalledWith(SEARCH_LOCATION_URL_EN)
-    })
+describe('pollutant-controller-helper null/undefined query edge cases', () => {
+  let mockRequest
+  let mockH
 
-    it('should handle request with undefined query object', () => {
-      mockRequest.query = null
-
-      createPollutantHandler('sulphurDioxide', mockRequest, mockH)
-
-      expect(mockH.redirect).toHaveBeenCalledWith(SEARCH_LOCATION_URL_EN)
-    })
-
-    it('should handle query with lang parameter other than cy or en', () => {
-      mockRequest.query = {
-        locationId: 'LOC1111',
-        locationName: 'Oxford',
-        lang: 'fr'
+  beforeEach(() => {
+    mockRequest = {
+      info: {
+        host: TEST_HOST
+      },
+      headers: {
+        'x-forwarded-proto': 'http'
       }
+    }
 
-      createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
+    mockH = {
+      view: vi.fn((template, context) => ({ template, context })),
+      redirect: vi.fn((url) => ({
+        code: vi.fn((statusCode) => ({ url, statusCode }))
+      }))
+    }
+  })
 
-      const viewContext = mockH.view.mock.calls[0][1]
-      expect(viewContext.lang).toBe('fr')
-      expect(mockH.redirect).not.toHaveBeenCalled()
-    })
+  it('should handle request with null query object', () => {
+    mockRequest.query = null
 
-    it('should include complete queryParams in view context', () => {
-      mockRequest.query = {
-        locationId: 'LOC1212',
-        locationName: 'Bristol',
-        searchTerms: 'Bristol',
-        lang: 'en'
+    createPollutantHandler('particulateMatter25', mockRequest, mockH)
+
+    expect(mockH.redirect).toHaveBeenCalledWith(SEARCH_LOCATION_URL_EN)
+  })
+
+  it('should handle request with undefined query object', () => {
+    mockRequest.query = null
+
+    createPollutantHandler('sulphurDioxide', mockRequest, mockH)
+
+    expect(mockH.redirect).toHaveBeenCalledWith(SEARCH_LOCATION_URL_EN)
+  })
+})
+
+describe('pollutant-controller-helper view context edge cases', () => {
+  let mockRequest
+  let mockH
+
+  beforeEach(() => {
+    mockRequest = {
+      info: {
+        host: TEST_HOST
+      },
+      headers: {
+        'x-forwarded-proto': 'http'
       }
+    }
 
-      createPollutantHandler('ozone', mockRequest, mockH)
+    mockH = {
+      view: vi.fn((template, context) => ({ template, context })),
+      redirect: vi.fn((url) => ({
+        code: vi.fn((statusCode) => ({ url, statusCode }))
+      }))
+    }
+  })
 
-      const viewContext = mockH.view.mock.calls[0][1]
-      expect(viewContext.locationId).toBe('LOC1212')
-      expect(viewContext.locationName).toBe('Bristol')
-      expect(viewContext.searchTerms).toBe('Bristol')
-      expect(viewContext.lang).toBe('en')
-    })
+  it('should handle query with lang parameter other than cy or en', () => {
+    mockRequest.query = {
+      locationId: 'LOC1111',
+      locationName: 'Oxford',
+      lang: 'fr'
+    }
+
+    createPollutantHandler('nitrogenDioxide', mockRequest, mockH)
+
+    const viewContext = mockH.view.mock.calls[0][1]
+    expect(viewContext.lang).toBe('fr')
+    expect(mockH.redirect).not.toHaveBeenCalled()
+  })
+
+  it('should include complete queryParams in view context', () => {
+    mockRequest.query = {
+      locationId: 'LOC1212',
+      locationName: 'Bristol',
+      searchTerms: 'Bristol',
+      lang: 'en'
+    }
+
+    createPollutantHandler('ozone', mockRequest, mockH)
+
+    const viewContext = mockH.view.mock.calls[0][1]
+    expect(viewContext.locationId).toBe('LOC1212')
+    expect(viewContext.locationName).toBe('Bristol')
+    expect(viewContext.searchTerms).toBe('Bristol')
+    expect(viewContext.lang).toBe('en')
   })
 })

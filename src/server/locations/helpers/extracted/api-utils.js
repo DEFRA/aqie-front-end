@@ -1,6 +1,8 @@
 // API utility helpers
 import {
   STATUS_UNAUTHORIZED,
+  STATUS_OK,
+  STATUS_INTERNAL_SERVER_ERROR,
   FORECASTS_API_PATH,
   ROUND_OF_SIX,
   MEASUREMENTS_API_PATH
@@ -14,18 +16,12 @@ async function callAndHandleForecastsResponse(
   logger,
   errorResponse
 ) {
-  const [forecastStatus, getForecasts] = await catchFetchError(
-    url,
-    opts
-  )
+  const [forecastStatus, getForecasts] = await catchFetchError(url, opts)
   if (forecastStatus !== httpStatusOk) {
-    logger.error(
-      'Error fetching forecasts data: status code',
-      forecastStatus
-    )
+    logger.error('Error fetching forecasts data: status code', forecastStatus)
     return errorResponse(
       'Forecasts fetch failed',
-      forecastStatus || 500
+      forecastStatus || STATUS_INTERNAL_SERVER_ERROR
     )
   }
   logger.info('Forecasts data fetched')
@@ -34,7 +30,7 @@ async function callAndHandleForecastsResponse(
 }
 
 async function callForecastsApi({
-  config,
+  config: apiConfig,
   optionsEphemeralProtected,
   options,
   catchFetchError,
@@ -43,7 +39,7 @@ async function callForecastsApi({
   errorResponse,
   request
 }) {
-  const forecastsApiUrl = config.get('forecastsApiUrl')
+  const forecastsApiUrl = apiConfig.get('forecastsApiUrl')
   const { url, opts } = selectForecastsUrlAndOptions({
     request,
     forecastsApiUrl,
@@ -62,7 +58,7 @@ async function callForecastsApi({
 
 // Helper to check if request is from localhost
 function isLocalRequest(request) {
-  if (!request || !request.headers || !request.headers.host) {
+  if (!request?.headers?.host) {
     return false
   }
   const host = request.headers.host
@@ -71,18 +67,16 @@ function isLocalRequest(request) {
 
 // Helper to get CDP API key from multiple sources
 function getCdpApiKey(localOptionsEphemeralProtected) {
-  if (
-    localOptionsEphemeralProtected &&
-    localOptionsEphemeralProtected.headers &&
-    localOptionsEphemeralProtected.headers['x-api-key']
-  ) {
+  if (localOptionsEphemeralProtected?.headers?.['x-api-key']) {
     return localOptionsEphemeralProtected.headers['x-api-key']
   }
-  if (typeof config !== 'undefined' && config.get) {
+  if (config !== undefined && config.get) {
     const configKey = config.get('cdpXApiKey')
-    if (configKey) return configKey
+    if (configKey) {
+      return configKey
+    }
   }
-  if (process && process.env && process.env.CDP_X_API_KEY) {
+  if (process?.env?.CDP_X_API_KEY) {
     return process.env.CDP_X_API_KEY
   }
   return null
@@ -90,10 +84,10 @@ function getCdpApiKey(localOptionsEphemeralProtected) {
 
 // Helper to get ephemeral protected dev API URL
 function getEphemeralDevApiUrl(request) {
-  if (request && request.app && request.app.config) {
+  if (request?.app?.config) {
     return request.app.config.ephemeralProtectedDevApiUrl
   }
-  if (typeof config !== 'undefined' && config.get) {
+  if (config !== undefined && config.get) {
     return config.get('ephemeralProtectedDevApiUrl')
   }
   return null
@@ -106,7 +100,7 @@ function buildLocalForecastsUrlAndOpts(
 ) {
   const ephemeralProtectedDevApiUrl = getEphemeralDevApiUrl(request)
   const cdpXApiKey = getCdpApiKey(localOptionsEphemeralProtected)
-  
+
   if (!ephemeralProtectedDevApiUrl) {
     throw new Error(
       'ephemeralProtectedDevApiUrl must be provided in config for local requests'
@@ -117,11 +111,11 @@ function buildLocalForecastsUrlAndOpts(
       'FORECASTS_API_PATH constant must be defined for local requests'
     )
   }
-  
+
   const url = `${ephemeralProtectedDevApiUrl}${FORECASTS_API_PATH}`
   const opts = { ...localOptionsEphemeralProtected }
   opts.headers = {
-    ...(opts.headers || {}),
+    ...opts.headers,
     'x-api-key': cdpXApiKey
   }
   return { url, opts }
@@ -134,7 +128,7 @@ function buildRemoteForecastsUrlAndOpts(forecastsApiUrl, localOptions) {
     opts: {
       ...localOptions,
       headers: {
-        ...(localOptions.headers || {}),
+        ...localOptions.headers,
         'Content-Type': 'application/json'
       }
     }
@@ -149,7 +143,10 @@ function selectForecastsUrlAndOptions({
   options: localOptions
 }) {
   if (isLocalRequest(request)) {
-    return buildLocalForecastsUrlAndOpts(request, localOptionsEphemeralProtected)
+    return buildLocalForecastsUrlAndOpts(
+      request,
+      localOptionsEphemeralProtected
+    )
   } else {
     return buildRemoteForecastsUrlAndOpts(forecastsApiUrl, localOptions)
   }
@@ -178,14 +175,14 @@ function buildMeasurementsQueryParams(latitude, longitude) {
 // Helper to build local measurements URL and options
 function buildLocalMeasurementsUrlAndOpts(
   queryParams,
-  config,
+  apiConfig,
   optionsEphemeralProtected
 ) {
-  const ephemeralProtectedDevApiUrl = config.get(
+  const ephemeralProtectedDevApiUrl = apiConfig.get(
     'ephemeralProtectedDevApiUrl'
   )
   const measurementsApiPath = MEASUREMENTS_API_PATH || ''
-  
+
   if (!ephemeralProtectedDevApiUrl) {
     throw new Error(
       'ephemeralProtectedDevApiUrl must be provided in config for local requests'
@@ -196,7 +193,7 @@ function buildLocalMeasurementsUrlAndOpts(
       'MEASUREMENTS_API_PATH constant must be set for local requests'
     )
   }
-  
+
   return {
     url: `${ephemeralProtectedDevApiUrl}${measurementsApiPath}${queryParams.toString()}`,
     opts: optionsEphemeralProtected
@@ -210,7 +207,7 @@ function buildRemoteMeasurementsUrlAndOpts(url, options) {
     opts: {
       ...options,
       headers: {
-        ...(options.headers || {}),
+        ...options.headers,
         'Content-Type': 'application/json'
       }
     }
@@ -225,30 +222,30 @@ function selectMeasurementsUrlAndOptions(
   di = {}
 ) {
   const {
-    config,
+    config: apiConfig,
     logger,
     optionsEphemeralProtected,
     options,
     request
   } = di
-  
+
   if (useNewRicardoMeasurementsEnabled) {
     logger.info(
       `Using mock measurements with latitude: ${latitude}, longitude: ${longitude}`
     )
-    
+
     const queryParams = buildMeasurementsQueryParams(latitude, longitude)
-    const baseUrl = config.get('ricardoMeasurementsApiUrl')
+    const baseUrl = apiConfig.get('ricardoMeasurementsApiUrl')
     const newRicardoMeasurementsApiUrl = `${baseUrl}?${queryParams.toString()}`
-    
+
     logger.info(
       `New Ricardo measurements API URL: ${newRicardoMeasurementsApiUrl}`
     )
-    
+
     if (isLocalRequest(request)) {
       return buildLocalMeasurementsUrlAndOpts(
         queryParams,
-        config,
+        apiConfig,
         optionsEphemeralProtected
       )
     } else {
@@ -258,7 +255,7 @@ function selectMeasurementsUrlAndOptions(
       )
     }
   } else {
-    const measurementsAPIurl = config.get('measurementsApiUrl')
+    const measurementsAPIurl = apiConfig.get('measurementsApiUrl')
     logger.info(`Old measurements API URL: ${measurementsAPIurl}`)
     return buildRemoteMeasurementsUrlAndOpts(measurementsAPIurl, options)
   }
@@ -272,8 +269,8 @@ async function callAndHandleMeasurementsResponse(
   logger
 ) {
   const [status, data] = await catchFetchError(url, opts)
-  if (status !== 200) {
-    logger.error(`Error fetching data: ${data && data.message}`)
+  if (status !== STATUS_OK) {
+    logger.error(`Error fetching data: ${data?.message}`)
     return []
   }
   logger.info('Data fetched successfully.')
@@ -321,9 +318,7 @@ async function callAndHandleUKApiResponse({
   const isLocal =
     String(osNamesApiUrlFull).includes('localhost') ||
     String(osNamesApiUrlFull).includes('127.0.0.1')
-  const selectedOptions = isLocal
-    ? optionsEphemeralProtected
-    : options
+  const selectedOptions = isLocal ? optionsEphemeralProtected : options
   logger.info(
     `[DEBUG] Calling catchProxyFetchError with URL: ${osNamesApiUrlFull}`
   )
@@ -336,20 +331,15 @@ async function callAndHandleUKApiResponse({
   if (statusCodeOSPlace === httpStatusOk) {
     logger.info('getOSPlaces data fetched:')
     return formatUKApiResponse(getOSPlaces)
-  } else {
-    if (statusCodeOSPlace === STATUS_UNAUTHORIZED) {
-      logger.warn(
-        `OS Names API returned 401 (unauthorized). Check OS_NAMES_API_KEY. URL was suppressed in logs.`
-      )
-      return null
-    } else {
-      logger.error(
-        'Error fetching statusCodeOSPlace data:',
-        statusCodeOSPlace
-      )
-      return null
-    }
   }
+  if (statusCodeOSPlace === STATUS_UNAUTHORIZED) {
+    logger.warn(
+      `OS Names API returned 401 (unauthorized). Check OS_NAMES_API_KEY. URL was suppressed in logs.`
+    )
+    return null
+  }
+  logger.error('Error fetching statusCodeOSPlace data:', statusCodeOSPlace)
+  return null
 }
 
 export {

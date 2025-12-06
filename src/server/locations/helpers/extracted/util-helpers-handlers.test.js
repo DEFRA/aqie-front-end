@@ -1,10 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import {
   handleNILocationData,
   handleUKLocationData,
   handleUnsupportedLocationType,
   catchProxyFetchError
 } from './util-helpers.js'
+import { STATUS_BAD_REQUEST } from '../../../data/constants.js'
 
 describe('util-helpers - Handler Functions', () => {
   let mockLogger
@@ -76,7 +77,7 @@ describe('util-helpers - Handler Functions', () => {
       )
       expect(mockErrorResponse).toHaveBeenCalledWith(
         'Unsupported location type provided',
-        400
+        STATUS_BAD_REQUEST
       )
       expect(result).toEqual({ error: 'Bad request' })
     })

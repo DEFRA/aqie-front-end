@@ -7,7 +7,7 @@
 > cross-env NODE_ENV=production webpack
 
 25 assets
-42 modules
+43 modules
 
 WARNING in ./stylesheets/application.scss
 Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
@@ -86,31 +86,31 @@ More info and automated migrator: https://sass-lang.com/d/import
 
 WARNING in ./stylesheets/application.scss
 Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
-Deprecation Warning on line 20, column 16 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/helpers/_mq.scss:20:16:
+Deprecation Warning on line 18, column 16 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/helpers/_mq.scss:18:16:
 Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
 Use map.get instead.
 
 More info and automated migrator: https://sass-lang.com/d/import
 
-20 |     $min-width: map-get($breakpoints, $from);
+18 |     $min-width: map-get($breakpoints, $from);
 
 
-../../../../src/client/assets/stylesheets/helpers/_mq.scss 21:17  mq()
-../../../../src/client/assets/stylesheets/daqi/_all.scss 301:5    @import
+../../../../src/client/assets/stylesheets/helpers/_mq.scss 19:17  mq()
+../../../../src/client/assets/stylesheets/daqi/_all.scss 304:5    @import
 ../../../../src/client/assets/stylesheets/application.scss 11:9   root stylesheet
 
 WARNING in ./stylesheets/application.scss
 Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
-Deprecation Warning on line 23, column 16 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/helpers/_mq.scss:23:16:
+Deprecation Warning on line 21, column 16 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/helpers/_mq.scss:21:16:
 Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
 Use map.get instead.
 
 More info and automated migrator: https://sass-lang.com/d/import
 
-23 |     $max-width: map-get($breakpoints, $until) - 1px;
+21 |     $max-width: map-get($breakpoints, $until) - 1px;
 
 
-../../../../src/client/assets/stylesheets/helpers/_mq.scss 24:17                     mq()
+../../../../src/client/assets/stylesheets/helpers/_mq.scss 22:17                     mq()
 ../../../../src/client/assets/stylesheets/sass/components/_aq-levels-table.scss 9:3  @import
 ../../../../src/client/assets/stylesheets/sass/all.scss 15:9                         @import
 ../../../../src/client/assets/stylesheets/application.scss 13:9                      root stylesheet
@@ -131,10 +131,10 @@ Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
 27 repetitive deprecation warnings omitted.
 Run in verbose mode to see all warnings.
 
-webpack 5.99.9 compiled with 10 warnings in 13720 ms
+webpack 5.99.9 compiled with 10 warnings in 2939 ms
 
 > aqie-front-end@0.15.0 test
-> cross-env TZ=UTC NODE_OPTIONS=--max-old-space-size=4096 npx vitest run --coverage --coverage --reporter=json --outputFile=coverage-summary.json
+> cross-env TZ=UTC NODE_OPTIONS=--max-old-space-size=4096 npx vitest run --coverage --coverage
 
 file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/node_modules/vitest/dist/chunks/cac.Cb-PYCCB.js:1267
 			throw new Error(`Expected a single value for option "${command}", received [${received}]`);

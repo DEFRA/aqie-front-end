@@ -2,6 +2,7 @@
 import { welsh } from '../../data/cy/cy.js' // '' Welsh copy
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js' // '' Site URL helper
 import { createLogger } from '../../common/helpers/logging/logger.js' // '' Logger
+import { STATUS_INTERNAL_SERVER_ERROR } from '../../data/constants.js'
 import {
   getReadableLocationName,
   buildHealthEffectsViewModel
@@ -63,7 +64,9 @@ const healthEffectsHandlerCy = (request, h, content = welsh) => {
     return h.view('health-effects/cy/index', viewModel)
   } catch (err) {
     logger.error(err, "'' Failed to render health-effects CY")
-    return h.response('Internal Server Error').code(500)
+    return h
+      .response('Internal Server Error')
+      .code(STATUS_INTERNAL_SERVER_ERROR)
   }
 }
 

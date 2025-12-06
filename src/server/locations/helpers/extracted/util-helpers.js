@@ -11,6 +11,7 @@ import { buildAndCheckUKApiUrl } from './api-utils.js'
 import { catchFetchError } from '../../../common/helpers/catch-fetch-error.js'
 import { createLogger } from '../../../common/helpers/logging/logger.js'
 import { fetchOAuthToken } from '../../../common/helpers/fetch-oauth-token.js'
+import { STATUS_BAD_REQUEST } from '../../../data/constants.js'
 
 // Helper to detect test mode for DI and unit tests
 function isTestMode() {
@@ -48,19 +49,10 @@ const refreshOAuthToken = async (request, di = {}) => {
   return accessToken
 }
 
-const handleNILocationData = async (
-  userLocation,
-  searchTerms,
-  secondSearchTerm,
-  shouldCallApi,
-  options,
-  optionsEphemeralProtected,
-  request,
-  di = {}
-) => {
+const handleNILocationData = async (userLocation, di = {}) => {
   const testLogger = di.logger || logger
   const testIsTestMode = di.isTestMode || isTestMode
-  
+
   if (testIsTestMode?.()) {
     if (testLogger && typeof testLogger.info === 'function') {
       testLogger.info('Test mode: handleNILocationData returning mock data')
@@ -71,12 +63,7 @@ const handleNILocationData = async (
   return getNIPlaces(userLocation)
 }
 
-const handleUKLocationData = async (
-  userLocation,
-  searchTerms,
-  secondSearchTerm,
-  di = {}
-) => {
+const handleUKLocationData = async (userLocation, di = {}) => {
   // ''  Simple DI with fallbacks
   const testLogger = di.logger || logger
   const testBuildUKLocationFilters = di.buildUKLocationFilters
@@ -90,7 +77,9 @@ const handleUKLocationData = async (
   const testOptions = di.options
   const testConfig = di.config
   const request = di.request
-  
+  const searchTerms = di.searchTerms
+  const secondSearchTerm = di.secondSearchTerm
+
   const testModeResult = handleUKLocationDataTestMode(
     testIsTestMode,
     testLogger
@@ -119,10 +108,7 @@ const handleUKLocationData = async (
     return { results: [] }
   }
   const finalUserLocation = combinedLocation
-  const shouldCallApi = testShouldCallUKApi(
-    finalUserLocation,
-    testSymbolsArray
-  )
+  const shouldCallApi = testShouldCallUKApi(finalUserLocation, testSymbolsArray)
   return getOSPlacesHelper(
     finalUserLocation,
     searchTerms,
@@ -141,14 +127,16 @@ const buildNIOptionsOAuth = async ({
 }) => {
   // Check if isMockEnabled is a function and call it, otherwise use as boolean
   const isMock =
-    typeof isMockEnabled === 'function'
-      ? isMockEnabled()
-      : !!isMockEnabled
+    typeof isMockEnabled === 'function' ? isMockEnabled() : !!isMockEnabled
 
   logger.info(`buildNIOptionsOAuth called - isMockEnabled: ${isMock}`)
-  let optionsOAuth = {}
   let accessToken
-  if (!isMock) {
+  let optionsOAuth
+
+  if (isMock) {
+    logger.info('Mock is enabled, skipping OAuth token fetch')
+    optionsOAuth = {}
+  } else {
     logger.info('Mock is disabled, fetching OAuth token...')
     const savedAccessToken = request.yar.get('savedAccessToken')
     logger.info(`Saved access token exists: ${!!savedAccessToken}`)
@@ -161,52 +149,45 @@ const buildNIOptionsOAuth = async ({
         'Content-Type': 'application/json'
       }
     }
-  } else {
-    logger.info('Mock is enabled, skipping OAuth token fetch')
   }
   // Always return an object for optionsOAuth, even in mock mode
   return { optionsOAuth, accessToken }
 }
 
-function handleUnsupportedLocationType(/* params */) {
-  return function handleUnsupportedLocationType(
-    logger,
-    errorResponse,
-    locationType
-  ) {
-    logger.error('Unsupported location type provided:', locationType)
-    return errorResponse('Unsupported location type provided', 400)
+function handleUnsupportedLocationType() {
+  return function createHandler(errorLogger, errorResponse, locationType) {
+    errorLogger.error('Unsupported location type provided:', locationType)
+    return errorResponse(
+      'Unsupported location type provided',
+      STATUS_BAD_REQUEST
+    )
   }
 }
 
 // Builds a Northern Ireland postcode URL (stub implementation)
-function buildNIPostcodeUrl(postcode, config = {}) {
-  // TODO: Replace with real URL logic if needed
+function buildNIPostcodeUrl(postcode) {
   if (!postcode) {
     return ''
   }
-  const baseUrl = config.niApiBaseUrl || 'https://api.ni.example.com/postcode'
+  const baseUrl = 'https://api.ni.example.com/postcode'
   return `${baseUrl}/${encodeURIComponent(postcode)}`
 }
 
 // Formats the UK API response (stub implementation)
 function formatUKApiResponse(response) {
-  // TODO: Replace with real formatting logic if needed
   return response
 }
 
 // Formats a Northern Ireland postcode (stub implementation)
 function formatNorthernIrelandPostcode(postcode) {
-  // TODO: Replace with real formatting logic if needed
   if (!postcode) {
     return ''
   }
-  return postcode.trim().toUpperCase().replace(/\s+/g, '')
+  return postcode.trim().toUpperCase().replaceAll(/\s+/g, '')
 }
 
 // Combines UK search terms (stub implementation)
 function combineUKSearchTerms(term1, term2) {
-  // TODO: Replace with real logic if needed
   if (!term1 && !term2) {
     return ''
   }
@@ -220,8 +201,7 @@ function combineUKSearchTerms(term1, term2) {
 }
 
 // Builds UK location filters (stub implementation)
-function buildUKLocationFilters(location, config = {}) {
-  // TODO: Replace with real filter logic if needed
+function buildUKLocationFilters(location) {
   if (!location) {
     return {}
   }
@@ -229,12 +209,11 @@ function buildUKLocationFilters(location, config = {}) {
 }
 
 // Builds a UK API URL (stub implementation)
-function buildUKApiUrl(location, config = {}) {
-  // TODO: Replace with real URL logic if needed
+function buildUKApiUrl(location) {
   if (!location) {
     return ''
   }
-  const baseUrl = config.ukApiBaseUrl || 'https://api.uk.example.com/location'
+  const baseUrl = 'https://api.uk.example.com/location'
   return `${baseUrl}/${encodeURIComponent(location)}`
 }
 

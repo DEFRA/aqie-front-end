@@ -1,6 +1,8 @@
+import { STATUS_OK } from '../data/constants.js'
+
 const healthController = {
-  handler: (request, h) => {
-    return h.response({ message: 'success' }).code(200)
+  handler: (_request, h) => {
+    return h.response({ message: 'success' }).code(STATUS_OK)
   }
 }
 

@@ -15,79 +15,50 @@ import {
   mockPollutantLevel,
   getAvailableBands
 } from '../common/helpers/mock-pollutant-level.js'
+import {
+  STATUS_OK,
+  STATUS_FOUND,
+  STATUS_BAD_REQUEST
+} from '../data/constants.js'
 
 // Constants for duplicated string literals
 const BAND_LOW = 'low'
 const BAND_MODERATE = 'moderate'
 const BAND_HIGH = 'high'
 const BAND_VERY_HIGH = 'very-high'
+const PATH_TEST_POLLUTANTS_CUSTOM = '/test-pollutants-custom'
+const CLASS_ACTIVE = 'class="active"'
+const CONTENT_TYPE_HTML = 'text/html'
 
-export default [
-  {
-    method: 'GET',
-    path: '/test-pollutants',
-    options: {
-      description: 'Test pollutant band levels and colors',
-      notes:
-        'Pass ?band=low|moderate|high|very-high to test different pollutant bands',
-      tags: ['api', 'testing', 'pollutants']
-    },
-    handler: async (request, h) => {
-      const band = request.query.band || BAND_MODERATE
+// ''  Helper function to generate HTML table rows for pollutants
+const generatePollutantTableRows = (mockPollutants, normalizedBand) => {
+  return Object.entries(mockPollutants)
+    .map(
+      ([type, data]) => `
+        <tr>
+            <td><strong>${type}</strong></td>
+            <td>${data.value}</td>
+            <td><span class="daqi-tag daqi-tag--${normalizedBand}">${data.band}</span></td>
+            <td>${data.daqi}</td>
+        </tr>
+    `
+    )
+    .join('')
+}
 
-      // Normalize band
-      const normalizedBand = band.toLowerCase().replace(/\s+/g, '-')
+// ''  Helper function to generate band selector links
+const generateBandSelectorLinks = (normalizedBand) => {
+  return `
+    <a href="/test-pollutants?band=${BAND_LOW}" ${normalizedBand === BAND_LOW ? CLASS_ACTIVE : ''}>Low</a>
+    <a href="/test-pollutants?band=${BAND_MODERATE}" ${normalizedBand === BAND_MODERATE ? CLASS_ACTIVE : ''}>Moderate</a>
+    <a href="/test-pollutants?band=${BAND_HIGH}" ${normalizedBand === BAND_HIGH ? CLASS_ACTIVE : ''}>High</a>
+    <a href="/test-pollutants?band=${BAND_VERY_HIGH}" ${normalizedBand === BAND_VERY_HIGH ? CLASS_ACTIVE : ''}>Very High</a>
+  `
+}
 
-      // Validate band
-      const validBands = [BAND_LOW, BAND_MODERATE, BAND_HIGH, BAND_VERY_HIGH]
-      if (!validBands.includes(normalizedBand)) {
-        return h
-          .response({
-            error: 'Invalid band',
-            message: `Band must be one of: ${validBands.join(', ')}`,
-            validBands,
-            usage: {
-              examples: [
-                `/test-pollutants?band=${BAND_LOW}`,
-                `/test-pollutants?band=${BAND_MODERATE}`,
-                `/test-pollutants?band=${BAND_HIGH}`,
-                `/test-pollutants?band=${BAND_VERY_HIGH}`
-              ]
-            }
-          })
-          .code(400)
-      }
-
-      // Generate mock pollutants
-      const mockPollutants = mockPollutantBand(normalizedBand, {
-        logDetails: true
-      })
-
-      // Return as JSON or info page
-      if (request.query.format === 'json') {
-        return h
-          .response({
-            band: normalizedBand,
-            mockPollutants,
-            usage: {
-              changeBand: `/test-pollutants?band=${normalizedBand}`,
-              jsonFormat: `/test-pollutants?band=${normalizedBand}&format=json`,
-              customPollutants: '/test-pollutants-custom',
-              viewAll: '/test-pollutants-all'
-            }
-          })
-          .code(200)
-      }
-
-      // Return HTML response
-      const htmlContent = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mock Pollutant Test - ${normalizedBand}</title>
-    <style>
+// ''  Helper function to generate common CSS styles
+const getTestPageStyles = () => {
+  return `
         body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
         h1 { color: #333; }
         .band-selector { margin: 20px 0; }
@@ -117,7 +88,19 @@ export default [
         .daqi-tag--very-high { background: #FF0000; }
         .code-block { background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto; }
         pre { margin: 0; }
-    </style>
+  `
+}
+
+// Helper function to generate HTML content for band test page
+const generateBandTestHTML = (normalizedBand, mockPollutants) => {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Pollutant Test - ${normalizedBand}</title>
+    <style>${getTestPageStyles()}</style>
 </head>
 <body>
     <h1>🧪 Mock Pollutant Band Test</h1>
@@ -125,10 +108,7 @@ export default [
     
     <div class="band-selector">
         <h3>Quick Band Selection:</h3>
-        <a href="/test-pollutants?band=${BAND_LOW}" ${normalizedBand === BAND_LOW ? 'class="active"' : ''}>Low</a>
-        <a href="/test-pollutants?band=${BAND_MODERATE}" ${normalizedBand === BAND_MODERATE ? 'class="active"' : ''}>Moderate</a>
-        <a href="/test-pollutants?band=${BAND_HIGH}" ${normalizedBand === BAND_HIGH ? 'class="active"' : ''}>High</a>
-        <a href="/test-pollutants?band=${BAND_VERY_HIGH}" ${normalizedBand === BAND_VERY_HIGH ? 'class="active"' : ''}>Very High</a>
+        ${generateBandSelectorLinks(normalizedBand)}
     </div>
 
     <h2>Mock Pollutant Data</h2>
@@ -142,18 +122,7 @@ export default [
             </tr>
         </thead>
         <tbody>
-            ${Object.entries(mockPollutants)
-              .map(
-                ([type, data]) => `
-                <tr>
-                    <td><strong>${type}</strong></td>
-                    <td>${data.value}</td>
-                    <td><span class="daqi-tag daqi-tag--${normalizedBand}">${data.band}</span></td>
-                    <td>${data.daqi}</td>
-                </tr>
-            `
-              )
-              .join('')}
+            ${generatePollutantTableRows(mockPollutants, normalizedBand)}
         </tbody>
     </table>
 
@@ -170,75 +139,18 @@ export default [
 
     <h2>Other Test Routes</h2>
     <ul>
-        <li><a href="/test-pollutants-custom">Custom Pollutant Levels</a> - Test specific pollutants individually</li>
+        <li><a href="${PATH_TEST_POLLUTANTS_CUSTOM}">Custom Pollutant Levels</a> - Test specific pollutants individually</li>
         <li><a href="/test-pollutants-all">All Bands Comparison</a> - See all bands side by side</li>
         <li><a href="/test-pollutants?format=json">JSON Format</a> - Get raw JSON output</li>
     </ul>
 </body>
 </html>
-      `
+  `
+}
 
-      return h.response(htmlContent).type('text/html').code(200)
-    }
-  },
-
-  {
-    method: 'GET',
-    path: '/test-pollutants-custom',
-    options: {
-      description: 'Test specific pollutants with individual band levels',
-      notes:
-        'Pass pollutant parameters: ?NO2=moderate&PM25=high&PM10=low&O3=very-high&SO2=moderate',
-      tags: ['api', 'testing', 'pollutants']
-    },
-    handler: async (request, h) => {
-      const pollutantBands = {}
-
-      // Extract pollutant parameters from query
-      const validPollutants = ['NO2', 'PM25', 'PM10', 'O3', 'SO2']
-      validPollutants.forEach((pollutant) => {
-        if (request.query[pollutant]) {
-          pollutantBands[pollutant] = request.query[pollutant]
-        }
-      })
-
-      // If no pollutants specified, use defaults
-      if (Object.keys(pollutantBands).length === 0) {
-        pollutantBands.NO2 = 'moderate'
-        pollutantBands.PM25 = 'high'
-        pollutantBands.O3 = 'low'
-      }
-
-      // Generate mock pollutants
-      const mockPollutants = mockPollutantLevel(pollutantBands, {
-        logDetails: true,
-        fillMissing: true
-      })
-
-      // Return as JSON
-      if (request.query.format === 'json') {
-        return h
-          .response({
-            pollutantBands,
-            mockPollutants,
-            usage: {
-              example: '/test-pollutants-custom?NO2=moderate&PM25=high&O3=low',
-              jsonFormat: '/test-pollutants-custom?format=json',
-              uniformBand: '/test-pollutants?band=moderate'
-            }
-          })
-          .code(200)
-      }
-
-      // Return HTML response
-      const htmlContent = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custom Mock Pollutants Test</title>
-    <style>
+// ''  Helper function to generate custom pollutants CSS
+const getCustomPollutantsStyles = () => {
+  return `
         body { font-family: Arial, sans-serif; padding: 20px; max-width: 900px; margin: 0 auto; }
         h1 { color: #333; }
         table { width: 100%; border-collapse: collapse; margin: 20px 0; }
@@ -260,13 +172,30 @@ export default [
         select { padding: 5px; }
         button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
         .code-block { background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto; margin: 20px 0; }
-    </style>
+  `
+}
+
+// ''  Helper function to generate custom pollutants HTML
+const generateCustomPollutantsHTML = (
+  validPollutants,
+  pollutantBands,
+  mockPollutants,
+  requestUrl
+) => {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Mock Pollutants Test</title>
+    <style>${getCustomPollutantsStyles()}</style>
 </head>
 <body>
     <h1>🧪 Custom Mock Pollutant Levels</h1>
     
     <h2>Select Individual Pollutant Bands</h2>
-    <form method="GET" action="/test-pollutants-custom">
+    <form method="GET" action="${PATH_TEST_POLLUTANTS_CUSTOM}">
         ${validPollutants
           .map(
             (pollutant) => `
@@ -298,7 +227,9 @@ export default [
         <tbody>
             ${Object.entries(mockPollutants)
               .map(([type, data]) => {
-                const bandClass = data.band.toLowerCase().replace(/\s+/g, '-')
+                const bandClass = data.band
+                  .toLowerCase()
+                  .replaceAll(/\s+/g, '-')
                 return `
                     <tr>
                         <td><strong>${type}</strong></td>
@@ -314,7 +245,7 @@ export default [
 
     <h2>URL Parameters</h2>
     <div class="code-block">
-        <pre>${request.url.href}</pre>
+        <pre>${requestUrl}</pre>
     </div>
 
     <h2>Other Test Routes</h2>
@@ -324,51 +255,12 @@ export default [
     </ul>
 </body>
 </html>
-      `
+  `
+}
 
-      return h.response(htmlContent).type('text/html').code(200)
-    }
-  },
-
-  {
-    method: 'GET',
-    path: '/test-pollutants-all',
-    options: {
-      description: 'Test all pollutant bands at once for comparison',
-      notes: 'Display all bands (Low, Moderate, High, Very High) side by side',
-      tags: ['api', 'testing', 'pollutants']
-    },
-    handler: async (request, h) => {
-      const bands = ['low', 'moderate', 'high', 'very-high']
-      const allBandsData = {}
-
-      bands.forEach((band) => {
-        allBandsData[band] = mockPollutantBand(band, { logDetails: false })
-      })
-
-      // Return as JSON
-      if (request.query.format === 'json') {
-        return h
-          .response({
-            message: 'All pollutant bands comparison',
-            bands: allBandsData,
-            usage: {
-              testSpecificBand: '/test-pollutants?band=moderate',
-              customPollutants: '/test-pollutants-custom'
-            }
-          })
-          .code(200)
-      }
-
-      // Return HTML response
-      const htmlContent = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Pollutant Bands Comparison</title>
-    <style>
+// ''  Helper function to generate all bands CSS
+const getAllBandsStyles = () => {
+  return `
         body { font-family: Arial, sans-serif; padding: 20px; }
         h1 { color: #333; text-align: center; }
         .bands-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
@@ -393,7 +285,19 @@ export default [
         .band-moderate { border-color: #FFFF00; }
         .band-high { border-color: #FF9900; }
         .band-very-high { border-color: #FF0000; }
-    </style>
+  `
+}
+
+// ''  Helper function to generate all bands comparison HTML
+const generateAllBandsHTML = (bands, allBandsData) => {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Pollutant Bands Comparison</title>
+    <style>${getAllBandsStyles()}</style>
 </head>
 <body>
     <h1>🧪 All Pollutant Bands Comparison</h1>
@@ -446,9 +350,164 @@ export default [
     </div>
 </body>
 </html>
-      `
+  `
+}
 
-      return h.response(htmlContent).type('text/html').code(200)
+export default [
+  {
+    method: 'GET',
+    path: '/test-pollutants',
+    options: {
+      description: 'Test pollutant band levels and colors',
+      notes:
+        'Pass ?band=low|moderate|high|very-high to test different pollutant bands',
+      tags: ['api', 'testing', 'pollutants']
+    },
+    handler: async (request, h) => {
+      const band = request.query.band || BAND_MODERATE
+
+      // Normalize band
+      const normalizedBand = band.toLowerCase().replaceAll(/\s+/g, '-')
+
+      // Validate band
+      const validBands = [BAND_LOW, BAND_MODERATE, BAND_HIGH, BAND_VERY_HIGH]
+      if (!validBands.includes(normalizedBand)) {
+        return h
+          .response({
+            error: 'Invalid band',
+            message: `Band must be one of: ${validBands.join(', ')}`,
+            validBands,
+            usage: {
+              examples: [
+                `/test-pollutants?band=${BAND_LOW}`,
+                `/test-pollutants?band=${BAND_MODERATE}`,
+                `/test-pollutants?band=${BAND_HIGH}`,
+                `/test-pollutants?band=${BAND_VERY_HIGH}`
+              ]
+            }
+          })
+          .code(STATUS_BAD_REQUEST)
+      }
+
+      // Generate mock pollutants
+      const mockPollutants = mockPollutantBand(normalizedBand, {
+        logDetails: true
+      })
+
+      // Return as JSON or info page
+      if (request.query.format === 'json') {
+        return h
+          .response({
+            band: normalizedBand,
+            mockPollutants,
+            usage: {
+              changeBand: `/test-pollutants?band=${normalizedBand}`,
+              jsonFormat: `/test-pollutants?band=${normalizedBand}&format=json`,
+              customPollutants: PATH_TEST_POLLUTANTS_CUSTOM,
+              viewAll: '/test-pollutants-all'
+            }
+          })
+          .code(STATUS_OK)
+      }
+
+      // Return HTML response
+      const htmlContent = generateBandTestHTML(normalizedBand, mockPollutants)
+      return h.response(htmlContent).type(CONTENT_TYPE_HTML).code(STATUS_OK)
+    }
+  },
+
+  {
+    method: 'GET',
+    path: PATH_TEST_POLLUTANTS_CUSTOM,
+    options: {
+      description: 'Test specific pollutants with individual band levels',
+      notes:
+        'Pass pollutant parameters: ?NO2=moderate&PM25=high&PM10=low&O3=very-high&SO2=moderate',
+      tags: ['api', 'testing', 'pollutants']
+    },
+    handler: async (request, h) => {
+      const pollutantBands = {}
+
+      // Extract pollutant parameters from query
+      const validPollutants = ['NO2', 'PM25', 'PM10', 'O3', 'SO2']
+      for (const pollutant of validPollutants) {
+        if (request.query[pollutant]) {
+          pollutantBands[pollutant] = request.query[pollutant]
+        }
+      }
+
+      // If no pollutants specified, use defaults
+      if (Object.keys(pollutantBands).length === 0) {
+        pollutantBands.NO2 = 'moderate'
+        pollutantBands.PM25 = 'high'
+        pollutantBands.O3 = 'low'
+      }
+
+      // Generate mock pollutants
+      const mockPollutants = mockPollutantLevel(pollutantBands, {
+        logDetails: true,
+        fillMissing: true
+      })
+
+      // Return as JSON
+      if (request.query.format === 'json') {
+        return h
+          .response({
+            pollutantBands,
+            mockPollutants,
+            usage: {
+              example: `${PATH_TEST_POLLUTANTS_CUSTOM}?NO2=moderate&PM25=high&O3=low`,
+              jsonFormat: `${PATH_TEST_POLLUTANTS_CUSTOM}?format=json`,
+              uniformBand: '/test-pollutants?band=moderate'
+            }
+          })
+          .code(STATUS_OK)
+      }
+
+      // Return HTML response
+      const htmlContent = generateCustomPollutantsHTML(
+        validPollutants,
+        pollutantBands,
+        mockPollutants,
+        request.url.href
+      )
+      return h.response(htmlContent).type(CONTENT_TYPE_HTML).code(STATUS_OK)
+    }
+  },
+
+  {
+    method: 'GET',
+    path: '/test-pollutants-all',
+    options: {
+      description: 'Test all pollutant bands at once for comparison',
+      notes: 'Display all bands (Low, Moderate, High, Very High) side by side',
+      tags: ['api', 'testing', 'pollutants']
+    },
+    handler: async (request, h) => {
+      const bands = ['low', 'moderate', 'high', 'very-high']
+      const allBandsData = {}
+
+      for (const band of bands) {
+        allBandsData[band] = mockPollutantBand(band, { logDetails: false })
+      }
+
+      // Return as JSON
+      if (request.query.format === 'json') {
+        return h
+          .response({
+            message: 'All pollutant bands comparison',
+            bands: allBandsData,
+            usage: {
+              testSpecificBand: '/test-pollutants?band=moderate',
+              customPollutants: PATH_TEST_POLLUTANTS_CUSTOM
+            }
+          })
+          .code(STATUS_OK)
+      }
+
+      // Return HTML response
+      const htmlContent = generateAllBandsHTML(bands, allBandsData)
+      return h.response(htmlContent).type(CONTENT_TYPE_HTML).code(STATUS_OK)
     }
   },
 
@@ -464,7 +523,7 @@ export default [
     },
     handler: async (request, h) => {
       const locationId = request.params.locationId
-      const mockPollutantBand = request.query.mockPollutantBand || 'high'
+      const pollutantBandParam = request.query.mockPollutantBand || 'high'
 
       // Set searchTermsSaved to bypass search redirect
       request.yar.set('searchTermsSaved', true)
@@ -472,9 +531,9 @@ export default [
       // Redirect to actual location page with mock parameter
       return h
         .redirect(
-          `/location/${locationId}?mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
+          `/location/${locationId}?mockPollutantBand=${encodeURIComponent(pollutantBandParam)}`
         )
-        .code(302)
+        .code(STATUS_FOUND)
     }
   }
 ]

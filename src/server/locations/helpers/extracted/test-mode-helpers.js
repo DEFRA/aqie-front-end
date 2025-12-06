@@ -1,7 +1,9 @@
 import { config } from '../../../../config/index.js'
-import { LOCATION_TYPE_UK, LOCATION_TYPE_NI } from '../../../data/constants.js'
-
-const HTTP_BAD_REQUEST = 400
+import {
+  LOCATION_TYPE_UK,
+  LOCATION_TYPE_NI,
+  STATUS_BAD_REQUEST
+} from '../../../data/constants.js'
 
 function handleTestModeFetchData({
   locationType,
@@ -24,11 +26,7 @@ function handleTestModeFetchData({
     )
     return buildUKTestModeResult(osPlacesResult)
   } else if (locationType === LOCATION_TYPE_NI) {
-    const result = handleNILocationData(
-      userLocation,
-      optionsOAuth,
-      args || {}
-    )
+    const result = handleNILocationData(userLocation, optionsOAuth, args || {})
     if (result && typeof result.then === 'function') {
       return result.then((getNIPlaces) => buildNITestModeResult(getNIPlaces))
     }
@@ -36,14 +34,11 @@ function handleTestModeFetchData({
   } else {
     // fallback for unsupported types
     if (logger && typeof logger.error === 'function') {
-      logger.error(
-        'Unsupported location type in test mode:',
-        locationType
-      )
+      logger.error('Unsupported location type in test mode:', locationType)
     }
     return errorResponse(
       'Unsupported location type in test mode',
-      HTTP_BAD_REQUEST
+      STATUS_BAD_REQUEST
     )
   }
 }
@@ -77,9 +72,7 @@ function handleUKLocationDataTestMode(isTestMode, logger) {
 function fetchMeasurementsTestMode(isTestMode, logger) {
   if (isTestMode?.()) {
     if (logger && typeof logger.info === 'function') {
-      logger.info(
-        'Test mode: fetchMeasurements returning mock measurements'
-      )
+      logger.info('Test mode: fetchMeasurements returning mock measurements')
     }
     return [{ measurement: 'mock-measurement' }]
   }

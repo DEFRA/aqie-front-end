@@ -16,12 +16,15 @@ import {
   getToken,
   isMockEnabled
 } from './location-helpers.js'
+import {
+  STATUS_BAD_REQUEST,
+  STATUS_INTERNAL_SERVER_ERROR
+} from '../../data/constants.js'
 
 // ''
 const MANCHESTER_CITY = 'manchester city'
 const LOCAL_TYPE_CITY = 'LOCAL_TYPE:City'
 const HTTP_NOT_FOUND = 404
-const HTTP_BAD_REQUEST = 400
 
 describe('location-helpers - buildUKLocationFilters', () => {
   it('should return UK location filters as a concatenated string', () => {
@@ -364,7 +367,7 @@ describe('location-helpers - errorResponse', () => {
     expect(result).toEqual({
       error: true,
       message: 'Something went wrong',
-      statusCode: 500
+      statusCode: STATUS_INTERNAL_SERVER_ERROR
     })
   })
 
@@ -378,11 +381,11 @@ describe('location-helpers - errorResponse', () => {
   })
 
   it('should return error object with status code 400', () => {
-    const result = errorResponse('Bad request', HTTP_BAD_REQUEST)
+    const result = errorResponse('Bad request', STATUS_BAD_REQUEST)
     expect(result).toEqual({
       error: true,
       message: 'Bad request',
-      statusCode: HTTP_BAD_REQUEST
+      statusCode: STATUS_BAD_REQUEST
     })
   })
 })
@@ -400,7 +403,7 @@ describe('location-helpers - validateParams', () => {
     expect(result).toEqual({
       error: true,
       message: 'Missing required parameter: age',
-      statusCode: 400
+      statusCode: STATUS_BAD_REQUEST
     })
   })
 
@@ -410,7 +413,7 @@ describe('location-helpers - validateParams', () => {
     expect(result).toEqual({
       error: true,
       message: 'Missing required parameter: name',
-      statusCode: 400
+      statusCode: STATUS_BAD_REQUEST
     })
   })
 

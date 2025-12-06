@@ -5,8 +5,8 @@ import { warningMessages as cyWarningMessages } from '../../data/cy/air-quality.
 import { LANG_CY, LANG_EN } from '../../data/constants.js'
 
 // ''  Constants for high pollution bands
-const HIGH_BANDS = ['high', 'uchel']
-const VERY_HIGH_BANDS = ['veryHigh', 'uchelIawn']
+const HIGH_BANDS = new Set(['high', 'uchel'])
+const VERY_HIGH_BANDS = new Set(['veryHigh', 'uchelIawn'])
 
 // Days configuration
 const FORECAST_DAYS = [
@@ -21,7 +21,7 @@ const FORECAST_DAYS = [
  * Check if a band is high or very high pollution level
  */
 function isHighOrVeryHighBand(band) {
-  return HIGH_BANDS.includes(band) || VERY_HIGH_BANDS.includes(band)
+  return HIGH_BANDS.has(band) || VERY_HIGH_BANDS.has(band)
 }
 
 /**
