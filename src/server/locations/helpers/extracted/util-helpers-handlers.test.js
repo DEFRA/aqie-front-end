@@ -9,20 +9,12 @@ import { STATUS_BAD_REQUEST } from '../../../data/constants.js'
 
 describe('util-helpers - Handler Functions', () => {
   let mockLogger
-  let mockRequest
 
   beforeEach(() => {
     mockLogger = {
       info: vi.fn(),
       error: vi.fn(),
       warn: vi.fn()
-    }
-    mockRequest = {
-      yar: {
-        get: vi.fn(),
-        set: vi.fn(),
-        clear: vi.fn()
-      }
     }
   })
 

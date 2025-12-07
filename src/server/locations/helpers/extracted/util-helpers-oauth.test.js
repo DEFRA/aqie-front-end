@@ -1,9 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { refreshOAuthToken, buildNIOptionsOAuth } from './util-helpers.js'
 
-// ''  Test constants
-const TEST_OAUTH_TOKEN = 'Bearer test-oauth-token-123'
-
 describe('util-helpers - refreshOAuthToken', () => {
   let mockLogger
   let mockRequest
