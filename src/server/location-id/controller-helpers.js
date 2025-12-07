@@ -1,6 +1,7 @@
 import { createLogger } from '../common/helpers/logging/logger.js'
 import { LANG_CY, LANG_EN } from '../data/constants.js'
 import { config } from '../../config/index.js'
+import { getDetailedInfo } from '../data/en/air-quality.js'
 
 const logger = createLogger()
 
@@ -238,18 +239,40 @@ export function validateMockPollutantBand(mockPollutantBand) {
  * @returns {object} Modified air quality data
  */
 export function applyMockToDay(airQuality, level, mockDay) {
+  const mockDayData = getDetailedInfo(level)
+
+  // '' Debug: Log incoming airQuality structure
+  logger.info(
+    `🔍 applyMockToDay - incoming: today=${airQuality?.today?.value}, day2=${airQuality?.day2?.value}, day3=${airQuality?.day3?.value}, day4=${airQuality?.day4?.value}, day5=${airQuality?.day5?.value}, mockDay=${mockDay}, mockLevel=${level}`
+  )
+
   if (mockDay && ['today', 'day2', 'day3', 'day4', 'day5'].includes(mockDay)) {
-    const mockDayData = {
-      today: airQuality?.today || null,
-      day2: airQuality?.day2 || null,
-      day3: airQuality?.day3 || null,
-      day4: airQuality?.day4 || null,
-      day5: airQuality?.day5 || null
+    // '' Preserve original air quality data for non-mocked days - use spread unconditionally
+    const modifiedAirQuality = {
+      today: airQuality?.today ? { ...airQuality.today } : airQuality?.today,
+      day2: airQuality?.day2 ? { ...airQuality.day2 } : airQuality?.day2,
+      day3: airQuality?.day3 ? { ...airQuality.day3 } : airQuality?.day3,
+      day4: airQuality?.day4 ? { ...airQuality.day4 } : airQuality?.day4,
+      day5: airQuality?.day5 ? { ...airQuality.day5 } : airQuality?.day5
     }
-    mockDayData[mockDay] = { value: level, band: 'moderate' }
-    return mockDayData
+    // '' Override the specific day with the mock level
+    modifiedAirQuality[mockDay] = mockDayData
+    logger.info(
+      `🎯 Applied mock level ${level} to ${mockDay} only (value: ${mockDayData.value}, band: ${mockDayData.band}, readableBand: ${mockDayData.readableBand})`
+    )
+    logger.info(
+      `🔍 applyMockToDay - output: today=${modifiedAirQuality?.today?.value}, day2=${modifiedAirQuality?.day2?.value}, day3=${modifiedAirQuality?.day3?.value}, day4=${modifiedAirQuality?.day4?.value}, day5=${modifiedAirQuality?.day5?.value}`
+    )
+    return modifiedAirQuality
   }
-  return { today: { value: level, band: 'moderate' } }
+  // '' If no specific day, apply to today only
+  return {
+    today: mockDayData,
+    day2: airQuality?.day2 ? { ...airQuality.day2 } : airQuality?.day2,
+    day3: airQuality?.day3 ? { ...airQuality.day3 } : airQuality?.day3,
+    day4: airQuality?.day4 ? { ...airQuality.day4 } : airQuality?.day4,
+    day5: airQuality?.day5 ? { ...airQuality.day5 } : airQuality?.day5
+  }
 }
 
 /**

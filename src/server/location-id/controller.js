@@ -164,7 +164,15 @@ function buildLocationViewData({
   headerTitle = convertFirstLetterIntoUppercase(headerTitle)
 
   // '' Handle case where dailySummary might be undefined (e.g., in test mode)
+  logger.info(`🔍 forecastNum array: ${JSON.stringify(forecastNum)}`)
+
   let { airQuality } = airQualityValues(forecastNum, lang)
+
+  // '' Debug: Log original airQuality BEFORE any mocking
+  logger.info(
+    `🔍 Original airQuality BEFORE applyMockLevel: today=${airQuality?.today?.value}, day2=${airQuality?.day2?.value}, day3=${airQuality?.day3?.value}, day4=${airQuality?.day4?.value}, day5=${airQuality?.day5?.value}`
+  )
+
   const highestAQ = Math.max(...forecastNum)
   const { transformedDailySummary } = locationData[DAILY_SUMMARY_KEY]
     ? transformKeys(locationData[DAILY_SUMMARY_KEY], lang, highestAQ)
@@ -172,6 +180,11 @@ function buildLocationViewData({
 
   // Apply mock level if requested
   airQuality = applyMockLevel(request, airQuality)
+
+  // '' Debug: Log airQuality AFTER applyMockLevel
+  logger.info(
+    `🔍 Modified airQuality AFTER applyMockLevel: today=${airQuality?.today?.value}, day2=${airQuality?.day2?.value}, day3=${airQuality?.day3?.value}, day4=${airQuality?.day4?.value}, day5=${airQuality?.day5?.value}`
+  )
 
   // '' Apply mock pollutant bands if requested
   const modifiedMonitoringSites = applyMockPollutants(

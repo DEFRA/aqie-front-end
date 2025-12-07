@@ -105,7 +105,7 @@ describe('util-helpers - buildNIOptionsOAuth', () => {
     expect(result.optionsOAuth).toEqual({
       method: 'GET',
       headers: {
-        Authorization: TEST_OAUTH_TOKEN,
+        Authorization: 'Bearer oauth-token-123',
         'Content-Type': 'application/json'
       }
     })
