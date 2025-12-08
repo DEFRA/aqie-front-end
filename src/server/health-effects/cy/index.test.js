@@ -27,7 +27,7 @@ vi.mock('../../common/helpers/logging/logger.js', () => ({
   })
 }))
 
-describe("'' healthEffectsCy plugin", () => {
+describe("'' healthEffectsCy plugin - route registration", () => {
   let server
   let logger
 
@@ -45,6 +45,19 @@ describe("'' healthEffectsCy plugin", () => {
     expect(healthEffectsController.handler).toHaveBeenCalledTimes(1)
   })
 
+  it("'' continues request when legacy path does not match", async () => {
+    const res = await server.inject('/location/unknown/path')
+    expect(res.statusCode).toBe(HTTP_NOT_FOUND) // '' No route matches
+  })
+})
+
+describe("'' healthEffectsCy plugin - redirects", () => {
+  let server
+
+  beforeEach(async () => {
+    server = new Server({ port: 0 })
+    await server.register({ plugin: healthEffectsCy })
+  })
   it("'' redirects legacy English path to Welsh dynamic route when lang=cy", async () => {
     // '' Provide lang=cy query so onPreHandler will perform the redirect when the plugin registers it.
     const res = await server.inject(
@@ -67,67 +80,6 @@ describe("'' healthEffectsCy plugin", () => {
     expect(res.statusCode).toBe(HTTP_NOT_FOUND) // '' No route matches / original path continues
   })
 
-  it("'' continues request when legacy path does not match", async () => {
-    const res = await server.inject('/location/unknown/path')
-    expect(res.statusCode).toBe(HTTP_NOT_FOUND) // '' No route matches
-  })
-
-  it("'' logs error when onPreHandler fails", async () => {
-    // '' Simulate error in onPreHandler
-    const mockRedirect = vi.fn(() => {
-      throw new Error('Simulated onPreHandler error')
-    })
-    server.ext('onPreHandler', (_request, _h) => mockRedirect())
-    const res = await server.inject('/location/invalid/health-effects')
-    expect([HTTP_NOT_FOUND, HTTP_SERVER_ERROR]).toContain(res.statusCode) // '' Accept either behavior
-
-    // '' Accept logging being optional in this environment.
-    // If logging occurred, ensure it includes an Error or mentions onPreHandler.
-    const warnCalls = logger.warn.mock?.calls?.length ?? 0
-    const errorCalls = logger.error.mock?.calls?.length ?? 0
-
-    const combinedCalls = [
-      ...(logger.warn.mock?.calls || []),
-      ...(logger.error.mock?.calls || [])
-    ]
-    const containsExpected = combinedCalls.some((call) =>
-      call.some(
-        (arg) =>
-          arg instanceof Error ||
-          (typeof arg === 'string' && arg.includes('onPreHandler'))
-      )
-    )
-
-    if (warnCalls + errorCalls > 0) {
-      expect(containsExpected).toBeTruthy()
-    }
-  })
-
-  it("'' logs error when plugin registration fails", async () => {
-    const failingPlugin = {
-      name: 'failingPlugin',
-      version: '1.0.0',
-      register: async () => {
-        throw new Error('Registration failed')
-      }
-    }
-    // '' Expect registration to reject with the plugin error
-    await expect(server.register({ plugin: failingPlugin })).rejects.toThrow(
-      'Registration failed'
-    )
-  })
-
-  it("'' handles warning when onPreHandler fails", async () => {
-    // '' Test warning path in onPreHandler catch block
-    const warnServer = new Server({ port: 0 })
-
-    await warnServer.register({ plugin: healthEffectsCy })
-
-    // '' Inject path that won't match redirect pattern
-    const res = await warnServer.inject('/some/other/path')
-    expect(res.statusCode).toBe(HTTP_NOT_FOUND)
-  })
-
   it("'' successfully redirects English path with lang=cy", async () => {
     // '' Test the redirect logic when path matches and lang=cy
     const redirectServer = new Server({ port: 0 })
@@ -145,14 +97,90 @@ describe("'' healthEffectsCy plugin", () => {
       expect(res.headers.location).toBe('/lleoliad/test-id/effeithiau-iechyd')
     }
   })
+})
 
-  it("'' handles error propagation in registration", async () => {
-    // '' Test that errors during registration are thrown
-    const errorServer = new Server({ port: 0 })
+describe("'' healthEffectsCy plugin - error handling", () => {
+  let server
+  let logger
 
-    // '' Successfully register the plugin
-    await expect(
-      errorServer.register({ plugin: healthEffectsCy })
-    ).resolves.not.toThrow()
+  beforeEach(async () => {
+    server = new Server({ port: 0 })
+    logger = require('../../common/helpers/logging/logger.js').createLogger()
+    vi.spyOn(logger, 'warn')
+    vi.spyOn(logger, 'error')
+    await server.register({ plugin: healthEffectsCy })
+  })
+
+  const hasErrorOrOnPreHandlerMessage = (calls) => {
+    for (const callArgs of calls) {
+      for (const arg of callArgs) {
+        if (
+          arg instanceof Error ||
+          (typeof arg === 'string' && arg.includes('onPreHandler'))
+        ) {
+          return true
+        }
+      }
+    }
+    return false
+  }
+
+  describe("'' error handling", () => {
+    it("'' logs error when onPreHandler fails", async () => {
+      // '' Simulate error in onPreHandler
+      const mockRedirect = vi.fn(() => {
+        throw new Error('Simulated onPreHandler error')
+      })
+      server.ext('onPreHandler', (_request, _h) => mockRedirect())
+      const res = await server.inject('/location/invalid/health-effects')
+      expect([HTTP_NOT_FOUND, HTTP_SERVER_ERROR]).toContain(res.statusCode) // '' Accept either behavior
+
+      // '' Accept logging being optional in this environment.
+      const warnCalls = logger.warn.mock?.calls?.length ?? 0
+      const errorCalls = logger.error.mock?.calls?.length ?? 0
+
+      if (warnCalls + errorCalls > 0) {
+        const allCalls = [
+          ...(logger.warn.mock?.calls || []),
+          ...(logger.error.mock?.calls || [])
+        ]
+        expect(hasErrorOrOnPreHandlerMessage(allCalls)).toBeTruthy()
+      }
+    })
+
+    it("'' logs error when plugin registration fails", async () => {
+      const failingPlugin = {
+        name: 'failingPlugin',
+        version: '1.0.0',
+        register: async () => {
+          throw new Error('Registration failed')
+        }
+      }
+      // '' Expect registration to reject with the plugin error
+      await expect(server.register({ plugin: failingPlugin })).rejects.toThrow(
+        'Registration failed'
+      )
+    })
+
+    it("'' handles warning when onPreHandler fails", async () => {
+      // '' Test warning path in onPreHandler catch block
+      const warnServer = new Server({ port: 0 })
+
+      await warnServer.register({ plugin: healthEffectsCy })
+
+      // '' Inject path that won't match redirect pattern
+      const res = await warnServer.inject('/some/other/path')
+      expect(res.statusCode).toBe(HTTP_NOT_FOUND)
+    })
+
+    it("'' handles error propagation in registration", async () => {
+      // '' Test that errors during registration are thrown
+      const errorServer = new Server({ port: 0 })
+
+      // '' Successfully register the plugin
+      await expect(
+        errorServer.register({ plugin: healthEffectsCy })
+      ).resolves.not.toThrow()
+    })
   })
 })

@@ -98,4 +98,18 @@ describe('Cookies Handler', () => {
     )
     expect(mockH.view).toHaveBeenCalledWith(COOKIES_INDEX, expectedViewData)
   })
+
+  it('should default to English when no lang query parameter is provided', () => {
+    mockRequest.query = {}
+    mockRequest.path = COOKIES_PATH
+    const actualUrl = getAirQualitySiteUrl(mockRequest)
+    const result = cookiesHandler(mockRequest, mockH, mockContent)
+    expect(result).toBe(VIEW_RENDERED)
+    const expectedViewData = createCookiesViewData(
+      mockContent,
+      actualUrl,
+      LANG_EN
+    )
+    expect(mockH.view).toHaveBeenCalledWith(COOKIES_INDEX, expectedViewData)
+  })
 })

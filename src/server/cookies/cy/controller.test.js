@@ -107,4 +107,21 @@ describe('Cookies Handler', () => {
       currentPath: '/briwsion/cy'
     })
   })
+
+  it('should default to Welsh when no lang query parameter is provided', () => {
+    const mockH = createMockH()
+
+    mockRequest = {
+      query: {},
+      path: '/briwsion/cy'
+    }
+    const result = cookiesHandler(mockRequest, mockH, mockContent)
+    expect(result).toBe('view rendered')
+    expect(mockH.view).toHaveBeenCalledWith(
+      'cookies/index',
+      expect.objectContaining({
+        lang: 'cy'
+      })
+    )
+  })
 })

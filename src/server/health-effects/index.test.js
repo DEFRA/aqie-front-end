@@ -4,9 +4,13 @@ import { Server } from '@hapi/hapi' // '' Hapi server
 import { healthEffects } from './index.js' // '' English plugin
 import { healthEffectsController } from './controller.js' // '' English controller
 
+const HTTP_OK = 200
+const HTTP_FOUND = 302
+const HTTP_NOT_FOUND = 404
+
 vi.mock('./controller.js', () => ({
   healthEffectsController: {
-    handler: vi.fn((req, h) => h.response('ok').code(200))
+    handler: vi.fn((_req, h) => h.response('ok').code(HTTP_OK))
   } // '' Mock handler
 }))
 
@@ -39,7 +43,7 @@ describe("'' healthEffects plugin", () => {
     const res = await server.inject(
       '/location/bristol_city-of-bristol/health-effects'
     )
-    expect(res.statusCode).toBe(200)
+    expect(res.statusCode).toBe(HTTP_OK)
     expect(healthEffectsController.handler).toHaveBeenCalledTimes(1)
   })
 
@@ -48,12 +52,12 @@ describe("'' healthEffects plugin", () => {
     const res = await server.inject(
       '/lleoliad/bristol_city-of-bristol/effeithiau-iechyd'
     )
-    expect(res.statusCode).toBe(404)
+    expect(res.statusCode).toBe(HTTP_NOT_FOUND)
   })
 
   it("'' continues request when legacy path does not match", async () => {
     const res = await server.inject('/lleoliad/unknown/path?lang=en')
-    expect(res.statusCode).toBe(404) // '' No route matches
+    expect(res.statusCode).toBe(HTTP_NOT_FOUND) // '' No route matches
   })
 
   /* it("'' logs error when onPreHandler fails", async () => {
@@ -110,7 +114,7 @@ describe("'' healthEffects plugin", () => {
 
     // '' Test that continues to work even when regex doesn't match
     const res = await testServer.inject('/some/other/path')
-    expect(res.statusCode).toBe(404) // '' No route matches
+    expect(res.statusCode).toBe(HTTP_NOT_FOUND) // '' No route matches
 
     logger.warn = originalWarn
   })
@@ -123,7 +127,7 @@ describe("'' healthEffects plugin", () => {
 
     // '' Inject a path that won't match the redirect pattern
     const res = await errorServer.inject('/some/path')
-    expect(res.statusCode).toBe(404)
+    expect(res.statusCode).toBe(HTTP_NOT_FOUND)
   })
 
   it("'' successfully redirects Welsh path with lang=en", async () => {
@@ -137,6 +141,6 @@ describe("'' healthEffects plugin", () => {
     )
 
     // '' Depending on implementation, this might be 302 (redirect) or 404 (no route)
-    expect([302, 404]).toContain(res.statusCode)
+    expect([HTTP_FOUND, HTTP_NOT_FOUND]).toContain(res.statusCode)
   })
 })
