@@ -209,6 +209,59 @@ function processMeasurementPollutants(measurement, lang, latlon) {
   }
 }
 
+// Helper to fetch and process new Ricardo measurements
+async function fetchAndProcessNewMeasurements(
+  latlon,
+  matches,
+  lang,
+  useNewRicardoMeasurementsEnabled,
+  request
+) {
+  if (!latlon?.lat || !latlon?.lon) {
+    return []
+  }
+
+  const newMeasurements = await fetchMeasurements(
+    latlon.lat,
+    latlon.lon,
+    useNewRicardoMeasurementsEnabled,
+    { request }
+  )
+
+  if (!newMeasurements?.measurements) {
+    return []
+  }
+
+  const newMeasurementsMapped = newMeasurements.measurements.map(
+    (measurement) => processMeasurementPollutants(measurement, lang, latlon)
+  )
+
+  return buildNearestLocationsRange(
+    matches,
+    newMeasurementsMapped,
+    latlon,
+    lang
+  )
+}
+
+// Helper to fetch and process legacy measurements
+async function fetchAndProcessLegacyMeasurements(
+  latlon,
+  matches,
+  lang,
+  useNewRicardoMeasurementsEnabled,
+  request
+) {
+  const measurements = await fetchMeasurements(
+    latlon.lat,
+    latlon.lon,
+    useNewRicardoMeasurementsEnabled,
+    { request }
+  )
+
+  return buildNearestLocationsRange(matches, measurements, latlon, lang)
+}
+
 async function getNearestLocation(
   matches,
   forecasts,
@@ -224,54 +277,30 @@ async function getNearestLocation(
     index,
     forecasts
   )
-  let nearestLocationsRange = []
-  let nearestLocation = {}
-  let forecastNum = 0
-  const resultLatlon = latlon
-  let getMeasurments = null
+
   const forecastDay =
     moment
       .tz('Europe/London')
       ?.format('dddd')
       ?.substring(0, FORECAST_DAY_SLICE_LENGTH) || ''
 
-  if (useNewRicardoMeasurementsEnabled) {
-    let newMeasurements = []
-    if (latlon?.lat && latlon?.lon) {
-      newMeasurements = await fetchMeasurements(
-        latlon.lat,
-        latlon.lon,
-        useNewRicardoMeasurementsEnabled,
-        { request }
-      )
-    }
-
-    if (newMeasurements?.measurements) {
-      const newMeasurementsMapped = newMeasurements.measurements.map(
-        (measurement) => processMeasurementPollutants(measurement, lang, latlon)
-      )
-      nearestLocationsRange = buildNearestLocationsRange(
-        matches,
-        newMeasurementsMapped,
+  const nearestLocationsRange = useNewRicardoMeasurementsEnabled
+    ? await fetchAndProcessNewMeasurements(
         latlon,
-        lang
+        matches,
+        lang,
+        useNewRicardoMeasurementsEnabled,
+        request
       )
-    }
-  } else {
-    getMeasurments = await fetchMeasurements(
-      latlon.lat,
-      latlon.lon,
-      useNewRicardoMeasurementsEnabled,
-      { request }
-    )
-    nearestLocationsRange = buildNearestLocationsRange(
-      matches,
-      getMeasurments,
-      latlon,
-      lang
-    )
-  }
-  nearestLocation =
+    : await fetchAndProcessLegacyMeasurements(
+        latlon,
+        matches,
+        lang,
+        useNewRicardoMeasurementsEnabled,
+        request
+      )
+
+  const nearestLocation =
     matches.length > 0
       ? getNearLocation(
           latlon?.lat,
@@ -280,13 +309,14 @@ async function getNearestLocation(
           forecasts
         )
       : {}
-  forecastNum = buildForecastNum(matches, nearestLocation, forecastDay)
+
+  const forecastNum = buildForecastNum(matches, nearestLocation, forecastDay)
 
   return {
     forecastNum,
     nearestLocationsRange,
     nearestLocation,
-    latlon: resultLatlon
+    latlon
   }
 }
 
