@@ -32,7 +32,7 @@ const transformKeys = (dailySummary, lang) => {
     )
   }
 
-  const remainingDaysRange = `${remainingDays[0]} to ${remainingDays[remainingDays.length - 1]}`
+  const remainingDaysRange = `${remainingDays.at(0)} to ${remainingDays.at(-1)}`
 
   if (lang === LANG_CY) {
     const translateDayToWelsh = (day) => {

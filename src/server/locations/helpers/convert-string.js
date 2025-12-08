@@ -6,12 +6,12 @@
 const THREE_WORDS = 3
 
 const convertStringToHyphenatedLowercaseWords = (input) => {
-  const removedHyphens = input.replace(/ - /g, ' ')
+  const removedHyphens = input.replaceAll(' - ', ' ')
   // Remove commas, convert to lowercase, and split the string into words
   const words = removedHyphens
-    .replace(/,/g, '')
+    .replaceAll(',', '')
     .toLowerCase()
-    .replace(/\s+/g, ' ')
+    .replaceAll(/\s+/g, ' ')
     .trim()
     .split(' ')
 
@@ -31,17 +31,17 @@ function removeLastWordAndHyphens(str) {
   let words = str.split(' ') // Split the string into an array of words
   words.pop() // Remove the last word
   words = words.join('') // Join the remaining words
-  return words.includes('-') ? words.replace(/-/g, '') : words
+  return words.includes('-') ? words.replaceAll('-', '') : words
 }
 
 function splitAndKeepFirstWord(str) {
   const words = str.split('_') // Split the string by the underscore character
-  return words[0].includes('-') ? words[0].replace(/-/g, '') : words[0] // Return the first word
+  return words[0].includes('-') ? words[0].replaceAll('-', '') : words[0] // Return the first word
 }
 
 function removeHyphensAndUnderscores(str) {
   // Define a function to remove hyphens and underscores from a string
-  return str.includes('-') ? str.replace(/-/g, '') : str // Replace hyphens with an empty string if found, otherwise return the original string ''
+  return str.includes('-') ? str.replaceAll('-', '') : str // Replace hyphens with an empty string if found, otherwise return the original string ''
 }
 
 function extractAndFormatUKPostcode(headerTitle) {
@@ -153,7 +153,7 @@ function formatNorthernIrelandPostcode(postcode) {
 
 // Function to check if a word separated by spaces in one string has an exact match in another string
 function hasExactMatch(wordString, name1, name2 = null) {
-  const normalizeString = (str) => str?.toUpperCase().replace(/\s+/g, '') // Normalize string by converting to uppercase and removing spaces
+  const normalizeString = (str) => str?.toUpperCase().replaceAll(/\s+/g, '') // Normalize string by converting to uppercase and removing spaces
   const words = wordString.split(' ').map((word) => word.toUpperCase()) // Split and normalize words in the input string
 
   const checkMatch = (target, wordArray) => {

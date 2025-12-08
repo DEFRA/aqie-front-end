@@ -104,7 +104,11 @@ const router = {
 
       const existingRoutes = server.table().map((route) => route.path) // ''
 
-      if (!existingRoutes.includes('/public/{param*}')) {
+      if (existingRoutes.includes('/public/{param*}')) {
+        logger.warn(
+          'Route /public/{param*} already exists. Skipping registration.'
+        ) // ''
+      } else {
         server.route({
           method: 'GET',
           path: '/public/{param*}',
@@ -116,10 +120,6 @@ const router = {
             }
           }
         }) // ''
-      } else {
-        logger.warn(
-          'Route /public/{param*} already exists. Skipping registration.'
-        ) // ''
       }
     }
   }

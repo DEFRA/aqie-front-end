@@ -128,7 +128,7 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
 
   const locationData = {
     results: getNIPlaces?.results,
-    urlRoute: `${getNIPlaces?.results[0].postcode.toLowerCase()}`.replace(
+    urlRoute: `${getNIPlaces?.results[0].postcode.toLowerCase()}`.replaceAll(
       /\s+/g,
       ''
     ),
@@ -226,6 +226,102 @@ function isInvalidDailySummary(getDailySummary) {
   )
 }
 
+/**
+ * '' Prepare formatted date information for display
+ */
+function prepareDateFormatting(getDailySummary, lang) {
+  const { transformedDailySummary } = transformKeys(getDailySummary, lang)
+  const { formattedDateSummary, getMonthSummary } = getFormattedDateSummary(
+    getDailySummary?.issue_date,
+    calendarEnglish,
+    calendarWelsh,
+    lang
+  )
+  const { englishDate, welshDate } = getLanguageDates(
+    formattedDateSummary,
+    getMonthSummary,
+    calendarEnglish,
+    calendarWelsh
+  )
+
+  return { transformedDailySummary, englishDate, welshDate }
+}
+
+/**
+ * '' Route request to appropriate location type handler
+ */
+function routeToLocationTypeHandler(request, h, redirectError, context) {
+  const { locationType } = redirectError
+
+  if (locationType === LOCATION_TYPE_UK) {
+    return processUKLocationType(request, h, redirectError, context.ukContext)
+  }
+
+  if (locationType === LOCATION_TYPE_NI) {
+    return processNILocationType(request, h, redirectError, context.niContext)
+  }
+
+  request.yar.clear('searchTermsSaved')
+  return h.redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`).takeover()
+}
+
+/**
+ * '' Build context objects for location type handlers
+ */
+function buildLocationContexts(params) {
+  const {
+    userLocation,
+    locationNameOrPostcode,
+    lang,
+    searchTerms,
+    secondSearchTerm,
+    getOSPlaces,
+    getDailySummary,
+    getForecasts,
+    getNIPlaces,
+    transformedDailySummary,
+    englishDate,
+    welshDate,
+    month,
+    home,
+    multipleLocations
+  } = params
+
+  const ukContext = {
+    userLocation,
+    locationNameOrPostcode,
+    lang,
+    searchTerms,
+    secondSearchTerm,
+    getOSPlaces,
+    airQualityData,
+    getDailySummary,
+    getForecasts,
+    transformedDailySummary,
+    calendarWelsh,
+    englishDate,
+    welshDate,
+    month,
+    english
+  }
+
+  const niContext = {
+    locationNameOrPostcode,
+    lang,
+    getNIPlaces,
+    transformedDailySummary,
+    englishDate,
+    welshDate,
+    getDailySummary,
+    month,
+    multipleLocations,
+    home,
+    getForecasts
+  }
+
+  return { ukContext, niContext }
+}
+
 const searchMiddleware = async (request, h) => {
   const { query, payload } = request
   const lang = LANG_EN
@@ -273,57 +369,30 @@ const searchMiddleware = async (request, h) => {
     )
   }
 
-  const { transformedDailySummary } = transformKeys(getDailySummary, lang)
-  const { formattedDateSummary, getMonthSummary } = getFormattedDateSummary(
-    getDailySummary?.issue_date,
-    calendarEnglish,
-    calendarWelsh,
-    lang
-  )
-  const { englishDate, welshDate } = getLanguageDates(
-    formattedDateSummary,
-    getMonthSummary,
-    calendarEnglish,
-    calendarWelsh
-  )
+  const { transformedDailySummary, englishDate, welshDate } =
+    prepareDateFormatting(getDailySummary, lang)
+
   request.yar.set('searchTermsSaved', searchTerms)
 
-  if (redirectError.locationType === LOCATION_TYPE_UK) {
-    return processUKLocationType(request, h, redirectError, {
-      userLocation,
-      locationNameOrPostcode,
-      lang,
-      searchTerms,
-      secondSearchTerm,
-      getOSPlaces,
-      airQualityData,
-      getDailySummary,
-      getForecasts,
-      transformedDailySummary,
-      calendarWelsh,
-      englishDate,
-      welshDate,
-      month,
-      english
-    })
-  } else if (redirectError.locationType === LOCATION_TYPE_NI) {
-    return processNILocationType(request, h, redirectError, {
-      locationNameOrPostcode,
-      lang,
-      getNIPlaces,
-      transformedDailySummary,
-      englishDate,
-      welshDate,
-      getDailySummary,
-      month,
-      multipleLocations,
-      home,
-      getForecasts
-    })
-  } else {
-    request.yar.clear('searchTermsSaved')
-    return h.redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`).takeover()
-  }
+  const contexts = buildLocationContexts({
+    userLocation,
+    locationNameOrPostcode,
+    lang,
+    searchTerms,
+    secondSearchTerm,
+    getOSPlaces,
+    getDailySummary,
+    getForecasts,
+    getNIPlaces,
+    transformedDailySummary,
+    englishDate,
+    welshDate,
+    month,
+    home,
+    multipleLocations
+  })
+
+  return routeToLocationTypeHandler(request, h, redirectError, contexts)
 }
 
 export { searchMiddleware, shouldReturnNotFound, isInvalidDailySummary }

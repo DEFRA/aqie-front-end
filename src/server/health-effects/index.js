@@ -25,7 +25,7 @@ const healthEffects = {
           ) // '' Extract {id} from CY path
           const wantsEn =
             ((request.query.lang || '') + '').toLowerCase() === 'en' // '' Only redirect if lang=en
-          if (m && m[1] && wantsEn) {
+          if (m?.[1] && wantsEn) {
             const id = encodeURIComponent(m[1]) // '' URL-safe
             return h.redirect(`/location/${id}/health-effects`).takeover() // '' Redirect to EN dynamic
           }
