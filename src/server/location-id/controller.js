@@ -147,6 +147,59 @@ function handleSearchTermsRedirect(
   return null
 }
 
+// Helper to prepare location titles
+function prepareLocationTitles(locationDetails) {
+  let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
+  title = convertFirstLetterIntoUppercase(title)
+  headerTitle = convertFirstLetterIntoUppercase(headerTitle)
+  return { title, headerTitle }
+}
+
+// Helper to prepare air quality with mocking
+function prepareAirQuality(
+  forecastNum,
+  lang,
+  request,
+  locationData,
+  highestAQ
+) {
+  logger.info(`🔍 forecastNum array: ${JSON.stringify(forecastNum)}`)
+
+  let { airQuality } = airQualityValues(forecastNum, lang)
+
+  logger.info(
+    `🔍 Original airQuality BEFORE applyMockLevel: today=${airQuality?.today?.value}, day2=${airQuality?.day2?.value}, day3=${airQuality?.day3?.value}, day4=${airQuality?.day4?.value}, day5=${airQuality?.day5?.value}`
+  )
+
+  const { transformedDailySummary } = locationData[DAILY_SUMMARY_KEY]
+    ? transformKeys(locationData[DAILY_SUMMARY_KEY], lang, highestAQ)
+    : { transformedDailySummary: null }
+
+  airQuality = applyMockLevel(request, airQuality)
+
+  logger.info(
+    `🔍 Modified airQuality AFTER applyMockLevel: today=${airQuality?.today?.value}, day2=${airQuality?.day2?.value}, day3=${airQuality?.day3?.value}, day4=${airQuality?.day4?.value}, day5=${airQuality?.day5?.value}`
+  )
+
+  return { airQuality, transformedDailySummary }
+}
+
+// Helper to extract location context from request
+function extractLocationContext(request, headerTitle) {
+  const searchTerms = request?.query?.searchTerms || ''
+  const locationNameFromQuery = request?.query?.locationName || ''
+  const locationNameForTemplate = locationNameFromQuery || headerTitle
+
+  logger.info('🔍 DEBUG - Location view data:', {
+    searchTerms,
+    locationNameFromQuery,
+    headerTitle,
+    locationNameForTemplate
+  })
+
+  return { searchTerms, locationNameForTemplate }
+}
+
 // Helper to build view data for found location
 function buildLocationViewData({
   locationDetails,
@@ -159,56 +212,29 @@ function buildLocationViewData({
   request,
   locationId
 }) {
-  let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
-  title = convertFirstLetterIntoUppercase(title)
-  headerTitle = convertFirstLetterIntoUppercase(headerTitle)
-
-  // '' Handle case where dailySummary might be undefined (e.g., in test mode)
-  logger.info(`🔍 forecastNum array: ${JSON.stringify(forecastNum)}`)
-
-  let { airQuality } = airQualityValues(forecastNum, lang)
-
-  // '' Debug: Log original airQuality BEFORE any mocking
-  logger.info(
-    `🔍 Original airQuality BEFORE applyMockLevel: today=${airQuality?.today?.value}, day2=${airQuality?.day2?.value}, day3=${airQuality?.day3?.value}, day4=${airQuality?.day4?.value}, day5=${airQuality?.day5?.value}`
-  )
+  const { title, headerTitle } = prepareLocationTitles(locationDetails)
 
   const highestAQ = Math.max(...forecastNum)
-  const { transformedDailySummary } = locationData[DAILY_SUMMARY_KEY]
-    ? transformKeys(locationData[DAILY_SUMMARY_KEY], lang, highestAQ)
-    : { transformedDailySummary: null }
-
-  // Apply mock level if requested
-  airQuality = applyMockLevel(request, airQuality)
-
-  // '' Debug: Log airQuality AFTER applyMockLevel
-  logger.info(
-    `🔍 Modified airQuality AFTER applyMockLevel: today=${airQuality?.today?.value}, day2=${airQuality?.day2?.value}, day3=${airQuality?.day3?.value}, day4=${airQuality?.day4?.value}, day5=${airQuality?.day5?.value}`
+  const { airQuality, transformedDailySummary } = prepareAirQuality(
+    forecastNum,
+    lang,
+    request,
+    locationData,
+    highestAQ
   )
 
-  // '' Apply mock pollutant bands if requested
   const modifiedMonitoringSites = applyMockPollutants(
     request,
     nearestLocationsRange
   )
 
-  // '' Get forecast warning for high/very high pollution levels
   const forecastWarning = getForecastWarning(airQuality, lang)
 
-  // '' Get searchTerms and locationName from request query for back link context
-  const searchTerms = request?.query?.searchTerms || ''
-  const locationNameFromQuery = request?.query?.locationName || ''
-  const locationNameForTemplate = locationNameFromQuery || headerTitle
+  const { searchTerms, locationNameForTemplate } = extractLocationContext(
+    request,
+    headerTitle
+  )
 
-  logger.info('🔍 DEBUG - Location view data:', {
-    searchTerms,
-    locationNameFromQuery,
-    headerTitle,
-    locationNameForTemplate,
-    locationId
-  })
-
-  // '' Process air quality messages using helper
   const processedAirQualityData = processAirQualityMessages(
     airQualityData,
     locationId,

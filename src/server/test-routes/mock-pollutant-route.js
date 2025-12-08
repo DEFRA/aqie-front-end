@@ -175,6 +175,42 @@ const getCustomPollutantsStyles = () => {
   `
 }
 
+// Helper to generate pollutant form fields
+const generatePollutantFormFields = (validPollutants, pollutantBands) => {
+  return validPollutants
+    .map(
+      (pollutant) => `
+        <div class="form-group">
+            <label for="${pollutant}">${pollutant}:</label>
+            <select name="${pollutant}" id="${pollutant}">
+                <option value="low" ${pollutantBands[pollutant] === 'low' ? 'selected' : ''}>Low</option>
+                <option value="moderate" ${pollutantBands[pollutant] === 'moderate' ? 'selected' : ''}>Moderate</option>
+                <option value="high" ${pollutantBands[pollutant] === 'high' ? 'selected' : ''}>High</option>
+                <option value="very-high" ${pollutantBands[pollutant] === 'very-high' ? 'selected' : ''}>Very High</option>
+            </select>
+        </div>
+    `
+    )
+    .join('')
+}
+
+// Helper to generate custom pollutant table rows
+const generateCustomPollutantTableRows = (mockPollutants) => {
+  return Object.entries(mockPollutants)
+    .map(([type, data]) => {
+      const bandClass = data.band.toLowerCase().replaceAll(/\s+/g, '-')
+      return `
+            <tr>
+                <td><strong>${type}</strong></td>
+                <td>${data.value}</td>
+                <td><span class="daqi-tag daqi-tag--${bandClass}">${data.band}</span></td>
+                <td>${data.daqi}</td>
+            </tr>
+        `
+    })
+    .join('')
+}
+
 // ''  Helper function to generate custom pollutants HTML
 const generateCustomPollutantsHTML = (
   validPollutants,
@@ -196,21 +232,7 @@ const generateCustomPollutantsHTML = (
     
     <h2>Select Individual Pollutant Bands</h2>
     <form method="GET" action="${PATH_TEST_POLLUTANTS_CUSTOM}">
-        ${validPollutants
-          .map(
-            (pollutant) => `
-            <div class="form-group">
-                <label for="${pollutant}">${pollutant}:</label>
-                <select name="${pollutant}" id="${pollutant}">
-                    <option value="low" ${pollutantBands[pollutant] === 'low' ? 'selected' : ''}>Low</option>
-                    <option value="moderate" ${pollutantBands[pollutant] === 'moderate' ? 'selected' : ''}>Moderate</option>
-                    <option value="high" ${pollutantBands[pollutant] === 'high' ? 'selected' : ''}>High</option>
-                    <option value="very-high" ${pollutantBands[pollutant] === 'very-high' ? 'selected' : ''}>Very High</option>
-                </select>
-            </div>
-        `
-          )
-          .join('')}
+        ${generatePollutantFormFields(validPollutants, pollutantBands)}
         <button type="submit">Apply</button>
     </form>
 
@@ -225,21 +247,7 @@ const generateCustomPollutantsHTML = (
             </tr>
         </thead>
         <tbody>
-            ${Object.entries(mockPollutants)
-              .map(([type, data]) => {
-                const bandClass = data.band
-                  .toLowerCase()
-                  .replaceAll(/\s+/g, '-')
-                return `
-                    <tr>
-                        <td><strong>${type}</strong></td>
-                        <td>${data.value}</td>
-                        <td><span class="daqi-tag daqi-tag--${bandClass}">${data.band}</span></td>
-                        <td>${data.daqi}</td>
-                    </tr>
-                `
-              })
-              .join('')}
+            ${generateCustomPollutantTableRows(mockPollutants)}
         </tbody>
     </table>
 

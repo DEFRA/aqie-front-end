@@ -259,6 +259,29 @@ function extractDailySummary(getForecasts) {
   return getDailySummary
 }
 
+// Helper to build OAuth options for NI locations
+async function buildOAuthForNI(locationType, deps, request) {
+  if (locationType !== LOCATION_TYPE_NI) {
+    return null
+  }
+  const niOptions = await buildNIOptionsOAuth({
+    request,
+    isMockEnabled: deps.isMockEnabled,
+    refreshOAuthTokenFn: deps.refreshOAuthToken
+  })
+  return niOptions.optionsOAuth
+}
+
+// Helper to fetch and extract forecasts
+async function fetchAndExtractForecasts(deps, diRequest, diOverrides) {
+  const getForecasts = await deps.fetchForecasts({
+    ...diOverrides,
+    request: diRequest
+  })
+  const getDailySummary = extractDailySummary(getForecasts)
+  return { getForecasts, getDailySummary }
+}
+
 /**
  * ''  Fetch air quality data for a location
  */
@@ -273,10 +296,8 @@ async function fetchData(
     )
   }
 
-  // ''  Simple DI with defaults
   const deps = setupDependencies(diOverrides)
 
-  // Input validation
   const validationError = deps.validateParams({ locationType, userLocation }, [
     'locationType',
     'userLocation'
@@ -285,26 +306,15 @@ async function fetchData(
     return validationError
   }
 
-  // ''  Build OAuth options for NI if needed
-  let optionsOAuth
-  if (locationType === LOCATION_TYPE_NI) {
-    const niOptions = await buildNIOptionsOAuth({
-      request,
-      isMockEnabled: deps.isMockEnabled,
-      refreshOAuthTokenFn: deps.refreshOAuthToken
-    })
-    optionsOAuth = niOptions.optionsOAuth
-  }
-
-  // ''  Fetch forecasts data and extract daily summary
   const diRequest = diOverrides?.request ?? request
-  const getForecasts = await deps.fetchForecasts({
-    ...diOverrides,
-    request: diRequest
-  })
-  const getDailySummary = extractDailySummary(getForecasts)
 
-  // ''  Test mode handling
+  const optionsOAuth = await buildOAuthForNI(locationType, deps, request)
+  const { getForecasts, getDailySummary } = await fetchAndExtractForecasts(
+    deps,
+    diRequest,
+    diOverrides
+  )
+
   if (deps.isTestMode()) {
     return handleTestModeFetchData({
       locationType,
@@ -322,7 +332,6 @@ async function fetchData(
     })
   }
 
-  // ''  Handle UK locations
   if (locationType === LOCATION_TYPE_UK) {
     const osPlacesResult = await handleUKLocation(
       userLocation,

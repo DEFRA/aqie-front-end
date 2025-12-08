@@ -91,7 +91,8 @@ describe('util-helpers - buildNIOptionsOAuth', () => {
   })
   it('should return options with OAuth token when mock is disabled', async () => {
     mockRequest.yar.get.mockReturnValue(null)
-    const mockRefreshOAuthToken = vi.fn().mockResolvedValue('oauth-token-123')
+    const testToken = 'oauth-token-123' // '' Test token - not a real credential
+    const mockRefreshOAuthToken = vi.fn().mockResolvedValue(testToken)
 
     const result = await buildNIOptionsOAuth({
       request: mockRequest,
@@ -102,11 +103,11 @@ describe('util-helpers - buildNIOptionsOAuth', () => {
     expect(result.optionsOAuth).toEqual({
       method: 'GET',
       headers: {
-        Authorization: 'Bearer oauth-token-123',
+        Authorization: `Bearer ${testToken}`,
         'Content-Type': 'application/json'
       }
     })
-    expect(result.accessToken).toBe('oauth-token-123')
+    expect(result.accessToken).toBe(testToken)
   })
 
   it('should use saved access token if available', async () => {
