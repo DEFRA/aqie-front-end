@@ -1,6 +1,6 @@
 import { config } from '../../../config/index.js'
 import { STATUS_BAD_REQUEST } from '../../data/constants.js'
-import {
+export {
   isValidFullPostcodeUK,
   isValidPartialPostcodeUK
 } from './convert-string.js'
@@ -155,7 +155,5 @@ export {
   validateParams,
   fetchApi,
   getToken,
-  isValidFullPostcodeUK,
-  isValidPartialPostcodeUK,
   isMockEnabled
 }

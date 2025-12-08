@@ -18,32 +18,32 @@ import { addToSentenceCase } from './filters/format-sentence.js'
 
 const logger = createLogger('nunjucks')
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
+const currentDir = dirname(fileURLToPath(import.meta.url))
 const nunjucksEnvironment = nunjucks.configure(
   [
     'node_modules/govuk-frontend/dist/',
-    path.resolve(__dirname, '../../node_modules/govuk-frontend/dist/'),
-    path.resolve(__dirname, '../../server/common/templates'),
-    path.resolve(__dirname, '../../server/common/components'),
-    path.resolve(__dirname, '../../server/common/components/footer'),
-    path.resolve(__dirname, '../../server/common/templates/partials'),
-    path.resolve(__dirname, '../../server/common/templates/macros'),
-    path.resolve(__dirname, '../../server/home/partials'),
-    path.resolve(__dirname, '../../server/home'),
-    path.resolve(__dirname, '../../server/check-local-air-quality/partials'),
-    path.resolve(__dirname, '../../server/common/templates/partials'),
-    path.resolve(__dirname, '../../server/common/templates/partials/daqi'),
-    path.resolve(__dirname, '../../server/common/templates/macros/attributes'),
-    path.resolve(__dirname, '../../server/common/templates/macros/logo'),
-    path.resolve(__dirname, '../../server/cookies/partials'),
-    path.resolve(__dirname, '../../server/accessibility/partials'),
+    path.resolve(currentDir, '../../node_modules/govuk-frontend/dist/'),
+    path.resolve(currentDir, '../../server/common/templates'),
+    path.resolve(currentDir, '../../server/common/components'),
+    path.resolve(currentDir, '../../server/common/components/footer'),
+    path.resolve(currentDir, '../../server/common/templates/partials'),
+    path.resolve(currentDir, '../../server/common/templates/macros'),
+    path.resolve(currentDir, '../../server/home/partials'),
+    path.resolve(currentDir, '../../server/home'),
+    path.resolve(currentDir, '../../server/check-local-air-quality/partials'),
+    path.resolve(currentDir, '../../server/common/templates/partials'),
+    path.resolve(currentDir, '../../server/common/templates/partials/daqi'),
+    path.resolve(currentDir, '../../server/common/templates/macros/attributes'),
+    path.resolve(currentDir, '../../server/common/templates/macros/logo'),
+    path.resolve(currentDir, '../../server/cookies/partials'),
+    path.resolve(currentDir, '../../server/accessibility/partials'),
     path.resolve(
-      __dirname,
+      currentDir,
       '../../server/common/templates/partials/pollutants'
     ),
-    path.resolve(__dirname, '../../server/error/partials'),
+    path.resolve(currentDir, '../../server/error/partials'),
     path.resolve(
-      __dirname,
+      currentDir,
       '../../node_modules/govuk-frontend/dist/govuk/components/cookie-banner/'
     )
   ],
@@ -71,20 +71,20 @@ export const nunjucksConfig = {
     compileOptions: {
       environment: nunjucksEnvironment
     },
-    relativeTo: path.resolve(__dirname, '../..'),
+    relativeTo: path.resolve(currentDir, '../..'),
     path: 'server',
     isCached: config.get('isProduction'),
     context
   }
 }
 
-Object.entries(globals).forEach(([name, global]) => {
+for (const [name, global] of Object.entries(globals)) {
   nunjucksEnvironment.addGlobal(name, global)
-})
+}
 
-Object.entries(filters).forEach(([name, filter]) => {
+for (const [name, filter] of Object.entries(filters)) {
   nunjucksEnvironment.addFilter(name, filter)
-})
+}
 
 nunjucksEnvironment.addFilter('minusOneHour', function (date) {
   const newDate = new Date(date)
@@ -93,7 +93,7 @@ nunjucksEnvironment.addFilter('minusOneHour', function (date) {
 })
 
 nunjucksEnvironment.addFilter('date', function (date, _format) {
-  if (!date || isNaN(new Date(date).getTime())) {
+  if (!date || Number.isNaN(new Date(date).getTime())) {
     return 'Invalid date'
   }
   const options = { year: 'numeric', month: '2-digit', day: '2-digit' }

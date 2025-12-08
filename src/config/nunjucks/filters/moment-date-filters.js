@@ -24,13 +24,13 @@ function addMomentFilters(env) {
   try {
     env.addFilter('govukDate', function (dateString) {
       if (dateString === CALENDAR_STRING.NOW) {
-        return moment.tz(EUROPE_LONDON)
+        return moment.tz(EUROPE_LONDON).format(CALENDAR_STRING.DD_MMMM_YYYY)
       }
       return moment.tz(EUROPE_LONDON).format(CALENDAR_STRING.DD_MMMM_YYYY)
     })
     env.addFilter('govukDateHour', function (dateString) {
       if (dateString === CALENDAR_STRING.NOW) {
-        return moment.tz(EUROPE_LONDON)
+        return moment.tz(EUROPE_LONDON).format('ha, DD, MMMM, YYYY')
       }
       return moment(dateString).format('ha, DD, MMMM, YYYY')
     })
@@ -46,6 +46,7 @@ function addMomentFilters(env) {
       // Format using the custom formatter for lowercase 'am/pm'
       return formatCalendarWithLowercase(momentDate)
     })
+    return env
   } catch (error) {
     return error
   }

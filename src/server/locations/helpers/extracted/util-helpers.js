@@ -1,10 +1,4 @@
 import { getOSPlaces as getOSPlacesHelper } from '../get-os-places.js'
-import {
-  isValidFullPostcodeUK,
-  isValidPartialPostcodeUK,
-  isValidFullPostcodeNI,
-  isValidPartialPostcodeNI
-} from '../convert-string.js'
 import { getNIPlaces } from '../get-ni-places.js'
 import { handleUKLocationDataTestMode } from './test-mode-helpers.js'
 import { buildAndCheckUKApiUrl } from './api-utils.js'
@@ -12,6 +6,12 @@ import { catchFetchError } from '../../../common/helpers/catch-fetch-error.js'
 import { createLogger } from '../../../common/helpers/logging/logger.js'
 import { fetchOAuthToken } from '../../../common/helpers/fetch-oauth-token.js'
 import { STATUS_BAD_REQUEST } from '../../../data/constants.js'
+export {
+  isValidFullPostcodeUK,
+  isValidPartialPostcodeUK,
+  isValidFullPostcodeNI,
+  isValidPartialPostcodeNI
+} from '../convert-string.js'
 
 // Helper to detect test mode for DI and unit tests
 function isTestMode() {
@@ -230,9 +230,5 @@ export {
   buildUKLocationFilters,
   formatNorthernIrelandPostcode,
   formatUKApiResponse,
-  isValidFullPostcodeUK,
-  isValidPartialPostcodeUK,
-  isValidFullPostcodeNI,
-  isValidPartialPostcodeNI,
   combineUKSearchTerms
 }

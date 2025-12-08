@@ -1,5 +1,5 @@
 import { searchLocationController } from './controller.js'
-import { EventEmitter } from 'events'
+import { EventEmitter } from 'node:events'
 
 // Increase the maximum number of listeners for the process object
 EventEmitter.defaultMaxListeners = 20

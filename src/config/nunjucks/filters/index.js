@@ -1,23 +1,11 @@
-import { formatDate } from './format-date.js'
-import { formatCurrency } from './format-currency.js'
-import {
+export { formatDate } from './format-date.js'
+export { formatCurrency } from './format-currency.js'
+export {
   addMomentFilters,
   addDaysToTodayAbrev,
   addDaysToTodayAbrevWelsh,
   addDaysToTodayFull,
   addDaysToTodayFullWelsh
 } from './moment-date-filters.js'
-import { addToSentenceCase } from './format-sentence.js'
-import { normalizeBandClass } from './normalize-band-class.js'
-
-export {
-  formatDate,
-  formatCurrency,
-  addMomentFilters,
-  addDaysToTodayAbrev,
-  addDaysToTodayAbrevWelsh,
-  addDaysToTodayFull,
-  addDaysToTodayFullWelsh,
-  addToSentenceCase,
-  normalizeBandClass
-}
+export { addToSentenceCase } from './format-sentence.js'
+export { normalizeBandClass } from './normalize-band-class.js'

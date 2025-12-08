@@ -1,7 +1,5 @@
 // ''  Data fetching functions for air quality locations
 import {
-  buildUKTestModeResult,
-  buildNITestModeResult,
   handleTestModeFetchData,
   fetchForecastsTestMode,
   fetchMeasurementsTestMode
@@ -14,7 +12,6 @@ import {
 } from '../../data/constants.js'
 import {
   callForecastsApi,
-  callAndHandleForecastsResponse,
   selectMeasurementsUrlAndOptions,
   callAndHandleMeasurementsResponse
 } from './extracted/api-utils.js'
@@ -22,10 +19,9 @@ import {
 import { config } from '../../../config/index.js'
 import { catchFetchError } from '../../common/helpers/catch-fetch-error.js'
 import {
-  handleUnsupportedLocationType,
-  handleUKLocationData,
-  handleNILocationData,
-  refreshOAuthToken,
+  handleUKLocationData as localHandleUKLocationData,
+  handleNILocationData as localHandleNILocationData,
+  refreshOAuthToken as localRefreshOAuthToken,
   buildNIOptionsOAuth
 } from './extracted/util-helpers.js'
 import {
@@ -42,6 +38,17 @@ import {
 } from './location-helpers.js'
 
 import { createLogger } from '../../common/helpers/logging/logger.js'
+export {
+  buildUKTestModeResult,
+  buildNITestModeResult
+} from './extracted/test-mode-helpers.js'
+export { callAndHandleForecastsResponse } from './extracted/api-utils.js'
+export {
+  handleUnsupportedLocationType,
+  handleUKLocationData,
+  handleNILocationData,
+  refreshOAuthToken
+} from './extracted/util-helpers.js'
 const logger = createLogger()
 
 /**
@@ -153,14 +160,14 @@ export const fetchMeasurements = async (
 function setupDependencies(diOverrides) {
   const {
     fetchForecasts: diFetchForecasts = fetchForecasts,
-    handleUKLocationData: diHandleUKLocationData = handleUKLocationData,
-    handleNILocationData: diHandleNILocationData = handleNILocationData,
+    handleUKLocationData: diHandleUKLocationData = localHandleUKLocationData,
+    handleNILocationData: diHandleNILocationData = localHandleNILocationData,
     isTestMode: diIsTestMode = isTestMode,
     validateParams: diValidateParams = validateParams,
     logger: diLogger = logger,
     errorResponse: diErrorResponse = errorResponse,
     isMockEnabled: diIsMockEnabled = isMockEnabled,
-    refreshOAuthToken: diRefreshOAuthToken = refreshOAuthToken,
+    refreshOAuthToken: diRefreshOAuthToken = localRefreshOAuthToken,
     buildUKLocationFilters: diBuildUKLocationFilters = buildUKLocationFilters,
     combineUKSearchTerms: diCombineUKSearchTerms = combineUKSearchTerms,
     isValidFullPostcodeUK: diIsValidFullPostcodeUK = isValidFullPostcodeUK,
@@ -364,14 +371,4 @@ async function fetchData(
   )
 }
 
-export {
-  fetchData,
-  handleUKLocationData,
-  handleNILocationData,
-  fetchForecasts,
-  refreshOAuthToken,
-  buildUKTestModeResult,
-  buildNITestModeResult,
-  handleUnsupportedLocationType,
-  callAndHandleForecastsResponse
-}
+export { fetchData, fetchForecasts }

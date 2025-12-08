@@ -1,6 +1,6 @@
 import { config } from '../config'
 import { HttpsProxyAgent } from 'https-proxy-agent'
-import { Url } from 'url'
+import { Url } from 'node:url'
 import { createLogger } from '../server/common/helpers/logging/logger.js' // Updated import to use relative path
 
 const logger = createLogger()
@@ -8,9 +8,7 @@ const logger = createLogger()
 const proxyAgent = () => {
   const httpsProxy = config.get('httpsProxy')
 
-  if (!httpsProxy) {
-    return null
-  } else {
+  if (httpsProxy) {
     try {
       const proxyUrl = new Url(httpsProxy)
       return {
@@ -22,6 +20,8 @@ const proxyAgent = () => {
       return null
     }
   }
+
+  return null
 }
 
 export { proxyAgent }
