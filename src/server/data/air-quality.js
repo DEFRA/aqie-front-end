@@ -77,29 +77,25 @@ export function getCommonMessage(band) {
   return commonMessages[band] || commonMessages.unknown
 }
 
+function getBandInfo(value) {
+  if (value >= LOW_MIN && value <= LOW_MAX) {
+    return { band: 'low', readableBand: 'low' }
+  }
+  if (value >= MODERATE_MIN && value <= MODERATE_MAX) {
+    return { band: 'moderate', readableBand: 'moderate' }
+  }
+  if (value >= HIGH_MIN && value <= HIGH_MAX) {
+    return { band: 'high', readableBand: 'high' }
+  }
+  if (value === 10) {
+    return { band: 'veryHigh', readableBand: 'very high' }
+  }
+  return { band: 'unknown', readableBand: 'unknown' }
+}
+
 export function getAirQuality(aqValue = '4') {
   const value = aqValue
-
-  const lookup = {
-    1: { band: 'low', readableBand: 'low' },
-    2: { band: 'low', readableBand: 'low' },
-    3: { band: 'low', readableBand: 'low' },
-    4: { band: 'moderate', readableBand: 'moderate' },
-    5: { band: 'moderate', readableBand: 'moderate' },
-    6: { band: 'moderate', readableBand: 'moderate' },
-    7: { band: 'high', readableBand: 'high' },
-    8: { band: 'high', readableBand: 'high' },
-    9: { band: 'high', readableBand: 'high' },
-    10: { band: 'veryHigh', readableBand: 'very high' }
-  }
-
-  const bandInfo = lookup[value] || {
-    band: 'unknown',
-    readableBand: 'unknown'
-  }
-  const band = bandInfo.band
-  const readableBand = bandInfo.readableBand
-
+  const { band, readableBand } = getBandInfo(value)
   const message = getCommonMessage(band)
 
   return {
