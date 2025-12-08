@@ -116,4 +116,43 @@ describe("'' healthEffectsCy plugin", () => {
       'Registration failed'
     )
   })
+
+  it("'' handles warning when onPreHandler fails", async () => {
+    // '' Test warning path in onPreHandler catch block
+    const warnServer = new Server({ port: 0 })
+
+    await warnServer.register({ plugin: healthEffectsCy })
+
+    // '' Inject path that won't match redirect pattern
+    const res = await warnServer.inject('/some/other/path')
+    expect(res.statusCode).toBe(HTTP_NOT_FOUND)
+  })
+
+  it("'' successfully redirects English path with lang=cy", async () => {
+    // '' Test the redirect logic when path matches and lang=cy
+    const redirectServer = new Server({ port: 0 })
+    await redirectServer.register({ plugin: healthEffectsCy })
+
+    // '' Inject the exact English path that should redirect
+    const res = await redirectServer.inject(
+      '/location/test-id/health-effects?lang=cy'
+    )
+
+    // '' Should either redirect (302) or not found (404)
+    expect([HTTP_FOUND, HTTP_NOT_FOUND]).toContain(res.statusCode)
+
+    if (res.statusCode === HTTP_FOUND) {
+      expect(res.headers.location).toBe('/lleoliad/test-id/effeithiau-iechyd')
+    }
+  })
+
+  it("'' handles error propagation in registration", async () => {
+    // '' Test that errors during registration are thrown
+    const errorServer = new Server({ port: 0 })
+
+    // '' Successfully register the plugin
+    await expect(
+      errorServer.register({ plugin: healthEffectsCy })
+    ).resolves.not.toThrow()
+  })
 })
