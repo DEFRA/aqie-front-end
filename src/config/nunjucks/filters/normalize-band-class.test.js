@@ -79,5 +79,15 @@ describe('normalizeBandClass', () => {
     it('should handle unknown band names by converting to lowercase with hyphens', () => {
       expect(normalizeBandClass('Unknown Band')).toBe('unknown-band')
     })
+
+    it('should handle uppercase English band names', () => {
+      expect(normalizeBandClass('LOW')).toBe('low')
+      expect(normalizeBandClass('MODERATE')).toBe('moderate')
+      expect(normalizeBandClass('HIGH')).toBe('high')
+    })
+
+    it('should handle mixed case band names with multiple spaces', () => {
+      expect(normalizeBandClass('Very  High')).toBe('very--high')
+    })
   })
 })

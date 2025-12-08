@@ -4,7 +4,18 @@ import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 import { createMockH } from '../../locations/helpers/error-input-and-redirect-helpers.test.js'
 import { vi } from 'vitest'
 
-describe('Cookies Handler', () => {
+const COOKIES_PATH_CY = '/briwsion/cy'
+const VIEW_RENDERED = 'view rendered'
+const VIEW_NAME = 'cookies/index'
+
+// Mock at top level
+vi.mock('../../common/helpers/get-site-url.js', () => ({
+  getAirQualitySiteUrl: vi.fn((request) => {
+    return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+  })
+}))
+
+describe('Cookies Handler - Redirects', () => {
   let mockRequest
   const mockContent = welsh
 
@@ -13,11 +24,6 @@ describe('Cookies Handler', () => {
       query: {},
       path: ''
     }
-    vi.mock('../../common/helpers/get-site-url.js', () => ({
-      getAirQualitySiteUrl: vi.fn((request) => {
-        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
-      })
-    }))
   })
 
   it('should redirect to the English version if the language is "en"', () => {
@@ -37,6 +43,18 @@ describe('Cookies Handler', () => {
     expect(result.takeover()).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith('/cookies?lang=en')
   })
+})
+
+describe('Cookies Handler - Welsh Rendering', () => {
+  let mockRequest
+  const mockContent = welsh
+
+  beforeEach(() => {
+    mockRequest = {
+      query: {},
+      path: ''
+    }
+  })
 
   it('should render the cookies page with the necessary data', () => {
     const mockH = createMockH()
@@ -45,15 +63,15 @@ describe('Cookies Handler', () => {
       query: {
         lang: 'cy'
       },
-      path: '/briwsion/cy'
+      path: COOKIES_PATH_CY
     }
     const expectedUrl =
       'https://check-air-quality.service.gov.uk/briwsion/cy?lang=cy'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = cookiesHandler(mockRequest, mockH, mockContent)
-    expect(result).toBe('view rendered')
-    expect(mockH.view).toHaveBeenCalledWith('cookies/index', {
+    expect(result).toBe(VIEW_RENDERED)
+    expect(mockH.view).toHaveBeenCalledWith(VIEW_NAME, {
       pageTitle: mockContent.footer.cookies.pageTitle,
       description: mockContent.footer.cookies.description,
       title: mockContent.footer.cookies.title,
@@ -69,8 +87,20 @@ describe('Cookies Handler', () => {
       serviceName: mockContent.multipleLocations.serviceName,
       cookieBanner: mockContent.cookieBanner,
       lang: mockRequest.query.lang,
-      currentPath: '/briwsion/cy'
+      currentPath: COOKIES_PATH_CY
     })
+  })
+})
+
+describe('Cookies Handler - Default Language', () => {
+  let mockRequest
+  const mockContent = welsh
+
+  beforeEach(() => {
+    mockRequest = {
+      query: {},
+      path: ''
+    }
   })
 
   it('should default to Welsh if language is not "cy" or "en" and path is "/preifatrwydd/cy"', () => {
@@ -80,15 +110,15 @@ describe('Cookies Handler', () => {
       query: {
         lang: 'fr'
       },
-      path: '/briwsion/cy'
+      path: COOKIES_PATH_CY
     }
     const expectedUrl =
       'https://check-air-quality.service.gov.uk/briwsion/cy?lang=fr'
     const actualUrl = getAirQualitySiteUrl(mockRequest)
     expect(actualUrl).toBe(expectedUrl)
     const result = cookiesController.handler(mockRequest, mockH, mockContent)
-    expect(result).toBe('view rendered')
-    expect(mockH.view).toHaveBeenCalledWith('cookies/index', {
+    expect(result).toBe(VIEW_RENDERED)
+    expect(mockH.view).toHaveBeenCalledWith(VIEW_NAME, {
       pageTitle: mockContent.footer.cookies.pageTitle,
       description: mockContent.footer.cookies.description,
       metaSiteUrl: actualUrl,
@@ -104,7 +134,7 @@ describe('Cookies Handler', () => {
       serviceName: mockContent.multipleLocations.serviceName,
       cookieBanner: mockContent.cookieBanner,
       lang: 'cy',
-      currentPath: '/briwsion/cy'
+      currentPath: COOKIES_PATH_CY
     })
   })
 
@@ -113,12 +143,12 @@ describe('Cookies Handler', () => {
 
     mockRequest = {
       query: {},
-      path: '/briwsion/cy'
+      path: COOKIES_PATH_CY
     }
     const result = cookiesHandler(mockRequest, mockH, mockContent)
-    expect(result).toBe('view rendered')
+    expect(result).toBe(VIEW_RENDERED)
     expect(mockH.view).toHaveBeenCalledWith(
-      'cookies/index',
+      VIEW_NAME,
       expect.objectContaining({
         lang: 'cy'
       })
