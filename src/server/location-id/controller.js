@@ -49,47 +49,23 @@ const logger = createLogger()
 const DATE_FORMAT = 'DD MMMM YYYY'
 const DAILY_SUMMARY_KEY = 'dailySummary'
 
-/**
- * Check if mock level is requested and override air quality data
- * Non-intrusive: only applies mock if explicitly enabled, otherwise returns original data
- */
 function applyMockLevel(request, airQuality) {
   const mocksDisabled = config.get('disableTestMocks')
   if (mocksDisabled) {
-    logger.info(`🚫 Mock DAQI levels disabled (disableTestMocks=true)`)
     return airQuality
   }
-
   const mockLevel = request.yar.get('mockLevel')
   const mockDay = request.yar.get('mockDay')
-
-  logger.info(
-    `🔍 applyMockLevel called - mockLevel from session:`,
-    mockLevel,
-    `(type: ${typeof mockLevel}), mockDay:`,
-    mockDay
-  )
-
   if (mockLevel === undefined || mockLevel === null) {
-    logger.info(`🔍 Returning original airQuality (no mock)`)
     return airQuality
   }
-
   const level = Number.parseInt(mockLevel, 10)
-  logger.info(`🔍 Parsed level:`, level, `isNaN:`, Number.isNaN(level))
-
   if (Number.isNaN(level) || level < 0 || level > 10) {
     logger.warn(`Invalid mock level: ${mockLevel}. Must be 0-10.`)
     return airQuality
   }
-
-  logger.info(`🎨 Mock DAQI Level ${level} applied from session`)
   return applyMockToDay(airQuality, level, mockDay)
 }
-
-/**
- * Check if mock pollutant band is requested and override pollutant data in monitoring sites
- */
 function applyMockPollutants(request, monitoringSites) {
   return applyMockPollutantsHelper(
     request,
@@ -99,12 +75,12 @@ function applyMockPollutants(request, monitoringSites) {
   )
 }
 
-// Helper to handle redirection for Welsh language
 function handleWelshRedirect(query, locationId, h) {
   if (query?.lang && query?.lang === LANG_CY && !query?.searchTerms) {
-    const mocksDisabled = config.get('disableTestMocks')
-    const mockParams = buildMockQueryParams({ query }, mocksDisabled)
-
+    const mockParams = buildMockQueryParams(
+      { query },
+      config.get('disableTestMocks')
+    )
     return h
       .redirect(`/lleoliad/${locationId}/?lang=cy${mockParams}`)
       .code(REDIRECT_STATUS_CODE)
@@ -112,7 +88,6 @@ function handleWelshRedirect(query, locationId, h) {
   return null
 }
 
-// Helper to handle redirection if search terms are missing
 function handleSearchTermsRedirect(
   headers,
   searchTermsSaved,
@@ -132,11 +107,10 @@ function handleSearchTermsRedirect(
     const { searchTerms, secondSearchTerm, searchTermsLocationType } =
       getSearchTermsFromUrl(currentUrl)
     request.yar.clear('locationData')
-    logger.info('Redirecting to location search')
-
-    const mocksDisabled = config.get('disableTestMocks')
-    const mockParams = buildMockQueryParams(request, mocksDisabled)
-
+    const mockParams = buildMockQueryParams(
+      request,
+      config.get('disableTestMocks')
+    )
     return h
       .redirect(
         `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}${mockParams}`
@@ -147,15 +121,14 @@ function handleSearchTermsRedirect(
   return null
 }
 
-// Helper to prepare location titles
 function prepareLocationTitles(locationDetails) {
-  let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
-  title = convertFirstLetterIntoUppercase(title)
-  headerTitle = convertFirstLetterIntoUppercase(headerTitle)
-  return { title, headerTitle }
+  const { title, headerTitle } = gazetteerEntryFilter(locationDetails)
+  return {
+    title: convertFirstLetterIntoUppercase(title),
+    headerTitle: convertFirstLetterIntoUppercase(headerTitle)
+  }
 }
 
-// Helper to prepare air quality with mocking
 function prepareAirQuality(
   forecastNum,
   lang,
@@ -163,40 +136,17 @@ function prepareAirQuality(
   locationData,
   highestAQ
 ) {
-  logger.info(`🔍 forecastNum array: ${JSON.stringify(forecastNum)}`)
-
   let { airQuality } = airQualityValues(forecastNum, lang)
-
-  logger.info(
-    `🔍 Original airQuality BEFORE applyMockLevel: today=${airQuality?.today?.value}, day2=${airQuality?.day2?.value}, day3=${airQuality?.day3?.value}, day4=${airQuality?.day4?.value}, day5=${airQuality?.day5?.value}`
-  )
-
   const { transformedDailySummary } = locationData[DAILY_SUMMARY_KEY]
     ? transformKeys(locationData[DAILY_SUMMARY_KEY], lang, highestAQ)
     : { transformedDailySummary: null }
-
   airQuality = applyMockLevel(request, airQuality)
-
-  logger.info(
-    `🔍 Modified airQuality AFTER applyMockLevel: today=${airQuality?.today?.value}, day2=${airQuality?.day2?.value}, day3=${airQuality?.day3?.value}, day4=${airQuality?.day4?.value}, day5=${airQuality?.day5?.value}`
-  )
-
   return { airQuality, transformedDailySummary }
 }
 
-// Helper to extract location context from request
 function extractLocationContext(request, headerTitle) {
   const searchTerms = request?.query?.searchTerms || ''
-  const locationNameFromQuery = request?.query?.locationName || ''
-  const locationNameForTemplate = locationNameFromQuery || headerTitle
-
-  logger.info('🔍 DEBUG - Location view data:', {
-    searchTerms,
-    locationNameFromQuery,
-    headerTitle,
-    locationNameForTemplate
-  })
-
+  const locationNameForTemplate = request?.query?.locationName || headerTitle
   return { searchTerms, locationNameForTemplate }
 }
 
@@ -234,7 +184,6 @@ function buildLocationViewData({
     request,
     headerTitle
   )
-
   const processedAirQualityData = processAirQualityMessages(
     airQualityData,
     locationId,
@@ -276,7 +225,6 @@ function buildLocationViewData({
   }
 }
 
-// Helper to build view data for not found location
 function buildNotFoundViewData(lang) {
   return {
     paragraph: english.notFoundLocation.paragraphs,
