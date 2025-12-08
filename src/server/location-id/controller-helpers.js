@@ -1,6 +1,7 @@
 import { createLogger } from '../common/helpers/logging/logger.js'
 import { LANG_CY, LANG_EN } from '../data/constants.js'
 import { config } from '../../config/index.js'
+import { getDetailedInfo } from '../data/en/air-quality.js'
 
 const logger = createLogger()
 
@@ -231,6 +232,30 @@ export function validateMockPollutantBand(mockPollutantBand) {
 }
 
 /**
+ * Clone air quality day data safely
+ * @param {object} dayData - Day data to clone
+ * @returns {object} Cloned or original data
+ */
+function cloneDayData(dayData) {
+  return dayData ? { ...dayData } : dayData
+}
+
+/**
+ * Create base air quality structure from existing data
+ * @param {object} airQuality - Air quality data
+ * @returns {object} Cloned structure
+ */
+function createBaseAirQuality(airQuality) {
+  return {
+    today: cloneDayData(airQuality?.today),
+    day2: cloneDayData(airQuality?.day2),
+    day3: cloneDayData(airQuality?.day3),
+    day4: cloneDayData(airQuality?.day4),
+    day5: cloneDayData(airQuality?.day5)
+  }
+}
+
+/**
  * Apply mock level to specific day or all days
  * @param {object} airQuality - Air quality data
  * @param {number} level - Mock level value
@@ -238,18 +263,26 @@ export function validateMockPollutantBand(mockPollutantBand) {
  * @returns {object} Modified air quality data
  */
 export function applyMockToDay(airQuality, level, mockDay) {
-  if (mockDay && ['today', 'day2', 'day3', 'day4', 'day5'].includes(mockDay)) {
-    const mockDayData = {
-      today: airQuality?.today || null,
-      day2: airQuality?.day2 || null,
-      day3: airQuality?.day3 || null,
-      day4: airQuality?.day4 || null,
-      day5: airQuality?.day5 || null
-    }
-    mockDayData[mockDay] = { value: level, band: 'moderate' }
-    return mockDayData
-  }
-  return { today: { value: level, band: 'moderate' } }
+  const mockDayData = getDetailedInfo(level)
+  const validDays = ['today', 'day2', 'day3', 'day4', 'day5']
+
+  logger.info(
+    `🔍 applyMockToDay - incoming: today=${airQuality?.today?.value}, day2=${airQuality?.day2?.value}, day3=${airQuality?.day3?.value}, day4=${airQuality?.day4?.value}, day5=${airQuality?.day5?.value}, mockDay=${mockDay}, mockLevel=${level}`
+  )
+
+  const modifiedAirQuality = createBaseAirQuality(airQuality)
+
+  const targetDay = mockDay && validDays.includes(mockDay) ? mockDay : 'today'
+  modifiedAirQuality[targetDay] = mockDayData
+
+  logger.info(
+    `🎯 Applied mock level ${level} to ${targetDay} only (value: ${mockDayData.value}, band: ${mockDayData.band}, readableBand: ${mockDayData.readableBand})`
+  )
+  logger.info(
+    `🔍 applyMockToDay - output: today=${modifiedAirQuality?.today?.value}, day2=${modifiedAirQuality?.day2?.value}, day3=${modifiedAirQuality?.day3?.value}, day4=${modifiedAirQuality?.day4?.value}, day5=${modifiedAirQuality?.day5?.value}`
+  )
+
+  return modifiedAirQuality
 }
 
 /**

@@ -1,4 +1,5 @@
 import { config } from '../../../config/index.js'
+import { STATUS_BAD_REQUEST } from '../../data/constants.js'
 import {
   isValidFullPostcodeUK,
   isValidPartialPostcodeUK
@@ -88,7 +89,6 @@ function formatNIResponse(getNIPlaces) {
 }
 
 // --- General Utility Helpers ---
-const HTTP_STATUS_BAD_REQUEST = 400
 const HTTP_STATUS_INTERNAL_ERROR = 500
 
 function isTestMode() {
@@ -108,7 +108,7 @@ function validateParams(params, requiredKeys = []) {
     if (!params[key]) {
       return errorResponse(
         `Missing required parameter: ${key}`,
-        HTTP_STATUS_BAD_REQUEST
+        STATUS_BAD_REQUEST
       )
     }
   }

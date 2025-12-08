@@ -56,7 +56,10 @@ const actionsReduceExposureCyController = {
     // Get location ID from path parameters and location name from session/query
     const locationId = params.locationId
     const searchTerms = query?.searchTerms || ''
-    const locationName = query?.locationName || ''
+    // Handle locationName as array (when duplicated in query string) or string
+    const locationName = Array.isArray(query?.locationName)
+      ? query.locationName[0]
+      : query?.locationName || ''
 
     if (query?.lang && query?.lang === LANG_EN) {
       const redirectUrl = buildEnglishRedirectUrl(

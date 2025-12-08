@@ -1,3 +1,4 @@
+// ''  Data fetching functions for air quality locations
 import {
   buildUKTestModeResult,
   buildNITestModeResult,
@@ -6,16 +7,20 @@ import {
   fetchMeasurementsTestMode
 } from './extracted/test-mode-helpers.js'
 import {
+  STATUS_BAD_REQUEST,
+  STATUS_OK,
+  LOCATION_TYPE_NI,
+  LOCATION_TYPE_UK
+} from '../../data/constants.js'
+import {
   callForecastsApi,
   callAndHandleForecastsResponse,
   selectMeasurementsUrlAndOptions,
   callAndHandleMeasurementsResponse
 } from './extracted/api-utils.js'
 /* eslint-env node */
-import { setupFetchForecastsDI } from './extracted/di-helpers.js'
 import { config } from '../../../config/index.js'
 import { catchFetchError } from '../../common/helpers/catch-fetch-error.js'
-import { LOCATION_TYPE_NI, LOCATION_TYPE_UK } from '../../data/constants.js'
 import {
   handleUnsupportedLocationType,
   handleUKLocationData,
@@ -39,86 +44,55 @@ import {
 import { createLogger } from '../../common/helpers/logging/logger.js'
 const logger = createLogger()
 
-const fetchForecasts = async (di = {}) => {
-  const merged = { ...setupFetchForecastsDI(di), ...di }
-  const injectedConfig =
-    merged.injectedConfig && typeof merged.injectedConfig.get === 'function'
-      ? merged.injectedConfig
-      : config
-  const injectedLogger =
-    merged.injectedLogger &&
-    typeof merged.injectedLogger.error === 'function' &&
-    typeof merged.injectedLogger.info === 'function'
-      ? merged.injectedLogger
-      : logger
-  const injectedCatchFetchError =
-    typeof merged.injectedCatchFetchError === 'function'
-      ? merged.injectedCatchFetchError
-      : catchFetchError
-  const injectedErrorResponse =
-    typeof merged.injectedErrorResponse === 'function'
-      ? merged.injectedErrorResponse
-      : errorResponse
-  const injectedIsTestMode =
-    typeof merged.injectedIsTestMode === 'function'
-      ? merged.injectedIsTestMode
-      : isTestMode
-  const injectedForecastsApiPath =
-    merged.injectedForecastsApiPath || injectedConfig.get('forecastsApiUrl')
-  const injectedHttpStatusOk = merged.injectedHttpStatusOk || 200
-  // Only define optionsEphemeralProtected here if cdpXApiKey is needed
-  let injectedOptionsEphemeralProtected =
-    merged.injectedOptionsEphemeralProtected
-  if (typeof injectedOptionsEphemeralProtected === 'undefined') {
-    // If cdpXApiKey is required for this fetch, set it up here
-    if (
-      merged.injectedConfig &&
-      typeof merged.injectedConfig.get === 'function'
-    ) {
-      const cdpXApiKey = merged.injectedConfig.get('cdpXApiKey')
-      if (cdpXApiKey) {
-        injectedOptionsEphemeralProtected = {
-          headers: { 'x-api-key': cdpXApiKey }
-        }
-      } else {
-        injectedOptionsEphemeralProtected = {}
-      }
-    } else {
-      injectedOptionsEphemeralProtected = {}
-    }
+/**
+ * ''  Build options with API key headers
+ */
+function buildApiOptions() {
+  const cdpXApiKey = config.get('cdpXApiKey')
+  if (cdpXApiKey) {
+    return { headers: { 'x-api-key': cdpXApiKey } }
   }
-  const request = merged.request
-  const injectedOptions = merged.injectedOptions || {}
-  const testModeResult = fetchForecastsTestMode(
-    injectedIsTestMode,
-    injectedLogger
-  )
+  return {}
+}
+
+/**
+ * ''  Ensure forecast-summary field exists
+ */
+function ensureForecastSummary(forecastData) {
+  if (
+    forecastData &&
+    typeof forecastData === 'object' &&
+    !('forecast-summary' in forecastData)
+  ) {
+    forecastData['forecast-summary'] = { today: null }
+  }
+  return forecastData
+}
+
+const fetchForecasts = async (di = {}) => {
+  // ''  Simple DI with fallbacks
+  const testModeChecker = di.isTestMode || isTestMode
+  const testLogger = di.logger || logger
+
+  const testModeResult = fetchForecastsTestMode(testModeChecker, testLogger)
   if (testModeResult) {
-    if (!testModeResult['forecast-summary']) {
-      testModeResult['forecast-summary'] = { today: null }
-    }
-    return testModeResult
+    return ensureForecastSummary(testModeResult)
   }
 
+  // ''  Call forecasts API
   const forecastsResult = await callForecastsApi({
-    injectedConfig,
-    injectedForecastsApiPath,
-    injectedOptionsEphemeralProtected,
-    injectedOptions,
-    injectedCatchFetchError,
-    injectedHttpStatusOk,
-    injectedLogger,
-    injectedErrorResponse,
-    request
+    config: di.config || config,
+    optionsEphemeralProtected:
+      di.optionsEphemeralProtected || buildApiOptions(),
+    options: di.options || {},
+    catchFetchError: di.catchFetchError || catchFetchError,
+    httpStatusOk: di.HTTP_STATUS_OK || STATUS_OK,
+    logger: testLogger,
+    errorResponse: di.errorResponse || errorResponse,
+    request: di.request
   })
-  if (
-    forecastsResult &&
-    typeof forecastsResult === 'object' &&
-    !('forecast-summary' in forecastsResult)
-  ) {
-    forecastsResult['forecast-summary'] = { today: null }
-  }
-  return forecastsResult
+
+  return ensureForecastSummary(forecastsResult)
 }
 
 export const fetchMeasurements = async (
@@ -127,41 +101,17 @@ export const fetchMeasurements = async (
   useNewRicardoMeasurementsEnabled,
   di = {}
 ) => {
-  // Local fallback for optionsEphemeralProtected
-  let optionsEphemeralProtected = {}
-  // Always ensure x-api-key is present for local requests if available
-  const cdpXApiKey =
-    (di.config &&
-      typeof di.config.get === 'function' &&
-      di.config.get('cdpXApiKey')) ||
-    (typeof config !== 'undefined' && config.get && config.get('cdpXApiKey')) ||
-    (typeof process !== 'undefined' && process.env && process.env.CDP_X_API_KEY)
-  if (cdpXApiKey) {
-    optionsEphemeralProtected = { headers: { 'x-api-key': cdpXApiKey } }
-  }
-  // Dependency injection with fallbacks
-  const injectedLogger = di.logger || logger
-  const injectedConfig = di.config || config
-  const injectedCatchFetchError = di.catchFetchError || catchFetchError
-  const injectedOptionsEphemeralProtected =
-    di.optionsEphemeralProtected || optionsEphemeralProtected
-  const injectedOptions = di.options || {}
-  let injectedNodeEnv = di.nodeEnv
-  if (
-    typeof process !== 'undefined' &&
-    typeof process.env !== 'undefined' &&
-    Object.prototype.hasOwnProperty.call(process.env, 'NODE_ENV')
-  ) {
-    injectedNodeEnv = injectedNodeEnv || process.env.NODE_ENV
-  }
-  const injectedIsTestMode =
+  // ''  Simple DI with fallbacks
+  const diLogger = di.logger || logger
+  const diConfig = di.config || config
+  const diCatchFetchError = di.catchFetchError || catchFetchError
+  const diOptions = di.optionsEphemeralProtected || buildApiOptions()
+  const diExtraOptions = di.options || {}
+  const diIsTestMode =
     typeof di.isTestMode === 'function' ? di.isTestMode : isTestMode
 
   // 1. Test mode logic
-  const testModeResult = fetchMeasurementsTestMode(
-    injectedIsTestMode,
-    injectedLogger
-  )
+  const testModeResult = fetchMeasurementsTestMode(diIsTestMode, diLogger)
   if (testModeResult) {
     return testModeResult
   }
@@ -174,20 +124,17 @@ export const fetchMeasurements = async (
       longitude,
       useNewRicardoMeasurementsEnabled,
       {
-        injectedConfig,
-        injectedLogger,
-        injectedNodeEnv,
-        injectedOptionsEphemeralProtected,
-        injectedOptions,
-        request: di.request // Pass request if present in DI
+        config: diConfig,
+        logger: diLogger,
+        optionsEphemeralProtected: diOptions,
+        options: diExtraOptions,
+        request: di.request
       }
     )
     url = selection.url
     opts = selection.opts
   } catch (err) {
-    injectedLogger.error(
-      `Unexpected error in fetchMeasurements: ${err.message}`
-    )
+    diLogger.error(`Unexpected error in fetchMeasurements: ${err.message}`)
     return []
   }
 
@@ -195,88 +142,180 @@ export const fetchMeasurements = async (
   return callAndHandleMeasurementsResponse(
     url,
     opts,
-    injectedCatchFetchError,
-    injectedLogger
+    diCatchFetchError,
+    diLogger
   )
 }
 
+/**
+ * ''  Extract and set up dependency injection defaults
+ */
+function setupDependencies(diOverrides) {
+  const {
+    fetchForecasts: diFetchForecasts = fetchForecasts,
+    handleUKLocationData: diHandleUKLocationData = handleUKLocationData,
+    handleNILocationData: diHandleNILocationData = handleNILocationData,
+    isTestMode: diIsTestMode = isTestMode,
+    validateParams: diValidateParams = validateParams,
+    logger: diLogger = logger,
+    errorResponse: diErrorResponse = errorResponse,
+    isMockEnabled: diIsMockEnabled = isMockEnabled,
+    refreshOAuthToken: diRefreshOAuthToken = refreshOAuthToken,
+    buildUKLocationFilters: diBuildUKLocationFilters = buildUKLocationFilters,
+    combineUKSearchTerms: diCombineUKSearchTerms = combineUKSearchTerms,
+    isValidFullPostcodeUK: diIsValidFullPostcodeUK = isValidFullPostcodeUK,
+    isValidPartialPostcodeUK:
+      diIsValidPartialPostcodeUK = isValidPartialPostcodeUK,
+    buildUKApiUrl: diBuildUKApiUrl = buildUKApiUrl,
+    shouldCallUKApi: diShouldCallUKApi = shouldCallUKApi,
+    config: diConfig = config
+  } = diOverrides
+
+  return {
+    fetchForecasts: diFetchForecasts,
+    handleUKLocationData: diHandleUKLocationData,
+    handleNILocationData: diHandleNILocationData,
+    isTestMode: diIsTestMode,
+    validateParams: diValidateParams,
+    logger: diLogger,
+    errorResponse: diErrorResponse,
+    isMockEnabled: diIsMockEnabled,
+    refreshOAuthToken: diRefreshOAuthToken,
+    buildUKLocationFilters: diBuildUKLocationFilters,
+    combineUKSearchTerms: diCombineUKSearchTerms,
+    isValidFullPostcodeUK: diIsValidFullPostcodeUK,
+    isValidPartialPostcodeUK: diIsValidPartialPostcodeUK,
+    buildUKApiUrl: diBuildUKApiUrl,
+    shouldCallUKApi: diShouldCallUKApi,
+    config: diConfig
+  }
+}
+
+/**
+ * ''  Handle UK location data fetching
+ */
+async function handleUKLocation(
+  userLocation,
+  searchTerms,
+  secondSearchTerm,
+  di,
+  diRequest
+) {
+  const ukDi = {
+    ...di.overrides,
+    request: diRequest || {},
+    buildUKLocationFilters: di.buildUKLocationFilters,
+    combineUKSearchTerms: di.combineUKSearchTerms,
+    isValidFullPostcodeUK: di.isValidFullPostcodeUK,
+    isValidPartialPostcodeUK: di.isValidPartialPostcodeUK,
+    buildUKApiUrl: di.buildUKApiUrl,
+    shouldCallUKApi: (...args) =>
+      di.shouldCallUKApi(...args.map((arg) => (Array.isArray(arg) ? arg : []))),
+    config: di.config,
+    searchTerms,
+    secondSearchTerm
+  }
+  const osPlacesResult = await di.handleUKLocationData(userLocation, ukDi)
+  return osPlacesResult
+}
+
+/**
+ * ''  Handle NI location data fetching
+ */
+async function handleNILocation(
+  userLocation,
+  searchTerms,
+  secondSearchTerm,
+  optionsOAuth,
+  di,
+  diRequest
+) {
+  const niDi = { ...di.overrides, request: diRequest || {} }
+  const isMock =
+    typeof di.isMockEnabled === 'function'
+      ? di.isMockEnabled()
+      : !!di.isMockEnabled
+  const getNIPlaces = await di.handleNILocationData(
+    userLocation,
+    searchTerms,
+    secondSearchTerm,
+    isMock,
+    optionsOAuth,
+    undefined,
+    diRequest,
+    niDi
+  )
+  return getNIPlaces
+}
+
+/**
+ * ''  Extract daily summary from forecast data
+ */
+function extractDailySummary(getForecasts) {
+  let getDailySummary = getForecasts?.['forecast-summary']
+  if (!getDailySummary || typeof getDailySummary !== 'object') {
+    getDailySummary = { today: null }
+  }
+  return getDailySummary
+}
+
+// Helper to build OAuth options for NI locations
+async function buildOAuthForNI(locationType, deps, request) {
+  if (locationType !== LOCATION_TYPE_NI) {
+    return null
+  }
+  const niOptions = await buildNIOptionsOAuth({
+    request,
+    isMockEnabled: deps.isMockEnabled,
+    refreshOAuthTokenFn: deps.refreshOAuthToken
+  })
+  return niOptions.optionsOAuth
+}
+
+// Helper to fetch and extract forecasts
+async function fetchAndExtractForecasts(deps, diRequest, diOverrides) {
+  const getForecasts = await deps.fetchForecasts({
+    ...diOverrides,
+    request: diRequest
+  })
+  const getDailySummary = extractDailySummary(getForecasts)
+  return { getForecasts, getDailySummary }
+}
+
+/**
+ * ''  Fetch air quality data for a location
+ */
 async function fetchData(
   request,
   { locationType, userLocation, searchTerms, secondSearchTerm },
   diOverrides = {}
 ) {
-  // Local fallback for optionsEphemeralProtected
-  // Removed unused optionsEphemeralProtected
-  // Remove console.log for production and lint compliance
   if (!request) {
     throw new Error(
       "fetchData: 'request' argument is required and was not provided."
     )
   }
-  // Dependency injection destructure
-  const {
-    fetchForecasts: injectedFetchForecasts = fetchForecasts,
-    handleUKLocationData: injectedHandleUKLocationData = handleUKLocationData,
-    handleNILocationData: injectedHandleNILocationData = handleNILocationData,
-    isTestMode: injectedIsTestMode = isTestMode,
-    validateParams: injectedValidateParams = validateParams,
-    logger: injectedLogger = logger,
-    errorResponse: injectedErrorResponse = errorResponse,
-    isMockEnabled: injectedIsMockEnabled = isMockEnabled,
-    refreshOAuthToken: injectedRefreshOAuthToken = refreshOAuthToken,
-    buildUKLocationFilters:
-      injectedBuildUKLocationFilters = buildUKLocationFilters,
-    combineUKSearchTerms: injectedCombineUKSearchTerms = combineUKSearchTerms,
-    isValidFullPostcodeUK:
-      injectedIsValidFullPostcodeUK = isValidFullPostcodeUK,
-    isValidPartialPostcodeUK:
-      injectedIsValidPartialPostcodeUK = isValidPartialPostcodeUK,
-    buildUKApiUrl: injectedBuildUKApiUrl = buildUKApiUrl,
-    shouldCallUKApi: injectedShouldCallUKApi = shouldCallUKApi,
-    config: injectedConfig = config
-    // options and optionsEphemeralProtected are not used in main DI destructure
-  } = diOverrides
 
-  // Input validation
-  const validationError = injectedValidateParams(
-    { locationType, userLocation },
-    ['locationType', 'userLocation']
-  )
+  const deps = setupDependencies(diOverrides)
+
+  const validationError = deps.validateParams({ locationType, userLocation }, [
+    'locationType',
+    'userLocation'
+  ])
   if (validationError) {
     return validationError
   }
 
-  // Build options for NI if needed
-  let optionsOAuth
-  if (locationType === LOCATION_TYPE_NI) {
-    const niOptions = await buildNIOptionsOAuth({
-      request,
-      injectedIsMockEnabled,
-      injectedRefreshOAuthToken
-    })
-    optionsOAuth = niOptions.optionsOAuth
-    // accessToken is not used
-  }
+  const diRequest = diOverrides?.request ?? request
 
-  // Fetch forecasts (which contains daily summary)
-  const diRequest =
-    diOverrides && diOverrides.request !== undefined
-      ? diOverrides.request
-      : request
-  const getForecasts = await injectedFetchForecasts({
-    ...diOverrides,
-    request: diRequest
-  })
+  const optionsOAuth = await buildOAuthForNI(locationType, deps, request)
+  const { getForecasts, getDailySummary } = await fetchAndExtractForecasts(
+    deps,
+    diRequest,
+    diOverrides
+  )
 
-  // getDailySummary is derived from getForecasts['forecast-summary']
-  let getDailySummary = getForecasts && getForecasts['forecast-summary']
-  // Always provide a fallback object if missing or invalid
-  if (!getDailySummary || typeof getDailySummary !== 'object') {
-    getDailySummary = { today: null }
-  }
-
-  // In test mode, always return the actual handler function result so test mocks control output
-  if (injectedIsTestMode()) {
+  if (deps.isTestMode()) {
     return handleTestModeFetchData({
       locationType,
       userLocation,
@@ -285,62 +324,44 @@ async function fetchData(
       optionsOAuth,
       getDailySummary,
       getForecasts,
-      injectedHandleUKLocationData,
-      injectedHandleNILocationData,
-      injectedLogger,
-      injectedErrorResponse,
+      handleUKLocationData: deps.handleUKLocationData,
+      handleNILocationData: deps.handleNILocationData,
+      logger: deps.logger,
+      errorResponse: deps.errorResponse,
       args: diOverrides
     })
   }
 
-  // Main logic for UK and NI
   if (locationType === LOCATION_TYPE_UK) {
-    // Ensure request is always defined and not overwritten by undefined in DI
-    const di = {
-      ...diOverrides,
-      request: diRequest || {},
-      buildUKLocationFilters: injectedBuildUKLocationFilters,
-      combineUKSearchTerms: injectedCombineUKSearchTerms,
-      isValidFullPostcodeUK: injectedIsValidFullPostcodeUK,
-      isValidPartialPostcodeUK: injectedIsValidPartialPostcodeUK,
-      buildUKApiUrl: injectedBuildUKApiUrl,
-      // Defensive wrapper: always pass safe arrays to shouldCallUKApi
-      shouldCallUKApi: (...args) =>
-        injectedShouldCallUKApi(
-          ...args.map((arg) => (Array.isArray(arg) ? arg : []))
-        ),
-      config: injectedConfig
-    }
-    const osPlacesResult = await injectedHandleUKLocationData(
+    const osPlacesResult = await handleUKLocation(
       userLocation,
       searchTerms,
       secondSearchTerm,
-      di
+      deps,
+      diRequest
     )
     return { getDailySummary, getForecasts, getOSPlaces: osPlacesResult }
-  } else if (locationType === LOCATION_TYPE_NI) {
-    const di = { ...diOverrides, request: diRequest || {} }
-    // Removed unused options
-    // Explicitly call handleNILocationData with correct arguments for NI
-    const isMock =
-      typeof injectedIsMockEnabled === 'function'
-        ? injectedIsMockEnabled()
-        : !!injectedIsMockEnabled
-    const getNIPlaces = await injectedHandleNILocationData(
+  }
+
+  // ''  Handle NI locations
+  if (locationType === LOCATION_TYPE_NI) {
+    const getNIPlaces = await handleNILocation(
       userLocation,
       searchTerms,
       secondSearchTerm,
-      isMock, // isMockEnabled
-      optionsOAuth, // optionsOAuth (OAuth headers)
-      undefined, // optionsEphemeralProtected (not used for NI)
-      diRequest, // real request object
-      di
+      optionsOAuth,
+      deps,
+      diRequest
     )
     return { getDailySummary, getForecasts, getNIPlaces }
-  } else {
-    injectedLogger.error('Unsupported location type provided:', locationType)
-    return injectedErrorResponse('Unsupported location type provided', 400)
   }
+
+  // ''  Unsupported location type
+  deps.logger.error('Unsupported location type provided:', locationType)
+  return deps.errorResponse(
+    'Unsupported location type provided',
+    STATUS_BAD_REQUEST
+  )
 }
 
 export {

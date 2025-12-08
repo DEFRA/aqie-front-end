@@ -4,6 +4,50 @@ import { warningMessages as enWarningMessages } from '../../data/en/air-quality.
 import { warningMessages as cyWarningMessages } from '../../data/cy/air-quality.js'
 import { LANG_CY, LANG_EN } from '../../data/constants.js'
 
+// ''  Constants for high pollution bands
+const HIGH_BANDS = new Set(['high', 'uchel'])
+const VERY_HIGH_BANDS = new Set(['veryHigh', 'uchelIawn'])
+
+// Days configuration
+const FORECAST_DAYS = [
+  { key: 'today', dayOffset: 0 },
+  { key: 'day2', dayOffset: 1 },
+  { key: 'day3', dayOffset: 2 },
+  { key: 'day4', dayOffset: 3 },
+  { key: 'day5', dayOffset: 4 }
+]
+
+/**
+ * Check if a band is high or very high pollution level
+ */
+function isHighOrVeryHighBand(band) {
+  return HIGH_BANDS.has(band) || VERY_HIGH_BANDS.has(band)
+}
+
+/**
+ * Get weekday label for a given day
+ */
+function getWeekdayLabel(dayKey, dayOffset, lang) {
+  if (dayKey === 'today') {
+    return lang === LANG_CY ? 'heddiw' : 'today'
+  }
+  const targetDate = moment().locale(lang).add(dayOffset, 'days')
+  return targetDate.format('dddd')
+}
+
+/**
+ * Build warning text from template
+ */
+function buildWarningText(level, weekday, lang) {
+  const warningMessages =
+    lang === LANG_CY ? cyWarningMessages : enWarningMessages
+  const template = warningMessages.forecastWarning
+
+  return template
+    .replace('{level}', capitalizeFirstLetter(level))
+    .replace('{weekday}', weekday)
+}
+
 /**
  * Check if air quality forecast contains High or Very High levels
  * and return warning text with level and weekday
@@ -16,56 +60,17 @@ export function getForecastWarning(airQuality, lang = LANG_EN) {
     return null
   }
 
-  // Define high and very high bands
-  const highBands = ['high', 'uchel']
-  const veryHighBands = ['veryHigh', 'uchelIawn']
-
-  // Days to check in order - matches the DAQI tab structure
-  const days = [
-    { key: 'today', dayOffset: 0 },
-    { key: 'day2', dayOffset: 1 },
-    { key: 'day3', dayOffset: 2 },
-    { key: 'day4', dayOffset: 3 },
-    { key: 'day5', dayOffset: 4 }
-  ]
-
-  // Find first occurrence of high or very high
-  for (const day of days) {
+  // ''  Find first day with high or very high pollution
+  for (const day of FORECAST_DAYS) {
     const dayData = airQuality[day.key]
-    if (!dayData || !dayData.band) {
+    if (!dayData?.band) {
       continue
     }
 
-    const band = dayData.band
-    const isHigh = highBands.includes(band)
-    const isVeryHigh = veryHighBands.includes(band)
-
-    if (isHigh || isVeryHigh) {
-      // Get the readable band label
-      const level = dayData.readableBand || band
-
-      // Calculate weekday using the SAME format as DAQI tabs
-      // This ensures the weekday matches the tab labels exactly
-      const targetDate = moment().locale(lang).add(day.dayOffset, 'days')
-
-      // Use "today" or "heddiw" for today, otherwise use full weekday name
-      let weekday
-      if (day.key === 'today') {
-        weekday = lang === LANG_CY ? 'heddiw' : 'today'
-      } else {
-        // For day2-day5, use full weekday name
-        weekday = targetDate.format('dddd')
-      }
-
-      // Get warning message template
-      const warningMessages =
-        lang === LANG_CY ? cyWarningMessages : enWarningMessages
-      const template = warningMessages.forecastWarning
-
-      // Replace placeholders
-      const text = template
-        .replace('{level}', capitalizeFirstLetter(level))
-        .replace('{weekday}', weekday)
+    if (isHighOrVeryHighBand(dayData.band)) {
+      const level = dayData.readableBand || dayData.band
+      const weekday = getWeekdayLabel(day.key, day.dayOffset, lang)
+      const text = buildWarningText(level, weekday, lang)
 
       return {
         text,
@@ -85,6 +90,8 @@ export function getForecastWarning(airQuality, lang = LANG_EN) {
  * @returns {string}
  */
 function capitalizeFirstLetter(str) {
-  if (!str) return ''
+  if (!str) {
+    return ''
+  }
   return str.charAt(0).toUpperCase() + str.slice(1)
 }

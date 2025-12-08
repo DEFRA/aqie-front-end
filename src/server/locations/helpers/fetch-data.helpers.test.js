@@ -5,6 +5,7 @@ import {
   handleUnsupportedLocationType
 } from './fetch-data.js'
 import { describe, it, expect, vi } from 'vitest'
+import { STATUS_BAD_REQUEST } from '../../data/constants.js'
 
 describe('buildUKTestModeResult', () => {
   it('should wrap results in array if not already', () => {
@@ -47,7 +48,7 @@ describe('handleUnsupportedLocationType', () => {
     )
     expect(result).toEqual({
       msg: 'Unsupported location type provided',
-      code: 400
+      code: STATUS_BAD_REQUEST
     })
   })
 })

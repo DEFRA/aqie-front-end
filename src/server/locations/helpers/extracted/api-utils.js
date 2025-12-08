@@ -1,6 +1,8 @@
 // API utility helpers
 import {
   STATUS_UNAUTHORIZED,
+  STATUS_OK,
+  STATUS_INTERNAL_SERVER_ERROR,
   FORECASTS_API_PATH,
   ROUND_OF_SIX,
   MEASUREMENTS_API_PATH
@@ -9,55 +11,128 @@ import { config } from '../../../../config/index.js'
 async function callAndHandleForecastsResponse(
   url,
   opts,
-  injectedCatchFetchError,
-  injectedHttpStatusOk,
-  injectedLogger,
-  injectedErrorResponse
+  catchFetchError,
+  httpStatusOk,
+  logger,
+  errorResponse
 ) {
-  const [forecastStatus, getForecasts] = await injectedCatchFetchError(
-    url,
-    opts
-  )
-  if (forecastStatus !== injectedHttpStatusOk) {
-    injectedLogger.error(
-      'Error fetching forecasts data: status code',
-      forecastStatus
-    )
-    return injectedErrorResponse(
+  const [forecastStatus, getForecasts] = await catchFetchError(url, opts)
+  if (forecastStatus !== httpStatusOk) {
+    logger.error('Error fetching forecasts data: status code', forecastStatus)
+    return errorResponse(
       'Forecasts fetch failed',
-      forecastStatus || 500
+      forecastStatus || STATUS_INTERNAL_SERVER_ERROR
     )
   }
-  injectedLogger.info('Forecasts data fetched')
+  logger.info('Forecasts data fetched')
 
   return getForecasts
 }
 
 async function callForecastsApi({
-  injectedConfig,
-  injectedOptionsEphemeralProtected,
-  injectedOptions,
-  injectedCatchFetchError,
-  injectedHttpStatusOk,
-  injectedLogger,
-  injectedErrorResponse,
+  config: apiConfig,
+  optionsEphemeralProtected,
+  options,
+  catchFetchError,
+  httpStatusOk,
+  logger,
+  errorResponse,
   request
 }) {
-  const forecastsApiUrl = injectedConfig.get('forecastsApiUrl')
+  const forecastsApiUrl = apiConfig.get('forecastsApiUrl')
   const { url, opts } = selectForecastsUrlAndOptions({
     request,
     forecastsApiUrl,
-    optionsEphemeralProtected: injectedOptionsEphemeralProtected,
-    options: injectedOptions
+    optionsEphemeralProtected,
+    options
   })
   return callAndHandleForecastsResponse(
     url,
     opts,
-    injectedCatchFetchError,
-    injectedHttpStatusOk,
-    injectedLogger,
-    injectedErrorResponse
+    catchFetchError,
+    httpStatusOk,
+    logger,
+    errorResponse
   )
+}
+
+// Helper to check if request is from localhost
+function isLocalRequest(request) {
+  if (!request?.headers?.host) {
+    return false
+  }
+  const host = request.headers.host
+  return host.includes('localhost') || host.includes('127.0.0.1')
+}
+
+// Helper to get CDP API key from multiple sources
+function getCdpApiKey(localOptionsEphemeralProtected) {
+  if (localOptionsEphemeralProtected?.headers?.['x-api-key']) {
+    return localOptionsEphemeralProtected.headers['x-api-key']
+  }
+  if (config !== undefined && config.get) {
+    const configKey = config.get('cdpXApiKey')
+    if (configKey) {
+      return configKey
+    }
+  }
+  if (process?.env?.CDP_X_API_KEY) {
+    return process.env.CDP_X_API_KEY
+  }
+  return null
+}
+
+// Helper to get ephemeral protected dev API URL
+function getEphemeralDevApiUrl(request) {
+  if (request?.app?.config) {
+    return request.app.config.ephemeralProtectedDevApiUrl
+  }
+  if (config !== undefined && config.get) {
+    return config.get('ephemeralProtectedDevApiUrl')
+  }
+  return null
+}
+
+// Helper to build local forecasts URL and options
+function buildLocalForecastsUrlAndOpts(
+  request,
+  localOptionsEphemeralProtected
+) {
+  const ephemeralProtectedDevApiUrl = getEphemeralDevApiUrl(request)
+  const cdpXApiKey = getCdpApiKey(localOptionsEphemeralProtected)
+
+  if (!ephemeralProtectedDevApiUrl) {
+    throw new Error(
+      'ephemeralProtectedDevApiUrl must be provided in config for local requests'
+    )
+  }
+  if (!FORECASTS_API_PATH) {
+    throw new Error(
+      'FORECASTS_API_PATH constant must be defined for local requests'
+    )
+  }
+
+  const url = `${ephemeralProtectedDevApiUrl}${FORECASTS_API_PATH}`
+  const opts = { ...localOptionsEphemeralProtected }
+  opts.headers = {
+    ...opts.headers,
+    'x-api-key': cdpXApiKey
+  }
+  return { url, opts }
+}
+
+// Helper to build remote forecasts URL and options
+function buildRemoteForecastsUrlAndOpts(forecastsApiUrl, localOptions) {
+  return {
+    url: forecastsApiUrl,
+    opts: {
+      ...localOptions,
+      headers: {
+        ...localOptions.headers,
+        'Content-Type': 'application/json'
+      }
+    }
+  }
 }
 
 // Helper to select the correct forecasts URL and options based on environment
@@ -67,63 +142,75 @@ function selectForecastsUrlAndOptions({
   optionsEphemeralProtected: localOptionsEphemeralProtected,
   options: localOptions
 }) {
-  // Only use the request object to determine if the call is local
-  let isLocal = false
-  if (request && request.headers && request.headers.host) {
-    const host = request.headers.host
-    isLocal = host.includes('localhost') || host.includes('127.0.0.1')
-  }
-  let url, opts
-  if (isLocal) {
-    let cdpXApiKey
-    const ephemeralProtectedDevApiUrl =
-      request && request.app && request.app.config
-        ? request.app.config.ephemeralProtectedDevApiUrl
-        : typeof config !== 'undefined' &&
-          config.get &&
-          config.get('ephemeralProtectedDevApiUrl')
-    // fallback: try process.env for cdpXApiKey
-    if (
-      localOptionsEphemeralProtected &&
-      localOptionsEphemeralProtected.headers &&
-      localOptionsEphemeralProtected.headers['x-api-key']
-    ) {
-      cdpXApiKey = localOptionsEphemeralProtected.headers['x-api-key']
-    }
-    if (!cdpXApiKey && typeof config !== 'undefined') {
-      cdpXApiKey = config.get && config.get('cdpXApiKey')
-    }
-    if (!cdpXApiKey && process && process.env && process.env.CDP_X_API_KEY) {
-      cdpXApiKey = process.env.CDP_X_API_KEY
-    }
-    if (!ephemeralProtectedDevApiUrl) {
-      throw new Error(
-        'ephemeralProtectedDevApiUrl must be provided in config for local requests'
-      )
-    }
-    if (!FORECASTS_API_PATH) {
-      throw new Error(
-        'FORECASTS_API_PATH constant must be defined for local requests'
-      )
-    }
-    url = `${ephemeralProtectedDevApiUrl}${FORECASTS_API_PATH}`
-    opts = { ...localOptionsEphemeralProtected }
-    opts.headers = {
-      ...(opts.headers || {}),
-      'x-api-key': cdpXApiKey
-    }
+  if (isLocalRequest(request)) {
+    return buildLocalForecastsUrlAndOpts(
+      request,
+      localOptionsEphemeralProtected
+    )
   } else {
-    url = forecastsApiUrl
-    opts = { ...localOptions }
-    // For remote, always set Content-Type: application/json
-    opts.headers = {
-      ...(opts.headers || {}),
-      'Content-Type': 'application/json'
-    }
+    return buildRemoteForecastsUrlAndOpts(forecastsApiUrl, localOptions)
   }
+}
+
+// Helper to build query parameters for new Ricardo measurements
+function buildMeasurementsQueryParams(latitude, longitude) {
+  const formatCoordinate = (coord) => Number(coord).toFixed(ROUND_OF_SIX)
+  if (!URLSearchParams) {
+    throw new Error('URLSearchParams is not available in this environment')
+  }
+  return new URLSearchParams({
+    page: '1',
+    'latest-measurement': 'true',
+    'with-closed': 'false',
+    'with-pollutants': 'true',
+    latitude: formatCoordinate(latitude),
+    longitude: formatCoordinate(longitude),
+    'networks[]': '4',
+    totalItems: '3',
+    distance: '60',
+    'daqi-pollutant': 'true'
+  })
+}
+
+// Helper to build local measurements URL and options
+function buildLocalMeasurementsUrlAndOpts(
+  queryParams,
+  apiConfig,
+  optionsEphemeralProtected
+) {
+  const ephemeralProtectedDevApiUrl = apiConfig.get(
+    'ephemeralProtectedDevApiUrl'
+  )
+  const measurementsApiPath = MEASUREMENTS_API_PATH || ''
+
+  if (!ephemeralProtectedDevApiUrl) {
+    throw new Error(
+      'ephemeralProtectedDevApiUrl must be provided in config for local requests'
+    )
+  }
+  if (!measurementsApiPath) {
+    throw new Error(
+      'MEASUREMENTS_API_PATH constant must be set for local requests'
+    )
+  }
+
+  return {
+    url: `${ephemeralProtectedDevApiUrl}${measurementsApiPath}${queryParams.toString()}`,
+    opts: optionsEphemeralProtected
+  }
+}
+
+// Helper to build remote measurements URL and options
+function buildRemoteMeasurementsUrlAndOpts(url, options) {
   return {
     url,
-    opts
+    opts: {
+      ...options,
+      headers: {
+        ...options.headers,
+        'Content-Type': 'application/json'
+      }
+    }
   }
 }
 
@@ -135,84 +222,42 @@ function selectMeasurementsUrlAndOptions(
   di = {}
 ) {
   const {
-    injectedConfig,
-    injectedLogger,
-    injectedOptionsEphemeralProtected,
-    injectedOptions,
+    config: apiConfig,
+    logger,
+    optionsEphemeralProtected,
+    options,
     request
   } = di
-  const formatCoordinate = (coord) => Number(coord).toFixed(ROUND_OF_SIX)
+
   if (useNewRicardoMeasurementsEnabled) {
-    injectedLogger.info(
+    logger.info(
       `Using mock measurements with latitude: ${latitude}, longitude: ${longitude}`
     )
-    if (!URLSearchParams) {
-      throw new Error('URLSearchParams is not available in this environment')
-    }
-    const queryParams = new URLSearchParams({
-      page: '1',
-      'latest-measurement': 'true',
-      'with-closed': 'false',
-      'with-pollutants': 'true',
-      latitude: formatCoordinate(latitude),
-      longitude: formatCoordinate(longitude),
-      'networks[]': '4',
-      totalItems: '3',
-      distance: '60',
-      'daqi-pollutant': 'true'
-    })
-    const baseUrl = injectedConfig.get('ricardoMeasurementsApiUrl')
+
+    const queryParams = buildMeasurementsQueryParams(latitude, longitude)
+    const baseUrl = apiConfig.get('ricardoMeasurementsApiUrl')
     const newRicardoMeasurementsApiUrl = `${baseUrl}?${queryParams.toString()}`
-    injectedLogger.info(
+
+    logger.info(
       `New Ricardo measurements API URL: ${newRicardoMeasurementsApiUrl}`
     )
-    let isLocal = false
-    if (request && request.headers && request.headers.host) {
-      const host = request.headers.host
-      isLocal = host.includes('localhost') || host.includes('127.0.0.1')
-    }
-    if (isLocal) {
-      const ephemeralProtectedDevApiUrl = injectedConfig.get(
-        'ephemeralProtectedDevApiUrl'
+
+    if (isLocalRequest(request)) {
+      return buildLocalMeasurementsUrlAndOpts(
+        queryParams,
+        apiConfig,
+        optionsEphemeralProtected
       )
-      const measurementsApiPath = MEASUREMENTS_API_PATH || ''
-      if (!ephemeralProtectedDevApiUrl) {
-        throw new Error(
-          'ephemeralProtectedDevApiUrl must be provided in config for local requests'
-        )
-      }
-      if (!measurementsApiPath) {
-        throw new Error(
-          'MEASUREMENTS_API_PATH constant must be set for local requests'
-        )
-      }
-      return {
-        url: `${ephemeralProtectedDevApiUrl}${measurementsApiPath}${queryParams.toString()}`,
-        opts: injectedOptionsEphemeralProtected
-      }
     } else {
-      // For remote, always set Content-Type: application/json
-      const remoteHeaders = {
-        ...(injectedOptions.headers || {}),
-        'Content-Type': 'application/json'
-      }
-      return {
-        url: newRicardoMeasurementsApiUrl,
-        opts: { ...injectedOptions, headers: remoteHeaders }
-      }
+      return buildRemoteMeasurementsUrlAndOpts(
+        newRicardoMeasurementsApiUrl,
+        options
+      )
     }
   } else {
-    const measurementsAPIurl = injectedConfig.get('measurementsApiUrl')
-    injectedLogger.info(`Old measurements API URL: ${measurementsAPIurl}`)
-    // For remote, always set Content-Type: application/json
-    const remoteHeaders = {
-      ...(injectedOptions.headers || {}),
-      'Content-Type': 'application/json'
-    }
-    return {
-      url: measurementsAPIurl,
-      opts: { ...injectedOptions, headers: remoteHeaders }
-    }
+    const measurementsAPIurl = apiConfig.get('measurementsApiUrl')
+    logger.info(`Old measurements API URL: ${measurementsAPIurl}`)
+    return buildRemoteMeasurementsUrlAndOpts(measurementsAPIurl, options)
   }
 }
 
@@ -220,15 +265,15 @@ function selectMeasurementsUrlAndOptions(
 async function callAndHandleMeasurementsResponse(
   url,
   opts,
-  injectedCatchFetchError,
-  injectedLogger
+  catchFetchError,
+  logger
 ) {
-  const [status, data] = await injectedCatchFetchError(url, opts)
-  if (status !== 200) {
-    injectedLogger.error(`Error fetching data: ${data && data.message}`)
+  const [status, data] = await catchFetchError(url, opts)
+  if (status !== STATUS_OK) {
+    logger.error(`Error fetching data: ${data?.message}`)
     return []
   }
-  injectedLogger.info('Data fetched successfully.')
+  logger.info('Data fetched successfully.')
   return data || []
 }
 
@@ -237,20 +282,20 @@ function buildAndCheckUKApiUrl(
   userLocation,
   searchTerms,
   secondSearchTerm,
-  injected
+  deps
 ) {
-  const filters = injected.buildUKLocationFilters()
-  const osNamesApiUrl = injected.config.get('osNamesApiUrl')
-  const osNamesApiKey = injected.config.get('osNamesApiKey')
+  const filters = deps.buildUKLocationFilters()
+  const osNamesApiUrl = deps.config.get('osNamesApiUrl')
+  const osNamesApiKey = deps.config.get('osNamesApiKey')
   const hasOsKey = Boolean(osNamesApiKey && String(osNamesApiKey).trim() !== '')
-  const combinedLocation = injected.combineUKSearchTerms(
+  const combinedLocation = deps.combineUKSearchTerms(
     userLocation,
     searchTerms,
     secondSearchTerm,
-    injected.isValidFullPostcodeUK,
-    injected.isValidPartialPostcodeUK
+    deps.isValidFullPostcodeUK,
+    deps.isValidPartialPostcodeUK
   )
-  const osNamesApiUrlFull = injected.buildUKApiUrl(
+  const osNamesApiUrlFull = deps.buildUKApiUrl(
     combinedLocation,
     filters,
     osNamesApiUrl,
@@ -260,48 +305,41 @@ function buildAndCheckUKApiUrl(
 }
 
 // Helper to call the UK API and handle the response
-async function callAndHandleUKApiResponse(
+async function callAndHandleUKApiResponse({
   osNamesApiUrlFull,
-  injectedOptions,
-  injectedOptionsEphemeralProtected,
+  options,
+  optionsEphemeralProtected,
   shouldCallApi,
-  injectedCatchProxyFetchError,
-  injectedHttpStatusOk,
-  injectedLogger,
-  injectedFormatUKApiResponse
-) {
+  catchProxyFetchError,
+  httpStatusOk,
+  logger,
+  formatUKApiResponse
+}) {
   const isLocal =
     String(osNamesApiUrlFull).includes('localhost') ||
     String(osNamesApiUrlFull).includes('127.0.0.1')
-  const selectedOptions = isLocal
-    ? injectedOptionsEphemeralProtected
-    : injectedOptions
-  injectedLogger.info(
+  const selectedOptions = isLocal ? optionsEphemeralProtected : options
+  logger.info(
     `[DEBUG] Calling catchProxyFetchError with URL: ${osNamesApiUrlFull}`
   )
-  injectedLogger.info('[DEBUG] Options:', JSON.stringify(selectedOptions))
-  const [statusCodeOSPlace, getOSPlaces] = await injectedCatchProxyFetchError(
+  logger.info('[DEBUG] Options:', JSON.stringify(selectedOptions))
+  const [statusCodeOSPlace, getOSPlaces] = await catchProxyFetchError(
     osNamesApiUrlFull,
     selectedOptions,
     shouldCallApi
   )
-  if (statusCodeOSPlace === injectedHttpStatusOk) {
-    injectedLogger.info('getOSPlaces data fetched:')
-    return injectedFormatUKApiResponse(getOSPlaces)
-  } else {
-    if (statusCodeOSPlace === STATUS_UNAUTHORIZED) {
-      injectedLogger.warn(
-        `OS Names API returned 401 (unauthorized). Check OS_NAMES_API_KEY. URL was suppressed in logs.`
-      )
-      return null
-    } else {
-      injectedLogger.error(
-        'Error fetching statusCodeOSPlace data:',
-        statusCodeOSPlace
-      )
-      return null
-    }
+  if (statusCodeOSPlace === httpStatusOk) {
+    logger.info('getOSPlaces data fetched:')
+    return formatUKApiResponse(getOSPlaces)
   }
+  if (statusCodeOSPlace === STATUS_UNAUTHORIZED) {
+    logger.warn(
+      `OS Names API returned 401 (unauthorized). Check OS_NAMES_API_KEY. URL was suppressed in logs.`
+    )
+    return null
+  }
+  logger.error('Error fetching statusCodeOSPlace data:', statusCodeOSPlace)
+  return null
 }
 
 export {

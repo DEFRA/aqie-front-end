@@ -4,6 +4,14 @@ import {
   selectMeasurementsUrlAndOptions,
   callAndHandleMeasurementsResponse
 } from './extracted/api-utils.js'
+import {
+  STATUS_OK,
+  STATUS_INTERNAL_SERVER_ERROR
+} from '../../data/constants.js'
+
+// Test constants
+const TEST_LATITUDE = 51.5
+const TEST_LONGITUDE = -0.1
 
 describe('fetchMeasurementsTestMode', () => {
   it('returns mock measurement and logs in test mode', () => {
@@ -24,38 +32,59 @@ describe('fetchMeasurementsTestMode', () => {
 describe('selectMeasurementsUrlAndOptions', () => {
   const injectedConfig = {
     get: vi.fn((key) => {
-      if (key === 'ricardoMeasurementsApiUrl') return 'ricardo-url'
-      if (key === 'ephemeralProtectedDevApiUrl') return 'dev-url'
-      if (key === 'measurementsApiUrl') return 'old-url'
+      if (key === 'ricardoMeasurementsApiUrl') {
+        return 'ricardo-url'
+      }
+      if (key === 'ephemeralProtectedDevApiUrl') {
+        return 'dev-url'
+      }
+      if (key === 'measurementsApiUrl') {
+        return 'old-url'
+      }
       return ''
     })
   }
   const injectedLogger = { info: vi.fn() }
   it('returns new Ricardo API url and opts in production', () => {
-    const result = selectMeasurementsUrlAndOptions(51.5, -0.1, true, {
-      injectedConfig,
-      injectedLogger,
-      injectedOptions: { headers: {} }
-    })
+    const result = selectMeasurementsUrlAndOptions(
+      TEST_LATITUDE,
+      TEST_LONGITUDE,
+      true,
+      {
+        config: injectedConfig,
+        logger: injectedLogger,
+        options: { headers: {} }
+      }
+    )
     expect(result.url).toContain('ricardo-url?')
     expect(result.opts).toBeDefined()
   })
   it('returns dev url and opts in development', () => {
-    const result = selectMeasurementsUrlAndOptions(51.5, -0.1, true, {
-      injectedConfig,
-      injectedLogger,
-      injectedOptionsEphemeralProtected: 'dev-opts',
-      request: { headers: { host: 'localhost' } }
-    })
+    const result = selectMeasurementsUrlAndOptions(
+      TEST_LATITUDE,
+      TEST_LONGITUDE,
+      true,
+      {
+        config: injectedConfig,
+        logger: injectedLogger,
+        optionsEphemeralProtected: 'dev-opts',
+        request: { headers: { host: 'localhost' } }
+      }
+    )
     expect(result.url).toContain('dev-url')
     expect(result.opts).toBe('dev-opts')
   })
   it('returns old API url and opts if not using new Ricardo', () => {
-    const result = selectMeasurementsUrlAndOptions(51.5, -0.1, false, {
-      injectedConfig,
-      injectedLogger,
-      injectedOptions: { headers: {} }
-    })
+    const result = selectMeasurementsUrlAndOptions(
+      TEST_LATITUDE,
+      TEST_LONGITUDE,
+      false,
+      {
+        config: injectedConfig,
+        logger: injectedLogger,
+        options: { headers: {} }
+      }
+    )
     expect(result.url).toBe('old-url')
     expect(result.opts).toBeDefined()
   })
@@ -63,7 +92,10 @@ describe('selectMeasurementsUrlAndOptions', () => {
 
 describe('callAndHandleMeasurementsResponse', () => {
   it('returns data if status is 200', async () => {
-    const injectedCatchFetchError = vi.fn(async () => [200, [{ foo: 'bar' }]])
+    const injectedCatchFetchError = vi.fn(async () => [
+      STATUS_OK,
+      [{ foo: 'bar' }]
+    ])
     const injectedLogger = { info: vi.fn(), error: vi.fn() }
     const result = await callAndHandleMeasurementsResponse(
       'url',
@@ -78,7 +110,7 @@ describe('callAndHandleMeasurementsResponse', () => {
   })
   it('returns [] and logs error if status is not 200', async () => {
     const injectedCatchFetchError = vi.fn(async () => [
-      500,
+      STATUS_INTERNAL_SERVER_ERROR,
       { message: 'fail' }
     ])
     const injectedLogger = { info: vi.fn(), error: vi.fn() }

@@ -17,6 +17,36 @@ import { config } from '../../../config/index.js'
 
 const logger = createLogger()
 
+// Helper function to build mock query parameters
+const buildMockQueryParams = (request) => {
+  const mocksEnabled = config.get('disableTestMocks') === false
+
+  if (!mocksEnabled) {
+    return ''
+  }
+
+  const params = []
+  const mockLevel = request.query?.mockLevel
+  const mockDay = request.query?.mockDay
+  const mockPollutantBand = request.query?.mockPollutantBand
+  const testMode = request.query?.testMode
+
+  if (mockLevel !== undefined) {
+    params.push(`mockLevel=${encodeURIComponent(mockLevel)}`)
+  }
+  if (mockDay !== undefined) {
+    params.push(`mockDay=${encodeURIComponent(mockDay)}`)
+  }
+  if (mockPollutantBand !== undefined) {
+    params.push(`mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`)
+  }
+  if (testMode !== undefined) {
+    params.push(`testMode=${encodeURIComponent(testMode)}`)
+  }
+
+  return params.length > 0 ? `?${params.join('&')}` : ''
+}
+
 // Helper function to handle single match
 const handleSingleMatch = (
   h,
@@ -61,31 +91,8 @@ const handleSingleMatch = (
   })
   logger.info(`Redirecting to location with custom ID: ${customId}`)
 
-  // '' Disable mock parameters when configured (production by default)
-  const mocksDisabled = config.get('disableTestMocks')
-
-  // Preserve mock parameters in redirect if present (only when mocks enabled)
-  const mockLevel = !mocksDisabled ? request.query?.mockLevel : undefined
-  const mockLevelParam =
-    mockLevel !== undefined ? `?mockLevel=${encodeURIComponent(mockLevel)}` : ''
-
-  const mockDay = !mocksDisabled ? request.query?.mockDay : undefined
-  const mockDayParam =
-    mockDay !== undefined ? `&mockDay=${encodeURIComponent(mockDay)}` : ''
-
-  const mockPollutantBand = !mocksDisabled
-    ? request.query?.mockPollutantBand
-    : undefined
-  const mockPollutantParam =
-    mockPollutantBand !== undefined
-      ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
-      : ''
-
-  const testMode = !mocksDisabled ? request.query?.testMode : undefined
-  const testModeParam =
-    testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
-
-  const queryParams = `${mockLevelParam}${mockDayParam}${mockPollutantParam}${testModeParam}`
+  // '' Build query parameters for mock testing (only when mocks enabled)
+  const queryParams = buildMockQueryParams(request)
 
   return lang === LANG_EN
     ? h
@@ -317,14 +324,16 @@ const getFormattedDateSummary = (issueDate, calendarEnglish) => {
     .format('DD MMMM YYYY')
     .split(' ')
   const getMonthSummary = calendarEnglish.findIndex(function (item) {
-    return item.indexOf(formattedDateSummary[1]) !== -1
+    return item.includes(formattedDateSummary[1])
   })
   return { getMonthSummary, formattedDateSummary }
 }
 
 // Helper function to check if date is today
 const isSummaryDateToday = (issueDate) => {
-  if (!issueDate) return false
+  if (!issueDate) {
+    return false
+  }
   const today = moment().format('YYYY-MM-DD')
   const issueDateFormatted = moment(issueDate).format('YYYY-MM-DD')
   return today === issueDateFormatted
@@ -332,9 +341,13 @@ const isSummaryDateToday = (issueDate) => {
 
 // '' Helper function to extract time from issue_date in H:mm format
 const getIssueTime = (issueDate) => {
-  if (!issueDate) return '5:00am' // Default fallback
+  if (!issueDate) {
+    return '5:00am'
+  }
   const issueMoment = moment(issueDate)
-  if (!issueMoment.isValid()) return '5:00am' // Default fallback for invalid dates
+  if (!issueMoment.isValid()) {
+    return '5:00am'
+  }
   return issueMoment.format('h:mma') // Format as h:mma (e.g., "5:34am", "2:05pm")
 }
 

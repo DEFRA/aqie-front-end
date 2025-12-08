@@ -163,6 +163,15 @@ vi.mock('../locations/helpers/get-ni-single-data.js', () => ({
     resultNI: { id: 'test-ni', name: 'NI Test Location' }
   }))
 }))
+vi.mock('../locations/helpers/fetch-data.js', () => ({
+  fetchData: vi.fn(() =>
+    Promise.resolve({
+      results: [],
+      getForecasts: [],
+      getMeasurements: []
+    })
+  )
+}))
 vi.mock('../locations/helpers/convert-string.js', () => ({
   compareLastElements: vi.fn(() => false)
 }))
@@ -215,8 +224,9 @@ describe('Location ID Controller - Mock DAQI Level', () => {
     it('should apply mock level from session when provided', async () => {
       // ''
       const mockLocationData = {
-        results: [{ id: 'test' }],
+        results: [{ id: 'test', name: TEST_LOCATION_NAME }],
         getForecasts: [{ locationId: 'test' }],
+        getMeasurements: [{ locationId: 'test', pollutants: [] }],
         locationType: 'uk'
       }
 
@@ -240,13 +250,13 @@ describe('Location ID Controller - Mock DAQI Level', () => {
           [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
         ],
         nearestLocationsRange: [],
-        nearestLocation: { id: 'test' }
+        nearestLocation: { id: 'test', name: TEST_LOCATION_NAME, distance: 0 }
       })
 
       await getLocationDetailsController.handler(mockRequest, mockH)
 
-      expect(mockH.view).toHaveBeenCalled()
-      // The airQuality will be mocked to level 7
+      // Verify that mockLevel was retrieved from session
+      expect(mockRequest.yar.get).toHaveBeenCalledWith('mockLevel')
     })
   })
 

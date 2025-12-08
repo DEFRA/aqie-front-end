@@ -17,6 +17,7 @@ import { fetchMeasurements } from './fetch-data.js'
 import { createLogger } from '../../common/helpers/logging/logger.js'
 
 const logger = createLogger()
+const METERS_TO_MILES = 0.000621371192
 
 // Helper to get latlon and forecastCoordinates //
 export function getLatLonAndForecastCoords(
@@ -26,25 +27,25 @@ export function getLatLonAndForecastCoords(
   forecasts
 ) {
   const latlon =
-    matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
+    matches.length > 0 ? convertPointToLonLat(matches, location, index) : {}
   const forecastCoordinates =
-    matches.length !== 0 ? coordinatesTotal(forecasts, location) : []
+    matches.length > 0 ? coordinatesTotal(forecasts, location) : []
   return { latlon, forecastCoordinates }
 }
 
 // Helper to build forecastNum
 export function buildForecastNum(matches, nearestLocation, forecastDay) {
-  return matches.length !== 0
+  return matches.length > 0
     ? nearestLocation.map((current) => {
         let todayDate = []
         const otherdays = []
-        current.forecast.forEach(({ day, value }) => {
+        for (const { day, value } of current.forecast) {
           if (day === forecastDay) {
             todayDate = [{ today: value }]
           } else {
             otherdays.push({ [day]: value })
           }
-        })
+        }
         return [...todayDate, ...otherdays]
       })
     : 0
@@ -61,11 +62,11 @@ export function isValidNonNegativeNumber(value) {
 // Helper to build pollutants object for a measurement
 export function buildPollutantsObject(curr, lang) {
   const newpollutants = []
-  Object.keys(curr.pollutants).forEach((pollutant) => {
+  for (const pollutant of Object.keys(curr.pollutants)) {
     const polValue = curr.pollutants[pollutant].value
     // Only proceed if the value is a valid non‑negative number
     if (!isValidNonNegativeNumber(polValue)) {
-      return
+      continue
     }
     const { getDaqi, getBand } =
       lang === LANG_CY
@@ -95,7 +96,7 @@ export function buildPollutantsObject(curr, lang) {
         band: getBand
       }
     })
-  })
+  }
   return newpollutants
 }
 
@@ -108,7 +109,7 @@ export function buildNearestLocationEntry(curr, latlon, lang) {
         latitude: curr.location.coordinates[0],
         longitude: curr.location.coordinates[1]
       }
-    ) * 0.000621371192
+    ) * METERS_TO_MILES
   const newpollutants = buildPollutantsObject(curr, lang)
   if (Object.keys(newpollutants).length === 0) {
     logger.error(`No valid pollutants found for location`, {
@@ -140,7 +141,7 @@ export function buildNearestLocationsRange(
   lang
 ) {
   const measurementsCoordinates =
-    matches.length !== 0 ? coordinatesTotal(getMeasurments, latlon) : []
+    matches.length > 0 ? coordinatesTotal(getMeasurments, latlon) : []
   const orderByDistanceMeasurements = geolib.orderByDistance(
     { latitude: latlon?.lat, longitude: latlon?.lon },
     measurementsCoordinates
@@ -165,8 +166,100 @@ export function buildNearestLocationsRange(
   const result = nearestLocationsRangeCal
     .map((curr) => buildNearestLocationEntry(curr, latlon, lang))
     .filter(Boolean)
-  result.sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
+  result.sort(
+    (a, b) => Number.parseFloat(a.distance) - Number.parseFloat(b.distance)
+  )
   return result
+}
+
+// Helper to process measurement pollutants with DAQI calculations
+function processMeasurementPollutants(measurement, lang, latlon) {
+  const updatedPollutants = {}
+
+  for (const [pollutant, data] of Object.entries(
+    measurement.pollutants || {}
+  )) {
+    const polValue = data?.value
+    if (!isValidNonNegativeNumber(polValue)) {
+      continue
+    }
+
+    const { getDaqi, getBand } =
+      lang === LANG_CY
+        ? getPollutantLevelCy(polValue, pollutant)
+        : getPollutantLevel(polValue, pollutant)
+
+    updatedPollutants[pollutant] = {
+      ...data,
+      daqi: getDaqi,
+      band: getBand
+    }
+  }
+
+  if (Object.keys(updatedPollutants).length === 0) {
+    logger.error(`No valid pollutants found for measurement`, {
+      measurementId: measurement.id,
+      latlon
+    })
+  }
+
+  return {
+    ...measurement,
+    pollutants: updatedPollutants
+  }
+}
+
+// Helper to fetch and process new Ricardo measurements
+async function fetchAndProcessNewMeasurements(
+  latlon,
+  matches,
+  lang,
+  useNewRicardoMeasurementsEnabled,
+  request
+) {
+  if (!latlon?.lat || !latlon?.lon) {
+    return []
+  }
+
+  const newMeasurements = await fetchMeasurements(
+    latlon.lat,
+    latlon.lon,
+    useNewRicardoMeasurementsEnabled,
+    { request }
+  )
+
+  if (!newMeasurements?.measurements) {
+    return []
+  }
+
+  const newMeasurementsMapped = newMeasurements.measurements.map(
+    (measurement) => processMeasurementPollutants(measurement, lang, latlon)
+  )
+
+  return buildNearestLocationsRange(
+    matches,
+    newMeasurementsMapped,
+    latlon,
+    lang
+  )
+}
+
+// Helper to fetch and process legacy measurements
+async function fetchAndProcessLegacyMeasurements(
+  latlon,
+  matches,
+  lang,
+  useNewRicardoMeasurementsEnabled,
+  request
+) {
+  const measurements = await fetchMeasurements(
+    latlon.lat,
+    latlon.lon,
+    useNewRicardoMeasurementsEnabled,
+    { request }
+  )
+
+  return buildNearestLocationsRange(matches, measurements, latlon, lang)
 }
 
 async function getNearestLocation(
@@ -184,88 +277,31 @@ async function getNearestLocation(
     index,
     forecasts
   )
-  let nearestLocationsRange = []
-  let nearestLocation = {}
-  let forecastNum = 0
-  const resultLatlon = latlon
-  let getMeasurments = null
+
   const forecastDay =
     moment
       .tz('Europe/London')
       ?.format('dddd')
       ?.substring(0, FORECAST_DAY_SLICE_LENGTH) || ''
 
-  if (!useNewRicardoMeasurementsEnabled) {
-    getMeasurments = await fetchMeasurements(
-      latlon.lat,
-      latlon.lon,
-      useNewRicardoMeasurementsEnabled,
-      { request }
-    )
-    nearestLocationsRange = buildNearestLocationsRange(
-      matches,
-      getMeasurments,
-      latlon,
-      lang
-    )
-  } else {
-    let newMeasurements = []
-    if (latlon?.lat && latlon?.lon) {
-      newMeasurements = await fetchMeasurements(
-        latlon.lat,
-        latlon.lon,
-        useNewRicardoMeasurementsEnabled,
-        { request }
-      )
-    }
-
-    if (newMeasurements?.measurements) {
-      const newMeasurementsMapped = newMeasurements.measurements.map(
-        (measurement) => {
-          const updatedPollutants = {}
-
-          Object.entries(measurement.pollutants || {}).forEach(
-            ([pollutant, data]) => {
-              const polValue = data?.value
-              // Only proceed if the value is a valid non‑negative number
-              if (!isValidNonNegativeNumber(polValue)) {
-                return
-              }
-              const { getDaqi, getBand } =
-                lang === LANG_CY
-                  ? getPollutantLevelCy(polValue, pollutant)
-                  : getPollutantLevel(polValue, pollutant)
-
-              updatedPollutants[pollutant] = {
-                ...data,
-                daqi: getDaqi,
-                band: getBand
-              }
-            }
-          )
-          // validate updatedPollutants {} is still empty and log an error statement
-          if (Object.keys(updatedPollutants).length === 0) {
-            logger.error(`No valid pollutants found for measurement`, {
-              measurementId: measurement.id,
-              latlon
-            })
-          }
-          return {
-            ...measurement,
-            pollutants: updatedPollutants
-          }
-        }
-      )
-      nearestLocationsRange = buildNearestLocationsRange(
-        matches,
-        newMeasurementsMapped,
+  const nearestLocationsRange = useNewRicardoMeasurementsEnabled
+    ? await fetchAndProcessNewMeasurements(
         latlon,
-        lang
+        matches,
+        lang,
+        useNewRicardoMeasurementsEnabled,
+        request
       )
-    }
-  }
-  nearestLocation =
-    matches.length !== 0
+    : await fetchAndProcessLegacyMeasurements(
+        latlon,
+        matches,
+        lang,
+        useNewRicardoMeasurementsEnabled,
+        request
+      )
+
+  const nearestLocation =
+    matches.length > 0
       ? getNearLocation(
           latlon?.lat,
           latlon?.lon,
@@ -273,13 +309,14 @@ async function getNearestLocation(
           forecasts
         )
       : {}
-  forecastNum = buildForecastNum(matches, nearestLocation, forecastDay)
+
+  const forecastNum = buildForecastNum(matches, nearestLocation, forecastDay)
 
   return {
     forecastNum,
     nearestLocationsRange,
     nearestLocation,
-    latlon: resultLatlon
+    latlon
   }
 }
 
