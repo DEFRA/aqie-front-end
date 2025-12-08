@@ -12,6 +12,11 @@ const DAQI_VALUE_VERY_HIGH = 10
 const DEFAULT_DAQI_VALUE = '4'
 const ENJOY_OUTDOOR_ACTIVITIES =
   'Mwynhewch eich gweithgareddau awyr agored arferol.'
+const ISEL_AT_RISK_ADVICE = {
+  adults: ENJOY_OUTDOOR_ACTIVITIES,
+  asthma: ENJOY_OUTDOOR_ACTIVITIES,
+  oldPeople: ENJOY_OUTDOOR_ACTIVITIES
+}
 
 export const warningMessages = {
   forecastWarning:
@@ -22,7 +27,7 @@ export const commonMessages = {
   isel: {
     values: [DAQI_VALUE_LOW_MIN, 2, DAQI_VALUE_LOW_MAX],
     advice: ENJOY_OUTDOOR_ACTIVITIES,
-    insetText: `<p>I’r rhan fwyaf o bobl, dyw amlygiad byrdymor i lefelau isel o lygredd aer ddim yn broblem. Ewch ymlaen â’ch gweithgareddau awyr agored arferol.</p>
+    insetText: `<p>I'r rhan fwyaf o bobl, dyw amlygiad byrdymor i lefelau isel o lygredd aer ddim yn broblem. Ewch ymlaen â'ch gweithgareddau awyr agored arferol.</p>
 <p>Gallai rhai pobl brofi symptomau oherwydd llygredd aer, hyd yn oed pan fo’r lefelau’n isel.</p>
 <p>Mae oedolion a phlant sydd â chyflyrau’r ysgyfaint neu’r galon yn wynebu mwy o risg o brofi symptomau.</p>
 <p>Gallai’r symptomau gynnwys:</p>
@@ -35,13 +40,9 @@ export const commonMessages = {
     <li>symptomau gwaeth clefyd rhwystrol cronig yr ysgyfaint (COPD)</li>
 </ul>
 <p>Dilynwch gyngor arferol eich meddyg neu’ch nyrs am weithgareddau sy’n heriol yn gorfforol a rheoli’ch cyflwr.</p>
-<p>Dilynwch eich cynllun rheoli cytûn os oes un gennych – er enghraifft, cynllun gweithredu asthma. Gofynnwch i’ch meddyg neu’ch nyrs am gynllun os nad oes un gennych.</p>
+<p>Dilynwch eich cynllun rheoli cytûn os oes un gennych – er enghraifft, cynllun gweithredu asthma. Gofynnwch i'ch meddyg neu'ch nyrs am gynllun os nad oes un gennych.</p>
 <p>Ystyriwch effaith sbardunau eraill ar eich symptomau hefyd – er enghraifft, paill uchel y tu allan neu ansawdd aer gwael dan do.</p>`,
-    atrisk: {
-      adults: ENJOY_OUTDOOR_ACTIVITIES,
-      asthma: ENJOY_OUTDOOR_ACTIVITIES,
-      oldPeople: ENJOY_OUTDOOR_ACTIVITIES
-    },
+    atrisk: ISEL_AT_RISK_ADVICE,
     outlook:
       'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.'
   },

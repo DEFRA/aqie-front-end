@@ -11,16 +11,17 @@ const HIGH_MAX = 9
 
 // Common advice messages
 const ENJOY_OUTDOOR_ACTIVITIES = 'Enjoy your usual outdoor activities.'
+const LOW_AT_RISK_ADVICE = {
+  adults: ENJOY_OUTDOOR_ACTIVITIES,
+  asthma: ENJOY_OUTDOOR_ACTIVITIES,
+  oldPeople: ENJOY_OUTDOOR_ACTIVITIES
+}
 
 export const commonMessages = {
   low: {
     values: [LOW_MIN, LOW_MID, LOW_MAX],
     advice: ENJOY_OUTDOOR_ACTIVITIES,
-    atrisk: {
-      adults: ENJOY_OUTDOOR_ACTIVITIES,
-      asthma: ENJOY_OUTDOOR_ACTIVITIES,
-      oldPeople: ENJOY_OUTDOOR_ACTIVITIES
-    },
+    atrisk: LOW_AT_RISK_ADVICE,
     outlook:
       'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.'
   },
