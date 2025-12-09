@@ -72,4 +72,60 @@ describe('locationNotFoundController - english', () => {
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith(LOCATION_NOT_FOUND_ROUTE_CY)
   })
+
+  it('should use session lang when query.lang is not provided', () => {
+    mockRequest.yar.get.mockReturnValue({
+      locationNameOrPostcode: 'TestLocation',
+      lang: 'cy'
+    })
+    const result = locationNotFoundController.handler(mockRequest, mockH)
+    expect(result).toBe('view rendered')
+    expect(mockH.view).toHaveBeenCalledWith(
+      LOCATION_NOT_FOUND,
+      expect.objectContaining({
+        lang: 'cy',
+        userLocation: 'TestLocation'
+      })
+    )
+  })
+
+  it('should handle empty session data gracefully', () => {
+    mockRequest.yar.get.mockReturnValue(null)
+    const result = locationNotFoundController.handler(mockRequest, mockH)
+    expect(result).toBe('view rendered')
+    expect(mockH.view).toHaveBeenCalledWith(
+      LOCATION_NOT_FOUND,
+      expect.objectContaining({
+        userLocation: '',
+        lang: 'en'
+      })
+    )
+  })
+
+  it('should override session lang with query.lang when provided', () => {
+    mockRequest.query.lang = 'en'
+    mockRequest.yar.get.mockReturnValue({
+      locationNameOrPostcode: 'Cardiff',
+      lang: 'cy'
+    })
+    const result = locationNotFoundController.handler(mockRequest, mockH)
+    expect(result).toBe('view rendered')
+    expect(mockH.view).toHaveBeenCalledWith(
+      LOCATION_NOT_FOUND,
+      expect.objectContaining({
+        lang: 'en',
+        userLocation: 'Cardiff'
+      })
+    )
+  })
+
+  it('should handle missing notFoundLocation fields', () => {
+    mockRequest.yar.get.mockReturnValue({
+      locationNameOrPostcode: 'Test',
+      lang: 'en'
+    })
+    const result = locationNotFoundController.handler(mockRequest, mockH)
+    expect(result).toBe('view rendered')
+    expect(mockH.view).toHaveBeenCalled()
+  })
 })
