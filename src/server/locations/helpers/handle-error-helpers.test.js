@@ -315,7 +315,6 @@ describe('handle-error-helpers - referer search-location', () => {
         locationNameOrPostcode: 'London'
       })
     })
-
   })
 })
 
@@ -359,7 +358,6 @@ describe('handle-error-helpers - referer chwilio-lleoliad', () => {
         locationNameOrPostcode: 'Cardiff'
       })
     })
-
   })
 })
 
