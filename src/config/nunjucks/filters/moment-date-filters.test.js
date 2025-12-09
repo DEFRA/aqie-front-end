@@ -13,6 +13,8 @@ const TEST_DEFAULT_DAYS_MSG =
   'should default to 0 days when non-number provided'
 const TEST_INVALID_ENV_MSG = 'should handle invalid environment'
 const TEST_REG_ERROR_MSG = 'should handle errors during filter registration'
+const TEST_NO_ADDFILTER_MSG =
+  'should handle environment without addFilter function'
 const REG_ERROR_MSG = 'Registration error'
 const HOURS_TO_SUBTRACT = 1.56
 const ABBREVIATED_DAY_LENGTH = 3
@@ -110,7 +112,7 @@ describe('addDaysToTodayAbrev', () => {
     expect(result).toBeInstanceOf(Error)
   })
 
-  it('should handle environment without addFilter function', () => {
+  it(TEST_NO_ADDFILTER_MSG, () => {
     const result = addDaysToTodayAbrev({})
     expect(result).toBeInstanceOf(Error)
   })
@@ -169,7 +171,7 @@ describe('addDaysToTodayAbrevWelsh', () => {
     expect(result).toBeInstanceOf(Error)
   })
 
-  it('should handle environment without addFilter function', () => {
+  it(TEST_NO_ADDFILTER_MSG, () => {
     const result = addDaysToTodayAbrevWelsh({})
     expect(result).toBeInstanceOf(Error)
   })
@@ -228,7 +230,7 @@ describe('addDaysToTodayFull', () => {
     expect(result).toBeInstanceOf(Error)
   })
 
-  it('should handle environment without addFilter function', () => {
+  it(TEST_NO_ADDFILTER_MSG, () => {
     const result = addDaysToTodayFull({})
     expect(result).toBeInstanceOf(Error)
   })
@@ -287,7 +289,7 @@ describe('addDaysToTodayFullWelsh', () => {
     expect(result).toBeInstanceOf(Error)
   })
 
-  it('should handle environment without addFilter function', () => {
+  it(TEST_NO_ADDFILTER_MSG, () => {
     const result = addDaysToTodayFullWelsh({})
     expect(result).toBeInstanceOf(Error)
   })

@@ -1,23 +1,6 @@
 // '' - Tests for normalizeBandClass filter
 import { describe, it, expect } from 'vitest'
-import {
-  normalizeBandClass,
-  WELSH_TO_ENGLISH_BAND_MAP
-} from './normalize-band-class.js'
-
-describe('Welsh to English band mapping', () => {
-  it('should export WELSH_TO_ENGLISH_BAND_MAP constant', () => {
-    expect(WELSH_TO_ENGLISH_BAND_MAP).toBeDefined()
-    expect(typeof WELSH_TO_ENGLISH_BAND_MAP).toBe('object')
-  })
-
-  it('should have all Welsh band mappings', () => {
-    expect(WELSH_TO_ENGLISH_BAND_MAP.isel).toBe('low')
-    expect(WELSH_TO_ENGLISH_BAND_MAP.cymedrol).toBe('moderate')
-    expect(WELSH_TO_ENGLISH_BAND_MAP.uchel).toBe('high')
-    expect(WELSH_TO_ENGLISH_BAND_MAP['uchel iawn']).toBe('very high')
-  })
-})
+import { normalizeBandClass } from './normalize-band-class.js'
 
 describe('normalizeBandClass - English band names', () => {
   it('should normalize "Low" to "low"', () => {

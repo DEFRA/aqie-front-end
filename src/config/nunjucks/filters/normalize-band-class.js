@@ -1,16 +1,6 @@
 // '' - Filter to normalize Welsh and English pollutant band names to CSS class names
 
 /**
- * Map of Welsh band names to English equivalents for CSS class consistency
- */
-const WELSH_TO_ENGLISH_BAND_MAP = {
-  isel: 'low',
-  cymedrol: 'moderate',
-  uchel: 'high',
-  'uchel iawn': 'very high'
-}
-
-/**
  * Normalize pollutant band name to CSS class
  * Handles both English and Welsh band names
  *
@@ -25,14 +15,32 @@ function normalizeBandClass(band) {
   // Convert to lowercase for comparison
   const lowercaseBand = band.toLowerCase()
 
+  // Welsh to English band mapping
+  const welshToEnglish = {
+    isel: 'low',
+    cymedrol: 'moderate',
+    uchel: 'high',
+    'uchel iawn': 'very high'
+  }
+
   // Check if it's a Welsh band and map to English
-  const englishEquivalent = WELSH_TO_ENGLISH_BAND_MAP[lowercaseBand]
+  const englishEquivalent = welshToEnglish[lowercaseBand]
 
   // Use English equivalent if found, otherwise use the original band
   const normalizedBand = englishEquivalent || lowercaseBand
 
   // Convert spaces to hyphens for CSS class naming convention
   return normalizedBand.replaceAll(' ', '-')
+}
+
+/**
+ * Map of Welsh band names to English equivalents for CSS class consistency
+ */
+const WELSH_TO_ENGLISH_BAND_MAP = {
+  isel: 'low',
+  cymedrol: 'moderate',
+  uchel: 'high',
+  'uchel iawn': 'very high'
 }
 
 export { normalizeBandClass, WELSH_TO_ENGLISH_BAND_MAP }
