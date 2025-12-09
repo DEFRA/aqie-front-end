@@ -18,7 +18,7 @@ const HOURS_TO_SUBTRACT = 1.56
 const ABBREVIATED_DAY_LENGTH = 3
 const MIN_FULL_DAY_LENGTH = 3
 
-// Mock logger
+// Mock logger to avoid console spam during tests
 vi.mock('../../../server/common/helpers/logging/logger.js', () => ({
   createLogger: vi.fn(() => ({
     error: vi.fn()
@@ -110,6 +110,11 @@ describe('addDaysToTodayAbrev', () => {
     expect(result).toBeInstanceOf(Error)
   })
 
+  it('should handle environment without addFilter function', () => {
+    const result = addDaysToTodayAbrev({})
+    expect(result).toBeInstanceOf(Error)
+  })
+
   it(TEST_REG_ERROR_MSG, () => {
     const errorEnv = {
       addFilter: vi.fn(() => {
@@ -161,6 +166,11 @@ describe('addDaysToTodayAbrevWelsh', () => {
 
   it(TEST_INVALID_ENV_MSG, () => {
     const result = addDaysToTodayAbrevWelsh(null)
+    expect(result).toBeInstanceOf(Error)
+  })
+
+  it('should handle environment without addFilter function', () => {
+    const result = addDaysToTodayAbrevWelsh({})
     expect(result).toBeInstanceOf(Error)
   })
 
@@ -218,6 +228,11 @@ describe('addDaysToTodayFull', () => {
     expect(result).toBeInstanceOf(Error)
   })
 
+  it('should handle environment without addFilter function', () => {
+    const result = addDaysToTodayFull({})
+    expect(result).toBeInstanceOf(Error)
+  })
+
   it(TEST_REG_ERROR_MSG, () => {
     const errorEnv = {
       addFilter: vi.fn(() => {
@@ -269,6 +284,11 @@ describe('addDaysToTodayFullWelsh', () => {
 
   it(TEST_INVALID_ENV_MSG, () => {
     const result = addDaysToTodayFullWelsh(null)
+    expect(result).toBeInstanceOf(Error)
+  })
+
+  it('should handle environment without addFilter function', () => {
+    const result = addDaysToTodayFullWelsh({})
     expect(result).toBeInstanceOf(Error)
   })
 

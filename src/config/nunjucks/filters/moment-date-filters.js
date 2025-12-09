@@ -27,7 +27,9 @@ function addMomentFilters(env) {
       if (dateString === CALENDAR_STRING.NOW) {
         return moment.tz(EUROPE_LONDON).format(CALENDAR_STRING.DD_MMMM_YYYY)
       }
-      return moment.tz(EUROPE_LONDON).format(CALENDAR_STRING.DD_MMMM_YYYY)
+      return moment(dateString)
+        .tz(EUROPE_LONDON)
+        .format(CALENDAR_STRING.DD_MMMM_YYYY)
     })
     env.addFilter('govukDateHour', function (dateString) {
       if (dateString === CALENDAR_STRING.NOW) {
@@ -56,9 +58,6 @@ function addMomentFilters(env) {
 const addDaysToTodayAbrev = function (env) {
   try {
     if (!env || typeof env.addFilter !== 'function') {
-      logger.error(
-        'Invalid Nunjucks environment passed to addDaysToTodayAbrev.'
-      )
       throw new Error(INVALID_ENV_ERROR)
     }
     env.addFilter('addDaysToTodayAbrev', function (days) {
@@ -82,9 +81,6 @@ const addDaysToTodayAbrev = function (env) {
 const addDaysToTodayAbrevWelsh = function (env) {
   try {
     if (!env || typeof env.addFilter !== 'function') {
-      logger.error(
-        'Invalid Nunjucks environment passed to addDaysToTodayAbrevWelsh.'
-      )
       throw new Error(INVALID_ENV_ERROR)
     }
     env.addFilter('addDaysToTodayAbrevWelsh', function (days) {
@@ -109,7 +105,6 @@ const addDaysToTodayAbrevWelsh = function (env) {
 const addDaysToTodayFull = function (env) {
   try {
     if (!env || typeof env.addFilter !== 'function') {
-      logger.error('Invalid Nunjucks environment passed to addDaysToTodayFull.')
       throw new Error(INVALID_ENV_ERROR)
     }
     env.addFilter('addDaysToTodayFull', function (days) {
@@ -133,9 +128,6 @@ const addDaysToTodayFull = function (env) {
 const addDaysToTodayFullWelsh = function (env) {
   try {
     if (!env || typeof env.addFilter !== 'function') {
-      logger.error(
-        'Invalid Nunjucks environment passed to addDaysToTodayFullWelsh.'
-      )
       throw new Error(INVALID_ENV_ERROR)
     }
     env.addFilter('addDaysToTodayFullWelsh', function (days) {
