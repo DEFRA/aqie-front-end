@@ -19,7 +19,7 @@ const TEST_OPTIONS = { method: 'GET' }
 const STATUS_OK = 200
 const STATUS_ERROR = 500
 
-describe('catchProxyFetchError', () => {
+describe('catchProxyFetchError - basic behavior', () => {
   let proxyFetch
 
   beforeEach(async () => {
@@ -63,6 +63,38 @@ describe('catchProxyFetchError', () => {
     )
   })
 
+  it('should log API call duration', async () => {
+    // ''
+    const mockData = { location: 'Manchester' }
+    const mockResponse = {
+      ok: true,
+      status: STATUS_OK,
+      json: vi.fn().mockResolvedValue(mockData)
+    }
+    proxyFetch.mockResolvedValue(mockResponse)
+
+    const { catchProxyFetchError } = await import(
+      '../../../../src/server/common/helpers/catch-proxy-fetch-error.js'
+    )
+    await catchProxyFetchError(TEST_URL, TEST_OPTIONS, true)
+
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      expect.stringMatching(/API response\.status.*milliseconds/)
+    )
+  })
+})
+
+describe('catchProxyFetchError - error handling', () => {
+  let proxyFetch
+
+  beforeEach(async () => {
+    vi.clearAllMocks()
+    const proxyModule = await import(
+      '../../../../src/server/common/helpers/proxy.js'
+    )
+    proxyFetch = proxyModule.proxyFetch
+  })
+
   it('should handle non-ok response status', async () => {
     // ''
     const mockResponse = {
@@ -101,26 +133,6 @@ describe('catchProxyFetchError', () => {
     expect(result[0]).toBe(mockError)
     expect(mockLogger.error).toHaveBeenCalledWith(
       expect.stringContaining('Failed to proxyFetch data')
-    )
-  })
-
-  it('should log API call duration', async () => {
-    // ''
-    const mockData = { location: 'Manchester' }
-    const mockResponse = {
-      ok: true,
-      status: STATUS_OK,
-      json: vi.fn().mockResolvedValue(mockData)
-    }
-    proxyFetch.mockResolvedValue(mockResponse)
-
-    const { catchProxyFetchError } = await import(
-      '../../../../src/server/common/helpers/catch-proxy-fetch-error.js'
-    )
-    await catchProxyFetchError(TEST_URL, TEST_OPTIONS, true)
-
-    expect(mockLogger.info).toHaveBeenCalledWith(
-      expect.stringMatching(/API response\.status.*milliseconds/)
     )
   })
 })
