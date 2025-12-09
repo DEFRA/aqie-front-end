@@ -63,6 +63,14 @@ describe('normalizeBandClass - Welsh band names', () => {
   it('should normalize "Uchel Iawn" to "very-high"', () => {
     expect(normalizeBandClass('Uchel Iawn')).toBe('very-high')
   })
+
+  it('should handle all Welsh variants with proper case conversion', () => {
+    // Test all 4 Welsh band mappings to ensure object literal coverage
+    expect(normalizeBandClass('ISEL')).toBe('low')
+    expect(normalizeBandClass('CYMEDROL')).toBe('moderate')
+    expect(normalizeBandClass('UCHEL')).toBe('high')
+    expect(normalizeBandClass('UCHEL IAWN')).toBe('very-high')
+  })
 })
 
 describe('normalizeBandClass - Edge cases', () => {
@@ -104,5 +112,14 @@ describe('WELSH_TO_ENGLISH_BAND_MAP - Exported constant', () => {
     expect(WELSH_TO_ENGLISH_BAND_MAP.cymedrol).toBe('moderate')
     expect(WELSH_TO_ENGLISH_BAND_MAP.uchel).toBe('high')
     expect(WELSH_TO_ENGLISH_BAND_MAP['uchel iawn']).toBe('very high')
+  })
+
+  it('should have exactly 4 Welsh band mappings', () => {
+    const keys = Object.keys(WELSH_TO_ENGLISH_BAND_MAP)
+    expect(keys).toHaveLength(4)
+    expect(keys).toContain('isel')
+    expect(keys).toContain('cymedrol')
+    expect(keys).toContain('uchel')
+    expect(keys).toContain('uchel iawn')
   })
 })
