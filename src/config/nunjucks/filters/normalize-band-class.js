@@ -35,4 +35,4 @@ function normalizeBandClass(band) {
   return normalizedBand.replaceAll(' ', '-')
 }
 
-export { normalizeBandClass }
+export { normalizeBandClass, WELSH_TO_ENGLISH_BAND_MAP }

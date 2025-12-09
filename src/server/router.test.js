@@ -1,5 +1,8 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest'
 
+const PUBLIC_ROUTE_PATH = '/public/{param*}'
+const MINIMUM_PLUGIN_REGISTRATIONS = 30
+
 // Mock all the dependencies first, before any imports ''
 vi.mock('../../config/index.js', () => ({
   config: {
@@ -150,14 +153,14 @@ vi.mock('node:path', () => ({
     resolve: vi.fn((...args) => args.join('/')),
     join: vi.fn((...args) => args.join('/'))
   },
-  dirname: vi.fn((path) => '/mock/dirname')
+  dirname: vi.fn((_path) => '/mock/dirname')
 }))
 
-describe('Router Tests', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
+beforeEach(() => {
+  vi.clearAllMocks()
+})
 
+describe('Router plugin structure', () => {
   test('should export router object', async () => {
     // ''
     const { router } = await import('./router.js')
@@ -175,7 +178,9 @@ describe('Router Tests', () => {
       register: expect.any(Function)
     })
   })
+})
 
+describe('Router plugin registration', () => {
   test('should register plugins on server', async () => {
     // ''
     const mockServer = {
@@ -200,7 +205,7 @@ describe('Router Tests', () => {
     expect(mockServer.route).toHaveBeenCalledWith(
       expect.objectContaining({
         method: 'GET',
-        path: '/public/{param*}'
+        path: PUBLIC_ROUTE_PATH
       })
     )
   })
@@ -228,7 +233,7 @@ describe('Router Tests', () => {
     expect(mockServer.route).toHaveBeenCalledWith(
       expect.objectContaining({
         method: 'GET',
-        path: '/public/{param*}'
+        path: PUBLIC_ROUTE_PATH
       })
     )
   })
@@ -238,7 +243,7 @@ describe('Router Tests', () => {
     const mockServer = {
       register: vi.fn(),
       route: vi.fn(),
-      table: vi.fn(() => [{ path: '/public/{param*}' }])
+      table: vi.fn(() => [{ path: PUBLIC_ROUTE_PATH }])
     }
 
     const { router } = await import('./router.js')
@@ -246,7 +251,7 @@ describe('Router Tests', () => {
 
     // Should only call route once for .well-known (not for duplicate public)
     const publicRouteCalls = mockServer.route.mock.calls.filter(
-      (call) => call[0].path === '/public/{param*}'
+      (call) => call[0].path === PUBLIC_ROUTE_PATH
     )
     expect(publicRouteCalls).toHaveLength(0) // Should be skipped due to existing route
   })
@@ -257,7 +262,9 @@ describe('Router Tests', () => {
     expect(router.plugin.register).toBeDefined()
     expect(typeof router.plugin.register).toBe('function')
   })
+})
 
+describe('Router route registration', () => {
   test('should register actions-reduce-exposure routes', async () => {
     // ''
     const mockServer = {
@@ -294,7 +301,9 @@ describe('Router Tests', () => {
     expect(mockServer.register).toHaveBeenCalledWith([expect.any(Object)])
 
     // Should register multiple plugins (including actions-reduce-exposure and health-effects)
-    expect(mockServer.register.mock.calls.length).toBeGreaterThan(30) // ''
+    expect(mockServer.register.mock.calls.length).toBeGreaterThan(
+      MINIMUM_PLUGIN_REGISTRATIONS
+    ) // ''
   })
 
   test('should handle WELSH_TITLE constant in imports', async () => {

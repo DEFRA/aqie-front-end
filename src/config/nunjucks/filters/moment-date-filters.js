@@ -9,6 +9,7 @@ import {
 import { createLogger } from '../../../server/common/helpers/logging/logger.js'
 
 const logger = createLogger('moment-date-filters') // ''
+const INVALID_ENV_ERROR = 'Invalid Nunjucks environment.'
 
 /**
  * Formats a moment date with lowercase 'am/pm'.
@@ -58,7 +59,7 @@ const addDaysToTodayAbrev = function (env) {
       logger.error(
         'Invalid Nunjucks environment passed to addDaysToTodayAbrev.'
       )
-      throw new Error('Invalid Nunjucks environment.')
+      throw new Error(INVALID_ENV_ERROR)
     }
     env.addFilter('addDaysToTodayAbrev', function (days) {
       if (typeof days !== 'number') {
@@ -80,6 +81,12 @@ const addDaysToTodayAbrev = function (env) {
 
 const addDaysToTodayAbrevWelsh = function (env) {
   try {
+    if (!env || typeof env.addFilter !== 'function') {
+      logger.error(
+        'Invalid Nunjucks environment passed to addDaysToTodayAbrevWelsh.'
+      )
+      throw new Error(INVALID_ENV_ERROR)
+    }
     env.addFilter('addDaysToTodayAbrevWelsh', function (days) {
       if (typeof days !== 'number') {
         days = 0
@@ -103,7 +110,7 @@ const addDaysToTodayFull = function (env) {
   try {
     if (!env || typeof env.addFilter !== 'function') {
       logger.error('Invalid Nunjucks environment passed to addDaysToTodayFull.')
-      throw new Error('Invalid Nunjucks environment.')
+      throw new Error(INVALID_ENV_ERROR)
     }
     env.addFilter('addDaysToTodayFull', function (days) {
       if (typeof days !== 'number') {
