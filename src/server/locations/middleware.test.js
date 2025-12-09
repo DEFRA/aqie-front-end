@@ -426,3 +426,165 @@ describe('searchMiddleware - date formatting', () => {
     expect(getFormattedDateSummary).toHaveBeenCalledWith(MOCK_DATE_STRING)
   })
 })
+
+describe('searchMiddleware - NI WRONG_POSTCODE handling', () => {
+  beforeEach(() => {
+    setupMocks()
+  })
+
+  it('should handle NI location with WRONG_POSTCODE error', async () => {
+    const { mockRequest, mockH } = mocks
+    mockRequest.query = {
+      searchTerms: 'invalid',
+      secondSearchTerm: 'ni'
+    }
+
+    vi.mocked(handleErrorInputAndRedirect).mockReturnValue({
+      locationType: LOCATION_TYPE_NI,
+      userLocation: 'Invalid',
+      locationNameOrPostcode: 'Invalid'
+    })
+
+    vi.mocked(fetchData).mockResolvedValue({
+      getDailySummary: { issue_date: MOCK_DATE_STRING, today: {} },
+      getForecasts: { forecasts: [] },
+      getOSPlaces: null,
+      getNIPlaces: WRONG_POSTCODE
+    })
+
+    vi.mocked(transformKeys).mockReturnValue({
+      transformedDailySummary: MOCK_DATE_OBJECT
+    })
+
+    const result = await searchMiddleware(mockRequest, mockH)
+
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('locationDataNotFound', {
+      locationNameOrPostcode: 'Invalid',
+      lang: LANG_EN
+    })
+    expect(mockRequest.yar.clear).toHaveBeenCalledWith('searchTermsSaved')
+    expect(result).toBe(TAKEOVER_RESULT)
+  })
+})
+
+describe('searchMiddleware - NI empty results handling', () => {
+  beforeEach(() => {
+    setupMocks()
+  })
+
+  it('should handle NI location with empty results array', async () => {
+    const { mockRequest, mockH } = mocks
+    mockRequest.query = {
+      searchTerms: 'unknown',
+      secondSearchTerm: 'ni'
+    }
+
+    vi.mocked(handleErrorInputAndRedirect).mockReturnValue({
+      locationType: LOCATION_TYPE_NI,
+      userLocation: 'Unknown',
+      locationNameOrPostcode: 'Unknown'
+    })
+
+    vi.mocked(fetchData).mockResolvedValue({
+      getDailySummary: { issue_date: MOCK_DATE_STRING, today: {} },
+      getForecasts: { forecasts: [] },
+      getOSPlaces: null,
+      getNIPlaces: { results: [] }
+    })
+
+    vi.mocked(transformKeys).mockReturnValue({
+      transformedDailySummary: MOCK_DATE_OBJECT
+    })
+
+    vi.mocked(isValidPartialPostcodeNI).mockReturnValue(false)
+    vi.mocked(isValidPartialPostcodeUK).mockReturnValue(false)
+
+    const result = await searchMiddleware(mockRequest, mockH)
+
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('locationDataNotFound', {
+      locationNameOrPostcode: 'Unknown',
+      lang: LANG_EN
+    })
+    expect(mockRequest.yar.clear).toHaveBeenCalledWith('searchTermsSaved')
+    expect(result).toBe(TAKEOVER_RESULT)
+  })
+})
+
+describe('searchMiddleware - location not found without searchTerms', () => {
+  beforeEach(() => {
+    setupMocks()
+  })
+
+  it('should redirect when searchTerms is empty', async () => {
+    const { mockRequest, mockH } = mocks
+    mockRequest.query = {
+      searchTerms: '',
+      secondSearchTerm: ''
+    }
+
+    vi.mocked(handleErrorInputAndRedirect).mockReturnValue({
+      locationType: LOCATION_TYPE_UK,
+      userLocation: 'Test',
+      locationNameOrPostcode: 'Test'
+    })
+
+    vi.mocked(fetchData).mockResolvedValue({
+      getDailySummary: { issue_date: MOCK_DATE_STRING },
+      getForecasts: { forecasts: [] },
+      getOSPlaces: null,
+      getNIPlaces: null
+    })
+
+    vi.mocked(isValidPartialPostcodeNI).mockReturnValue(true)
+    vi.mocked(isValidPartialPostcodeUK).mockReturnValue(false)
+
+    const result = await searchMiddleware(mockRequest, mockH)
+
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('locationDataNotFound', {
+      locationNameOrPostcode: 'Test',
+      lang: LANG_EN
+    })
+    expect(mockH.redirect).toHaveBeenCalledWith('location-not-found')
+    expect(result).toBe(TAKEOVER_RESULT)
+  })
+})
+
+describe('searchMiddleware - unknown location type fallback', () => {
+  beforeEach(() => {
+    setupMocks()
+  })
+
+  it('should redirect to location-not-found for unknown location type', async () => {
+    const { mockRequest, mockH } = mocks
+    mockRequest.query = {
+      searchTerms: 'test',
+      secondSearchTerm: ''
+    }
+
+    // Mock an unknown location type (neither UK nor NI)
+    vi.mocked(handleErrorInputAndRedirect).mockReturnValue({
+      locationType: 'UNKNOWN',
+      userLocation: 'Test',
+      locationNameOrPostcode: 'Test'
+    })
+
+    vi.mocked(fetchData).mockResolvedValue({
+      getDailySummary: { issue_date: MOCK_DATE_STRING, today: {} },
+      getForecasts: { forecasts: [] },
+      getOSPlaces: { results: [{ id: '1' }] }, // Valid data to pass validation
+      getNIPlaces: null
+    })
+
+    vi.mocked(transformKeys).mockReturnValue({
+      transformedDailySummary: MOCK_DATE_OBJECT
+    })
+
+    vi.mocked(isValidPartialPostcodeNI).mockReturnValue(false)
+    vi.mocked(isValidPartialPostcodeUK).mockReturnValue(false)
+
+    const result = await searchMiddleware(mockRequest, mockH)
+
+    expect(mockRequest.yar.clear).toHaveBeenCalledWith('searchTermsSaved')
+    expect(result).toBe(TAKEOVER_RESULT)
+  })
+})
