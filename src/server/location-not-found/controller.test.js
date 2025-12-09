@@ -7,8 +7,17 @@ import {
 import { vi } from 'vitest'
 
 const VIEW_RENDERED = 'view rendered'
+const REDIRECTED = 'redirected'
 
-describe('locationNotFoundController - english', () => {
+const createMockH = () => {
+  const takeover = vi.fn(() => REDIRECTED)
+  const code = vi.fn(() => ({ takeover }))
+  const redirect = vi.fn(() => ({ code }))
+  const view = vi.fn(() => VIEW_RENDERED)
+  return { redirect, view }
+}
+
+describe('locationNotFoundController - english - basic rendering', () => {
   let mockRequest
   let mockH
   const mockContent = english
@@ -24,14 +33,7 @@ describe('locationNotFoundController - english', () => {
         })
       }
     }
-    mockH = {
-      redirect: vi.fn(() => ({
-        code: vi.fn(() => ({
-          takeover: vi.fn(() => 'redirected')
-        }))
-      })),
-      view: vi.fn(() => VIEW_RENDERED)
-    }
+    mockH = createMockH()
   })
 
   it('should render the location not found view with empty location data', () => {
@@ -71,8 +73,27 @@ describe('locationNotFoundController - english', () => {
   it('should redirect to the English version if the language is "cy"', () => {
     mockRequest.query.lang = 'cy'
     const result = locationNotFoundController.handler(mockRequest, mockH)
-    expect(result).toBe('redirected')
+    expect(result).toBe(REDIRECTED)
     expect(mockH.redirect).toHaveBeenCalledWith(LOCATION_NOT_FOUND_ROUTE_CY)
+  })
+})
+
+describe('locationNotFoundController - english - session handling', () => {
+  let mockRequest
+  let mockH
+
+  beforeEach(() => {
+    mockRequest = {
+      query: {},
+      path: '/location-not-found',
+      yar: {
+        get: vi.fn().mockReturnValue({
+          locationNameOrPostcode: '',
+          lang: 'en'
+        })
+      }
+    }
+    mockH = createMockH()
   })
 
   it('should use session lang when query.lang is not provided', () => {

@@ -275,7 +275,7 @@ describe('handle-error-helpers - handleSearchTerms', () => {
   })
 })
 
-describe('handle-error-helpers - referer paths', () => {
+describe('handle-error-helpers - referer search-location', () => {
   let mockRequest, mockH, mockPayload
 
   beforeEach(() => {
@@ -286,7 +286,7 @@ describe('handle-error-helpers - referer paths', () => {
     vi.clearAllMocks()
   })
 
-  describe('handleNoSearchTerms - referer paths', () => {
+  describe('handleNoSearchTerms - search-location referer', () => {
     it('should set session values when referer path is search-location', () => {
       mockRequest.headers = {
         referer: 'http://localhost:3000/search-location?lang=en'
@@ -316,6 +316,21 @@ describe('handle-error-helpers - referer paths', () => {
       })
     })
 
+  })
+})
+
+describe('handle-error-helpers - referer chwilio-lleoliad', () => {
+  let mockRequest, mockH, mockPayload
+
+  beforeEach(() => {
+    mockRequest = createMockRequest()
+    mockH = createMockH()
+    mockPayload = createMockPayload()
+    setupMocks()
+    vi.clearAllMocks()
+  })
+
+  describe('handleNoSearchTerms - chwilio-lleoliad referer', () => {
     it('should set session values when referer path is chwilio-lleoliad', () => {
       mockRequest.headers = {
         referer: 'http://localhost:3000/chwilio-lleoliad?lang=cy'
@@ -345,6 +360,21 @@ describe('handle-error-helpers - referer paths', () => {
       })
     })
 
+  })
+})
+
+describe('handle-error-helpers - other referer paths', () => {
+  let mockRequest, mockH, mockPayload
+
+  beforeEach(() => {
+    mockRequest = createMockRequest()
+    mockH = createMockH()
+    mockPayload = createMockPayload()
+    setupMocks()
+    vi.clearAllMocks()
+  })
+
+  describe('handleNoSearchTerms - other referer', () => {
     it('should retrieve from session when referer path is not search-location or chwilio-lleoliad', () => {
       mockRequest.headers = {
         referer: 'http://localhost:3000/some-other-page'
