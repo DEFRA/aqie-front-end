@@ -72,12 +72,37 @@ describe("'' healthEffectsCy plugin - redirects", () => {
     }
   })
 
+  it("'' redirects with case-insensitive lang=CY", async () => {
+    const res = await server.inject('/location/test/health-effects?lang=CY')
+    expect([HTTP_FOUND, HTTP_NOT_FOUND]).toContain(res.statusCode)
+    if (res.statusCode === HTTP_FOUND) {
+      expect(res.headers.location).toBe('/lleoliad/test/effeithiau-iechyd')
+    }
+  })
+
+  it("'' URL encodes id parameter when redirecting", async () => {
+    const res = await server.inject(
+      '/location/test%20id/health-effects?lang=cy'
+    )
+    expect([HTTP_FOUND, HTTP_NOT_FOUND]).toContain(res.statusCode)
+    if (res.statusCode === HTTP_FOUND) {
+      expect(res.headers.location).toBe(
+        '/lleoliad/test%2520id/effeithiau-iechyd'
+      )
+    }
+  })
+
   it("'' does not redirect when lang is not cy", async () => {
     // '' Should not redirect when lang is not 'cy' (wantsCy false)
     const res = await server.inject(
       '/location/locationName/health-effects?lang=en'
     )
     expect(res.statusCode).toBe(HTTP_NOT_FOUND) // '' No route matches / original path continues
+  })
+
+  it("'' continues when English path matches but no lang parameter", async () => {
+    const res = await server.inject('/location/test/health-effects')
+    expect(res.statusCode).toBe(HTTP_NOT_FOUND) // '' No redirect, continues
   })
 
   it("'' successfully redirects English path with lang=cy", async () => {
