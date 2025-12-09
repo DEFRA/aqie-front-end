@@ -132,6 +132,12 @@ const addDaysToTodayFull = function (env) {
 
 const addDaysToTodayFullWelsh = function (env) {
   try {
+    if (!env || typeof env.addFilter !== 'function') {
+      logger.error(
+        'Invalid Nunjucks environment passed to addDaysToTodayFullWelsh.'
+      )
+      throw new Error(INVALID_ENV_ERROR)
+    }
     env.addFilter('addDaysToTodayFullWelsh', function (days) {
       if (typeof days !== 'number') {
         days = 0
