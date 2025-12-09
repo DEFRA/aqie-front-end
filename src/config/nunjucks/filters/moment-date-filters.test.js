@@ -192,6 +192,11 @@ describe('addDaysToTodayAbrevWelsh', () => {
     expect(result).toBe('Llun')
   })
 
+  it(TEST_INVALID_ENV_MSG, () => {
+    const result = addDaysToTodayAbrevWelsh(null)
+    expect(result).toBeInstanceOf(Error)
+  })
+
   it(TEST_REG_ERROR_MSG, () => {
     const errorEnv = {
       addFilter: vi.fn(() => {
