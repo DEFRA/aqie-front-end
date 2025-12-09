@@ -6,6 +6,8 @@ import {
 } from '../data/constants.js'
 import { vi } from 'vitest'
 
+const VIEW_RENDERED = 'view rendered'
+
 describe('locationNotFoundController - english', () => {
   let mockRequest
   let mockH
@@ -28,13 +30,13 @@ describe('locationNotFoundController - english', () => {
           takeover: vi.fn(() => 'redirected')
         }))
       })),
-      view: vi.fn(() => 'view rendered')
+      view: vi.fn(() => VIEW_RENDERED)
     }
   })
 
   it('should render the location not found view with empty location data', () => {
     const result = locationNotFoundController.handler(mockRequest, mockH)
-    expect(result).toBe('view rendered')
+    expect(result).toBe(VIEW_RENDERED)
     expect(mockH.view).toHaveBeenCalledWith(LOCATION_NOT_FOUND, {
       userLocation: '',
       serviceName: mockContent.notFoundLocation.heading,
@@ -52,7 +54,7 @@ describe('locationNotFoundController - english', () => {
   test.skip('should render the location not found page when invalid empty location data', () => {
     const locationData = { locationNameOrPostcode: 'dkjfhe', lang: 'en' }
     const result = locationNotFoundController.handler(mockRequest, mockH)
-    expect(result).toBe('view rendered')
+    expect(result).toBe(VIEW_RENDERED)
     expect(mockH.view).toHaveBeenCalledWith(LOCATION_NOT_FOUND, {
       userLocation: locationData.locationNameOrPostcode,
       serviceName: mockContent.notFoundLocation.heading,
@@ -79,7 +81,7 @@ describe('locationNotFoundController - english', () => {
       lang: 'cy'
     })
     const result = locationNotFoundController.handler(mockRequest, mockH)
-    expect(result).toBe('view rendered')
+    expect(result).toBe(VIEW_RENDERED)
     expect(mockH.view).toHaveBeenCalledWith(
       LOCATION_NOT_FOUND,
       expect.objectContaining({
@@ -92,7 +94,7 @@ describe('locationNotFoundController - english', () => {
   it('should handle empty session data gracefully', () => {
     mockRequest.yar.get.mockReturnValue(null)
     const result = locationNotFoundController.handler(mockRequest, mockH)
-    expect(result).toBe('view rendered')
+    expect(result).toBe(VIEW_RENDERED)
     expect(mockH.view).toHaveBeenCalledWith(
       LOCATION_NOT_FOUND,
       expect.objectContaining({
@@ -109,7 +111,7 @@ describe('locationNotFoundController - english', () => {
       lang: 'cy'
     })
     const result = locationNotFoundController.handler(mockRequest, mockH)
-    expect(result).toBe('view rendered')
+    expect(result).toBe(VIEW_RENDERED)
     expect(mockH.view).toHaveBeenCalledWith(
       LOCATION_NOT_FOUND,
       expect.objectContaining({
@@ -125,7 +127,7 @@ describe('locationNotFoundController - english', () => {
       lang: 'en'
     })
     const result = locationNotFoundController.handler(mockRequest, mockH)
-    expect(result).toBe('view rendered')
+    expect(result).toBe(VIEW_RENDERED)
     expect(mockH.view).toHaveBeenCalled()
   })
 })

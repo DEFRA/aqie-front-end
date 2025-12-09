@@ -17,6 +17,13 @@ const TEST_REG_ERROR_MSG = 'should handle errors during filter registration'
 const REG_ERROR_MSG = 'Registration error'
 const HOURS_TO_SUBTRACT = 1.56
 
+// Mock logger
+vi.mock('../../../server/common/helpers/logging/logger.js', () => ({
+  createLogger: vi.fn(() => ({
+    error: vi.fn()
+  }))
+}))
+
 // Mock moment-timezone
 vi.mock('moment-timezone', () => {
   const mockMoment = vi.fn(() => ({
@@ -71,6 +78,8 @@ describe('addMomentFilters', () => {
     const result = addMomentFilters(errorEnv)
     expect(result).toBeInstanceOf(Error)
   })
+
+
 })
 
 describe('addDaysToTodayAbrev', () => {
@@ -123,6 +132,8 @@ describe('addDaysToTodayAbrev', () => {
     expect(mockMomentObj.add).toHaveBeenCalledWith(0, 'days')
     expect(result).toBe('Mon')
   })
+
+
 
   it(TEST_INVALID_ENV_MSG, () => {
     const result = addDaysToTodayAbrev(null)
@@ -196,6 +207,8 @@ describe('addDaysToTodayAbrevWelsh', () => {
     const result = addDaysToTodayAbrevWelsh(null)
     expect(result).toBeInstanceOf(Error)
   })
+
+
 
   it(TEST_REG_ERROR_MSG, () => {
     const errorEnv = {

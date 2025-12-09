@@ -122,7 +122,7 @@ function splitAndCheckExactWords(sourceString, targetString) {
   const words = sourceString.split(' ') // Split the source string into an array of words
   if (words.length >= THREE_WORDS) {
     // Check if the source string contains exactly three words
-    return words.some((word) => new RegExp(`\\b${word}\\b`).test(targetString)) // Check if the target string contains exactly any of the three words
+    return words.some((word) => new RegExp(String.raw`\b${word}\b`).test(targetString)) // Check if the target string contains exactly any of the three words
   }
   return false // Return false if the source string does not contain exactly three words
 }
