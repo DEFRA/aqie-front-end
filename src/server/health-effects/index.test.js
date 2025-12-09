@@ -4,9 +4,14 @@ import { Server } from '@hapi/hapi' // '' Hapi server
 import { healthEffects } from './index.js' // '' English plugin
 import { healthEffectsController } from './controller.js' // '' English controller
 
+const HTTP_OK = 200
+const HTTP_FOUND = 302
+const HTTP_NOT_FOUND = 404
+const WELSH_HEALTH_EFFECTS_PATH = '/lleoliad/{id}/effeithiau-iechyd'
+
 vi.mock('./controller.js', () => ({
   healthEffectsController: {
-    handler: vi.fn((req, h) => h.response('ok').code(200))
+    handler: vi.fn((_req, h) => h.response('ok').code(HTTP_OK))
   } // '' Mock handler
 }))
 
@@ -22,7 +27,7 @@ vi.mock('../common/helpers/logging/logger.js', () => {
   }
 })
 
-describe("'' healthEffects plugin", () => {
+describe("'' healthEffects plugin - basic routes", () => {
   let server
   let logger
 
@@ -39,21 +44,21 @@ describe("'' healthEffects plugin", () => {
     const res = await server.inject(
       '/location/bristol_city-of-bristol/health-effects'
     )
-    expect(res.statusCode).toBe(200)
+    expect(res.statusCode).toBe(HTTP_OK)
     expect(healthEffectsController.handler).toHaveBeenCalledTimes(1)
   })
 
   it("'' redirects legacy Welsh path to English dynamic route", async () => {
     // '' In current test environment the legacy path isn't registered -> expect 404
     const res = await server.inject(
-      '/lleoliad/bristol_city-of-bristol/effeithiau-iechyd'
+      WELSH_HEALTH_EFFECTS_PATH.replace('{id}', 'bristol_city-of-bristol')
     )
-    expect(res.statusCode).toBe(404)
+    expect(res.statusCode).toBe(HTTP_NOT_FOUND)
   })
 
   it("'' continues request when legacy path does not match", async () => {
     const res = await server.inject('/lleoliad/unknown/path?lang=en')
-    expect(res.statusCode).toBe(404) // '' No route matches
+    expect(res.statusCode).toBe(HTTP_NOT_FOUND) // '' No route matches
   })
 
   /* it("'' logs error when onPreHandler fails", async () => {
@@ -93,6 +98,19 @@ describe("'' healthEffects plugin", () => {
       'Registration failed'
     )
   })
+})
+
+describe("'' healthEffects plugin - legacy redirects", () => {
+  let server
+  let logger
+
+  beforeEach(async () => {
+    server = new Server({ port: 0 })
+    logger = require('../common/helpers/logging/logger.js').createLogger()
+    vi.spyOn(logger, 'warn')
+    vi.spyOn(logger, 'error')
+    await server.register({ plugin: healthEffects })
+  })
 
   it("'' logs warning when onPreHandler redirect fails", async () => {
     // '' Simulate error in logger.warn by catching it
@@ -110,7 +128,7 @@ describe("'' healthEffects plugin", () => {
 
     // '' Test that continues to work even when regex doesn't match
     const res = await testServer.inject('/some/other/path')
-    expect(res.statusCode).toBe(404) // '' No route matches
+    expect(res.statusCode).toBe(HTTP_NOT_FOUND) // '' No route matches
 
     logger.warn = originalWarn
   })
@@ -123,20 +141,102 @@ describe("'' healthEffects plugin", () => {
 
     // '' Inject a path that won't match the redirect pattern
     const res = await errorServer.inject('/some/path')
-    expect(res.statusCode).toBe(404)
+    expect(res.statusCode).toBe(HTTP_NOT_FOUND)
   })
 
   it("'' successfully redirects Welsh path with lang=en", async () => {
     // '' Test the redirect logic when path matches and lang=en
     const redirectServer = new Server({ port: 0 })
+
+    // '' Register the plugin which adds the onPreHandler hook
     await redirectServer.register({ plugin: healthEffects })
 
-    // '' Inject the exact Welsh path that should redirect
+    // '' Register a route for the Welsh path to test the redirect
+    redirectServer.route({
+      method: 'GET',
+      path: WELSH_HEALTH_EFFECTS_PATH,
+      handler: () => 'Welsh route reached'
+    })
+
+    // '' Inject the exact Welsh path that should trigger redirect
     const res = await redirectServer.inject(
       '/lleoliad/test-id/effeithiau-iechyd?lang=en'
     )
 
-    // '' Depending on implementation, this might be 302 (redirect) or 404 (no route)
-    expect([302, 404]).toContain(res.statusCode)
+    // '' Should redirect to English path
+    expect(res.statusCode).toBe(HTTP_FOUND)
+    expect(res.headers.location).toBe('/location/test-id/health-effects')
+  })
+
+  it("'' URL encodes id parameter when redirecting", async () => {
+    const encodeServer = new Server({ port: 0 })
+    await encodeServer.register({ plugin: healthEffects })
+
+    // '' Register Welsh route
+    encodeServer.route({
+      method: 'GET',
+      path: WELSH_HEALTH_EFFECTS_PATH,
+      handler: () => 'Welsh route'
+    })
+
+    // '' Test with ID that needs encoding (has special characters)
+    const res = await encodeServer.inject(
+      WELSH_HEALTH_EFFECTS_PATH.replace('{id}', 'test%20id') + '?lang=en'
+    )
+
+    // '' Should redirect with properly encoded ID
+    expect(res.statusCode).toBe(HTTP_FOUND)
+    expect(res.headers.location).toBe('/location/test%2520id/health-effects')
+  })
+})
+
+describe("'' healthEffects plugin - Welsh route continuation", () => {
+  let server
+  let logger
+
+  beforeEach(async () => {
+    server = new Server({ port: 0 })
+    logger = require('../common/helpers/logging/logger.js').createLogger()
+    vi.spyOn(logger, 'warn')
+    vi.spyOn(logger, 'error')
+    await server.register({ plugin: healthEffects })
+  })
+
+  it("'' continues when Welsh path matches but lang is not en", async () => {
+    const noLangServer = new Server({ port: 0 })
+    await noLangServer.register({ plugin: healthEffects })
+
+    // '' Register Welsh route
+    noLangServer.route({
+      method: 'GET',
+      path: WELSH_HEALTH_EFFECTS_PATH,
+      handler: () => 'Welsh content'
+    })
+
+    // '' Request without lang=en should continue to Welsh route
+    const res = await noLangServer.inject(
+      WELSH_HEALTH_EFFECTS_PATH.replace('{id}', 'test-id')
+    )
+    expect(res.statusCode).toBe(HTTP_OK)
+    expect(res.payload).toBe('Welsh content')
+  })
+
+  it("'' continues when Welsh path matches with lang=cy", async () => {
+    const cyServer = new Server({ port: 0 })
+    await cyServer.register({ plugin: healthEffects })
+
+    // '' Register Welsh route
+    cyServer.route({
+      method: 'GET',
+      path: WELSH_HEALTH_EFFECTS_PATH,
+      handler: () => 'Cynnwys Cymraeg'
+    })
+
+    // '' Request with lang=cy should continue to Welsh route (not redirect)
+    const res = await cyServer.inject(
+      WELSH_HEALTH_EFFECTS_PATH.replace('{id}', 'test-id') + '?lang=cy'
+    )
+    expect(res.statusCode).toBe(HTTP_OK)
+    expect(res.payload).toBe('Cynnwys Cymraeg')
   })
 })

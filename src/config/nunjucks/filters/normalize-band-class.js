@@ -25,7 +25,7 @@ function normalizeBandClass(band) {
   // Convert to lowercase for comparison
   const lowercaseBand = band.toLowerCase()
 
-  // Check if it's a Welsh band and map to English
+  // Check if it's a Welsh band and map to English using the constant
   const englishEquivalent = WELSH_TO_ENGLISH_BAND_MAP[lowercaseBand]
 
   // Use English equivalent if found, otherwise use the original band
@@ -35,4 +35,4 @@ function normalizeBandClass(band) {
   return normalizedBand.replaceAll(' ', '-')
 }
 
-export { normalizeBandClass }
+export { normalizeBandClass, WELSH_TO_ENGLISH_BAND_MAP }

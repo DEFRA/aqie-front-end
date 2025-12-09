@@ -45,6 +45,25 @@ const pollutantConfigs = {
 }
 
 /**
+ * Build query parameters for Welsh redirect
+ * @param {Object} query - Query object
+ * @returns {URLSearchParams} Query parameters
+ */
+function buildWelshRedirectParams(query) {
+  const queryParams = new URLSearchParams({ lang: LANG_CY })
+  if (query.locationId) {
+    queryParams.append('locationId', query.locationId)
+  }
+  if (query.locationName) {
+    queryParams.append('locationName', query.locationName)
+  }
+  if (query.searchTerms) {
+    queryParams.append('searchTerms', query.searchTerms)
+  }
+  return queryParams
+}
+
+/**
  * Generic pollutant controller handler
  * Eliminates code duplication across all English pollutant controllers
  *
@@ -67,16 +86,7 @@ export function createPollutantHandler(pollutantType, request, h) {
 
   // Handle Welsh language redirect
   if (query?.lang && query?.lang === LANG_CY) {
-    const queryParams = new URLSearchParams({ lang: LANG_CY })
-    if (query.locationId) {
-      queryParams.append('locationId', query.locationId)
-    }
-    if (query.locationName) {
-      queryParams.append('locationName', query.locationName)
-    }
-    if (query.searchTerms) {
-      queryParams.append('searchTerms', query.searchTerms)
-    }
+    const queryParams = buildWelshRedirectParams(query)
     return h
       .redirect(`${config.welshRedirectPath}?${queryParams.toString()}`)
       .code(REDIRECT_STATUS_CODE)

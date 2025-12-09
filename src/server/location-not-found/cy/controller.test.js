@@ -6,7 +6,9 @@ import {
 } from '../../data/constants.js'
 import { vi } from 'vitest'
 
-describe('locationNotFoundController - welsh', () => {
+const VIEW_RENDERED = 'view rendered'
+
+describe('locationNotFoundController - welsh - basic rendering', () => {
   let mockRequest
   let mockH
   const mockContent = welsh
@@ -22,20 +24,17 @@ describe('locationNotFoundController - welsh', () => {
         })
       }
     }
-    mockH = {
-      redirect: vi.fn(() => ({
-        code: vi.fn(() => ({
-          takeover: vi.fn(() => 'redirected')
-        }))
-      })),
-      view: vi.fn(() => 'view rendered')
-    }
+    const takeover = vi.fn(() => 'redirected')
+    const code = vi.fn(() => ({ takeover }))
+    const redirect = vi.fn(() => ({ code }))
+    const view = vi.fn(() => VIEW_RENDERED)
+    mockH = { redirect, view }
   })
 
   it('should render the location not found view with empty location data', () => {
     mockRequest.query.lang = 'cy'
     const result = locationNotFoundController.handler(mockRequest, mockH)
-    expect(result).toBe('view rendered')
+    expect(result).toBe(VIEW_RENDERED)
     expect(mockH.view).toHaveBeenCalledWith(LOCATION_NOT_FOUND, {
       userLocation: '',
       serviceName: mockContent.notFoundLocation.heading,
@@ -55,5 +54,77 @@ describe('locationNotFoundController - welsh', () => {
     const result = locationNotFoundController.handler(mockRequest, mockH)
     expect(result).toBe('redirected')
     expect(mockH.redirect).toHaveBeenCalledWith(LOCATION_NOT_FOUND_ROUTE_EN)
+  })
+})
+
+describe('locationNotFoundController - welsh - session handling', () => {
+  let mockRequest
+  let mockH
+
+  beforeEach(() => {
+    mockRequest = {
+      query: {},
+      path: '/lleoliad-heb-ei-ganfod/cy',
+      yar: {
+        get: vi.fn().mockReturnValue({
+          locationNameOrPostcode: '',
+          lang: 'cy'
+        })
+      }
+    }
+    const takeover = vi.fn(() => 'redirected')
+    const code = vi.fn(() => ({ takeover }))
+    const redirect = vi.fn(() => ({ code }))
+    const view = vi.fn(() => VIEW_RENDERED)
+    mockH = { redirect, view }
+  })
+
+  it('should use session lang when query.lang is not provided', () => {
+    mockRequest.yar.get.mockReturnValue({
+      locationNameOrPostcode: 'Caerdydd',
+      lang: 'cy'
+    })
+    const result = locationNotFoundController.handler(mockRequest, mockH)
+    expect(result).toBe(VIEW_RENDERED)
+    expect(mockH.view).toHaveBeenCalledWith(
+      LOCATION_NOT_FOUND,
+      expect.objectContaining({
+        lang: 'cy',
+        userLocation: 'Caerdydd'
+      })
+    )
+  })
+
+  it('should handle empty session data gracefully', () => {
+    mockRequest.yar.get.mockReturnValue([])
+    const result = locationNotFoundController.handler(mockRequest, mockH)
+    expect(result).toBe(VIEW_RENDERED)
+    // When destructuring empty array, locationNameOrPostcode and lang will be undefined
+    // The controller passes these undefined values directly to the view
+    expect(mockH.view).toHaveBeenCalled()
+  })
+
+  it('should override session lang with query.lang when provided', () => {
+    mockRequest.query.lang = 'cy'
+    mockRequest.yar.get.mockReturnValue({
+      locationNameOrPostcode: 'Abertawe',
+      lang: 'en'
+    })
+    const result = locationNotFoundController.handler(mockRequest, mockH)
+    expect(result).toBe(VIEW_RENDERED)
+    expect(mockH.view).toHaveBeenCalledWith(
+      LOCATION_NOT_FOUND,
+      expect.objectContaining({
+        lang: 'cy',
+        userLocation: 'Abertawe'
+      })
+    )
+  })
+
+  it('should handle null session data', () => {
+    mockRequest.yar.get.mockReturnValue(null)
+    const result = locationNotFoundController.handler(mockRequest, mockH)
+    expect(result).toBe(VIEW_RENDERED)
+    expect(mockH.view).toHaveBeenCalled()
   })
 })

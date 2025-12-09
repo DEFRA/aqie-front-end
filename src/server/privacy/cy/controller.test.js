@@ -1,4 +1,4 @@
-/* global vi */
+import { vi } from 'vitest'
 import { welsh } from '../../data/cy/cy.js'
 import { privacyController } from './controller.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
@@ -6,6 +6,14 @@ import { LANG_CY, LANG_EN } from '../../data/constants.js'
 
 const PRIVACY_PATH_CY = '/preifatrwydd/cy'
 const VIEW_RENDERED = 'view rendered'
+const VIEW_NAME = 'privacy/index'
+
+// Mock at top level to avoid duplication
+vi.mock('../../common/helpers/get-site-url.js', () => ({
+  getAirQualitySiteUrl: vi.fn((request) => {
+    return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+  })
+}))
 
 // Helper to create expected view data
 function createExpectedViewData(mockContent, actualUrl, lang, currentPath) {
@@ -31,7 +39,6 @@ function createExpectedViewData(mockContent, actualUrl, lang, currentPath) {
 describe('privacy controller - Welsh', () => {
   let mockRequest
   let mockH
-  const mockContent = welsh
 
   beforeEach(() => {
     mockRequest = {
@@ -68,6 +75,25 @@ describe('privacy controller - Welsh', () => {
       expect(mockH.redirect).toHaveBeenCalledWith('/privacy?lang=en')
     })
   })
+})
+
+describe('privacy controller Welsh - Page rendering', () => {
+  let mockRequest
+  let mockH
+  const mockContent = welsh
+
+  beforeEach(() => {
+    mockRequest = {
+      query: {},
+      path: ''
+    }
+    mockH = {
+      redirect: vi.fn(() => ({
+        code: vi.fn(() => 'redirected')
+      })),
+      view: vi.fn(() => VIEW_RENDERED)
+    }
+  })
 
   describe('Page rendering', () => {
     it('should render the privacy page with the necessary data', () => {
@@ -85,9 +111,30 @@ describe('privacy controller - Welsh', () => {
         mockRequest.query.lang,
         PRIVACY_PATH_CY
       )
-      expect(mockH.view).toHaveBeenCalledWith('privacy/index', expectedData)
+      expect(mockH.view).toHaveBeenCalledWith(VIEW_NAME, expectedData)
     })
+  })
+})
 
+describe('privacy controller Welsh - Non-standard language handling', () => {
+  let mockRequest
+  let mockH
+  const mockContent = welsh
+
+  beforeEach(() => {
+    mockRequest = {
+      query: {},
+      path: ''
+    }
+    mockH = {
+      redirect: vi.fn(() => ({
+        code: vi.fn(() => 'redirected')
+      })),
+      view: vi.fn(() => VIEW_RENDERED)
+    }
+  })
+
+  describe('Non-standard language', () => {
     it('should render the privacy page by default when lang is not cy/en and the path is there', () => {
       mockRequest.query.lang = 'fr'
       mockRequest.path = PRIVACY_PATH_CY
@@ -103,7 +150,27 @@ describe('privacy controller - Welsh', () => {
         LANG_CY,
         PRIVACY_PATH_CY
       )
-      expect(mockH.view).toHaveBeenCalledWith('privacy/index', expectedData)
+      expect(mockH.view).toHaveBeenCalledWith(VIEW_NAME, expectedData)
+    })
+  })
+
+  describe('Default language handling', () => {
+    it('should default to CY when no lang query parameter is provided on Welsh path', () => {
+      mockRequest.query = {}
+      mockRequest.path = PRIVACY_PATH_CY
+      const expectedUrl =
+        'https://check-air-quality.service.gov.uk/preifatrwydd/cy?lang=undefined'
+      const actualUrl = getAirQualitySiteUrl(mockRequest)
+      expect(actualUrl).toBe(expectedUrl)
+      const result = privacyController.handler(mockRequest, mockH)
+      expect(result).toBe(VIEW_RENDERED)
+      const expectedData = createExpectedViewData(
+        mockContent,
+        actualUrl,
+        LANG_CY,
+        PRIVACY_PATH_CY
+      )
+      expect(mockH.view).toHaveBeenCalledWith(VIEW_NAME, expectedData)
     })
   })
 })
