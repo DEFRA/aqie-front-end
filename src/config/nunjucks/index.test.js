@@ -9,15 +9,12 @@ vi.mock('path', () => ({
   dirname: vi.fn(() => '/mock/dirname')
 }))
 
-vi.mock('nunjucks', () => ({
-  default: {
-    configure: vi.fn(() => ({
-      addFilter: vi.fn(),
-      addGlobal: vi.fn(),
-      render: vi.fn()
-    }))
+vi.mock('nunjucks', async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    default: actual.default
   }
-}))
+})
 
 vi.mock('@hapi/vision', () => ({
   default: {
@@ -70,16 +67,6 @@ vi.mock('./filters/format-sentence.js', () => ({
 describe('Nunjucks Configuration', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-  })
-
-  test('should configure nunjucks environment', async () => {
-    // ''
-    const nunjucksMock = await import('nunjucks')
-
-    // Import the module to trigger configuration
-    await import('./index.js')
-
-    expect(nunjucksMock.default.configure).toHaveBeenCalled()
   })
 
   test('should export nunjucksConfig with required properties', async () => {
@@ -140,60 +127,66 @@ describe('Nunjucks Configuration', () => {
   })
 })
 
-describe('Nunjucks Filters - Logic Coverage', () => {
-  // '' Direct testing of filter logic to cover lines 88-101
+describe('Nunjucks Filters - Actual Template Rendering', () => {
+  // '' Test filters by actually rendering templates (covers lines 88-101)
+  const DATE_FILTER_TEMPLATE = '{{ testDate | date }}'
+  const INVALID_DATE_MESSAGE = 'Invalid date'
+  const DATE_STRING_PREFIX_LENGTH = 15
 
-  test('minusOneHour filter subtracts one hour from date', () => {
-    // '' Replicate filter from lines 88-90
-    const MILLISECONDS_IN_HOUR = 3600000
-    const filter = function (date) {
-      const newDate = new Date(date)
-      newDate.setHours(newDate.getHours() - 1)
-      return newDate
-    }
+  test('minusOneHour filter works in template rendering', async () => {
+    // ''
+    const module = await import('./index.js')
+    const compile = module.nunjucksConfig.options.engines.njk.compile
+    const compileOptions = module.nunjucksConfig.options.compileOptions
 
+    const templateSource = '{{ testDate | minusOneHour }}'
+    const renderFn = compile(templateSource, compileOptions)
     const testDate = new Date('2025-12-10T15:00:00Z')
-    const result = filter(testDate)
+    const result = renderFn({ testDate })
 
-    expect(result.getTime()).toBe(testDate.getTime() - MILLISECONDS_IN_HOUR)
+    const expectedDate = new Date(testDate)
+    expectedDate.setHours(expectedDate.getHours() - 1)
+
+    expect(result).toContain(
+      expectedDate.toString().substring(0, DATE_STRING_PREFIX_LENGTH)
+    )
   })
 
-  test('date filter with valid date', () => {
-    // '' Replicate filter from lines 93-98
-    const filter = function (date, _format) {
-      if (!date || Number.isNaN(new Date(date).getTime())) {
-        return 'Invalid date'
-      }
-      const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
-      return new Intl.DateTimeFormat('en-GB', options).format(new Date(date))
-    }
+  test('date filter formats valid date correctly', async () => {
+    // ''
+    const module = await import('./index.js')
+    const compile = module.nunjucksConfig.options.engines.njk.compile
+    const compileOptions = module.nunjucksConfig.options.compileOptions
 
-    const result = filter(new Date('2025-12-10'), 'any')
+    const renderFn = compile(DATE_FILTER_TEMPLATE, compileOptions)
+    const result = renderFn({ testDate: new Date('2025-12-10') })
+
     expect(result).toMatch(/^\d{2}\/\d{2}\/\d{4}$/)
   })
 
-  test('date filter with null', () => {
-    const filter = function (date, _format) {
-      if (!date || Number.isNaN(new Date(date).getTime())) {
-        return 'Invalid date'
-      }
-      const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
-      return new Intl.DateTimeFormat('en-GB', options).format(new Date(date))
-    }
+  test('date filter returns Invalid date for null', async () => {
+    // ''
+    const module = await import('./index.js')
+    const compile = module.nunjucksConfig.options.engines.njk.compile
+    const compileOptions = module.nunjucksConfig.options.compileOptions
 
-    expect(filter(null)).toBe('Invalid date')
+    const renderFn = compile(DATE_FILTER_TEMPLATE, compileOptions)
+    const result = renderFn({ testDate: null })
+
+    expect(result).toBe(INVALID_DATE_MESSAGE)
   })
 
-  test('date filter with invalid string', () => {
-    const filter = function (date, _format) {
-      if (!date || Number.isNaN(new Date(date).getTime())) {
-        return 'Invalid date'
-      }
-      const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
-      return new Intl.DateTimeFormat('en-GB', options).format(new Date(date))
-    }
+  test('date filter returns Invalid date for invalid string', async () => {
+    // ''
+    const module = await import('./index.js')
+    const compile = module.nunjucksConfig.options.engines.njk.compile
+    const compileOptions = module.nunjucksConfig.options.compileOptions
 
-    expect(filter('invalid')).toBe('Invalid date')
-    expect(filter(undefined)).toBe('Invalid date')
+    const renderFn = compile(DATE_FILTER_TEMPLATE, compileOptions)
+    const resultInvalid = renderFn({ testDate: 'invalid' })
+    const resultNull = renderFn({ testDate: null })
+
+    expect(resultInvalid).toBe(INVALID_DATE_MESSAGE)
+    expect(resultNull).toBe(INVALID_DATE_MESSAGE)
   })
 })

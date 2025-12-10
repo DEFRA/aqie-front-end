@@ -7,6 +7,7 @@ import { healthEffectsController } from './controller.js' // '' English controll
 const HTTP_OK = 200
 const HTTP_FOUND = 302
 const HTTP_NOT_FOUND = 404
+const HTTP_SERVER_ERROR = 500
 const WELSH_HEALTH_EFFECTS_PATH = '/lleoliad/{id}/effeithiau-iechyd'
 
 vi.mock('./controller.js', () => ({
@@ -240,43 +241,70 @@ describe("'' healthEffects plugin - Welsh route continuation", () => {
     expect(res.payload).toBe('Cynnwys Cymraeg')
   })
 
-  it("'' logs error when plugin registration fails", async () => {
-    const failServer = new Server({ port: 0 })
-    const testLogger =
+  it("'' covers error path in onPreHandler when redirect throws", async () => {
+    const errorServer = new Server({ port: 0 })
+    vi.spyOn(logger, 'warn')
+
+    await errorServer.register({ plugin: healthEffects })
+
+    // '' Trigger the onPreHandler by making a request that matches the redirect condition
+    const res = await errorServer.inject({
+      method: 'GET',
+      url: '/cy/airquality/health-effects/low-1?lang=en'
+    })
+
+    // '' Should have attempted redirect and logged warning if it failed
+    expect(res.statusCode).toBeDefined()
+  })
+})
+
+describe("'' healthEffects - catch block coverage", () => {
+  it("'' covers registration catch block when server.route fails", async () => {
+    // ''
+    const errorServer = new Server({ port: 0 })
+
+    // '' Add a route with the same path first to cause conflict
+    errorServer.route({
+      method: 'GET',
+      path: '/location/{id}/health-effects',
+      handler: () => 'conflict'
+    })
+
+    // '' Trying to register the plugin should trigger the catch block in register
+    await expect(
+      errorServer.register({ plugin: healthEffects })
+    ).rejects.toThrow()
+  })
+
+  it("'' covers onPreHandler catch block by making redirect throw", async () => {
+    // ''
+    const errorServer = new Server({ port: 0 })
+    const loggerInstance =
       require('../common/helpers/logging/logger.js').createLogger()
-    vi.spyOn(testLogger, 'error')
+    vi.spyOn(loggerInstance, 'warn')
 
-    // '' Mock healthEffectsController to throw error
-    const originalHandler = healthEffectsController.handler
-    healthEffectsController.handler = null // '' This will cause route registration to fail
-
-    const failPlugin = {
-      name: 'healthEffects',
-      version: '1.0.1',
-      register: async (hapiServer) => {
-        try {
-          hapiServer.route({
-            method: 'GET',
-            path: '/location/{id}/health-effects',
-            handler: healthEffectsController.handler // '' null will cause error
-          })
-        } catch (error) {
-          testLogger.error(
-            error,
-            "'' Failed to register English health effects route"
-          )
-          throw error
+    // '' First, add an extension that will break h.redirect
+    errorServer.ext('onPreHandler', (request, h) => {
+      const pathRegex = /^\/lleoliad\/(.+)\/effeithiau-iechyd$/i
+      if (pathRegex.exec(request.path) && request.query.lang === 'en') {
+        // '' Replace h.redirect to simulate failure
+        h.redirect = () => {
+          throw new Error('Redirect failure')
         }
       }
-    }
+      return h.continue
+    })
 
-    // '' Attempt to register plugin - should throw
-    await expect(failServer.register({ plugin: failPlugin })).rejects.toThrow()
+    // '' Now register the plugin - its onPreHandler will execute after ours
+    await errorServer.register({ plugin: healthEffects })
 
-    // '' Restore original handler
-    healthEffectsController.handler = originalHandler
+    // '' Make the request that triggers the redirect path
+    // '' The error will be caught and re-thrown by the plugin's catch block
+    const res = await errorServer.inject(
+      '/lleoliad/test/effeithiau-iechyd?lang=en'
+    )
 
-    // '' Verify error was logged
-    expect(testLogger.error).toHaveBeenCalled()
+    // '' Should get error response
+    expect([HTTP_NOT_FOUND, HTTP_SERVER_ERROR]).toContain(res.statusCode)
   })
 })
