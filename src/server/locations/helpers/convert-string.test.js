@@ -23,6 +23,15 @@ import {
   convertString
 } from './convert-string.js'
 
+// Test constants
+const HELLO_WORLD_EXAMPLE = 'hello world example'
+const EMPTY_STRING_INPUT = 'handles empty string input'
+const HELLO_WORLD = 'hello world'
+const LOWERCASE_INPUT = 'handles lowercase input'
+const HELLO_WORLD_UPPER = 'HELLO WORLD'
+const EXAMPLE_URL = 'https://example.com/page1'
+const THREE_WORDS = 3
+
 describe('convertStringToHyphenatedLowercaseWords', () => {
   it('should convert a string to lowercase words joined by hyphens and remove commas', () => {
     const input = 'London City Airport, Newham'
@@ -51,16 +60,14 @@ describe('convertStringToHyphenatedLowercaseWords', () => {
 
 describe('removeLastWordAndAddHyphens', () => {
   test('removes the last word and adds hyphens', () => {
-    expect(removeLastWordAndAddHyphens('hello world example')).toBe(
-      'hello-world'
-    )
+    expect(removeLastWordAndAddHyphens(HELLO_WORLD_EXAMPLE)).toBe('hello-world')
   })
 
   test('handles single word input', () => {
     expect(removeLastWordAndAddHyphens('hello')).toBe('')
   })
 
-  test('handles empty string input', () => {
+  test(EMPTY_STRING_INPUT, () => {
     expect(removeLastWordAndAddHyphens('')).toBe('')
   })
 })
@@ -71,10 +78,10 @@ describe('removeLastWordAndHyphens', () => {
   })
 
   test('handles input without hyphens', () => {
-    expect(removeLastWordAndHyphens('hello world example')).toBe('helloworld')
+    expect(removeLastWordAndHyphens(HELLO_WORLD_EXAMPLE)).toBe('helloworld')
   })
 
-  test('handles empty string input', () => {
+  test(EMPTY_STRING_INPUT, () => {
     expect(removeLastWordAndHyphens('')).toBe('')
   })
 })
@@ -85,12 +92,10 @@ describe('splitAndKeepFirstWord', () => {
   })
 
   test('handles input without underscores', () => {
-    expect(splitAndKeepFirstWord('hello world example')).toBe(
-      'hello world example'
-    )
+    expect(splitAndKeepFirstWord(HELLO_WORLD_EXAMPLE)).toBe(HELLO_WORLD_EXAMPLE)
   })
 
-  test('handles empty string input', () => {
+  test(EMPTY_STRING_INPUT, () => {
     expect(splitAndKeepFirstWord('')).toBe('')
   })
 })
@@ -101,10 +106,10 @@ describe('removeHyphensAndUnderscores', () => {
   })
 
   test('handles input without hyphens or underscores', () => {
-    expect(removeHyphensAndUnderscores('hello world')).toBe('hello world')
+    expect(removeHyphensAndUnderscores(HELLO_WORLD)).toBe(HELLO_WORLD)
   })
 
-  test('handles empty string input', () => {
+  test(EMPTY_STRING_INPUT, () => {
     expect(removeHyphensAndUnderscores('')).toBe('')
   })
 })
@@ -121,7 +126,7 @@ describe('extractAndFormatUKPostcode', () => {
   })
 
   test('handles input without postcode', () => {
-    expect(extractAndFormatUKPostcode('hello world')).toBeNull()
+    expect(extractAndFormatUKPostcode(HELLO_WORLD)).toBeNull()
   })
 })
 
@@ -131,12 +136,12 @@ describe('removeAllWordsAfterUnderscore', () => {
   })
 
   test('handles input without underscores', () => {
-    expect(removeAllWordsAfterUnderscore('hello world example')).toBe(
-      'hello world example'
+    expect(removeAllWordsAfterUnderscore(HELLO_WORLD_EXAMPLE)).toBe(
+      HELLO_WORLD_EXAMPLE
     )
   })
 
-  test('handles empty string input', () => {
+  test(EMPTY_STRING_INPUT, () => {
     expect(removeAllWordsAfterUnderscore('')).toBe('')
   })
 })
@@ -147,11 +152,11 @@ describe('isValidPartialPostcodeUK', () => {
     expect(isValidPartialPostcodeUK('invalid')).toBe(false)
   })
 
-  test('handles lowercase input', () => {
+  test(LOWERCASE_INPUT, () => {
     expect(isValidPartialPostcodeUK('sw1')).toBe(true)
   })
 
-  test('handles empty string input', () => {
+  test(EMPTY_STRING_INPUT, () => {
     expect(isValidPartialPostcodeUK('')).toBe(false)
   })
 })
@@ -162,11 +167,11 @@ describe('isValidFullPostcodeUK', () => {
     expect(isValidFullPostcodeUK('invalid')).toBe(false)
   })
 
-  test('handles lowercase input', () => {
+  test(LOWERCASE_INPUT, () => {
     expect(isValidFullPostcodeUK('sw1a 1aa')).toBe(true)
   })
 
-  test('handles empty string input', () => {
+  test(EMPTY_STRING_INPUT, () => {
     expect(isValidFullPostcodeUK('')).toBe(false)
   })
 })
@@ -177,11 +182,11 @@ describe('isValidPartialPostcodeNI', () => {
     expect(isValidPartialPostcodeNI('invalid')).toBe(false)
   })
 
-  test('handles lowercase input', () => {
+  test(LOWERCASE_INPUT, () => {
     expect(isValidPartialPostcodeNI('bt1')).toBe(true)
   })
 
-  test('handles empty string input', () => {
+  test(EMPTY_STRING_INPUT, () => {
     expect(isValidPartialPostcodeNI('')).toBe(false)
   })
 })
@@ -193,7 +198,7 @@ describe('isValidFullPostcodeNI', () => {
     expect(isValidFullPostcodeNI('invalid')).toBe(false)
   })
 
-  test('handles lowercase input', () => {
+  test(LOWERCASE_INPUT, () => {
     expect(isValidFullPostcodeNI('bt1 1aa')).toBe(true)
   })
 
@@ -201,7 +206,7 @@ describe('isValidFullPostcodeNI', () => {
     expect(isValidFullPostcodeNI('BT11AA')).toBe(true)
   })
 
-  test('handles empty string input', () => {
+  test(EMPTY_STRING_INPUT, () => {
     expect(isValidFullPostcodeNI('')).toBe(false)
   })
 })
@@ -209,9 +214,9 @@ describe('isValidFullPostcodeNI', () => {
 describe('splitAndCheckSpecificWords', () => {
   test('checks if source string contains exact first two words or last word', () => {
     // For 2 words: check if sourceString includes joinedWords.toUpperCase() OR vice versa
-    expect(
-      splitAndCheckSpecificWords('HELLO WORLD EXAMPLE', 'hello world')
-    ).toBe(true)
+    expect(splitAndCheckSpecificWords('HELLO WORLD EXAMPLE', HELLO_WORLD)).toBe(
+      true
+    )
     expect(
       splitAndCheckSpecificWords('HELLO WORLD EXAMPLE', 'world example')
     ).toBe(true) // "HELLO WORLD EXAMPLE".includes("WORLD EXAMPLE") = true
@@ -220,10 +225,10 @@ describe('splitAndCheckSpecificWords', () => {
   test('handles input with three words', () => {
     // For 3 words, checks if sourceString.includes(firstTwoWords) - case sensitive!
     expect(
-      splitAndCheckSpecificWords('hello world example', 'hello world example')
+      splitAndCheckSpecificWords(HELLO_WORLD_EXAMPLE, HELLO_WORLD_EXAMPLE)
     ).toBe(true)
     expect(
-      splitAndCheckSpecificWords('hello world extra', 'hello world example')
+      splitAndCheckSpecificWords('hello world extra', HELLO_WORLD_EXAMPLE)
     ).toBe(true)
   })
 
@@ -238,8 +243,10 @@ describe('splitAndCheckSpecificWords', () => {
 
   test('handles two-word input where target contains the joined words', () => {
     // For 2 words: check if sourceString includes 'hello world' OR 'HELLO WORLD' includes sourceString
-    expect(splitAndCheckSpecificWords('HELLO WORLD', 'hello world')).toBe(true)
-    expect(splitAndCheckSpecificWords('HELLO WORLD FOO', 'hello world')).toBe(
+    expect(splitAndCheckSpecificWords(HELLO_WORLD_UPPER, HELLO_WORLD)).toBe(
+      true
+    )
+    expect(splitAndCheckSpecificWords('HELLO WORLD FOO', HELLO_WORLD)).toBe(
       true
     )
   })
@@ -298,20 +305,20 @@ describe('splitAndCheckExactWords', () => {
 
 describe('countWords', () => {
   test('counts the number of words in a string', () => {
-    expect(countWords('hello world example')).toBe(3)
+    expect(countWords(HELLO_WORLD_EXAMPLE)).toBe(THREE_WORDS)
     expect(countWords('hello')).toBe(1)
   })
 
   test('handles input with multiple spaces', () => {
-    expect(countWords('hello   world   example')).toBe(3)
+    expect(countWords('hello   world   example')).toBe(THREE_WORDS)
   })
 
-  test('handles empty string input', () => {
+  test(EMPTY_STRING_INPUT, () => {
     expect(countWords('')).toBe(1)
   })
 
   test('handles input with leading and trailing spaces', () => {
-    expect(countWords('  hello world example  ')).toBe(3)
+    expect(countWords('  hello world example  ')).toBe(THREE_WORDS)
   })
 })
 
@@ -323,7 +330,7 @@ describe('isOnlyLettersAndMoreThanFour', () => {
   })
 
   test('handles input with spaces', () => {
-    expect(isOnlyLettersAndMoreThanFour('hello world')).toBe(true)
+    expect(isOnlyLettersAndMoreThanFour(HELLO_WORLD)).toBe(true)
   })
 
   test('handles empty string input', () => {
@@ -356,13 +363,13 @@ describe('formatNorthernIrelandPostcode', () => {
 
 describe('hasExactMatch', () => {
   test('checks if a word separated by spaces in one string has an exact match in another string', () => {
-    expect(hasExactMatch('hello world', 'HELLO WORLD')).toBe(true)
-    expect(hasExactMatch('hello world', 'WORLD HELLO')).toBe(false)
+    expect(hasExactMatch(HELLO_WORLD, HELLO_WORLD_UPPER)).toBe(true)
+    expect(hasExactMatch(HELLO_WORLD, 'WORLD HELLO')).toBe(false)
   })
 
   test('handles input with name2', () => {
-    expect(hasExactMatch('hello world', 'HELLO', 'WORLD')).toBe(false)
-    expect(hasExactMatch('hello world', 'HELLO', 'HELLO WORLD')).toBe(true)
+    expect(hasExactMatch(HELLO_WORLD, 'HELLO', 'WORLD')).toBe(false)
+    expect(hasExactMatch(HELLO_WORLD, 'HELLO', HELLO_WORLD_UPPER)).toBe(true)
   })
 
   test('handles input with single word', () => {
@@ -370,44 +377,42 @@ describe('hasExactMatch', () => {
     expect(hasExactMatch('hello', 'WORLD')).toBe(false)
   })
 
-  test('handles empty string input', () => {
+  test(EMPTY_STRING_INPUT, () => {
     expect(hasExactMatch('', 'HELLO')).toBe(false)
     expect(hasExactMatch('hello', '')).toBe(false)
   })
 
   test('handles null name1', () => {
-    expect(hasExactMatch('hello world', null)).toBe(false)
+    expect(hasExactMatch(HELLO_WORLD, null)).toBe(false)
   })
 
   test('handles null name2', () => {
-    expect(hasExactMatch('hello world', 'HELLO', null)).toBe(false)
+    expect(hasExactMatch(HELLO_WORLD, 'HELLO', null)).toBe(false)
   })
 
   test('handles undefined inputs', () => {
-    expect(hasExactMatch('hello world', undefined)).toBe(false)
-    expect(hasExactMatch('hello world', 'HELLO', undefined)).toBe(false)
+    expect(hasExactMatch(HELLO_WORLD, undefined)).toBe(false)
+    expect(hasExactMatch(HELLO_WORLD, 'HELLO', undefined)).toBe(false)
   })
 })
 
 describe('hasCommonWord', () => {
   test('checks if two strings contain the exact same word', () => {
-    expect(hasCommonWord('hello world', 'world example')).toBe(true)
-    expect(hasCommonWord('hello world', 'example test')).toBe(false)
+    expect(hasCommonWord(HELLO_WORLD, 'world example')).toBe(true)
+    expect(hasCommonWord(HELLO_WORLD, 'example test')).toBe(false)
   })
 
   test('handles input with multiple common words', () => {
-    expect(hasCommonWord('hello world example', 'world example test')).toBe(
-      true
-    )
+    expect(hasCommonWord(HELLO_WORLD_EXAMPLE, 'world example test')).toBe(true)
   })
 
   test('handles input with no common words', () => {
-    expect(hasCommonWord('hello world', 'example test')).toBe(false)
+    expect(hasCommonWord(HELLO_WORLD, 'example test')).toBe(false)
   })
 
-  test('handles empty string input', () => {
+  test(EMPTY_STRING_INPUT, () => {
     expect(hasCommonWord('', 'world')).toBe(false)
-    expect(hasCommonWord('hello world', '')).toBe(false)
+    expect(hasCommonWord(HELLO_WORLD, '')).toBe(false)
   })
 })
 
@@ -421,26 +426,26 @@ describe('formatUKPostcode', () => {
     expect(formatUKPostcode('invalid')).toBe('invalid')
   })
 
-  test('handles lowercase input', () => {
+  test(LOWERCASE_INPUT, () => {
     expect(formatUKPostcode('sw1a 1aa')).toBe('SW1A 1AA')
   })
 
-  test('handles empty string input', () => {
+  test(EMPTY_STRING_INPUT, () => {
     expect(formatUKPostcode('')).toBe('')
   })
 })
 
 describe('isOnlyWords', () => {
   test('checks if string contains only words (letters)', () => {
-    expect(isOnlyWords('hello world')).toBe(true)
+    expect(isOnlyWords(HELLO_WORLD)).toBe(true)
     expect(isOnlyWords('hello123')).toBe(false)
   })
 
   test('handles input with spaces', () => {
-    expect(isOnlyWords('hello world')).toBe(true)
+    expect(isOnlyWords(HELLO_WORLD)).toBe(true)
   })
 
-  test('handles empty string input', () => {
+  test(EMPTY_STRING_INPUT, () => {
     expect(isOnlyWords('')).toBe(false)
   })
 
@@ -451,26 +456,15 @@ describe('isOnlyWords', () => {
 
 describe('compareLastElements', () => {
   test('compares the last elements of two URLs', () => {
-    expect(
-      compareLastElements(
-        'https://example.com/page1',
-        'https://example.com/page1'
-      )
-    ).toBe(true)
-    expect(
-      compareLastElements(
-        'https://example.com/page1',
-        'https://example.com/page2'
-      )
-    ).toBe(false)
+    expect(compareLastElements(EXAMPLE_URL, EXAMPLE_URL)).toBe(true)
+    expect(compareLastElements(EXAMPLE_URL, 'https://example.com/page2')).toBe(
+      false
+    )
   })
 
   test('handles input with query parameters', () => {
     expect(
-      compareLastElements(
-        'https://example.com/page1?query=123',
-        'https://example.com/page1'
-      )
+      compareLastElements('https://example.com/page1?query=123', EXAMPLE_URL)
     ).toBe(true)
   })
 
@@ -483,9 +477,9 @@ describe('compareLastElements', () => {
     ).toBe(false)
   })
 
-  test('handles empty string input', () => {
-    expect(compareLastElements('', 'https://example.com/page1')).toBe(false)
-    expect(compareLastElements('https://example.com/page1', '')).toBe(false)
+  test(EMPTY_STRING_INPUT, () => {
+    expect(compareLastElements('', EXAMPLE_URL)).toBe(false)
+    expect(compareLastElements(EXAMPLE_URL, '')).toBe(false)
   })
 })
 

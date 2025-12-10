@@ -6,7 +6,6 @@ import {
   configureLocationTypeAndRedirects,
   filteredAndSelectedLocationType
 } from './location-type-util.js'
-import { calendarEnglish } from '../../data/en/en.js'
 import {
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI,
@@ -81,13 +80,15 @@ describe('handleRedirect', () => {
   })
 })
 
-describe.skip('getMonth', () => {
+describe('getMonth', () => {
   test('returns the formatted date index', () => {
-    const formattedDate = 'January'
-    const getFormattedDate = calendarEnglish.findIndex((item) =>
-      item.includes(formattedDate)
-    )
-    expect(getMonth()).toEqual({ getFormattedDate })
+    const MONTHS_IN_YEAR = 12
+    const result = getMonth()
+    expect(result).toHaveProperty('getFormattedDate')
+    expect(typeof result.getFormattedDate).toBe('number')
+    // The index should be between 0 and 11 for months
+    expect(result.getFormattedDate).toBeGreaterThanOrEqual(0)
+    expect(result.getFormattedDate).toBeLessThan(MONTHS_IN_YEAR)
   })
 })
 

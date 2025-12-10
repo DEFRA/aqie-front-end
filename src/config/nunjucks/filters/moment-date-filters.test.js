@@ -448,6 +448,80 @@ describe('date filter', () => {
   })
 })
 
+describe('govukDate filter', () => {
+  it('should format "now" string to current date', () => {
+    addMomentFilters(mockEnv)
+    const govukDateFilter = mockEnv.addFilter.mock.calls.find(
+      (call) => call[0] === 'govukDate'
+    )[1]
+
+    const result = govukDateFilter('now')
+    // Result should be in format: "DD MMMM YYYY"
+    expect(typeof result).toBe('string')
+    expect(result).toMatch(/^\d{2} \w+ \d{4}$/)
+  })
+
+  it('should format date string to govuk format', () => {
+    addMomentFilters(mockEnv)
+    const govukDateFilter = mockEnv.addFilter.mock.calls.find(
+      (call) => call[0] === 'govukDate'
+    )[1]
+
+    const result = govukDateFilter(TEST_ISO_DATE)
+    expect(typeof result).toBe('string')
+    expect(result).toMatch(/^\d{2} \w+ \d{4}$/)
+  })
+})
+
+describe('govukDateHour filter', () => {
+  it('should format "now" string to current date with hour', () => {
+    addMomentFilters(mockEnv)
+    const govukDateHourFilter = mockEnv.addFilter.mock.calls.find(
+      (call) => call[0] === 'govukDateHour'
+    )[1]
+
+    const result = govukDateHourFilter('now')
+    // Result should be in format: "ha, DD, MMMM, YYYY"
+    expect(typeof result).toBe('string')
+    expect(result).toMatch(/^\d{1,2}(am|pm), \d{2}, \w+, \d{4}$/)
+  })
+
+  it('should format date string with hour', () => {
+    addMomentFilters(mockEnv)
+    const govukDateHourFilter = mockEnv.addFilter.mock.calls.find(
+      (call) => call[0] === 'govukDateHour'
+    )[1]
+
+    const result = govukDateHourFilter(TEST_ISO_DATE)
+    expect(typeof result).toBe('string')
+    expect(result).toMatch(/^\d{1,2}(am|pm), \d{2}, \w+, \d{4}$/)
+  })
+})
+
+describe('date filter', () => {
+  it('should return moment object for "now" string', () => {
+    addMomentFilters(mockEnv)
+    const dateFilter = mockEnv.addFilter.mock.calls.find(
+      (call) => call[0] === 'date'
+    )[1]
+
+    const result = dateFilter('now')
+    expect(result).toBeDefined()
+    expect(typeof result.format).toBe('function')
+  })
+
+  it('should return moment object for date string', () => {
+    addMomentFilters(mockEnv)
+    const dateFilter = mockEnv.addFilter.mock.calls.find(
+      (call) => call[0] === 'date'
+    )[1]
+
+    const result = dateFilter(TEST_ISO_DATE)
+    expect(result).toBeDefined()
+    expect(typeof result.format).toBe('function')
+  })
+})
+
 describe('minusOneHour filter', () => {
   it('minusOneHour should subtract 1.56 hours and format', () => {
     addMomentFilters(mockEnv)

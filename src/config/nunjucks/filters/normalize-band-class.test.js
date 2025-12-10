@@ -123,3 +123,17 @@ describe('WELSH_TO_ENGLISH_BAND_MAP - Exported constant', () => {
     expect(keys).toContain('uchel iawn')
   })
 })
+
+describe('normalizeBandClass - Additional coverage', () => {
+  it('should handle band names without Welsh mapping by using original value', () => {
+    // This tests the path where englishEquivalent is undefined
+    expect(normalizeBandClass('Custom Band')).toBe('custom-band')
+  })
+
+  it('should use replaceAll for space replacement', () => {
+    // Ensures replaceAll is called for the final transformation
+    expect(normalizeBandClass('Multiple Word Band Name')).toBe(
+      'multiple-word-band-name'
+    )
+  })
+})
