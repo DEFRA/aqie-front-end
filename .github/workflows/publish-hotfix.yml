@@ -55,7 +55,7 @@ jobs:
             -Dsonar.test.inclusions=**/*.test.js
             -Dsonar.test.exclusions=src/client/**,src/server/common/**/*,src/server/locations/cy/**,src/src/govuk/**/*,src/**/__fixtures__/**
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-            -Dsonar.coverage.exclusions=src/client/**,coverage/**,node_modules/**,**/test/**,**/*.test.js,src/server/common/**/*,src/server/locations/cy/**,src/src/govuk/**/*,src/config/nunjucks/filters/format-currency.js,src/**/__fixtures__/**
+            -Dsonar.coverage.exclusions=src/client/**,coverage/**,node_modules/**,**/test/**,**/*.test.js,**/test-helpers/**,**/test-setup.js,src/server/locations/test-helpers/**,src/server/common/**/*,src/server/locations/cy/**,src/src/govuk/**/*,src/config/nunjucks/filters/format-currency.js,src/**/__fixtures__/**
             -Dsonar.newCode.referenceBranch=main
             -Dsonar.cpd.exclusions=src/server/data/**/daqi-and-pollutants*.js,src/server/data/**/navigation*.js,src/server/data/**/footer-and-ui*.js,src/server/data/**/en.js,src/server/data/**/cy.js
             -Dsonar.issue.exclusions.multicriteria=e1,e2,e3,e4,e5
