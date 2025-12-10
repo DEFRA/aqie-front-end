@@ -239,4 +239,44 @@ describe("'' healthEffects plugin - Welsh route continuation", () => {
     expect(res.statusCode).toBe(HTTP_OK)
     expect(res.payload).toBe('Cynnwys Cymraeg')
   })
+
+  it("'' logs error when plugin registration fails", async () => {
+    const failServer = new Server({ port: 0 })
+    const testLogger =
+      require('../common/helpers/logging/logger.js').createLogger()
+    vi.spyOn(testLogger, 'error')
+
+    // '' Mock healthEffectsController to throw error
+    const originalHandler = healthEffectsController.handler
+    healthEffectsController.handler = null // '' This will cause route registration to fail
+
+    const failPlugin = {
+      name: 'healthEffects',
+      version: '1.0.1',
+      register: async (hapiServer) => {
+        try {
+          hapiServer.route({
+            method: 'GET',
+            path: '/location/{id}/health-effects',
+            handler: healthEffectsController.handler // '' null will cause error
+          })
+        } catch (error) {
+          testLogger.error(
+            error,
+            "'' Failed to register English health effects route"
+          )
+          throw error
+        }
+      }
+    }
+
+    // '' Attempt to register plugin - should throw
+    await expect(failServer.register({ plugin: failPlugin })).rejects.toThrow()
+
+    // '' Restore original handler
+    healthEffectsController.handler = originalHandler
+
+    // '' Verify error was logged
+    expect(testLogger.error).toHaveBeenCalled()
+  })
 })

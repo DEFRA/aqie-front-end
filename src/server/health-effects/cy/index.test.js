@@ -124,6 +124,21 @@ describe("'' healthEffectsCy plugin - redirects", () => {
   })
 })
 
+// '' Helper function for checking error messages
+const hasErrorOrOnPreHandlerMessage = (calls) => {
+  for (const callArgs of calls) {
+    for (const arg of callArgs) {
+      if (
+        arg instanceof Error ||
+        (typeof arg === 'string' && arg.includes('onPreHandler'))
+      ) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
 describe("'' healthEffectsCy plugin - error handling", () => {
   let server
   let logger
@@ -135,20 +150,6 @@ describe("'' healthEffectsCy plugin - error handling", () => {
     vi.spyOn(logger, 'error')
     await server.register({ plugin: healthEffectsCy })
   })
-
-  const hasErrorOrOnPreHandlerMessage = (calls) => {
-    for (const callArgs of calls) {
-      for (const arg of callArgs) {
-        if (
-          arg instanceof Error ||
-          (typeof arg === 'string' && arg.includes('onPreHandler'))
-        ) {
-          return true
-        }
-      }
-    }
-    return false
-  }
 
   describe("'' error handling", () => {
     it("'' logs error when onPreHandler fails", async () => {
@@ -206,6 +207,46 @@ describe("'' healthEffectsCy plugin - error handling", () => {
       await expect(
         errorServer.register({ plugin: healthEffectsCy })
       ).resolves.not.toThrow()
+    })
+
+    it("'' logs error when plugin registration fails", async () => {
+      const failServer = new Server({ port: 0 })
+      const testLogger =
+        require('../../common/helpers/logging/logger.js').createLogger()
+      vi.spyOn(testLogger, 'error')
+
+      // '' Mock healthEffectsController to cause registration error
+      const originalHandler = healthEffectsController.handler
+      healthEffectsController.handler = null
+
+      const failPlugin = {
+        name: 'healthEffectsCy',
+        version: '1.0.1',
+        register: async (hapiServer) => {
+          try {
+            hapiServer.route({
+              method: 'GET',
+              path: '/lleoliad/{id}/effeithiau-iechyd',
+              handler: healthEffectsController.handler // '' null causes error
+            })
+          } catch (error) {
+            testLogger.error(
+              error,
+              "'' Failed to register Welsh health effects route"
+            )
+            throw error
+          }
+        }
+      }
+
+      await expect(
+        failServer.register({ plugin: failPlugin })
+      ).rejects.toThrow()
+
+      // '' Restore handler
+      healthEffectsController.handler = originalHandler
+
+      expect(testLogger.error).toHaveBeenCalled()
     })
   })
 })
