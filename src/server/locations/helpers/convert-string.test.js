@@ -25,7 +25,6 @@ import {
 
 // Test constants
 const HELLO_WORLD_EXAMPLE = 'hello world example'
-const EMPTY_STRING_INPUT = 'handles empty string input'
 const HELLO_WORLD = 'hello world'
 const LOWERCASE_INPUT = 'handles lowercase input'
 const HELLO_WORLD_UPPER = 'HELLO WORLD'
@@ -68,7 +67,7 @@ describe('removeLastWordAndAddHyphens', () => {
     expect(removeLastWordAndAddHyphens('hello')).toBe('')
   })
 
-  test(EMPTY_STRING_INPUT, () => {
+  test('returns empty string when given empty string', () => {
     expect(removeLastWordAndAddHyphens('')).toBe('')
   })
 })
@@ -82,7 +81,7 @@ describe('removeLastWordAndHyphens', () => {
     expect(removeLastWordAndHyphens(HELLO_WORLD_EXAMPLE)).toBe('helloworld')
   })
 
-  test(EMPTY_STRING_INPUT, () => {
+  test('returns empty for empty input', () => {
     expect(removeLastWordAndHyphens('')).toBe('')
   })
 })
@@ -96,7 +95,7 @@ describe('splitAndKeepFirstWord', () => {
     expect(splitAndKeepFirstWord(HELLO_WORLD_EXAMPLE)).toBe(HELLO_WORLD_EXAMPLE)
   })
 
-  test(EMPTY_STRING_INPUT, () => {
+  test('returns empty when input is empty', () => {
     expect(splitAndKeepFirstWord('')).toBe('')
   })
 })
@@ -110,7 +109,7 @@ describe('removeHyphensAndUnderscores', () => {
     expect(removeHyphensAndUnderscores(HELLO_WORLD)).toBe(HELLO_WORLD)
   })
 
-  test(EMPTY_STRING_INPUT, () => {
+  test('preserves empty strings', () => {
     expect(removeHyphensAndUnderscores('')).toBe('')
   })
 })
@@ -142,7 +141,7 @@ describe('removeAllWordsAfterUnderscore', () => {
     )
   })
 
-  test(EMPTY_STRING_INPUT, () => {
+  test('handles empty value', () => {
     expect(removeAllWordsAfterUnderscore('')).toBe('')
   })
 })
@@ -157,7 +156,7 @@ describe('isValidPartialPostcodeUK', () => {
     expect(isValidPartialPostcodeUK('sw1')).toBe(true)
   })
 
-  test(EMPTY_STRING_INPUT, () => {
+  test('rejects empty postcode', () => {
     expect(isValidPartialPostcodeUK('')).toBe(false)
   })
 })
@@ -172,7 +171,7 @@ describe('isValidFullPostcodeUK', () => {
     expect(isValidFullPostcodeUK('sw1a 1aa')).toBe(true)
   })
 
-  test(EMPTY_STRING_INPUT, () => {
+  test('returns false for empty postcode', () => {
     expect(isValidFullPostcodeUK('')).toBe(false)
   })
 })
@@ -187,7 +186,7 @@ describe('isValidPartialPostcodeNI', () => {
     expect(isValidPartialPostcodeNI('bt1')).toBe(true)
   })
 
-  test(EMPTY_STRING_INPUT, () => {
+  test('invalidates empty NI postcode', () => {
     expect(isValidPartialPostcodeNI('')).toBe(false)
   })
 })
@@ -207,7 +206,7 @@ describe('isValidFullPostcodeNI', () => {
     expect(isValidFullPostcodeNI('BT11AA')).toBe(true)
   })
 
-  test(EMPTY_STRING_INPUT, () => {
+  test('rejects blank NI postcode', () => {
     expect(isValidFullPostcodeNI('')).toBe(false)
   })
 })
@@ -314,7 +313,7 @@ describe('countWords', () => {
     expect(countWords(HELLO_WORLD_EXAMPLE)).toBe(THREE_WORDS)
   })
 
-  test(EMPTY_STRING_INPUT, () => {
+  test('counts 1 for blank string', () => {
     expect(countWords('')).toBe(1)
   })
 
@@ -334,7 +333,7 @@ describe('isOnlyLettersAndMoreThanFour', () => {
     expect(isOnlyLettersAndMoreThanFour(HELLO_WORLD)).toBe(true)
   })
 
-  test('handles empty string input', () => {
+  test('returns false for blank input', () => {
     expect(isOnlyLettersAndMoreThanFour('')).toBe(false)
   })
 
@@ -357,7 +356,7 @@ describe('formatNorthernIrelandPostcode', () => {
     expect(formatNorthernIrelandPostcode('bt1 1aa')).toBe('BT1 1AA')
   })
 
-  test('handles empty string input', () => {
+  test('preserves blank postcode', () => {
     expect(formatNorthernIrelandPostcode('')).toBe('')
   })
 })
@@ -378,7 +377,7 @@ describe('hasExactMatch', () => {
     expect(hasExactMatch('hello', 'WORLD')).toBe(false)
   })
 
-  test(EMPTY_STRING_INPUT, () => {
+  test('returns false for blank strings', () => {
     expect(hasExactMatch('', 'HELLO')).toBe(false)
     expect(hasExactMatch('hello', '')).toBe(false)
   })
@@ -411,7 +410,7 @@ describe('hasCommonWord', () => {
     expect(hasCommonWord(HELLO_WORLD, 'example test')).toBe(false)
   })
 
-  test(EMPTY_STRING_INPUT, () => {
+  test('no match with blank values', () => {
     expect(hasCommonWord('', 'world')).toBe(false)
     expect(hasCommonWord(HELLO_WORLD, '')).toBe(false)
   })
@@ -431,7 +430,7 @@ describe('formatUKPostcode', () => {
     expect(formatUKPostcode('sw1a 1aa')).toBe('SW1A 1AA')
   })
 
-  test(EMPTY_STRING_INPUT, () => {
+  test('preserves empty UK postcode', () => {
     expect(formatUKPostcode('')).toBe('')
   })
 })
@@ -446,7 +445,7 @@ describe('isOnlyWords', () => {
     expect(isOnlyWords(HELLO_WORLD)).toBe(true)
   })
 
-  test(EMPTY_STRING_INPUT, () => {
+  test('rejects blank text', () => {
     expect(isOnlyWords('')).toBe(false)
   })
 
@@ -478,7 +477,7 @@ describe('compareLastElements', () => {
     ).toBe(false)
   })
 
-  test(EMPTY_STRING_INPUT, () => {
+  test('returns false for blank URLs', () => {
     expect(compareLastElements('', EXAMPLE_URL)).toBe(false)
     expect(compareLastElements(EXAMPLE_URL, '')).toBe(false)
   })
