@@ -29,6 +29,7 @@ const EMPTY_STRING_INPUT = 'handles empty string input'
 const HELLO_WORLD = 'hello world'
 const LOWERCASE_INPUT = 'handles lowercase input'
 const HELLO_WORLD_UPPER = 'HELLO WORLD'
+const HELLO_WORLD_EXAMPLE_UPPER = 'HELLO WORLD EXAMPLE'
 const EXAMPLE_URL = 'https://example.com/page1'
 const THREE_WORDS = 3
 
@@ -214,11 +215,11 @@ describe('isValidFullPostcodeNI', () => {
 describe('splitAndCheckSpecificWords', () => {
   test('checks if source string contains exact first two words or last word', () => {
     // For 2 words: check if sourceString includes joinedWords.toUpperCase() OR vice versa
-    expect(splitAndCheckSpecificWords('HELLO WORLD EXAMPLE', HELLO_WORLD)).toBe(
-      true
-    )
     expect(
-      splitAndCheckSpecificWords('HELLO WORLD EXAMPLE', 'world example')
+      splitAndCheckSpecificWords(HELLO_WORLD_EXAMPLE_UPPER, HELLO_WORLD)
+    ).toBe(true)
+    expect(
+      splitAndCheckSpecificWords(HELLO_WORLD_EXAMPLE_UPPER, 'world example')
     ).toBe(true) // "HELLO WORLD EXAMPLE".includes("WORLD EXAMPLE") = true
   })
 
@@ -233,12 +234,12 @@ describe('splitAndCheckSpecificWords', () => {
   })
 
   test('handles input with one word', () => {
-    expect(splitAndCheckSpecificWords('HELLO WORLD EXAMPLE', 'hello')).toBe(
+    expect(splitAndCheckSpecificWords(HELLO_WORLD_EXAMPLE_UPPER, 'hello')).toBe(
       true
     )
-    expect(splitAndCheckSpecificWords('HELLO WORLD EXAMPLE', 'example')).toBe(
-      true
-    )
+    expect(
+      splitAndCheckSpecificWords(HELLO_WORLD_EXAMPLE_UPPER, 'example')
+    ).toBe(true)
   })
 
   test('handles two-word input where target contains the joined words', () => {
@@ -283,9 +284,9 @@ describe('splitAndCheckSpecificWords', () => {
 
 describe('splitAndCheckExactWords', () => {
   test('checks if target string contains exactly any of the three words', () => {
-    expect(splitAndCheckExactWords('hello world example', 'world')).toBe(true)
-    expect(splitAndCheckExactWords('hello world example', 'example')).toBe(true)
-    expect(splitAndCheckExactWords('hello world example', 'test')).toBe(false)
+    expect(splitAndCheckExactWords(HELLO_WORLD_EXAMPLE, 'world')).toBe(true)
+    expect(splitAndCheckExactWords(HELLO_WORLD_EXAMPLE, 'example')).toBe(true)
+    expect(splitAndCheckExactWords(HELLO_WORLD_EXAMPLE, 'test')).toBe(false)
   })
 
   test('handles input with more than three words', () => {
@@ -310,7 +311,7 @@ describe('countWords', () => {
   })
 
   test('handles input with multiple spaces', () => {
-    expect(countWords('hello   world   example')).toBe(THREE_WORDS)
+    expect(countWords(HELLO_WORLD_EXAMPLE)).toBe(THREE_WORDS)
   })
 
   test(EMPTY_STRING_INPUT, () => {
@@ -318,7 +319,7 @@ describe('countWords', () => {
   })
 
   test('handles input with leading and trailing spaces', () => {
-    expect(countWords('  hello world example  ')).toBe(THREE_WORDS)
+    expect(countWords(HELLO_WORLD_EXAMPLE)).toBe(THREE_WORDS)
   })
 })
 
