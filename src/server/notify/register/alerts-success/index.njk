@@ -1,0 +1,50 @@
+{% extends 'layouts/page.njk' %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-panel govuk-panel--confirmation">
+        <h1 class="govuk-panel__title">You have successfully signed up for air quality alerts</h1>
+        <div class="govuk-panel__body">
+          You will receive email alerts at<br><strong>{{ emailAddress }}</strong>
+        </div>
+      </div>
+
+      <p class="govuk-body">We have sent you a confirmation email.</p>
+
+      <h2 class="govuk-heading-m">What happens next</h2>
+      <p class="govuk-body">You will receive email alerts when:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>air pollution levels are forecast to be high or very high in your area</li>
+        <li>there are rapid changes in air quality that could affect your health</li>
+      </ul>
+
+      <div class="govuk-inset-text">
+        <p>You can unsubscribe from these alerts at any time using the unsubscribe link in any alert email.</p>
+      </div>
+
+      <h2 class="govuk-heading-m">Your alert details</h2>
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Email address</dt>
+          <dd class="govuk-summary-list__value">{{ emailAddress }}</dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Location</dt>
+          <dd class="govuk-summary-list__value">{{ location }}</dd>
+        </div>
+      </dl>
+
+      <form action="/notify/register/alerts-success" method="post">
+        <button type="submit" class="govuk-button">Return to Check air quality</button>
+      </form>
+
+      <h2 class="govuk-heading-m">Get more information</h2>
+      <p class="govuk-body">You can:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li><a href="/" class="govuk-link">check current air quality in your area</a></li>
+        <li><a href="/help" class="govuk-link">find out more about air pollution and health</a></li>
+        <li><a href="/privacy" class="govuk-link">read our privacy policy</a></li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}

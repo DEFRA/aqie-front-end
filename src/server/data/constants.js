@@ -144,5 +144,9 @@ export const ROUND_OF_SIX = 6
 export const FORECAST_ARRAY_INDEX_THIRD = 3
 export const MAX_FORECAST_DAYS = 6
 
+// '' - API service constants
+export const DEFAULT_TIMEOUT_MS = 5000
+export const MAX_ERROR_BODY_LENGTH = 500
+
 // '' - Constant for the server directory name
 export const SERVER_DIRNAME = dirname(fileURLToPath(import.meta.url))

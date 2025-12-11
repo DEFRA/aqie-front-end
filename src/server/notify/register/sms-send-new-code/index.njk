@@ -1,0 +1,43 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">Request a new activation code</h1>
+      <p class="govuk-body">
+        Text messages sometimes take a few minutes to arrive. If you do not receive the text message, you can request a new one.
+      </p>
+
+  <div class="govuk-!-padding-bottom-5"></div>
+      
+
+  <details class="govuk-details" open="">
+    <summary class="govuk-details__summary">
+      <span class="govuk-details__summary-text">
+        Change where the text is sent
+      </span>
+    </summary>
+    <div class="govuk-details__text">
+        <label class="govuk-label" for="event-name">
+        Mobile number
+        </label>
+        <input class="govuk-input govuk-input govuk-input--width-20" id="mobile-number-new" name="MobileNumberNew" type="text">
+    </div>
+    
+  </details>
+
+      
+  
+    
+  
+
+<a href="/notify/register/sms-verify-code" role="button" draggable="false" class="govuk-button" data-module="govuk-button" data-govuk-button-init="">
+  Request a new code
+</a>
+
+
+  </div>
+</div>
+
+{% endblock %}

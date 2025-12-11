@@ -251,6 +251,38 @@ export const config = convict({
     sensitive: true,
     env: 'CDP_X_API_KEY'
   },
+  notify: {
+    enabled: {
+      doc: 'Enable notify service (sends via backend wrapper API)',
+      format: Boolean,
+      default: false,
+      env: 'NOTIFY_ENABLED'
+    },
+    baseUrl: {
+      doc: 'Backend notify wrapper API base URL',
+      format: String,
+      default: '',
+      env: 'NOTIFY_BASE_URL'
+    },
+    emailPath: {
+      doc: 'Backend API path for sending email codes',
+      format: String,
+      default: '/send-email-code',
+      env: 'NOTIFY_EMAIL_PATH'
+    },
+    smsPath: {
+      doc: 'Backend API path for sending SMS codes',
+      format: String,
+      default: '/send-sms-code',
+      env: 'NOTIFY_SMS_PATH'
+    },
+    timeoutMs: {
+      doc: 'Request timeout in milliseconds',
+      format: 'int',
+      default: 5000,
+      env: 'NOTIFY_TIMEOUT_MS'
+    }
+  },
   ephemeralProtectedDevApiUrl: {
     doc: 'Ephemeral Protected Dev API url',
     format: String,
