@@ -1,0 +1,64 @@
+{% extends 'layouts/page.njk' %}
+
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      
+      {{ govukPanel({
+        titleText: heading,
+        html: successMessage
+      }) }}
+      
+      <p class="govuk-body">{{ description }}</p>
+      
+      <p class="govuk-body">
+        If you want to set up another alert for <strong>{{ mobilePhone }}</strong> you can 
+        <a href="/search-location" class="govuk-link">search for another location</a>.
+      </p>
+      
+      <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
+      
+      <h2 class="govuk-heading-m">Help us make our service better</h2>
+      
+      <p class="govuk-body">
+        Join our user research panel to share your feedback and contribute to the ongoing improvement of this service. 
+        By signing up, you agree to our <a href="/privacy" class="govuk-link">privacy statement</a> and consent to being contacted for research purposes.
+      </p>
+      
+      <form method="post" action="#research-panel">
+        {{ govukRadios({
+          name: "research-panel",
+          fieldset: {
+            legend: {
+              text: "Would you like to help improve this service?",
+              isPageHeading: false,
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          hint: {
+            text: "Select one option"
+          },
+          items: [
+            {
+              value: "yes",
+              text: "Yes"
+            },
+            {
+              value: "no", 
+              text: "No"
+            }
+          ]
+        }) }}
+        
+        {{ govukButton({
+          text: "Continue",
+          type: "submit"
+        }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

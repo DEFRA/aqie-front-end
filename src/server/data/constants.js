@@ -3,6 +3,10 @@ import { fileURLToPath } from 'node:url'
 import { dirname } from 'node:path'
 export const FORECASTS_API_PATH = '/aqie-forecast-api/forecast'
 export const MEASUREMENTS_API_PATH = '/aqie-back-end/monitoringStationInfo?'
+export const NOTIFY_GENERATE_OTP_API_PATH =
+  '/aqie-notify-service/subscribe/generate-otp'
+export const NOTIFY_SMS_PATH = '/subscribe/generate-otp'
+export const NOTIFY_VERIFY_OTP_PATH = '/subscribe/validate-otp'
 export const REFERER_PATH_INDEX = 3
 export const FORECAST_DAY_SLICE_LENGTH = 3
 export const LANG_SLICE_LENGTH = 2
@@ -132,6 +136,7 @@ export const BASE_URL = 'https://check-air-quality.service.gov.uk'
 export const REDIRECT_STATUS_CODE = 301
 export const SAMPLE_LOCATION_NAME = 'Sample Location'
 export const HTTP_STATUS_OK = 200
+export const HTTP_STATUS_CREATED = 201
 export const MINUTES_IN_HALF_HOUR = 30
 export const REFRESH_INTERVAL_MS = MINUTES_IN_HALF_HOUR * 60 * 1000
 export const AIR_QUALITY_THRESHOLD_1 = 1
@@ -143,6 +148,10 @@ export const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500
 export const ROUND_OF_SIX = 6
 export const FORECAST_ARRAY_INDEX_THIRD = 3
 export const MAX_FORECAST_DAYS = 6
+
+// '' - API service constants
+export const DEFAULT_TIMEOUT_MS = 5000
+export const MAX_ERROR_BODY_LENGTH = 500
 
 // '' - Constant for the server directory name
 export const SERVER_DIRNAME = dirname(fileURLToPath(import.meta.url))

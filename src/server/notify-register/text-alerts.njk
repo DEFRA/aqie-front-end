@@ -1,0 +1,58 @@
+{% extends 'layouts/page.njk' %}
+
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% set htmlLang = "en" %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      
+      {% if error %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: [
+            {
+              text: error.text,
+              href: "#mobile-phone"
+            }
+          ]
+        }) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-l">{{ heading }}</h1>
+      
+      {% if description %}
+        <p class="govuk-body">{{ description }}</p>
+      {% endif %}
+
+      <form method="post" action="/notify/text-alerts" autocomplete="off" novalidate>
+        {{ govukInput({
+          label: {
+            text: "Mobile phone number",
+            classes: "govuk-label--m"
+          },
+          hint: {
+            text: "For international numbers include the country code"
+          },
+          id: "mobile-phone",
+          name: "mobilePhone",
+          type: "tel",
+          autocomplete: "tel",
+          spellcheck: false,
+          classes: "govuk-input--width-20",
+          errorMessage: error if error,
+          value: mobilePhone if mobilePhone
+        }) }}
+
+        {{ govukButton({
+          text: "Continue",
+          preventDoubleClick: true
+        }) }}
+      </form>
+      
+    </div>
+  </div>
+{% endblock %}

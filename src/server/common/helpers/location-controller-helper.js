@@ -170,7 +170,7 @@ export async function processLocationData(
     indexNI
   )
 
-  const { forecastNum, nearestLocationsRange, nearestLocation } =
+  const { forecastNum, nearestLocationsRange, nearestLocation, latlon } =
     await getNearestLocation(
       locationData?.results,
       getForecasts,
@@ -185,7 +185,8 @@ export async function processLocationData(
     locationDetails,
     forecastNum,
     nearestLocationsRange,
-    nearestLocation
+    nearestLocation,
+    latlon
   }
 }
 
@@ -378,6 +379,7 @@ export function buildLocationViewData({
     issueTime: locationData.issueTime,
     dailySummaryTexts: components.dailySummaryTexts,
     serviceName: components.multipleLocations.serviceName,
+    latlon: locationData.latlon,
     lang
   }
 }

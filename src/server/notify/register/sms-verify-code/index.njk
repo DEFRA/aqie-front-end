@@ -1,0 +1,62 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if error %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: [
+            {
+              text: error.message,
+              href: "#activation-code"
+            }
+          ]
+        }) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-l">Check your mobile phone</h1>
+      <p class="govuk-body">
+        We've sent a text message to <strong>{{ mobileNumber }}</strong> with a 5 digit activation code.
+      </p>
+      {% if debugToken %}
+        <p class="govuk-hint">(Developer hint: code is <b>{{ debugToken }}</b>)</p>
+      {% endif %}
+      <form class="form" action="/notify/register/sms-verify-code" method="post" novalidate>
+        <div class="govuk-form-group{% if error %} govuk-form-group--error{% endif %}">
+          <label class="govuk-label" for="activation-code">
+            Enter the code to activate your air pollution alert.
+          </label>
+          {% if error %}
+            <p id="activation-code-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
+            </p>
+          {% endif %}
+          <input class="govuk-input govuk-!-width-one-third{% if error %} govuk-input--error{% endif %}" id="activation-code" name="activation-code" type="text"{% if error %} aria-describedby="activation-code-error"{% endif %}{% if formData and formData['activation-code'] %} value="{{ formData['activation-code'] }}"{% endif %}>
+        </div>
+        <p>
+          The code expires in 15 minutes.
+        </p>
+        <details class="govuk-details" open="">
+          <summary class="govuk-details__summary">
+            <span class="govuk-details__summary-text">
+              Not received a text message?
+            </span>
+          </summary>
+          <div class="govuk-details__text">
+            <p>Text messages sometimes take a few minutes to arrive.</p>
+            <p>If you have not received the text message after 10 minutes, check that:</p> 
+            <ul>
+              <li>the phone number shown here is correct</li>
+              <li>you have mobile phone signal</li>
+            </ul>
+            <p>If you still don't have the text message, you can <a href="/notify/register/sms-send-new-code">request a new activation code</a>.</p>
+          </div>
+        </details>
+        <button type="submit" class="govuk-button" data-module="govuk-button">
+          Continue
+        </button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

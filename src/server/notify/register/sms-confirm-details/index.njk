@@ -1,0 +1,21 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form class="form" action="/notify/register/sms-confirm-details" method="post" novalidate>
+        <h1 class="govuk-heading-l">{{ heading }}</h1>
+        
+        <p class="govuk-body">{{ content.description }}</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>{{ forecastAlert }}</li>
+          <li>{{ monitoringAlert }}</li>
+        </ul>
+
+        <button type="submit" class="govuk-button" data-module="govuk-button">
+          {{ content.continueButton }}
+        </button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

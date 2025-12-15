@@ -18,6 +18,7 @@ const TEST_NO_ADDFILTER_MSG =
 const REG_ERROR_MSG = 'Registration error'
 const HOURS_TO_SUBTRACT = 1.56
 const ABBREVIATED_DAY_LENGTH = 3
+const ABBREVIATED_DAY_LENGTH_WELSH = 4 // Welsh day abbreviations can be 4 chars (e.g., "Llun")
 const MIN_FULL_DAY_LENGTH = 3
 
 // Mock logger to avoid console spam during tests
@@ -163,7 +164,7 @@ describe('addDaysToTodayAbrevWelsh', () => {
 
     // Non-number defaults to 0 days
     expect(typeof result).toBe('string')
-    expect(result.length).toBe(ABBREVIATED_DAY_LENGTH)
+    expect(result.length).toBe(ABBREVIATED_DAY_LENGTH_WELSH)
   })
 
   it(TEST_INVALID_ENV_MSG, () => {

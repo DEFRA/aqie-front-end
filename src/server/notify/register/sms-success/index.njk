@@ -1,0 +1,41 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      
+      <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+        <div class="govuk-notification-banner__header">
+          <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+            Success
+          </h2>
+        </div>
+        <div class="govuk-notification-banner__content">
+          <h1 class="govuk-notification-banner__heading">
+            You have set up air quality alerts for {{ location }}
+          </h1>
+        </div>
+      </div>
+
+      <p class="govuk-body">We have sent you a confirmation text message.</p>
+
+      <p class="govuk-body govuk-!-padding-bottom-6">
+        If you want to set up another alert you can <a href="/search-location" class="govuk-link">search for another location</a>.
+      </p>
+
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+      <h2 class="govuk-heading-m">Help us make our service better</h2>
+
+      <p class="govuk-body">
+        Join our user research panel to share your feedback and contribute to the ongoing improvement of this service.
+        By signing up, you agree to our <a href="https://www.gov.uk/government/publications/defras-social-research-privacy-notice" class="govuk-link">privacy statement</a> and consent to being contacted for research purposes.
+      </p>
+
+      <p class="govuk-body">
+        <a href="" class="govuk-link">I would like to join the user research panel to share my feedback</a>
+      </p>
+
+    </div>
+  </div>
+{% endblock %}
