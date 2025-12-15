@@ -4,8 +4,34 @@ import {
   handleConfirmAlertDetailsPost
 } from './controller.js'
 
-describe('Confirm Alert Details Controller', () => {
-  test('handleConfirmAlertDetailsRequest returns correct view data', () => {
+// Test constants ''
+const FOOTER_TEXT = 'Footer text'
+const PHASE_BANNER = 'Phase banner'
+const COOKIE_BANNER = 'Cookie banner'
+const TEST_HEADING = 'You will get free air quality alerts for {location}'
+const TEST_DESCRIPTION = 'Test description'
+const TEST_FORECAST = 'Forecast alert for {location}'
+const TEST_MONITORING = 'Monitoring alert for {location}'
+
+// Helper to create mock content ''
+const createMockContent = () => ({
+  footerTxt: FOOTER_TEXT,
+  phaseBanner: PHASE_BANNER,
+  backlink: 'Back link',
+  cookieBanner: COOKIE_BANNER,
+  smsConfirmDetails: {
+    heading: TEST_HEADING,
+    description: TEST_DESCRIPTION,
+    alertTypes: {
+      forecast: TEST_FORECAST,
+      monitoring: TEST_MONITORING
+    },
+    continueButton: 'Continue'
+  }
+})
+
+describe('Confirm Alert Details Controller - handleConfirmAlertDetailsRequest', () => {
+  test('returns correct view data', () => {
     const mockRequest = {
       yar: {
         get: vi
@@ -20,10 +46,19 @@ describe('Confirm Alert Details Controller', () => {
       view: vi.fn()
     }
     const mockContent = {
-      footerTxt: 'Footer text',
-      phaseBanner: 'Phase banner',
+      footerTxt: FOOTER_TEXT,
+      phaseBanner: PHASE_BANNER,
       backlink: 'Back link',
-      cookieBanner: 'Cookie banner'
+      cookieBanner: COOKIE_BANNER,
+      smsConfirmDetails: {
+        heading: 'You will get free air quality alerts for {location}',
+        description: 'Test description',
+        alertTypes: {
+          forecast: 'Forecast alert for {location}',
+          monitoring: 'Monitoring alert for {location}'
+        },
+        continueButton: 'Continue'
+      }
     }
 
     handleConfirmAlertDetailsRequest(mockRequest, mockH, mockContent)
@@ -31,101 +66,21 @@ describe('Confirm Alert Details Controller', () => {
     expect(mockH.view).toHaveBeenCalledWith(
       'notify/register/sms-confirm-details/index',
       expect.objectContaining({
-        pageTitle: 'Confirm your alert details - Check air quality - GOV.UK',
-        heading: 'Confirm your alert details',
+        heading: 'You will get free air quality alerts for London',
         serviceName: 'Check air quality',
         lang: 'en',
         mobileNumber: '07123456789',
         location: 'London',
-        footerTxt: 'Footer text',
-        phaseBanner: 'Phase banner',
-        backlink: 'Back link',
-        cookieBanner: 'Cookie banner'
+        footerTxt: FOOTER_TEXT,
+        phaseBanner: PHASE_BANNER,
+        cookieBanner: COOKIE_BANNER
       })
     )
   })
+})
 
-  test('handleConfirmAlertDetailsPost validates confirmation selection', () => {
-    const mockRequest = {
-      payload: {
-        confirmDetails: ''
-      },
-      yar: {
-        set: vi.fn(),
-        get: vi
-          .fn()
-          .mockReturnValueOnce('07123456789') // mobileNumber
-          .mockReturnValueOnce('London') // location
-      }
-    }
-
-    const mockH = {
-      view: vi.fn(),
-      redirect: vi.fn()
-    }
-
-    const mockContent = {
-      footerTxt: 'Footer text',
-      phaseBanner: 'Phase banner',
-      backlink: 'Back link',
-      cookieBanner: 'Cookie banner'
-    }
-
-    handleConfirmAlertDetailsPost(mockRequest, mockH, mockContent)
-
-    expect(mockH.view).toHaveBeenCalledWith(
-      'notify/register/sms-confirm-details/index',
-      expect.objectContaining({
-        pageTitle:
-          'Error: Confirm your alert details - Check air quality - GOV.UK',
-        serviceName: 'Check air quality',
-        lang: 'en',
-        mobileNumber: '07123456789',
-        location: 'London',
-        footerTxt: 'Footer text',
-        phaseBanner: 'Phase banner',
-        backlink: 'Back link',
-        cookieBanner: 'Cookie banner',
-        error: {
-          message: 'Select yes to confirm your alert details',
-          field: 'confirmDetails'
-        }
-      })
-    )
-  })
-
-  test('handleConfirmAlertDetailsPost redirects on valid confirmation', () => {
-    const mockRequest = {
-      payload: {
-        confirmDetails: 'yes'
-      },
-      yar: {
-        set: vi.fn()
-      }
-    }
-
-    const mockH = {
-      view: vi.fn(),
-      redirect: vi.fn()
-    }
-
-    const mockContent = {
-      footerTxt: 'Footer text',
-      phaseBanner: 'Phase banner',
-      backlink: 'Back link',
-      cookieBanner: 'Cookie banner'
-    }
-
-    handleConfirmAlertDetailsPost(mockRequest, mockH, mockContent)
-
-    expect(mockRequest.yar.set).toHaveBeenCalledWith(
-      'alertDetailsConfirmed',
-      true
-    )
-    expect(mockH.redirect).toHaveBeenCalledWith('/notify/register/sms-success')
-  })
-
-  test('handleConfirmAlertDetailsRequest handles missing session data', () => {
+describe('Confirm Alert Details Controller - Missing Session Data', () => {
+  test('handles missing session data', () => {
     const mockRequest = {
       yar: {
         get: vi
@@ -139,12 +94,7 @@ describe('Confirm Alert Details Controller', () => {
     const mockH = {
       view: vi.fn()
     }
-    const mockContent = {
-      footerTxt: 'Footer text',
-      phaseBanner: 'Phase banner',
-      backlink: 'Back link',
-      cookieBanner: 'Cookie banner'
-    }
+    const mockContent = createMockContent()
 
     handleConfirmAlertDetailsRequest(mockRequest, mockH, mockContent)
 
@@ -152,8 +102,54 @@ describe('Confirm Alert Details Controller', () => {
       'notify/register/sms-confirm-details/index',
       expect.objectContaining({
         mobileNumber: 'Not provided',
-        location: 'Not selected'
+        location: 'Unknown location'
       })
     )
+  })
+})
+
+describe('Confirm Alert Details Controller - handleConfirmAlertDetailsPost', () => {
+  describe('POST handler', () => {
+    test('redirects to success page', async () => {
+      const mockRequest = {
+        payload: {
+          confirmDetails: 'yes'
+        },
+        yar: {
+          get: vi.fn((key) => {
+            const mockData = {
+              mobileNumber: '07123456789',
+              location: 'London',
+              latitude: '51.5074',
+              longitude: '-0.1278'
+            }
+            return mockData[key] || ''
+          }),
+          set: vi.fn()
+        }
+      }
+
+      const mockH = {
+        view: vi.fn(),
+        redirect: vi.fn()
+      }
+
+      const mockContent = {
+        footerTxt: FOOTER_TEXT,
+        phaseBanner: PHASE_BANNER,
+        backlink: 'Back link',
+        cookieBanner: COOKIE_BANNER
+      }
+
+      await handleConfirmAlertDetailsPost(mockRequest, mockH, mockContent)
+
+      expect(mockRequest.yar.set).toHaveBeenCalledWith(
+        'alertDetailsConfirmed',
+        true
+      )
+      expect(mockH.redirect).toHaveBeenCalledWith(
+        '/notify/register/sms-success'
+      )
+    })
   })
 })

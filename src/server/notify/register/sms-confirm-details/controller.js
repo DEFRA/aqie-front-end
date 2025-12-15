@@ -3,78 +3,94 @@ import { english } from '../../../data/en/en.js'
 import { LANG_EN } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 
+// Constants ''
+const LOCATION_PLACEHOLDER = '{location}'
+
 // Create a logger instance ''
 const logger = createLogger()
 
 const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
   logger.info('Showing confirm alert details page')
 
-  const { footerTxt, phaseBanner, backlink, cookieBanner } = content
+  const { footerTxt, phaseBanner, cookieBanner, smsConfirmDetails } = content
   const metaSiteUrl = getAirQualitySiteUrl(request)
 
-  // Get data from session
+  // Get data from session ''
   const mobileNumber = request.yar.get('mobileNumber') || 'Not provided'
-  const location = request.yar.get('location') || 'Not selected'
+  const location = request.yar.get('location') || 'Unknown location'
+
+  // Replace {location} placeholder with actual location ''
+  const heading = smsConfirmDetails.heading.replace(
+    LOCATION_PLACEHOLDER,
+    location
+  )
+  const forecastAlert = smsConfirmDetails.alertTypes.forecast.replace(
+    LOCATION_PLACEHOLDER,
+    location
+  )
+  const monitoringAlert = smsConfirmDetails.alertTypes.monitoring.replace(
+    LOCATION_PLACEHOLDER,
+    location
+  )
 
   const viewModel = {
-    pageTitle: 'Confirm your alert details - Check air quality - GOV.UK',
-    heading: 'Confirm your alert details',
-    page: 'Confirm your alert details',
+    pageTitle: `${smsConfirmDetails.pageTitle} - Check air quality - GOV.UK`,
+    heading,
+    page: heading,
     serviceName: 'Check air quality',
     lang: LANG_EN,
     metaSiteUrl,
     footerTxt,
     phaseBanner,
-    backlink,
     cookieBanner,
+    displayBacklink: false,
+    content: smsConfirmDetails,
     mobileNumber,
     location,
+    forecastAlert,
+    monitoringAlert,
     formData: request.yar.get('formData') || {}
   }
 
   return h.view('notify/register/sms-confirm-details/index', viewModel)
 }
 
-const handleConfirmAlertDetailsPost = (request, h, content = english) => {
-  const { confirmDetails } = request.payload
+const handleConfirmAlertDetailsPost = async (request, h) => {
+  logger.info('Processing alert confirmation')
 
-  // Basic validation
-  if (!confirmDetails || confirmDetails !== 'yes') {
-    const { footerTxt, phaseBanner, backlink, cookieBanner } = content
-    const metaSiteUrl = getAirQualitySiteUrl(request)
+  // Get data from session ''
+  const phoneNumber = request.yar.get('mobileNumber')
+  const location = request.yar.get('location')
 
-    // Get data from session for display
-    const mobileNumber = request.yar.get('mobileNumber') || 'Not provided'
-    const location = request.yar.get('location') || 'Not selected'
-
-    const viewModel = {
-      pageTitle:
-        'Error: Confirm your alert details - Check air quality - GOV.UK',
-      heading: 'Confirm your alert details',
-      page: 'Confirm your alert details',
-      serviceName: 'Check air quality',
-      lang: LANG_EN,
-      metaSiteUrl,
-      footerTxt,
-      phaseBanner,
-      backlink,
-      cookieBanner,
-      mobileNumber,
-      location,
-      error: {
-        message: 'Select yes to confirm your alert details',
-        field: 'confirmDetails'
-      },
-      formData: request.payload
-    }
-
-    return h.view('notify/register/sms-confirm-details/index', viewModel)
+  if (!phoneNumber || !location) {
+    logger.warn('Missing phone number or location in session')
+    return h.redirect('/notify/register/sms-mobile-number')
   }
 
-  // Store confirmation in session
+  // Get latitude and longitude from session ''
+  const lat = request.yar.get('latitude') || ''
+  const long = request.yar.get('longitude') || ''
+
+  // Call setup-alert API with all required fields ''
+  const { setupAlert } = await import('../../../common/services/notify.js')
+  const result = await setupAlert(
+    phoneNumber,
+    'sms',
+    location,
+    lat,
+    long,
+    request
+  )
+
+  if (!result.ok) {
+    logger.error('Failed to setup alert', { error: result.error })
+    // Still redirect to success but log the error ''
+  }
+
+  // Store confirmation in session ''
   request.yar.set('alertDetailsConfirmed', true)
 
-  // Redirect to success page or next step ''
+  // Redirect to success page ''
   return h.redirect('/notify/register/sms-success')
 }
 

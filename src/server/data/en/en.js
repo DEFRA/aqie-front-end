@@ -6,6 +6,7 @@ import {
   actionsReduceExposureTranslations
 } from './daqi-and-pollutants.js'
 import { uiTranslations, footerTranslations } from './footer-and-ui.js'
+import { notificationTranslations } from './notifications.js'
 
 /**
  * Consolidated English translations for the air quality service
@@ -17,7 +18,8 @@ export const english = {
   ...pollutantTranslations,
   ...actionsReduceExposureTranslations,
   ...uiTranslations,
-  ...footerTranslations
+  ...footerTranslations,
+  ...notificationTranslations
 }
 
 // Re-export using export...from syntax for consistency

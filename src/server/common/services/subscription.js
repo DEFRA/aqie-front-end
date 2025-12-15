@@ -6,21 +6,23 @@ import {
   DEFAULT_TIMEOUT_MS,
   MAX_ERROR_BODY_LENGTH
 } from '../../data/constants.js'
+import { buildBackendApiFetchOptions } from '../helpers/backend-api-helper.js'
 
 const logger = createLogger('subscription-service')
 
-function buildUrl(path) {
-  const base = (config.get('subscriptionApi.baseUrl') || '').replace(/\/$/, '')
-  const suffix = path.startsWith('/') ? path : `/${path}`
-  return `${base}${suffix}`
-}
-
-async function postJson(url, body) {
+/**
+ * Make POST request to subscription API with automatic local/remote handling ''
+ * @param {Object} request - Hapi request object (for detecting localhost)
+ * @param {string} apiPath - API path
+ * @param {Object} body - Request body
+ * @returns {Object} Response object
+ */
+async function postJson(request, apiPath, body) {
   const enabled = config.get('subscriptionApi.enabled')
   const baseUrl = config.get('subscriptionApi.baseUrl')
   if (!enabled || !baseUrl) {
     logger.debug('Subscription API disabled or baseUrl missing; skipping', {
-      url
+      apiPath
     })
     return { skipped: true }
   }
@@ -31,13 +33,19 @@ async function postJson(url, body) {
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), timeout)
   try {
+    // Use reusable helper to build URL and options based on environment ''
+    const additionalHeaders = apiKey
+      ? { authorization: `Bearer ${apiKey}` }
+      : {}
+    const { url, fetchOptions } = buildBackendApiFetchOptions(
+      request,
+      baseUrl,
+      apiPath,
+      { method: 'POST', body, additionalHeaders }
+    )
+
     const res = await proxyFetch(url, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        ...(apiKey ? { authorization: `Bearer ${apiKey}` } : {})
-      },
-      body: JSON.stringify(body),
+      ...fetchOptions,
       signal: controller.signal
     })
     clearTimeout(timer)
@@ -60,13 +68,22 @@ async function postJson(url, body) {
   }
 }
 
-export async function recordEmailCapture(email) {
-  // Minimal payload now; expand later with metadata as needed ''
-  const url = buildUrl(config.get('subscriptionApi.emailPath'))
-  return postJson(url, { email })
+/**
+ * Record email capture ''
+ * @param {string} email - Email address
+ * @param {Object} request - Hapi request object (optional)
+ */
+export async function recordEmailCapture(email, request = null) {
+  const emailPath = config.get('subscriptionApi.emailPath')
+  return postJson(request, emailPath, { email })
 }
 
-export async function recordSmsCapture(mobileNumber) {
-  const url = buildUrl(config.get('subscriptionApi.smsPath'))
-  return postJson(url, { mobileNumber })
+/**
+ * Record SMS capture ''
+ * @param {string} mobileNumber - Mobile number
+ * @param {Object} request - Hapi request object (optional)
+ */
+export async function recordSmsCapture(mobileNumber, request = null) {
+  const smsPath = config.get('subscriptionApi.smsPath')
+  return postJson(request, smsPath, { mobileNumber })
 }

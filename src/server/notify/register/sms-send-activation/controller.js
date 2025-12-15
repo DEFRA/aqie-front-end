@@ -5,6 +5,9 @@ import { LANG_EN } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { sendSmsCode } from '../../../common/services/notify.js'
 
+// Constants ''
+const MOBILE_NUMBER_PAGE_PATH = '/notify/register/sms-mobile-number'
+
 // Create a logger instance ''
 const logger = createLogger()
 
@@ -22,10 +25,16 @@ export const handleSendActivationRequest = (request, h, content = english) => {
 
   if (!mobileNumber) {
     // If no mobile number in session, redirect back to mobile number page ''
-    return h.redirect('/notify/register/sms-mobile-number')
+    return h.redirect(MOBILE_NUMBER_PAGE_PATH)
   }
 
-  const { footerTxt, phaseBanner, backlink, cookieBanner } = content
+  // Get locationId from session to build back link with query parameter ''
+  const locationId = request.yar.get('locationId') || ''
+  const backLinkUrl = locationId
+    ? `${MOBILE_NUMBER_PAGE_PATH}?locationId=${encodeURIComponent(locationId)}`
+    : MOBILE_NUMBER_PAGE_PATH
+
+  const { footerTxt, phaseBanner, cookieBanner } = content
   const metaSiteUrl = getAirQualitySiteUrl(request)
 
   const viewModel = {
@@ -38,8 +47,14 @@ export const handleSendActivationRequest = (request, h, content = english) => {
     metaSiteUrl,
     footerTxt,
     phaseBanner,
-    backlink,
+    backlink: {
+      text: 'Back'
+    },
     cookieBanner,
+    displayBacklink: true,
+    customBackLink: true,
+    backLinkText: 'Back',
+    backLinkUrl,
     mobileNumber
   }
 
@@ -63,15 +78,12 @@ export const handleSendActivationPost = async (request, h) => {
     return h.redirect('/notify/register/sms-mobile-number')
   }
 
-  // Generate and store a 5-digit token ''
-  const token = Array.from({ length: 5 }, () =>
-    Math.floor(Math.random() * 10)
-  ).join('')
-  request.yar.set('smsVerificationToken', token)
+  // Store activation timestamp ''
   request.yar.set('activationSent', Date.now())
 
   try {
-    await sendSmsCode(mobileNumber, token)
+    // Send OTP request to backend (backend generates and sends the code) ''
+    await sendSmsCode(mobileNumber, request)
     logger.info('Queued Notify SMS for delivery')
   } catch (err) {
     logger.error('Notify SMS send failed', err)

@@ -3,6 +3,7 @@ import { english } from '../../../data/en/en.js'
 import { LANG_EN } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { recordSmsCapture } from '../../../common/services/subscription.js'
+import { validateUKMobile } from '../../../common/helpers/validate-uk-mobile.js'
 
 // Constants for repeated strings
 const PAGE_HEADING = 'What is your mobile phone number?'
@@ -21,7 +22,24 @@ const handleNotifyRequest = (request, h, content = english) => {
     request.yar.set('location', request.query.location)
   }
 
-  const { footerTxt, phaseBanner, backlink, cookieBanner } = content
+  // Capture latitude and longitude from query parameters ''
+  if (request.query.lat) {
+    request.yar.set('latitude', request.query.lat)
+  }
+  if (request.query.long) {
+    request.yar.set('longitude', request.query.long)
+  }
+
+  // Capture and store locationId in session for back navigation ''
+  if (request.query.locationId) {
+    request.yar.set('locationId', request.query.locationId)
+  }
+
+  // Get locationId from session or query parameter to build back link ''
+  const locationId =
+    request.query.locationId || request.yar.get('locationId') || ''
+
+  const { footerTxt, phaseBanner, cookieBanner } = content
   const metaSiteUrl = getAirQualitySiteUrl(request)
 
   const viewModel = {
@@ -33,9 +51,19 @@ const handleNotifyRequest = (request, h, content = english) => {
     metaSiteUrl,
     footerTxt,
     phaseBanner,
-    backlink,
+    backlink: {
+      text: 'Back'
+    },
     cookieBanner,
     formData: request.yar.get('formData') || {}
+  }
+
+  // Only show back button if locationId exists ''
+  if (locationId) {
+    viewModel.displayBacklink = true
+    viewModel.customBackLink = true
+    viewModel.backLinkText = 'Back'
+    viewModel.backLinkUrl = `/location/${locationId}`
   }
 
   return h.view('notify/register/sms-mobile-number/index', viewModel)
@@ -44,9 +72,15 @@ const handleNotifyRequest = (request, h, content = english) => {
 const handleNotifyPost = async (request, h, content = english) => {
   const { notifyByText } = request.payload
 
-  // Basic validation
-  if (!notifyByText || notifyByText.trim() === '') {
-    const { footerTxt, phaseBanner, backlink, cookieBanner } = content
+  // Validate UK mobile number ''
+  const validation = validateUKMobile(notifyByText)
+
+  if (!validation.isValid) {
+    // Get locationId from session or query parameter to build back link ''
+    const locationId =
+      request.query.locationId || request.yar.get('locationId') || ''
+
+    const { footerTxt, phaseBanner, cookieBanner } = content
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     const viewModel = {
@@ -58,24 +92,34 @@ const handleNotifyPost = async (request, h, content = english) => {
       metaSiteUrl,
       footerTxt,
       phaseBanner,
-      backlink,
+      backlink: {
+        text: 'Back'
+      },
       cookieBanner,
       error: {
-        message: 'Enter your mobile phone number',
+        message: validation.error,
         field: 'notifyByText'
       },
       formData: request.payload
     }
 
+    // Only show back button if locationId exists ''
+    if (locationId) {
+      viewModel.displayBacklink = true
+      viewModel.customBackLink = true
+      viewModel.backLinkText = 'Back'
+      viewModel.backLinkUrl = `/location/${locationId}`
+    }
+
     return h.view('notify/register/sms-mobile-number/index', viewModel)
   }
 
-  // Store the mobile number in session
-  request.yar.set('mobileNumber', notifyByText)
+  // Store the formatted mobile number in session ''
+  request.yar.set('mobileNumber', validation.formatted)
 
   // Fire-and-forget capture to subscription backend ''
   try {
-    const res = await recordSmsCapture(notifyByText)
+    const res = await recordSmsCapture(validation.formatted)
     if (res?.ok) {
       logger.debug('Recorded SMS capture')
     } else if (res?.skipped) {

@@ -1,10 +1,16 @@
 /* global vi */
 import { handleNotifyRequest, handleNotifyPost } from './controller.js'
 
-describe('Notify Controller', () => {
-  test('handleNotifyRequest returns correct view data', () => {
+// Test constants ''
+const FOOTER_TEXT = 'Footer text'
+const PHASE_BANNER = 'Phase banner'
+const BACK_LINK = 'Back link'
+const COOKIE_BANNER = 'Cookie banner'
+
+describe('Notify Controller - handleNotifyRequest', () => {
+  test('returns correct view data', () => {
     const mockRequest = {
-      query: {},
+      query: { locationId: 'test-location-id' },
       yar: {
         set: vi.fn(),
         get: vi.fn().mockReturnValue({})
@@ -15,10 +21,10 @@ describe('Notify Controller', () => {
       view: vi.fn()
     }
     const mockContent = {
-      footerTxt: 'Footer text',
-      phaseBanner: 'Phase banner',
-      backlink: 'Back link',
-      cookieBanner: 'Cookie banner'
+      footerTxt: FOOTER_TEXT,
+      phaseBanner: PHASE_BANNER,
+      backlink: BACK_LINK,
+      cookieBanner: COOKIE_BANNER
     }
 
     handleNotifyRequest(mockRequest, mockH, mockContent)
@@ -32,21 +38,28 @@ describe('Notify Controller', () => {
         heading: 'What is your mobile phone number?',
         serviceName: 'Check air quality',
         lang: 'en',
-        footerTxt: 'Footer text',
-        phaseBanner: 'Phase banner',
-        backlink: 'Back link',
-        cookieBanner: 'Cookie banner'
+        footerTxt: FOOTER_TEXT,
+        phaseBanner: PHASE_BANNER,
+        cookieBanner: COOKIE_BANNER,
+        displayBacklink: true,
+        customBackLink: true,
+        backLinkText: 'Back',
+        backLinkUrl: '/location/test-location-id'
       })
     )
   })
+})
 
-  test('handleNotifyPost validates mobile number', async () => {
+describe('Notify Controller - handleNotifyPost', () => {
+  test('validates mobile number', async () => {
     const mockRequest = {
+      query: {},
       payload: {
         notifyByText: ''
       },
       yar: {
-        set: vi.fn()
+        set: vi.fn(),
+        get: vi.fn()
       }
     }
 
@@ -56,10 +69,10 @@ describe('Notify Controller', () => {
     }
 
     const mockContent = {
-      footerTxt: 'Footer text',
-      phaseBanner: 'Phase banner',
-      backlink: 'Back link',
-      cookieBanner: 'Cookie banner'
+      footerTxt: FOOTER_TEXT,
+      phaseBanner: PHASE_BANNER,
+      backlink: BACK_LINK,
+      cookieBanner: COOKIE_BANNER
     }
 
     await handleNotifyPost(mockRequest, mockH, mockContent)
@@ -71,25 +84,27 @@ describe('Notify Controller', () => {
           'Error: What is your mobile phone number? - Check air quality - GOV.UK',
         serviceName: 'Check air quality',
         lang: 'en',
-        footerTxt: 'Footer text',
-        phaseBanner: 'Phase banner',
-        backlink: 'Back link',
-        cookieBanner: 'Cookie banner',
+        footerTxt: FOOTER_TEXT,
+        phaseBanner: PHASE_BANNER,
+        cookieBanner: COOKIE_BANNER,
         error: {
           message: 'Enter your mobile phone number',
           field: 'notifyByText'
         }
       })
     )
+    // Note: backlink is no longer a simple string, it's an object with { text: 'Back' }
   })
 
-  test('handleNotifyPost redirects on valid mobile number', async () => {
+  test('redirects on valid mobile number', async () => {
     const mockRequest = {
+      query: {},
       payload: {
         notifyByText: '07123456789'
       },
       yar: {
-        set: vi.fn()
+        set: vi.fn(),
+        get: vi.fn()
       }
     }
 
@@ -99,17 +114,17 @@ describe('Notify Controller', () => {
     }
 
     const mockContent = {
-      footerTxt: 'Footer text',
-      phaseBanner: 'Phase banner',
-      backlink: 'Back link',
-      cookieBanner: 'Cookie banner'
+      footerTxt: FOOTER_TEXT,
+      phaseBanner: PHASE_BANNER,
+      backlink: BACK_LINK,
+      cookieBanner: COOKIE_BANNER
     }
 
     await handleNotifyPost(mockRequest, mockH, mockContent)
 
     expect(mockRequest.yar.set).toHaveBeenCalledWith(
       'mobileNumber',
-      '07123456789'
+      '+447123456789'
     )
     expect(mockH.redirect).toHaveBeenCalledWith(
       '/notify/register/sms-send-activation'
