@@ -61,18 +61,42 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
   // Get data from session ''
   const phoneNumber = request.yar.get('mobileNumber')
   const location = request.yar.get('location')
+  const lat = request.yar.get('latitude')
+  const long = request.yar.get('longitude')
+
+  // Log all session data for debugging ''
+  logger.info('Session data for alert setup', {
+    phoneNumber: phoneNumber ? '***' + phoneNumber.slice(-4) : undefined,
+    location,
+    lat,
+    long,
+    hasLat: !!lat,
+    hasLong: !!long
+  })
 
   if (!phoneNumber || !location) {
     logger.warn('Missing phone number or location in session')
     return h.redirect('/notify/register/sms-mobile-number')
   }
 
-  // Get latitude and longitude from session ''
-  const lat = request.yar.get('latitude') || ''
-  const long = request.yar.get('longitude') || ''
+  if (!lat || !long) {
+    logger.warn('Missing coordinates in session', { lat, long })
+    // Could redirect back or continue with empty coordinates
+    // For now, we'll continue but log the warning
+  }
 
   // Call setup-alert API with all required fields ''
   const { setupAlert } = await import('../../../common/services/notify.js')
+
+  // Log the payload being sent ''
+  logger.info('Calling setupAlert with payload', {
+    phoneNumber: '***' + phoneNumber.slice(-4),
+    alertType: 'sms',
+    location,
+    lat,
+    long
+  })
+
   const result = await setupAlert(
     phoneNumber,
     'sms',
@@ -83,8 +107,14 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
   )
 
   if (!result.ok) {
-    logger.error('Failed to setup alert', { error: result.error })
+    logger.error('Failed to setup alert', {
+      error: result.error,
+      status: result.status,
+      body: result.body
+    })
     // Still redirect to success but log the error ''
+  } else {
+    logger.info('Alert setup successful', { data: result.data })
   }
 
   // Store confirmation in session ''
