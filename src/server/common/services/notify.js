@@ -37,6 +37,12 @@ async function postToBackend(request, apiPath, body) {
     bodyKeys: Object.keys(body)
   })
 
+  // Debug: Print actual request body to console ''
+  console.log(
+    '🔥 REQUEST BODY BEING SENT TO BACKEND:',
+    JSON.stringify(body, null, 2)
+  )
+
   try {
     // Use reusable helper to build URL and options based on environment ''
     // Local: uses ephemeralUrl + x-api-key (from buildBackendApiFetchOptions)
@@ -57,8 +63,17 @@ async function postToBackend(request, apiPath, body) {
       logger.warn(msg, {
         url,
         status,
-        body: JSON.stringify(data)?.slice(0, MAX_ERROR_BODY_LENGTH)
+        requestBody: body,
+        responseBody: data,
+        bodyStringified: JSON.stringify(data)?.slice(0, MAX_ERROR_BODY_LENGTH)
       })
+
+      // Debug: Print error details to console ''
+      console.log('🚨 BACKEND ERROR RESPONSE:')
+      console.log('  Status:', status)
+      console.log('  Request Body:', JSON.stringify(body, null, 2))
+      console.log('  Response Body:', JSON.stringify(data, null, 2))
+
       return { ok: false, status, body: data }
     }
 
@@ -117,6 +132,7 @@ export async function setupAlert(
   phoneNumber,
   alertType,
   location,
+  locationId,
   lat,
   long,
   request = null
@@ -135,16 +151,20 @@ export async function setupAlert(
     parsedLat: latitude,
     parsedLong: longitude,
     latType: typeof latitude,
-    longType: typeof longitude
+    longType: typeof longitude,
+    locationId
   })
 
   const payload = {
     phoneNumber,
     alertType,
     location,
+    locationId,
     lat: latitude,
     long: longitude
   }
+
+  logger.info('Final payload being sent to backend', payload)
 
   return postToBackend(request, setupPath, payload)
 }

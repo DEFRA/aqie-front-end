@@ -8,6 +8,9 @@ import {
 } from '../../data/en/monitoring-sites.js'
 import * as airQualityData from '../../data/en/air-quality.js'
 import { LANG_CY } from '../../data/constants.js'
+import { createLogger } from '../../common/helpers/logging/logger.js'
+
+const logger = createLogger()
 
 const renderLocationDetailsView = (locationDetails, config, h) => {
   const {
@@ -36,6 +39,18 @@ const renderLocationDetailsView = (locationDetails, config, h) => {
   const latlon = locationData.latlon || {}
   const locationId =
     locationDetails?.GAZETTEER_ENTRY?.ID || locationDetails?.id || ''
+
+  // Log coordinate availability for alert links ''
+  logger.info('🗺️ Rendering location page with coordinates', {
+    hasLocationDataLatlon: !!locationData.latlon,
+    hasLat: !!latlon?.lat,
+    hasLon: !!latlon?.lon,
+    lat: latlon?.lat,
+    lon: latlon?.lon,
+    locationId,
+    title,
+    latlonKeys: latlon ? Object.keys(latlon) : 'latlon is undefined'
+  })
 
   return h.view('locations/location', {
     result: locationDetails,

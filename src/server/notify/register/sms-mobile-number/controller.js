@@ -30,9 +30,12 @@ const handleNotifyRequest = (request, h, content = english) => {
     hasQueryLat: !!request.query.lat,
     hasQueryLong: !!request.query.long,
     hasQueryLocation: !!request.query.location,
-    lat: request.yar.get('latitude'),
-    long: request.yar.get('longitude'),
-    location: request.yar.get('location')
+    queryLat: request.query.lat,
+    queryLong: request.query.long,
+    queryLocation: request.query.location,
+    sessionLat: request.yar.get('latitude'),
+    sessionLong: request.yar.get('longitude'),
+    sessionLocation: request.yar.get('location')
   })
 
   // Set the journey start in session

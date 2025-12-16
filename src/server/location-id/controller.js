@@ -192,6 +192,24 @@ function buildLocationViewData({
     locationNameForTemplate
   )
 
+  // Use calculated coordinates from geolib (from getNearestLocation) ''
+  // Format coordinates to 4 decimal places for alert links ''
+  const rawLatlon = locationData.latlon || {}
+  const latlon = {
+    lat: rawLatlon.lat ? Number(rawLatlon.lat.toFixed(4)) : undefined,
+    lon: rawLatlon.lon ? Number(rawLatlon.lon.toFixed(4)) : undefined
+  }
+
+  // Log coordinate availability for alert links ''
+  logger.info('🗺️ Building view data with coordinates')
+  logger.info('🗺️ locationData keys:', Object.keys(locationData))
+  logger.info('🗺️ locationData.latlon:', locationData.latlon)
+  logger.info('🗺️ latlon variable:', latlon)
+  logger.info('🗺️ latlon.lat:', latlon?.lat)
+  logger.info('🗺️ latlon.lon:', latlon?.lon)
+  logger.info('🗺️ locationId:', locationId)
+  logger.info('🗺️ title:', title)
+
   return {
     result: locationDetails,
     airQuality,
@@ -205,6 +223,7 @@ function buildLocationViewData({
     title: `${english.multipleLocations.titlePrefix} ${headerTitle}`,
     locationName: locationNameForTemplate,
     locationId,
+    latlon,
     searchTerms,
     displayBacklink: true,
     transformedDailySummary,
@@ -283,7 +302,7 @@ async function getNearestLocationData(
     locationType,
     indexNI
   )
-  const { forecastNum, nearestLocationsRange, nearestLocation } =
+  const { forecastNum, nearestLocationsRange, nearestLocation, latlon } =
     await getNearestLocation(
       locationData?.results,
       getForecasts,
@@ -293,11 +312,16 @@ async function getNearestLocationData(
       useNewRicardoMeasurementsEnabled,
       request
     )
+
+  // Store calculated latlon from geolib in locationData ''
+  locationData.latlon = latlon
+
   return {
     locationDetails,
     forecastNum,
     nearestLocationsRange,
-    nearestLocation
+    nearestLocation,
+    latlon
   }
 }
 
