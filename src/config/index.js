@@ -267,7 +267,7 @@ export const config = convict({
     alertBackendBaseUrl: {
       doc: 'Alert backend service base URL for setup-alert endpoint',
       format: String,
-      default: 'https://aqie-alert-back-end-service.dev.cdp-int.defra.cloud',
+      default: 'https://aqie-alert-back-end-service.test.cdp-int.defra.cloud',
       env: 'ALERT_BACKEND_BASE_URL'
     },
     emailPath: {
