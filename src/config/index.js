@@ -295,6 +295,45 @@ export const config = convict({
       env: 'NOTIFY_TIMEOUT_MS'
     }
   },
+  subscriptionApi: {
+    enabled: {
+      doc: 'Enable subscription capture API (for recording SMS/email captures)',
+      format: Boolean,
+      default: false,
+      env: 'SUBSCRIPTION_API_ENABLED'
+    },
+    baseUrl: {
+      doc: 'Subscription API base URL',
+      format: String,
+      default: '',
+      env: 'SUBSCRIPTION_API_BASE_URL'
+    },
+    apiKey: {
+      doc: 'Subscription API authentication key',
+      format: String,
+      default: '',
+      env: 'SUBSCRIPTION_API_KEY',
+      sensitive: true
+    },
+    emailPath: {
+      doc: 'API path for recording email captures',
+      format: String,
+      default: '/capture/email',
+      env: 'SUBSCRIPTION_API_EMAIL_PATH'
+    },
+    smsPath: {
+      doc: 'API path for recording SMS captures',
+      format: String,
+      default: '/capture/sms',
+      env: 'SUBSCRIPTION_API_SMS_PATH'
+    },
+    timeoutMs: {
+      doc: 'Request timeout in milliseconds',
+      format: 'int',
+      default: 5000,
+      env: 'SUBSCRIPTION_API_TIMEOUT_MS'
+    }
+  },
   ephemeralProtectedDevApiUrl: {
     doc: 'Ephemeral Protected Dev API url',
     format: String,

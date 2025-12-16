@@ -4,7 +4,6 @@ import { config } from '../../../config/index.js'
 import { catchFetchError } from '../helpers/catch-fetch-error.js'
 import {
   MAX_ERROR_BODY_LENGTH,
-  NOTIFY_SMS_PATH,
   HTTP_STATUS_OK,
   HTTP_STATUS_CREATED
 } from '../../data/constants.js'
@@ -24,11 +23,19 @@ async function postToBackend(request, apiPath, body) {
   const baseUrl = config.get('notify.baseUrl')
 
   if (!enabled || !baseUrl) {
-    logger.debug('Notify API disabled or baseUrl missing; skipping', {
-      apiPath
+    logger.warn('Notify API disabled or baseUrl missing; skipping', {
+      apiPath,
+      enabled,
+      baseUrl: baseUrl || '[not configured]'
     })
     return { skipped: true }
   }
+
+  logger.info('Notify API request starting', {
+    apiPath,
+    baseUrl,
+    bodyKeys: Object.keys(body)
+  })
 
   try {
     // Use reusable helper to build URL and options based on environment ''
@@ -70,7 +77,7 @@ async function postToBackend(request, apiPath, body) {
  * @param {Object} request - Hapi request object (optional)
  */
 export async function sendEmailCode(emailAddress, code, request = null) {
-  const emailPath = config.get('notify.emailPath') || '/send-email-code'
+  const emailPath = config.get('notify.emailPath')
   return postToBackend(request, emailPath, { emailAddress, code })
 }
 
@@ -80,7 +87,7 @@ export async function sendEmailCode(emailAddress, code, request = null) {
  * @param {Object} request - Hapi request object (optional)
  */
 export async function sendSmsCode(phoneNumber, request = null) {
-  const smsPath = config.get('notify.smsPath') || NOTIFY_SMS_PATH
+  const smsPath = config.get('notify.smsPath')
   return postToBackend(request, smsPath, { phoneNumber })
 }
 
@@ -92,8 +99,7 @@ export async function sendSmsCode(phoneNumber, request = null) {
  * @returns {Promise<Object>} { ok: boolean, data: { notificationId, status } }
  */
 export async function verifyOtp(phoneNumber, otp, request = null) {
-  const verifyPath =
-    config.get('notify.verifyOtpPath') || '/subscribe/validate-otp'
+  const verifyPath = config.get('notify.verifyOtpPath')
   return postToBackend(request, verifyPath, { phoneNumber, otp })
 }
 
@@ -115,7 +121,7 @@ export async function setupAlert(
   long,
   request = null
 ) {
-  const setupPath = config.get('notify.setupAlertPath') || '/setup-alert'
+  const setupPath = config.get('notify.setupAlertPath')
   return postToBackend(request, setupPath, {
     phoneNumber,
     alertType,
