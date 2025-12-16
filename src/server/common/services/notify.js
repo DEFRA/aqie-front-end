@@ -16,11 +16,12 @@ const logger = createLogger('notify-service')
  * @param {Object} request - Hapi request object (for detecting localhost)
  * @param {string} apiPath - API path
  * @param {Object} body - Request body
+ * @param {string} customBaseUrl - Optional custom base URL to override default notify.baseUrl
  * @returns {Object} Response object
  */
-async function postToBackend(request, apiPath, body) {
+async function postToBackend(request, apiPath, body, customBaseUrl = null) {
   const enabled = config.get('notify.enabled')
-  const baseUrl = config.get('notify.baseUrl')
+  const baseUrl = customBaseUrl || config.get('notify.baseUrl')
 
   if (!enabled || !baseUrl) {
     logger.warn('Notify API disabled or baseUrl missing; skipping', {
@@ -138,11 +139,12 @@ export async function setupAlert(
   request = null
 ) {
   const setupPath = config.get('notify.setupAlertPath')
+  const alertBackendBaseUrl = config.get('notify.alertBackendBaseUrl')
 
   // Convert coordinates to numbers if they're strings ''
   // MongoDB may expect numeric values for geospatial queries
-  const latitude = lat ? parseFloat(lat) : undefined
-  const longitude = long ? parseFloat(long) : undefined
+  const latitude = lat ? Number.parseFloat(lat) : undefined
+  const longitude = long ? Number.parseFloat(long) : undefined
 
   // Log coordinate conversion for debugging ''
   logger.info('Setting up alert with coordinates', {
@@ -152,7 +154,8 @@ export async function setupAlert(
     parsedLong: longitude,
     latType: typeof latitude,
     longType: typeof longitude,
-    locationId
+    locationId,
+    alertBackendBaseUrl
   })
 
   const payload = {
@@ -166,5 +169,5 @@ export async function setupAlert(
 
   logger.info('Final payload being sent to backend', payload)
 
-  return postToBackend(request, setupPath, payload)
+  return postToBackend(request, setupPath, payload, alertBackendBaseUrl)
 }
