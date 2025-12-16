@@ -181,6 +181,9 @@ export async function processLocationData(
       request
     )
 
+  // Store calculated latlon from geolib in locationData ''
+  locationData.latlon = latlon
+
   return {
     locationDetails,
     forecastNum,

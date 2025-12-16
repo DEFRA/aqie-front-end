@@ -32,20 +32,10 @@ const renderLocationDetailsView = (locationDetails, config, h) => {
   )
   const { airQuality } = airQualityValues(forecastNum, lang)
 
-  // Extract coordinates from gazetteer entry - always present ''
-  const gazetteerEntry = locationDetails?.GAZETTEER_ENTRY || locationDetails
-  const latlon = {
-    lat:
-      gazetteerEntry?.LATITUDE ||
-      gazetteerEntry?.latitude ||
-      locationData.latlon?.lat,
-    lon:
-      gazetteerEntry?.LONGITUDE ||
-      gazetteerEntry?.longitude ||
-      locationData.latlon?.lon
-  }
+  // Use calculated coordinates from geolib (from getNearestLocation) ''
+  const latlon = locationData.latlon || {}
   const locationId =
-    gazetteerEntry?.ID || gazetteerEntry?.id || locationDetails?.id || ''
+    locationDetails?.GAZETTEER_ENTRY?.ID || locationDetails?.id || ''
 
   return h.view('locations/location', {
     result: locationDetails,
