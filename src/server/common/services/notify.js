@@ -108,8 +108,8 @@ export async function verifyOtp(phoneNumber, otp, request = null) {
  * @param {string} phoneNumber - Phone number
  * @param {string} alertType - Type of alert (e.g., 'sms', 'email')
  * @param {string} location - Location for alerts
- * @param {string} lat - Latitude coordinate
- * @param {string} long - Longitude coordinate
+ * @param {string|number} lat - Latitude coordinate
+ * @param {string|number} long - Longitude coordinate
  * @param {Object} request - Hapi request object (optional)
  * @returns {Promise<Object>} { ok: boolean, data: subscription details }
  */
@@ -122,11 +122,29 @@ export async function setupAlert(
   request = null
 ) {
   const setupPath = config.get('notify.setupAlertPath')
-  return postToBackend(request, setupPath, {
+
+  // Convert coordinates to numbers if they're strings ''
+  // MongoDB may expect numeric values for geospatial queries
+  const latitude = lat ? parseFloat(lat) : undefined
+  const longitude = long ? parseFloat(long) : undefined
+
+  // Log coordinate conversion for debugging ''
+  logger.info('Setting up alert with coordinates', {
+    rawLat: lat,
+    rawLong: long,
+    parsedLat: latitude,
+    parsedLong: longitude,
+    latType: typeof latitude,
+    longType: typeof longitude
+  })
+
+  const payload = {
     phoneNumber,
     alertType,
     location,
-    lat,
-    long
-  })
+    lat: latitude,
+    long: longitude
+  }
+
+  return postToBackend(request, setupPath, payload)
 }
