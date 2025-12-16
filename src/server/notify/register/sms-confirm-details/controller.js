@@ -61,6 +61,7 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
   // Get data from session ''
   const phoneNumber = request.yar.get('mobileNumber')
   const location = request.yar.get('location')
+  const locationId = request.yar.get('locationId')
   const lat = request.yar.get('latitude')
   const long = request.yar.get('longitude')
 
@@ -68,10 +69,12 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
   logger.info('Session data for alert setup', {
     phoneNumber: phoneNumber ? '***' + phoneNumber.slice(-4) : undefined,
     location,
+    locationId,
     lat,
     long,
     hasLat: !!lat,
-    hasLong: !!long
+    hasLong: !!long,
+    hasLocationId: !!locationId
   })
 
   if (!phoneNumber || !location) {
@@ -91,6 +94,7 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
     phoneNumber: '***' + phoneNumber.slice(-4),
     alertType: 'sms',
     location,
+    locationId,
     lat,
     long
   })
@@ -99,6 +103,7 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
     phoneNumber,
     'sms',
     location,
+    locationId,
     lat,
     long,
     request
