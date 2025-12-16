@@ -24,11 +24,19 @@ async function postToBackend(request, apiPath, body) {
   const baseUrl = config.get('notify.baseUrl')
 
   if (!enabled || !baseUrl) {
-    logger.debug('Notify API disabled or baseUrl missing; skipping', {
-      apiPath
+    logger.warn('Notify API disabled or baseUrl missing; skipping', {
+      apiPath,
+      enabled,
+      baseUrl: baseUrl || '[not configured]'
     })
     return { skipped: true }
   }
+
+  logger.info('Notify API request starting', {
+    apiPath,
+    baseUrl,
+    bodyKeys: Object.keys(body)
+  })
 
   try {
     // Use reusable helper to build URL and options based on environment ''
