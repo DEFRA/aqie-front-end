@@ -81,8 +81,6 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
 
   if (!lat || !long) {
     logger.warn('Missing coordinates in session', { lat, long })
-    // Could redirect back or continue with empty coordinates
-    // For now, we'll continue but log the warning
   }
 
   // Call setup-alert API with all required fields ''

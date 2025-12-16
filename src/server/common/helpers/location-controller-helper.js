@@ -379,9 +379,35 @@ export function buildLocationViewData({
     issueTime: locationData.issueTime,
     dailySummaryTexts: components.dailySummaryTexts,
     serviceName: components.multipleLocations.serviceName,
-    latlon: locationData.latlon,
+    latlon: extractCoordinates(locationDetails, locationData),
+    locationId: extractLocationId(locationDetails),
     lang
   }
+}
+
+/**
+ * Extract coordinates from location details with fallbacks ''
+ */
+function extractCoordinates(locationDetails, locationData) {
+  const gazetteerEntry = locationDetails?.GAZETTEER_ENTRY || locationDetails
+  return {
+    lat:
+      gazetteerEntry?.LATITUDE ||
+      gazetteerEntry?.latitude ||
+      locationData?.latlon?.lat,
+    lon:
+      gazetteerEntry?.LONGITUDE ||
+      gazetteerEntry?.longitude ||
+      locationData?.latlon?.lon
+  }
+}
+
+/**
+ * Extract location ID from location details ''
+ */
+function extractLocationId(locationDetails) {
+  const gazetteerEntry = locationDetails?.GAZETTEER_ENTRY || locationDetails
+  return gazetteerEntry?.ID || gazetteerEntry?.id || locationDetails?.id || ''
 }
 
 /**

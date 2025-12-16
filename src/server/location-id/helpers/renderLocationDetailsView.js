@@ -32,6 +32,21 @@ const renderLocationDetailsView = (locationDetails, config, h) => {
   )
   const { airQuality } = airQualityValues(forecastNum, lang)
 
+  // Extract coordinates from gazetteer entry - always present ''
+  const gazetteerEntry = locationDetails?.GAZETTEER_ENTRY || locationDetails
+  const latlon = {
+    lat:
+      gazetteerEntry?.LATITUDE ||
+      gazetteerEntry?.latitude ||
+      locationData.latlon?.lat,
+    lon:
+      gazetteerEntry?.LONGITUDE ||
+      gazetteerEntry?.longitude ||
+      locationData.latlon?.lon
+  }
+  const locationId =
+    gazetteerEntry?.ID || gazetteerEntry?.id || locationDetails?.id || ''
+
   return h.view('locations/location', {
     result: locationDetails,
     airQuality,
@@ -57,7 +72,9 @@ const renderLocationDetailsView = (locationDetails, config, h) => {
     issueTime: locationData.issueTime,
     dailySummaryTexts: english.dailySummaryTexts,
     serviceName: multipleLocations.serviceName,
-    lang
+    lang,
+    latlon,
+    locationId
   })
 }
 
