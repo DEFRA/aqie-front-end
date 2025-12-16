@@ -32,6 +32,11 @@ const renderLocationDetailsView = (locationDetails, config, h) => {
   )
   const { airQuality } = airQualityValues(forecastNum, lang)
 
+  // Use calculated coordinates from geolib (from getNearestLocation) ''
+  const latlon = locationData.latlon || {}
+  const locationId =
+    locationDetails?.GAZETTEER_ENTRY?.ID || locationDetails?.id || ''
+
   return h.view('locations/location', {
     result: locationDetails,
     airQuality,
@@ -57,7 +62,9 @@ const renderLocationDetailsView = (locationDetails, config, h) => {
     issueTime: locationData.issueTime,
     dailySummaryTexts: english.dailySummaryTexts,
     serviceName: multipleLocations.serviceName,
-    lang
+    lang,
+    latlon,
+    locationId
   })
 }
 

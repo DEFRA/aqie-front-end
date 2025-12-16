@@ -12,11 +12,6 @@ const PAGE_HEADING = 'What is your mobile phone number?'
 const logger = createLogger()
 
 const handleNotifyRequest = (request, h, content = english) => {
-  logger.info('Starting notify journey')
-
-  // Set the journey start in session
-  request.yar.set('notifyJourney', 'started')
-
   // Capture location from query parameter if provided
   if (request.query.location) {
     request.yar.set('location', request.query.location)
@@ -29,6 +24,19 @@ const handleNotifyRequest = (request, h, content = english) => {
   if (request.query.long) {
     request.yar.set('longitude', request.query.long)
   }
+
+  // Log coordinates for debugging ''
+  logger.info('Starting notify journey', {
+    hasQueryLat: !!request.query.lat,
+    hasQueryLong: !!request.query.long,
+    hasQueryLocation: !!request.query.location,
+    lat: request.yar.get('latitude'),
+    long: request.yar.get('longitude'),
+    location: request.yar.get('location')
+  })
+
+  // Set the journey start in session
+  request.yar.set('notifyJourney', 'started')
 
   // Capture and store locationId in session for back navigation ''
   if (request.query.locationId) {
