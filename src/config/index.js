@@ -261,7 +261,7 @@ export const config = convict({
     baseUrl: {
       doc: 'Backend notify wrapper API base URL',
       format: String,
-      default: 'https://aqie-notify-service.dev.cdp-int.defra.cloud',
+      default: 'https://aqie-notify-service.test.cdp-int.defra.cloud',
       env: 'NOTIFY_BASE_URL'
     },
     emailPath: {
