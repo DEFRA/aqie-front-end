@@ -110,20 +110,12 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
   )
 
   if (!result.ok) {
-    // Treat 409 (Conflict) as a non-error: subscription already exists
-    if (result.status === 409) {
-      logger.warn('Alert already exists for this phone/location; continuing', {
-        status: result.status,
-        locationId,
-        phoneLast4: phoneNumber ? phoneNumber.slice(-4) : undefined
-      })
-    } else {
-      logger.error('Failed to setup alert', {
-        error: result.error,
-        status: result.status
-      })
-    }
-    // Continue to success page to keep UX smooth
+    logger.error('Failed to setup alert', {
+      error: result.error,
+      status: result.status,
+      body: result.body
+    })
+    // Still redirect to success but log the error ''
   } else {
     logger.info('Alert setup successful', { data: result.data })
   }
