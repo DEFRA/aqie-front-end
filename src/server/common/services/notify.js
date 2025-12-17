@@ -154,15 +154,7 @@ export async function setupAlert(
     long: longitude
   }
 
-  // Avoid logging sensitive fields like full phone numbers
-  logger.info('Final payload being sent to backend', {
-    alertType,
-    locationId,
-    hasPhoneNumber: Boolean(phoneNumber),
-    phoneLast4: phoneNumber ? phoneNumber.slice(-4) : undefined,
-    lat: latitude,
-    long: longitude
-  })
+  logger.info('Final payload being sent to backend', payload)
 
   return postToBackend(request, setupPath, payload, alertBackendBaseUrl)
 }
