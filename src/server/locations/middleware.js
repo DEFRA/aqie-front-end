@@ -25,6 +25,10 @@ import {
 } from './helpers/convert-string.js'
 import { sentenceCase } from '../common/helpers/sentence-case.js'
 import { convertFirstLetterIntoUppercase } from './helpers/convert-first-letter-into-upper-case.js'
+import { createLogger } from '../common/helpers/logging/logger.js'
+import { config } from '../../config/index.js'
+
+const logger = createLogger()
 
 const handleLocationDataNotFound = (
   request,
@@ -99,6 +103,7 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
   const {
     locationNameOrPostcode,
     lang,
+    searchTerms,
     getNIPlaces,
     transformedDailySummary,
     englishDate,
@@ -122,16 +127,25 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
       .takeover()
   }
 
-  const postcode = getNIPlaces?.results[0].postcode
-  const town = sentenceCase(getNIPlaces?.results[0].town)
+  // '' Guard against null/undefined results from failed mock server fetch
+  const firstNIResult = getNIPlaces?.results?.[0]
+  if (!firstNIResult || !firstNIResult.postcode) {
+    logger.error('NI mock server returned invalid data - postcode missing')
+    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+    request.yar.clear('searchTermsSaved')
+    return h
+      .redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`)
+      .code(REDIRECT_STATUS_CODE)
+      .takeover()
+  }
+
+  const postcode = firstNIResult.postcode
+  const town = sentenceCase(firstNIResult.town)
   const locationTitle = `${postcode}, ${town}`
 
   const locationData = {
     results: getNIPlaces?.results,
-    urlRoute: `${getNIPlaces?.results[0].postcode.toLowerCase()}`.replaceAll(
-      /\s+/g,
-      ''
-    ),
+    urlRoute: `${firstNIResult.postcode.toLowerCase()}`.replaceAll(/\s+/g, ''),
     locationType: redirectError.locationType,
     transformedDailySummary,
     englishDate,
@@ -144,8 +158,38 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
     lang
   }
 
+  logger.info(`[DEBUG processNILocationType] Setting locationData with:`)
+  logger.info(
+    `[DEBUG processNILocationType] - results is array: ${Array.isArray(locationData.results)}`
+  )
+  logger.info(
+    `[DEBUG processNILocationType] - results length: ${locationData.results?.length || 0}`
+  )
+  logger.info(
+    `[DEBUG processNILocationType] - getForecasts exists: ${!!locationData.getForecasts}`
+  )
+  logger.info(
+    `[DEBUG processNILocationType] - getForecasts length: ${locationData.getForecasts?.length || 0}`
+  )
+
   request.yar.clear('locationData')
   request.yar.set('locationData', locationData)
+
+  // '' Set searchTermsSaved for NI locations to prevent redirect loop in controller
+  request.yar.set('searchTermsSaved', searchTerms)
+
+  logger.info(
+    `[DEBUG processNILocationType] After set, locationData from session:`
+  )
+  const retrievedLocationData = request.yar.get('locationData')
+  logger.info(
+    `[DEBUG processNILocationType] - retrieved results is array: ${Array.isArray(retrievedLocationData?.results)}`
+  )
+  logger.info(
+    `[DEBUG processNILocationType] - retrieved getForecasts exists: ${!!retrievedLocationData?.getForecasts}`
+  )
+
+  // '' Use .takeover() to send redirect immediately and skip remaining lifecycle
   return h
     .redirect(`/location/${locationData.urlRoute}?lang=en`)
     .code(REDIRECT_STATUS_CODE)
@@ -199,10 +243,26 @@ function shouldReturnNotFound(
   userLocation,
   getOSPlaces
 ) {
+  logger.info(
+    `[DEBUG shouldReturnNotFound] locationType: ${redirectError.locationType}`
+  )
+  logger.info(
+    `[DEBUG shouldReturnNotFound] getNIPlaces?.results exists: ${!!getNIPlaces?.results}`
+  )
+  logger.info(
+    `[DEBUG shouldReturnNotFound] getNIPlaces?.results length: ${getNIPlaces?.results?.length}`
+  )
+  logger.info(
+    `[DEBUG shouldReturnNotFound] getNIPlaces structure: ${JSON.stringify(getNIPlaces)}`
+  )
+
   if (
     redirectError.locationType === LOCATION_TYPE_NI &&
     (!getNIPlaces?.results || getNIPlaces?.results.length === 0)
   ) {
+    logger.info(
+      `[DEBUG shouldReturnNotFound] Returning true: NI with no results`
+    )
     return true
   }
   if (
@@ -213,12 +273,23 @@ function shouldReturnNotFound(
       getNIPlaces
     )
   ) {
+    logger.info(
+      `[DEBUG shouldReturnNotFound] Returning true: isLocationDataNotFound`
+    )
     return true
   }
+  logger.info(`[DEBUG shouldReturnNotFound] Returning false: location found`)
   return false
 }
 
 function isInvalidDailySummary(getDailySummary) {
+  const isMockEnabled = config.get('enabledMock')
+
+  // '' When mock is enabled, allow null daily summary for NI testing
+  if (isMockEnabled) {
+    return false
+  }
+
   return (
     !getDailySummary ||
     typeof getDailySummary !== 'object' ||
@@ -308,6 +379,7 @@ function buildLocationContexts(params) {
   const niContext = {
     locationNameOrPostcode,
     lang,
+    searchTerms,
     getNIPlaces,
     transformedDailySummary,
     englishDate,
@@ -323,12 +395,21 @@ function buildLocationContexts(params) {
 }
 
 const searchMiddleware = async (request, h) => {
+  logger.info(
+    `[DEBUG MIDDLEWARE TOP] Request to /location - query params: ${JSON.stringify(request.query)}`
+  )
+
   const { query, payload } = request
   const lang = LANG_EN
   const month = getMonth(lang)
   const { home, multipleLocations } = english
   const searchTerms = query?.searchTerms?.toUpperCase()
   const secondSearchTerm = query?.secondSearchTerm?.toUpperCase()
+
+  // '' Set searchTermsSaved early in UK location processing
+  if (searchTerms) {
+    request.yar.set('searchTermsSaved', searchTerms)
+  }
 
   const redirectError = handleErrorInputAndRedirect(
     request,
@@ -360,6 +441,10 @@ const searchMiddleware = async (request, h) => {
     ) ||
     isInvalidDailySummary(getDailySummary)
   ) {
+    logger.info(
+      `[DEBUG] Redirecting to location-not-found. shouldReturnNotFound: ${shouldReturnNotFound(redirectError, getNIPlaces, userLocation, getOSPlaces)}, isInvalidDailySummary: ${isInvalidDailySummary(getDailySummary)}`
+    )
+    logger.info(`[DEBUG] getDailySummary: ${JSON.stringify(getDailySummary)}`)
     return handleLocationDataNotFound(
       request,
       h,
@@ -371,8 +456,6 @@ const searchMiddleware = async (request, h) => {
 
   const { transformedDailySummary, englishDate, welshDate } =
     prepareDateFormatting(getDailySummary, lang)
-
-  request.yar.set('searchTermsSaved', searchTerms)
 
   const contexts = buildLocationContexts({
     userLocation,
@@ -391,6 +474,8 @@ const searchMiddleware = async (request, h) => {
     home,
     multipleLocations
   })
+
+  // '' searchTermsSaved is set in processNILocationType/processUKLocationType before redirecting
 
   return routeToLocationTypeHandler(request, h, redirectError, contexts)
 }

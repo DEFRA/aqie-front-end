@@ -260,7 +260,7 @@ describe('Location ID Controller - Session Management', () => {
         locationType: 'uk'
       }
 
-      const nearestLocation = { id: 'test', forecast: 4 }
+      const nearestLocation = [{ id: 'test', forecast: 4 }] // '' Changed to array to match actual implementation
       const nearestLocationsRange = [{ id: 'nearby-1' }]
 
       mockRequest.yar.get

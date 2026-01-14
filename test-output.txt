@@ -1,0 +1,228 @@
+
+> aqie-front-end@0.15.0 pretest
+> npm run build:frontend
+
+
+> aqie-front-end@0.15.0 build:frontend
+> cross-env NODE_ENV=production webpack
+
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+25 assets
+43 modules
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 3, column 8 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/application.scss:3:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+3 | @import "~govuk-frontend/dist/govuk/index";
+
+
+../../../../src/client/assets/stylesheets/application.scss 4:9  root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 4, column 28 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/sass/components/_inset-text-colour.scss:4:28:
+Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use list.nth instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+4 |     border-left: 10px solid nth($daqi-colour, $i + 1);
+
+
+../../../../src/client/assets/stylesheets/sass/components/_inset-text-colour.scss 5:29  @import
+../../../../src/client/assets/stylesheets/sass/all.scss 21:9                            @import
+../../../../src/client/assets/stylesheets/application.scss 13:9                         root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 5, column 8 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/application.scss:5:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+5 | @import "variables/all";
+
+
+../../../../src/client/assets/stylesheets/application.scss 6:9  root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 6, column 8 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/application.scss:6:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+6 | @import "helpers/all";
+
+
+../../../../src/client/assets/stylesheets/application.scss 7:9  root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 7, column 8 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/application.scss:7:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+7 | @import "core/all";
+
+
+../../../../src/client/assets/stylesheets/application.scss 8:9  root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 8, column 8 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/application.scss:8:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+8 | @import "components/all";
+
+
+../../../../src/client/assets/stylesheets/application.scss 9:9  root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 18, column 16 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/helpers/_mq.scss:18:16:
+Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use map.get instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+18 |     $min-width: map-get($breakpoints, $from);
+
+
+../../../../src/client/assets/stylesheets/helpers/_mq.scss 19:17  mq()
+../../../../src/client/assets/stylesheets/daqi/_all.scss 304:5    @import
+../../../../src/client/assets/stylesheets/application.scss 11:9   root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 21, column 16 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/helpers/_mq.scss:21:16:
+Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use map.get instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+21 |     $max-width: map-get($breakpoints, $until) - 1px;
+
+
+../../../../src/client/assets/stylesheets/helpers/_mq.scss 22:17                     mq()
+../../../../src/client/assets/stylesheets/sass/components/_aq-levels-table.scss 9:3  @import
+../../../../src/client/assets/stylesheets/sass/all.scss 15:9                         @import
+../../../../src/client/assets/stylesheets/application.scss 13:9                      root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+14 on the type scale is deprecated and will be removed as a possible option in the next major version. To silence this warning, update $govuk-suppressed-warnings with key: "govuk-typography-scale-14"
+
+../../../govuk-frontend/dist/govuk/settings/_warnings.scss 51:5                  -warning()
+../../../govuk-frontend/dist/govuk/helpers/_typography.scss 210:7                govuk-font-size()
+../../../govuk-frontend/dist/govuk/helpers/_typography.scss 284:5                govuk-font()
+../../../../src/client/assets/stylesheets/sass/components/_daqitable.scss 199:5  @import
+../../../../src/client/assets/stylesheets/sass/all.scss 13:9                     @import
+../../../../src/client/assets/stylesheets/application.scss 13:9                  root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+27 repetitive deprecation warnings omitted.
+Run in verbose mode to see all warnings.
+
+webpack 5.99.9 compiled with 10 warnings in 227069 ms
+
+> aqie-front-end@0.15.0 test
+> cross-env TZ=UTC NODE_OPTIONS=--max-old-space-size=4096 npx vitest run --coverage
+
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+
+ RUN  v3.2.4 /Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end
+      Coverage enabled with v8
+
+ ❯ src/server/location-id/controller-redirects.test.js (10 tests | 1 failed | 1 skipped) 14ms
+   ✓ Location ID Controller - Welsh Redirects > Welsh redirect - with lang=cy > should redirect to Welsh URL when lang=cy and no search terms 2ms
+   ✓ Location ID Controller - Welsh Redirects > Welsh redirect - with search terms > should not redirect to Welsh URL when search terms present 2ms
+   ✓ Location ID Controller - Search Term Redirects > Search terms redirect functionality > should redirect when no referer and no saved search terms 1ms
+   ✓ Location ID Controller - Search Term Redirects > Search terms redirect functionality > should redirect when referer equals current URL and no saved search terms 0ms
+   ↓ Location ID Controller - Search Term Redirects > Search terms redirect functionality > should not redirect when referer exists and search terms saved
+   ✓ Location ID Controller - Session Validation > Session data validation > should redirect when locationData.results is not an array 0ms
+   × Location ID Controller - Session Validation > Session data validation > should redirect when getForecasts is missing 6ms
+     → expected "spy" to be called with arguments: [ Array(1) ][90m
+
+Number of calls: [1m0[22m
+[39m
+   ✓ Location ID Controller - Session Validation > Session data validation > should redirect when locationData is empty object 0ms
+   ✓ Location ID Controller - Location Processing > UK location processing > should successfully process UK location and return view 1ms
+   ✓ Location ID Controller - NI Location Processing > NI location processing > should successfully process NI location 0ms
+ ✓ src/config/nunjucks/context/context.test.js (7 tests) 284ms
+ ❯ src/server/locations/helpers/get-nearest-location.test.js (22 tests | 1 failed) 17ms
+   ✓ getLatLonAndForecastCoords > should return latlon and forecastCoordinates when matches exist 1ms
+   ✓ getLatLonAndForecastCoords > should return empty objects when matches array is empty 0ms
+   ✓ buildForecastNum > should build forecast numbers for today and other days 0ms
+   ✓ buildForecastNum > should return [] when matches array is empty 0ms
+   ✓ buildForecastNum > should handle no matching forecastDay 0ms
+   ✓ isValidNonNegativeNumber > should return true for valid positive numbers 0ms
+   ✓ isValidNonNegativeNumber > should return true for numeric strings 0ms
+   ✓ isValidNonNegativeNumber > should return false for negative numbers 0ms
+   ✓ isValidNonNegativeNumber > should return false for NaN 0ms
+   ✓ isValidNonNegativeNumber > should return true for null (coerces to 0) but false for undefined 0ms
+   ✓ isValidNonNegativeNumber > should return false for Infinity 0ms
+   ✓ buildPollutantsObject > should build pollutants object with English language 3ms
+   ✓ buildPollutantsObject > should build pollutants object with Welsh language 0ms
+   ✓ buildPollutantsObject > should skip pollutants with invalid values 0ms
+   ✓ buildPollutantsObject > should return empty array when no pollutants 0ms
+   ✓ buildNearestLocationEntry > should build a valid nearest location entry 0ms
+   ✓ buildNearestLocationEntry > should return null when no valid pollutants exist 0ms
+   ✓ buildNearestLocationsRange > should build nearest locations range with valid measurements 0ms
+   ✓ buildNearestLocationsRange > should return empty array when matches is empty 0ms
+   ✓ getNearestLocation > should get nearest location with old measurements (useNewRicardoMeasurementsEnabled=false) 2ms
+   ✓ getNearestLocation > should get nearest location with new measurements (useNewRicardoMeasurementsEnabled=true) 1ms
+   × getNearestLocation > should handle empty matches array 7ms
+     → expected [] to deeply equal {}
+ ✓ src/server/cookies/partials/form.test.js (1 test) 97ms
+ ✓ src/helpers/proxy-fetch-extended.test.js (2 tests) 1021ms
+   ✓ proxy-fetch coverage > should export proxyFetch function  1020ms
+ ✓ test/server/common/helpers/proxy.test.js (6 tests) 1053ms
+   ✓ proxy.js - provideProxy > should return null when no proxy URL is configured  1050ms
+ ✓ src/config/nunjucks/index.test.js (11 tests) 654ms
+   ✓ Nunjucks Configuration > should export nunjucksConfig with required properties  636ms
+ ✓ src/server/locations/helpers/get-os-places.test.js (9 tests) 1144ms
+   ✓ getOSPlaces - basic functionality > should call getOSPlaces function without errors  1132ms
+ ✓ src/server/health-effects/cy/index.test.js (14 tests) 194ms
+ ✓ src/server/health-effects/index.test.js (13 tests) 201ms
+ ✓ src/index.test.js (6 tests) 38ms
+ ✓ src/server/router.test.js (9 tests) 1593ms
+   ✓ Router plugin structure > should export router object  1584ms
+ ✓ src/server/locations/helpers/handle-location-data.test.js (6 tests) 142ms
+ ✓ src/server/index.test.js (16 tests) 39ms
+ ✓ src/server/home/partials/inset-text.test.js (2 tests) 378ms
+   ✓ Nunjucks cookie banner Template > should render the language toggle template correctly for English  372ms
+ ✓ src/server/home/partials/start-button.test.js (2 tests) 398ms
+   ✓ Nunjucks cookie banner Template > should render the start button template correctly for English  388ms
+ ✓ src/server/check-local-air-quality/partials/start-button.test.js (2 tests) 410ms
+   ✓ Nunjucks cookie banner Template > should render the start button template correctly for English  398ms
+ ✓ src/helpers/proxy-agent.test.js (4 tests) 14ms
+ ✓ src/server/health/controller.test.js (2 tests) 13ms
+ ✓ src/server/check-local-air-quality/partials/inset-text.test.js (2 tests) 17ms
+ ✓ src/server/cookies/partials/notification-banner.test.js (1 test) 53ms
+ ✓ src/server/multiple-results/controller.test.js (8 tests) 15ms
+ ✓ src/server/location-id/controller-errors.test.js (4 tests) 18ms
+ ✓ test/daqi-numbered-template.test.js (2 tests) 66ms
+ ✓ test/forecast-partial.test.js (1 test) 49ms
+ ✓ src/config/nunjucks/filters/moment-date-filters.test.js (45 tests) 15ms
+ ✓ src/server/error/partials/error-404-cy.test.js (1 test) 9ms
+ ✓ src/server/notify/register/sms-confirm-details/controller.test.js (3 tests) 28ms
+ ✓ src/server/location-id/controller-mocks-daqi.test.js (10 tests) 17ms
+ ✓ src/helpers/proxy-fetch.test.js (4 tests) 7ms
+ ✓ src/server/search-location/cy/index.test.js (1 test) 7ms
+ ✓ src/server/locations/helpers/forecast-warning.test.js (19 tests) 7ms
+ ✓ src/server/locations/helpers/extra-middleware-helpers.test.js (12 tests) 7ms
+ ✓ src/server/locations/helpers/location-helpers.test.js (52 tests) 6ms
+ ✓ src/config/nunjucks/filters/format-currency.test.js (2 tests) 12ms
+ ✓ src/server/locations/helpers/handle-error-helpers.test.js (12 tests) 6ms
+ ✓ src/server/location-id/controller-mocks-test.test.js (7 tests) 11ms
+ ✓ src/server/particulate-matter-10/index.test.js (1 test) 8ms
+npm error A complete log of this run can be found in: /Users/2057586/.npm/_logs/2026-01-14T16_48_22_061Z-debug-0.log

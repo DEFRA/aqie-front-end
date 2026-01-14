@@ -11,6 +11,13 @@ import { buildBackendApiFetchOptions } from '../helpers/backend-api-helper.js'
 
 const logger = createLogger('notify-service')
 
+// Helper to remove common presentation prefix from location strings
+// Example: "Air quality in London, City of Westminster" -> "London, City of Westminster"
+function sanitizeLocationName(location) {
+  if (!location || typeof location !== 'string') return location
+  return location.replace(/^\s*air\s+quality\s+in\s+/i, '').trim()
+}
+
 /**
  * Make POST request to backend notify API with automatic local/remote handling ''
  * @param {Object} request - Hapi request object (for detecting localhost)
@@ -145,24 +152,24 @@ export async function setupAlert(
     alertBackendBaseUrl
   })
 
+  const sanitizedLocation = sanitizeLocationName(location)
+
   const payload = {
     phoneNumber,
     alertType,
-    location,
+    location: sanitizedLocation,
     locationId,
     lat: latitude,
     long: longitude
   }
 
-  // Avoid logging sensitive fields like full phone numbers
-  logger.info('Final payload being sent to backend', {
-    alertType,
-    locationId,
-    hasPhoneNumber: Boolean(phoneNumber),
-    phoneLast4: phoneNumber ? phoneNumber.slice(-4) : undefined,
-    lat: latitude,
-    long: longitude
-  })
+  // Do not log payload contents or sensitive fields
+  if (sanitizedLocation !== location) {
+    logger.info('Sanitized location name for alert setup', {
+      original: location,
+      sanitized: sanitizedLocation
+    })
+  }
 
   return postToBackend(request, setupPath, payload, alertBackendBaseUrl)
 }

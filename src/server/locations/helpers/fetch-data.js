@@ -260,6 +260,10 @@ async function handleNILocation(
  */
 function extractDailySummary(getForecasts) {
   let getDailySummary = getForecasts?.['forecast-summary']
+  logger.info(`[DEBUG FORECAST] forecast-summary exists: ${!!getDailySummary}`)
+  logger.info(
+    `[DEBUG FORECAST] getForecasts keys: ${Object.keys(getForecasts || {}).join(', ')}`
+  )
   if (!getDailySummary || typeof getDailySummary !== 'object') {
     getDailySummary = { today: null }
   }

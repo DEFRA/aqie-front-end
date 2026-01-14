@@ -35,20 +35,33 @@ export function getLatLonAndForecastCoords(
 
 // Helper to build forecastNum
 export function buildForecastNum(matches, nearestLocation, forecastDay) {
-  return matches.length > 0
-    ? nearestLocation.map((current) => {
-        let todayDate = []
-        const otherdays = []
-        for (const { day, value } of current.forecast) {
-          if (day === forecastDay) {
-            todayDate = [{ today: value }]
-          } else {
-            otherdays.push({ [day]: value })
-          }
-        }
-        return [...todayDate, ...otherdays]
-      })
-    : 0
+  // '' Return empty array if no matches or nearestLocation is not a valid array
+  if (
+    !matches ||
+    matches.length === 0 ||
+    !Array.isArray(nearestLocation) ||
+    nearestLocation.length === 0
+  ) {
+    return []
+  }
+
+  return nearestLocation.map((current) => {
+    // '' Guard against missing forecast property
+    if (!current || !Array.isArray(current.forecast)) {
+      return []
+    }
+
+    let todayDate = []
+    const otherdays = []
+    for (const { day, value } of current.forecast) {
+      if (day === forecastDay) {
+        todayDate = [{ today: value }]
+      } else {
+        otherdays.push({ [day]: value })
+      }
+    }
+    return [...todayDate, ...otherdays]
+  })
 }
 
 // Helper to validate pollutant values (allow only numbers >= 0)
@@ -312,10 +325,15 @@ async function getNearestLocation(
 
   const forecastNum = buildForecastNum(matches, nearestLocation, forecastDay)
 
+  // '' Ensure nearestLocation is always an array for template compatibility
+  const nearestLocationSafe = Array.isArray(nearestLocation)
+    ? nearestLocation
+    : []
+
   return {
     forecastNum,
     nearestLocationsRange,
-    nearestLocation,
+    nearestLocation: nearestLocationSafe,
     latlon
   }
 }

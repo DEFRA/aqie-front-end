@@ -506,21 +506,37 @@ export function validateAndProcessSessionData(
   getSearchTermsFromUrl,
   REDIRECT_STATUS_CODE
 ) {
-  if (!Array.isArray(locationData?.results) || !locationData?.getForecasts) {
-    const { searchTerms, secondSearchTerm, searchTermsLocationType } =
-      getSearchTermsFromUrl(currentUrl)
+  logger.info(
+    `[DEBUG validateAndProcessSessionData] locationData exists: ${!!locationData}`
+  )
+  logger.info(
+    `[DEBUG validateAndProcessSessionData] locationData.results is array: ${Array.isArray(locationData?.results)}`
+  )
+  logger.info(
+    `[DEBUG validateAndProcessSessionData] locationData.getForecasts exists: ${!!locationData?.getForecasts}`
+  )
+  logger.info(
+    `[DEBUG validateAndProcessSessionData] locationData.results length: ${locationData?.results?.length || 0}`
+  )
+
+  // '' Allow pages to render even without forecasts - validation only checks for results
+  const isValidData =
+    Array.isArray(locationData?.results) && locationData.results.length > 0
+
+  if (!isValidData) {
+    logger.info(
+      `[DEBUG validateAndProcessSessionData] REDIRECTING - validation failed`
+    )
     request.yar.clear('locationData')
 
-    const safeSearchTerms = searchTerms || ''
-    const safeSecondSearchTerm = secondSearchTerm || ''
-    const safeSearchTermsLocationType = searchTermsLocationType || ''
-    const searchParams =
-      safeSearchTerms || safeSecondSearchTerm || safeSearchTermsLocationType
-        ? `&searchTerms=${encodeURIComponent(safeSearchTerms)}&secondSearchTerm=${encodeURIComponent(safeSecondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(safeSearchTermsLocationType)}`
-        : ''
+    // '' Don't include searchTerms in redirect - they should only come from bookmarks/direct URLs, not from form submissions
+    const searchParams = ''
 
     const redirectUrl = buildRedirectUrl(lang, searchParams, request)
     return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE).takeover()
   }
+  logger.info(
+    `[DEBUG validateAndProcessSessionData] NOT redirecting - validation passed`
+  )
   return null
 }
