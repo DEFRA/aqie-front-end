@@ -89,6 +89,10 @@ const handleSingleMatch = (
     showSummaryDate,
     issueTime
   })
+
+  // '' Set searchTermsSaved before redirect to prevent controller redirect loop
+  request.yar.set('searchTermsSaved', request.query.searchTerms || '')
+
   logger.info(`Redirecting to location with custom ID: ${customId}`)
 
   // '' Build query parameters for mock testing (only when mocks enabled)

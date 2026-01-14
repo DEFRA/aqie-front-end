@@ -95,29 +95,38 @@ function handleSearchTermsRedirect(
   request,
   h
 ) {
+  logger.info(
+    `[DEBUG controller] handleSearchTermsRedirect - searchTermsSaved from session: ${searchTermsSaved}`
+  )
   const previousUrl = headers.referer || headers.referrer
+  logger.info(`[DEBUG controller] previousUrl: ${previousUrl}`)
+  logger.info(`[DEBUG controller] currentUrl: ${currentUrl}`)
   const isPreviousAndCurrentUrlEqual = compareLastElements(
     previousUrl,
     currentUrl
+  )
+  logger.info(
+    `[DEBUG controller] isPreviousAndCurrentUrlEqual: ${isPreviousAndCurrentUrlEqual}`
   )
   if (
     (previousUrl === undefined && !searchTermsSaved) ||
     (isPreviousAndCurrentUrlEqual && !searchTermsSaved)
   ) {
-    const { searchTerms, secondSearchTerm, searchTermsLocationType } =
-      getSearchTermsFromUrl(currentUrl)
+    logger.info(
+      `[DEBUG controller] REDIRECTING because searchTermsSaved is missing`
+    )
     request.yar.clear('locationData')
     const mockParams = buildMockQueryParams(
       request,
       config.get('disableTestMocks')
     )
+    // '' Don't include searchTerms in redirect - they should only come from bookmarks/direct URLs, not from form submissions
     return h
-      .redirect(
-        `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}${mockParams}`
-      )
+      .redirect(`/location?lang=en${mockParams}`)
       .code(REDIRECT_STATUS_CODE)
       .takeover()
   }
+  logger.info(`[DEBUG controller] NOT redirecting - searchTermsSaved found`)
   return null
 }
 
@@ -164,9 +173,13 @@ function buildLocationViewData({
 }) {
   const { title, headerTitle } = prepareLocationTitles(locationDetails)
 
-  const highestAQ = Math.max(...forecastNum)
+  // '' Handle missing or empty forecastNum gracefully - ensure it's always an array
+  const forecastNumSafe =
+    Array.isArray(forecastNum) && forecastNum.length > 0 ? forecastNum : []
+  const highestAQ =
+    forecastNumSafe.length > 0 ? Math.max(...forecastNumSafe) : 0
   const { airQuality, transformedDailySummary } = prepareAirQuality(
-    forecastNum,
+    forecastNumSafe,
     lang,
     request,
     locationData,
@@ -263,10 +276,18 @@ function updateSessionWithNearest(
   nearestLocation,
   nearestLocationsRange
 ) {
+  // '' Ensure we only assign valid arrays to prevent template errors
+  const nearestLocationSafe = Array.isArray(nearestLocation)
+    ? nearestLocation
+    : []
+  const nearestLocationsRangeSafe = Array.isArray(nearestLocationsRange)
+    ? nearestLocationsRange
+    : []
+
   // Replace the large getForecasts with a single-record version
-  locationData.getForecasts = nearestLocation
+  locationData.getForecasts = nearestLocationSafe
   // Replace the large getMeasurements with a filtered version
-  locationData.getMeasurements = nearestLocationsRange
+  locationData.getMeasurements = nearestLocationsRangeSafe
   // Save the updated locationData back into session
   request.yar.set('locationData', locationData)
 }
@@ -283,7 +304,7 @@ async function getNearestLocationData(
 ) {
   let distance
   if (locationData.locationType === LOCATION_TYPE_NI) {
-    distance = getNearestLocation(
+    distance = await getNearestLocation(
       locationData?.results,
       getForecasts,
       locationType,
@@ -292,6 +313,23 @@ async function getNearestLocationData(
       useNewRicardoMeasurementsEnabled,
       request
     )
+    // '' Ensure distance has valid latlon structure even when forecasts fail
+    if (
+      !distance ||
+      !distance.latlon ||
+      distance.latlon.lat === undefined ||
+      distance.latlon.lon === undefined
+    ) {
+      // Fall back to using the first result's coordinates if available
+      const firstResult = Array.isArray(locationData?.results)
+        ? locationData.results[0]
+        : null
+      distance = distance || {}
+      distance.latlon = {
+        lat: firstResult?.latitude || 0,
+        lon: firstResult?.longitude || 0
+      }
+    }
   }
   const indexNI = 0
   const { resultNI } = getNIData(locationData, distance, locationType)
@@ -316,11 +354,17 @@ async function getNearestLocationData(
   // Store calculated latlon from geolib in locationData ''
   locationData.latlon = latlon
 
+  // '' Ensure nearestLocation is an array; fallback to empty array if forecasts are missing
+  const nearestLocationSafe =
+    Array.isArray(nearestLocation) && nearestLocation.length > 0
+      ? nearestLocation
+      : []
+
   return {
     locationDetails,
     forecastNum,
     nearestLocationsRange,
-    nearestLocation,
+    nearestLocation: nearestLocationSafe,
     latlon
   }
 }
@@ -358,6 +402,19 @@ function initializeCommonVariables(request) {
   )
   const metaSiteUrl = getAirQualitySiteUrl(request)
   const locationData = request.yar.get('locationData') || {}
+
+  logger.info(
+    `[DEBUG initializeCommonVariables] locationData exists: ${!!locationData}`
+  )
+  logger.info(
+    `[DEBUG initializeCommonVariables] locationData.results exists: ${!!locationData?.results}`
+  )
+  logger.info(
+    `[DEBUG initializeCommonVariables] locationData.results is array: ${Array.isArray(locationData?.results)}`
+  )
+  logger.info(
+    `[DEBUG initializeCommonVariables] locationData.getForecasts exists: ${!!locationData?.getForecasts}`
+  )
 
   return {
     getMonth,
@@ -549,10 +606,15 @@ async function processLocationWorkflow({
 
 const getLocationDetailsController = {
   handler: async (request, h) => {
+    logger.info(
+      `[DEBUG TOP OF HANDLER] Request to /location/${request.params.id} - URL: ${request.url.pathname}`
+    )
+
     try {
       // Handle initialization and validation
       const initResult = await initializeAndValidateRequest(request, h)
       if (initResult.redirect) {
+        logger.info(`[DEBUG TOP OF HANDLER] Returning redirect from initResult`)
         return initResult.redirect
       }
 

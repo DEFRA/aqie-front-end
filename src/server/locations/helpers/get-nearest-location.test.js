@@ -112,14 +112,14 @@ describe('buildForecastNum', () => {
     expect(result).toEqual([[{ today: 4 }, { Mon: 3 }, { Wed: 2 }]])
   })
 
-  it('should return 0 when matches array is empty', () => {
+  it('should return [] when matches array is empty', () => {
     const matches = []
     const nearestLocation = []
     const forecastDay = 'Mon'
 
     const result = buildForecastNum(matches, nearestLocation, forecastDay)
 
-    expect(result).toBe(0)
+    expect(result).toEqual([])
   })
 
   it('should handle no matching forecastDay', () => {
@@ -489,8 +489,8 @@ describe('getNearestLocation', () => {
       request
     )
 
-    expect(result.forecastNum).toBe(0)
+    expect(result.forecastNum).toEqual([])
     expect(result.nearestLocationsRange).toEqual([])
-    expect(result.nearestLocation).toEqual({})
+    expect(result.nearestLocation).toEqual([]) // '' nearestLocationSafe converts non-arrays to []
   })
 })

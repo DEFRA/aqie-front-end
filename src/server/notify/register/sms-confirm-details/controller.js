@@ -89,14 +89,10 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
   // Call setup-alert API with all required fields ''
   const { setupAlert } = await import('../../../common/services/notify.js')
 
-  // Log the payload being sent ''
-  logger.info('Calling setupAlert with payload', {
-    phoneNumber: '***' + phoneNumber.slice(-4),
-    alertType: 'sms',
-    location,
+  // Log minimal, non-sensitive metadata only
+  logger.info('Submitting alert setup request', {
     locationId,
-    lat,
-    long
+    hasCoordinates: Boolean(lat && long)
   })
 
   const result = await setupAlert(

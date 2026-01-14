@@ -41,7 +41,7 @@ function getNearLocation(lat, lon, forecastCoordinates, forecasts) {
       item.location.coordinates[1] === getLocation.longitude
     )
   })
-  return nearestLocation
+  return Array.isArray(nearestLocation) ? nearestLocation : []
 }
 
 function orderByDistance(lat, lon, forecastCoordinates) {

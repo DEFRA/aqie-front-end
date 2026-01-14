@@ -16,6 +16,7 @@ async function callAndHandleForecastsResponse(
   logger,
   errorResponse
 ) {
+  logger.info(`[DEBUG FORECAST API] Calling forecast API: ${url}`)
   const [forecastStatus, getForecasts] = await catchFetchError(url, opts)
   if (forecastStatus !== httpStatusOk) {
     logger.error('Error fetching forecasts data: status code', forecastStatus)

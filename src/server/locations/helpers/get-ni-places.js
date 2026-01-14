@@ -67,6 +67,13 @@ async function getNIPlaces(userLocation) {
 
   if (statusCodeNI === STATUS_CODE_SUCCESS) {
     logger.info(`niPlacesData fetched:`)
+    logger.info(
+      `[DEBUG] niPlacesData structure:`,
+      JSON.stringify(niPlacesData, null, 2)
+    )
+    logger.info(
+      `[DEBUG] niPlacesData.results length: ${niPlacesData?.results?.length}`
+    )
   } else {
     logger.error(`Error fetching statusCodeNI data: ${statusCodeNI}`)
   }
