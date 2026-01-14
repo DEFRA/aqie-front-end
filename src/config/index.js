@@ -349,13 +349,13 @@ export const config = convict({
   measurementsApiUrl: {
     doc: 'Ricardo API url',
     format: String,
-    default: `https://aqie-back-end.dev.cdp-int.defra.cloud/measurements`,
+    default: `https://aqie-back-end.test.cdp-int.defra.cloud/measurements`,
     env: 'MEASUREMENTS_API_URL'
   },
   ricardoMeasurementsApiUrl: {
     doc: 'New Ricardo API url',
     format: String,
-    default: `https://aqie-back-end.dev.cdp-int.defra.cloud/monitoringStationInfo?`,
+    default: `https://aqie-back-end.test.cdp-int.defra.cloud/monitoringStationInfo?`,
     env: 'NEW_RICARDO_MEASUREMENTS_API_URL'
   },
   postcodeNortherIrelandUrl: {
