@@ -8,7 +8,7 @@ const logger = createLogger()
 const STATUS_CODE_SUCCESS = 200
 
 // ''  Simplified - removed test-only DI parameters
-async function getNIPlaces(userLocation) {
+async function getNIPlaces(userLocation, request) {
   // Read configuration directly instead of via parameters
   const isMockEnabled = config.get('enabledMock')
   const osPlacesApiPostcodeNorthernIrelandUrl = config.get(
@@ -28,7 +28,7 @@ async function getNIPlaces(userLocation) {
   // Build OAuth options if not in mock mode
   let optionsOAuth = {}
   if (!isMockEnabled) {
-    const accessToken = await refreshOAuthToken(logger)
+    const accessToken = await refreshOAuthToken(request, { logger })
     if (accessToken) {
       optionsOAuth = {
         headers: {
