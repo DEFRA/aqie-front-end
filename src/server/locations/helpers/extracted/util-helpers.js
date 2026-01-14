@@ -52,6 +52,7 @@ const refreshOAuthToken = async (request, di = {}) => {
 const handleNILocationData = async (userLocation, di = {}) => {
   const testLogger = di.logger || logger
   const testIsTestMode = di.isTestMode || isTestMode
+  const request = di.request
 
   if (testIsTestMode?.()) {
     if (testLogger && typeof testLogger.info === 'function') {
@@ -59,8 +60,8 @@ const handleNILocationData = async (userLocation, di = {}) => {
     }
     return { results: ['niData'] }
   }
-  // ''  Use getNIPlaces for NI lookups - simplified, no DI parameters needed
-  return getNIPlaces(userLocation)
+  // ''  Use getNIPlaces for NI lookups - pass request for OAuth token refresh
+  return getNIPlaces(userLocation, request)
 }
 
 const handleUKLocationData = async (userLocation, di = {}) => {

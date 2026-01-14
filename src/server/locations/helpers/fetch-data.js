@@ -238,20 +238,8 @@ async function handleNILocation(
   diRequest
 ) {
   const niDi = { ...di.overrides, request: diRequest || {} }
-  const isMock =
-    typeof di.isMockEnabled === 'function'
-      ? di.isMockEnabled()
-      : !!di.isMockEnabled
-  const getNIPlaces = await di.handleNILocationData(
-    userLocation,
-    searchTerms,
-    secondSearchTerm,
-    isMock,
-    optionsOAuth,
-    undefined,
-    diRequest,
-    niDi
-  )
+  // '' Pass userLocation and niDi (which contains request) to handleNILocationData
+  const getNIPlaces = await di.handleNILocationData(userLocation, niDi)
   return getNIPlaces
 }
 
