@@ -38,7 +38,8 @@ describe('Confirm Alert Details Controller - handleConfirmAlertDetailsRequest', 
           .fn()
           .mockReturnValueOnce('07123456789') // mobileNumber
           .mockReturnValueOnce('London') // location
-          .mockReturnValueOnce({}) // formData
+          .mockReturnValueOnce({}), // formData
+        clear: vi.fn()
       }
     }
 
@@ -125,7 +126,8 @@ describe('Confirm Alert Details Controller - handleConfirmAlertDetailsPost', () 
             }
             return mockData[key] || ''
           }),
-          set: vi.fn()
+          set: vi.fn(),
+          clear: vi.fn()
         }
       }
 

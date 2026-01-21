@@ -98,12 +98,6 @@ export const config = convict({
     default: false,
     env: 'ENABLED_MOCK'
   },
-  useNewRicardoMeasurementsEnabled: {
-    doc: 'Falg To Use New Ricardo Measurements API',
-    format: Boolean,
-    default: true,
-    env: 'USE_NEW_RICARDO_MEASUREMENTS_ENABLED'
-  },
   log: {
     enabled: {
       doc: 'Is logging enabled',
@@ -258,6 +252,24 @@ export const config = convict({
       default: false,
       env: 'NOTIFY_ENABLED'
     },
+    mockOtpEnabled: {
+      doc: 'Enable mock OTP fallback when real service fails (for local and test environments)',
+      format: Boolean,
+      default: false,
+      env: 'NOTIFY_MOCK_OTP_ENABLED'
+    },
+    mockOtpCode: {
+      doc: 'Mock OTP code to use when mock mode is active',
+      format: String,
+      default: '12345',
+      env: 'NOTIFY_MOCK_OTP_CODE'
+    },
+    mockSetupAlertEnabled: {
+      doc: 'Enable mock setup alert fallback when backend service fails (for local and test environments ONLY - never use in production)',
+      format: Boolean,
+      default: false,
+      env: 'NOTIFY_MOCK_SETUP_ALERT_ENABLED'
+    },
     baseUrl: {
       doc: 'Backend notify wrapper API base URL',
       format: String,
@@ -293,6 +305,12 @@ export const config = convict({
       format: String,
       default: '/setup-alert',
       env: 'NOTIFY_SETUP_ALERT_PATH'
+    },
+    getSubscriptionsPath: {
+      doc: 'Backend API path for getting user subscriptions',
+      format: String,
+      default: '/api/subscriptions',
+      env: 'NOTIFY_GET_SUBSCRIPTIONS_PATH'
     },
     timeoutMs: {
       doc: 'Request timeout in milliseconds',
@@ -346,17 +364,11 @@ export const config = convict({
     default: `https://ephemeral-protected.api.test.cdp-int.defra.cloud`,
     env: 'EPHEMERAL_PROTECTED_DEV_API_URL'
   },
-  measurementsApiUrl: {
-    doc: 'Ricardo API url',
-    format: String,
-    default: `https://aqie-back-end.test.cdp-int.defra.cloud/measurements`,
-    env: 'MEASUREMENTS_API_URL'
-  },
   ricardoMeasurementsApiUrl: {
-    doc: 'New Ricardo API url',
+    doc: 'Ricardo Measurements API url',
     format: String,
     default: `https://aqie-back-end.test.cdp-int.defra.cloud/monitoringStationInfo?`,
-    env: 'NEW_RICARDO_MEASUREMENTS_API_URL'
+    env: 'RICARDO_MEASUREMENTS_API_URL'
   },
   postcodeNortherIrelandUrl: {
     doc: 'Search postcode Northern Ireland url',
@@ -473,6 +485,12 @@ export const config = convict({
       default: 'x-cdp-request-id',
       env: 'TRACING_HEADER'
     }
+  },
+  userResearchPanelUrl: {
+    doc: 'URL for user research panel sign up',
+    format: String,
+    default: 'https://defragroup.eu.qualtrics.com/jfe/form/SV_3JEDGo4ZaGtBpHw',
+    env: 'USER_RESEARCH_PANEL_URL'
   }
 })
 

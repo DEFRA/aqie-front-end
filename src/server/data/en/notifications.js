@@ -28,7 +28,23 @@ export const notificationTranslations = {
     radioNo: 'No, I do not want to receive alerts',
     continueButton: 'Continue',
     errors: {
-      required: 'Select yes if you want to receive air quality alerts'
+      required: 'Select yes if you want to receive air quality alerts',
+      duplicateAlert: {
+        summary:
+          'You have already set up an alert for {location}. Choose a different location or mobile phone number.',
+        field:
+          'Select yes if you want to receive air quality alerts for a different location'
+      }
+    }
+  },
+  // SMS Mobile Number page errors
+  smsMobileNumber: {
+    errors: {
+      maxAlertsReached: {
+        summary:
+          'You have already added the maximum of 5 alerts for {phoneNumber}. Enter a different UK phone number.',
+        field: 'Enter a UK mobile phone number, like 07700 900 982'
+      }
     }
   }
 }

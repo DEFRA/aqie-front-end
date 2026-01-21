@@ -15,6 +15,16 @@ const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
   const { footerTxt, phaseBanner, cookieBanner, smsConfirmDetails } = content
   const metaSiteUrl = getAirQualitySiteUrl(request)
 
+  // '' Check for duplicate alert error
+  const duplicateAlertError = request.yar.get('duplicateAlertError')
+  const duplicateAlertLocation = request.yar.get('duplicateAlertLocation')
+
+  // '' Clear error flags after reading
+  if (duplicateAlertError) {
+    request.yar.clear('duplicateAlertError')
+    request.yar.clear('duplicateAlertLocation')
+  }
+
   // Get data from session ''
   const mobileNumber = request.yar.get('mobileNumber') || 'Not provided'
   const location = request.yar.get('location') || 'Unknown location'
@@ -34,7 +44,9 @@ const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
   )
 
   const viewModel = {
-    pageTitle: `${smsConfirmDetails.pageTitle} - Check air quality - GOV.UK`,
+    pageTitle: duplicateAlertError
+      ? `Error: ${smsConfirmDetails.pageTitle} - Check air quality - GOV.UK`
+      : `${smsConfirmDetails.pageTitle} - Check air quality - GOV.UK`,
     heading,
     page: heading,
     serviceName: 'Check air quality',
@@ -49,7 +61,14 @@ const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
     location,
     forecastAlert,
     monitoringAlert,
-    formData: request.yar.get('formData') || {}
+    formData: request.yar.get('formData') || {},
+    duplicateAlertError: duplicateAlertError
+      ? {
+          summary: `You have already set up an alert for ${duplicateAlertLocation || location}. Choose a different location or mobile phone number.`,
+          message:
+            'Select yes if you want to receive air quality alerts for a different location'
+        }
+      : null
   }
 
   return h.view('notify/register/sms-confirm-details/index', viewModel)
@@ -69,6 +88,12 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
   logger.info('Session data for alert setup', {
     phoneNumber: phoneNumber ? '***' + phoneNumber.slice(-4) : undefined,
     location,
+    locationStartsWith: location
+      ? location.substring(0, Math.min(20, location.length))
+      : undefined,
+    locationHasAirQuality: location
+      ? location.toLowerCase().includes('air quality')
+      : false,
     locationId,
     lat,
     long,
@@ -105,24 +130,65 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
     request
   )
 
+  // '' Debug logging to see actual result
+  logger.info('Setup alert result received', {
+    ok: result.ok,
+    status: result.status,
+    hasBody: !!result.body,
+    hasError: !!result.error,
+    bodyMessage: result.body?.message,
+    bodyStatusCode: result.body?.statusCode,
+    bodyError: result.body?.error
+  })
+
   if (!result.ok) {
-    // Treat 409 (Conflict) as a non-error: subscription already exists
-    if (result.status === 409) {
-      logger.warn('Alert already exists for this phone/location; continuing', {
+    // '' Handle 400 Bad Request - Maximum 5 locations reached
+    if (result.status === 400) {
+      logger.warn('Maximum locations reached for this phone number', {
         status: result.status,
-        locationId,
+        message: result.body?.message,
         phoneLast4: phoneNumber ? phoneNumber.slice(-4) : undefined
       })
-    } else {
-      logger.error('Failed to setup alert', {
-        error: result.error,
-        status: result.status
-      })
+      // '' Store error in session and redirect to mobile number page
+      const maskedNumber = phoneNumber.replace(
+        /(\d{5})\d+(\d{3})$/,
+        '$1 XXX $2'
+      )
+      request.yar.set('maxAlertsError', true)
+      request.yar.set('maskedPhoneNumber', maskedNumber)
+      request.yar.clear('mobileNumber')
+      return h.redirect('/notify/register/sms-mobile-number')
     }
-    // Continue to success page to keep UX smooth
-  } else {
-    logger.info('Alert setup successful', { data: result.data })
+
+    // '' Handle 409 Conflict - Alert already exists for this location
+    if (result.status === 409) {
+      logger.warn('Alert already exists for this phone/location', {
+        status: result.status,
+        message: result.body?.message,
+        location,
+        phoneLast4: phoneNumber ? phoneNumber.slice(-4) : undefined
+      })
+      // '' Keep notificationFlow active so user can search for different location
+      // '' Don't clear it here - let user continue the flow with a different location
+      // '' Redirect to duplicate subscription page
+      return h.redirect('/notify/register/duplicate-subscription')
+    }
+
+    // '' Handle other errors - redirect back to mobile number page
+    logger.error('Failed to setup alert - unhandled error status', {
+      error: result.error,
+      status: result.status,
+      body: result.body,
+      statusType: typeof result.status,
+      bodyKeys: result.body ? Object.keys(result.body) : []
+    })
+    // '' Store error and redirect back to mobile number page
+    request.yar.set('setupAlertError', true)
+    request.yar.clear('mobileNumber')
+    return h.redirect('/notify/register/sms-mobile-number')
   }
+
+  logger.info('Alert setup successful', { data: result.data })
 
   // Store confirmation in session ''
   request.yar.set('alertDetailsConfirmed', true)

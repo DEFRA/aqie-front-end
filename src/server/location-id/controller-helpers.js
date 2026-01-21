@@ -1,5 +1,5 @@
 import { createLogger } from '../common/helpers/logging/logger.js'
-import { LANG_CY, LANG_EN } from '../data/constants.js'
+import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../data/constants.js'
 import { config } from '../../config/index.js'
 import { getDetailedInfo } from '../data/en/air-quality.js'
 
@@ -389,9 +389,6 @@ export function initializeRequestData(request) {
   const { query, headers = {} } = request
   const locationId = request.params.id
   const searchTermsSaved = request.yar.get('searchTermsSaved')
-  const useNewRicardoMeasurementsEnabled = config.get(
-    'useNewRicardoMeasurementsEnabled'
-  )
   const currentUrl = request.url.href
   const lang = query?.lang ?? LANG_EN
   const mocksDisabled = config.get('disableTestMocks')
@@ -451,7 +448,6 @@ export function initializeRequestData(request) {
     headers,
     locationId,
     searchTermsSaved,
-    useNewRicardoMeasurementsEnabled,
     currentUrl,
     lang
   }
@@ -462,9 +458,11 @@ export function initializeRequestData(request) {
  * @param {string} lang - Language code
  * @param {string} searchParams - Search parameters string
  * @param {object} request - Request object
+ * @param {string} locationId - Location ID from URL (for bookmark support)
  * @returns {string} Redirect URL
  */
-function buildRedirectUrl(lang, searchParams, request) {
+// eslint-disable-next-line no-unused-vars
+function buildRedirectUrl(lang, searchParams, request, locationId = null) {
   const mockLevel = request.query?.mockLevel
   const mockLevelParam =
     mockLevel !== null && mockLevel !== undefined
@@ -483,7 +481,12 @@ function buildRedirectUrl(lang, searchParams, request) {
       ? `&testMode=${encodeURIComponent(testMode)}`
       : ''
 
-  return `/location?lang=${encodeURIComponent(lang)}${searchParams}${mockLevelParam}${mockPollutantParam}${testModeParam}`
+  // '' If locationId is provided (bookmark scenario), pass it as searchTerms to middleware
+  const searchTermsParam = locationId
+    ? `&searchTerms=${encodeURIComponent(locationId.toUpperCase())}`
+    : ''
+
+  return `/location?lang=${encodeURIComponent(lang)}${searchParams}${searchTermsParam}${mockLevelParam}${mockPollutantParam}${testModeParam}`
 }
 
 /**
@@ -493,8 +496,7 @@ function buildRedirectUrl(lang, searchParams, request) {
  * @param {string} lang - Language code
  * @param {object} h - Hapi response toolkit
  * @param {object} request - Request object
- * @param {Function} getSearchTermsFromUrl - Function to extract search terms from URL
- * @param {number} REDIRECT_STATUS_CODE - HTTP status code for redirect
+ * @param {string} locationId - Location ID from URL (for bookmark support)
  * @returns {object|null} Redirect response or null if valid
  */
 export function validateAndProcessSessionData(
@@ -503,8 +505,8 @@ export function validateAndProcessSessionData(
   lang,
   h,
   request,
-  getSearchTermsFromUrl,
-  REDIRECT_STATUS_CODE
+  locationId,
+  getSearchTermsFromUrl
 ) {
   logger.info(
     `[DEBUG validateAndProcessSessionData] locationData exists: ${!!locationData}`
@@ -518,21 +520,52 @@ export function validateAndProcessSessionData(
   logger.info(
     `[DEBUG validateAndProcessSessionData] locationData.results length: ${locationData?.results?.length || 0}`
   )
+  logger.info(
+    `[DEBUG validateAndProcessSessionData] locationId from URL: ${locationId}`
+  )
 
-  // '' Allow pages to render even without forecasts - validation only checks for results
-  const isValidData =
-    Array.isArray(locationData?.results) && locationData.results.length > 0
-
-  if (!isValidData) {
+  // '' Check for valid results AND forecasts (like 0.685.0)
+  if (!Array.isArray(locationData?.results) || !locationData?.getForecasts) {
     logger.info(
       `[DEBUG validateAndProcessSessionData] REDIRECTING - validation failed`
     )
+
+    // '' Extract searchTerms from current URL path (0.685.0 approach)
+    const { searchTerms, secondSearchTerm, searchTermsLocationType } =
+      getSearchTermsFromUrl(currentUrl)
+
     request.yar.clear('locationData')
 
-    // '' Don't include searchTerms in redirect - they should only come from bookmarks/direct URLs, not from form submissions
-    const searchParams = ''
+    const safeSearchTerms = searchTerms || ''
+    const safeSecondSearchTerm = secondSearchTerm || ''
+    const safeSearchTermsLocationType = searchTermsLocationType || ''
+    const searchParams =
+      safeSearchTerms || safeSecondSearchTerm || safeSearchTermsLocationType
+        ? `&searchTerms=${encodeURIComponent(safeSearchTerms)}&secondSearchTerm=${encodeURIComponent(safeSecondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(safeSearchTermsLocationType)}`
+        : ''
 
-    const redirectUrl = buildRedirectUrl(lang, searchParams, request)
+    // '' Preserve mock parameters in redirect
+    const mockLevel = request.query?.mockLevel
+    const mockLevelParam =
+      mockLevel !== undefined
+        ? `&mockLevel=${encodeURIComponent(mockLevel)}`
+        : ''
+
+    const mockPollutantBand = request.query?.mockPollutantBand
+    const mockPollutantParam =
+      mockPollutantBand !== undefined
+        ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
+        : ''
+
+    const testMode = request.query?.testMode
+    const testModeParam =
+      testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
+
+    const redirectUrl = `/location?lang=${encodeURIComponent(lang)}${searchParams}${mockLevelParam}${mockPollutantParam}${testModeParam}`
+
+    logger.info(
+      `[DEBUG validateAndProcessSessionData] Redirect URL: ${redirectUrl}`
+    )
     return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE).takeover()
   }
   logger.info(

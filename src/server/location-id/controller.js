@@ -115,14 +115,44 @@ function handleSearchTermsRedirect(
     logger.info(
       `[DEBUG controller] REDIRECTING because searchTermsSaved is missing`
     )
+
+    // '' Extract searchTerms from URL path (0.685.0 approach)
+    const { searchTerms, secondSearchTerm, searchTermsLocationType } =
+      getSearchTermsFromUrl(currentUrl)
+
     request.yar.clear('locationData')
-    const mockParams = buildMockQueryParams(
-      request,
-      config.get('disableTestMocks')
-    )
-    // '' Don't include searchTerms in redirect - they should only come from bookmarks/direct URLs, not from form submissions
+    logger.info('Redirecting to location search')
+
+    // '' Disable mock functionality when configured (production by default)
+    const mocksDisabled = config.get('disableTestMocks')
+
+    // Preserve mock parameters in redirect if present (only when mocks enabled)
+    const mockLevel = !mocksDisabled ? request.query?.mockLevel : undefined
+    const mockLevelParam =
+      mockLevel !== undefined
+        ? `&mockLevel=${encodeURIComponent(mockLevel)}`
+        : ''
+
+    const mockDay = !mocksDisabled ? request.query?.mockDay : undefined
+    const mockDayParam =
+      mockDay !== undefined ? `&mockDay=${encodeURIComponent(mockDay)}` : ''
+
+    const mockPollutantBand = !mocksDisabled
+      ? request.query?.mockPollutantBand
+      : undefined
+    const mockPollutantParam =
+      mockPollutantBand !== undefined
+        ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
+        : ''
+
+    const testMode = !mocksDisabled ? request.query?.testMode : undefined
+    const testModeParam =
+      testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
+
     return h
-      .redirect(`/location?lang=en${mockParams}`)
+      .redirect(
+        `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}${mockLevelParam}${mockDayParam}${mockPollutantParam}${testModeParam}`
+      )
       .code(REDIRECT_STATUS_CODE)
       .takeover()
   }
@@ -234,6 +264,7 @@ function buildLocationViewData({
     metaSiteUrl,
     description: `${english.daqi.description.a} ${headerTitle}${english.daqi.description.b}`,
     title: `${english.multipleLocations.titlePrefix} ${headerTitle}`,
+    headerTitle,
     locationName: locationNameForTemplate,
     locationId,
     latlon,
@@ -299,7 +330,6 @@ async function getNearestLocationData(
   locationType,
   locationId,
   lang,
-  useNewRicardoMeasurementsEnabled,
   request
 ) {
   let distance
@@ -310,7 +340,6 @@ async function getNearestLocationData(
       locationType,
       0,
       lang,
-      useNewRicardoMeasurementsEnabled,
       request
     )
     // '' Ensure distance has valid latlon structure even when forecasts fail
@@ -347,7 +376,6 @@ async function getNearestLocationData(
       locationType,
       locationIndex,
       lang,
-      useNewRicardoMeasurementsEnabled,
       request
     )
 
@@ -395,6 +423,7 @@ function handleRequestData(request) {
 
 // Helper to initialize common variables
 function initializeCommonVariables(request) {
+  // '' Clear searchTermsSaved after handleSearchTermsRedirect check (0.685.0 behavior)
   request.yar.clear('searchTermsSaved')
   const formattedDate = moment().format(DATE_FORMAT).split(' ')
   const getMonth = calendarEnglish.findIndex((item) =>
@@ -450,15 +479,8 @@ function processLocationResult(
 // Helper to handle all initialization and validation steps
 async function initializeAndValidateRequest(request, h) {
   // Initialize request data
-  const {
-    query,
-    headers,
-    locationId,
-    searchTermsSaved,
-    useNewRicardoMeasurementsEnabled,
-    currentUrl,
-    lang
-  } = handleRequestData(request)
+  const { query, headers, locationId, searchTermsSaved, currentUrl, lang } =
+    handleRequestData(request)
 
   // Handle Welsh redirect
   const welshRedirect = handleWelshRedirect(query, locationId, h)
@@ -488,7 +510,9 @@ async function initializeAndValidateRequest(request, h) {
     currentUrl,
     lang,
     h,
-    request
+    request,
+    locationId,
+    getSearchTermsFromUrl
   )
   if (sessionValidationResult) {
     return { redirect: sessionValidationResult }
@@ -497,7 +521,6 @@ async function initializeAndValidateRequest(request, h) {
   return {
     data: {
       locationData,
-      useNewRicardoMeasurementsEnabled,
       locationId,
       lang,
       getMonth,
@@ -545,7 +568,6 @@ function logAndCalculateSummaryDate(locationData) {
 // Helper to process location data and return appropriate response
 async function processLocationWorkflow({
   locationData,
-  useNewRicardoMeasurementsEnabled,
   locationId,
   lang,
   getMonth,
@@ -553,8 +575,109 @@ async function processLocationWorkflow({
   request,
   h
 }) {
+  // '' Check if user is in notification registration flow (SMS or Email) from multiple-results page
+  const notificationFlow = request.yar.get('notificationFlow')
+  if (notificationFlow) {
+    // '' Update session with location data for notification
+    if (
+      locationData &&
+      locationData.results &&
+      locationData.results.length > 0
+    ) {
+      // '' Find the result that matches the locationId (not just the first one)
+      let result = locationData.results.find((r) => {
+        const id = r.GAZETTEER_ENTRY?.ID || r.ID
+        return id === locationId
+      })
+
+      // '' Fallback to first result if no match found (shouldn't happen)
+      if (!result) {
+        logger.warn(
+          `No result found matching locationId: ${locationId}, using first result`
+        )
+        result = locationData.results[0]
+      }
+
+      const gazetteerEntry = result.GAZETTEER_ENTRY || result
+
+      // '' Build proper location title from gazetteerEntry instead of using page title
+      let locationTitle = locationData.headerTitle
+
+      // '' If headerTitle is not set or is a generic page title, build from gazetteerEntry
+      if (!locationTitle || locationTitle === 'Locations matching') {
+        const name = gazetteerEntry.NAME2 || gazetteerEntry.NAME1 || ''
+        const district =
+          gazetteerEntry.DISTRICT_BOROUGH || gazetteerEntry.COUNTY_UNITARY || ''
+        locationTitle = district ? `${name}, ${district}` : name
+      }
+
+      // '' Convert British National Grid coordinates (GEOMETRY_X/Y) to lat/long
+      let lat, lon
+      if (gazetteerEntry.GEOMETRY_X && gazetteerEntry.GEOMETRY_Y) {
+        // '' Import OsGridRef for coordinate conversion
+        const OsGridRef = (await import('mt-osgridref')).default
+        const point = new OsGridRef(
+          gazetteerEntry.GEOMETRY_X,
+          gazetteerEntry.GEOMETRY_Y
+        )
+        const latlon = OsGridRef.osGridToLatLong(point)
+        lat = latlon._lat
+        lon = latlon._lon
+      } else {
+        // '' Fallback to direct latitude/longitude if available
+        lat =
+          gazetteerEntry.LATITUDE || gazetteerEntry.latitude || result.latitude
+        lon =
+          gazetteerEntry.LONGITUDE ||
+          gazetteerEntry.longitude ||
+          result.longitude
+      }
+
+      request.yar.set('location', locationTitle)
+      request.yar.set('locationId', locationId)
+      request.yar.set('latitude', lat)
+      request.yar.set('longitude', lon)
+      logger.info(
+        `[DEBUG processLocationWorkflow] Updated session location data:`,
+        {
+          location: locationTitle,
+          locationId,
+          lat,
+          lon,
+          hasLat: !!lat,
+          hasLon: !!lon,
+          geometryX: gazetteerEntry.GEOMETRY_X,
+          geometryY: gazetteerEntry.GEOMETRY_Y
+        }
+      )
+    }
+
+    // '' Clear the flow flag and redirect to appropriate confirm details page
+    request.yar.clear('notificationFlow')
+    logger.info(
+      `[DEBUG processLocationWorkflow] Redirecting to ${notificationFlow} confirm details (notificationFlow=${notificationFlow})`
+    )
+
+    if (notificationFlow === 'sms') {
+      return h
+        .redirect(`/notify/register/sms-confirm-details?lang=${lang}`)
+        .code(REDIRECT_STATUS_CODE)
+    } else if (notificationFlow === 'email') {
+      // '' Placeholder for email flow - will be implemented later
+      return h
+        .redirect(`/notify/register/email-confirm-details?lang=${lang}`)
+        .code(REDIRECT_STATUS_CODE)
+    }
+  }
+
   const { getForecasts } = locationData
   const locationType = determineLocationType(locationData)
+
+  // '' If user is viewing a location page (not in notification flow), clear any stale notification flags
+  // '' This prevents the notification loop from persisting when user navigates away
+  if (!notificationFlow) {
+    request.yar.clear('notificationFlow')
+  }
 
   applyTestModeAndLogDebug(request, locationData)
 
@@ -569,7 +692,6 @@ async function processLocationWorkflow({
     locationType,
     locationId,
     lang,
-    useNewRicardoMeasurementsEnabled,
     request
   )
 

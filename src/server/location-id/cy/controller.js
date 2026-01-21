@@ -361,9 +361,6 @@ async function processLocationRequest(request, h) {
   const { query } = request
   const locationId = request.params.id
   const searchTermsSaved = request.yar.get('searchTermsSaved')
-  const useNewRicardoMeasurementsEnabled = config.get(
-    'useNewRicardoMeasurementsEnabled'
-  )
 
   storeMockParameter(request, 'Mock level', query?.mockLevel, 'mockLevel')
   storeMockParameter(request, 'Mock day', query?.mockDay, 'mockDay')
@@ -407,8 +404,7 @@ async function processLocationRequest(request, h) {
     request,
     locationData,
     locationId,
-    LANG_CY,
-    useNewRicardoMeasurementsEnabled
+    LANG_CY
   )
 
   if (processedData.locationDetails) {

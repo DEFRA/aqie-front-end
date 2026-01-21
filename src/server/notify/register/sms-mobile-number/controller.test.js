@@ -13,7 +13,8 @@ describe('Notify Controller - handleNotifyRequest', () => {
       query: { locationId: 'test-location-id' },
       yar: {
         set: vi.fn(),
-        get: vi.fn().mockReturnValue({})
+        get: vi.fn().mockReturnValue(null), // Return null for all yar.get calls
+        clear: vi.fn()
       }
     }
 

@@ -1,5 +1,6 @@
 import { createLogger } from '../../../common/helpers/logging/logger.js'
 import { english } from '../../../data/en/en.js'
+import { notificationTranslations } from '../../../data/en/notifications.js'
 import { LANG_EN } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { recordSmsCapture } from '../../../common/services/subscription.js'
@@ -12,17 +13,42 @@ const PAGE_HEADING = 'What is your mobile phone number?'
 const logger = createLogger()
 
 const handleNotifyRequest = (request, h, content = english) => {
+  // '' Check if user has reached maximum alerts
+  const maxAlertsError = request.yar.get('maxAlertsError')
+  const maskedPhoneNumber = request.yar.get('maskedPhoneNumber')
+
+  // '' Clear the error flags after reading them
+  if (maxAlertsError) {
+    request.yar.clear('maxAlertsError')
+    request.yar.clear('maskedPhoneNumber')
+  }
+
   // Capture location from query parameter if provided
   if (request.query.location) {
-    request.yar.set('location', request.query.location)
+    // '' Remove 'Air quality in' prefix if present to ensure consistency
+    const sanitizedLocation = request.query.location
+      .replace(/^\s*air\s+quality\s+in\s+/i, '')
+      .trim()
+    request.yar.set('location', sanitizedLocation)
+    // '' Log the location string to debug sanitization
+    logger.info('Location captured from query parameter', {
+      rawLocation: request.query.location,
+      sanitizedLocation,
+      wasModified: sanitizedLocation !== request.query.location
+    })
   }
 
   // Capture latitude and longitude from query parameters ''
+  // '' Round to 6 decimal places for consistency with BNG-converted coordinates
   if (request.query.lat) {
-    request.yar.set('latitude', request.query.lat)
+    const lat =
+      Math.round(Number.parseFloat(request.query.lat) * 1000000) / 1000000
+    request.yar.set('latitude', lat)
   }
   if (request.query.long) {
-    request.yar.set('longitude', request.query.long)
+    const lon =
+      Math.round(Number.parseFloat(request.query.long) * 1000000) / 1000000
+    request.yar.set('longitude', lon)
   }
 
   // Log coordinates for debugging ''
@@ -54,7 +80,9 @@ const handleNotifyRequest = (request, h, content = english) => {
   const metaSiteUrl = getAirQualitySiteUrl(request)
 
   const viewModel = {
-    pageTitle: `${PAGE_HEADING} - Check air quality - GOV.UK`,
+    pageTitle: maxAlertsError
+      ? `Error: ${PAGE_HEADING} - Check air quality - GOV.UK`
+      : `${PAGE_HEADING} - Check air quality - GOV.UK`,
     heading: PAGE_HEADING,
     page: PAGE_HEADING,
     serviceName: 'Check air quality',
@@ -67,6 +95,23 @@ const handleNotifyRequest = (request, h, content = english) => {
     },
     cookieBanner,
     formData: request.yar.get('formData') || {}
+  }
+
+  // '' Add max alerts error if present
+  if (maxAlertsError && maskedPhoneNumber) {
+    const errorMessages =
+      notificationTranslations.smsMobileNumber.errors.maxAlertsReached
+    viewModel.error = {
+      message: errorMessages.field,
+      field: 'notifyByText'
+    }
+    viewModel.maxAlertsError = {
+      summary: errorMessages.summary.replace(
+        '{phoneNumber}',
+        maskedPhoneNumber
+      ),
+      field: errorMessages.field
+    }
   }
 
   // Only show back button if locationId exists ''

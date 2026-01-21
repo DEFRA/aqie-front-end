@@ -111,6 +111,17 @@ const prepareViewModel = ({
 const searchLocationController = {
   handler: (request, h) => {
     request.yar.set('locationNameOrPostcode', '')
+
+    // '' Check if user is coming from notification registration flow (SMS or Email)
+    const fromSmsFlow = request.query?.fromSmsFlow === 'true'
+    const fromEmailFlow = request.query?.fromEmailFlow === 'true'
+
+    if (fromSmsFlow) {
+      request.yar.set('notificationFlow', 'sms')
+    } else if (fromEmailFlow) {
+      request.yar.set('notificationFlow', 'email')
+    }
+
     const metaSiteUrl = getAirQualitySiteUrl(request)
     const lang = determineLanguage(request)
 

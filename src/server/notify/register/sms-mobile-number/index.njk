@@ -4,7 +4,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <form class="form" action="/notify/register/sms-mobile-number" method="post" novalidate>
-        {% if error %}
+        {% if error or maxAlertsError %}
           <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
             <h2 class="govuk-error-summary__title" id="error-summary-title">
               There is a problem
@@ -12,7 +12,7 @@
             <div class="govuk-error-summary__body">
               <ul class="govuk-list govuk-error-summary__list">
                 <li>
-                  <a href="#notify-by-text">{{ error.message }}</a>
+                  <a href="#notify-by-text">{% if maxAlertsError %}{{ maxAlertsError.summary }}{% else %}{{ error.message }}{% endif %}</a>
                 </li>
               </ul>
             </div>
