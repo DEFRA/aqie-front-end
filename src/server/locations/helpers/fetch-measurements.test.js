@@ -16,54 +16,25 @@ describe('fetchMeasurements edge branches', () => {
       isTestMode: () => false,
       logger: { info: vi.fn(), error: vi.fn() },
       config: {
-        get: vi.fn((key) =>
-          key === 'ephemeralProtectedDevApiUrl' ? 'dev-url' : 'base-url'
-        )
+        get: vi.fn((key) => {
+          if (key === 'ephemeralProtectedDevApiUrl') return 'dev-url'
+          if (key === 'ricardoMeasurementsApiUrl') return 'ricardo-url?'
+          return 'base-url'
+        })
       },
       catchFetchError: vi.fn(async () => [STATUS_OK, [{ measurement: 'dev' }]]),
       options: {},
       optionsEphemeralProtected: {},
       nodeEnv: 'development'
     }
-    const result = await fetchMeasurements(
-      TEST_LATITUDE,
-      TEST_LONGITUDE,
-      true,
-      {
-        ...di,
-        request: {}
-      }
-    )
+    const result = await fetchMeasurements(TEST_LATITUDE, TEST_LONGITUDE, {
+      ...di,
+      request: {}
+    })
     expect(result).toEqual([{ measurement: 'dev' }])
-    expect(di.logger.info).toHaveBeenCalledWith(
-      expect.stringContaining('New Ricardo measurements API URL:')
-    )
+    // '' Log message changed - function now uses debug logs
   })
-
-  it('calls old measurements API if useNewRicardoMeasurementsEnabled is false', async () => {
-    const di = {
-      isTestMode: () => false,
-      logger: { info: vi.fn(), error: vi.fn() },
-      config: { get: vi.fn((_key) => 'old-url') },
-      catchFetchError: vi.fn(async () => [STATUS_OK, [{ measurement: 'old' }]]),
-      options: {},
-      optionsEphemeralProtected: {},
-      nodeEnv: 'production'
-    }
-    const result = await fetchMeasurements(
-      TEST_LATITUDE,
-      TEST_LONGITUDE,
-      false,
-      {
-        ...di,
-        request: {}
-      }
-    )
-    expect(result).toEqual([{ measurement: 'old' }])
-    expect(di.logger.info).toHaveBeenCalledWith(
-      'Old measurements API URL: old-url'
-    )
-  })
+  // '' Test removed: function always uses Ricardo API now (no old API option)
 })
 
 describe('fetchMeasurements additional coverage', () => {
@@ -73,7 +44,7 @@ describe('fetchMeasurements additional coverage', () => {
       logger: { info: vi.fn(), error: vi.fn() },
       config: {
         get: vi.fn((key) => {
-          if (key === 'measurementsApiUrl') {
+          if (key === 'ricardoMeasurementsApiUrl') {
             throw new Error('fail')
           }
           return 'mock-url'
@@ -84,15 +55,10 @@ describe('fetchMeasurements additional coverage', () => {
       optionsEphemeralProtected: {},
       nodeEnv: 'production'
     }
-    const result = await fetchMeasurements(
-      TEST_LATITUDE,
-      TEST_LONGITUDE,
-      false,
-      {
-        ...di,
-        request: {}
-      }
-    )
+    const result = await fetchMeasurements(TEST_LATITUDE, TEST_LONGITUDE, {
+      ...di,
+      request: {}
+    })
     expect(result).toEqual([])
     expect(di.logger.error).toHaveBeenCalled()
   })
@@ -110,15 +76,10 @@ describe('fetchMeasurements additional coverage', () => {
       optionsEphemeralProtected: {},
       nodeEnv: 'production'
     }
-    const result = await fetchMeasurements(
-      TEST_LATITUDE,
-      TEST_LONGITUDE,
-      false,
-      {
-        ...di,
-        request: {}
-      }
-    )
+    const result = await fetchMeasurements(TEST_LATITUDE, TEST_LONGITUDE, {
+      ...di,
+      request: {}
+    })
     expect(result).toEqual([])
     expect(di.logger.error).toHaveBeenCalledWith(
       'Error fetching data: not found'
@@ -140,15 +101,10 @@ describe('fetchMeasurements error handling', () => {
       optionsEphemeralProtected: {},
       nodeEnv: 'production'
     }
-    const result = await fetchMeasurements(
-      TEST_LATITUDE,
-      TEST_LONGITUDE,
-      false,
-      {
-        ...di,
-        request: {}
-      }
-    )
+    const result = await fetchMeasurements(TEST_LATITUDE, TEST_LONGITUDE, {
+      ...di,
+      request: {}
+    })
     expect(result).toEqual([])
     expect(di.logger.error).toHaveBeenCalledWith('Error fetching data: fail')
   })
@@ -167,15 +123,10 @@ describe('fetchMeasurements error handling', () => {
       optionsEphemeralProtected: {},
       nodeEnv: 'production'
     }
-    const result = await fetchMeasurements(
-      TEST_LATITUDE,
-      TEST_LONGITUDE,
-      false,
-      {
-        ...di,
-        request: {}
-      }
-    )
+    const result = await fetchMeasurements(TEST_LATITUDE, TEST_LONGITUDE, {
+      ...di,
+      request: {}
+    })
     expect(result).toEqual([])
   })
 })

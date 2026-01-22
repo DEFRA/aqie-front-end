@@ -254,22 +254,27 @@ describe('Location ID Controller - Session Management', () => {
   describe('Session management - locationData updates', () => {
     it('should update locationData in session with nearest location info', async () => {
       // ''
+      mockRequest.params = { id: 'test' }
+      mockRequest.headers = { referer: 'https://example.com/location' }
+
       const mockLocationData = {
         results: [{ id: 'test' }],
         getForecasts: [{ locationId: 'test' }],
-        locationType: 'uk'
+        getMeasurements: [],
+        dailySummary: { issue_date: '2025-10-15 12:00:00' },
+        locationType: 'uk',
+        issueTime: '12:00'
       }
 
       const nearestLocation = [{ id: 'test', forecast: 4 }] // '' Changed to array to match actual implementation
       const nearestLocationsRange = [{ id: 'nearby-1' }]
 
-      mockRequest.yar.get
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(null) // mockLevel
-        .mockReturnValueOnce(null) // mockDay
-        .mockReturnValueOnce(null) // mockPollutantBand
-        .mockReturnValueOnce(null) // testMode
-        .mockReturnValueOnce(mockLocationData) // locationData
+      // Use mockImplementation to handle all yar.get calls dynamically
+      mockRequest.yar.get.mockImplementation((key) => {
+        if (key === 'searchTermsSaved') return true
+        if (key === 'locationData') return mockLocationData
+        return null
+      })
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,

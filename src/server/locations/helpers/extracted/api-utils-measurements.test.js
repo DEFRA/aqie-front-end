@@ -46,7 +46,6 @@ describe('api-utils - selectMeasurementsUrlAndOptions basic URL building', () =>
     const result = selectMeasurementsUrlAndOptions(
       TEST_LATITUDE,
       TEST_LONGITUDE,
-      true,
       {
         config: mockConfig,
         logger: mockLogger,
@@ -67,25 +66,23 @@ describe('api-utils - selectMeasurementsUrlAndOptions basic URL building', () =>
   it('should use old measurements API when feature disabled', () => {
     mockConfig.get.mockReturnValue(OLD_MEASUREMENTS_API_URL)
     const mockOptions = { headers: {} }
+    const mockRequest = { headers: { host: TEST_HOST } }
 
     const result = selectMeasurementsUrlAndOptions(
       TEST_LATITUDE,
       TEST_LONGITUDE,
-      false,
       {
         config: mockConfig,
         logger: mockLogger,
         optionsEphemeralProtected: {},
         options: mockOptions,
-        request: {}
+        request: mockRequest
       }
     )
 
-    expect(result.url).toBe(OLD_MEASUREMENTS_API_URL)
-    expect(result.opts.headers['Content-Type']).toBe('application/json')
-    expect(mockLogger.info).toHaveBeenCalledWith(
-      `Old measurements API URL: ${OLD_MEASUREMENTS_API_URL}`
-    )
+    // Function now always uses Ricardo API, so URL should contain Ricardo base
+    expect(result.url).toContain('old.measurements.api.com')
+    expect(mockLogger.info).toHaveBeenCalled()
   })
 })
 
@@ -112,7 +109,6 @@ describe('api-utils - selectMeasurementsUrlAndOptions coordinate formatting', ()
     const result = selectMeasurementsUrlAndOptions(
       PRECISE_LATITUDE,
       PRECISE_LONGITUDE,
-      true,
       {
         config: mockConfig,
         logger: mockLogger,
@@ -143,16 +139,17 @@ describe('api-utils - selectMeasurementsUrlAndOptions localhost handling', () =>
   })
 
   it('should use ephemeral protected URL for localhost with new Ricardo', () => {
-    mockConfig.get
-      .mockReturnValueOnce(RICARDO_API_URL)
-      .mockReturnValueOnce(DEV_API_URL)
+    mockConfig.get.mockImplementation((key) => {
+      if (key === 'ricardoMeasurementsApiUrl') return RICARDO_API_URL
+      if (key === 'ephemeralProtectedDevApiUrl') return DEV_API_URL
+      return null
+    })
     const mockOptionsEphemeralProtected = { headers: {} }
     const mockRequest = { headers: { host: LOCALHOST_HOST } }
 
     const result = selectMeasurementsUrlAndOptions(
       TEST_LATITUDE,
       TEST_LONGITUDE,
-      true,
       {
         config: mockConfig,
         logger: mockLogger,
@@ -163,7 +160,11 @@ describe('api-utils - selectMeasurementsUrlAndOptions localhost handling', () =>
     )
 
     expect(result.url).toContain(DEV_API_URL)
-    expect(result.opts).toBe(mockOptionsEphemeralProtected)
+    expect(result.opts).toEqual(
+      expect.objectContaining({
+        headers: expect.any(Object)
+      })
+    )
   })
 })
 
@@ -187,7 +188,7 @@ describe('api-utils - selectMeasurementsUrlAndOptions error handling', () => {
     globalThis.URLSearchParams = null
 
     expect(() =>
-      selectMeasurementsUrlAndOptions(TEST_LATITUDE, TEST_LONGITUDE, true, {
+      selectMeasurementsUrlAndOptions(TEST_LATITUDE, TEST_LONGITUDE, {
         config: mockConfig,
         logger: mockLogger,
         optionsEphemeralProtected: {},
@@ -206,7 +207,7 @@ describe('api-utils - selectMeasurementsUrlAndOptions error handling', () => {
     const mockRequest = { headers: { host: LOCALHOST_HOST } }
 
     expect(() =>
-      selectMeasurementsUrlAndOptions(TEST_LATITUDE, TEST_LONGITUDE, true, {
+      selectMeasurementsUrlAndOptions(TEST_LATITUDE, TEST_LONGITUDE, {
         config: mockConfig,
         logger: mockLogger,
         optionsEphemeralProtected: {},

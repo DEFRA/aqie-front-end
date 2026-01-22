@@ -320,22 +320,29 @@ describe('Location ID Controller - Test Mode TodayDate', () => {
   it('should set date to today', async () => {
     // ''
     mockRequest.query = { lang: 'en' }
+    mockRequest.params = { id: 'test' }
+    mockRequest.headers = { referer: 'https://example.com/location' }
 
     const mockLocationData = {
       results: [{ id: 'test' }],
       getForecasts: [{ locationId: 'test' }],
+      getMeasurements: [],
       locationType: 'uk',
       dailySummary: {
         issue_date: '2020-01-01 10:00:00',
         no2: 30,
         pm25: 15
-      }
+      },
+      issueTime: '10:00'
     }
 
-    mockRequest.yar.get
-      .mockReturnValueOnce(true) // searchTermsSaved
-      .mockReturnValueOnce(mockLocationData)
-      .mockReturnValueOnce('todayDate') // testMode from session
+    // Use mockImplementation to handle all yar.get calls dynamically
+    mockRequest.yar.get.mockImplementation((key) => {
+      if (key === 'searchTermsSaved') return true
+      if (key === 'locationData') return mockLocationData
+      if (key === 'testMode') return 'todayDate'
+      return null
+    })
 
     vi.mocked(getIdMatch).mockReturnValue({
       locationIndex: 0,
@@ -433,20 +440,25 @@ describe('Location ID Controller - Test Mode Error Handling', () => {
   it('should handle unknown test mode with warning', async () => {
     // ''
     mockRequest.query = { lang: 'en' }
+    mockRequest.params = { id: 'test' }
+    mockRequest.headers = { referer: 'https://example.com/location' }
 
     const mockLocationData = {
       results: [{ id: 'test' }],
       getForecasts: [{ locationId: 'test' }],
-      locationType: 'uk'
+      getMeasurements: [],
+      dailySummary: { issue_date: '2025-10-15 12:00:00' },
+      locationType: 'uk',
+      issueTime: '12:00'
     }
 
-    mockRequest.yar.get
-      .mockReturnValueOnce(true) // searchTermsSaved
-      .mockReturnValueOnce(null) // mockLevel
-      .mockReturnValueOnce(null) // mockDay
-      .mockReturnValueOnce(null) // mockPollutantBand
-      .mockReturnValueOnce('unknownMode') // testMode
-      .mockReturnValueOnce(mockLocationData) // locationData
+    // Use mockImplementation to handle all yar.get calls dynamically
+    mockRequest.yar.get.mockImplementation((key) => {
+      if (key === 'searchTermsSaved') return true
+      if (key === 'testMode') return 'unknownMode'
+      if (key === 'locationData') return mockLocationData
+      return null
+    })
 
     vi.mocked(getIdMatch).mockReturnValue({
       locationIndex: 0,
