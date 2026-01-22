@@ -14,7 +14,6 @@ const ERROR_PAGE_TITLE =
 const SERVICE_NAME = 'Check air quality'
 const VIEW_PATH = 'notify/register/sms-verify-code/index'
 const FIELD_NAME = 'activation-code'
-const HTTP_BAD_REQUEST = 400
 const MAX_FAILED_ATTEMPTS = 3
 const SIXTY_SECONDS = 60
 const ONE_THOUSAND = 1000
@@ -242,7 +241,16 @@ const handleCheckMessagePost = async (request, h, content = english) => {
 
   const result = await verifyOtp(mobileNumber, submitted, request)
 
-  const isFailure = !result.ok || result.error?.statusCode === HTTP_BAD_REQUEST
+  logger.info('OTP verification result received', {
+    ok: result.ok,
+    status: result.status,
+    hasError: !!result.error,
+    hasBody: !!result.body,
+    bodyMessage: result.body?.message,
+    errorMessage: result.error?.message
+  })
+
+  const isFailure = !result.ok
   if (isFailure) {
     return handleVerificationFailure(
       request,

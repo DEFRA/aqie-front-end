@@ -183,8 +183,9 @@
         </div>
     </div>
 
-    <script src="daqi-testing-function.js"></script>
+    <script src="../daqi-testing-function.js"></script>
     <script>
+        /* global DAQITesting */
         // ''
         
         // Override console.log to capture output
@@ -252,17 +253,25 @@
             }
         }
 
+        const SEPARATOR_LENGTH = 40;
+        const DAQI_LEVEL_MODERATE = 5;
+        const DAQI_LEVEL_LOW = 2;
+        const DAQI_LEVEL_HIGH = 8;
+        const DAQI_LEVEL_MAX = 10;
+        const TEST_RANGE_LEVELS = [DAQI_LEVEL_LOW, DAQI_LEVEL_MODERATE, DAQI_LEVEL_HIGH, DAQI_LEVEL_MAX];
+        const DEFAULT_TEST_LEVEL = '5';
+
         function testSingleLevel() {
-            const level = prompt('Enter DAQI level to test (1-10):', '5');
+            const level = prompt('Enter DAQI level to test (1-10):', DEFAULT_TEST_LEVEL);
             if (level && level >= 1 && level <= 10) {
-                testSpecificLevel(parseInt(level));
+                testSpecificLevel(Number.parseInt(level, 10));
             }
         }
 
         function testSpecificLevel(level) {
             clearConsole();
             console.log(`🎯 Testing DAQI Level ${level}`);
-            console.log('═'.repeat(40));
+            console.log('═'.repeat(SEPARATOR_LENGTH));
             DAQITesting.testDAQILevel(level);
         }
 
@@ -274,7 +283,7 @@
         function testRangeComparison() {
             clearConsole();
             console.log('🔍 Testing Representative Values from Each Range');
-            DAQITesting.testDAQIRange([2, 5, 8, 10]);
+            DAQITesting.testDAQIRange(TEST_RANGE_LEVELS);
         }
 
         function clearConsole() {

@@ -209,9 +209,10 @@ export async function sendSmsCode(phoneNumber, request = null) {
         realServiceBody: result.data || result.body
       }
     )
-    // '' Store mock OTP in session for verification
+    // '' Store mock OTP in session for verification with timestamp
     if (request) {
       request.yar.set('mockOtp', mockOtpCode)
+      request.yar.set('mockOtpTimestamp', Date.now())
     }
     return {
       ok: true,
@@ -238,17 +239,41 @@ export async function sendSmsCode(phoneNumber, request = null) {
 export async function verifyOtp(phoneNumber, otp, request = null) {
   const verifyPath = config.get('notify.verifyOtpPath')
   const mockOtpEnabled = config.get('notify.mockOtpEnabled')
+  const FIFTEEN_MINUTES_MS = 15 * 60 * 1000
 
   // '' Check if we're using mock OTP from session
   if (mockOtpEnabled && request) {
     const mockOtp = request.yar.get('mockOtp')
+    const mockOtpTimestamp = request.yar.get('mockOtpTimestamp')
+
     if (mockOtp) {
+      // '' Check if mock OTP has expired (15 minutes like real service)
+      const isExpired =
+        mockOtpTimestamp && Date.now() - mockOtpTimestamp > FIFTEEN_MINUTES_MS
+
       logger.info('Verifying against mock OTP', {
-        otpMatches: otp === mockOtp
+        otpMatches: otp === mockOtp,
+        isExpired,
+        ageMinutes: mockOtpTimestamp
+          ? ((Date.now() - mockOtpTimestamp) / 60000).toFixed(2)
+          : 'unknown'
       })
+
+      if (isExpired) {
+        // '' Clear expired mock OTP
+        request.yar.clear('mockOtp')
+        request.yar.clear('mockOtpTimestamp')
+        return {
+          ok: false,
+          status: 400,
+          body: { message: 'Secret has expired', mock: true }
+        }
+      }
+
       if (otp === mockOtp) {
         // '' Clear mock OTP after successful verification
         request.yar.clear('mockOtp')
+        request.yar.clear('mockOtpTimestamp')
         return { ok: true, data: { status: 'verified', mock: true } }
       } else {
         return {

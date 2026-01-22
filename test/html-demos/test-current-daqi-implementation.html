@@ -188,7 +188,8 @@ For demo purposes, a mock DAQI will be created below if no real one is found.
 
     <!-- Mock DAQI for testing if no real one exists -->
     <div class="mock-daqi" id="mockDaqi" style="display: none;">
-        <div class="daqi-numbered" role="img" aria-label="moderate 5">
+        <div class="daqi-numbered" style="position: relative;">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='24' fill='%23000'%3E5%3C/text%3E%3C/svg%3E" alt="moderate 5" style="width: 50px; height: 50px;">
             <div class="daqi-bar">
                 <div class="daqi-bar-segment daqi-0"><span class="daqi-number">1</span></div>
                 <div class="daqi-bar-segment daqi-0"><span class="daqi-number">2</span></div>
@@ -210,20 +211,34 @@ For demo purposes, a mock DAQI will be created below if no real one is found.
         </div>
     </div>
 
-    <script src="daqi-current-implementation-tester.js"></script>
+    <script src="../daqi-current-implementation-tester.js"></script>
     <script>
         // ''
+        const ERROR_MESSAGE_TESTER = 'Tester not loaded';
+        const TEST_ALL_DELAY_MS = 1500;
         
         // Override console.log to capture output
         const originalLog = console.log;
         const originalError = console.error;
         const originalWarn = console.warn;
         
-        function addToOutput(message, type = 'log') {
-            originalLog.apply(console, arguments);
+        function getLogPrefix(type) {
+            if (type === 'error') {
+                return '❌ ';
+            }
+            if (type === 'warn') {
+                return '⚠️ ';
+            }
+            return '';
+        }
+        
+        function addToOutput(...args) {
+            const type = args[args.length - 1];
+            const message = args.slice(0, -1).join(' ');
+            originalLog.apply(console, args);
             const output = document.getElementById('consoleOutput');
-            const prefix = type === 'error' ? '❌ ' : type === 'warn' ? '⚠️ ' : '';
-            output.textContent += prefix + message + '\n';
+            const prefix = getLogPrefix(type);
+            output.textContent += `${prefix}${message}\n`;
             output.scrollTop = output.scrollHeight;
         }
         
@@ -333,7 +348,7 @@ For demo purposes, a mock DAQI will be created below if no real one is found.
         // Test a specific level
         function testLevel(level) {
             if (typeof testCurrentDAQI === 'undefined') {
-                console.error('Tester not loaded');
+                console.error(ERROR_MESSAGE_TESTER);
                 return;
             }
             clearConsole();
@@ -343,17 +358,17 @@ For demo purposes, a mock DAQI will be created below if no real one is found.
         // Test all levels
         function testAllLevels() {
             if (typeof testCurrentDAQI === 'undefined') {
-                console.error('Tester not loaded');
+                console.error(ERROR_MESSAGE_TESTER);
                 return;
             }
             clearConsole();
-            testCurrentDAQI.testAll(1500);
+            testCurrentDAQI.testAll(TEST_ALL_DELAY_MS);
         }
 
         // Test responsive behavior
         function testResponsive() {
             if (typeof testCurrentDAQI === 'undefined') {
-                console.error('Tester not loaded');
+                console.error(ERROR_MESSAGE_TESTER);
                 return;
             }
             clearConsole();
@@ -363,7 +378,7 @@ For demo purposes, a mock DAQI will be created below if no real one is found.
         // Test color accuracy
         function testColors() {
             if (typeof testCurrentDAQI === 'undefined') {
-                console.error('Tester not loaded');
+                console.error(ERROR_MESSAGE_TESTER);
                 return;
             }
             clearConsole();
