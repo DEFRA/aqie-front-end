@@ -189,6 +189,59 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
     `[DEBUG processNILocationType] - retrieved getForecasts exists: ${!!retrievedLocationData?.getForecasts}`
   )
 
+  // '' Check if user is in notification registration flow (SMS or Email)
+  const notificationFlow = request.yar.get('notificationFlow')
+  if (notificationFlow) {
+    // '' Update session with new location data for notification
+    if (locationData && locationData.results && locationData.results[0]) {
+      const result = locationData.results[0]
+      const locationTitle =
+        result.localName ||
+        result.secondaryName ||
+        result.displayName ||
+        searchTerms
+      // '' Remove 'Air quality in' prefix if present to ensure consistency
+      const sanitizedLocation = locationTitle
+        .replace(/^\s*air\s+quality\s+in\s+/i, '')
+        .trim()
+      request.yar.set(
+        'location',
+        convertFirstLetterIntoUppercase(sanitizedLocation)
+      )
+      request.yar.set('locationId', locationData.urlRoute)
+      request.yar.set('latitude', result.latitude)
+      request.yar.set('longitude', result.longitude)
+      logger.info(
+        `[DEBUG processNILocationType] Updated session location data:`,
+        {
+          location: locationTitle,
+          locationId: locationData.urlRoute,
+          lat: result.latitude,
+          lon: result.longitude
+        }
+      )
+    }
+
+    // '' Clear the flow flag and redirect to appropriate confirm details page
+    request.yar.clear('notificationFlow')
+    logger.info(
+      `[DEBUG processNILocationType] Redirecting to ${notificationFlow} confirm details (notificationFlow=${notificationFlow})`
+    )
+
+    if (notificationFlow === 'sms') {
+      return h
+        .redirect(`/notify/register/sms-confirm-details?lang=en`)
+        .code(REDIRECT_STATUS_CODE)
+        .takeover()
+    } else if (notificationFlow === 'email') {
+      // '' Placeholder for email flow - will be implemented later
+      return h
+        .redirect(`/notify/register/email-confirm-details?lang=en`)
+        .code(REDIRECT_STATUS_CODE)
+        .takeover()
+    }
+  }
+
   // '' Use .takeover() to send redirect immediately and skip remaining lifecycle
   return h
     .redirect(`/location/${locationData.urlRoute}?lang=en`)

@@ -83,10 +83,41 @@ export const handleSendActivationPost = async (request, h) => {
 
   try {
     // Send OTP request to backend (backend generates and sends the code) ''
-    await sendSmsCode(mobileNumber, request)
-    logger.info('Queued Notify SMS for delivery')
+    logger.info('Attempting to send SMS code', {
+      phoneNumberLength: mobileNumber?.length,
+      phoneStart: mobileNumber?.substring(0, 4)
+    })
+
+    const result = await sendSmsCode(mobileNumber, request)
+
+    logger.info('SMS code send result', {
+      ok: result?.ok,
+      skipped: result?.skipped,
+      status: result?.status,
+      hasData: !!result?.data,
+      hasError: !!result?.error,
+      isMock: result?.mock
+    })
+
+    if (result?.skipped) {
+      logger.warn('SMS service is disabled or not configured')
+    } else if (!result?.ok) {
+      logger.error('SMS send returned error', {
+        status: result?.status,
+        error: result?.error,
+        body: result?.body
+      })
+    } else {
+      if (result?.mock) {
+        logger.info('Using mock OTP for local development', {
+          mockOtpCode: result?.data?.mockOtpCode
+        })
+      } else {
+        logger.info('Queued Notify SMS for delivery')
+      }
+    }
   } catch (err) {
-    logger.error('Notify SMS send failed', err)
+    logger.error('Notify SMS send failed with exception', err)
   }
 
   logger.info(

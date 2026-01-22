@@ -13,7 +13,8 @@ describe('Alerts Success Controller', () => {
           .mockReturnValueOnce('07123456789') // mobileNumber
           .mockReturnValueOnce('London') // location
           .mockReturnValueOnce(true) // alertDetailsConfirmed
-          .mockReturnValueOnce({}) // formData
+          .mockReturnValueOnce({}), // formData
+        clear: vi.fn()
       }
     }
 
@@ -84,7 +85,8 @@ describe('Alerts Success Controller', () => {
           .mockReturnValueOnce(null) // mobileNumber
           .mockReturnValueOnce(null) // location
           .mockReturnValueOnce(null) // alertDetailsConfirmed
-          .mockReturnValueOnce({}) // formData
+          .mockReturnValueOnce({}), // formData
+        clear: vi.fn()
       }
     }
 

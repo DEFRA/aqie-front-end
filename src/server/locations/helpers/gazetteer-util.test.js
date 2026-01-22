@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { gazetteerEntryFilter } from '../../../server/locations/helpers/gazetteer-util.js'
-import * as convertString from '../../../server/locations/helpers/convert-string.js'
 
 vi.mock('../../../server/locations/helpers/convert-string', async () => {
   const actual = await vi.importActual(
@@ -78,11 +77,11 @@ describe('gazetteerEntryFilter', () => {
 })
 
 describe('gazetteerEntryFilter', () => {
-  it('Postcode with POPULATED_PLACE and NAME2', () => {
+  it('Postcode with DISTRICT_BOROUGH and NAME2', () => {
     const result = gazetteerEntryFilter({
       GAZETTEER_ENTRY: {
         LOCAL_TYPE: 'Postcode',
-        POPULATED_PLACE: 'London',
+        DISTRICT_BOROUGH: 'London',
         NAME2: 'SW1A'
       }
     })
@@ -92,18 +91,17 @@ describe('gazetteerEntryFilter', () => {
     })
   })
 
-  it('Postcode with POPULATED_PLACE and NAME1 (no NAME2)', () => {
+  it('Postcode with DISTRICT_BOROUGH and NAME1 (no NAME2)', () => {
     const result = gazetteerEntryFilter({
       GAZETTEER_ENTRY: {
         LOCAL_TYPE: 'Postcode',
-        POPULATED_PLACE: 'Manchester',
+        DISTRICT_BOROUGH: 'Manchester',
         NAME1: 'M1 1AE'
       }
     })
-    expect(convertString.formatUKPostcode).toHaveBeenCalledWith('M1 1AE')
     expect(result).toEqual({
-      title: 'Formatted-M1 1AE, Manchester',
-      headerTitle: 'Formatted-M1 1AE, Manchester'
+      title: 'M1 1AE, Manchester',
+      headerTitle: 'M1 1AE, Manchester'
     })
   })
 

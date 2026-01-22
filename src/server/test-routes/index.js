@@ -7,6 +7,7 @@
 
 import mockDaqiRoutes from './mock-daqi-route.js'
 import mockPollutantRoutes from './mock-pollutant-route.js'
+import mockAlertStorageRoutes from './mock-alert-storage-route.js'
 
 export const testRoutes = {
   plugin: {
@@ -17,6 +18,9 @@ export const testRoutes = {
 
       // Register mock pollutant routes
       server.route(mockPollutantRoutes)
+
+      // Register mock alert storage inspection routes
+      server.route(mockAlertStorageRoutes)
 
       server.log(['info', 'test-routes'], 'Test routes registered successfully')
     }

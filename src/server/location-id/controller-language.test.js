@@ -217,20 +217,25 @@ describe('Location ID Controller - Welsh Language Handling', () => {
   it('should handle Welsh language correctly', async () => {
     // ''
     mockRequest.query = { lang: 'cy', searchTerms: 'caerdydd' }
+    mockRequest.params = { id: 'cardiff' }
+    mockRequest.headers = { referer: 'https://example.com/lleoliad' }
 
     const mockLocationData = {
-      results: [{ id: 'cardiff' }],
-      getForecasts: [{ locationId: 'cardiff' }],
+      results: [{ id: 'cardiff', name: 'Cardiff' }],
+      getForecasts: [{ locationId: 'cardiff', level: 3 }],
+      getMeasurements: [],
+      dailySummary: { issue_date: '2025-10-15 12:00:00' },
       locationType: 'uk',
-      welshDate: '15 Hydref 2025'
+      welshDate: '15 Hydref 2025',
+      issueTime: '12:00'
     }
 
-    mockRequest.yar.get
-      .mockReturnValueOnce(true) // searchTermsSaved
-      .mockReturnValueOnce(null) // mockLevel (first call)
-      .mockReturnValueOnce(null) // mockLevel (second call)
-      .mockReturnValueOnce(mockLocationData)
-      .mockReturnValueOnce(null) // mockLevel in applyMockLevel
+    // Use mockImplementation to handle all yar.get calls dynamically
+    mockRequest.yar.get.mockImplementation((key) => {
+      if (key === 'searchTermsSaved') return true
+      if (key === 'locationData') return mockLocationData
+      return null // Return null for mockLevel, mockDay, testMode, notificationFlow, etc.
+    })
 
     vi.mocked(getIdMatch).mockReturnValue({
       locationIndex: 0,
@@ -267,20 +272,24 @@ describe('Location ID Controller - English Language Default', () => {
   it('should default to English when no lang parameter', async () => {
     // ''
     mockRequest.query = {}
+    mockRequest.params = { id: 'test' }
+    mockRequest.headers = { referer: 'https://example.com/location' }
 
     const mockLocationData = {
       results: [{ id: 'test' }],
       getForecasts: [{ locationId: 'test' }],
-      locationType: 'uk'
+      getMeasurements: [],
+      dailySummary: { issue_date: '2025-10-15 12:00:00' },
+      locationType: 'uk',
+      issueTime: '12:00'
     }
 
-    mockRequest.yar.get
-      .mockReturnValueOnce(true) // searchTermsSaved
-      .mockReturnValueOnce(null) // mockLevel
-      .mockReturnValueOnce(null) // mockDay
-      .mockReturnValueOnce(null) // mockPollutantBand
-      .mockReturnValueOnce(null) // testMode
-      .mockReturnValueOnce(mockLocationData)
+    // Use mockImplementation to handle all yar.get calls dynamically
+    mockRequest.yar.get.mockImplementation((key) => {
+      if (key === 'searchTermsSaved') return true
+      if (key === 'locationData') return mockLocationData
+      return null // Return null for mockLevel, mockDay, testMode, notificationFlow, etc.
+    })
 
     vi.mocked(getIdMatch).mockReturnValue({
       locationIndex: 0,

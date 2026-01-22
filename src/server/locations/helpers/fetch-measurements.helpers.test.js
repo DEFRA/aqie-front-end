@@ -33,7 +33,7 @@ describe('selectMeasurementsUrlAndOptions', () => {
   const injectedConfig = {
     get: vi.fn((key) => {
       if (key === 'ricardoMeasurementsApiUrl') {
-        return 'ricardo-url'
+        return 'ricardo-url?'
       }
       if (key === 'ephemeralProtectedDevApiUrl') {
         return 'dev-url'
@@ -49,7 +49,6 @@ describe('selectMeasurementsUrlAndOptions', () => {
     const result = selectMeasurementsUrlAndOptions(
       TEST_LATITUDE,
       TEST_LONGITUDE,
-      true,
       {
         config: injectedConfig,
         logger: injectedLogger,
@@ -63,31 +62,19 @@ describe('selectMeasurementsUrlAndOptions', () => {
     const result = selectMeasurementsUrlAndOptions(
       TEST_LATITUDE,
       TEST_LONGITUDE,
-      true,
       {
         config: injectedConfig,
         logger: injectedLogger,
-        optionsEphemeralProtected: 'dev-opts',
+        optionsEphemeralProtected: { headers: {} },
         request: { headers: { host: 'localhost' } }
       }
     )
     expect(result.url).toContain('dev-url')
-    expect(result.opts).toBe('dev-opts')
-  })
-  it('returns old API url and opts if not using new Ricardo', () => {
-    const result = selectMeasurementsUrlAndOptions(
-      TEST_LATITUDE,
-      TEST_LONGITUDE,
-      false,
-      {
-        config: injectedConfig,
-        logger: injectedLogger,
-        options: { headers: {} }
-      }
+    expect(result.opts).toEqual(
+      expect.objectContaining({ headers: expect.any(Object) })
     )
-    expect(result.url).toBe('old-url')
-    expect(result.opts).toBeDefined()
   })
+  // '' Test removed: function always uses Ricardo API now (useNewMeasurementsApi flag removed)
 })
 
 describe('callAndHandleMeasurementsResponse', () => {

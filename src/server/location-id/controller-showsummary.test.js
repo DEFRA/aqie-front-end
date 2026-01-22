@@ -353,20 +353,23 @@ describe('Location ID Controller - ShowSummaryDate Preservation', () => {
 
   it('should handle missing issue_date gracefully', async () => {
     // ''
+    mockRequest.params = { id: 'test' }
+    mockRequest.headers = { referer: 'https://example.com/location' }
+
     const mockLocationData = {
       results: [{ id: 'test' }],
       getForecasts: [{ locationId: 'test' }],
+      getMeasurements: [],
       locationType: 'uk',
       dailySummary: { no2: 30 }
     }
 
-    mockRequest.yar.get
-      .mockReturnValueOnce(true)
-      .mockReturnValueOnce(null)
-      .mockReturnValueOnce(null)
-      .mockReturnValueOnce(null)
-      .mockReturnValueOnce(null)
-      .mockReturnValueOnce(mockLocationData)
+    // Use mockImplementation to handle all yar.get calls dynamically
+    mockRequest.yar.get.mockImplementation((key) => {
+      if (key === 'searchTermsSaved') return true
+      if (key === 'locationData') return mockLocationData
+      return null
+    })
 
     vi.mocked(getIdMatch).mockReturnValue({
       locationIndex: 0,

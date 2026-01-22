@@ -146,7 +146,7 @@ export function buildNearestLocationEntry(curr, latlon, lang) {
   }
 }
 
-// Helper to build nearestLocationsRange for !useNewRicardoMeasurementsEnabled
+// Helper to build nearestLocationsRange for legacy measurements
 export function buildNearestLocationsRange(
   matches,
   getMeasurments,
@@ -222,28 +222,69 @@ function processMeasurementPollutants(measurement, lang, latlon) {
   }
 }
 
-// Helper to fetch and process new Ricardo measurements
-async function fetchAndProcessNewMeasurements(
-  latlon,
-  matches,
-  lang,
-  useNewRicardoMeasurementsEnabled,
-  request
-) {
+// Helper to fetch and process Ricardo measurements
+async function fetchAndProcessNewMeasurements(latlon, matches, lang, request) {
   if (!latlon?.lat || !latlon?.lon) {
+    logger.warn('No latlon provided for measurements fetch')
     return []
   }
 
-  const newMeasurements = await fetchMeasurements(
-    latlon.lat,
-    latlon.lon,
-    useNewRicardoMeasurementsEnabled,
-    { request }
+  logger.info(
+    `[MEASUREMENTS DEBUG] Fetching measurements for lat: ${latlon.lat}, lon: ${latlon.lon}`
   )
 
-  if (!newMeasurements?.measurements) {
+  const newMeasurements = await fetchMeasurements(latlon.lat, latlon.lon, {
+    request
+  })
+
+  logger.info(
+    `[MEASUREMENTS DEBUG] Raw response from fetchMeasurements:`,
+    JSON.stringify(newMeasurements, null, 2)
+  )
+
+  if (!newMeasurements) {
+    logger.warn('[MEASUREMENTS DEBUG] newMeasurements is null/undefined')
     return []
   }
+
+  if (Array.isArray(newMeasurements)) {
+    logger.warn(
+      '[MEASUREMENTS DEBUG] newMeasurements is an array (expected object with measurements property)'
+    )
+    logger.info(`[MEASUREMENTS DEBUG] Array length: ${newMeasurements.length}`)
+
+    // If it's an array, treat it as the measurements array directly
+    if (newMeasurements.length === 0) {
+      logger.warn('[MEASUREMENTS DEBUG] Empty measurements array received')
+      return []
+    }
+
+    const newMeasurementsMapped = newMeasurements.map((measurement) =>
+      processMeasurementPollutants(measurement, lang, latlon)
+    )
+
+    return buildNearestLocationsRange(
+      matches,
+      newMeasurementsMapped,
+      latlon,
+      lang
+    )
+  }
+
+  if (!newMeasurements?.measurements) {
+    logger.warn(
+      '[MEASUREMENTS DEBUG] newMeasurements.measurements is missing or empty'
+    )
+    logger.info(
+      `[MEASUREMENTS DEBUG] newMeasurements structure:`,
+      Object.keys(newMeasurements || {})
+    )
+    return []
+  }
+
+  logger.info(
+    `[MEASUREMENTS DEBUG] Found ${newMeasurements.measurements.length} measurements`
+  )
 
   const newMeasurementsMapped = newMeasurements.measurements.map(
     (measurement) => processMeasurementPollutants(measurement, lang, latlon)
@@ -257,31 +298,12 @@ async function fetchAndProcessNewMeasurements(
   )
 }
 
-// Helper to fetch and process legacy measurements
-async function fetchAndProcessLegacyMeasurements(
-  latlon,
-  matches,
-  lang,
-  useNewRicardoMeasurementsEnabled,
-  request
-) {
-  const measurements = await fetchMeasurements(
-    latlon.lat,
-    latlon.lon,
-    useNewRicardoMeasurementsEnabled,
-    { request }
-  )
-
-  return buildNearestLocationsRange(matches, measurements, latlon, lang)
-}
-
-async function getNearestLocation(
+export async function getNearestLocation(
   matches,
   forecasts,
   location,
   index,
   lang,
-  useNewRicardoMeasurementsEnabled,
   request
 ) {
   const { latlon, forecastCoordinates } = getLatLonAndForecastCoords(
@@ -297,21 +319,12 @@ async function getNearestLocation(
       ?.format('dddd')
       ?.substring(0, FORECAST_DAY_SLICE_LENGTH) || ''
 
-  const nearestLocationsRange = useNewRicardoMeasurementsEnabled
-    ? await fetchAndProcessNewMeasurements(
-        latlon,
-        matches,
-        lang,
-        useNewRicardoMeasurementsEnabled,
-        request
-      )
-    : await fetchAndProcessLegacyMeasurements(
-        latlon,
-        matches,
-        lang,
-        useNewRicardoMeasurementsEnabled,
-        request
-      )
+  const nearestLocationsRange = await fetchAndProcessNewMeasurements(
+    latlon,
+    matches,
+    lang,
+    request
+  )
 
   const nearestLocation =
     matches.length > 0
@@ -337,5 +350,3 @@ async function getNearestLocation(
     latlon
   }
 }
-
-export { getNearestLocation }

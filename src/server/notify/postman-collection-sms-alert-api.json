@@ -1,0 +1,361 @@
+{
+  "info": {
+    "_postman_id": "aqie-sms-alerts-api",
+    "name": "AQIE SMS Alert Service - Local Environment",
+    "description": "Postman collection for testing the SMS telephone backend API used in the AQIE front-end project. This collection uses the local environment configuration with the ephemeral protected API and CDP X-API-Key authentication.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Alert Management",
+      "item": [
+        {
+          "name": "1. Generate OTP (Send SMS Code)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{cdpXApiKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"{{testPhoneNumber}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ephemeralUrl}}/{{notifyService}}/subscribe/generate-otp",
+              "host": ["{{ephemeralUrl}}"],
+              "path": ["{{notifyService}}", "subscribe", "generate-otp"]
+            },
+            "description": "Generates an OTP (One-Time Password) and sends it via SMS to the specified phone number. This is the first step in the SMS alert subscription flow.\n\n**Request Body:**\n- `phoneNumber` (string, required): UK phone number in format 07XXXXXXXXX\n\n**Response:**\n- `200 OK`: OTP sent successfully\n- `400 Bad Request`: Invalid phone number or request\n- `500 Internal Server Error`: Service error"
+          },
+          "response": []
+        },
+        {
+          "name": "2. Verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{cdpXApiKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"{{testPhoneNumber}}\",\n  \"otp\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ephemeralUrl}}/{{notifyService}}/subscribe/validate-otp",
+              "host": ["{{ephemeralUrl}}"],
+              "path": ["{{notifyService}}", "subscribe", "validate-otp"]
+            },
+            "description": "Verifies the OTP code sent to the user's phone number. This is the second step before setting up an alert.\n\n**Request Body:**\n- `phoneNumber` (string, required): Phone number that received the OTP\n- `otp` (string, required): The 6-digit OTP code received via SMS\n\n**Response:**\n- `200 OK`: OTP verified successfully\n- `400 Bad Request`: Invalid or expired OTP\n- `401 Unauthorized`: OTP verification failed"
+          },
+          "response": []
+        },
+        {
+          "name": "3. Setup Alert Subscription",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Define cities array",
+                  "const cities = [",
+                  "  { name: \"London\", lat: 51.5074, long: -0.1278 },",
+                  "  { name: \"Birmingham\", lat: 52.4862, long: -1.8904 },",
+                  "  { name: \"Manchester\", lat: 53.4808, long: -2.2426 },",
+                  "  { name: \"Leeds\", lat: 53.8008, long: -1.5491 },",
+                  "  { name: \"Liverpool\", lat: 53.4084, long: -2.9916 },",
+                  "  { name: \"Bristol\", lat: 51.4545, long: -2.5879 }",
+                  "];",
+                  "",
+                  "// Get current city index (or start at 0)",
+                  "let cityIndex = pm.collectionVariables.get(\"currentCityIndex\") || 0;",
+                  "",
+                  "// Set current city data",
+                  "const currentCity = cities[cityIndex];",
+                  "pm.collectionVariables.set(\"currentCityName\", currentCity.name);",
+                  "pm.collectionVariables.set(\"currentCityLat\", currentCity.lat);",
+                  "pm.collectionVariables.set(\"currentCityLong\", currentCity.long);",
+                  "",
+                  "// Increment for next call",
+                  "pm.collectionVariables.set(\"currentCityIndex\", (cityIndex + 1) % cities.length);",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{cdpXApiKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"{{testPhoneNumber}}\",\n  \"alertType\": \"sms\",\n  \"location\": \"{{currentCityName}}\",\n  \"lat\": {{currentCityLat}},\n  \"long\": {{currentCityLong}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ephemeralUrl}}/{{alertService}}/setup-alert",
+              "host": ["{{ephemeralUrl}}"],
+              "path": ["{{alertService}}", "setup-alert"]
+            },
+            "description": "Creates a new alert subscription for the verified phone number and location. This is the final step in the SMS alert setup flow.\n\n**Auto-cycling Cities:**\nThis request automatically cycles through 6 UK cities each time you click Send:\n1. London (51.5074, -0.1278)\n2. Birmingham (52.4862, -1.8904)\n3. Manchester (53.4808, -2.2426)\n4. Leeds (53.8008, -1.5491)\n5. Liverpool (53.4084, -2.9916)\n6. Bristol (51.4545, -2.5879)\n\nClick Send 5 times to create 5 alerts, then the 6th click should trigger the 400 error.\n\n**Request Body:**\n- `phoneNumber` (string, required): Verified phone number\n- `alertType` (string, required): Type of alert (\"sms\" or \"email\")\n- `location` (string, required): Location name for the alert\n- `lat` (number, required): Latitude coordinate\n- `long` (number, required): Longitude coordinate\n\n**Response:**\n- `200 OK` or `201 Created`: Alert created successfully\n- `400 Bad Request`: Maximum 5 locations reached for this phone number\n- `409 Conflict`: Alert already exists for this location and phone number\n- `500 Internal Server Error`: Service error"
+          },
+          "response": []
+        },
+        {
+          "name": "4. Get User Subscriptions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{cdpXApiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{ephemeralUrl}}/{{alertService}}/api/subscriptions/{{testPhoneNumber}}",
+              "host": ["{{ephemeralUrl}}"],
+              "path": [
+                "{{alertService}}",
+                "api",
+                "subscriptions",
+                "{{testPhoneNumber}}"
+              ]
+            },
+            "description": "Retrieves all alert subscriptions for a given phone number. Used to check if maximum alerts (5 locations) have been reached.\n\n**Path Parameters:**\n- `phoneNumber` (string, required): Phone number to check subscriptions for\n\n**Response:**\n- `200 OK`: User can add more locations (returns subscription data)\n- `400 Bad Request`: Maximum 5 locations reached\n  - Response body will contain: `{ \"statusCode\": 400, \"error\": \"Bad Request\", \"message\": \"Maximum of 5 locations reached\" }`"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for managing SMS alert subscriptions including OTP generation, verification, alert setup, and subscription management."
+    },
+    {
+      "name": "Email Alerts",
+      "item": [
+        {
+          "name": "Send Email Code",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{cdpXApiKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"emailAddress\": \"test@example.com\",\n  \"code\": \"ABC123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ephemeralUrl}}/{{notifyService}}/send-email-code",
+              "host": ["{{ephemeralUrl}}"],
+              "path": ["{{notifyService}}", "send-email-code"]
+            },
+            "description": "Sends an email verification code to the specified email address.\n\n**Request Body:**\n- `emailAddress` (string, required): Email address to send code to\n- `code` (string, required): Verification code to include in email\n\n**Response:**\n- `200 OK` or `201 Created`: Email sent successfully"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for email alert functionality."
+    },
+    {
+      "name": "Test Scenarios",
+      "item": [
+        {
+          "name": "Test: Duplicate Alert (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{cdpXApiKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"{{testPhoneNumber}}\",\n  \"alertType\": \"sms\",\n  \"location\": \"London, City of Westminster\",\n  \"lat\": 51.5074,\n  \"long\": -0.1278\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ephemeralUrl}}/{{alertService}}/setup-alert",
+              "host": ["{{ephemeralUrl}}"],
+              "path": ["{{alertService}}", "setup-alert"]
+            },
+            "description": "Test duplicate alert handling by submitting the same location and phone number twice. The second request should return a 409 Conflict status.\n\n**Expected Behavior:**\n1. First call: Returns 200/201 - Alert created\n2. Second call: Returns 409 - Alert already exists\n\n**Frontend Handling:**\nWhen 409 is received, the user is redirected to `/notify/register/duplicate-subscription` page showing:\n- \"This alert has already been set up\"\n- \"You are already getting alerts for [location] to [phone]\"\n- Link to search for a different location"
+          },
+          "response": []
+        },
+        {
+          "name": "Test: Max Alerts Reached (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{cdpXApiKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"{{testPhoneNumber}}\",\n  \"alertType\": \"sms\",\n  \"location\": \"Manchester, Greater Manchester\",\n  \"lat\": 53.4808,\n  \"long\": -2.2426\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ephemeralUrl}}/{{alertService}}/setup-alert",
+              "host": ["{{ephemeralUrl}}"],
+              "path": ["{{alertService}}", "setup-alert"]
+            },
+            "description": "Test maximum alerts handling. After setting up 5 alerts for a phone number, additional attempts should return 400 Bad Request.\n\n**Expected Behavior:**\n- After 5th alert: Returns 200/201\n- 6th alert attempt: Returns 400 with message \"Maximum of 5 locations reached\"\n\n**Frontend Handling:**\nWhen 400 is received:\n1. Phone number is masked: 07XXX XXX XXX\n2. `maxAlertsError` flag set in session\n3. User redirected to `/notify/register/sms-mobile-number`\n4. Error message shown: \"You cannot set up more than 5 air quality alerts for [masked phone]\"\n5. User can enter a different phone number"
+          },
+          "response": []
+        }
+      ],
+      "description": "Test scenarios for error handling and edge cases."
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "ephemeralUrl",
+      "value": "https://ephemeral-protected.api.test.cdp-int.defra.cloud",
+      "type": "string",
+      "description": "Ephemeral protected API base URL for local testing"
+    },
+    {
+      "key": "notifyService",
+      "value": "aqie-notify-service",
+      "type": "string",
+      "description": "Notify service name for OTP operations"
+    },
+    {
+      "key": "alertService",
+      "value": "aqie-alert-back-end-service",
+      "type": "string",
+      "description": "Alert service name for subscription operations"
+    },
+    {
+      "key": "cdpXApiKey",
+      "value": "58IB6iqmLe7Gi5TWiZXJv4vXfSVXIBZH",
+      "type": "string",
+      "description": "CDP X-API-Key for authentication"
+    },
+    {
+      "key": "testPhoneNumber",
+      "value": "07595591667",
+      "type": "string",
+      "description": "Test UK phone number for SMS alerts (change to your test number)"
+    },
+    {
+      "key": "currentCityIndex",
+      "value": "0",
+      "type": "string",
+      "description": "Current city index for auto-cycling through cities (0-5)"
+    },
+    {
+      "key": "currentCityName",
+      "value": "London",
+      "type": "string",
+      "description": "Current city name (auto-populated by pre-request script)"
+    },
+    {
+      "key": "currentCityLat",
+      "value": "51.5074",
+      "type": "string",
+      "description": "Current city latitude (auto-populated by pre-request script)"
+    },
+    {
+      "key": "currentCityLong",
+      "value": "-0.1278",
+      "type": "string",
+      "description": "Current city longitude (auto-populated by pre-request script)"
+    }
+  ]
+}

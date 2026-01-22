@@ -102,12 +102,7 @@ const fetchForecasts = async (di = {}) => {
   return ensureForecastSummary(forecastsResult)
 }
 
-export const fetchMeasurements = async (
-  latitude,
-  longitude,
-  useNewRicardoMeasurementsEnabled,
-  di = {}
-) => {
+export const fetchMeasurements = async (latitude, longitude, di = {}) => {
   // ''  Simple DI with fallbacks
   const diLogger = di.logger || logger
   const diConfig = di.config || config
@@ -126,18 +121,13 @@ export const fetchMeasurements = async (
   // 2. Select API URL and options
   let url, opts
   try {
-    const selection = selectMeasurementsUrlAndOptions(
-      latitude,
-      longitude,
-      useNewRicardoMeasurementsEnabled,
-      {
-        config: diConfig,
-        logger: diLogger,
-        optionsEphemeralProtected: diOptions,
-        options: diExtraOptions,
-        request: di.request
-      }
-    )
+    const selection = selectMeasurementsUrlAndOptions(latitude, longitude, {
+      config: diConfig,
+      logger: diLogger,
+      optionsEphemeralProtected: diOptions,
+      options: diExtraOptions,
+      request: di.request
+    })
     url = selection.url
     opts = selection.opts
   } catch (err) {

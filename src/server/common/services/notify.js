@@ -11,11 +11,103 @@ import { buildBackendApiFetchOptions } from '../helpers/backend-api-helper.js'
 
 const logger = createLogger('notify-service')
 
+// In-memory storage for mock alerts (only used when mockSetupAlertEnabled is true) ''
+// This allows testing duplicate detection and max alerts limit without a real database ''
+const mockAlertStorage = new Map()
+
+const PHONE_LAST_DIGITS_COUNT = 4
+const UK_COUNTRY_CODE = '+44'
+const UK_TRUNK_PREFIX = '0'
+const MOCK_ALERTS_MAX_PER_PHONE = 5
+
+function normalizePhoneNumber(phoneNumber = '') {
+  if (!phoneNumber || typeof phoneNumber !== 'string') {
+    return ''
+  }
+
+  const digitsOnly = phoneNumber.replace(/\D/g, '')
+  if (!digitsOnly) {
+    return ''
+  }
+
+  // Already has country code
+  if (digitsOnly.startsWith('44')) {
+    return `${UK_COUNTRY_CODE}${digitsOnly.slice(2)}`
+  }
+
+  // UK mobile in national format, convert 07... -> +447...
+  if (digitsOnly.startsWith('0')) {
+    return `${UK_COUNTRY_CODE}${digitsOnly.slice(1)}`
+  }
+
+  // Fall back to raw digits; keeps key deterministic
+  return digitsOnly
+}
+
+function maskPhoneNumber(phoneNumber = '') {
+  if (typeof phoneNumber !== 'string') {
+    return undefined
+  }
+
+  if (phoneNumber.length <= PHONE_LAST_DIGITS_COUNT) {
+    return '****'
+  }
+
+  return `***${phoneNumber.slice(-PHONE_LAST_DIGITS_COUNT)}`
+}
+
+function maskPhoneNumberForResponse(phoneNumber = '') {
+  if (typeof phoneNumber !== 'string') {
+    return undefined
+  }
+
+  return maskPhoneNumber(phoneNumber)
+}
+
+export function getMockAlertStorageSnapshot() {
+  return Array.from(mockAlertStorage.entries()).map(([key, value]) => ({
+    key,
+    phoneNumber: maskPhoneNumber(value?.phoneNumber),
+    location: value?.location,
+    locationId: value?.locationId,
+    latitude: value?.coordinates?.lat,
+    longitude: value?.coordinates?.long,
+    createdAt: value?.createdAt
+  }))
+}
+
 // Helper to remove common presentation prefix from location strings
 // Example: "Air quality in London, City of Westminster" -> "London, City of Westminster"
 function sanitizeLocationName(location) {
   if (!location || typeof location !== 'string') return location
-  return location.replace(/^\s*air\s+quality\s+in\s+/i, '').trim()
+  const sanitized = location.replace(/^\s*air\s+quality\s+in\s+/i, '').trim()
+  return sanitized
+}
+
+// Helper to generate unique key for alert (phone + location + coordinates) ''
+function generateAlertKey(phoneNumber, location, lat, long) {
+  return `${phoneNumber}|${location}|${lat}|${long}`
+}
+
+function generateStableAlertKey(phoneNumber, locationId, location, lat, long) {
+  const normalizedPhone = normalizePhoneNumber(phoneNumber)
+
+  if (locationId) {
+    return `${normalizedPhone}|${locationId}`
+  }
+
+  return generateAlertKey(normalizedPhone, location, lat, long)
+}
+
+// Helper to count alerts for a phone number ''
+function countAlertsForPhone(phoneNumber) {
+  let count = 0
+  for (const key of mockAlertStorage.keys()) {
+    if (key.startsWith(phoneNumber + '|')) {
+      count++
+    }
+  }
+  return count
 }
 
 /**
@@ -98,7 +190,42 @@ export async function sendEmailCode(emailAddress, code, request = null) {
  */
 export async function sendSmsCode(phoneNumber, request = null) {
   const smsPath = config.get('notify.smsPath')
-  return postToBackend(request, smsPath, { phoneNumber })
+  const mockOtpEnabled = config.get('notify.mockOtpEnabled')
+  const mockOtpCode = config.get('notify.mockOtpCode') || '12345'
+
+  // '' Try real service first
+  const result = await postToBackend(request, smsPath, { phoneNumber })
+
+  // '' If mock is enabled and service failed (otp_generated_notification_failed), use mock
+  if (
+    mockOtpEnabled &&
+    (!result.ok || result.data?.status === 'otp_generated_notification_failed')
+  ) {
+    logger.warn(
+      'SMS service failed or returned otp_generated_notification_failed, using mock OTP',
+      {
+        mockOtpCode,
+        realServiceStatus: result.status,
+        realServiceBody: result.data || result.body
+      }
+    )
+    // '' Store mock OTP in session for verification
+    if (request) {
+      request.yar.set('mockOtp', mockOtpCode)
+    }
+    return {
+      ok: true,
+      data: { status: 'mock_otp_enabled', mockOtpCode },
+      mock: true
+    }
+  }
+
+  // '' Clear mock OTP if real service succeeded
+  if (request && result.ok) {
+    request.yar.clear('mockOtp')
+  }
+
+  return result
 }
 
 /**
@@ -110,6 +237,30 @@ export async function sendSmsCode(phoneNumber, request = null) {
  */
 export async function verifyOtp(phoneNumber, otp, request = null) {
   const verifyPath = config.get('notify.verifyOtpPath')
+  const mockOtpEnabled = config.get('notify.mockOtpEnabled')
+
+  // '' Check if we're using mock OTP from session
+  if (mockOtpEnabled && request) {
+    const mockOtp = request.yar.get('mockOtp')
+    if (mockOtp) {
+      logger.info('Verifying against mock OTP', {
+        otpMatches: otp === mockOtp
+      })
+      if (otp === mockOtp) {
+        // '' Clear mock OTP after successful verification
+        request.yar.clear('mockOtp')
+        return { ok: true, data: { status: 'verified', mock: true } }
+      } else {
+        return {
+          ok: false,
+          status: 400,
+          body: { message: 'Invalid OTP code', mock: true }
+        }
+      }
+    }
+  }
+
+  // '' Use real service if mock not enabled or no mock OTP in session
   return postToBackend(request, verifyPath, { phoneNumber, otp })
 }
 
@@ -134,11 +285,18 @@ export async function setupAlert(
 ) {
   const setupPath = config.get('notify.setupAlertPath')
   const alertBackendBaseUrl = config.get('notify.alertBackendBaseUrl')
+  const mockSetupAlertEnabled = config.get('notify.mockSetupAlertEnabled')
 
   // Convert coordinates to numbers if they're strings ''
   // MongoDB may expect numeric values for geospatial queries
-  const latitude = lat ? Number.parseFloat(lat) : undefined
-  const longitude = long ? Number.parseFloat(long) : undefined
+  // '' Round to 6 decimal places for consistency (~10cm precision)
+  // '' This ensures coordinates from different sources (query params vs BNG conversion) match
+  const latitude = lat
+    ? Math.round(Number.parseFloat(lat) * 1000000) / 1000000
+    : undefined
+  const longitude = long
+    ? Math.round(Number.parseFloat(long) * 1000000) / 1000000
+    : undefined
 
   // Log coordinate conversion for debugging ''
   logger.info('Setting up alert with coordinates', {
@@ -171,5 +329,273 @@ export async function setupAlert(
     })
   }
 
-  return postToBackend(request, setupPath, payload, alertBackendBaseUrl)
+  // Try real service first ''
+  const result = await postToBackend(
+    request,
+    setupPath,
+    payload,
+    alertBackendBaseUrl
+  )
+
+  // '' Log backend response to debug duplicate detection
+  logger.info('Backend response received', {
+    ok: result.ok,
+    status: result.status,
+    error: result.error,
+    bodyKeys: result.body ? Object.keys(result.body) : [],
+    phoneNumberLast4: phoneNumber ? phoneNumber.slice(-4) : undefined,
+    sanitizedLocation
+  })
+
+  // If backend service is unavailable (502/503/504) and mock is enabled, use in-memory storage ''
+  // This handles cases where backend depends on notify service which may be down (50 SMS/day limit) ''
+  // IMPORTANT: Only activates when service fails (never bypasses working service) ''
+  // IMPORTANT: Should only be enabled in local/test environments, never in production ''
+  const isServiceUnavailable =
+    !result.ok && [502, 503, 504].includes(result.status)
+
+  logger.info('Checking if mock should be used', {
+    isServiceUnavailable,
+    mockSetupAlertEnabled,
+    status: result.status,
+    willUseMock: isServiceUnavailable && mockSetupAlertEnabled
+  })
+
+  if (isServiceUnavailable && mockSetupAlertEnabled) {
+    // Production safety check - throw error if mock is enabled in production
+    const isProduction = config.get('env') === 'production'
+    if (isProduction) {
+      const errorMsg =
+        'CRITICAL: Mock setup alert is enabled in production environment. This should NEVER happen. Set NOTIFY_MOCK_SETUP_ALERT_ENABLED=false immediately.'
+      logger.error(errorMsg)
+      throw new Error(errorMsg)
+    }
+
+    logger.warn(
+      'Backend service unavailable (status: ' +
+        result.status +
+        '), using mock setup alert with in-memory storage'
+    )
+    logger.warn('Mock setup alert should NEVER be enabled in production')
+
+    // Check if phone number already has 5 alerts (max limit) ''
+    const normalizedPhone = normalizePhoneNumber(phoneNumber)
+    const alertCount = countAlertsForPhone(normalizedPhone)
+
+    // Log current storage state ''
+    const currentStorage = Array.from(mockAlertStorage.entries()).map(
+      ([key, value]) => ({
+        key,
+        location: value?.location,
+        locationId: value?.locationId,
+        phoneNumberMasked: maskPhoneNumber(value?.phoneNumber)
+      })
+    )
+    logger.info(
+      'Mock: Current storage state - Total entries: ' +
+        mockAlertStorage.size +
+        ', Alert count for this phone: ' +
+        alertCount
+    )
+    logger.info(
+      'Mock: All stored alerts: ' + JSON.stringify(currentStorage, null, 2)
+    )
+
+    if (alertCount >= MOCK_ALERTS_MAX_PER_PHONE) {
+      logger.info('Mock: Phone number has reached max alerts limit (5)', {
+        phoneNumber: phoneNumber.substring(0, 7) + '****',
+        currentCount: alertCount
+      })
+      return {
+        ok: false,
+        status: 400,
+        data: {
+          message: 'Maximum number of alerts reached for this phone number',
+          phoneNumber: maskPhoneNumberForResponse(phoneNumber),
+          currentAlertCount: alertCount,
+          maxAlerts: MOCK_ALERTS_MAX_PER_PHONE
+        }
+      }
+    }
+
+    // Check for duplicate alert (same phone + location + coordinates) ''
+    const alertKey = generateStableAlertKey(
+      phoneNumber,
+      locationId,
+      sanitizedLocation,
+      latitude,
+      longitude
+    )
+
+    logger.info('Mock: Checking for duplicate alert', {
+      phoneNumber: phoneNumber.substring(0, 7) + '****',
+      sanitizedLocation,
+      latitude,
+      longitude,
+      generatedKey: alertKey,
+      existingKeys: Array.from(mockAlertStorage.keys()),
+      keyExists: mockAlertStorage.has(alertKey)
+    })
+
+    if (mockAlertStorage.has(alertKey)) {
+      logger.info('Mock: Duplicate alert detected', {
+        phoneNumber: phoneNumber.substring(0, 7) + '****',
+        location: sanitizedLocation
+      })
+      return {
+        ok: false,
+        status: 409,
+        data: {
+          message: 'Alert already exists for this location and phone number',
+          phoneNumber: maskPhoneNumberForResponse(phoneNumber),
+          location: sanitizedLocation,
+          coordinates: { lat: latitude, long: longitude }
+        }
+      }
+    }
+
+    // Store alert in mock storage ''
+    mockAlertStorage.set(alertKey, {
+      phoneNumber: normalizedPhone,
+      alertType,
+      location: sanitizedLocation,
+      locationId,
+      coordinates: { lat: latitude, long: longitude },
+      createdAt: new Date().toISOString()
+    })
+
+    logger.info('Mock: Alert stored successfully', {
+      phoneNumber: phoneNumber.substring(0, 7) + '****',
+      sanitizedLocation,
+      alertKey,
+      totalAlerts: mockAlertStorage.size,
+      allKeys: Array.from(mockAlertStorage.keys())
+    })
+
+    return {
+      ok: true,
+      status: 201,
+      data: {
+        message: 'Alert setup successful (mock mode - stored in memory)',
+        phoneNumber: maskPhoneNumberForResponse(phoneNumber),
+        location: sanitizedLocation,
+        alertType,
+        coordinates: { lat: latitude, long: longitude },
+        mock: true,
+        alertCount: alertCount + 1
+      }
+    }
+  }
+
+  return result
+}
+
+/**
+ * Check if user has reached maximum alerts ''
+ * @param {string} phoneNumber - Phone number to check
+ * @param {Object} request - Hapi request object (optional)
+ * @returns {Promise<Object>} { ok: boolean, maxReached: boolean }
+ */
+export async function getSubscriptionCount(phoneNumber, request = null) {
+  const alertBackendBaseUrl = config.get('notify.alertBackendBaseUrl')
+  const getSubscriptionsPath =
+    config.get('notify.getSubscriptionsPath') || '/api/subscriptions'
+
+  logger.info('Checking maximum alerts', {
+    alertBackendBaseUrl,
+    getSubscriptionsPath,
+    phoneNumberLast4: phoneNumber ? phoneNumber.slice(-4) : undefined
+  })
+
+  try {
+    const enabled = config.get('notify.enabled')
+    const baseUrl = alertBackendBaseUrl || config.get('notify.baseUrl')
+
+    if (!enabled || !baseUrl) {
+      logger.warn(
+        'Notify API disabled or baseUrl missing; allowing by default',
+        {
+          getSubscriptionsPath,
+          enabled,
+          baseUrl: baseUrl || '[not configured]'
+        }
+      )
+      return { ok: true, maxReached: false }
+    }
+
+    // Use reusable helper to build URL and options based on environment ''
+    const { url, fetchOptions } = buildBackendApiFetchOptions(
+      request,
+      baseUrl,
+      `${getSubscriptionsPath}/${encodeURIComponent(phoneNumber)}`,
+      { method: 'GET', body: null }
+    )
+
+    const [status, data] = await catchFetchError(url, fetchOptions)
+
+    // '' Backend returns 400 with specific message when max locations reached
+    if (status === 400) {
+      logger.warn('Maximum alerts reached', {
+        statusCode: data?.statusCode,
+        error: data?.error,
+        message: data?.message
+      })
+      return { ok: true, maxReached: true }
+    }
+
+    // '' 200 OK means user can add more locations
+    if (status === HTTP_STATUS_OK) {
+      logger.info('User can add more locations')
+      return { ok: true, maxReached: false }
+    }
+
+    // '' Any other status is treated as an error - fail open for better UX
+    logger.warn('Unexpected response from subscriptions API', { status, data })
+    return { ok: false, maxReached: false }
+  } catch (err) {
+    logger.error('Error checking subscriptions', err)
+    return { ok: false, maxReached: false }
+  }
+}
+
+/**
+ * Get all mock alerts (for testing/debugging only) ''
+ * @returns {Array} Array of mock alerts
+ */
+export function getMockAlerts() {
+  const alerts = []
+  for (const [key, value] of mockAlertStorage.entries()) {
+    alerts.push({ key, ...value })
+  }
+  return alerts
+}
+
+/**
+ * Clear all mock alerts (for testing/debugging only) ''
+ * @returns {number} Number of alerts cleared
+ */
+export function clearMockAlerts() {
+  const count = mockAlertStorage.size
+  mockAlertStorage.clear()
+  logger.info('Mock alerts cleared', { count })
+  return count
+}
+
+/**
+ * Remove specific mock alert (for testing/debugging only) ''
+ * @param {string} phoneNumber - Phone number
+ * @param {string} location - Location name
+ * @param {number} lat - Latitude
+ * @param {number} long - Longitude
+ * @returns {boolean} True if alert was removed
+ */
+export function removeMockAlert(phoneNumber, location, lat, long) {
+  const key = generateAlertKey(phoneNumber, location, lat, long)
+  const existed = mockAlertStorage.has(key)
+  mockAlertStorage.delete(key)
+  logger.info('Mock alert removed', {
+    existed,
+    phoneNumber: phoneNumber.substring(0, 7) + '****'
+  })
+  return existed
 }

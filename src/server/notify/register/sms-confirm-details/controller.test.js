@@ -4,6 +4,15 @@ import {
   handleConfirmAlertDetailsPost
 } from './controller.js'
 
+// Mock the notify service
+vi.mock('../../../common/services/notify.js', () => ({
+  setupAlert: vi.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    data: { message: 'Alert setup successful' }
+  })
+}))
+
 // Test constants ''
 const FOOTER_TEXT = 'Footer text'
 const PHASE_BANNER = 'Phase banner'
@@ -34,11 +43,15 @@ describe('Confirm Alert Details Controller - handleConfirmAlertDetailsRequest', 
   test('returns correct view data', () => {
     const mockRequest = {
       yar: {
-        get: vi
-          .fn()
-          .mockReturnValueOnce('07123456789') // mobileNumber
-          .mockReturnValueOnce('London') // location
-          .mockReturnValueOnce({}) // formData
+        get: vi.fn((key) => {
+          const mockData = {
+            mobileNumber: '07123456789',
+            location: 'London',
+            formData: {}
+          }
+          return mockData[key] || null
+        }),
+        clear: vi.fn()
       }
     }
 
@@ -83,11 +96,12 @@ describe('Confirm Alert Details Controller - Missing Session Data', () => {
   test('handles missing session data', () => {
     const mockRequest = {
       yar: {
-        get: vi
-          .fn()
-          .mockReturnValueOnce(null) // mobileNumber
-          .mockReturnValueOnce(null) // location
-          .mockReturnValueOnce({}) // formData
+        get: vi.fn((key) => {
+          const mockData = {
+            formData: {}
+          }
+          return mockData[key] || null
+        })
       }
     }
 
@@ -120,12 +134,14 @@ describe('Confirm Alert Details Controller - handleConfirmAlertDetailsPost', () 
             const mockData = {
               mobileNumber: '07123456789',
               location: 'London',
+              locationId: 'london-123',
               latitude: '51.5074',
               longitude: '-0.1278'
             }
             return mockData[key] || ''
           }),
-          set: vi.fn()
+          set: vi.fn(),
+          clear: vi.fn()
         }
       }
 

@@ -139,8 +139,7 @@ export async function processLocationData(
   request,
   locationData,
   locationId,
-  lang,
-  useNewRicardoMeasurementsEnabled
+  lang
 ) {
   const { getForecasts } = locationData
   const locationType = getLocationType(locationData)
@@ -155,7 +154,6 @@ export async function processLocationData(
       locationType,
       0,
       lang,
-      useNewRicardoMeasurementsEnabled,
       request
     )
     const niDataResult = getNIData(locationData, distance, locationType)
@@ -177,7 +175,6 @@ export async function processLocationData(
       locationType,
       locationIndex,
       lang,
-      useNewRicardoMeasurementsEnabled,
       request
     )
 

@@ -8,6 +8,7 @@ import {
   isValidFullPostcodeUK,
   formatUKPostcode
 } from './convert-string.js'
+import OsGridRef from 'mt-osgridref'
 import { LANG_EN, LANG_CY, REDIRECT_STATUS_CODE } from '../../data/constants.js'
 import { createURLRouteBookmarks } from './create-bookmark-ids.js'
 import reduceMatches from './reduce-matches.js'
@@ -48,7 +49,7 @@ const buildMockQueryParams = (request) => {
 }
 
 // Helper function to handle single match
-const handleSingleMatch = (
+const handleSingleMatch = async (
   h,
   request,
   {
@@ -94,6 +95,72 @@ const handleSingleMatch = (
   request.yar.set('searchTermsSaved', request.query.searchTerms || '')
 
   logger.info(`Redirecting to location with custom ID: ${customId}`)
+
+  // '' Check if user is in notification registration flow (SMS or Email)
+  const notificationFlow = request.yar.get('notificationFlow')
+  if (notificationFlow) {
+    // '' Update session with new location data for notification
+    const locationData = request.yar.get('locationData')
+    if (locationData && locationData.results && locationData.results[0]) {
+      const result = locationData.results[0]
+      const gazetteerEntry = result.GAZETTEER_ENTRY || result
+
+      // '' Convert British National Grid coordinates (GEOMETRY_X/Y) to lat/long
+      let lat, lon
+      if (gazetteerEntry.GEOMETRY_X && gazetteerEntry.GEOMETRY_Y) {
+        // '' Convert BNG coordinates to WGS84 lat/long
+        const point = new OsGridRef(
+          gazetteerEntry.GEOMETRY_X,
+          gazetteerEntry.GEOMETRY_Y
+        )
+        const latlon = OsGridRef.osGridToLatLong(point)
+        lat = latlon._lat
+        lon = latlon._lon
+      } else {
+        // '' Fallback to direct latitude/longitude if available
+        lat =
+          gazetteerEntry.LATITUDE || gazetteerEntry.latitude || result.latitude
+        lon =
+          gazetteerEntry.LONGITUDE ||
+          gazetteerEntry.longitude ||
+          result.longitude
+      }
+
+      request.yar.set('location', headerTitle || title)
+      request.yar.set('locationId', customId)
+      request.yar.set('latitude', lat)
+      request.yar.set('longitude', lon)
+      logger.info(`[DEBUG handleSingleMatch] Updated session location data:`, {
+        location: headerTitle || title,
+        locationId: customId,
+        lat,
+        lon,
+        hasLat: !!lat,
+        hasLon: !!lon,
+        geometryX: gazetteerEntry.GEOMETRY_X,
+        geometryY: gazetteerEntry.GEOMETRY_Y
+      })
+    }
+
+    // '' Clear the flow flag and redirect to appropriate confirm details page
+    request.yar.clear('notificationFlow')
+    logger.info(
+      `[DEBUG handleSingleMatch] Redirecting to ${notificationFlow} confirm details (notificationFlow=${notificationFlow})`
+    )
+
+    if (notificationFlow === 'sms') {
+      return h
+        .redirect(`/notify/register/sms-confirm-details?lang=${lang}`)
+        .code(REDIRECT_STATUS_CODE)
+        .takeover()
+    } else if (notificationFlow === 'email') {
+      // '' Placeholder for email flow - will be implemented later
+      return h
+        .redirect(`/notify/register/email-confirm-details?lang=${lang}`)
+        .code(REDIRECT_STATUS_CODE)
+        .takeover()
+    }
+  }
 
   // '' Build query parameters for mock testing (only when mocks enabled)
   const queryParams = buildMockQueryParams(request)
