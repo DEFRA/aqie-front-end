@@ -103,7 +103,7 @@ describe('refreshOAuthToken additional coverage', () => {
     }
     const request = { yar: { clear: vi.fn(), set: vi.fn() } }
     const result = await refreshOAuthToken(request, di)
-    expect(result).toBe('token')
+    expect(result).toEqual({ accessToken: 'token' })
     expect(request.yar.clear).toHaveBeenCalledWith('savedAccessToken')
     expect(request.yar.set).toHaveBeenCalledWith('savedAccessToken', 'token')
   })

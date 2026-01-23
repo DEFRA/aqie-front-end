@@ -99,6 +99,49 @@ const processUKLocationType = (request, h, redirectError, options = {}) => {
   })
 }
 
+// '' Helper: Extract location title from result object with fallback chain
+const getLocationTitle = (result, searchTerms) => {
+  return (
+    result?.localName ||
+    result?.secondaryName ||
+    result?.displayName ||
+    result?.postcode ||
+    result?.town ||
+    searchTerms ||
+    'Location'
+  )
+}
+
+// '' Helper: Update session with location data for notification flow
+const updateNotificationSession = (request, locationData, searchTerms) => {
+  const result = locationData?.results?.[0]
+  if (!result) return
+
+  const locationTitle = getLocationTitle(result, searchTerms)
+  const sanitizedLocation =
+    (locationTitle || 'Location')
+      .replace(/^\s*air\s+quality\s+in\s+/i, '')
+      .trim() || 'Location'
+
+  request.yar.set(
+    'location',
+    convertFirstLetterIntoUppercase(sanitizedLocation)
+  )
+  request.yar.set('locationId', locationData.urlRoute)
+  request.yar.set('latitude', result.latitude || result.yCoordinate)
+  request.yar.set('longitude', result.longitude || result.xCoordinate)
+
+  logger.info(
+    `[DEBUG updateNotificationSession] Updated session location data:`,
+    {
+      location: locationTitle,
+      locationId: locationData.urlRoute,
+      lat: result.latitude,
+      lon: result.longitude
+    }
+  )
+}
+
 const processNILocationType = (request, h, redirectError, options = {}) => {
   const {
     locationNameOrPostcode,
@@ -129,7 +172,7 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
 
   // '' Guard against null/undefined results from failed mock server fetch
   const firstNIResult = getNIPlaces?.results?.[0]
-  if (!firstNIResult || !firstNIResult.postcode) {
+  if (!firstNIResult?.postcode) {
     logger.error('NI mock server returned invalid data - postcode missing')
     request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
     request.yar.clear('searchTermsSaved')
@@ -193,34 +236,7 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
   const notificationFlow = request.yar.get('notificationFlow')
   if (notificationFlow) {
     // '' Update session with new location data for notification
-    if (locationData && locationData.results && locationData.results[0]) {
-      const result = locationData.results[0]
-      const locationTitle =
-        result.localName ||
-        result.secondaryName ||
-        result.displayName ||
-        searchTerms
-      // '' Remove 'Air quality in' prefix if present to ensure consistency
-      const sanitizedLocation = locationTitle
-        .replace(/^\s*air\s+quality\s+in\s+/i, '')
-        .trim()
-      request.yar.set(
-        'location',
-        convertFirstLetterIntoUppercase(sanitizedLocation)
-      )
-      request.yar.set('locationId', locationData.urlRoute)
-      request.yar.set('latitude', result.latitude)
-      request.yar.set('longitude', result.longitude)
-      logger.info(
-        `[DEBUG processNILocationType] Updated session location data:`,
-        {
-          location: locationTitle,
-          locationId: locationData.urlRoute,
-          lat: result.latitude,
-          lon: result.longitude
-        }
-      )
-    }
+    updateNotificationSession(request, locationData, searchTerms)
 
     // '' Clear the flow flag and redirect to appropriate confirm details page
     request.yar.clear('notificationFlow')
@@ -233,13 +249,12 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
         .redirect(`/notify/register/sms-confirm-details?lang=en`)
         .code(REDIRECT_STATUS_CODE)
         .takeover()
-    } else if (notificationFlow === 'email') {
-      // '' Placeholder for email flow - will be implemented later
-      return h
-        .redirect(`/notify/register/email-confirm-details?lang=en`)
-        .code(REDIRECT_STATUS_CODE)
-        .takeover()
     }
+    // '' Email flow - will be implemented later
+    return h
+      .redirect(`/notify/register/email-confirm-details?lang=en`)
+      .code(REDIRECT_STATUS_CODE)
+      .takeover()
   }
 
   // '' Use .takeover() to send redirect immediately and skip remaining lifecycle

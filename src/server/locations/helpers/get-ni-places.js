@@ -28,7 +28,9 @@ async function getNIPlaces(userLocation, request) {
   // Build OAuth options if not in mock mode
   let optionsOAuth = {}
   if (!isMockEnabled) {
-    const accessToken = await refreshOAuthToken(request, { logger })
+    const tokenResult = await refreshOAuthToken(request, { logger })
+    // '' Extract accessToken from the returned object
+    const accessToken = tokenResult?.accessToken
     if (accessToken) {
       optionsOAuth = {
         headers: {

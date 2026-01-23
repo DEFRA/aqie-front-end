@@ -1,0 +1,54 @@
+{
+  "results": [
+    {
+      "postcode": "BT1 1AA",
+      "easting": 333500,
+      "northing": 374000,
+      "xCoordinate": -5.9301,
+      "yCoordinate": 54.597,
+      "town": "Belfast",
+      "district": "Belfast",
+      "county": "Antrim"
+    },
+    {
+      "postcode": "BT12 1AB",
+      "easting": 331000,
+      "northing": 372500,
+      "xCoordinate": -5.9601,
+      "yCoordinate": 54.583,
+      "town": "Belfast",
+      "district": "Belfast",
+      "county": "Antrim"
+    },
+    {
+      "postcode": "BT15 2CD",
+      "easting": 334200,
+      "northing": 375800,
+      "xCoordinate": -5.9201,
+      "yCoordinate": 54.613,
+      "town": "Belfast",
+      "district": "Belfast",
+      "county": "Antrim"
+    },
+    {
+      "postcode": "BT7 1NN",
+      "easting": 334800,
+      "northing": 373200,
+      "xCoordinate": -5.9141,
+      "yCoordinate": 54.589,
+      "town": "Belfast",
+      "district": "Belfast",
+      "county": "Antrim"
+    },
+    {
+      "postcode": "BT9 5AB",
+      "easting": 332900,
+      "northing": 371400,
+      "xCoordinate": -5.9381,
+      "yCoordinate": 54.573,
+      "town": "Belfast",
+      "district": "Belfast",
+      "county": "Antrim"
+    }
+  ]
+}

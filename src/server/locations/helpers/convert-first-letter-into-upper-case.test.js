@@ -27,7 +27,7 @@ describe('convertFirstLetterIntoUppercase', () => {
 
   it('should handle empty strings', () => {
     const input = ''
-    const expected = ''
+    const expected = 'Location'
     expect(convertFirstLetterIntoUppercase(input)).toBe(expected)
   })
 

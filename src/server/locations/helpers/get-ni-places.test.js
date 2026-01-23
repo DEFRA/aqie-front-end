@@ -50,7 +50,7 @@ vi.mock('./convert-string.js', () => ({
 }))
 
 vi.mock('./extracted/util-helpers.js', () => ({
-  refreshOAuthToken: vi.fn(() => Promise.resolve('mock-token'))
+  refreshOAuthToken: vi.fn(() => Promise.resolve({ accessToken: 'mock-token' }))
 }))
 
 // Now import after mocks are set up
@@ -118,5 +118,15 @@ describe('getNIPlaces', () => {
     expect(catchProxyFetchError).toHaveBeenCalled()
     expect(result).toBeDefined()
     expect(result.results).toBeInstanceOf(Array)
+  })
+
+  it('should handle SMS journey scenario with undefined request', async () => {
+    // '' Test the fix for SMS journey where request might be undefined
+    const mockData = { results: [{ postcode: 'BT1 1AA', town: 'Belfast' }] }
+    catchProxyFetchError.mockResolvedValue([STATUS_OK, mockData])
+    const result = await getNIPlaces('BT1 1AA', undefined)
+    expect(result).toBeDefined()
+    expect(result.results).toBeInstanceOf(Array)
+    expect(result.results.length).toBeGreaterThan(0)
   })
 })
