@@ -1,79 +1,115 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { refreshOAuthToken, buildNIOptionsOAuth } from './util-helpers.js'
 
-describe('util-helpers - refreshOAuthToken', () => {
+const REAL_ACCESS_TOKEN = 'real-access-token'
+
+const createMockLogger = () => ({
+  info: vi.fn(),
+  error: vi.fn(),
+  warn: vi.fn()
+})
+
+const createMockRequest = () => ({
+  yar: {
+    get: vi.fn(),
+    set: vi.fn(),
+    clear: vi.fn()
+  }
+})
+
+describe('refreshOAuthToken - test mode', () => {
   let mockLogger
   let mockRequest
 
   beforeEach(() => {
-    mockLogger = {
-      info: vi.fn(),
-      error: vi.fn(),
-      warn: vi.fn()
-    }
-    mockRequest = {
-      yar: {
-        get: vi.fn(),
-        set: vi.fn(),
-        clear: vi.fn()
+    mockLogger = createMockLogger()
+    mockRequest = createMockRequest()
+  })
+
+  describe('test mode behavior', () => {
+    it('should return mock token in test mode', async () => {
+      const di = {
+        logger: mockLogger,
+        isTestMode: () => true
       }
-    }
+
+      const result = await refreshOAuthToken(mockRequest, di)
+
+      expect(result).toEqual({ accessToken: 'mock-token' })
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Test mode: refreshOAuthToken returning mock token'
+      )
+    })
+
+    it('should handle missing logger gracefully', async () => {
+      const di = {
+        isTestMode: () => true
+      }
+
+      const result = await refreshOAuthToken(mockRequest, di)
+
+      expect(result).toEqual({ accessToken: 'mock-token' })
+    })
   })
 
-  it('should return mock token in test mode', async () => {
-    const di = {
-      logger: mockLogger,
-      isTestMode: () => true
-    }
+  describe('production mode behavior', () => {
+    it('should fetch OAuth token when not in test mode', async () => {
+      const di = {
+        logger: mockLogger,
+        fetchOAuthToken: vi.fn().mockResolvedValue(REAL_ACCESS_TOKEN),
+        isTestMode: () => false
+      }
 
-    const result = await refreshOAuthToken(mockRequest, di)
+      const result = await refreshOAuthToken(mockRequest, di)
 
-    expect(result).toEqual({ accessToken: 'mock-token' })
-    expect(mockLogger.info).toHaveBeenCalledWith(
-      'Test mode: refreshOAuthToken returning mock token'
-    )
+      expect(result).toEqual({ accessToken: REAL_ACCESS_TOKEN })
+      expect(mockRequest.yar.clear).toHaveBeenCalledWith('savedAccessToken')
+      expect(mockRequest.yar.set).toHaveBeenCalledWith(
+        'savedAccessToken',
+        REAL_ACCESS_TOKEN
+      )
+    })
+
+    it('should return error if fetchOAuthToken fails', async () => {
+      const mockError = { error: 'Failed to fetch token' }
+      const di = {
+        logger: mockLogger,
+        fetchOAuthToken: vi.fn().mockResolvedValue(mockError),
+        isTestMode: () => false
+      }
+
+      const result = await refreshOAuthToken(mockRequest, di)
+
+      expect(result).toEqual(mockError)
+      expect(mockRequest.yar.clear).not.toHaveBeenCalled()
+    })
   })
 
-  it('should fetch OAuth token when not in test mode', async () => {
-    const mockAccessToken = 'real-access-token'
-    const di = {
-      logger: mockLogger,
-      fetchOAuthToken: vi.fn().mockResolvedValue(mockAccessToken),
-      isTestMode: () => false
-    }
+  describe('error handling', () => {
+    it('should handle missing request object gracefully', async () => {
+      const di = {
+        logger: mockLogger,
+        fetchOAuthToken: vi.fn().mockResolvedValue(REAL_ACCESS_TOKEN),
+        isTestMode: () => false
+      }
 
-    const result = await refreshOAuthToken(mockRequest, di)
+      const result = await refreshOAuthToken(undefined, di)
 
-    expect(result).toBe(mockAccessToken)
-    expect(mockRequest.yar.clear).toHaveBeenCalledWith('savedAccessToken')
-    expect(mockRequest.yar.set).toHaveBeenCalledWith(
-      'savedAccessToken',
-      mockAccessToken
-    )
-  })
+      expect(result).toEqual({ accessToken: REAL_ACCESS_TOKEN })
+    })
 
-  it('should return error if fetchOAuthToken fails', async () => {
-    const mockError = { error: 'Failed to fetch token' }
-    const di = {
-      logger: mockLogger,
-      fetchOAuthToken: vi.fn().mockResolvedValue(mockError),
-      isTestMode: () => false
-    }
+    it('should handle request without yar property gracefully', async () => {
+      const di = {
+        logger: mockLogger,
+        fetchOAuthToken: vi.fn().mockResolvedValue(REAL_ACCESS_TOKEN),
+        isTestMode: () => false
+      }
 
-    const result = await refreshOAuthToken(mockRequest, di)
+      const requestWithoutYar = {}
+      const result = await refreshOAuthToken(requestWithoutYar, di)
 
-    expect(result).toEqual(mockError)
-    expect(mockRequest.yar.clear).not.toHaveBeenCalled()
-  })
-
-  it('should handle missing logger gracefully', async () => {
-    const di = {
-      isTestMode: () => true
-    }
-
-    const result = await refreshOAuthToken(mockRequest, di)
-
-    expect(result).toEqual({ accessToken: 'mock-token' })
+      expect(result).toEqual({ accessToken: REAL_ACCESS_TOKEN })
+    })
   })
 })
 

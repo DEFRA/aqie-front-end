@@ -1,6 +1,7 @@
 import { nitrogenDioxideController } from './controller.js'
 import { nitrogenDioxide } from './index.js'
 import Hapi from '@hapi/hapi'
+import { vi } from 'vitest'
 
 describe('nitrogen dioxide index plugin - en', () => {
   let server
@@ -20,11 +21,10 @@ describe('nitrogen dioxide index plugin - en', () => {
   })
 
   test('should register nitrogen dioxide route', () => {
-    const routes = server.table()
-    const nitrogenDioxideRoute = routes.find(
-      (routes) =>
-        routes.path === '/pollutants/nitrogen-dioxide' &&
-        routes.method === 'get'
+    const allRoutes = server.table()
+    const nitrogenDioxideRoute = allRoutes.find(
+      (route) =>
+        route.path === '/pollutants/nitrogen-dioxide' && route.method === 'get'
     )
     expect(nitrogenDioxideRoute).toBeDefined()
     expect(nitrogenDioxideRoute.settings.handler).toBe(

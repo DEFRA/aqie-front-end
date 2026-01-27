@@ -44,9 +44,13 @@ const refreshOAuthToken = async (request, di = {}) => {
   if (accessToken?.error) {
     return accessToken
   }
-  request.yar.clear('savedAccessToken')
-  request.yar.set('savedAccessToken', accessToken)
-  return accessToken
+  // '' Guard against missing request or yar (session) object
+  if (request?.yar) {
+    request.yar.clear('savedAccessToken')
+    request.yar.set('savedAccessToken', accessToken)
+  }
+  // '' Always return an object with accessToken for consistency
+  return { accessToken }
 }
 
 const handleNILocationData = async (userLocation, di = {}) => {
@@ -139,9 +143,14 @@ const buildNIOptionsOAuth = async ({
     optionsOAuth = {}
   } else {
     logger.info('Mock is disabled, fetching OAuth token...')
-    const savedAccessToken = request.yar.get('savedAccessToken')
+    // '' Guard against missing request or yar object
+    const savedAccessToken = request?.yar?.get('savedAccessToken')
     logger.info(`Saved access token exists: ${!!savedAccessToken}`)
-    accessToken = savedAccessToken || (await refreshOAuthTokenFn(request))
+    // '' Extract accessToken from the returned object if we need to refresh
+    const tokenResult = savedAccessToken || (await refreshOAuthTokenFn(request))
+    // '' Handle both cases: savedAccessToken is a string, tokenResult is an object
+    accessToken =
+      typeof tokenResult === 'string' ? tokenResult : tokenResult?.accessToken
     logger.info(`Access token obtained: ${!!accessToken}`)
     optionsOAuth = {
       method: 'GET',
