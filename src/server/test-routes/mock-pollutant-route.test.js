@@ -41,6 +41,8 @@ describe('mock-pollutant-route', () => {
   const HTTP_OK = 200
   const HTTP_BAD_REQUEST = 400
   const HTTP_REDIRECT = 302
+  const FORMAT_JSON = 'json'
+  const JSON_FORMAT_TEST_NAME = 'returns JSON if format=json'
 
   describe('GET /test-pollutants', () => {
     it('returns HTML for valid band', async () => {
@@ -60,9 +62,9 @@ describe('mock-pollutant-route', () => {
       expect(result.code).toBe(HTTP_BAD_REQUEST)
     })
 
-    it('returns JSON if format=json', async () => {
+    it(JSON_FORMAT_TEST_NAME, async () => {
       const route = routes.find((r) => r.path === TEST_POLLUTANTS_PATH)
-      const request = { query: { band: 'low', format: 'json' } }
+      const request = { query: { band: 'low', format: FORMAT_JSON } }
       const result = await route.handler(request, mockH)
       expect(result.payload.band).toBe('low')
       expect(result.code).toBe(HTTP_OK)
@@ -80,10 +82,10 @@ describe('mock-pollutant-route', () => {
       expect(result.payload).toContain('Custom Mock Pollutant Levels') // ''
     })
 
-    it('returns JSON if format=json', async () => {
+    it(JSON_FORMAT_TEST_NAME, async () => {
       const route = routes.find((r) => r.path === TEST_POLLUTANTS_CUSTOM_PATH)
       const request = {
-        query: { format: 'json', NO2: 'high' },
+        query: { format: FORMAT_JSON, NO2: 'high' },
         url: { href: '/test-pollutants-custom?format=json&NO2=high' }
       } // ''
       const result = await route.handler(request, mockH)
@@ -103,9 +105,9 @@ describe('mock-pollutant-route', () => {
       expect(result.payload).toContain('All Pollutant Bands Comparison') // ''
     })
 
-    it('returns JSON if format=json', async () => {
+    it(JSON_FORMAT_TEST_NAME, async () => {
       const route = routes.find((r) => r.path === '/test-pollutants-all')
-      const request = { query: { format: 'json' } }
+      const request = { query: { format: FORMAT_JSON } }
       const result = await route.handler(request, mockH)
       expect(result.code).toBe(HTTP_OK)
       expect(result.payload.bands).toBeDefined() // ''

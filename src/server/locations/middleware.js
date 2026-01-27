@@ -101,27 +101,27 @@ const processUKLocationType = (request, h, redirectError, options = {}) => {
 
 // '' Helper: Extract location title from result object with fallback chain
 const getLocationTitle = (result, searchTerms) => {
-  return (
-    result?.localName ||
-    result?.secondaryName ||
-    result?.displayName ||
-    result?.postcode ||
-    result?.town ||
-    searchTerms ||
-    'Location'
-  )
+  const primaryTitle = result?.localName || result?.secondaryName
+  if (primaryTitle) {
+    return primaryTitle
+  }
+
+  const secondaryTitle = result?.displayName || result?.postcode || result?.town
+  return secondaryTitle || searchTerms || 'Location'
 }
 
 // '' Helper: Update session with location data for notification flow
 const updateNotificationSession = (request, locationData, searchTerms) => {
   const result = locationData?.results?.[0]
-  if (!result) return
+  if (!result) {
+    return
+  }
 
   const locationTitle = getLocationTitle(result, searchTerms)
-  const sanitizedLocation =
-    (locationTitle || 'Location')
-      .replace(/^\s*air\s+quality\s+in\s+/i, '')
-      .trim() || 'Location'
+  const cleanedLocation = (locationTitle || 'Location')
+    .replace(/^\s*air\s+quality\s+in\s+/i, '')
+    .trim()
+  const sanitizedLocation = cleanedLocation || 'Location'
 
   request.yar.set(
     'location',
@@ -142,12 +142,29 @@ const updateNotificationSession = (request, locationData, searchTerms) => {
   )
 }
 
-const processNILocationType = (request, h, redirectError, options = {}) => {
+// '' Helper: Redirect to location not found page
+const redirectToLocationNotFound = (
+  request,
+  h,
+  locationNameOrPostcode,
+  lang
+) => {
+  request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+  request.yar.clear('searchTermsSaved')
+  return h
+    .redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`)
+    .code(REDIRECT_STATUS_CODE)
+    .takeover()
+}
+
+// '' Helper: Build location data object for NI locations
+const buildNILocationData = (
+  firstNIResult,
+  getNIPlaces,
+  redirectError,
+  options
+) => {
   const {
-    locationNameOrPostcode,
-    lang,
-    searchTerms,
-    getNIPlaces,
     transformedDailySummary,
     englishDate,
     welshDate,
@@ -155,38 +172,14 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
     month,
     multipleLocations,
     home,
-    getForecasts
+    getForecasts,
+    lang
   } = options
-  if (
-    !getNIPlaces?.results ||
-    getNIPlaces?.results.length === 0 ||
-    getNIPlaces === WRONG_POSTCODE
-  ) {
-    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-    request.yar.clear('searchTermsSaved')
-    return h
-      .redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`)
-      .code(REDIRECT_STATUS_CODE)
-      .takeover()
-  }
-
-  // '' Guard against null/undefined results from failed mock server fetch
-  const firstNIResult = getNIPlaces?.results?.[0]
-  if (!firstNIResult?.postcode) {
-    logger.error('NI mock server returned invalid data - postcode missing')
-    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-    request.yar.clear('searchTermsSaved')
-    return h
-      .redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`)
-      .code(REDIRECT_STATUS_CODE)
-      .takeover()
-  }
-
   const postcode = firstNIResult.postcode
   const town = sentenceCase(firstNIResult.town)
   const locationTitle = `${postcode}, ${town}`
 
-  const locationData = {
+  return {
     results: getNIPlaces?.results,
     urlRoute: `${firstNIResult.postcode.toLowerCase()}`.replaceAll(/\s+/g, ''),
     locationType: redirectError.locationType,
@@ -200,7 +193,10 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
     getForecasts: getForecasts?.forecasts,
     lang
   }
+}
 
+// '' Helper: Log debug information about location data
+const logLocationDataDebug = (locationData, retrievedLocationData) => {
   logger.info(`[DEBUG processNILocationType] Setting locationData with:`)
   logger.info(
     `[DEBUG processNILocationType] - results is array: ${Array.isArray(locationData.results)}`
@@ -215,49 +211,81 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
     `[DEBUG processNILocationType] - getForecasts length: ${locationData.getForecasts?.length || 0}`
   )
 
-  request.yar.clear('locationData')
-  request.yar.set('locationData', locationData)
-
-  // '' Set searchTermsSaved for NI locations to prevent redirect loop in controller
-  request.yar.set('searchTermsSaved', searchTerms)
-
   logger.info(
     `[DEBUG processNILocationType] After set, locationData from session:`
   )
-  const retrievedLocationData = request.yar.get('locationData')
   logger.info(
     `[DEBUG processNILocationType] - retrieved results is array: ${Array.isArray(retrievedLocationData?.results)}`
   )
   logger.info(
     `[DEBUG processNILocationType] - retrieved getForecasts exists: ${!!retrievedLocationData?.getForecasts}`
   )
+}
 
-  // '' Check if user is in notification registration flow (SMS or Email)
-  const notificationFlow = request.yar.get('notificationFlow')
-  if (notificationFlow) {
-    // '' Update session with new location data for notification
-    updateNotificationSession(request, locationData, searchTerms)
+// '' Helper: Handle notification flow redirects
+const handleNotificationFlow = (
+  request,
+  h,
+  notificationFlow,
+  locationData,
+  searchTerms
+) => {
+  updateNotificationSession(request, locationData, searchTerms)
+  request.yar.clear('notificationFlow')
+  logger.info(
+    `[DEBUG processNILocationType] Redirecting to ${notificationFlow} confirm details (notificationFlow=${notificationFlow})`
+  )
 
-    // '' Clear the flow flag and redirect to appropriate confirm details page
-    request.yar.clear('notificationFlow')
-    logger.info(
-      `[DEBUG processNILocationType] Redirecting to ${notificationFlow} confirm details (notificationFlow=${notificationFlow})`
-    )
+  const smsRedirectUrl = '/notify/register/sms-confirm-details?lang=en'
+  const emailRedirectUrl = '/notify/register/email-confirm-details?lang=en'
+  const redirectUrl =
+    notificationFlow === 'sms' ? smsRedirectUrl : emailRedirectUrl
 
-    if (notificationFlow === 'sms') {
-      return h
-        .redirect(`/notify/register/sms-confirm-details?lang=en`)
-        .code(REDIRECT_STATUS_CODE)
-        .takeover()
-    }
-    // '' Email flow - will be implemented later
-    return h
-      .redirect(`/notify/register/email-confirm-details?lang=en`)
-      .code(REDIRECT_STATUS_CODE)
-      .takeover()
+  return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE).takeover()
+}
+
+const processNILocationType = (request, h, redirectError, options = {}) => {
+  const { locationNameOrPostcode, lang, searchTerms, getNIPlaces } = options
+
+  if (
+    !getNIPlaces?.results ||
+    getNIPlaces?.results.length === 0 ||
+    getNIPlaces === WRONG_POSTCODE
+  ) {
+    return redirectToLocationNotFound(request, h, locationNameOrPostcode, lang)
   }
 
-  // '' Use .takeover() to send redirect immediately and skip remaining lifecycle
+  const firstNIResult = getNIPlaces?.results?.[0]
+  if (!firstNIResult?.postcode) {
+    logger.error('NI mock server returned invalid data - postcode missing')
+    return redirectToLocationNotFound(request, h, locationNameOrPostcode, lang)
+  }
+
+  const locationData = buildNILocationData(
+    firstNIResult,
+    getNIPlaces,
+    redirectError,
+    options
+  )
+
+  request.yar.clear('locationData')
+  request.yar.set('locationData', locationData)
+  request.yar.set('searchTermsSaved', searchTerms)
+
+  const retrievedLocationData = request.yar.get('locationData')
+  logLocationDataDebug(locationData, retrievedLocationData)
+
+  const notificationFlow = request.yar.get('notificationFlow')
+  if (notificationFlow) {
+    return handleNotificationFlow(
+      request,
+      h,
+      notificationFlow,
+      locationData,
+      searchTerms
+    )
+  }
+
   return h
     .redirect(`/location/${locationData.urlRoute}?lang=en`)
     .code(REDIRECT_STATUS_CODE)

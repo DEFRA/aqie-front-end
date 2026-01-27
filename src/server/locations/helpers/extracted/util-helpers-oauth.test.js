@@ -3,23 +3,27 @@ import { refreshOAuthToken, buildNIOptionsOAuth } from './util-helpers.js'
 
 const REAL_ACCESS_TOKEN = 'real-access-token'
 
-describe('util-helpers - refreshOAuthToken', () => {
+const createMockLogger = () => ({
+  info: vi.fn(),
+  error: vi.fn(),
+  warn: vi.fn()
+})
+
+const createMockRequest = () => ({
+  yar: {
+    get: vi.fn(),
+    set: vi.fn(),
+    clear: vi.fn()
+  }
+})
+
+describe('refreshOAuthToken - test mode', () => {
   let mockLogger
   let mockRequest
 
   beforeEach(() => {
-    mockLogger = {
-      info: vi.fn(),
-      error: vi.fn(),
-      warn: vi.fn()
-    }
-    mockRequest = {
-      yar: {
-        get: vi.fn(),
-        set: vi.fn(),
-        clear: vi.fn()
-      }
-    }
+    mockLogger = createMockLogger()
+    mockRequest = createMockRequest()
   })
 
   describe('test mode behavior', () => {
