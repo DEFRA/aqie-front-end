@@ -73,13 +73,19 @@ function convertPointToLonLat(matches, location, index = 0) {
         // xCoordinate is longitude, yCoordinate is latitude (already in WGS84)
         lon = matches[index].xCoordinate
         lat = matches[index].yCoordinate
-      } else if (matches[index].GAZETTEER_ENTRY?.LONGITUDE && matches[index].GAZETTEER_ENTRY?.LATITUDE) {
+      } else if (
+        matches[index].GAZETTEER_ENTRY?.LONGITUDE &&
+        matches[index].GAZETTEER_ENTRY?.LATITUDE
+      ) {
         lon = matches[index].GAZETTEER_ENTRY.LONGITUDE
         lat = matches[index].GAZETTEER_ENTRY.LATITUDE
       } else if (matches[index].easting && matches[index].northing) {
         // Convert Irish Grid (easting/northing) to Lat/Long
         try {
-          pointNI = new OsGridRef(matches[index].easting, matches[index].northing)
+          pointNI = new OsGridRef(
+            matches[index].easting,
+            matches[index].northing
+          )
           const latlon = OsGridRef.osGridToLatLong(pointNI)
           lat = latlon._lat
           lon = latlon._lon

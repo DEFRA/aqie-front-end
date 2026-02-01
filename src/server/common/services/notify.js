@@ -89,15 +89,15 @@ function sanitizeLocationName(location) {
 // This prevents duplicates like "BT1 1AA" and "BT1 1AA, Belfast"
 function normalizeNIPostcode(location) {
   if (!location || typeof location !== 'string') return location
-  
+
   // NI postcode pattern: BT followed by 1-2 digits, space(s), 1 digit, 2 letters
   const niPostcodeMatch = location.match(/^(BT\d{1,2})\s*(\d[A-Z]{2})/i)
-  
+
   if (niPostcodeMatch) {
     // Return just the postcode part, normalized (uppercase, single space)
     return `${niPostcodeMatch[1]} ${niPostcodeMatch[2]}`.toUpperCase()
   }
-  
+
   return location
 }
 
