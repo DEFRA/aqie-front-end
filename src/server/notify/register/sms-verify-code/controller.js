@@ -67,11 +67,16 @@ function shouldResetAttempts(lastFailedTime) {
  */
 function getErrorMessage(errorMessage, failedAttempts, lastFailedTime) {
   const isExpired = errorMessage === 'Secret has expired'
+  const isSuperseded = errorMessage.includes('no longer valid')
   const exceedsMaxAttempts =
     failedAttempts >= MAX_FAILED_ATTEMPTS && lastFailedTime
 
   if (exceedsMaxAttempts && !shouldResetAttempts(lastFailedTime)) {
     return 'Wait 5 minutes, then get a new code using the link on this page'
+  }
+
+  if (isSuperseded) {
+    return 'This code is no longer valid. A newer code has been sent. Please use the most recent code'
   }
 
   if (isExpired) {

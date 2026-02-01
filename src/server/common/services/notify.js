@@ -228,10 +228,12 @@ export async function sendSmsCode(phoneNumber, request = null) {
         realServiceBody: result.data || result.body
       }
     )
-    // '' Store mock OTP in session for verification with timestamp
+    // '' Store mock OTP in session for verification with timestamp and sequence
     if (request) {
+      const currentSequence = request.yar.get('otpGenerationSequence') || 1
       request.yar.set('mockOtp', mockOtpCode)
       request.yar.set('mockOtpTimestamp', Date.now())
+      request.yar.set('mockOtpSequence', currentSequence)
     }
     return {
       ok: true,
@@ -264,8 +266,14 @@ export async function verifyOtp(phoneNumber, otp, request = null) {
   if (mockOtpEnabled && request) {
     const mockOtp = request.yar.get('mockOtp')
     const mockOtpTimestamp = request.yar.get('mockOtpTimestamp')
+    const mockOtpSequence = request.yar.get('mockOtpSequence')
+    const currentSequence = request.yar.get('otpGenerationSequence')
 
     if (mockOtp) {
+      // '' Check if this OTP has been superseded by a newer one
+      const isSuperseded =
+        mockOtpSequence && currentSequence && mockOtpSequence < currentSequence
+
       // '' Check if mock OTP has expired (15 minutes like real service)
       const isExpired =
         mockOtpTimestamp && Date.now() - mockOtpTimestamp > FIFTEEN_MINUTES_MS
@@ -273,15 +281,32 @@ export async function verifyOtp(phoneNumber, otp, request = null) {
       logger.info('Verifying against mock OTP', {
         otpMatches: otp === mockOtp,
         isExpired,
+        isSuperseded,
+        mockOtpSequence,
+        currentSequence,
         ageMinutes: mockOtpTimestamp
           ? ((Date.now() - mockOtpTimestamp) / 60000).toFixed(2)
           : 'unknown'
       })
 
+      if (isSuperseded) {
+        // '' Reject old OTP that has been replaced by a newer one
+        return {
+          ok: false,
+          status: 400,
+          body: {
+            message:
+              'This code is no longer valid. A newer code has been sent. Please use the most recent code.',
+            mock: true
+          }
+        }
+      }
+
       if (isExpired) {
         // '' Clear expired mock OTP
         request.yar.clear('mockOtp')
         request.yar.clear('mockOtpTimestamp')
+        request.yar.clear('mockOtpSequence')
         return {
           ok: false,
           status: 400,
@@ -293,6 +318,7 @@ export async function verifyOtp(phoneNumber, otp, request = null) {
         // '' Clear mock OTP after successful verification
         request.yar.clear('mockOtp')
         request.yar.clear('mockOtpTimestamp')
+        request.yar.clear('mockOtpSequence')
         return { ok: true, data: { status: 'verified', mock: true } }
       } else {
         return {

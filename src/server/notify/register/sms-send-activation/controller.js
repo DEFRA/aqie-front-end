@@ -78,8 +78,10 @@ export const handleSendActivationPost = async (request, h) => {
     return h.redirect('/notify/register/sms-mobile-number')
   }
 
-  // Store activation timestamp ''
+  // Store activation timestamp and initialize OTP generation sequence ''
   request.yar.set('activationSent', Date.now())
+  request.yar.set('otpGenerationSequence', 1)
+  request.yar.set('otpGeneratedAt', Date.now())
 
   try {
     // Send OTP request to backend (backend generates and sends the code) ''
