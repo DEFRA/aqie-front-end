@@ -56,8 +56,16 @@ const handleSendNewCodePost = async (request, h, content = english) => {
   const { mobileNumberNew } = request.payload
   const sessionMobileNumber = request.yar.get('mobileNumber')
 
-  // Validate mobile number (required field) ''
-  const validation = validateUKMobile(mobileNumberNew)
+  // Use new number if provided, otherwise use session number ''
+  const numberToValidate = mobileNumberNew || sessionMobileNumber
+
+  if (!numberToValidate) {
+    // No number in form or session - redirect to mobile number page ''
+    return h.redirect('/notify/register/sms-mobile-number')
+  }
+
+  // Validate mobile number ''
+  const validation = validateUKMobile(numberToValidate)
 
   if (!validation.isValid) {
     const { footerTxt, phaseBanner, backlink, cookieBanner } = content
@@ -109,6 +117,11 @@ const handleSendNewCodePost = async (request, h, content = english) => {
   // Store that a new code was requested ''
   request.yar.set('newCodeRequested', true)
   request.yar.set('newCodeSentAt', Date.now())
+
+  // Increment OTP generation sequence to invalidate previous codes ''
+  const currentSequence = request.yar.get('otpGenerationSequence') || 0
+  request.yar.set('otpGenerationSequence', currentSequence + 1)
+  request.yar.set('otpGeneratedAt', Date.now())
 
   logger.info(
     `New SMS activation code sent to: ${mobileNumber.substring(0, 4)}****`
