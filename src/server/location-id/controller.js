@@ -23,7 +23,10 @@ import { airQualityValues } from '../locations/helpers/air-quality-values.js'
 import { getNearestLocation } from '../locations/helpers/get-nearest-location.js'
 import { getIdMatch } from '../locations/helpers/get-id-match.js'
 import { getNIData } from '../locations/helpers/get-ni-single-data.js'
-import { compareLastElements } from '../locations/helpers/convert-string.js'
+import {
+  compareLastElements,
+  formatNorthernIrelandPostcode
+} from '../locations/helpers/convert-string.js'
 import sizeof from 'object-sizeof'
 import { config } from '../../config/index.js'
 import {
@@ -117,8 +120,21 @@ function handleSearchTermsRedirect(
     )
 
     // '' Extract searchTerms from URL path (0.685.0 approach)
-    const { searchTerms, secondSearchTerm, searchTermsLocationType } =
+    let { searchTerms, secondSearchTerm, searchTermsLocationType } =
       getSearchTermsFromUrl(currentUrl)
+
+    // '' Check if searchTerms is a normalized Northern Ireland postcode (e.g., bt938ad)
+    // '' and convert it back to proper format (e.g., BT93 8AD)
+    const normalizedNIPostcodeRegex = /^bt\d{1,2}\d[a-z]{2}$/i
+    if (normalizedNIPostcodeRegex.test(searchTerms)) {
+      logger.info(
+        `[DEBUG controller] Detected normalized NI postcode: ${searchTerms}`
+      )
+      searchTerms = formatNorthernIrelandPostcode(searchTerms.toUpperCase())
+      logger.info(
+        `[DEBUG controller] Converted to formatted NI postcode: ${searchTerms}`
+      )
+    }
 
     request.yar.clear('locationData')
     logger.info('Redirecting to location search')
