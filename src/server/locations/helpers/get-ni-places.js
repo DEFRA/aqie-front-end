@@ -1,7 +1,6 @@
 import { catchProxyFetchError } from '../../common/helpers/catch-proxy-fetch-error.js'
 import { createLogger } from '../../common/helpers/logging/logger.js'
 import { config } from '../../../config/index.js'
-import { formatNorthernIrelandPostcode } from './convert-string.js'
 import { refreshOAuthToken } from './extracted/util-helpers.js'
 
 const logger = createLogger()
@@ -18,12 +17,11 @@ async function getNIPlaces(userLocation, request) {
     'mockOsPlacesApiPostcodeNorthernIrelandUrl'
   )
 
-  const userLocationLocal = formatNorthernIrelandPostcode(
-    userLocation.toUpperCase()
-  )
+  // '' Remove spaces from postcode for API call - NI API expects postcodes without spaces
+  const userLocationNoSpaces = userLocation.toUpperCase().replace(/\s+/g, '')
   const postcodeNortherIrelandURL = isMockEnabled
-    ? `${mockOsPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocationLocal)}&_limit=1`
-    : `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
+    ? `${mockOsPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocationNoSpaces)}&_limit=1`
+    : `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocationNoSpaces)}&maxresults=1`
 
   // Build OAuth options if not in mock mode
   let optionsOAuth = {}
