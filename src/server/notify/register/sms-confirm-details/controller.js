@@ -150,10 +150,7 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
         phoneLast4: phoneNumber ? phoneNumber.slice(-4) : undefined
       })
       // '' Store error in session and redirect to mobile number page
-      const maskedNumber = phoneNumber.replace(
-        /(\d{5})\d+(\d{3})$/,
-        '$1 XXX $2'
-      )
+      const maskedNumber = phoneNumber
       request.yar.set('maxAlertsError', true)
       request.yar.set('maskedPhoneNumber', maskedNumber)
       request.yar.clear('mobileNumber')

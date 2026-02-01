@@ -1,20 +1,20 @@
 /* global describe, test, expect */
 
 describe('5 Location Maximum - Integration Tests (Simple)', () => {
-  describe('Phone Number Masking Logic', () => {
-    test('correctly masks various UK phone number formats', () => {
-      // '' This tests the masking regex used in the controller
+  describe('Phone Number Display Logic', () => {
+    test('displays full phone numbers without masking', () => {
+      // '' Phone numbers are now displayed in full
       const testCases = [
-        { input: '07700900982', expected: '07700 XXX 982' },
-        { input: '07123456789', expected: '07123 XXX 789' },
-        { input: '07999999999', expected: '07999 XXX 999' },
-        { input: '07555123456', expected: '07555 XXX 456' }
+        { input: '07700900982', expected: '07700900982' },
+        { input: '07123456789', expected: '07123456789' },
+        { input: '07999999999', expected: '07999999999' },
+        { input: '07555123456', expected: '07555123456' }
       ]
 
       testCases.forEach((testCase) => {
-        // '' Apply the same masking regex as used in controller
-        const masked = testCase.input.replace(/(\d{5})\d+(\d{3})$/, '$1 XXX $2')
-        expect(masked).toBe(testCase.expected)
+        // '' No masking applied - full number displayed
+        const displayed = testCase.input
+        expect(displayed).toBe(testCase.expected)
       })
     })
   })

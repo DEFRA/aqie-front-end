@@ -21,10 +21,8 @@ const handleDuplicateSubscriptionRequest = (request, h, content = english) => {
   const location = request.yar.get('location') || 'this location'
   const mobileNumber = request.yar.get('mobileNumber') || ''
 
-  // '' Mask the phone number for display
+  // '' Use full phone number for display
   const maskedPhoneNumber = mobileNumber
-    ? mobileNumber.replace(/(\d{5})\d+(\d{3})$/, '$1 XXX $2')
-    : ''
 
   const { footerTxt, phaseBanner, cookieBanner } = content
   const metaSiteUrl = getAirQualitySiteUrl(request)

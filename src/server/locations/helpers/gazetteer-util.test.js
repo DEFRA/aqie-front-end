@@ -119,6 +119,51 @@ describe('gazetteerEntryFilter', () => {
     })
   })
 
+  it('Postcode with POPULATED_PLACE (string) - prefers POPULATED_PLACE over DISTRICT_BOROUGH', () => {
+    const result = gazetteerEntryFilter({
+      GAZETTEER_ENTRY: {
+        LOCAL_TYPE: 'Postcode',
+        NAME1: 'N8 7GE',
+        POPULATED_PLACE: 'Hornsey',
+        DISTRICT_BOROUGH: 'Haringey'
+      }
+    })
+    expect(result).toEqual({
+      title: 'N8 7GE, Hornsey',
+      headerTitle: 'N8 7GE, Hornsey'
+    })
+  })
+
+  it('Postcode with POPULATED_PLACE (array) - normalizes and uses POPULATED_PLACE', () => {
+    const result = gazetteerEntryFilter({
+      GAZETTEER_ENTRY: {
+        LOCAL_TYPE: 'Postcode',
+        NAME1: 'SW1A 1AA',
+        POPULATED_PLACE: ['Westminster', 'London'],
+        DISTRICT_BOROUGH: 'City of Westminster'
+      }
+    })
+    expect(result).toEqual({
+      title: 'SW1A 1AA, London, Westminster',
+      headerTitle: 'SW1A 1AA, London, Westminster'
+    })
+  })
+
+  it('Postcode with empty POPULATED_PLACE - falls back to DISTRICT_BOROUGH', () => {
+    const result = gazetteerEntryFilter({
+      GAZETTEER_ENTRY: {
+        LOCAL_TYPE: 'Postcode',
+        NAME1: 'M2 3BB',
+        POPULATED_PLACE: '',
+        DISTRICT_BOROUGH: 'Manchester'
+      }
+    })
+    expect(result).toEqual({
+      title: 'M2 3BB, Manchester',
+      headerTitle: 'M2 3BB, Manchester'
+    })
+  })
+
   it('Non-Postcode with DISTRICT_BOROUGH and NAME2', () => {
     const result = gazetteerEntryFilter({
       GAZETTEER_ENTRY: {

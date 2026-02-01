@@ -95,7 +95,7 @@ describe('Check Max Alerts Controller', () => {
       expect(mockRequest.yar.set).toHaveBeenCalledWith('maxAlertsError', true)
       expect(mockRequest.yar.set).toHaveBeenCalledWith(
         'maskedPhoneNumber',
-        '07700 XXX 982'
+        '07700900982'
       )
       expect(mockRequest.yar.clear).toHaveBeenCalledWith('mobileNumber')
       expect(mockH.redirect).toHaveBeenCalledWith(
@@ -118,7 +118,7 @@ describe('Check Max Alerts Controller', () => {
       // '' Assert
       expect(mockRequest.yar.set).toHaveBeenCalledWith(
         'maskedPhoneNumber',
-        '07123 XXX 789'
+        '07123456789'
       )
     })
   })
