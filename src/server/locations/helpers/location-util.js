@@ -67,21 +67,28 @@ function convertPointToLonLat(matches, location, index = 0) {
       lat = latlon._lat
       lon = latlon._lon
     } else {
-      const long =
-        matches[index].xCoordinate || matches[index].GAZETTEER_ENTRY.LONGITUDE
-      const lati =
-        matches[index].yCoordinate || matches[index].GAZETTEER_ENTRY.LATITUDE
-      try {
-        pointNI = new OsGridRef(long, lati)
-      } catch (error) {
-        logger.error(
-          `Failed to fetch convertPointToLonLat matches
-        .reduce: ${JSON.stringify(error)}`
-        )
+      // '' NI API returns xCoordinate/yCoordinate as Lat/Long (already converted)
+      // Only easting/northing need Irish Grid → Lat/Long conversion
+      if (matches[index].xCoordinate && matches[index].yCoordinate) {
+        // xCoordinate is longitude, yCoordinate is latitude (already in WGS84)
+        lon = matches[index].xCoordinate
+        lat = matches[index].yCoordinate
+      } else if (matches[index].GAZETTEER_ENTRY?.LONGITUDE && matches[index].GAZETTEER_ENTRY?.LATITUDE) {
+        lon = matches[index].GAZETTEER_ENTRY.LONGITUDE
+        lat = matches[index].GAZETTEER_ENTRY.LATITUDE
+      } else if (matches[index].easting && matches[index].northing) {
+        // Convert Irish Grid (easting/northing) to Lat/Long
+        try {
+          pointNI = new OsGridRef(matches[index].easting, matches[index].northing)
+          const latlon = OsGridRef.osGridToLatLong(pointNI)
+          lat = latlon._lat
+          lon = latlon._lon
+        } catch (error) {
+          logger.error(
+            `Failed to convert Irish Grid to Lat/Long: ${JSON.stringify(error)}`
+          )
+        }
       }
-      const latlon = OsGridRef.osGridToLatLong(pointNI)
-      lat = latlon._lat
-      lon = latlon._lon
     }
   }
   return { lat, lon }
