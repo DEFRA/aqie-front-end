@@ -282,6 +282,34 @@ const processMatches = (
   return { selectedMatches }
 }
 
+// Helper function to normalize POPULATED_PLACE (handles arrays consistently) ''
+const normalizePopulatedPlace = (populatedPlace) => {
+  if (!populatedPlace) return ''
+
+  // If it's an array, sort alphabetically and join with comma
+  if (Array.isArray(populatedPlace)) {
+    return populatedPlace.sort().join(', ')
+  }
+
+  // If it's already a string, return as-is
+  return String(populatedPlace)
+}
+
+// Helper function to get the appropriate location field for postcodes ''
+// '' For postcodes, use POPULATED_PLACE if it exists (for consistency), else DISTRICT_BOROUGH
+// '' This ensures we always get the same location name (e.g., "Hornsey") for the same postcode
+const getPostcodeLocationField = (gazetteerEntry) => {
+  const populatedPlace = normalizePopulatedPlace(
+    gazetteerEntry?.POPULATED_PLACE
+  )
+  if (populatedPlace) {
+    return populatedPlace
+  }
+  return (
+    gazetteerEntry?.DISTRICT_BOROUGH || gazetteerEntry?.COUNTY_UNITARY || ''
+  )
+}
+
 const getTitleAndHeaderTitle = (
   locationDetails,
   locationNameOrPostcode = 'Unknown Location'
@@ -295,7 +323,31 @@ const getTitleAndHeaderTitle = (
   if (locationDetails?.[0]) {
     const gazetteerEntry = locationDetails[0].GAZETTEER_ENTRY
 
-    if (gazetteerEntry?.DISTRICT_BOROUGH) {
+    // '' For postcodes, prefer POPULATED_PLACE when available
+    const isPostcode = gazetteerEntry?.LOCAL_TYPE === 'Postcode'
+    if (isPostcode) {
+      const locationField = getPostcodeLocationField(gazetteerEntry)
+      if (locationField) {
+        term1 = gazetteerEntry.NAME1
+        const isFullPostcode = isValidFullPostcodeUK(term1)
+        const formattedPostcode = isFullPostcode
+          ? formatUKPostcode(term1)
+          : term1
+        title = `${formattedPostcode}, ${locationField} - ${home.pageTitle}`
+        headerTitle = `${formattedPostcode}, ${locationField}`
+        urlRoute = `${gazetteerEntry.NAME1}_${locationField}`
+      } else {
+        // '' Fallback when no location field is available for postcode
+        term1 = gazetteerEntry.NAME1
+        const isFullPostcode = isValidFullPostcodeUK(term1)
+        const formattedPostcode = isFullPostcode
+          ? formatUKPostcode(term1)
+          : term1
+        title = `${formattedPostcode} - ${home.pageTitle}`
+        headerTitle = formattedPostcode
+        urlRoute = gazetteerEntry.NAME1
+      }
+    } else if (gazetteerEntry?.DISTRICT_BOROUGH) {
       ;({ title, headerTitle, urlRoute, term1 } = handleDistrictBorough(
         gazetteerEntry,
         home

@@ -1,9 +1,32 @@
 /**
- * English translations for SMS notification journey
- * Covers mobile number input, code verification, and confirmation pages
+ * English translations for SMS and Email notification journeys
+ * Covers mobile number input, email input, code verification, and confirmation pages
  */
 // ''
+const SERVICE_NAME = 'Check air quality'
+
 export const notificationTranslations = {
+  // Common notification settings
+  common: {
+    serviceName: SERVICE_NAME,
+    textAlertsPage: 'Text alerts',
+    emailAlertsPage: 'Email alerts'
+  },
+  // SMS Mobile Phone Number Entry page
+  smsMobilePhone: {
+    pageTitle: 'What is your mobile phone number?',
+    heading: 'What is your mobile phone number?',
+    description:
+      'We will send you a text message with a 5-digit activation code.',
+    inputLabel: 'Enter your mobile phone number'
+  },
+  // Email Address Entry page
+  emailEnterEmail: {
+    pageTitle: 'What is your email address?',
+    heading: 'What is your email address?',
+    description: 'We will send you an email containing an activation link.',
+    inputLabel: 'Enter your email address'
+  },
   // SMS Confirm Details page
   smsConfirmDetails: {
     pageTitle: 'Confirm you want to set up an alert',

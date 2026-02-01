@@ -37,11 +37,8 @@ const checkMaxAlertsController = {
         // '' User has reached maximum alerts
         logger.info('User has reached maximum alerts, showing error')
 
-        // '' Format phone number for display (mask middle digits)
-        const maskedNumber = mobileNumber.replace(
-          /(\d{5})\d+(\d{3})$/,
-          '$1 XXX $2'
-        )
+        // '' Use full phone number for display
+        const maskedNumber = mobileNumber
 
         // '' Set error flag and formatted number in session
         request.yar.set('maxAlertsError', true)
