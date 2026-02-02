@@ -419,7 +419,8 @@ function validateAndProcessSessionData(
   currentUrl,
   lang,
   h,
-  request
+  request,
+  locationId
 ) {
   return validateSessionData(
     locationData,
@@ -427,8 +428,7 @@ function validateAndProcessSessionData(
     lang,
     h,
     request,
-    getSearchTermsFromUrl,
-    REDIRECT_STATUS_CODE
+    locationId
   )
 }
 

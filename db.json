@@ -49,6 +49,16 @@
       "town": "Belfast",
       "district": "Belfast",
       "county": "Antrim"
+    },
+    {
+      "postcode": "BT93 8AD",
+      "easting": 332900,
+      "northing": 371400,
+      "xCoordinate": -5.9386,
+      "yCoordinate": 54.578,
+      "town": "Belfast",
+      "district": "Belfast",
+      "county": "Antrim"
     }
   ]
 }
