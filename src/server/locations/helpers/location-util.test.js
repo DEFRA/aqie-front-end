@@ -159,8 +159,43 @@ describe('convertPointToLonLat', () => {
     expect(result).toEqual({ lat: 54.5074, lon: -6.1278 })
   })
 
-  it('should handle OsGridRef error for NI location when using easting/northing', () => {
-    // '' Test error handling when converting Irish Grid coordinates
+  it('should convert NI location using Irish Grid (easting/northing) to WGS84', () => {
+    // '' Test Irish Grid (EPSG:29903) to WGS84 conversion using proj4
+    const matches = [
+      {
+        easting: 333500, // Belfast Irish Grid easting
+        northing: 374000 // Belfast Irish Grid northing
+      }
+    ]
+    const location = 'ni-location'
+    const index = 0
+
+    const result = convertPointToLonLat(matches, location, index)
+
+    // '' Verify conversion to WGS84 coordinates
+    expect(result.lat).toBeCloseTo(54.597, 2)
+    expect(result.lon).toBeCloseTo(-5.934, 2)
+  })
+
+  it('should convert BT93 8AD (Enniskillen) using Irish Grid to WGS84', () => {
+    // '' Test with Enniskillen coordinates
+    const matches = [
+      {
+        easting: 322735,
+        northing: 358240
+      }
+    ]
+    const location = 'ni-location'
+    const index = 0
+
+    const result = convertPointToLonLat(matches, location, index)
+
+    expect(result.lat).toBeCloseTo(54.458, 2)
+    expect(result.lon).toBeCloseTo(-6.107, 2)
+  })
+
+  it('should handle proj4 error for NI location when using invalid easting/northing', () => {
+    // '' Test error handling when converting invalid Irish Grid coordinates
     const matches = [
       {
         easting: 'invalid',
@@ -169,9 +204,6 @@ describe('convertPointToLonLat', () => {
     ]
     const location = 'ni-location'
     const index = 0
-    OsGridRef.mockImplementation(() => {
-      throw new Error('Invalid coordinates')
-    })
 
     const result = convertPointToLonLat(matches, location, index)
     // Should return empty strings when conversion fails
