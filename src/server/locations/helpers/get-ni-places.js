@@ -82,6 +82,14 @@ async function getNIPlaces(userLocation, request) {
     logger.info(
       `[DEBUG] niPlacesData.results length: ${niPlacesData?.results?.length}`
     )
+    // '' Log coordinate fields from each result
+    if (niPlacesData?.results?.length > 0) {
+      niPlacesData.results.forEach((result, index) => {
+        logger.info(
+          `[DEBUG] Result ${index} coordinates: easting=${result.easting}, northing=${result.northing}, xCoordinate=${result.xCoordinate}, yCoordinate=${result.yCoordinate}, latitude=${result.latitude}, longitude=${result.longitude}`
+        )
+      })
+    }
   } else {
     logger.error(`Error fetching statusCodeNI data: ${statusCodeNI}`)
   }
