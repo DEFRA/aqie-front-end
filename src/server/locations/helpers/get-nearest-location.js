@@ -176,7 +176,7 @@ export function buildNearestLocationEntry(curr, latlon, lang) {
     areaType: curr.areaType,
     location: {
       type: curr.location.type,
-      coordinates: [lat, lon] // '' Store in app's [latitude, longitude] format
+      coordinates: [lat, lon] // '' Store in app's [latitude, longitude] formats
     },
     id: curr.name?.replaceAll(' ', '') || '',
     name: curr.name,
