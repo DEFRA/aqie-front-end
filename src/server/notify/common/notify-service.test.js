@@ -126,4 +126,111 @@ describe('notify service - mock alert storage', () => {
       })
     )
   })
+
+  test('NI postcode normalization prevents duplicates with/without town name', async () => {
+    // ''
+    const phoneNumber = '07700900123'
+
+    // First alert: BT1 1AA without town name
+    const first = await setupAlert(
+      phoneNumber,
+      'sms',
+      'BT1 1AA',
+      null,
+      '54.6024',
+      '-5.9213',
+      null
+    )
+
+    expect(first.ok).toBe(true)
+
+    // Second alert: same postcode with town name - should be detected as duplicate
+    const second = await setupAlert(
+      phoneNumber,
+      'sms',
+      'BT1 1AA, Belfast',
+      null,
+      '54.6024',
+      '-5.9213',
+      null
+    )
+
+    expect(second.ok).toBe(false)
+    expect(second.status).toBe(409)
+    expect(second.data.message).toContain('Alert already exists')
+
+    // Should only have one alert stored
+    const snapshot = getMockAlertStorageSnapshot()
+    expect(snapshot).toHaveLength(1)
+  })
+
+  test('NI postcode normalization handles different formatting', async () => {
+    // ''
+    const phoneNumber = '07700900456'
+    const sameCoords = { lat: '54.5085', lon: '-7.8305' }
+
+    // First alert: BT93 8AD with extra spaces
+    const first = await setupAlert(
+      phoneNumber,
+      'sms',
+      'BT93  8AD',
+      null,
+      sameCoords.lat,
+      sameCoords.lon,
+      null
+    )
+
+    expect(first.ok).toBe(true)
+
+    // Second alert: same postcode normalized with town - should be duplicate
+    const second = await setupAlert(
+      phoneNumber,
+      'sms',
+      'BT93 8AD, Enniskillen',
+      null,
+      sameCoords.lat,
+      sameCoords.lon,
+      null
+    )
+
+    expect(second.ok).toBe(false)
+    expect(second.status).toBe(409)
+
+    const snapshot = getMockAlertStorageSnapshot()
+    expect(snapshot).toHaveLength(1)
+  })
+
+  test('Non-NI locations are not affected by postcode normalization', async () => {
+    // ''
+    const phoneNumber = '07700900789'
+
+    // First alert: London
+    const first = await setupAlert(
+      phoneNumber,
+      'sms',
+      'London, City of Westminster',
+      null,
+      '51.5069',
+      '-0.1261',
+      null
+    )
+
+    expect(first.ok).toBe(true)
+
+    // Second alert: Different London location - should NOT be duplicate
+    const second = await setupAlert(
+      phoneNumber,
+      'sms',
+      'London, Camden',
+      null,
+      '51.5390',
+      '-0.1426',
+      null
+    )
+
+    expect(second.ok).toBe(true)
+
+    const snapshot = getMockAlertStorageSnapshot()
+    expect(snapshot).toHaveLength(2)
+  })
 })

@@ -130,56 +130,52 @@ describe('convertPointToLonLat', () => {
   })
 
   it('should convert NI location points using xCoordinate/yCoordinate', () => {
-    // ''
+    // '' xCoordinate/yCoordinate are already in Lat/Long format, not Grid
     const matches = [
       {
-        xCoordinate: 123456,
-        yCoordinate: 654321,
+        xCoordinate: -6.1278,
+        yCoordinate: 54.5074,
         GAZETTEER_ENTRY: { LONGITUDE: 999, LATITUDE: 888 }
       }
     ]
     const location = 'ni-location'
     const index = 0
-    const latlon = { _lat: 54.5074, _lon: -6.1278 }
-    OsGridRef.osGridToLatLong.mockReturnValue(latlon)
 
     const result = convertPointToLonLat(matches, location, index)
     expect(result).toEqual({ lat: 54.5074, lon: -6.1278 })
   })
 
   it('should convert NI location using LONGITUDE/LATITUDE when coordinates missing', () => {
-    // ''
+    // '' LONGITUDE/LATITUDE are already in Lat/Long format, use directly
     const matches = [
       {
-        GAZETTEER_ENTRY: { LONGITUDE: 123456, LATITUDE: 654321 }
+        GAZETTEER_ENTRY: { LONGITUDE: -6.1278, LATITUDE: 54.5074 }
       }
     ]
     const location = 'ni-location'
     const index = 0
-    const latlon = { _lat: 54.5074, _lon: -6.1278 }
-    OsGridRef.osGridToLatLong.mockReturnValue(latlon)
 
     const result = convertPointToLonLat(matches, location, index)
     expect(result).toEqual({ lat: 54.5074, lon: -6.1278 })
   })
 
-  it('should handle OsGridRef error for NI location', () => {
-    // ''
+  it('should handle OsGridRef error for NI location when using easting/northing', () => {
+    // '' Test error handling when converting Irish Grid coordinates
     const matches = [
       {
-        GAZETTEER_ENTRY: { LONGITUDE: 'invalid', LATITUDE: 'invalid' }
+        easting: 'invalid',
+        northing: 'invalid'
       }
     ]
     const location = 'ni-location'
     const index = 0
-    const latlon = { _lat: 54.5074, _lon: -6.1278 }
     OsGridRef.mockImplementation(() => {
       throw new Error('Invalid coordinates')
     })
-    OsGridRef.osGridToLatLong.mockReturnValue(latlon)
 
     const result = convertPointToLonLat(matches, location, index)
-    expect(result).toEqual({ lat: 54.5074, lon: -6.1278 })
+    // Should return empty strings when conversion fails
+    expect(result).toEqual({ lat: '', lon: '' })
   })
 })
 

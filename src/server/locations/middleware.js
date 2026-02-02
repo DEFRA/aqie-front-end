@@ -128,8 +128,9 @@ const updateNotificationSession = (request, locationData, searchTerms) => {
     convertFirstLetterIntoUppercase(sanitizedLocation)
   )
   request.yar.set('locationId', locationData.urlRoute)
-  request.yar.set('latitude', result.latitude || result.yCoordinate)
-  request.yar.set('longitude', result.longitude || result.xCoordinate)
+  // '' Coordinates should already be in Lat/Long format from convertPointToLonLat
+  request.yar.set('latitude', result.latitude)
+  request.yar.set('longitude', result.longitude)
 
   logger.info(
     `[DEBUG updateNotificationSession] Updated session location data:`,
