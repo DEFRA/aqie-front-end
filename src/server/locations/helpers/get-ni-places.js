@@ -39,15 +39,23 @@ async function getNIPlaces(userLocation, request) {
     }
   }
 
+  logger.info(`[DEBUG getNIPlaces] isMockEnabled: ${isMockEnabled}`)
   logger.info(
-    `[DEBUG] Calling catchProxyFetchError with URL: ${postcodeNortherIrelandURL}`
+    `[DEBUG getNIPlaces] Calling catchProxyFetchError with URL: ${postcodeNortherIrelandURL}`
   )
-  logger.info(`[DEBUG] Options: ${JSON.stringify(optionsOAuth)}`)
+  logger.info(`[DEBUG getNIPlaces] Options: ${JSON.stringify(optionsOAuth)}`)
 
   let [statusCodeNI, niPlacesData] = await catchProxyFetchError(
     postcodeNortherIrelandURL,
     optionsOAuth,
     true
+  )
+
+  logger.info(
+    `[DEBUG getNIPlaces] Raw response - statusCodeNI: ${statusCodeNI}`
+  )
+  logger.info(
+    `[DEBUG getNIPlaces] Raw response - niPlacesData: ${JSON.stringify(niPlacesData)}`
   )
 
   // Always return an object with results array

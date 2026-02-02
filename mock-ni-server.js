@@ -33,13 +33,20 @@ const server = createServer((req, res) => {
     const limit = Number.parseInt(url.searchParams.get('_limit') || '1', 10)
 
     // Filter results by postcode (case-insensitive, spaces ignored)
-    const normalizedSearch = postcode.toUpperCase().replaceAll(/\s/g, '')
+    const normalizedSearch = postcode.toUpperCase().replace(/\s+/g, '')
+    console.log(
+      `[DEBUG] Searching for normalized postcode: "${normalizedSearch}"`
+    )
     const results = dbData.results
       .filter((item) => {
         const normalizedPostcode = item.postcode
           .toUpperCase()
-          .replaceAll(/\s/g, '')
-        return normalizedPostcode.includes(normalizedSearch)
+          .replace(/\s+/g, '')
+        const matches = normalizedPostcode === normalizedSearch
+        console.log(
+          `[DEBUG] Comparing "${normalizedPostcode}" === "${normalizedSearch}": ${matches}`
+        )
+        return matches
       })
       .slice(0, limit)
 

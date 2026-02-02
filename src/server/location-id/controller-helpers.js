@@ -2,6 +2,7 @@ import { createLogger } from '../common/helpers/logging/logger.js'
 import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../data/constants.js'
 import { config } from '../../config/index.js'
 import { getDetailedInfo } from '../data/en/air-quality.js'
+import { getSearchTermsFromUrl } from '../locations/helpers/get-search-terms-from-url.js'
 
 const logger = createLogger()
 
@@ -505,8 +506,7 @@ export function validateAndProcessSessionData(
   lang,
   h,
   request,
-  locationId,
-  getSearchTermsFromUrl
+  locationId
 ) {
   logger.info(
     `[DEBUG validateAndProcessSessionData] locationData exists: ${!!locationData}`

@@ -101,6 +101,12 @@ const processUKLocationType = (request, h, redirectError, options = {}) => {
 
 // '' Helper: Extract location title from result object with fallback chain
 const getLocationTitle = (result, searchTerms) => {
+  // '' For NI locations (have postcode + town), always use "POSTCODE, TOWN" format
+  if (result?.postcode && result?.town) {
+    return `${result.postcode}, ${sentenceCase(result.town)}`
+  }
+
+  // '' For UK locations, use existing priority logic
   const primaryTitle = result?.localName || result?.secondaryName
   if (primaryTitle) {
     return primaryTitle
@@ -180,8 +186,16 @@ const buildNILocationData = (
   const town = sentenceCase(firstNIResult.town)
   const locationTitle = `${postcode}, ${town}`
 
+  // '' NI API returns xCoordinate/yCoordinate (already in Lat/Long WGS84 format)
+  // '' Convert to latitude/longitude for consistency with UK API structure
+  const resultsWithCoords = getNIPlaces?.results?.map((result) => ({
+    ...result,
+    latitude: result.yCoordinate || result.latitude,
+    longitude: result.xCoordinate || result.longitude
+  }))
+
   return {
-    results: getNIPlaces?.results,
+    results: resultsWithCoords,
     urlRoute: `${firstNIResult.postcode.toLowerCase()}`.replaceAll(/\s+/g, ''),
     locationType: redirectError.locationType,
     transformedDailySummary,
