@@ -1,5 +1,6 @@
 import * as geolib from 'geolib'
 import moment from 'moment-timezone'
+import proj4 from 'proj4'
 import {
   getNearLocation,
   convertPointToLonLat,
@@ -18,6 +19,40 @@ import { createLogger } from '../../common/helpers/logging/logger.js'
 
 const logger = createLogger()
 const METERS_TO_MILES = 0.000621371192
+
+// '' Define Irish Grid projection for coordinate conversion
+const irishGrid =
+  '+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=1.000035 +x_0=200000 +y_0=250000 +ellps=mod_airy +units=m +no_defs +type=crs'
+const wgs84 = 'EPSG:4326'
+
+/**
+ * '' Convert Irish Grid coordinates to WGS84 if detected
+ * Irish Grid values are typically > 10,000 (meters), WGS84 values are < 180 (degrees)
+ * '' NOTE: This app uses [latitude, longitude] format (not GeoJSON standard)
+ */
+function convertIrishGridIfNeeded(coord1, coord2) {
+  // '' Check if coordinates are Irish Grid (both > 10000)
+  if (coord1 > 10000 && coord1 < 500000 && coord2 > 10000 && coord2 < 600000) {
+    try {
+      logger.info(
+        `[IRISH GRID] Converting forecast coordinates: [${coord1}, ${coord2}]`
+      )
+      const [lon, lat] = proj4(irishGrid, wgs84, [coord1, coord2])
+      logger.info(`[IRISH GRID] Converted to WGS84: lat=${lat}, lon=${lon}`)
+      // '' Return in app's [latitude, longitude] format
+      return { lat, lon, converted: true }
+    } catch (error) {
+      logger.error(
+        `[IRISH GRID] Conversion failed for [${coord1}, ${coord2}]: ${error.message}`
+      )
+      // '' Fallback: treat as [lat, lon]
+      return { lat: coord1, lon: coord2, converted: false }
+    }
+  }
+
+  // '' Default: app's [latitude, longitude] format (not GeoJSON)
+  return { lat: coord1, lon: coord2, converted: false }
+}
 
 // Helper to get latlon and forecastCoordinates //
 export function getLatLonAndForecastCoords(
@@ -115,12 +150,17 @@ export function buildPollutantsObject(curr, lang) {
 
 // Helper to build a single nearest location range entry
 export function buildNearestLocationEntry(curr, latlon, lang) {
+  // '' Convert coordinates if they're Irish Grid
+  const coord1 = curr.location.coordinates[0]
+  const coord2 = curr.location.coordinates[1]
+  const { lat, lon } = convertIrishGridIfNeeded(coord1, coord2)
+
   const getDistance =
     geolib.getDistance(
       { latitude: latlon?.lat, longitude: latlon?.lon },
       {
-        latitude: curr.location.coordinates[0],
-        longitude: curr.location.coordinates[1]
+        latitude: lat,
+        longitude: lon
       }
     ) * METERS_TO_MILES
   const newpollutants = buildPollutantsObject(curr, lang)
@@ -136,7 +176,7 @@ export function buildNearestLocationEntry(curr, latlon, lang) {
     areaType: curr.areaType,
     location: {
       type: curr.location.type,
-      coordinates: [curr.location.coordinates[0], curr.location.coordinates[1]]
+      coordinates: [lat, lon] // '' Store in app's [latitude, longitude] format
     },
     id: curr.name?.replaceAll(' ', '') || '',
     name: curr.name,
@@ -170,10 +210,13 @@ export function buildNearestLocationsRange(
     if (!item.location?.coordinates) {
       return false
     }
+    // '' Convert coordinates if they're Irish Grid before comparison
+    const coord1 = item.location.coordinates[0]
+    const coord2 = item.location.coordinates[1]
+    const { lat, lon } = convertIrishGridIfNeeded(coord1, coord2)
+
     return pointsToDisplay.some(
-      (dis) =>
-        item.location.coordinates[0] === dis.latitude &&
-        item.location.coordinates[1] === dis.longitude
+      (dis) => lat === dis.latitude && lon === dis.longitude
     )
   })
   const result = nearestLocationsRangeCal

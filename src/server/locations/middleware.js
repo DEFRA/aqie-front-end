@@ -201,18 +201,30 @@ const buildNILocationData = (
 
     // '' If we have easting/northing (Irish Grid), convert to lat/long
     if (result.easting && result.northing) {
+      logger.info(
+        `[DEBUG NI COORDS] Converting Irish Grid to WGS84: easting=${result.easting}, northing=${result.northing}`
+      )
       const [lon, lat] = proj4(irishGrid, wgs84, [
         result.easting,
         result.northing
       ])
       latitude = lat
       longitude = lon
+      logger.info(
+        `[DEBUG NI COORDS] Converted to WGS84: latitude=${latitude}, longitude=${longitude}`
+      )
     } else if (result.xCoordinate && result.yCoordinate) {
       // '' Mock data with direct WGS84 coordinates
+      logger.info(
+        `[DEBUG NI COORDS] Using mock WGS84 coordinates: latitude=${result.yCoordinate}, longitude=${result.xCoordinate}`
+      )
       latitude = result.yCoordinate
       longitude = result.xCoordinate
     } else {
       // '' Fallback to existing lat/long if present
+      logger.info(
+        `[DEBUG NI COORDS] Using fallback coordinates: latitude=${result.latitude}, longitude=${result.longitude}`
+      )
       latitude = result.latitude
       longitude = result.longitude
     }

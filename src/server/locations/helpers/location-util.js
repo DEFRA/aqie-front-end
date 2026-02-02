@@ -10,6 +10,45 @@ const irishGrid =
   '+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=1.000035 +x_0=200000 +y_0=250000 +ellps=mod_airy +units=m +no_defs +type=crs'
 const wgs84 = 'EPSG:4326'
 
+/**
+ * '' Detect if coordinates are Irish Grid and convert to WGS84 if needed
+ * Irish Grid coordinates are typically:
+ * - Easting: 10,000 to 400,000 meters
+ * - Northing: 10,000 to 500,000 meters
+ * WGS84 for Ireland/UK:
+ * - Latitude: 49 to 61 degrees
+ * - Longitude: -11 to 2 degrees
+ *
+ * '' NOTE: This app uses [latitude, longitude] format (not GeoJSON standard)
+ */
+function convertIrishGridIfNeeded(coord1, coord2) {
+  // '' Check if coordinates are clearly Irish Grid (both > 10000, indicating meters not degrees)
+  // '' Irish Grid values for NI are typically: easting 10,000-400,000, northing 10,000-500,000
+  // '' WGS84 values are always < 180 (degrees)
+  if (coord1 > 10000 && coord1 < 500000 && coord2 > 10000 && coord2 < 600000) {
+    try {
+      logger.info(
+        `[IRISH GRID DETECTION] Converting Irish Grid coordinates: [${coord1}, ${coord2}]`
+      )
+      const [lon, lat] = proj4(irishGrid, wgs84, [coord1, coord2])
+      logger.info(
+        `[IRISH GRID DETECTION] Converted to WGS84: lat=${lat}, lon=${lon}`
+      )
+      // '' Return in app's [latitude, longitude] format
+      return { lat, lon, converted: true }
+    } catch (error) {
+      logger.error(
+        `[IRISH GRID DETECTION] Failed to convert coordinates [${coord1}, ${coord2}]: ${error.message}`
+      )
+      // '' Fallback: treat as [lat, lon] (app format)
+      return { lat: coord1, lon: coord2, converted: false }
+    }
+  }
+
+  // '' Default: treat as app's [latitude, longitude] format (not GeoJSON)
+  return { lat: coord1, lon: coord2, converted: false }
+}
+
 function pointsInRange(point1, point2) {
   const isPoint = geolib.isPointWithinRadius(
     { latitude: point1.lat, longitude: point1.lon },
@@ -43,10 +82,12 @@ function getNearLocation(lat, lon, forecastCoordinates, forecasts) {
     return []
   }
   const nearestLocation = forecasts?.filter((item) => {
-    return (
-      item.location.coordinates[0] === getLocation.latitude &&
-      item.location.coordinates[1] === getLocation.longitude
-    )
+    // '' Convert coordinates if they're Irish Grid
+    const coord1 = item.location.coordinates[0]
+    const coord2 = item.location.coordinates[1]
+    const { lat, lon } = convertIrishGridIfNeeded(coord1, coord2)
+
+    return lat === getLocation.latitude && lon === getLocation.longitude
   })
   return Array.isArray(nearestLocation) ? nearestLocation : []
 }
@@ -109,11 +150,17 @@ function coordinatesTotal(matches, _location) {
   let coordinates = []
   try {
     coordinates = matches.reduce((acc, current) => {
+      // '' MongoDB GeoJSON format is [longitude, latitude]
+      // '' But coordinates might be Irish Grid [easting, northing] - detect and convert
+      const coord1 = current.location.coordinates[0]
+      const coord2 = current.location.coordinates[1]
+      const { lat, lon } = convertIrishGridIfNeeded(coord1, coord2)
+
       return [
         ...acc,
         {
-          latitude: current.location.coordinates[0],
-          longitude: current.location.coordinates[1]
+          latitude: lat,
+          longitude: lon
         }
       ]
     }, [])
