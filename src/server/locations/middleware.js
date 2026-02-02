@@ -27,6 +27,7 @@ import { sentenceCase } from '../common/helpers/sentence-case.js'
 import { convertFirstLetterIntoUppercase } from './helpers/convert-first-letter-into-upper-case.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
 import { config } from '../../config/index.js'
+import proj4 from 'proj4'
 
 const logger = createLogger()
 
@@ -186,13 +187,42 @@ const buildNILocationData = (
   const town = sentenceCase(firstNIResult.town)
   const locationTitle = `${postcode}, ${town}`
 
-  // '' NI API returns xCoordinate/yCoordinate (already in Lat/Long WGS84 format)
-  // '' Convert to latitude/longitude for consistency with UK API structure
-  const resultsWithCoords = getNIPlaces?.results?.map((result) => ({
-    ...result,
-    latitude: result.yCoordinate || result.latitude,
-    longitude: result.xCoordinate || result.longitude
-  }))
+  // '' Real NI API returns easting/northing (Irish Grid EPSG:29903 coordinates)
+  // '' Mock API returns xCoordinate/yCoordinate (WGS84 lat/long)
+  // '' Convert Irish Grid to WGS84 lat/long for real API, or use direct coordinates from mock
+
+  // '' Define Irish Grid (EPSG:29903) projection - from epsg.io
+  const irishGrid =
+    '+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=1.000035 +x_0=200000 +y_0=250000 +ellps=mod_airy +units=m +no_defs +type=crs'
+  const wgs84 = 'EPSG:4326'
+
+  const resultsWithCoords = getNIPlaces?.results?.map((result) => {
+    let latitude, longitude
+
+    // '' If we have easting/northing (Irish Grid), convert to lat/long
+    if (result.easting && result.northing) {
+      const [lon, lat] = proj4(irishGrid, wgs84, [
+        result.easting,
+        result.northing
+      ])
+      latitude = lat
+      longitude = lon
+    } else if (result.xCoordinate && result.yCoordinate) {
+      // '' Mock data with direct WGS84 coordinates
+      latitude = result.yCoordinate
+      longitude = result.xCoordinate
+    } else {
+      // '' Fallback to existing lat/long if present
+      latitude = result.latitude
+      longitude = result.longitude
+    }
+
+    return {
+      ...result,
+      latitude,
+      longitude
+    }
+  })
 
   return {
     results: resultsWithCoords,

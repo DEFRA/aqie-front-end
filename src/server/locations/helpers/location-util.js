@@ -1,7 +1,14 @@
 import * as geolib from 'geolib'
 import OsGridRef from 'mt-osgridref'
+import proj4 from 'proj4'
 import { createLogger } from '../../common/helpers/logging/logger.js'
+
 const logger = createLogger()
+
+// '' Define Irish Grid (EPSG:29903) projection for NI coordinate conversion - from epsg.io
+const irishGrid =
+  '+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=1.000035 +x_0=200000 +y_0=250000 +ellps=mod_airy +units=m +no_defs +type=crs'
+const wgs84 = 'EPSG:4326'
 
 function pointsInRange(point1, point2) {
   const isPoint = geolib.isPointWithinRadius(
@@ -56,7 +63,6 @@ function convertPointToLonLat(matches, location, index = 0) {
   let lat = ''
   let lon = ''
   let point
-  let pointNI
   if (matches || matches[index]) {
     if (location === 'uk-location') {
       point = new OsGridRef(
@@ -67,10 +73,10 @@ function convertPointToLonLat(matches, location, index = 0) {
       lat = latlon._lat
       lon = latlon._lon
     } else {
-      // '' NI API returns xCoordinate/yCoordinate as Lat/Long (already converted)
-      // Only easting/northing need Irish Grid → Lat/Long conversion
+      // '' NI locations: Handle different coordinate formats
+      // '' Priority: 1) xCoordinate/yCoordinate (WGS84), 2) LONGITUDE/LATITUDE, 3) easting/northing (Irish Grid)
       if (matches[index].xCoordinate && matches[index].yCoordinate) {
-        // xCoordinate is longitude, yCoordinate is latitude (already in WGS84)
+        // '' xCoordinate is longitude, yCoordinate is latitude (already in WGS84)
         lon = matches[index].xCoordinate
         lat = matches[index].yCoordinate
       } else if (
@@ -80,18 +86,17 @@ function convertPointToLonLat(matches, location, index = 0) {
         lon = matches[index].GAZETTEER_ENTRY.LONGITUDE
         lat = matches[index].GAZETTEER_ENTRY.LATITUDE
       } else if (matches[index].easting && matches[index].northing) {
-        // Convert Irish Grid (easting/northing) to Lat/Long
+        // '' Convert Irish Grid (EPSG:29903) to WGS84 using proj4
         try {
-          pointNI = new OsGridRef(
+          const [longitude, latitude] = proj4(irishGrid, wgs84, [
             matches[index].easting,
             matches[index].northing
-          )
-          const latlon = OsGridRef.osGridToLatLong(pointNI)
-          lat = latlon._lat
-          lon = latlon._lon
+          ])
+          lat = latitude
+          lon = longitude
         } catch (error) {
           logger.error(
-            `Failed to convert Irish Grid to Lat/Long: ${JSON.stringify(error)}`
+            `Failed to convert Irish Grid to WGS84: ${JSON.stringify(error)}`
           )
         }
       }
