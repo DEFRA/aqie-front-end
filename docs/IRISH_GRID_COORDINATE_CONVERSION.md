@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the comprehensive Irish Grid (EPSG:29903) to WGS84 (EPSG:4326) coordinate conversion implementation across the AQIE frontend application.
+This document describes the comprehensive Irish Grid (EPSG:29903) to WGS84 (EPSG:4326) coordinate conversion implementation across the AQIE frontend application. This ensures accurate geolocation for Northern Ireland postcodes.
 
 ## Problem Statement
 
