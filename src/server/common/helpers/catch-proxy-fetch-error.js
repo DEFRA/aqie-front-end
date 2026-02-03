@@ -26,7 +26,7 @@ async function catchProxyFetchError(url, options, shouldCallApi) {
       return [statusCode, data]
     } catch (error) {
       logger.error(`Failed to proxyFetch data from ${url}: ${error.message}`)
-      return [error]
+      return [null, WRONG_POSTCODE]
     }
   }
   return [statusCode, WRONG_POSTCODE]

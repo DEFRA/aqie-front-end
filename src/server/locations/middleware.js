@@ -306,6 +306,7 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
 
   if (
     !getNIPlaces?.results ||
+    !Array.isArray(getNIPlaces.results) ||
     getNIPlaces?.results.length === 0 ||
     getNIPlaces === WRONG_POSTCODE
   ) {
