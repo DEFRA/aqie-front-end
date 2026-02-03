@@ -145,6 +145,61 @@ describe('NI API Coordinate Mapping', () => {
       expect(resultsWithCoords[0].latitude).toBe(54.578)
       expect(resultsWithCoords[0].longitude).toBe(-5.9386)
     })
+
+    it('should convert xCoordinate/yCoordinate when they are Irish Grid values', () => {
+      // '' Some NI responses provide x/y as Irish Grid (meters)
+      const mockApiResponse = {
+        results: [
+          {
+            postcode: 'BT1 1AA',
+            town: 'Belfast',
+            xCoordinate: 333500,
+            yCoordinate: 374000
+          }
+        ]
+      }
+
+      const resultsWithCoords = mockApiResponse.results.map((result) => {
+        let latitude, longitude
+
+        if (result.easting && result.northing) {
+          const [lon, lat] = proj4(irishGrid, wgs84, [
+            result.easting,
+            result.northing
+          ])
+          latitude = lat
+          longitude = lon
+        } else if (result.xCoordinate && result.yCoordinate) {
+          const xCoord = Number(result.xCoordinate)
+          const yCoord = Number(result.yCoordinate)
+          const isIrishGridPair =
+            Number.isFinite(xCoord) &&
+            Number.isFinite(yCoord) &&
+            xCoord > 10000 &&
+            xCoord < 500000 &&
+            yCoord > 10000 &&
+            yCoord < 600000
+
+          if (isIrishGridPair) {
+            const [lon, lat] = proj4(irishGrid, wgs84, [xCoord, yCoord])
+            latitude = lat
+            longitude = lon
+          } else {
+            latitude = result.yCoordinate
+            longitude = result.xCoordinate
+          }
+        }
+
+        return {
+          ...result,
+          latitude,
+          longitude
+        }
+      })
+
+      expect(resultsWithCoords[0].latitude).toBeCloseTo(54.597, 2)
+      expect(resultsWithCoords[0].longitude).toBeCloseTo(-5.93, 2)
+    })
   })
 
   describe('Coordinate Transformation Priority', () => {

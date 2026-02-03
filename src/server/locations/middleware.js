@@ -196,6 +196,20 @@ const buildNILocationData = (
     '+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=1.000035 +x_0=200000 +y_0=250000 +ellps=mod_airy +units=m +no_defs +type=crs'
   const wgs84 = 'EPSG:4326'
 
+  // '' Helper: detect Irish Grid numeric coordinates (meters)
+  const isIrishGridPair = (coord1, coord2) => {
+    const x = Number(coord1)
+    const y = Number(coord2)
+    return (
+      Number.isFinite(x) &&
+      Number.isFinite(y) &&
+      x > 10000 &&
+      x < 500000 &&
+      y > 10000 &&
+      y < 600000
+    )
+  }
+
   const resultsWithCoords = getNIPlaces?.results?.map((result) => {
     let latitude, longitude
 
@@ -214,12 +228,27 @@ const buildNILocationData = (
         `[DEBUG NI COORDS] Converted to WGS84: latitude=${latitude}, longitude=${longitude}`
       )
     } else if (result.xCoordinate && result.yCoordinate) {
-      // '' Mock data with direct WGS84 coordinates
-      logger.info(
-        `[DEBUG NI COORDS] Using mock WGS84 coordinates: latitude=${result.yCoordinate}, longitude=${result.xCoordinate}`
-      )
-      latitude = result.yCoordinate
-      longitude = result.xCoordinate
+      // '' xCoordinate/yCoordinate may be WGS84 or Irish Grid - detect and convert if needed
+      if (isIrishGridPair(result.xCoordinate, result.yCoordinate)) {
+        logger.info(
+          `[DEBUG NI COORDS] Converting Irish Grid from x/y: easting=${result.xCoordinate}, northing=${result.yCoordinate}`
+        )
+        const [lon, lat] = proj4(irishGrid, wgs84, [
+          Number(result.xCoordinate),
+          Number(result.yCoordinate)
+        ])
+        latitude = lat
+        longitude = lon
+        logger.info(
+          `[DEBUG NI COORDS] Converted x/y to WGS84: latitude=${latitude}, longitude=${longitude}`
+        )
+      } else {
+        logger.info(
+          `[DEBUG NI COORDS] Using WGS84 coordinates: latitude=${result.yCoordinate}, longitude=${result.xCoordinate}`
+        )
+        latitude = result.yCoordinate
+        longitude = result.xCoordinate
+      }
     } else {
       // '' Fallback to existing lat/long if present
       logger.info(
