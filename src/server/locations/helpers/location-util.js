@@ -115,11 +115,37 @@ function convertPointToLonLat(matches, location, index = 0) {
       lon = latlon._lon
     } else {
       // '' NI locations: Handle different coordinate formats
-      // '' Priority: 1) xCoordinate/yCoordinate (WGS84), 2) LONGITUDE/LATITUDE, 3) easting/northing (Irish Grid)
+      // '' Priority: 1) xCoordinate/yCoordinate (WGS84 or Irish Grid), 2) LONGITUDE/LATITUDE, 3) easting/northing (Irish Grid)
       if (matches[index].xCoordinate && matches[index].yCoordinate) {
-        // '' xCoordinate is longitude, yCoordinate is latitude (already in WGS84)
-        lon = matches[index].xCoordinate
-        lat = matches[index].yCoordinate
+        const xCoord = Number(matches[index].xCoordinate)
+        const yCoord = Number(matches[index].yCoordinate)
+        const isIrishGridPair =
+          Number.isFinite(xCoord) &&
+          Number.isFinite(yCoord) &&
+          xCoord > 10000 &&
+          xCoord < 500000 &&
+          yCoord > 10000 &&
+          yCoord < 600000
+
+        if (isIrishGridPair) {
+          // '' Convert Irish Grid x/y to WGS84
+          try {
+            const [longitude, latitude] = proj4(irishGrid, wgs84, [
+              xCoord,
+              yCoord
+            ])
+            lat = latitude
+            lon = longitude
+          } catch (error) {
+            logger.error(
+              `Failed to convert Irish Grid x/y to WGS84: ${JSON.stringify(error)}`
+            )
+          }
+        } else {
+          // '' xCoordinate is longitude, yCoordinate is latitude (already in WGS84)
+          lon = matches[index].xCoordinate
+          lat = matches[index].yCoordinate
+        }
       } else if (
         matches[index].GAZETTEER_ENTRY?.LONGITUDE &&
         matches[index].GAZETTEER_ENTRY?.LATITUDE
