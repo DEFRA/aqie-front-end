@@ -5,6 +5,7 @@ import { refreshOAuthToken } from './extracted/util-helpers.js'
 
 const logger = createLogger()
 const STATUS_CODE_SUCCESS = 200
+const SERVICE_UNAVAILABLE_ERROR = 'service-unavailable'
 
 // ''  Simplified - removed test-only DI parameters
 async function getNIPlaces(userLocation, request) {
@@ -59,6 +60,14 @@ async function getNIPlaces(userLocation, request) {
   logger.info(
     `[DEBUG getNIPlaces] Raw response - niPlacesData: ${JSON.stringify(niPlacesData)}`
   )
+
+  // '' Handle upstream failures separately from postcode errors
+  const isServiceUnavailable =
+    !statusCodeNI || niPlacesData?.error === SERVICE_UNAVAILABLE_ERROR
+  if (isServiceUnavailable) {
+    logger.error(`NI API unavailable - statusCodeNI: ${statusCodeNI}`)
+    return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
+  }
 
   // Always return an object with results array
   if (isMockEnabled) {
