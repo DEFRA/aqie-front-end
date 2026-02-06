@@ -151,9 +151,10 @@ export function buildPollutantsObject(curr, lang) {
 // Helper to build a single nearest location range entry
 export function buildNearestLocationEntry(curr, latlon, lang) {
   // '' Convert coordinates if they're Irish Grid
-  const coord1 = curr.location.coordinates[0]
-  const coord2 = curr.location.coordinates[1]
-  const { lat, lon } = convertIrishGridIfNeeded(coord1, coord2)
+  // '' MongoDB stores as [longitude, latitude] (GeoJSON), but convertIrishGridIfNeeded expects [latitude, longitude]
+  const mongoLon = curr.location.coordinates[0]
+  const mongoLat = curr.location.coordinates[1]
+  const { lat, lon } = convertIrishGridIfNeeded(mongoLat, mongoLon)
 
   const getDistance =
     geolib.getDistance(

@@ -101,6 +101,50 @@ describe('NI API Coordinate Mapping', () => {
       expect(resultsWithCoords[0].latitude).toBeCloseTo(54.458, 2)
       expect(resultsWithCoords[0].longitude).toBeCloseTo(-6.107, 2)
     })
+
+    it('should convert BT1 1FB (Belfast) with exact coordinates from real API', () => {
+      // '' BT1 1FB actual coordinates: latitude 54.5998426, longitude -5.9303257
+      // '' Irish Grid easting/northing calculated via reverse conversion
+      const expectedLat = 54.5998426
+      const expectedLon = -5.9303257
+
+      // '' Real API would return Irish Grid easting/northing
+      const realApiResponse = {
+        results: [
+          {
+            postcode: 'BT1 1FB',
+            town: 'Belfast',
+            easting: 333739, // Irish Grid easting for BT1 1FB
+            northing: 374377, // Irish Grid northing for BT1 1FB
+            district: 'Belfast',
+            county: 'Antrim'
+          }
+        ]
+      }
+
+      const resultsWithCoords = realApiResponse.results.map((result) => {
+        let latitude, longitude
+
+        if (result.easting && result.northing) {
+          const [lon, lat] = proj4(irishGrid, wgs84, [
+            result.easting,
+            result.northing
+          ])
+          latitude = lat
+          longitude = lon
+        }
+
+        return {
+          ...result,
+          latitude,
+          longitude
+        }
+      })
+
+      // '' Verify BT1 1FB coordinates match expected values (within 0.0001 degrees ~10m)
+      expect(resultsWithCoords[0].latitude).toBeCloseTo(expectedLat, 4)
+      expect(resultsWithCoords[0].longitude).toBeCloseTo(expectedLon, 4)
+    })
   })
 
   describe('Mock NI API (WGS84 Coordinates)', () => {
