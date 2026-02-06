@@ -43,7 +43,8 @@ describe('getNearLocation', () => {
     const lat = 51.5074
     const lon = -0.1278
     const forecastCoordinates = [{ latitude: 51.5074, longitude: -0.1278 }]
-    const forecasts = [{ location: { coordinates: [51.5074, -0.1278] } }]
+    // '' MongoDB GeoJSON format: [longitude, latitude]
+    const forecasts = [{ location: { coordinates: [-0.1278, 51.5074] } }]
     geolib.findNearest.mockReturnValue({
       latitude: 51.5074,
       longitude: -0.1278
@@ -58,7 +59,7 @@ describe('getNearLocation', () => {
     const lat = 51.5074
     const lon = -0.1278
     const forecastCoordinates = [{ latitude: 51.5074, longitude: -0.1278 }]
-    const forecasts = [{ location: { coordinates: [51.5074, -0.1278] } }]
+    const forecasts = [{ location: { coordinates: [-0.1278, 51.5074] } }]
     geolib.findNearest.mockReturnValue(undefined)
 
     const result = getNearLocation(lat, lon, forecastCoordinates, forecasts)
@@ -70,7 +71,7 @@ describe('getNearLocation', () => {
     const lat = 51.5074
     const lon = -0.1278
     const forecastCoordinates = [{ latitude: 51.5074, longitude: -0.1278 }]
-    const forecasts = [{ location: { coordinates: [51.5074, -0.1278] } }]
+    const forecasts = [{ location: { coordinates: [-0.1278, 51.5074] } }]
     geolib.findNearest.mockReturnValue({ longitude: -0.1278 })
 
     const result = getNearLocation(lat, lon, forecastCoordinates, forecasts)
@@ -82,7 +83,7 @@ describe('getNearLocation', () => {
     const lat = 51.5074
     const lon = -0.1278
     const forecastCoordinates = [{ latitude: 51.5074, longitude: -0.1278 }]
-    const forecasts = [{ location: { coordinates: [51.5074, -0.1278] } }]
+    const forecasts = [{ location: { coordinates: [-0.1278, 51.5074] } }]
     geolib.findNearest.mockImplementation(() => {
       throw new Error('findNearest error')
     })
@@ -94,7 +95,7 @@ describe('getNearLocation', () => {
   it('should return empty array when lat or lon is missing', () => {
     // ''
     const forecastCoordinates = [{ latitude: 51.5074, longitude: -0.1278 }]
-    const forecasts = [{ location: { coordinates: [51.5074, -0.1278] } }]
+    const forecasts = [{ location: { coordinates: [-0.1278, 51.5074] } }]
 
     const result = getNearLocation(null, null, forecastCoordinates, forecasts)
     expect(result).toEqual([])
@@ -213,8 +214,8 @@ describe('convertPointToLonLat', () => {
 
 describe('coordinatesTotal', () => {
   it('should return coordinates from matches', () => {
-    // ''
-    const matches = [{ location: { coordinates: [51.5074, -0.1278] } }]
+    // '' MongoDB GeoJSON format: [longitude, latitude]
+    const matches = [{ location: { coordinates: [-0.1278, 51.5074] } }]
     const result = coordinatesTotal(matches)
 
     expect(result).toEqual([{ latitude: 51.5074, longitude: -0.1278 }])

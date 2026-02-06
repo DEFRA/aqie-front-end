@@ -83,9 +83,11 @@ function getNearLocation(lat, lon, forecastCoordinates, forecasts) {
   }
   const nearestLocation = forecasts?.filter((item) => {
     // '' Convert coordinates if they're Irish Grid
-    const coord1 = item.location.coordinates[0]
-    const coord2 = item.location.coordinates[1]
-    const { lat, lon } = convertIrishGridIfNeeded(coord1, coord2)
+    // '' MongoDB stores coordinates as [longitude, latitude] (GeoJSON standard)
+    // '' But convertIrishGridIfNeeded expects [latitude, longitude] (app format)
+    const mongoLon = item.location.coordinates[0]
+    const mongoLat = item.location.coordinates[1]
+    const { lat, lon } = convertIrishGridIfNeeded(mongoLat, mongoLon)
 
     return lat === getLocation.latitude && lon === getLocation.longitude
   })
@@ -178,9 +180,10 @@ function coordinatesTotal(matches, _location) {
     coordinates = matches.reduce((acc, current) => {
       // '' MongoDB GeoJSON format is [longitude, latitude]
       // '' But coordinates might be Irish Grid [easting, northing] - detect and convert
-      const coord1 = current.location.coordinates[0]
-      const coord2 = current.location.coordinates[1]
-      const { lat, lon } = convertIrishGridIfNeeded(coord1, coord2)
+      // '' convertIrishGridIfNeeded expects [latitude, longitude] (app format), so swap
+      const mongoLon = current.location.coordinates[0]
+      const mongoLat = current.location.coordinates[1]
+      const { lat, lon } = convertIrishGridIfNeeded(mongoLat, mongoLon)
 
       return [
         ...acc,
