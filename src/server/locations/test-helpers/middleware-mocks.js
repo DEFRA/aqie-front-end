@@ -10,6 +10,10 @@ vi.mock('../../data/en/en.js', () => ({
     notFoundUrl: {
       nonService: {
         pageTitle: 'Page not found'
+      },
+      serviceAPI: {
+        pageTitle: 'Sorry, there is a problem with the service',
+        heading: 'Sorry, there is a problem with the service'
       }
     },
     phaseBanner: 'Beta',

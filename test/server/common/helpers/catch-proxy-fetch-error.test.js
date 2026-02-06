@@ -109,7 +109,7 @@ describe('catchProxyFetchError - error handling', () => {
     )
     const result = await catchProxyFetchError(TEST_URL, TEST_OPTIONS, true)
 
-    expect(result).toEqual([null, WRONG_POSTCODE])
+    expect(result).toEqual([STATUS_ERROR, { error: 'service-unavailable' }])
     expect(mockLogger.info).toHaveBeenCalledWith(
       expect.stringContaining(`Failed to fetch data from ${TEST_URL}`)
     )
@@ -128,7 +128,7 @@ describe('catchProxyFetchError - error handling', () => {
     )
     const result = await catchProxyFetchError(TEST_URL, TEST_OPTIONS, true)
 
-    expect(result).toEqual([null, WRONG_POSTCODE])
+    expect(result).toEqual([null, { error: 'service-unavailable' }])
     expect(mockLogger.error).toHaveBeenCalledWith(
       expect.stringContaining('Failed to proxyFetch data')
     )

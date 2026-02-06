@@ -26,7 +26,15 @@ async function catchProxyFetchError(url, options, shouldCallApi) {
       return [statusCode, data]
     } catch (error) {
       logger.error(`Failed to proxyFetch data from ${url}: ${error.message}`)
-      return [null, WRONG_POSTCODE]
+      // '' Differentiate between bad postcode (404) and upstream failure
+      if (statusCode && statusCode !== 200) {
+        const isNotFound = statusCode === 404
+        return [
+          statusCode,
+          isNotFound ? WRONG_POSTCODE : { error: 'service-unavailable' }
+        ]
+      }
+      return [null, { error: 'service-unavailable' }]
     }
   }
   return [statusCode, WRONG_POSTCODE]

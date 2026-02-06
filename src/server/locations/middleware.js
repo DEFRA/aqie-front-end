@@ -13,6 +13,7 @@ import {
   LOCATION_NOT_FOUND_URL,
   WRONG_POSTCODE,
   STATUS_NOT_FOUND,
+  STATUS_INTERNAL_SERVER_ERROR,
   REDIRECT_STATUS_CODE
 } from '../data/constants.js'
 import { handleUKLocationType } from './helpers/extra-middleware-helpers.js'
@@ -61,6 +62,27 @@ const handleLocationDataNotFound = (
       .takeover()
   }
   return h.redirect('location-not-found').takeover()
+}
+
+// '' Helper: Render service unavailable page for upstream failures
+const handleServiceUnavailable = (request, h, lang) => {
+  return h
+    .view('error/index', {
+      pageTitle: english.notFoundUrl.serviceAPI.pageTitle,
+      heading: english.notFoundUrl.serviceAPI.heading,
+      statusCode: STATUS_INTERNAL_SERVER_ERROR,
+      message: english.notFoundUrl.serviceAPI.heading,
+      url: request.path,
+      notFoundUrl: english.notFoundUrl,
+      displayBacklink: false,
+      phaseBanner: english.phaseBanner,
+      footerTxt: english.footerTxt,
+      cookieBanner: english.cookieBanner,
+      serviceName: english.multipleLocations.serviceName,
+      lang
+    })
+    .code(STATUS_INTERNAL_SERVER_ERROR)
+    .takeover()
 }
 
 const processUKLocationType = (request, h, redirectError, options = {}) => {
@@ -620,6 +642,15 @@ const searchMiddleware = async (request, h) => {
       searchTerms,
       secondSearchTerm
     )
+
+  // '' Handle upstream NI API failure to avoid incorrect not-found redirect
+  if (
+    redirectError.locationType === LOCATION_TYPE_NI &&
+    getNIPlaces?.error === 'service-unavailable'
+  ) {
+    logger.error('[DEBUG] NI API unavailable - showing service error page')
+    return handleServiceUnavailable(request, h, lang)
+  }
 
   if (
     shouldReturnNotFound(

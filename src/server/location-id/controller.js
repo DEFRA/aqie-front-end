@@ -52,6 +52,32 @@ const logger = createLogger()
 const DATE_FORMAT = 'DD MMMM YYYY'
 const DAILY_SUMMARY_KEY = 'dailySummary'
 
+// '' Helper to resolve alert coordinates with NI-safe fallback
+function resolveAlertLatLon(locationData = {}, fallbackLatlon = {}) {
+  const isNILocation = locationData?.locationType === LOCATION_TYPE_NI
+  const firstResult = Array.isArray(locationData?.results)
+    ? locationData.results[0]
+    : null
+  const resultLat = Number(firstResult?.latitude)
+  const resultLon = Number(firstResult?.longitude)
+
+  if (
+    isNILocation &&
+    Number.isFinite(resultLat) &&
+    Number.isFinite(resultLon)
+  ) {
+    return { lat: resultLat, lon: resultLon }
+  }
+
+  const fallbackLat = Number(fallbackLatlon?.lat)
+  const fallbackLon = Number(fallbackLatlon?.lon)
+  if (Number.isFinite(fallbackLat) && Number.isFinite(fallbackLon)) {
+    return { lat: fallbackLat, lon: fallbackLon }
+  }
+
+  return { lat: undefined, lon: undefined }
+}
+
 function applyMockLevel(request, airQuality) {
   const mocksDisabled = config.get('disableTestMocks')
   if (mocksDisabled) {
@@ -252,11 +278,16 @@ function buildLocationViewData({
   )
 
   // Use calculated coordinates from geolib (from getNearestLocation) ''
+  // '' Prefer NI search result coordinates for alert links to avoid forecast grid mismatches
   // Format coordinates to 4 decimal places for alert links ''
-  const rawLatlon = locationData.latlon || {}
+  const rawLatlon = resolveAlertLatLon(locationData, locationData.latlon)
   const latlon = {
-    lat: rawLatlon.lat ? Number(rawLatlon.lat.toFixed(4)) : undefined,
-    lon: rawLatlon.lon ? Number(rawLatlon.lon.toFixed(4)) : undefined
+    lat: Number.isFinite(rawLatlon.lat)
+      ? Number(rawLatlon.lat.toFixed(4))
+      : undefined,
+    lon: Number.isFinite(rawLatlon.lon)
+      ? Number(rawLatlon.lon.toFixed(4))
+      : undefined
   }
 
   // Log coordinate availability for alert links ''

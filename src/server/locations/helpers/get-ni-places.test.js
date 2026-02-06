@@ -138,4 +138,16 @@ describe('getNIPlaces', () => {
     expect(result.results).toBeInstanceOf(Array)
     expect(result.results.length).toBeGreaterThan(0)
   })
+
+  it('should return service-unavailable error when NI API fails', async () => {
+    // '' Simulate upstream failure from catchProxyFetchError
+    catchProxyFetchError.mockResolvedValue([
+      null,
+      { error: 'service-unavailable' }
+    ])
+
+    const result = await getNIPlaces('BT1 1AA')
+
+    expect(result).toEqual({ results: [], error: 'service-unavailable' })
+  })
 })

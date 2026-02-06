@@ -18,7 +18,8 @@ import {
   LOCATION_TYPE_NI,
   LOCATION_NOT_FOUND_URL,
   WRONG_POSTCODE,
-  STATUS_NOT_FOUND
+  STATUS_NOT_FOUND,
+  STATUS_INTERNAL_SERVER_ERROR
 } from '../data/constants.js'
 import {
   PAGE_NOT_FOUND,
@@ -226,6 +227,36 @@ describe('searchMiddleware - location not found scenarios', () => {
       })
     )
   })
+
+  it('should show service unavailable when NI API fails', async () => {
+    // ''
+    const { mockRequest, mockH, mockView } = mocks
+    mockRequest.query = {
+      searchTerms: 'bt1 1fb'
+    }
+
+    vi.mocked(handleErrorInputAndRedirect).mockReturnValue({
+      locationType: LOCATION_TYPE_NI,
+      userLocation: 'BT1 1FB',
+      locationNameOrPostcode: 'BT1 1FB'
+    })
+
+    vi.mocked(fetchData).mockResolvedValue({
+      getDailySummary: { issue_date: MOCK_DATE_STRING, today: {} },
+      getForecasts: { forecasts: [] },
+      getOSPlaces: null,
+      getNIPlaces: { results: [], error: 'service-unavailable' }
+    })
+
+    await searchMiddleware(mockRequest, mockH)
+
+    expect(mockView).toHaveBeenCalledWith(
+      ERROR_INDEX,
+      expect.objectContaining({
+        statusCode: STATUS_INTERNAL_SERVER_ERROR
+      })
+    )
+  })
 })
 
 describe('searchMiddleware - postcode validation', () => {
@@ -239,6 +270,12 @@ describe('searchMiddleware - postcode validation', () => {
       searchTerms: 'cf1',
       secondSearchTerm: ''
     }
+
+    vi.mocked(handleErrorInputAndRedirect).mockReturnValue({
+      locationType: LOCATION_TYPE_UK,
+      userLocation: 'CF1',
+      locationNameOrPostcode: 'Unknown'
+    })
 
     vi.mocked(isValidPartialPostcodeUK).mockReturnValue(true)
     vi.mocked(isValidPartialPostcodeNI).mockReturnValue(false)
