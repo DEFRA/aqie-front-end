@@ -232,6 +232,23 @@ const buildNILocationData = (
     )
   }
 
+  // '' Log raw NI API response before processing
+  logger.info(
+    `[NI API RAW] Received ${getNIPlaces?.results?.length || 0} results from NI API`
+  )
+  getNIPlaces?.results?.forEach((result, idx) => {
+    logger.info(`[NI API RAW] Result ${idx}:`, {
+      postcode: result.postcode,
+      town: result.town,
+      easting: result.easting,
+      northing: result.northing,
+      xCoordinate: result.xCoordinate,
+      yCoordinate: result.yCoordinate,
+      latitude: result.latitude,
+      longitude: result.longitude
+    })
+  })
+
   const resultsWithCoords = getNIPlaces?.results?.map((result) => {
     let latitude, longitude
 

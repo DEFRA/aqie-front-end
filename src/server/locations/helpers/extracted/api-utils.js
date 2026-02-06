@@ -27,6 +27,24 @@ async function callAndHandleForecastsResponse(
   }
   logger.info('Forecasts data fetched')
 
+  // '' Log raw forecast data to track coordinate origins
+  if (getForecasts?.forecasts && Array.isArray(getForecasts.forecasts)) {
+    logger.info(
+      `[FORECAST API RAW] Received ${getForecasts.forecasts.length} forecast stations`
+    )
+    getForecasts.forecasts.forEach((station, idx) => {
+      if (station.location?.coordinates) {
+        logger.info(`[FORECAST API RAW] Station ${idx}:`, {
+          area: station.area,
+          name: station.name,
+          areaType: station.areaType,
+          coordinates: station.location.coordinates,
+          coordinateType: station.location.type
+        })
+      }
+    })
+  }
+
   return getForecasts
 }
 
