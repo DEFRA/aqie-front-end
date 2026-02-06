@@ -300,4 +300,64 @@ describe('Location ID Controller - Session Management', () => {
       )
     })
   })
+
+  describe('Alert coordinates - NI fallback', () => {
+    it('should prefer NI result coordinates for alert links', async () => {
+      // ''
+      mockRequest.params = { id: 'bt11aa' }
+      mockRequest.headers = { referer: 'https://example.com/location' }
+
+      const mockLocationData = {
+        results: [
+          {
+            postcode: 'BT1 1AA',
+            town: 'Belfast',
+            latitude: 54.596517,
+            longitude: -5.934197
+          }
+        ],
+        urlRoute: 'bt11aa',
+        getForecasts: [{ location: { coordinates: [146778, 530104] } }],
+        getMeasurements: [],
+        dailySummary: { issue_date: '2025-10-15 12:00:00' },
+        locationType: 'ni',
+        issueTime: '12:00'
+      }
+
+      mockRequest.yar.get.mockImplementation((key) => {
+        if (key === 'searchTermsSaved') return true
+        if (key === 'locationData') return mockLocationData
+        return null
+      })
+
+      vi.mocked(getIdMatch).mockReturnValue({
+        locationIndex: 0,
+        locationDetails: {
+          GAZETTEER_ENTRY: {
+            NAME1: 'BT1 1AA',
+            DISTRICT_BOROUGH: 'Belfast'
+          }
+        }
+      })
+
+      vi.mocked(getNearestLocation)
+        .mockResolvedValueOnce({
+          forecastNum: [],
+          nearestLocationsRange: [],
+          nearestLocation: [],
+          latlon: { lat: 56.0135, lon: -8.8534 }
+        })
+        .mockResolvedValueOnce({
+          forecastNum: [],
+          nearestLocationsRange: [],
+          nearestLocation: [],
+          latlon: { lat: 56.0135, lon: -8.8534 }
+        })
+
+      await getLocationDetailsController.handler(mockRequest, mockH)
+
+      const viewData = mockH.view.mock.calls[0][1]
+      expect(viewData.latlon).toEqual({ lat: 54.5965, lon: -5.9342 })
+    })
+  })
 })
