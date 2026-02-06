@@ -357,7 +357,13 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
 
   request.yar.clear('locationData')
   request.yar.set('locationData', locationData)
-  request.yar.set('searchTermsSaved', searchTerms)
+  // '' Set searchTermsSaved with the actual postcode if searchTerms is undefined
+  // '' This prevents redirect loops when accessing NI location URLs directly
+  const savedSearchTerms = searchTerms || firstNIResult.postcode
+  request.yar.set('searchTermsSaved', savedSearchTerms)
+  logger.info(
+    `[DEBUG processNILocationType] Set searchTermsSaved: ${savedSearchTerms} (original searchTerms: ${searchTerms})`
+  )
 
   const retrievedLocationData = request.yar.get('locationData')
   logLocationDataDebug(locationData, retrievedLocationData)
