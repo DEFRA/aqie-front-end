@@ -45,10 +45,6 @@ vi.mock('../../common/helpers/logging/logger.js', () => ({
   }))
 }))
 
-vi.mock('./convert-string.js', () => ({
-  formatNorthernIrelandPostcode: vi.fn((pc) => pc.replaceAll(/\s/g, ''))
-}))
-
 vi.mock('./extracted/util-helpers.js', () => ({
   refreshOAuthToken: vi.fn(() => Promise.resolve({ accessToken: 'mock-token' }))
 }))
@@ -75,6 +71,19 @@ describe('getNIPlaces', () => {
     const result = await getNIPlaces('BT1 1AA')
     expect(result).toBeDefined()
     expect(catchProxyFetchError).toHaveBeenCalled()
+  })
+
+  it('should call NI API with no-space postcode', async () => {
+    catchProxyFetchError.mockResolvedValue([
+      STATUS_OK,
+      { results: [{ id: 'test' }] }
+    ])
+    await getNIPlaces('BT1 1AA')
+    expect(catchProxyFetchError).toHaveBeenCalledWith(
+      'https://api.example.com/ni/BT11AA&maxresults=1',
+      expect.any(Object),
+      true
+    )
   })
 
   it('should handle mock mode', async () => {
