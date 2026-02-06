@@ -229,7 +229,7 @@ describe('searchMiddleware - location not found scenarios', () => {
   })
 
   it('should show service unavailable when NI API fails', async () => {
-    // ''
+    // '' Shows 500 service error (not 404) to distinguish API failure from wrong postcode
     const { mockRequest, mockH, mockView } = mocks
     mockRequest.query = {
       searchTerms: 'bt1 1fb'
@@ -253,7 +253,8 @@ describe('searchMiddleware - location not found scenarios', () => {
     expect(mockView).toHaveBeenCalledWith(
       ERROR_INDEX,
       expect.objectContaining({
-        statusCode: STATUS_INTERNAL_SERVER_ERROR
+        statusCode: STATUS_INTERNAL_SERVER_ERROR,
+        heading: 'Sorry, there is a problem with the service'
       })
     )
   })
