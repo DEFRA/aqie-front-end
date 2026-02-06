@@ -643,12 +643,17 @@ const searchMiddleware = async (request, h) => {
       secondSearchTerm
     )
 
-  // '' Handle upstream NI API failure to avoid incorrect not-found redirect
+  // '' Handle upstream NI API failure - show 500 service error (not 404 postcode error)
   if (
     redirectError.locationType === LOCATION_TYPE_NI &&
     getNIPlaces?.error === 'service-unavailable'
   ) {
-    logger.error('[DEBUG] NI API unavailable - showing service error page')
+    logger.error(
+      '[NI API UNAVAILABLE] Upstream NI API failed - showing service error'
+    )
+    logger.error(
+      `[NI API UNAVAILABLE] This is NOT a wrong postcode - API connectivity issue for: ${userLocation}`
+    )
     return handleServiceUnavailable(request, h, lang)
   }
 
