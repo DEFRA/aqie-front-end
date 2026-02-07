@@ -142,19 +142,27 @@ async function postToBackend(request, apiPath, body, customBaseUrl = null) {
   const baseUrl = customBaseUrl || config.get('notify.baseUrl')
 
   if (!enabled || !baseUrl) {
-    logger.warn('Notify API disabled or baseUrl missing; skipping', {
+    const notifyDisabledData = {
       apiPath,
       enabled,
       baseUrl: baseUrl || '[not configured]'
-    })
+    }
+    logger.warn(
+      `Notify API disabled or baseUrl missing; skipping: ${JSON.stringify(notifyDisabledData)}`,
+      notifyDisabledData
+    )
     return { skipped: true }
   }
 
-  logger.info('Notify API request starting', {
+  const notifyRequestStart = {
     apiPath,
     baseUrl,
     bodyKeys: Object.keys(body)
-  })
+  }
+  logger.info(
+    `Notify API request starting: ${JSON.stringify(notifyRequestStart)}`,
+    notifyRequestStart
+  )
 
   try {
     // Use reusable helper to build URL and options based on environment ''
@@ -173,17 +181,25 @@ async function postToBackend(request, apiPath, body, customBaseUrl = null) {
     // Accept 200 OK and 201 Created as success
     if (status !== HTTP_STATUS_OK && status !== HTTP_STATUS_CREATED) {
       const msg = `Notify API error ${status}`
-      logger.warn(msg, {
+      const notifyErrorData = {
         url,
         status,
         responseBody: data,
         bodyStringified: JSON.stringify(data)?.slice(0, MAX_ERROR_BODY_LENGTH)
-      })
+      }
+      logger.warn(
+        `${msg}: ${JSON.stringify(notifyErrorData)}`,
+        notifyErrorData
+      )
 
       return { ok: false, status, body: data }
     }
 
-    logger.info('Notify message sent successfully', { url })
+    const notifySuccessData = { url }
+    logger.info(
+      `Notify message sent successfully: ${JSON.stringify(notifySuccessData)}`,
+      notifySuccessData
+    )
     return { ok: true, data }
   } catch (err) {
     logger.error('Notify API request failed', err)
@@ -278,7 +294,7 @@ export async function verifyOtp(phoneNumber, otp, request = null) {
       const isExpired =
         mockOtpTimestamp && Date.now() - mockOtpTimestamp > FIFTEEN_MINUTES_MS
 
-      logger.info('Verifying against mock OTP', {
+      const mockOtpCheck = {
         otpMatches: otp === mockOtp,
         isExpired,
         isSuperseded,
@@ -287,7 +303,11 @@ export async function verifyOtp(phoneNumber, otp, request = null) {
         ageMinutes: mockOtpTimestamp
           ? ((Date.now() - mockOtpTimestamp) / 60000).toFixed(2)
           : 'unknown'
-      })
+      }
+      logger.info(
+        `Verifying against mock OTP: ${JSON.stringify(mockOtpCheck)}`,
+        mockOtpCheck
+      )
 
       if (isSuperseded) {
         // '' Reject old OTP that has been replaced by a newer one
@@ -369,7 +389,7 @@ export async function setupAlert(
     : undefined
 
   // Log coordinate conversion for debugging ''
-  logger.info('Setting up alert with coordinates', {
+  const alertCoordinates = {
     rawLat: lat,
     rawLong: long,
     parsedLat: latitude,
@@ -378,7 +398,11 @@ export async function setupAlert(
     longType: typeof longitude,
     locationId,
     alertBackendBaseUrl
-  })
+  }
+  logger.info(
+    `Setting up alert with coordinates: ${JSON.stringify(alertCoordinates)}`,
+    alertCoordinates
+  )
 
   const sanitizedLocation = sanitizeLocationName(location)
 
@@ -393,10 +417,14 @@ export async function setupAlert(
 
   // Do not log payload contents or sensitive fields
   if (sanitizedLocation !== location) {
-    logger.info('Sanitized location name for alert setup', {
+    const sanitizedLocationLog = {
       original: location,
       sanitized: sanitizedLocation
-    })
+    }
+    logger.info(
+      `Sanitized location name for alert setup: ${JSON.stringify(sanitizedLocationLog)}`,
+      sanitizedLocationLog
+    )
   }
 
   // Try real service first ''
@@ -408,14 +436,18 @@ export async function setupAlert(
   )
 
   // '' Log backend response to debug duplicate detection
-  logger.info('Backend response received', {
+  const backendResponseLog = {
     ok: result.ok,
     status: result.status,
     error: result.error,
     bodyKeys: result.body ? Object.keys(result.body) : [],
     phoneNumberLast4: phoneNumber ? phoneNumber.slice(-4) : undefined,
     sanitizedLocation
-  })
+  }
+  logger.info(
+    `Backend response received: ${JSON.stringify(backendResponseLog)}`,
+    backendResponseLog
+  )
 
   // If backend service is unavailable (502/503/504) and mock is enabled, use in-memory storage ''
   // This handles cases where backend depends on notify service which may be down (50 SMS/day limit) ''
@@ -424,12 +456,16 @@ export async function setupAlert(
   const isServiceUnavailable =
     !result.ok && [502, 503, 504].includes(result.status)
 
-  logger.info('Checking if mock should be used', {
+  const mockDecisionLog = {
     isServiceUnavailable,
     mockSetupAlertEnabled,
     status: result.status,
     willUseMock: isServiceUnavailable && mockSetupAlertEnabled
-  })
+  }
+  logger.info(
+    `Checking if mock should be used: ${JSON.stringify(mockDecisionLog)}`,
+    mockDecisionLog
+  )
 
   if (isServiceUnavailable && mockSetupAlertEnabled) {
     // Production safety check - throw error if mock is enabled in production
@@ -472,10 +508,14 @@ export async function setupAlert(
     )
 
     if (alertCount >= MOCK_ALERTS_MAX_PER_PHONE) {
-      logger.info('Mock: Phone number has reached max alerts limit (5)', {
+      const maxAlertsLog = {
         phoneNumber: phoneNumber.substring(0, 7) + '****',
         currentCount: alertCount
-      })
+      }
+      logger.info(
+        `Mock: Phone number has reached max alerts limit (5): ${JSON.stringify(maxAlertsLog)}`,
+        maxAlertsLog
+      )
       return {
         ok: false,
         status: 400,
@@ -497,7 +537,7 @@ export async function setupAlert(
       longitude
     )
 
-    logger.info('Mock: Checking for duplicate alert', {
+    const duplicateCheckLog = {
       phoneNumber: phoneNumber.substring(0, 7) + '****',
       sanitizedLocation,
       latitude,
@@ -505,13 +545,21 @@ export async function setupAlert(
       generatedKey: alertKey,
       existingKeys: Array.from(mockAlertStorage.keys()),
       keyExists: mockAlertStorage.has(alertKey)
-    })
+    }
+    logger.info(
+      `Mock: Checking for duplicate alert: ${JSON.stringify(duplicateCheckLog)}`,
+      duplicateCheckLog
+    )
 
     if (mockAlertStorage.has(alertKey)) {
-      logger.info('Mock: Duplicate alert detected', {
+      const duplicateDetectedLog = {
         phoneNumber: phoneNumber.substring(0, 7) + '****',
         location: sanitizedLocation
-      })
+      }
+      logger.info(
+        `Mock: Duplicate alert detected: ${JSON.stringify(duplicateDetectedLog)}`,
+        duplicateDetectedLog
+      )
       return {
         ok: false,
         status: 409,
@@ -534,13 +582,17 @@ export async function setupAlert(
       createdAt: new Date().toISOString()
     })
 
-    logger.info('Mock: Alert stored successfully', {
+    const mockStoredLog = {
       phoneNumber: phoneNumber.substring(0, 7) + '****',
       sanitizedLocation,
       alertKey,
       totalAlerts: mockAlertStorage.size,
       allKeys: Array.from(mockAlertStorage.keys())
-    })
+    }
+    logger.info(
+      `Mock: Alert stored successfully: ${JSON.stringify(mockStoredLog)}`,
+      mockStoredLog
+    )
 
     return {
       ok: true,
@@ -571,24 +623,29 @@ export async function getSubscriptionCount(phoneNumber, request = null) {
   const getSubscriptionsPath =
     config.get('notify.getSubscriptionsPath') || '/api/subscriptions'
 
-  logger.info('Checking maximum alerts', {
+  const maxAlertsCheckLog = {
     alertBackendBaseUrl,
     getSubscriptionsPath,
     phoneNumberLast4: phoneNumber ? phoneNumber.slice(-4) : undefined
-  })
+  }
+  logger.info(
+    `Checking maximum alerts: ${JSON.stringify(maxAlertsCheckLog)}`,
+    maxAlertsCheckLog
+  )
 
   try {
     const enabled = config.get('notify.enabled')
     const baseUrl = alertBackendBaseUrl || config.get('notify.baseUrl')
 
     if (!enabled || !baseUrl) {
+      const subscriptionsDisabledLog = {
+        getSubscriptionsPath,
+        enabled,
+        baseUrl: baseUrl || '[not configured]'
+      }
       logger.warn(
-        'Notify API disabled or baseUrl missing; allowing by default',
-        {
-          getSubscriptionsPath,
-          enabled,
-          baseUrl: baseUrl || '[not configured]'
-        }
+        `Notify API disabled or baseUrl missing; allowing by default: ${JSON.stringify(subscriptionsDisabledLog)}`,
+        subscriptionsDisabledLog
       )
       return { ok: true, maxReached: false }
     }
@@ -605,11 +662,15 @@ export async function getSubscriptionCount(phoneNumber, request = null) {
 
     // '' Backend returns 400 with specific message when max locations reached
     if (status === 400) {
-      logger.warn('Maximum alerts reached', {
+      const maxReachedLog = {
         statusCode: data?.statusCode,
         error: data?.error,
         message: data?.message
-      })
+      }
+      logger.warn(
+        `Maximum alerts reached: ${JSON.stringify(maxReachedLog)}`,
+        maxReachedLog
+      )
       return { ok: true, maxReached: true }
     }
 
@@ -620,7 +681,11 @@ export async function getSubscriptionCount(phoneNumber, request = null) {
     }
 
     // '' Any other status is treated as an error - fail open for better UX
-    logger.warn('Unexpected response from subscriptions API', { status, data })
+    const unexpectedResponseLog = { status, data }
+    logger.warn(
+      `Unexpected response from subscriptions API: ${JSON.stringify(unexpectedResponseLog)}`,
+      unexpectedResponseLog
+    )
     return { ok: false, maxReached: false }
   } catch (err) {
     logger.error('Error checking subscriptions', err)
@@ -647,7 +712,11 @@ export function getMockAlerts() {
 export function clearMockAlerts() {
   const count = mockAlertStorage.size
   mockAlertStorage.clear()
-  logger.info('Mock alerts cleared', { count })
+  const mockAlertsClearedLog = { count }
+  logger.info(
+    `Mock alerts cleared: ${JSON.stringify(mockAlertsClearedLog)}`,
+    mockAlertsClearedLog
+  )
   return count
 }
 
@@ -663,9 +732,13 @@ export function removeMockAlert(phoneNumber, location, lat, long) {
   const key = generateAlertKey(phoneNumber, location, lat, long)
   const existed = mockAlertStorage.has(key)
   mockAlertStorage.delete(key)
-  logger.info('Mock alert removed', {
+  const mockAlertRemovedLog = {
     existed,
     phoneNumber: phoneNumber.substring(0, 7) + '****'
-  })
+  }
+  logger.info(
+    `Mock alert removed: ${JSON.stringify(mockAlertRemovedLog)}`,
+    mockAlertRemovedLog
+  )
   return existed
 }

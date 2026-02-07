@@ -166,10 +166,14 @@ export function buildNearestLocationEntry(curr, latlon, lang) {
     ) * METERS_TO_MILES
   const newpollutants = buildPollutantsObject(curr, lang)
   if (Object.keys(newpollutants).length === 0) {
-    logger.error(`No valid pollutants found for location`, {
+    const locationError = {
       locationId: curr.id,
       latlon
-    })
+    }
+    logger.error(
+      `No valid pollutants found for location: ${JSON.stringify(locationError)}`,
+      locationError
+    )
     return null
   }
   return {
@@ -254,10 +258,14 @@ function processMeasurementPollutants(measurement, lang, latlon) {
   }
 
   if (Object.keys(updatedPollutants).length === 0) {
-    logger.error(`No valid pollutants found for measurement`, {
+    const measurementError = {
       measurementId: measurement.id,
       latlon
-    })
+    }
+    logger.error(
+      `No valid pollutants found for measurement: ${JSON.stringify(measurementError)}`,
+      measurementError
+    )
   }
 
   return {
@@ -342,6 +350,18 @@ async function fetchAndProcessNewMeasurements(latlon, matches, lang, request) {
   )
 }
 
+// '' Helper: prefer NI location coordinates for measurements
+const getMeasurementLatLon = (location = {}, fallback = {}) => {
+  const hasLocationCoords =
+    location?.latitude != null && location?.longitude != null
+
+  if (hasLocationCoords) {
+    return { lat: location.latitude, lon: location.longitude }
+  }
+
+  return fallback
+}
+
 export async function getNearestLocation(
   matches,
   forecasts,
@@ -357,6 +377,12 @@ export async function getNearestLocation(
     forecasts
   )
 
+  const measurementLatLon = getMeasurementLatLon(location, latlon)
+
+  logger.info(
+    `[MEASUREMENTS DEBUG] Using coordinates for measurements: lat=${measurementLatLon?.lat}, lon=${measurementLatLon?.lon}`
+  )
+
   const forecastDay =
     moment
       .tz('Europe/London')
@@ -364,7 +390,7 @@ export async function getNearestLocation(
       ?.substring(0, FORECAST_DAY_SLICE_LENGTH) || ''
 
   const nearestLocationsRange = await fetchAndProcessNewMeasurements(
-    latlon,
+    measurementLatLon,
     matches,
     lang,
     request
