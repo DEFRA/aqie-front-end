@@ -130,7 +130,7 @@ const handleSingleMatch = async (
       request.yar.set('locationId', customId)
       request.yar.set('latitude', lat)
       request.yar.set('longitude', lon)
-      logger.info(`[DEBUG handleSingleMatch] Updated session location data:`, {
+      const sessionLocationData = {
         location: headerTitle || title,
         locationId: customId,
         lat,
@@ -139,7 +139,12 @@ const handleSingleMatch = async (
         hasLon: !!lon,
         geometryX: gazetteerEntry.GEOMETRY_X,
         geometryY: gazetteerEntry.GEOMETRY_Y
-      })
+      }
+
+      logger.info(
+        `[DEBUG handleSingleMatch] Updated session location data: ${JSON.stringify(sessionLocationData)}`,
+        sessionLocationData
+      )
     }
 
     // '' Clear the flow flag and redirect to appropriate confirm details page

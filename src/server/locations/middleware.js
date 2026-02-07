@@ -161,14 +161,16 @@ const updateNotificationSession = (request, locationData, searchTerms) => {
   request.yar.set('latitude', result.latitude)
   request.yar.set('longitude', result.longitude)
 
+  const sessionLocationData = {
+    location: locationTitle,
+    locationId: locationData.urlRoute,
+    lat: result.latitude,
+    lon: result.longitude
+  }
+
   logger.info(
-    `[DEBUG updateNotificationSession] Updated session location data:`,
-    {
-      location: locationTitle,
-      locationId: locationData.urlRoute,
-      lat: result.latitude,
-      lon: result.longitude
-    }
+    `[DEBUG updateNotificationSession] Updated session location data: ${JSON.stringify(sessionLocationData)}`,
+    sessionLocationData
   )
 }
 
@@ -237,7 +239,7 @@ const buildNILocationData = (
     `[NI API RAW] Received ${getNIPlaces?.results?.length || 0} results from NI API`
   )
   getNIPlaces?.results?.forEach((result, idx) => {
-    logger.info(`[NI API RAW] Result ${idx}:`, {
+    const rawResult = {
       postcode: result.postcode,
       town: result.town,
       easting: result.easting,
@@ -246,7 +248,12 @@ const buildNILocationData = (
       yCoordinate: result.yCoordinate,
       latitude: result.latitude,
       longitude: result.longitude
-    })
+    }
+
+    logger.info(
+      `[NI API RAW] Result ${idx}: ${JSON.stringify(rawResult)}`,
+      rawResult
+    )
   })
 
   const resultsWithCoords = getNIPlaces?.results?.map((result) => {

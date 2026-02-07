@@ -34,13 +34,18 @@ async function callAndHandleForecastsResponse(
     )
     getForecasts.forecasts.forEach((station, idx) => {
       if (station.location?.coordinates) {
-        logger.info(`[FORECAST API RAW] Station ${idx}:`, {
+        const rawStation = {
           area: station.area,
           name: station.name,
           areaType: station.areaType,
           coordinates: station.location.coordinates,
           coordinateType: station.location.type
-        })
+        }
+
+        logger.info(
+          `[FORECAST API RAW] Station ${idx}: ${JSON.stringify(rawStation)}`,
+          rawStation
+        )
       }
     })
   }

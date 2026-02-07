@@ -150,8 +150,10 @@ describe('addDaysToTodayAbrevWelsh', () => {
     const result = filterFunction(2)
 
     // With real moment in Welsh locale
+    // Welsh day abbreviations can be 3 or 4 chars (e.g., "Maw" vs "Llun")
     expect(typeof result).toBe('string')
-    expect(result.length).toBe(ABBREVIATED_DAY_LENGTH)
+    expect(result.length).toBeGreaterThanOrEqual(ABBREVIATED_DAY_LENGTH)
+    expect(result.length).toBeLessThanOrEqual(ABBREVIATED_DAY_LENGTH_WELSH)
   })
 
   it(TEST_DEFAULT_DAYS_MSG, () => {
