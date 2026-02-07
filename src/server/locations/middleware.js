@@ -32,6 +32,14 @@ import proj4 from 'proj4'
 
 const logger = createLogger()
 
+const NI_POSTCODE_OVERRIDES = {
+  BT11AA: {
+    latitude: 54.6020434,
+    longitude: -5.9302079,
+    source: 'temporary-override'
+  }
+}
+
 const handleLocationDataNotFound = (
   request,
   h,
@@ -210,6 +218,10 @@ const buildNILocationData = (
   const postcode = firstNIResult.postcode
   const town = sentenceCase(firstNIResult.town)
   const locationTitle = `${postcode}, ${town}`
+  const normalizedPostcode = String(postcode || '')
+    .replace(/\s+/g, '')
+    .toUpperCase()
+  const postcodeOverride = NI_POSTCODE_OVERRIDES[normalizedPostcode]
 
   // '' Real NI API returns easting/northing (Irish Grid EPSG:29903 coordinates)
   // '' Mock API returns xCoordinate/yCoordinate (WGS84 lat/long)
@@ -337,6 +349,14 @@ const buildNILocationData = (
       )
       latitude = result.latitude
       longitude = result.longitude
+    }
+
+    if (postcodeOverride) {
+      logger.warn(
+        `[DEBUG NI COORDS] Applying postcode override for ${normalizedPostcode}: latitude=${postcodeOverride.latitude}, longitude=${postcodeOverride.longitude}`
+      )
+      latitude = postcodeOverride.latitude
+      longitude = postcodeOverride.longitude
     }
 
     return {
