@@ -259,8 +259,15 @@ const buildNILocationData = (
   const resultsWithCoords = getNIPlaces?.results?.map((result) => {
     let latitude, longitude
 
-    // '' If we have easting/northing (Irish Grid), convert to lat/long
-    if (result.easting && result.northing) {
+    // '' Prefer direct WGS84 latitude/longitude when available
+    if (result.latitude != null && result.longitude != null) {
+      logger.info(
+        `[DEBUG NI COORDS] Using direct WGS84 coordinates: latitude=${result.latitude}, longitude=${result.longitude}`
+      )
+      latitude = result.latitude
+      longitude = result.longitude
+    } else if (result.easting && result.northing) {
+      // '' If we have easting/northing (Irish Grid), convert to lat/long
       logger.info(
         `[DEBUG NI COORDS] Converting Irish Grid to WGS84: easting=${result.easting}, northing=${result.northing}`
       )
