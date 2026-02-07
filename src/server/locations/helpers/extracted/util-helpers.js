@@ -71,6 +71,7 @@ const handleNILocationData = async (userLocation, di = {}) => {
 const handleUKLocationData = async (userLocation, di = {}) => {
   // ''  Simple DI with fallbacks
   const testLogger = di.logger || logger
+  const testGetOSPlacesHelper = di.getOSPlacesHelper || getOSPlacesHelper
   const testBuildUKLocationFilters = di.buildUKLocationFilters
   const testCombineUKSearchTerms = di.combineUKSearchTerms
   const testIsValidFullPostcodeUK = di.isValidFullPostcodeUK
@@ -114,7 +115,7 @@ const handleUKLocationData = async (userLocation, di = {}) => {
   }
   const finalUserLocation = combinedLocation
   const shouldCallApi = testShouldCallUKApi(finalUserLocation, testSymbolsArray)
-  return getOSPlacesHelper(
+  return testGetOSPlacesHelper(
     finalUserLocation,
     searchTerms,
     secondSearchTerm,

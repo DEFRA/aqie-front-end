@@ -28,7 +28,6 @@ import { sentenceCase } from '../common/helpers/sentence-case.js'
 import { convertFirstLetterIntoUppercase } from './helpers/convert-first-letter-into-upper-case.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
 import { config } from '../../config/index.js'
-import proj4 from 'proj4'
 
 const logger = createLogger()
 
@@ -122,81 +121,11 @@ const processUKLocationType = (request, h, redirectError, options = {}) => {
   })
 }
 
-// '' Helper: Extract location title from result object with fallback chain
-const getLocationTitle = (result, searchTerms) => {
-  // '' For NI locations (have postcode + town), always use "POSTCODE, TOWN" format
-  if (result?.postcode && result?.town) {
-    return `${result.postcode}, ${sentenceCase(result.town)}`
-  }
-
-  // '' For UK locations, use existing priority logic
-  const primaryTitle = result?.localName || result?.secondaryName
-  if (primaryTitle) {
-    return primaryTitle
-  }
-
-  const secondaryTitle = result?.displayName || result?.postcode || result?.town
-  return secondaryTitle || searchTerms || 'Location'
-}
-
-// '' Helper: Update session with location data for notification flow
-const updateNotificationSession = (request, locationData, searchTerms) => {
-  const result = locationData?.results?.[0]
-  if (!result) {
-    return
-  }
-
-  const locationTitle = getLocationTitle(result, searchTerms)
-  const cleanedLocation = (locationTitle || 'Location')
-    .replace(/^\s*air\s+quality\s+in\s+/i, '')
-    .trim()
-  const sanitizedLocation = cleanedLocation || 'Location'
-
-  request.yar.set(
-    'location',
-    convertFirstLetterIntoUppercase(sanitizedLocation)
-  )
-  request.yar.set('locationId', locationData.urlRoute)
-  // '' Coordinates should already be in Lat/Long format from convertPointToLonLat
-  request.yar.set('latitude', result.latitude)
-  request.yar.set('longitude', result.longitude)
-
-  const sessionLocationData = {
-    location: locationTitle,
-    locationId: locationData.urlRoute,
-    lat: result.latitude,
-    lon: result.longitude
-  }
-
-  logger.info(
-    `[DEBUG updateNotificationSession] Updated session location data: ${JSON.stringify(sessionLocationData)}`,
-    sessionLocationData
-  )
-}
-
-// '' Helper: Redirect to location not found page
-const redirectToLocationNotFound = (
-  request,
-  h,
-  locationNameOrPostcode,
-  lang
-) => {
-  request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-  request.yar.clear('searchTermsSaved')
-  return h
-    .redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`)
-    .code(REDIRECT_STATUS_CODE)
-    .takeover()
-}
-
-// '' Helper: Build location data object for NI locations
-const buildNILocationData = (
-  firstNIResult,
-  getNIPlaces,
-  redirectError,
-  options
-) => {
+const processNILocationType = (request, h, redirectError, options = {}) => {
   const {
+    locationNameOrPostcode,
+    lang,
+    getNIPlaces,
     transformedDailySummary,
     englishDate,
     welshDate,
@@ -204,151 +133,31 @@ const buildNILocationData = (
     month,
     multipleLocations,
     home,
-    getForecasts,
-    lang
+    getForecasts
   } = options
-  const postcode = firstNIResult.postcode
-  const town = sentenceCase(firstNIResult.town)
+  if (
+    !getNIPlaces?.results ||
+    getNIPlaces?.results.length === 0 ||
+    getNIPlaces === WRONG_POSTCODE
+  ) {
+    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+    request.yar.clear('searchTermsSaved')
+    return h
+      .redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`)
+      .code(REDIRECT_STATUS_CODE)
+      .takeover()
+  }
+
+  const postcode = getNIPlaces?.results[0].postcode
+  const town = sentenceCase(getNIPlaces?.results[0].town)
   const locationTitle = `${postcode}, ${town}`
 
-  // '' Real NI API returns easting/northing (Irish Grid EPSG:29903 coordinates)
-  // '' Mock API returns xCoordinate/yCoordinate (WGS84 lat/long)
-  // '' Convert Irish Grid to WGS84 lat/long for real API, or use direct coordinates from mock
-
-  // '' Define Irish Grid (EPSG:29903) projection - from epsg.io
-  const irishGrid =
-    '+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=1.000035 +x_0=200000 +y_0=250000 +ellps=mod_airy +units=m +no_defs +type=crs'
-  const wgs84 = 'EPSG:4326'
-
-  // '' Helper: detect Irish Grid numeric coordinates (meters)
-  const isIrishGridPair = (coord1, coord2) => {
-    const x = Number(coord1)
-    const y = Number(coord2)
-    return (
-      Number.isFinite(x) &&
-      Number.isFinite(y) &&
-      x > 10000 &&
-      x < 500000 &&
-      y > 10000 &&
-      y < 600000
-    )
-  }
-
-  // '' Helper: log when Irish Grid coords are outside expected NI range
-  const logIrshGridRangeWarning = (coord1, coord2, source) => {
-    const x = Number(coord1)
-    const y = Number(coord2)
-
-    if (!Number.isFinite(x) || !Number.isFinite(y)) {
-      return
-    }
-
-    const inRange = x >= 10000 && x <= 500000 && y >= 10000 && y <= 600000
-
-    if (!inRange) {
-      logger.warn(
-        `[DEBUG NI COORDS] Irish Grid values out of expected NI range (${source}): x=${x}, y=${y}`
-      )
-    }
-  }
-
-  // '' Log raw NI API response before processing
-  logger.info(
-    `[NI API RAW] Received ${getNIPlaces?.results?.length || 0} results from NI API`
-  )
-  getNIPlaces?.results?.forEach((result, idx) => {
-    const rawResult = {
-      postcode: result.postcode,
-      town: result.town,
-      easting: result.easting,
-      northing: result.northing,
-      xCoordinate: result.xCoordinate,
-      yCoordinate: result.yCoordinate,
-      latitude: result.latitude,
-      longitude: result.longitude
-    }
-
-    logger.info(
-      `[NI API RAW] Result ${idx}: ${JSON.stringify(rawResult)}`,
-      rawResult
-    )
-  })
-
-  const resultsWithCoords = getNIPlaces?.results?.map((result) => {
-    let latitude, longitude
-
-    // '' Prefer direct WGS84 latitude/longitude when available
-    if (result.latitude != null && result.longitude != null) {
-      logger.info(
-        `[DEBUG NI COORDS] Using direct WGS84 coordinates: latitude=${result.latitude}, longitude=${result.longitude}`
-      )
-      latitude = result.latitude
-      longitude = result.longitude
-    } else if (result.easting && result.northing) {
-      // '' If we have easting/northing (Irish Grid), convert to lat/long
-      logIrshGridRangeWarning(
-        result.easting,
-        result.northing,
-        'easting/northing'
-      )
-      logger.info(
-        `[DEBUG NI COORDS] Converting Irish Grid to WGS84: easting=${result.easting}, northing=${result.northing}`
-      )
-      const [lon, lat] = proj4(irishGrid, wgs84, [
-        result.easting,
-        result.northing
-      ])
-      latitude = lat
-      longitude = lon
-      logger.info(
-        `[DEBUG NI COORDS] Converted to WGS84: latitude=${latitude}, longitude=${longitude}`
-      )
-    } else if (result.xCoordinate && result.yCoordinate) {
-      // '' xCoordinate/yCoordinate may be WGS84 or Irish Grid - detect and convert if needed
-      if (isIrishGridPair(result.xCoordinate, result.yCoordinate)) {
-        logIrshGridRangeWarning(
-          result.xCoordinate,
-          result.yCoordinate,
-          'x/y Irish Grid'
-        )
-        logger.info(
-          `[DEBUG NI COORDS] Converting Irish Grid from x/y: easting=${result.xCoordinate}, northing=${result.yCoordinate}`
-        )
-        const [lon, lat] = proj4(irishGrid, wgs84, [
-          Number(result.xCoordinate),
-          Number(result.yCoordinate)
-        ])
-        latitude = lat
-        longitude = lon
-        logger.info(
-          `[DEBUG NI COORDS] Converted x/y to WGS84: latitude=${latitude}, longitude=${longitude}`
-        )
-      } else {
-        logger.info(
-          `[DEBUG NI COORDS] Using WGS84 coordinates: latitude=${result.yCoordinate}, longitude=${result.xCoordinate}`
-        )
-        latitude = result.yCoordinate
-        longitude = result.xCoordinate
-      }
-    } else {
-      // '' Fallback to existing lat/long if present
-      logger.info(
-        `[DEBUG NI COORDS] Using fallback coordinates: latitude=${result.latitude}, longitude=${result.longitude}`
-      )
-      latitude = result.latitude
-      longitude = result.longitude
-    }
-
-    return {
-      ...result,
-      latitude,
-      longitude
-    }
-  })
-
-  return {
-    results: resultsWithCoords,
-    urlRoute: `${firstNIResult.postcode.toLowerCase()}`.replaceAll(/\s+/g, ''),
+  const locationData = {
+    results: getNIPlaces?.results,
+    urlRoute: `${getNIPlaces?.results[0].postcode.toLowerCase()}`.replace(
+      /\s+/g,
+      ''
+    ),
     locationType: redirectError.locationType,
     transformedDailySummary,
     englishDate,
@@ -360,106 +169,9 @@ const buildNILocationData = (
     getForecasts: getForecasts?.forecasts,
     lang
   }
-}
-
-// '' Helper: Log debug information about location data
-const logLocationDataDebug = (locationData, retrievedLocationData) => {
-  logger.info(`[DEBUG processNILocationType] Setting locationData with:`)
-  logger.info(
-    `[DEBUG processNILocationType] - results is array: ${Array.isArray(locationData.results)}`
-  )
-  logger.info(
-    `[DEBUG processNILocationType] - results length: ${locationData.results?.length || 0}`
-  )
-  logger.info(
-    `[DEBUG processNILocationType] - getForecasts exists: ${!!locationData.getForecasts}`
-  )
-  logger.info(
-    `[DEBUG processNILocationType] - getForecasts length: ${locationData.getForecasts?.length || 0}`
-  )
-
-  logger.info(
-    `[DEBUG processNILocationType] After set, locationData from session:`
-  )
-  logger.info(
-    `[DEBUG processNILocationType] - retrieved results is array: ${Array.isArray(retrievedLocationData?.results)}`
-  )
-  logger.info(
-    `[DEBUG processNILocationType] - retrieved getForecasts exists: ${!!retrievedLocationData?.getForecasts}`
-  )
-}
-
-// '' Helper: Handle notification flow redirects
-const handleNotificationFlow = (
-  request,
-  h,
-  notificationFlow,
-  locationData,
-  searchTerms
-) => {
-  updateNotificationSession(request, locationData, searchTerms)
-  request.yar.clear('notificationFlow')
-  logger.info(
-    `[DEBUG processNILocationType] Redirecting to ${notificationFlow} confirm details (notificationFlow=${notificationFlow})`
-  )
-
-  const smsRedirectUrl = '/notify/register/sms-confirm-details?lang=en'
-  const emailRedirectUrl = '/notify/register/email-confirm-details?lang=en'
-  const redirectUrl =
-    notificationFlow === 'sms' ? smsRedirectUrl : emailRedirectUrl
-
-  return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE).takeover()
-}
-
-const processNILocationType = (request, h, redirectError, options = {}) => {
-  const { locationNameOrPostcode, lang, searchTerms, getNIPlaces } = options
-
-  if (
-    !getNIPlaces?.results ||
-    !Array.isArray(getNIPlaces.results) ||
-    getNIPlaces?.results.length === 0 ||
-    getNIPlaces === WRONG_POSTCODE
-  ) {
-    return redirectToLocationNotFound(request, h, locationNameOrPostcode, lang)
-  }
-
-  const firstNIResult = getNIPlaces?.results?.[0]
-  if (!firstNIResult?.postcode) {
-    logger.error('NI mock server returned invalid data - postcode missing')
-    return redirectToLocationNotFound(request, h, locationNameOrPostcode, lang)
-  }
-
-  const locationData = buildNILocationData(
-    firstNIResult,
-    getNIPlaces,
-    redirectError,
-    options
-  )
 
   request.yar.clear('locationData')
   request.yar.set('locationData', locationData)
-  // '' Set searchTermsSaved with the actual postcode if searchTerms is undefined
-  // '' This prevents redirect loops when accessing NI location URLs directly
-  const savedSearchTerms = searchTerms || firstNIResult.postcode
-  request.yar.set('searchTermsSaved', savedSearchTerms)
-  logger.info(
-    `[DEBUG processNILocationType] Set searchTermsSaved: ${savedSearchTerms} (original searchTerms: ${searchTerms})`
-  )
-
-  const retrievedLocationData = request.yar.get('locationData')
-  logLocationDataDebug(locationData, retrievedLocationData)
-
-  const notificationFlow = request.yar.get('notificationFlow')
-  if (notificationFlow) {
-    return handleNotificationFlow(
-      request,
-      h,
-      notificationFlow,
-      locationData,
-      searchTerms
-    )
-  }
-
   return h
     .redirect(`/location/${locationData.urlRoute}?lang=en`)
     .code(REDIRECT_STATUS_CODE)

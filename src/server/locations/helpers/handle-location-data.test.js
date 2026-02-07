@@ -3,10 +3,12 @@ import { handleUKLocationData, handleNILocationData } from './fetch-data.js'
 
 describe('handleUKLocationData more branches', () => {
   it('calls getOSPlacesHelper when conditions are met', async () => {
+    const getOSPlacesHelper = vi.fn().mockResolvedValue({ results: ['ok'] })
     const di = {
       isTestMode: () => false,
       logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
       config: { get: vi.fn(() => 'test-key') },
+      getOSPlacesHelper,
       buildUKLocationFilters: vi.fn(() => ({})),
       combineUKSearchTerms: vi.fn((a, _b) => a),
       isValidFullPostcodeUK: vi.fn(() => true),
@@ -21,6 +23,15 @@ describe('handleUKLocationData more branches', () => {
     }
     const result = await handleUKLocationData('test', di)
     expect(result).toBeDefined()
+    expect(getOSPlacesHelper).toHaveBeenCalledWith(
+      'test',
+      'test',
+      '',
+      true,
+      {},
+      {},
+      undefined
+    )
   })
 })
 
