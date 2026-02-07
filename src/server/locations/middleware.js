@@ -243,8 +243,7 @@ const buildNILocationData = (
       return
     }
 
-    const inRange =
-      x >= 10000 && x <= 500000 && y >= 10000 && y <= 600000
+    const inRange = x >= 10000 && x <= 500000 && y >= 10000 && y <= 600000
 
     if (!inRange) {
       logger.warn(
@@ -287,7 +286,11 @@ const buildNILocationData = (
       longitude = result.longitude
     } else if (result.easting && result.northing) {
       // '' If we have easting/northing (Irish Grid), convert to lat/long
-      logIrshGridRangeWarning(result.easting, result.northing, 'easting/northing')
+      logIrshGridRangeWarning(
+        result.easting,
+        result.northing,
+        'easting/northing'
+      )
       logger.info(
         `[DEBUG NI COORDS] Converting Irish Grid to WGS84: easting=${result.easting}, northing=${result.northing}`
       )
@@ -303,7 +306,11 @@ const buildNILocationData = (
     } else if (result.xCoordinate && result.yCoordinate) {
       // '' xCoordinate/yCoordinate may be WGS84 or Irish Grid - detect and convert if needed
       if (isIrishGridPair(result.xCoordinate, result.yCoordinate)) {
-        logIrshGridRangeWarning(result.xCoordinate, result.yCoordinate, 'x/y Irish Grid')
+        logIrshGridRangeWarning(
+          result.xCoordinate,
+          result.yCoordinate,
+          'x/y Irish Grid'
+        )
         logger.info(
           `[DEBUG NI COORDS] Converting Irish Grid from x/y: easting=${result.xCoordinate}, northing=${result.yCoordinate}`
         )
