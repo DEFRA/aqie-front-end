@@ -66,10 +66,7 @@ const getLocationDataController = {
 
       // Prepare the view data
       const viewData = prepareViewData(lang)
-      logger.info(
-        `Prepared view data: ${JSON.stringify(viewData)}`,
-        viewData
-      ) // Log view data
+      logger.info(`Prepared view data: ${JSON.stringify(viewData)}`, viewData) // Log view data
 
       // Render the view
       const response = h.view('location-not-found/index', viewData)

@@ -187,10 +187,7 @@ async function postToBackend(request, apiPath, body, customBaseUrl = null) {
         responseBody: data,
         bodyStringified: JSON.stringify(data)?.slice(0, MAX_ERROR_BODY_LENGTH)
       }
-      logger.warn(
-        `${msg}: ${JSON.stringify(notifyErrorData)}`,
-        notifyErrorData
-      )
+      logger.warn(`${msg}: ${JSON.stringify(notifyErrorData)}`, notifyErrorData)
 
       return { ok: false, status, body: data }
     }
