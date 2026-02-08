@@ -101,6 +101,19 @@ const handleSingleMatch = async (
   if (notificationFlow) {
     // '' Update session with new location data for notification
     const locationData = request.yar.get('locationData')
+
+    logger.info(
+      `[DEBUG handleSingleMatch] Notification flow detected: ${notificationFlow}`,
+      {
+        flow: notificationFlow,
+        hasLocationData: !!locationData,
+        hasResults: !!locationData?.results,
+        resultsCount: locationData?.results?.length,
+        customId,
+        title: headerTitle || title
+      }
+    )
+
     if (locationData && locationData.results && locationData.results[0]) {
       const result = locationData.results[0]
       const gazetteerEntry = result.GAZETTEER_ENTRY || result
@@ -126,10 +139,12 @@ const handleSingleMatch = async (
           result.longitude
       }
 
+      // '' Update session with new location data (overwrites previous alert's location)
       request.yar.set('location', headerTitle || title)
       request.yar.set('locationId', customId)
       request.yar.set('latitude', lat)
       request.yar.set('longitude', lon)
+
       const sessionLocationData = {
         location: headerTitle || title,
         locationId: customId,
@@ -142,8 +157,16 @@ const handleSingleMatch = async (
       }
 
       logger.info(
-        `[DEBUG handleSingleMatch] Updated session location data: ${JSON.stringify(sessionLocationData)}`,
+        `[DEBUG handleSingleMatch] Updated session location data for ${notificationFlow} flow: ${JSON.stringify(sessionLocationData)}`,
         sessionLocationData
+      )
+    } else {
+      logger.warn(
+        `[DEBUG handleSingleMatch] No location data found in session for ${notificationFlow} flow`,
+        {
+          hasLocationData: !!locationData,
+          locationDataKeys: locationData ? Object.keys(locationData) : []
+        }
       )
     }
 
