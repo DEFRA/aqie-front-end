@@ -2,6 +2,7 @@ import { catchProxyFetchError } from '../../common/helpers/catch-proxy-fetch-err
 import { createLogger } from '../../common/helpers/logging/logger.js'
 import { config } from '../../../config/index.js'
 import { refreshOAuthToken } from './extracted/util-helpers.js'
+import { fetchWithRetry } from '../../common/helpers/fetch-with-retry.js'
 
 const logger = createLogger()
 const STATUS_CODE_SUCCESS = 200
@@ -56,17 +57,41 @@ async function getNIPlaces(userLocation, request) {
     }
   }
 
-  logger.info(`[DEBUG getNIPlaces] isMockEnabled: ${isMockEnabled}`)
+  logger.info(`[getNIPlaces] isMockEnabled: ${isMockEnabled}`)
   logger.info(
-    `[DEBUG getNIPlaces] Calling catchProxyFetchError with URL: ${postcodeNortherIrelandURL}`
+    `[getNIPlaces] Calling NI API with URL: ${postcodeNortherIrelandURL}`
   )
-  logger.info(`[DEBUG getNIPlaces] Options: ${JSON.stringify(optionsOAuth)}`)
+  logger.info(`[getNIPlaces] OAuth options: ${JSON.stringify(optionsOAuth)}`)
 
-  let [statusCodeNI, niPlacesData] = await catchProxyFetchError(
-    postcodeNortherIrelandURL,
-    optionsOAuth,
-    true
-  )
+  // '' Wrap NI API call with retry logic for better reliability
+  let statusCodeNI, niPlacesData
+  try {
+    ;[statusCodeNI, niPlacesData] = await fetchWithRetry(
+      async (controller) => {
+        // Pass abort controller signal to catchProxyFetchError
+        const optionsWithSignal = controller
+          ? { ...optionsOAuth, signal: controller.signal }
+          : optionsOAuth
+
+        return await catchProxyFetchError(
+          postcodeNortherIrelandURL,
+          optionsWithSignal,
+          true
+        )
+      },
+      {
+        operationName: `NI API call for ${normalizedUserLocation}`,
+        maxRetries: isMockEnabled ? 0 : config.get('niApiMaxRetries'),
+        retryDelayMs: config.get('niApiRetryDelayMs'),
+        timeoutMs: config.get('niApiTimeoutMs')
+      }
+    )
+  } catch (error) {
+    logger.error(
+      `[getNIPlaces] NI API call failed after retries: ${error.message}`
+    )
+    return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
+  }
 
   logger.info(`[getNIPlaces] Response status: ${statusCodeNI}`)
   logger.info(`[getNIPlaces] Response data: ${JSON.stringify(niPlacesData)}`)

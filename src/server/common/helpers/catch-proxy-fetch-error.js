@@ -25,7 +25,14 @@ async function catchProxyFetchError(url, options, shouldCallApi) {
       const data = await response.json()
       return [statusCode, data]
     } catch (error) {
-      logger.error(`Failed to proxyFetch data from ${url}: ${error.message}`)
+      // '' Check if error is due to timeout/abort
+      const isAbortError = error.name === 'AbortError'
+      const errorMsg = isAbortError ? 'Request timeout/aborted' : error.message
+
+      logger.error(
+        `Failed to proxyFetch data from ${url}: ${errorMsg}${isAbortError ? ' (timeout)' : ''}`
+      )
+
       // '' Differentiate between bad postcode (404) and upstream failure
       if (statusCode && statusCode !== 200) {
         const isNotFound = statusCode === 404
