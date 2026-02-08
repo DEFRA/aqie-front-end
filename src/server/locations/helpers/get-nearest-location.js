@@ -350,18 +350,6 @@ async function fetchAndProcessNewMeasurements(latlon, matches, lang, request) {
   )
 }
 
-// '' Helper: prefer NI location coordinates for measurements
-const getMeasurementLatLon = (location = {}, fallback = {}) => {
-  const hasLocationCoords =
-    location?.latitude != null && location?.longitude != null
-
-  if (hasLocationCoords) {
-    return { lat: location.latitude, lon: location.longitude }
-  }
-
-  return fallback
-}
-
 export async function getNearestLocation(
   matches,
   forecasts,
@@ -377,10 +365,8 @@ export async function getNearestLocation(
     forecasts
   )
 
-  const measurementLatLon = getMeasurementLatLon(location, latlon)
-
   logger.info(
-    `[MEASUREMENTS DEBUG] Using coordinates for measurements: lat=${measurementLatLon?.lat}, lon=${measurementLatLon?.lon}`
+    `[MEASUREMENTS DEBUG] Using coordinates for measurements: lat=${latlon?.lat}, lon=${latlon?.lon}`
   )
 
   const forecastDay =
@@ -390,7 +376,7 @@ export async function getNearestLocation(
       ?.substring(0, FORECAST_DAY_SLICE_LENGTH) || ''
 
   const nearestLocationsRange = await fetchAndProcessNewMeasurements(
-    measurementLatLon,
+    latlon,
     matches,
     lang,
     request
