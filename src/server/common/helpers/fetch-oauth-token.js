@@ -43,9 +43,18 @@ export async function fetchOAuthToken(options = {}) {
 
   if (statusCodeToken !== 200) {
     fetchLogger.error('Error OAuth statusCodeToken fetched:', statusCodeToken)
-  } else {
-    fetchLogger.info('OAuth token fetched:::')
+    fetchLogger.error('OAuth token response data:', dataToken)
+    return { error: 'oauth-fetch-failed', statusCode: statusCodeToken }
   }
 
+  if (!dataToken || !dataToken.access_token) {
+    fetchLogger.error(
+      'OAuth token response missing access_token:',
+      JSON.stringify(dataToken)
+    )
+    return { error: 'oauth-token-missing', statusCode: statusCodeToken }
+  }
+
+  fetchLogger.info('OAuth token fetched successfully')
   return dataToken.access_token
 }
