@@ -427,6 +427,24 @@ export const config = convict({
     default: '',
     env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_CLIENT_SCOPE'
   },
+  niApiTimeoutMs: {
+    doc: 'Northern Ireland API request timeout in milliseconds',
+    format: Number,
+    default: 10000,
+    env: 'NI_API_TIMEOUT_MS'
+  },
+  niApiMaxRetries: {
+    doc: 'Maximum number of retry attempts for Northern Ireland API calls',
+    format: Number,
+    default: 2,
+    env: 'NI_API_MAX_RETRIES'
+  },
+  niApiRetryDelayMs: {
+    doc: 'Delay in milliseconds between retry attempts for Northern Ireland API',
+    format: Number,
+    default: 500,
+    env: 'NI_API_RETRY_DELAY_MS'
+  },
   redis: {
     host: {
       doc: 'Redis cache host',
