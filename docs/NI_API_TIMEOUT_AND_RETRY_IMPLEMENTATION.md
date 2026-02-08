@@ -9,6 +9,7 @@ This document describes the implementation of timeout and retry logic for Northe
 **Issue**: Valid NI postcodes (BT1 1FB, BT93 8AD, BT8 6LL) sometimes fail on first search attempt but succeed when the user retries.
 
 **Root Cause Analysis**:
+
 - OAuth token fetch: ~220-230ms (consistently successful)
 - NI API call: ~900-1500ms (slow, sometimes times out)
 - Total request time: ~1.1-2.2 seconds
@@ -46,6 +47,7 @@ niApiRetryDelayMs: {
 ```
 
 **Environment Variables**:
+
 - `NI_API_TIMEOUT_MS`: Timeout for each NI API request (default: 10000ms)
 - `NI_API_MAX_RETRIES`: Maximum number of retries (default: 2)
 - `NI_API_RETRY_DELAY_MS`: Base delay between retries (default: 500ms)
@@ -55,28 +57,33 @@ niApiRetryDelayMs: {
 Created a new `fetchWithRetry` helper function with the following features:
 
 **Key Features**:
+
 - **Configurable timeout**: Uses AbortController for request timeout
-- **Exponential backoff**: Delay increases with each retry attempt (delay * attempt)
+- **Exponential backoff**: Delay increases with each retry attempt (delay \* attempt)
 - **Detailed logging**: Logs each attempt, timeout, and final outcome
 - **Error differentiation**: Distinguishes between timeout errors and other errors
 
 **Function Signature**:
+
 ```javascript
 async function fetchWithRetry(fetchFn, options = {})
 ```
 
 **Options**:
+
 - `maxRetries`: Number (default: from config)
 - `retryDelayMs`: Number (default: from config)
 - `timeoutMs`: Number (default: from config)
 - `operationName`: String (for logging)
 
 **Retry Logic**:
+
 1. Attempt 1: Execute immediately
-2. Attempt 2 (after failure): Wait 500ms (1 * 500ms)
-3. Attempt 3 (after failure): Wait 1000ms (2 * 500ms)
+2. Attempt 2 (after failure): Wait 500ms (1 \* 500ms)
+3. Attempt 3 (after failure): Wait 1000ms (2 \* 500ms)
 
 **Example Usage**:
+
 ```javascript
 const result = await fetchWithRetry(
   async (controller) => {
@@ -94,6 +101,7 @@ const result = await fetchWithRetry(
 ### 3. NI Places Integration (src/server/locations/helpers/get-ni-places.js)
 
 **Changes**:
+
 1. Import `fetchWithRetry` helper
 2. Wrap `catchProxyFetchError` call with retry logic
 3. Pass AbortController signal for timeout support
@@ -101,6 +109,7 @@ const result = await fetchWithRetry(
 5. Handle retry failures gracefully
 
 **Implementation**:
+
 ```javascript
 let statusCodeNI, niPlacesData
 try {
@@ -124,7 +133,9 @@ try {
     }
   )
 } catch (error) {
-  logger.error(`[getNIPlaces] NI API call failed after retries: ${error.message}`)
+  logger.error(
+    `[getNIPlaces] NI API call failed after retries: ${error.message}`
+  )
   return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
 }
 ```
@@ -136,7 +147,9 @@ try {
 ```javascript
 // Handle 204 No Content as "postcode not found" (not a service error)
 if (statusCodeNI === 204) {
-  logger.info(`[getNIPlaces] NI API returned 204 No Content - postcode not found`)
+  logger.info(
+    `[getNIPlaces] NI API returned 204 No Content - postcode not found`
+  )
   return { results: [] }
 }
 ```
@@ -146,11 +159,13 @@ This prevents invalid postcodes from showing a 500 error page.
 ### 5. Enhanced Error Logging (src/server/common/helpers/catch-proxy-fetch-error.js)
 
 **Changes**:
+
 - Detect AbortError (timeout) separately from other errors
 - Log timeout errors with specific messaging
 - Preserve existing error handling for HTTP status codes
 
 **Implementation**:
+
 ```javascript
 catch (error) {
   const isAbortError = error.name === 'AbortError'
@@ -181,6 +196,7 @@ Created comprehensive tests in `src/server/common/helpers/fetch-with-retry.test.
 ### Integration Tests
 
 Existing `get-ni-places.test.js` tests continue to pass:
+
 - ✅ Basic functionality
 - ✅ Postcode normalization
 - ✅ Mock mode handling
@@ -188,6 +204,7 @@ Existing `get-ni-places.test.js` tests continue to pass:
 - ✅ SMS journey scenarios
 
 **Test Coverage**:
+
 - `fetch-with-retry.js`: 69.31% (uncovered: retry/timeout edge cases)
 - `get-ni-places.js`: 82.85% (uncovered: retry error paths)
 - `catch-proxy-fetch-error.js`: 100%
@@ -218,6 +235,7 @@ NI_API_RETRY_DELAY_MS=200    # 200ms base delay
 ### Testing Checklist
 
 #### Valid NI Postcodes (Should Work)
+
 Test these postcodes that previously had intermittent failures:
 
 - [ ] **BT1 1FB** (Belfast City Hall)
@@ -234,12 +252,14 @@ Test these postcodes that previously had intermittent failures:
   - Final result should show correct coordinates
 
 #### Invalid NI Postcodes (Should Show 404)
+
 - [ ] **BT7 1NN** (non-existent)
   - Should return "Location not found" page
   - Should NOT show 500 error page
   - Check logs for HTTP 204 handling
 
 #### Performance Testing
+
 - [ ] **First attempt success**: ~1-2 seconds
 - [ ] **Retry scenario**: ~2-4 seconds (includes retry delays)
 - [ ] **Timeout scenario**: ~10 seconds (timeout threshold)
@@ -249,6 +269,7 @@ Test these postcodes that previously had intermittent failures:
 Look for these log entries:
 
 **Successful first attempt**:
+
 ```
 [getNIPlaces] Calling NI API with URL: ...
 [fetchWithRetry] Starting NI API call for BT1 1FB
@@ -257,6 +278,7 @@ Look for these log entries:
 ```
 
 **Retry scenario**:
+
 ```
 [fetchWithRetry] Starting NI API call for BT1 1FB
 [fetchWithRetry] NI API call timeout on attempt 1/3: Timeout after 10000ms
@@ -267,6 +289,7 @@ Look for these log entries:
 ```
 
 **Timeout failure**:
+
 ```
 [fetchWithRetry] NI API call timeout on attempt 3/3: Timeout after 10000ms
 [fetchWithRetry] NI API call for BT1 1FB failed after 3 attempts
@@ -274,6 +297,7 @@ Look for these log entries:
 ```
 
 **HTTP 204 (not found)**:
+
 ```
 [getNIPlaces] Response status: 204
 [getNIPlaces] NI API returned 204 No Content - postcode not found
@@ -282,16 +306,19 @@ Look for these log entries:
 ## Benefits
 
 ### User Experience
+
 1. **Reduced intermittent failures**: Retries handle transient network issues
 2. **Faster perception**: First attempt usually succeeds (~1-2s)
 3. **Better error messages**: Invalid postcodes show 404 instead of 500
 
 ### Reliability
+
 1. **Automatic recovery**: Up to 3 attempts for each request
 2. **Timeout protection**: Prevents hanging requests
 3. **Exponential backoff**: Reduces load during network congestion
 
 ### Observability
+
 1. **Detailed logging**: Track retry attempts and timing
 2. **Error differentiation**: Distinguish timeout vs network vs service errors
 3. **Performance metrics**: Measure success rate and retry frequency
@@ -306,6 +333,7 @@ NI_API_TIMEOUT_MS=30000      # Increase timeout to 30s
 ```
 
 Or revert the commits:
+
 ```bash
 git revert 357a77d  # Revert timeout/retry implementation
 git revert 31e7d14  # Revert OAuth error handling
