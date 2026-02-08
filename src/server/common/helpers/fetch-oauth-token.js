@@ -13,10 +13,27 @@ const clientSecret = config.get('clientSecretNIreland')
 const redirectUri = config.get('redirectUriNIreland')
 const scope = config.get('scopeNIreland')
 
+// '' Retry configuration for OAuth token fetch
+const MAX_RETRIES = 3
+const INITIAL_RETRY_DELAY = 1000 // 1 second
+const MAX_RETRY_DELAY = 5000 // 5 seconds
+
+// '' Helper function to wait for a specified delay
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+// '' Calculate exponential backoff delay with jitter
+function calculateRetryDelay(attempt) {
+  const exponentialDelay = INITIAL_RETRY_DELAY * Math.pow(2, attempt)
+  const delayWithJitter = exponentialDelay * (0.5 + Math.random() * 0.5)
+  return Math.min(delayWithJitter, MAX_RETRY_DELAY)
+}
+
 export async function fetchOAuthToken(options = {}) {
   const fetchLogger = options.logger || logger
 
-  fetchLogger.info('OAuth token requested:')
+  fetchLogger.info('OAuth token requested')
 
   const url = `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`
   const requestOptions = {
@@ -34,27 +51,75 @@ export async function fetchOAuthToken(options = {}) {
     })
   }
 
-  // Invoking token API
-  const [statusCodeToken, dataToken] = await catchFetchError(
-    url,
-    requestOptions,
-    true
+  let lastError = null
+  let lastStatusCode = null
+
+  // '' Retry loop with exponential backoff
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      if (attempt > 0) {
+        const retryDelay = calculateRetryDelay(attempt - 1)
+        fetchLogger.info(
+          `Retrying OAuth token fetch (attempt ${attempt + 1}/${MAX_RETRIES}) after ${Math.round(retryDelay)}ms delay`
+        )
+        await delay(retryDelay)
+      }
+
+      // Invoking token API
+      const [statusCodeToken, dataToken] = await catchFetchError(
+        url,
+        requestOptions,
+        true
+      )
+
+      if (statusCodeToken !== 200) {
+        lastStatusCode = statusCodeToken
+        lastError = 'oauth-fetch-failed'
+        fetchLogger.warn(
+          `OAuth token fetch attempt ${attempt + 1}/${MAX_RETRIES} failed with status ${statusCodeToken}`
+        )
+
+        // '' Don't retry on client errors (4xx), only on server errors (5xx) or timeouts (0)
+        if (statusCodeToken >= 400 && statusCodeToken < 500) {
+          fetchLogger.error(
+            'Client error detected, not retrying:',
+            statusCodeToken
+          )
+          fetchLogger.error('OAuth token response data:', dataToken)
+          return { error: 'oauth-fetch-failed', statusCode: statusCodeToken }
+        }
+
+        continue // Retry on 5xx or 0
+      }
+
+      if (!dataToken || !dataToken.access_token) {
+        lastError = 'oauth-token-missing'
+        lastStatusCode = statusCodeToken
+        fetchLogger.warn(
+          `OAuth token response missing access_token on attempt ${attempt + 1}/${MAX_RETRIES}`
+        )
+        continue
+      }
+
+      fetchLogger.info(
+        `OAuth token fetched successfully${attempt > 0 ? ` on attempt ${attempt + 1}` : ''}`
+      )
+      return dataToken.access_token
+    } catch (error) {
+      lastError = error
+      fetchLogger.error(
+        `Unexpected error during OAuth token fetch attempt ${attempt + 1}/${MAX_RETRIES}:`,
+        error
+      )
+    }
+  }
+
+  // '' All retries exhausted
+  fetchLogger.error(
+    `Failed to fetch OAuth token after ${MAX_RETRIES} attempts. Last error: ${lastError}`
   )
-
-  if (statusCodeToken !== 200) {
-    fetchLogger.error('Error OAuth statusCodeToken fetched:', statusCodeToken)
-    fetchLogger.error('OAuth token response data:', dataToken)
-    return { error: 'oauth-fetch-failed', statusCode: statusCodeToken }
+  return {
+    error: lastError || 'oauth-fetch-failed',
+    statusCode: lastStatusCode || 0
   }
-
-  if (!dataToken || !dataToken.access_token) {
-    fetchLogger.error(
-      'OAuth token response missing access_token:',
-      JSON.stringify(dataToken)
-    )
-    return { error: 'oauth-token-missing', statusCode: statusCodeToken }
-  }
-
-  fetchLogger.info('OAuth token fetched successfully')
-  return dataToken.access_token
 }
