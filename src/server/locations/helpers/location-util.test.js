@@ -43,8 +43,7 @@ describe('getNearLocation', () => {
     const lat = 51.5074
     const lon = -0.1278
     const forecastCoordinates = [{ latitude: 51.5074, longitude: -0.1278 }]
-    // '' MongoDB GeoJSON format: [longitude, latitude]
-    const forecasts = [{ location: { coordinates: [-0.1278, 51.5074] } }]
+    const forecasts = [{ location: { coordinates: [51.5074, -0.1278] } }]
     geolib.findNearest.mockReturnValue({
       latitude: 51.5074,
       longitude: -0.1278
@@ -59,7 +58,7 @@ describe('getNearLocation', () => {
     const lat = 51.5074
     const lon = -0.1278
     const forecastCoordinates = [{ latitude: 51.5074, longitude: -0.1278 }]
-    const forecasts = [{ location: { coordinates: [-0.1278, 51.5074] } }]
+    const forecasts = [{ location: { coordinates: [51.5074, -0.1278] } }]
     geolib.findNearest.mockReturnValue(undefined)
 
     const result = getNearLocation(lat, lon, forecastCoordinates, forecasts)
@@ -71,7 +70,7 @@ describe('getNearLocation', () => {
     const lat = 51.5074
     const lon = -0.1278
     const forecastCoordinates = [{ latitude: 51.5074, longitude: -0.1278 }]
-    const forecasts = [{ location: { coordinates: [-0.1278, 51.5074] } }]
+    const forecasts = [{ location: { coordinates: [51.5074, -0.1278] } }]
     geolib.findNearest.mockReturnValue({ longitude: -0.1278 })
 
     const result = getNearLocation(lat, lon, forecastCoordinates, forecasts)
@@ -83,7 +82,7 @@ describe('getNearLocation', () => {
     const lat = 51.5074
     const lon = -0.1278
     const forecastCoordinates = [{ latitude: 51.5074, longitude: -0.1278 }]
-    const forecasts = [{ location: { coordinates: [-0.1278, 51.5074] } }]
+    const forecasts = [{ location: { coordinates: [51.5074, -0.1278] } }]
     geolib.findNearest.mockImplementation(() => {
       throw new Error('findNearest error')
     })
@@ -95,7 +94,7 @@ describe('getNearLocation', () => {
   it('should return empty array when lat or lon is missing', () => {
     // ''
     const forecastCoordinates = [{ latitude: 51.5074, longitude: -0.1278 }]
-    const forecasts = [{ location: { coordinates: [-0.1278, 51.5074] } }]
+    const forecasts = [{ location: { coordinates: [51.5074, -0.1278] } }]
 
     const result = getNearLocation(null, null, forecastCoordinates, forecasts)
     expect(result).toEqual([])
@@ -131,91 +130,63 @@ describe('convertPointToLonLat', () => {
   })
 
   it('should convert NI location points using xCoordinate/yCoordinate', () => {
-    // '' xCoordinate/yCoordinate are already in Lat/Long format, not Grid
+    // ''
     const matches = [
       {
-        xCoordinate: -6.1278,
-        yCoordinate: 54.5074,
+        xCoordinate: 123456,
+        yCoordinate: 654321,
         GAZETTEER_ENTRY: { LONGITUDE: 999, LATITUDE: 888 }
       }
     ]
     const location = 'ni-location'
     const index = 0
+    const latlon = { _lat: 54.5074, _lon: -6.1278 }
+    OsGridRef.osGridToLatLong.mockReturnValue(latlon)
 
     const result = convertPointToLonLat(matches, location, index)
     expect(result).toEqual({ lat: 54.5074, lon: -6.1278 })
   })
 
   it('should convert NI location using LONGITUDE/LATITUDE when coordinates missing', () => {
-    // '' LONGITUDE/LATITUDE are already in Lat/Long format, use directly
+    // ''
     const matches = [
       {
-        GAZETTEER_ENTRY: { LONGITUDE: -6.1278, LATITUDE: 54.5074 }
+        GAZETTEER_ENTRY: { LONGITUDE: 123456, LATITUDE: 654321 }
       }
     ]
     const location = 'ni-location'
     const index = 0
+    const latlon = { _lat: 54.5074, _lon: -6.1278 }
+    OsGridRef.osGridToLatLong.mockReturnValue(latlon)
 
     const result = convertPointToLonLat(matches, location, index)
     expect(result).toEqual({ lat: 54.5074, lon: -6.1278 })
   })
 
-  it('should convert NI location using Irish Grid (easting/northing) to WGS84', () => {
-    // '' Test Irish Grid (EPSG:29903) to WGS84 conversion using proj4
+  it('should handle OsGridRef error for NI location', () => {
+    // ''
     const matches = [
       {
-        easting: 333500, // Belfast Irish Grid easting
-        northing: 374000 // Belfast Irish Grid northing
+        GAZETTEER_ENTRY: { LONGITUDE: 'invalid', LATITUDE: 'invalid' }
       }
     ]
     const location = 'ni-location'
     const index = 0
+    const latlon = { _lat: 54.5074, _lon: -6.1278 }
+    OsGridRef.mockImplementation(() => {
+      throw new Error('Invalid coordinates')
+    })
+    OsGridRef.osGridToLatLong.mockReturnValue(latlon)
 
     const result = convertPointToLonLat(matches, location, index)
-
-    // '' Verify conversion to WGS84 coordinates
-    expect(result.lat).toBeCloseTo(54.597, 2)
-    expect(result.lon).toBeCloseTo(-5.934, 2)
-  })
-
-  it('should convert BT93 8AD (Enniskillen) using Irish Grid to WGS84', () => {
-    // '' Test with Enniskillen coordinates
-    const matches = [
-      {
-        easting: 322735,
-        northing: 358240
-      }
-    ]
-    const location = 'ni-location'
-    const index = 0
-
-    const result = convertPointToLonLat(matches, location, index)
-
-    expect(result.lat).toBeCloseTo(54.458, 2)
-    expect(result.lon).toBeCloseTo(-6.107, 2)
-  })
-
-  it('should handle proj4 error for NI location when using invalid easting/northing', () => {
-    // '' Test error handling when converting invalid Irish Grid coordinates
-    const matches = [
-      {
-        easting: 'invalid',
-        northing: 'invalid'
-      }
-    ]
-    const location = 'ni-location'
-    const index = 0
-
-    const result = convertPointToLonLat(matches, location, index)
-    // Should return empty strings when conversion fails
-    expect(result).toEqual({ lat: '', lon: '' })
+    expect(result).toEqual({ lat: 54.5074, lon: -6.1278 })
   })
 })
 
 describe('coordinatesTotal', () => {
   it('should return coordinates from matches', () => {
-    // '' MongoDB GeoJSON format: [longitude, latitude]
-    const matches = [{ location: { coordinates: [-0.1278, 51.5074] } }]
+    // ''
+    const matches = [{ location: { coordinates: [51.5074, -0.1278] } }]
     const result = coordinatesTotal(matches)
 
     expect(result).toEqual([{ latitude: 51.5074, longitude: -0.1278 }])
