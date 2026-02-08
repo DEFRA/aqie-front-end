@@ -14,9 +14,9 @@ const redirectUri = config.get('redirectUriNIreland')
 const scope = config.get('scopeNIreland')
 
 // '' Retry configuration for OAuth token fetch
-const MAX_RETRIES = 3
-const INITIAL_RETRY_DELAY = 1000 // 1 second
-const MAX_RETRY_DELAY = 5000 // 5 seconds
+const MAX_RETRIES = 5
+const INITIAL_RETRY_DELAY = 2000 // 2 seconds
+const MAX_RETRY_DELAY = 10000 // 10 seconds
 
 // '' Helper function to wait for a specified delay
 function delay(ms) {
