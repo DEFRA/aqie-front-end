@@ -39,8 +39,18 @@ const handleLocationDataNotFound = (
   searchTerms
 ) => {
   request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+
+  // '' Check if user is in notification flow
+  const notificationFlow = request.yar.get('notificationFlow')
+
   if (searchTerms) {
     request.yar.clear('searchTermsSaved')
+
+    // '' Preserve notification flow if active
+    const backlinkUrl = notificationFlow
+      ? `/search-location?from${notificationFlow === 'sms' ? 'Sms' : 'Email'}Flow=true`
+      : undefined
+
     // '' Render error view directly to avoid redirect
     return h
       .view('error/index', {
@@ -50,12 +60,16 @@ const handleLocationDataNotFound = (
         message: 'Page not found',
         url: request.path,
         notFoundUrl: english.notFoundUrl,
-        displayBacklink: false,
+        displayBacklink: !!backlinkUrl,
+        customBackLink: !!backlinkUrl,
+        backLinkUrl: backlinkUrl,
+        backLinkText: 'Go back to search',
         phaseBanner: english.phaseBanner,
         footerTxt: english.footerTxt,
         cookieBanner: english.cookieBanner,
         serviceName: english.multipleLocations.serviceName,
-        lang
+        lang,
+        notificationFlow
       })
       .code(STATUS_NOT_FOUND)
       .takeover()
@@ -65,6 +79,51 @@ const handleLocationDataNotFound = (
 
 // '' Helper: Render service unavailable page for upstream failures
 const handleServiceUnavailable = (request, h, lang) => {
+  // '' Check if user is in notification flow (SMS or Email)
+  const notificationFlow = request.yar.get('notificationFlow')
+  const mobileNumber = request.yar.get('mobileNumber')
+  const email = request.yar.get('email')
+
+  if (notificationFlow && (mobileNumber || email)) {
+    logger.warn(
+      `[SERVICE UNAVAILABLE] User in ${notificationFlow} notification flow - preserving session and allowing retry`,
+      {
+        flow: notificationFlow,
+        hasMobileNumber: !!mobileNumber,
+        hasEmail: !!email
+      }
+    )
+
+    // '' Preserve notification flow state and allow retry
+    const backlinkUrl =
+      notificationFlow === 'sms'
+        ? '/search-location?fromSmsFlow=true'
+        : '/search-location?fromEmailFlow=true'
+
+    return h
+      .view('error/index', {
+        pageTitle: english.notFoundUrl.serviceAPI.pageTitle,
+        heading: english.notFoundUrl.serviceAPI.heading,
+        statusCode: STATUS_INTERNAL_SERVER_ERROR,
+        message: english.notFoundUrl.serviceAPI.heading,
+        url: request.path,
+        notFoundUrl: english.notFoundUrl,
+        displayBacklink: true,
+        customBackLink: true,
+        backLinkUrl: backlinkUrl,
+        backLinkText: 'Go back to search',
+        phaseBanner: english.phaseBanner,
+        footerTxt: english.footerTxt,
+        cookieBanner: english.cookieBanner,
+        serviceName: english.multipleLocations.serviceName,
+        lang,
+        notificationFlow
+      })
+      .code(STATUS_INTERNAL_SERVER_ERROR)
+      .takeover()
+  }
+
+  // '' Normal error handling - no notification flow
   return h
     .view('error/index', {
       pageTitle: english.notFoundUrl.serviceAPI.pageTitle,
