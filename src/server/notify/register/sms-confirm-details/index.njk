@@ -25,6 +25,46 @@
           <li>{{ monitoringAlert }}</li>
         </ul>
 
+        {# '' Summary list showing mobile number and location with change links #}
+        {{ govukSummaryList({
+          rows: [
+            {
+              key: {
+                text: content.summaryList.mobileLabel
+              },
+              value: {
+                text: mobileNumber
+              },
+              actions: {
+                items: [
+                  {
+                    href: "/notify/register/sms-mobile-number",
+                    text: content.summaryList.changePhoneText,
+                    visuallyHiddenText: content.summaryList.changePhoneHidden
+                  }
+                ]
+              }
+            },
+            {
+              key: {
+                text: content.summaryList.locationLabel
+              },
+              value: {
+                text: location
+              },
+              actions: {
+                items: [
+                  {
+                    href: "/search-location?notificationFlow=sms",
+                    text: content.summaryList.changeLocationText,
+                    visuallyHiddenText: content.summaryList.changeLocationHidden
+                  }
+                ]
+              }
+            }
+          ]
+        }) }}
+
         <button type="submit" class="govuk-button" data-module="govuk-button">
           {{ content.continueButton }}
         </button>
