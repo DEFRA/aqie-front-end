@@ -23,16 +23,27 @@
       </div>
 
       <h2 class="govuk-heading-m">Your alert details</h2>
-      <dl class="govuk-summary-list">
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Email address</dt>
-          <dd class="govuk-summary-list__value">{{ emailAddress }}</dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Location</dt>
-          <dd class="govuk-summary-list__value">{{ location }}</dd>
-        </div>
-      </dl>
+      {# '' Summary list showing alert details #}
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Email address"
+            },
+            value: {
+              text: emailAddress
+            }
+          },
+          {
+            key: {
+              text: "Location"
+            },
+            value: {
+              text: location
+            }
+          }
+        ]
+      }) }}
 
       <form action="/notify/register/alerts-success" method="post">
         <button type="submit" class="govuk-button">Return to Check air quality</button>

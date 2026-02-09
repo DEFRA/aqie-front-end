@@ -17,33 +17,87 @@
 
         <h1 class="govuk-heading-l">Confirm your alert details</h1>
 
-        <dl class="govuk-summary-list">
-          {% if emailAddress %}
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">Email address</dt>
-            <dd class="govuk-summary-list__value">{{ emailAddress }}</dd>
-            <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" href="/notify/register/email-details">Change<span class="govuk-visually-hidden"> email address</span></a>
-            </dd>
-          </div>
-          {% endif %}
-          {% if mobileNumber %}
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">Mobile phone number</dt>
-            <dd class="govuk-summary-list__value">{{ mobileNumber }}</dd>
-            <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" href="/notify/register/sms-mobile-number">Change<span class="govuk-visually-hidden"> mobile phone number</span></a>
-            </dd>
-          </div>
-          {% endif %}
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">Location</dt>
-            <dd class="govuk-summary-list__value">{{ location }}</dd>
-            <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" href="/search-location">Change<span class="govuk-visually-hidden"> location</span></a>
-            </dd>
-          </div>
-        </dl>
+        {# '' Summary list showing alert details #}
+        {% if emailAddress %}
+          {{ govukSummaryList({
+            rows: [
+              {
+                key: {
+                  text: "Email address"
+                },
+                value: {
+                  text: emailAddress
+                },
+                actions: {
+                  items: [
+                    {
+                      href: "/notify/register/email-details",
+                      text: "Change",
+                      visuallyHiddenText: "email address"
+                    }
+                  ]
+                }
+              },
+              {
+                key: {
+                  text: "Location"
+                },
+                value: {
+                  text: location
+                },
+                actions: {
+                  items: [
+                    {
+                      href: "/search-location",
+                      text: "Change",
+                      visuallyHiddenText: "location"
+                    }
+                  ]
+                }
+              }
+            ]
+          }) }}
+        {% endif %}
+        {% if mobileNumber %}
+          {{ govukSummaryList({
+            rows: [
+              {
+                key: {
+                  text: "Mobile phone number"
+                },
+                value: {
+                  text: mobileNumber
+                },
+                actions: {
+                  items: [
+                    {
+                      href: "/notify/register/sms-mobile-number",
+                      text: "Change",
+                      visuallyHiddenText: "mobile phone number"
+                    }
+                  ]
+                }
+              },
+              {
+                key: {
+                  text: "Location"
+                },
+                value: {
+                  text: location
+                },
+                actions: {
+                  items: [
+                    {
+                      href: "/search-location",
+                      text: "Change",
+                      visuallyHiddenText: "location"
+                    }
+                  ]
+                }
+              }
+            ]
+          }) }}
+        {% endif %}
 
         <div class="govuk-form-group{% if error and error.field === 'confirmDetails' %} govuk-form-group--error{% endif %}">
           <fieldset class="govuk-fieldset">
