@@ -34,6 +34,8 @@ const refreshOAuthToken = async (request, di = {}) => {
   const testLogger = di.logger || logger
   const testFetchOAuthToken = di.fetchOAuthToken || fetchOAuthToken
   const testIsTestMode = di.isTestMode || isTestMode
+  // '' Read saved access token for fallback on fetch failure
+  const savedAccessToken = request?.yar?.get?.('savedAccessToken')
   if (testIsTestMode?.()) {
     if (testLogger && typeof testLogger.info === 'function') {
       testLogger.info('Test mode: refreshOAuthToken returning mock token')
@@ -42,6 +44,12 @@ const refreshOAuthToken = async (request, di = {}) => {
   }
   const accessToken = await testFetchOAuthToken({ logger: testLogger })
   if (accessToken?.error) {
+    if (savedAccessToken) {
+      testLogger.warn(
+        'OAuth token fetch failed; using saved access token fallback'
+      )
+      return { accessToken: savedAccessToken, isFallback: true }
+    }
     return accessToken
   }
   // '' Guard against missing request or yar (session) object

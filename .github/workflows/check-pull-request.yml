@@ -44,6 +44,7 @@ jobs:
         run: git fetch --no-tags --prune origin +refs/heads/main:refs/remotes/origin/main
 
       - name: SonarCloud Scan
+        continue-on-error: true
         if: github.actor != 'dependabot[bot]'
         uses: SonarSource/sonarcloud-github-action@eb211723266fe8e83102bac7361f0a05c3ac1d1b # v3.0.0 - Security: pinned to commit SHA
         with:

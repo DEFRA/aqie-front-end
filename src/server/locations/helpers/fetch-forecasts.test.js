@@ -110,16 +110,30 @@ describe('refreshOAuthToken additional coverage', () => {
 })
 
 describe('refreshOAuthToken error handling', () => {
-  it('returns error if fetchOAuthToken returns error', async () => {
+  it('returns error if fetchOAuthToken returns error and no saved token', async () => {
     const di = {
       isTestMode: () => false,
-      logger: { info: vi.fn(), error: vi.fn() },
+      logger: { info: vi.fn(), error: vi.fn(), warn: vi.fn() },
       fetchOAuthToken: vi.fn(async () => ({ error: 'fail' }))
     }
-    const request = { yar: { clear: vi.fn(), set: vi.fn() } }
+    const request = { yar: { clear: vi.fn(), set: vi.fn(), get: vi.fn() } }
+    request.yar.get.mockReturnValue(undefined)
     const result = await refreshOAuthToken(request, di)
 
     expect(result).toEqual({ error: 'fail' })
+  })
+
+  it('uses saved token if fetchOAuthToken returns error', async () => {
+    const di = {
+      isTestMode: () => false,
+      logger: { info: vi.fn(), error: vi.fn(), warn: vi.fn() },
+      fetchOAuthToken: vi.fn(async () => ({ error: 'fail' }))
+    }
+    const request = { yar: { clear: vi.fn(), set: vi.fn(), get: vi.fn() } }
+    request.yar.get.mockReturnValue('saved-token')
+    const result = await refreshOAuthToken(request, di)
+
+    expect(result).toEqual({ accessToken: 'saved-token', isFallback: true })
   })
 })
 

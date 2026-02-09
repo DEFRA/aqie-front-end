@@ -64,14 +64,13 @@ async function getNIPlaces(userLocation, request) {
   logger.info(`[getNIPlaces] OAuth options: ${JSON.stringify(optionsOAuth)}`)
 
   // '' Wrap NI API call with retry logic for better reliability
-  let statusCodeNI, niPlacesData
-  try {
-    ;[statusCodeNI, niPlacesData] = await fetchWithRetry(
+  const runNiRequest = async (requestOptions) =>
+    fetchWithRetry(
       async (controller) => {
         // Pass abort controller signal to catchProxyFetchError
         const optionsWithSignal = controller
-          ? { ...optionsOAuth, signal: controller.signal }
-          : optionsOAuth
+          ? { ...requestOptions, signal: controller.signal }
+          : requestOptions
 
         return await catchProxyFetchError(
           postcodeNortherIrelandURL,
@@ -86,11 +85,49 @@ async function getNIPlaces(userLocation, request) {
         timeoutMs: config.get('niApiTimeoutMs')
       }
     )
+
+  let statusCodeNI, niPlacesData
+  try {
+    ;[statusCodeNI, niPlacesData] = await runNiRequest(optionsOAuth)
   } catch (error) {
     logger.error(
       `[getNIPlaces] NI API call failed after retries: ${error.message}`
     )
     return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
+  }
+
+  // '' If token expired, refresh OAuth token and retry once
+  if (!isMockEnabled && statusCodeNI === 401) {
+    logger.warn('[getNIPlaces] NI API returned 401; refreshing OAuth token')
+    const tokenResult = await refreshOAuthToken(request, { logger })
+    if (tokenResult?.error) {
+      logger.error(
+        `[getNIPlaces] OAuth token refresh failed after 401: ${tokenResult.error}`
+      )
+      return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
+    }
+
+    const accessToken = tokenResult?.accessToken
+    if (!accessToken) {
+      logger.error('[getNIPlaces] OAuth token missing after refresh')
+      return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
+    }
+
+    optionsOAuth = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    }
+
+    try {
+      ;[statusCodeNI, niPlacesData] = await runNiRequest(optionsOAuth)
+    } catch (error) {
+      logger.error(
+        `[getNIPlaces] NI API retry failed after token refresh: ${error.message}`
+      )
+      return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
+    }
   }
 
   logger.info(`[getNIPlaces] Response status: ${statusCodeNI}`)

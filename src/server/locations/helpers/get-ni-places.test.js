@@ -1,19 +1,22 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { STATUS_OK } from '../../data/constants.js'
 
+const defaultConfigValues = {
+  enabledMock: 'false',
+  osPlacesApiPostcodeNorthernIrelandUrl: 'https://api.example.com/ni/',
+  mockOsPlacesApiPostcodeNorthernIrelandUrl: 'https://mock.example.com/ni/',
+  niApiMaxRetries: 1,
+  niApiRetryDelayMs: 1,
+  niApiTimeoutMs: 10,
+  log: '{ "enabled": true }'
+}
+
 // Mock config FIRST before any imports that use it
 vi.mock('../../../config/index.js', () => {
-  const configValues = {
-    enabledMock: 'false',
-    osPlacesApiPostcodeNorthernIrelandUrl: 'https://api.example.com/ni/',
-    mockOsPlacesApiPostcodeNorthernIrelandUrl: 'https://mock.example.com/ni/',
-    log: '{ "enabled": true }'
-  }
-
   return {
     config: {
       get: vi.fn((key) => {
-        const value = configValues[key] ?? ''
+        const value = defaultConfigValues[key] ?? ''
         // Parse JSON strings back to objects for 'log'
         if (key === 'log' && typeof value === 'string') {
           try {
@@ -41,7 +44,8 @@ vi.mock('../../common/helpers/catch-proxy-fetch-error.js', () => {
 vi.mock('../../common/helpers/logging/logger.js', () => ({
   createLogger: vi.fn(() => ({
     info: vi.fn(),
-    error: vi.fn()
+    error: vi.fn(),
+    warn: vi.fn()
   }))
 }))
 
@@ -55,12 +59,28 @@ const { getNIPlaces } = await import('./get-ni-places.js')
 describe('getNIPlaces', () => {
   let catchProxyFetchError
   let config
+  let refreshOAuthToken
 
   beforeEach(async () => {
     ;({ catchProxyFetchError } = await import(
       '../../common/helpers/catch-proxy-fetch-error.js'
     ))
     ;({ config } = await import('../../../config/index.js'))
+    ;({ refreshOAuthToken } = await import('./extracted/util-helpers.js'))
+    config.get.mockImplementation((key) => {
+      const value = defaultConfigValues[key] ?? ''
+      if (key === 'log' && typeof value === 'string') {
+        try {
+          return JSON.parse(value)
+        } catch {
+          return value
+        }
+      }
+      if (key === 'enabledMock') {
+        return value === 'true'
+      }
+      return value
+    })
     catchProxyFetchError.mockResolvedValue([
       STATUS_OK,
       { results: [{ id: 'test' }] }
@@ -149,5 +169,17 @@ describe('getNIPlaces', () => {
     const result = await getNIPlaces('BT1 1AA')
 
     expect(result).toEqual({ results: [], error: 'service-unavailable' })
+  })
+
+  it('should refresh token and retry once on 401', async () => {
+    refreshOAuthToken.mockResolvedValue({ accessToken: 'refreshed-token' })
+    catchProxyFetchError
+      .mockResolvedValueOnce([401, { error: 'unauthorized' }])
+      .mockResolvedValueOnce([STATUS_OK, { results: [{ id: 'retry' }] }])
+
+    const result = await getNIPlaces('BT1 1AA')
+
+    expect(catchProxyFetchError).toHaveBeenCalledTimes(2)
+    expect(result.results).toEqual([{ id: 'retry' }])
   })
 })

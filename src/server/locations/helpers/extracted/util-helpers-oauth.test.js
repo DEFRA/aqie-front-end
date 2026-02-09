@@ -70,7 +70,7 @@ describe('refreshOAuthToken - test mode', () => {
       )
     })
 
-    it('should return error if fetchOAuthToken fails', async () => {
+    it('should return error if fetchOAuthToken fails and no saved token', async () => {
       const mockError = { error: 'Failed to fetch token' }
       const di = {
         logger: mockLogger,
@@ -78,10 +78,25 @@ describe('refreshOAuthToken - test mode', () => {
         isTestMode: () => false
       }
 
+      mockRequest.yar.get.mockReturnValue(undefined)
       const result = await refreshOAuthToken(mockRequest, di)
 
       expect(result).toEqual(mockError)
       expect(mockRequest.yar.clear).not.toHaveBeenCalled()
+    })
+
+    it('should fall back to saved token if fetchOAuthToken fails', async () => {
+      const mockError = { error: 'Failed to fetch token' }
+      const di = {
+        logger: mockLogger,
+        fetchOAuthToken: vi.fn().mockResolvedValue(mockError),
+        isTestMode: () => false
+      }
+
+      mockRequest.yar.get.mockReturnValue('saved-token')
+      const result = await refreshOAuthToken(mockRequest, di)
+
+      expect(result).toEqual({ accessToken: 'saved-token', isFallback: true })
     })
   })
 
