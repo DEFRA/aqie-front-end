@@ -105,10 +105,13 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
   // '' If phone number or location is missing, log error but continue
   // '' The API call will fail and handle the error appropriately
   if (!phoneNumber || !location) {
-    logger.error('Missing phone number or location in session - this should not happen', {
-      hasPhoneNumber: !!phoneNumber,
-      hasLocation: !!location
-    })
+    logger.error(
+      'Missing phone number or location in session - this should not happen',
+      {
+        hasPhoneNumber: !!phoneNumber,
+        hasLocation: !!location
+      }
+    )
   }
 
   if (!lat || !long) {
