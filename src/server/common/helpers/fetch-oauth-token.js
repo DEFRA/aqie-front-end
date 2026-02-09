@@ -12,6 +12,7 @@ const clientId = config.get('clientIdNIreland')
 const clientSecret = config.get('clientSecretNIreland')
 const redirectUri = config.get('redirectUriNIreland')
 const scope = config.get('scopeNIreland')
+const tokenTimeoutMs = config.get('niApiTimeoutMs') ?? 15000
 
 // '' Retry configuration for OAuth token fetch
 const MAX_RETRIES = 5
@@ -21,6 +22,13 @@ const MAX_RETRY_DELAY = 10000 // 10 seconds
 // '' Helper function to wait for a specified delay
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+// '' Create AbortController with timeout for token fetch
+function createTimeoutController(timeoutMs) {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+  return { controller, timeoutId }
 }
 
 // '' Calculate exponential backoff delay with jitter
@@ -65,12 +73,18 @@ export async function fetchOAuthToken(options = {}) {
         await delay(retryDelay)
       }
 
-      // Invoking token API
-      const [statusCodeToken, dataToken] = await catchFetchError(
-        url,
-        requestOptions,
-        true
-      )
+      // '' Invoking token API with explicit timeout
+      const { controller, timeoutId } = createTimeoutController(tokenTimeoutMs)
+      let statusCodeToken
+      let dataToken
+      try {
+        ;[statusCodeToken, dataToken] = await catchFetchError(url, {
+          ...requestOptions,
+          signal: controller.signal
+        })
+      } finally {
+        clearTimeout(timeoutId)
+      }
 
       if (statusCodeToken !== 200) {
         lastStatusCode = statusCodeToken

@@ -106,18 +106,15 @@ describe('Confirm Alert Details Controller - Missing Session Data', () => {
     }
 
     const mockH = {
-      view: vi.fn()
+      view: vi.fn(),
+      redirect: vi.fn()
     }
     const mockContent = createMockContent()
 
     handleConfirmAlertDetailsRequest(mockRequest, mockH, mockContent)
 
-    expect(mockH.view).toHaveBeenCalledWith(
-      'notify/register/sms-confirm-details/index',
-      expect.objectContaining({
-        mobileNumber: 'Not provided',
-        location: 'Unknown location'
-      })
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      '/search-location?fromSmsFlow=true'
     )
   })
 })
