@@ -323,11 +323,16 @@ function shouldReturnNotFound(
   return false
 }
 
-function isInvalidDailySummary(getDailySummary) {
+function isInvalidDailySummary(getDailySummary, locationType) {
   const isMockEnabled = config.get('enabledMock')
 
   // '' When mock is enabled, allow null daily summary for NI testing
   if (isMockEnabled) {
+    return false
+  }
+
+  // '' For NI locations, don't enforce daily summary check (matches production 0.685.0 behavior)
+  if (locationType === LOCATION_TYPE_NI) {
     return false
   }
 
@@ -494,10 +499,10 @@ const searchMiddleware = async (request, h) => {
       userLocation,
       getOSPlaces
     ) ||
-    isInvalidDailySummary(getDailySummary)
+    isInvalidDailySummary(getDailySummary, redirectError.locationType)
   ) {
     logger.info(
-      `[DEBUG] Redirecting to location-not-found. shouldReturnNotFound: ${shouldReturnNotFound(redirectError, getNIPlaces, userLocation, getOSPlaces)}, isInvalidDailySummary: ${isInvalidDailySummary(getDailySummary)}`
+      `[DEBUG] Redirecting to location-not-found. shouldReturnNotFound: ${shouldReturnNotFound(redirectError, getNIPlaces, userLocation, getOSPlaces)}, isInvalidDailySummary: ${isInvalidDailySummary(getDailySummary, redirectError.locationType)}`
     )
     logger.info(`[DEBUG] getDailySummary: ${JSON.stringify(getDailySummary)}`)
     return handleLocationDataNotFound(
