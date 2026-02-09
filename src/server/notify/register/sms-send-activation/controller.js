@@ -11,6 +11,32 @@ const MOBILE_NUMBER_PAGE_PATH = '/notify/register/sms-mobile-number'
 // Create a logger instance ''
 const logger = createLogger()
 
+const buildSmsMobileNumberUrl = ({
+  location = '',
+  locationId = '',
+  lat,
+  long
+} = {}) => {
+  const queryParams = new URLSearchParams()
+  if (location) {
+    queryParams.set('location', location)
+  }
+  if (locationId) {
+    queryParams.set('locationId', locationId)
+  }
+  if (lat) {
+    queryParams.set('lat', lat)
+  }
+  if (long) {
+    queryParams.set('long', long)
+  }
+
+  const queryString = queryParams.toString()
+  return queryString
+    ? `${MOBILE_NUMBER_PAGE_PATH}?${queryString}`
+    : MOBILE_NUMBER_PAGE_PATH
+}
+
 /**
  * Handle GET request for SMS send activation page ''
  * @param {Object} request - Hapi request object
@@ -28,11 +54,17 @@ export const handleSendActivationRequest = (request, h, content = english) => {
     return h.redirect(MOBILE_NUMBER_PAGE_PATH)
   }
 
-  // Get locationId from session to build back link with query parameter ''
+  // Get location context from session to build back link with query parameters ''
   const locationId = request.yar.get('locationId') || ''
-  const backLinkUrl = locationId
-    ? `${MOBILE_NUMBER_PAGE_PATH}?locationId=${encodeURIComponent(locationId)}`
-    : MOBILE_NUMBER_PAGE_PATH
+  const location = request.yar.get('location') || ''
+  const lat = request.yar.get('latitude')
+  const long = request.yar.get('longitude')
+  const backLinkUrl = buildSmsMobileNumberUrl({
+    location,
+    locationId,
+    lat,
+    long
+  })
 
   const { footerTxt, phaseBanner, cookieBanner } = content
   const metaSiteUrl = getAirQualitySiteUrl(request)
@@ -55,6 +87,7 @@ export const handleSendActivationRequest = (request, h, content = english) => {
     customBackLink: true,
     backLinkText: 'Back',
     backLinkUrl,
+    changeMobileNumberUrl: backLinkUrl,
     mobileNumber
   }
 

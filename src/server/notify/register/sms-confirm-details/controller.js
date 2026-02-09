@@ -9,6 +9,32 @@ const LOCATION_PLACEHOLDER = '{location}'
 // Create a logger instance ''
 const logger = createLogger()
 
+const buildSmsMobileNumberUrl = ({
+  location = '',
+  locationId = '',
+  lat,
+  long
+} = {}) => {
+  const queryParams = new URLSearchParams()
+  if (location) {
+    queryParams.set('location', location)
+  }
+  if (locationId) {
+    queryParams.set('locationId', locationId)
+  }
+  if (lat) {
+    queryParams.set('lat', lat)
+  }
+  if (long) {
+    queryParams.set('long', long)
+  }
+
+  const queryString = queryParams.toString()
+  return queryString
+    ? `/notify/register/sms-mobile-number?${queryString}`
+    : '/notify/register/sms-mobile-number'
+}
+
 const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
   logger.info('Showing confirm alert details page')
 
@@ -27,20 +53,50 @@ const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
 
   // Get data from session ''
   const mobileNumber = request.yar.get('mobileNumber') || 'Not provided'
-  const location = request.yar.get('location') || 'Unknown location'
+  const location = request.yar.get('location')
+  const locationId = request.yar.get('locationId')
+  const lat = request.yar.get('latitude')
+  const long = request.yar.get('longitude')
+
+  // '' If location is missing but locationId exists, reload location to repopulate session
+  if (!location && locationId) {
+    logger.warn('Missing location in session, reloading location page', {
+      hasLocationId: true,
+      locationId
+    })
+    request.yar.set('notificationFlow', 'sms')
+    return h.redirect(`/location/${locationId}`)
+  }
+
+  // '' If location and locationId are missing, redirect to search to avoid 500
+  if (!location && !locationId) {
+    logger.error('Missing location and locationId in session', {
+      hasLocation: false,
+      hasLocationId: false
+    })
+    return h.redirect('/search-location?fromSmsFlow=true')
+  }
+
+  const safeLocation = location || 'Unknown location'
+  const changeMobileNumberUrl = buildSmsMobileNumberUrl({
+    location: safeLocation,
+    locationId,
+    lat,
+    long
+  })
 
   // Replace {location} placeholder with actual location ''
   const heading = smsConfirmDetails.heading.replace(
     LOCATION_PLACEHOLDER,
-    location
+    safeLocation
   )
   const forecastAlert = smsConfirmDetails.alertTypes.forecast.replace(
     LOCATION_PLACEHOLDER,
-    location
+    safeLocation
   )
   const monitoringAlert = smsConfirmDetails.alertTypes.monitoring.replace(
     LOCATION_PLACEHOLDER,
-    location
+    safeLocation
   )
 
   const viewModel = {
@@ -57,14 +113,15 @@ const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
     cookieBanner,
     displayBacklink: false,
     content: smsConfirmDetails,
+    changeMobileNumberUrl,
     mobileNumber,
-    location,
+    location: safeLocation,
     forecastAlert,
     monitoringAlert,
     formData: request.yar.get('formData') || {},
     duplicateAlertError: duplicateAlertError
       ? {
-          summary: `You have already set up an alert for ${duplicateAlertLocation || location}. Choose a different location or mobile phone number.`,
+          summary: `You have already set up an alert for ${duplicateAlertLocation || safeLocation}. Choose a different location or mobile phone number.`,
           message:
             'Select yes if you want to receive air quality alerts for a different location'
         }
