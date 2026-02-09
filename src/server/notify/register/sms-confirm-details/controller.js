@@ -38,97 +38,108 @@ const buildSmsMobileNumberUrl = ({
 const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
   logger.info('Showing confirm alert details page')
 
-  const { footerTxt, phaseBanner, cookieBanner, smsConfirmDetails } = content
-  const metaSiteUrl = getAirQualitySiteUrl(request)
+  try {
+    const { footerTxt, phaseBanner, cookieBanner, smsConfirmDetails } = content
+    const metaSiteUrl = getAirQualitySiteUrl(request)
 
-  // '' Check for duplicate alert error
-  const duplicateAlertError = request.yar.get('duplicateAlertError')
-  const duplicateAlertLocation = request.yar.get('duplicateAlertLocation')
+    // '' Check for duplicate alert error
+    const duplicateAlertError = request.yar.get('duplicateAlertError')
+    const duplicateAlertLocation = request.yar.get('duplicateAlertLocation')
 
-  // '' Clear error flags after reading
-  if (duplicateAlertError) {
-    request.yar.clear('duplicateAlertError')
-    request.yar.clear('duplicateAlertLocation')
-  }
+    // '' Clear error flags after reading
+    if (duplicateAlertError) {
+      request.yar.clear('duplicateAlertError')
+      request.yar.clear('duplicateAlertLocation')
+    }
 
-  // Get data from session ''
-  const mobileNumber = request.yar.get('mobileNumber') || 'Not provided'
-  const location = request.yar.get('location')
-  const locationId = request.yar.get('locationId')
-  const lat = request.yar.get('latitude')
-  const long = request.yar.get('longitude')
+    // Get data from session ''
+    const mobileNumber = request.yar.get('mobileNumber') || 'Not provided'
+    const location = request.yar.get('location')
+    const locationId = request.yar.get('locationId')
+    const lat = request.yar.get('latitude')
+    const long = request.yar.get('longitude')
 
-  // '' If location is missing but locationId exists, reload location to repopulate session
-  if (!location && locationId) {
-    logger.warn('Missing location in session, reloading location page', {
-      hasLocationId: true,
-      locationId
+    // '' If location is missing but locationId exists, reload location to repopulate session
+    if (!location && locationId) {
+      logger.warn('Missing location in session, reloading location page', {
+        hasLocationId: true,
+        locationId
+      })
+      request.yar.set('notificationFlow', 'sms')
+      return h.redirect(`/location/${locationId}`)
+    }
+
+    // '' If location and locationId are missing, redirect to search to avoid 500
+    if (!location && !locationId) {
+      logger.error('Missing location and locationId in session', {
+        hasLocation: false,
+        hasLocationId: false
+      })
+      return h.redirect('/search-location?fromSmsFlow=true')
+    }
+
+    const safeLocation = location || 'Unknown location'
+    const changeMobileNumberUrl = buildSmsMobileNumberUrl({
+      location: safeLocation,
+      locationId,
+      lat,
+      long
     })
-    request.yar.set('notificationFlow', 'sms')
-    return h.redirect(`/location/${locationId}`)
-  }
 
-  // '' If location and locationId are missing, redirect to search to avoid 500
-  if (!location && !locationId) {
-    logger.error('Missing location and locationId in session', {
-      hasLocation: false,
-      hasLocationId: false
+    // Replace {location} placeholder with actual location ''
+    const heading = smsConfirmDetails.heading.replace(
+      LOCATION_PLACEHOLDER,
+      safeLocation
+    )
+    const forecastAlert = smsConfirmDetails.alertTypes.forecast.replace(
+      LOCATION_PLACEHOLDER,
+      safeLocation
+    )
+    const monitoringAlert = smsConfirmDetails.alertTypes.monitoring.replace(
+      LOCATION_PLACEHOLDER,
+      safeLocation
+    )
+
+    const viewModel = {
+      pageTitle: duplicateAlertError
+        ? `Error: ${smsConfirmDetails.pageTitle} - Check air quality - GOV.UK`
+        : `${smsConfirmDetails.pageTitle} - Check air quality - GOV.UK`,
+      heading,
+      page: heading,
+      serviceName: 'Check air quality',
+      lang: LANG_EN,
+      metaSiteUrl,
+      footerTxt,
+      phaseBanner,
+      cookieBanner,
+      displayBacklink: false,
+      content: smsConfirmDetails,
+      changeMobileNumberUrl,
+      mobileNumber,
+      location: safeLocation,
+      forecastAlert,
+      monitoringAlert,
+      formData: request.yar.get('formData') || {},
+      duplicateAlertError: duplicateAlertError
+        ? {
+            summary: `You have already set up an alert for ${duplicateAlertLocation || safeLocation}. Choose a different location or mobile phone number.`,
+            message:
+              'Select yes if you want to receive air quality alerts for a different location'
+          }
+        : null
+    }
+
+    return h.view('notify/register/sms-confirm-details/index', viewModel)
+  } catch (error) {
+    logger.error('Failed to render sms-confirm-details page', {
+      error,
+      hasSession: Boolean(request?.yar),
+      hasLocation: Boolean(request?.yar?.get?.('location')),
+      hasLocationId: Boolean(request?.yar?.get?.('locationId')),
+      hasMobileNumber: Boolean(request?.yar?.get?.('mobileNumber'))
     })
-    return h.redirect('/search-location?fromSmsFlow=true')
+    throw error
   }
-
-  const safeLocation = location || 'Unknown location'
-  const changeMobileNumberUrl = buildSmsMobileNumberUrl({
-    location: safeLocation,
-    locationId,
-    lat,
-    long
-  })
-
-  // Replace {location} placeholder with actual location ''
-  const heading = smsConfirmDetails.heading.replace(
-    LOCATION_PLACEHOLDER,
-    safeLocation
-  )
-  const forecastAlert = smsConfirmDetails.alertTypes.forecast.replace(
-    LOCATION_PLACEHOLDER,
-    safeLocation
-  )
-  const monitoringAlert = smsConfirmDetails.alertTypes.monitoring.replace(
-    LOCATION_PLACEHOLDER,
-    safeLocation
-  )
-
-  const viewModel = {
-    pageTitle: duplicateAlertError
-      ? `Error: ${smsConfirmDetails.pageTitle} - Check air quality - GOV.UK`
-      : `${smsConfirmDetails.pageTitle} - Check air quality - GOV.UK`,
-    heading,
-    page: heading,
-    serviceName: 'Check air quality',
-    lang: LANG_EN,
-    metaSiteUrl,
-    footerTxt,
-    phaseBanner,
-    cookieBanner,
-    displayBacklink: false,
-    content: smsConfirmDetails,
-    changeMobileNumberUrl,
-    mobileNumber,
-    location: safeLocation,
-    forecastAlert,
-    monitoringAlert,
-    formData: request.yar.get('formData') || {},
-    duplicateAlertError: duplicateAlertError
-      ? {
-          summary: `You have already set up an alert for ${duplicateAlertLocation || safeLocation}. Choose a different location or mobile phone number.`,
-          message:
-            'Select yes if you want to receive air quality alerts for a different location'
-        }
-      : null
-  }
-
-  return h.view('notify/register/sms-confirm-details/index', viewModel)
 }
 
 const handleConfirmAlertDetailsPost = async (request, h) => {
