@@ -52,11 +52,15 @@ const handleAlertsSuccessRequest = (request, h, content = english) => {
 const handleAlertsSuccessPost = (request, h, content = english) => {
   // This is a success page, typically would just redirect back to home or clear session
 
-  // Clear notification session data
+  // Clear all notification session data when user is done
   request.yar.clear('mobileNumber')
   request.yar.clear('location')
+  request.yar.clear('locationId')
+  request.yar.clear('latitude')
+  request.yar.clear('longitude')
   request.yar.clear('alertDetailsConfirmed')
   request.yar.clear('notifyJourney')
+  request.yar.clear('notificationFlow')
   request.yar.clear('formData')
 
   // Redirect to home page ''
