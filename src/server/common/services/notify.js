@@ -225,22 +225,11 @@ export async function sendSmsCode(phoneNumber, request = null) {
   const mockOtpEnabled = config.get('notify.mockOtpEnabled')
   const mockOtpCode = config.get('notify.mockOtpCode') || '12345'
 
-  // '' Try real service first
-  const result = await postToBackend(request, smsPath, { phoneNumber })
-
-  // '' If mock is enabled and service failed (otp_generated_notification_failed), use mock
-  if (
-    mockOtpEnabled &&
-    (!result.ok || result.data?.status === 'otp_generated_notification_failed')
-  ) {
-    logger.warn(
-      'SMS service failed or returned otp_generated_notification_failed, using mock OTP',
-      {
-        mockOtpCode,
-        realServiceStatus: result.status,
-        realServiceBody: result.data || result.body
-      }
-    )
+  // '' If mock OTP is enabled, bypass the backend service entirely
+  if (mockOtpEnabled) {
+    logger.info('Mock OTP enabled, bypassing backend service', {
+      mockOtpCode
+    })
     // '' Store mock OTP in session for verification with timestamp and sequence
     if (request) {
       const currentSequence = request.yar.get('otpGenerationSequence') || 1
@@ -254,6 +243,9 @@ export async function sendSmsCode(phoneNumber, request = null) {
       mock: true
     }
   }
+
+  // '' Use real backend service
+  const result = await postToBackend(request, smsPath, { phoneNumber })
 
   // '' Clear mock OTP if real service succeeded
   if (request && result.ok) {
@@ -373,6 +365,7 @@ export async function setupAlert(
   const setupPath = config.get('notify.setupAlertPath')
   const alertBackendBaseUrl = config.get('notify.alertBackendBaseUrl')
   const mockSetupAlertEnabled = config.get('notify.mockSetupAlertEnabled')
+  const mockOtpEnabled = config.get('notify.mockOtpEnabled')
 
   // Convert coordinates to numbers if they're strings ''
   // MongoDB may expect numeric values for geospatial queries
@@ -422,6 +415,73 @@ export async function setupAlert(
       `Sanitized location name for alert setup: ${JSON.stringify(sanitizedLocationLog)}`,
       sanitizedLocationLog
     )
+  }
+
+  // '' If mock OTP is enabled, bypass backend service entirely and use mock storage
+  if (mockOtpEnabled) {
+    logger.info('Mock OTP enabled, bypassing backend for setup-alert')
+
+    // Check if phone number already has 5 alerts (max limit) ''
+    const normalizedPhone = normalizePhoneNumber(phoneNumber)
+    const alertCount = countAlertsForPhone(normalizedPhone)
+
+    if (alertCount >= MOCK_ALERTS_MAX_PER_PHONE) {
+      logger.warn(
+        `Mock storage: Phone ${normalizedPhone.slice(-PHONE_LAST_DIGITS_COUNT)} already has ${alertCount} alerts (max: ${MOCK_ALERTS_MAX_PER_PHONE})`
+      )
+      return {
+        ok: false,
+        status: 400,
+        body: {
+          message: `Maximum of ${MOCK_ALERTS_MAX_PER_PHONE} alerts allowed per phone number`,
+          mock: true
+        }
+      }
+    }
+
+    // Check for duplicate alert (same phone + location + coordinates) ''
+    const alertKey = generateStableAlertKey(
+      phoneNumber,
+      locationId,
+      sanitizedLocation,
+      latitude,
+      longitude
+    )
+
+    if (mockAlertStorage.has(alertKey)) {
+      logger.warn(
+        `Mock storage: Duplicate alert detected for phone ${normalizedPhone.slice(-PHONE_LAST_DIGITS_COUNT)} and location ${locationId}`
+      )
+      return {
+        ok: false,
+        status: 409,
+        body: { message: 'Alert already exists for this location', mock: true }
+      }
+    }
+
+    // Store alert in mock storage ''
+    mockAlertStorage.set(alertKey, {
+      phoneNumber: normalizedPhone,
+      alertType,
+      location: sanitizedLocation,
+      locationId,
+      coordinates: { lat: latitude, long: longitude },
+      createdAt: new Date().toISOString()
+    })
+
+    logger.info(
+      `Mock storage: Alert created for phone ${normalizedPhone.slice(-PHONE_LAST_DIGITS_COUNT)} (total: ${mockAlertStorage.size})`
+    )
+
+    return {
+      ok: true,
+      data: {
+        status: 'mock_alert_created',
+        phoneNumber: normalizedPhone,
+        locationId
+      },
+      mock: true
+    }
   }
 
   // Try real service first ''

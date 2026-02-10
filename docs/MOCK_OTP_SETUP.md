@@ -10,7 +10,7 @@ GOV.UK Notify has limits in trial mode:
 
 ## Solution
 
-The application now automatically falls back to mock OTP when the real service fails.
+The application provides a mock OTP mode that **bypasses the backend service entirely** for local development and testing.
 
 ## How It Works
 
@@ -25,30 +25,37 @@ The application now automatically falls back to mock OTP when the real service f
 }
 ```
 
-### 2. Automatic Fallback Logic
+### 2. Mock Mode Behavior
 
-1. **Always tries real service first** - Sends request to backend
-2. **Falls back to mock** if:
-   - Backend returns error
-   - Backend returns `{ status: "otp_generated_notification_failed" }`
-3. **Automatically uses real service** when it's working again
+When `mockOtpEnabled: true`:
+
+1. **Backend service is bypassed** - No API call to backend
+2. **Mock OTP code is used** - The configured code (default: `12345`) is stored in session
+3. **Server logs show**: `Mock OTP enabled, bypassing backend service`
+
+When `mockOtpEnabled: false`:
+
+1. **Backend service is called** - Normal SMS flow via GOV.UK Notify
+2. **Real OTP sent via SMS** - User receives actual text message
+3. **Verification via backend API** - Real service validates the code
 
 ### 3. Mock OTP Flow
 
-When mock mode activates:
+When mock mode is enabled:
 
+- No backend API call is made
 - Mock OTP code (`12345`) is stored in session
-- Server logs show: `Using mock OTP for local development`
+- Server logs show: `Mock OTP enabled, bypassing backend service { mockOtpCode: '12345' }`
 - User enters `12345` on verification page
 - Verification succeeds against session value
 
 ### 4. Real Service Flow
 
-When real service works:
+When mock mode is disabled:
 
-- SMS sent via GOV.UK Notify
-- Mock OTP cleared from session
-- User enters real code from SMS
+- SMS sent via GOV.UK Notify backend
+- User receives real code via SMS
+- User enters code from SMS
 - Verification happens via backend API
 
 ## Usage
@@ -125,19 +132,18 @@ NOTIFY_MOCK_OTP_CODE=99999
 
 ## Important Notes
 
-- **Mock is only a fallback** - Real service is always tried first
+- **Mock bypasses backend** - When enabled, no backend API calls are made
 - **No code changes needed** - Just toggle config setting
-- **Automatic detection** - Switches to real service when available
 - **Session-based** - Mock OTP stored securely in encrypted session
 - **Development only** - Production config should have `mockOtpEnabled: false`
+- **Toggle at will** - Switch between mock and real service by changing config
 
 ## Server Logs
 
 ### Mock Mode Active
 
 ```
-SMS service failed or returned otp_generated_notification_failed, using mock OTP
-Using mock OTP for local development { mockOtpCode: '12345' }
+Mock OTP enabled, bypassing backend service { mockOtpCode: '12345' }
 ```
 
 ### Real Service Working
@@ -191,23 +197,21 @@ This ensures mock OTP is never used in production environments.
 
 4. **Test the flow**:
    - Go through SMS registration
-   - When GOV.UK Notify fails (50 SMS limit or otp_generated_notification_failed)
-   - System automatically uses mock OTP: `12345`
+   - With mock enabled, backend service is bypassed
    - Enter `12345` to verify successfully
 
 5. **Monitor logs** to confirm mock mode:
    ```
-   SMS service failed or returned otp_generated_notification_failed, using mock OTP
-   Using mock OTP for local development { mockOtpCode: '12345' }
+   Mock OTP enabled, bypassing backend service { mockOtpCode: '12345' }
    ```
 
-### When GOV.UK Notify Works Again
+### To Use Real Service
 
-No action needed! The system:
+Disable mock mode:
 
-- Always tries real service first
-- Automatically switches back when real service succeeds
-- Mock only activates as fallback
+- Set `NOTIFY_MOCK_OTP_ENABLED=false` or remove the variable
+- Redeploy the service
+- Real backend service will be called for SMS sending and verification
 
 ### To Disable Mock Mode
 

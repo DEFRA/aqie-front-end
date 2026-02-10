@@ -144,7 +144,7 @@ export const handleSendActivationPost = async (request, h) => {
       })
     } else {
       if (result?.mock) {
-        logger.info('Using mock OTP for local development', {
+        logger.info('Mock OTP enabled, bypassing backend service', {
           mockOtpCode: result?.data?.mockOtpCode
         })
       } else {

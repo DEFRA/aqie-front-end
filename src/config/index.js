@@ -253,7 +253,7 @@ export const config = convict({
       env: 'NOTIFY_ENABLED'
     },
     mockOtpEnabled: {
-      doc: 'Enable mock OTP fallback when real service fails (for local and test environments)',
+      doc: 'Enable mock OTP mode (bypasses backend service entirely for local and test environments)',
       format: Boolean,
       default: false,
       env: 'NOTIFY_MOCK_OTP_ENABLED'
