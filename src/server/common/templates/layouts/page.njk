@@ -46,6 +46,25 @@
   <meta name="description" content="{{metaDescription}}" />
   <meta name="google-site-verification" content="kK4-XyhL8lJqQ4AkkeB6GVwxm3NrhvUFt4g7TE1m7vc" />
   <link href="{{ getAssetPath('stylesheets/application.scss') }}" rel="stylesheet">
+  
+  {# '' Inline script to show loading overlay immediately if flag is set - must run before page renders #}
+  <script>
+    (function() {
+      if (sessionStorage.getItem('search-loading-active') === 'true') {
+        document.documentElement.classList.add('search-loading-init');
+        var style = document.createElement('style');
+        style.textContent = '.search-loading-init { overflow: hidden; } .search-loading-init::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 12, 12, 0.8); z-index: 9999; display: flex; align-items: center; justify-content: center; }';
+        document.head.appendChild(style);
+      }
+    })();
+  </script>
+  {# '' Ensure page still loads if JavaScript is disabled #}
+  <noscript>
+    <style>
+      .search-loading-init { overflow: auto !important; }
+      .search-loading-init::before { display: none !important; }
+    </style>
+  </noscript>
 {% endblock %}
 
 {% block header %}
