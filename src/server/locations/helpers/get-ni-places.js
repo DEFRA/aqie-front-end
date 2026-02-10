@@ -8,6 +8,99 @@ const logger = createLogger()
 const STATUS_CODE_SUCCESS = 200
 const SERVICE_UNAVAILABLE_ERROR = 'service-unavailable'
 
+// '' Simple in-memory cache and circuit breaker state
+const niPlacesCache = new Map()
+const circuitBreakerState = {
+  failureCount: 0,
+  openUntilMs: 0
+}
+
+function getCacheKey(normalizedPostcode = '') {
+  return normalizedPostcode
+}
+
+function getCacheConfig() {
+  return {
+    enabled: config.get('niApiCacheEnabled') ?? true,
+    ttlMs: config.get('niApiCacheTtlMs') ?? 10 * 60 * 1000
+  }
+}
+
+function getCircuitBreakerConfig() {
+  return {
+    enabled: config.get('niApiCircuitBreakerEnabled') ?? true,
+    failureThreshold: config.get('niApiCircuitBreakerFailureThreshold') ?? 3,
+    openDurationMs: config.get('niApiCircuitBreakerOpenMs') ?? 60 * 1000
+  }
+}
+
+function getCachedResult(cacheKey = '', nowMs = Date.now()) {
+  const { enabled } = getCacheConfig()
+  if (!enabled || !cacheKey) {
+    return null
+  }
+
+  const cachedEntry = niPlacesCache.get(cacheKey)
+  if (!cachedEntry) {
+    return null
+  }
+
+  if (cachedEntry.expiresAtMs <= nowMs) {
+    niPlacesCache.delete(cacheKey)
+    return null
+  }
+
+  return cachedEntry.data
+}
+
+function setCachedResult(cacheKey = '', data = null, nowMs = Date.now()) {
+  const { enabled, ttlMs } = getCacheConfig()
+  if (!enabled || !cacheKey || !data) {
+    return
+  }
+
+  niPlacesCache.set(cacheKey, {
+    data,
+    expiresAtMs: nowMs + ttlMs
+  })
+}
+
+function isCircuitBreakerOpen(nowMs = Date.now()) {
+  const { enabled } = getCircuitBreakerConfig()
+  if (!enabled) {
+    return false
+  }
+
+  return circuitBreakerState.openUntilMs > nowMs
+}
+
+function recordCircuitBreakerFailure(nowMs = Date.now()) {
+  const { enabled, failureThreshold, openDurationMs } =
+    getCircuitBreakerConfig()
+  if (!enabled) {
+    return
+  }
+
+  circuitBreakerState.failureCount += 1
+
+  if (circuitBreakerState.failureCount >= failureThreshold) {
+    circuitBreakerState.openUntilMs = nowMs + openDurationMs
+    logger.warn(
+      `[getNIPlaces] Circuit breaker opened for ${openDurationMs}ms after ${circuitBreakerState.failureCount} failures`
+    )
+  }
+}
+
+function resetCircuitBreaker() {
+  circuitBreakerState.failureCount = 0
+  circuitBreakerState.openUntilMs = 0
+}
+
+function resetNiPlacesState() {
+  niPlacesCache.clear()
+  resetCircuitBreaker()
+}
+
 // ''  Simplified - removed test-only DI parameters
 async function getNIPlaces(userLocation, request) {
   // Read configuration directly instead of via parameters
@@ -23,9 +116,27 @@ async function getNIPlaces(userLocation, request) {
   const normalizedUserLocation = (userLocation || '')
     .toUpperCase()
     .replace(/\s+/g, '')
+  const cacheKey = getCacheKey(normalizedUserLocation)
   const postcodeNortherIrelandURL = isMockEnabled
     ? `${mockOsPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(normalizedUserLocation)}&_limit=1`
     : `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(normalizedUserLocation)}&maxresults=1`
+
+  // '' Check circuit breaker before calling upstream
+  if (isCircuitBreakerOpen()) {
+    logger.warn(
+      `[getNIPlaces] Circuit breaker open - skipping NI API call for ${normalizedUserLocation}`
+    )
+
+    const cachedResult = getCachedResult(cacheKey)
+    if (cachedResult) {
+      logger.info(
+        `[getNIPlaces] Returning cached NI result for ${normalizedUserLocation}`
+      )
+      return cachedResult
+    }
+
+    return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
+  }
 
   // Build OAuth options if not in mock mode
   let optionsOAuth = {}
@@ -72,11 +183,26 @@ async function getNIPlaces(userLocation, request) {
           ? { ...requestOptions, signal: controller.signal }
           : requestOptions
 
-        return await catchProxyFetchError(
+        const result = await catchProxyFetchError(
           postcodeNortherIrelandURL,
           optionsWithSignal,
           true
         )
+
+        const [statusCode] = result
+        const isRetriableStatus =
+          !statusCode || statusCode >= 500 || statusCode === 429
+
+        // '' Treat upstream timeouts/5xx as retriable failures
+        if (isRetriableStatus) {
+          const error = new Error(
+            `[getNIPlaces] Retriable NI API failure - statusCode: ${statusCode ?? 'unknown'}`
+          )
+          error.name = 'RetriableNiApiError'
+          throw error
+        }
+
+        return result
       },
       {
         operationName: `NI API call for ${normalizedUserLocation}`,
@@ -93,6 +219,14 @@ async function getNIPlaces(userLocation, request) {
     logger.error(
       `[getNIPlaces] NI API call failed after retries: ${error.message}`
     )
+    recordCircuitBreakerFailure()
+    const cachedResult = getCachedResult(cacheKey)
+    if (cachedResult) {
+      logger.info(
+        `[getNIPlaces] Returning cached NI result for ${normalizedUserLocation}`
+      )
+      return cachedResult
+    }
     return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
   }
 
@@ -148,6 +282,14 @@ async function getNIPlaces(userLocation, request) {
     logger.error(
       `[getNIPlaces] NI API unavailable - statusCodeNI: ${statusCodeNI}`
     )
+    recordCircuitBreakerFailure()
+    const cachedResult = getCachedResult(cacheKey)
+    if (cachedResult) {
+      logger.info(
+        `[getNIPlaces] Returning cached NI result for ${normalizedUserLocation}`
+      )
+      return cachedResult
+    }
     return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
   }
 
@@ -167,6 +309,8 @@ async function getNIPlaces(userLocation, request) {
   }
 
   if (statusCodeNI === STATUS_CODE_SUCCESS) {
+    resetCircuitBreaker()
+    setCachedResult(cacheKey, niPlacesData)
     logger.info(`[getNIPlaces] NI data fetched successfully`)
     logger.info(
       `[getNIPlaces] Response structure:`,
@@ -192,4 +336,4 @@ async function getNIPlaces(userLocation, request) {
   return niPlacesData
 }
 
-export { getNIPlaces }
+export { getNIPlaces, resetNiPlacesState }

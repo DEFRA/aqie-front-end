@@ -53,8 +53,18 @@
       if (sessionStorage.getItem('search-loading-active') === 'true') {
         document.documentElement.classList.add('search-loading-init');
         var style = document.createElement('style');
-        style.textContent = '.search-loading-init { overflow: hidden; } .search-loading-init::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 12, 12, 0.8); z-index: 9999; display: flex; align-items: center; justify-content: center; }';
+        style.textContent = '.search-loading-init { overflow: hidden; } .search-loading-init .search-loading-overlay { display: flex; opacity: 1; background-color: rgba(255, 255, 255, 0.95); }';
         document.head.appendChild(style);
+
+        if (!document.querySelector('.search-loading-overlay')) {
+          var overlay = document.createElement('div');
+          overlay.className = 'search-loading-overlay search-loading-overlay--visible';
+          overlay.setAttribute('aria-live', 'polite');
+          overlay.setAttribute('aria-busy', 'true');
+          overlay.setAttribute('role', 'status');
+          overlay.innerHTML = '<div class="search-loading-content"><div class="search-loading-spinner" aria-hidden="true"></div><p class="search-loading-text">Loading air quality data...</p></div>';
+          (document.body || document.documentElement).appendChild(overlay);
+        }
       }
     })();
   </script>

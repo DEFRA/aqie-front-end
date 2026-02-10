@@ -23,6 +23,11 @@
   opacity: 1;
 }
 
+.search-loading-init .search-loading-overlay {
+  display: flex;
+  opacity: 1;
+}
+
 .search-loading-content {
   text-align: center;
   max-width: 400px;

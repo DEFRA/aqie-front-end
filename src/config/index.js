@@ -445,6 +445,36 @@ export const config = convict({
     default: 1000,
     env: 'NI_API_RETRY_DELAY_MS'
   },
+  niApiCircuitBreakerEnabled: {
+    doc: 'Enable NI API circuit breaker to prevent repeated failures',
+    format: Boolean,
+    default: true,
+    env: 'NI_API_CIRCUIT_BREAKER_ENABLED'
+  },
+  niApiCircuitBreakerFailureThreshold: {
+    doc: 'Failures required to open NI API circuit breaker',
+    format: Number,
+    default: 3,
+    env: 'NI_API_CIRCUIT_BREAKER_FAILURE_THRESHOLD'
+  },
+  niApiCircuitBreakerOpenMs: {
+    doc: 'Time in milliseconds the NI API circuit breaker remains open',
+    format: Number,
+    default: 60000,
+    env: 'NI_API_CIRCUIT_BREAKER_OPEN_MS'
+  },
+  niApiCacheEnabled: {
+    doc: 'Enable NI API response cache fallback',
+    format: Boolean,
+    default: true,
+    env: 'NI_API_CACHE_ENABLED'
+  },
+  niApiCacheTtlMs: {
+    doc: 'NI API response cache TTL in milliseconds',
+    format: Number,
+    default: 600000,
+    env: 'NI_API_CACHE_TTL_MS'
+  },
   redis: {
     host: {
       doc: 'Redis cache host',
