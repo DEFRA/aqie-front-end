@@ -1,0 +1,86 @@
+/**
+ * Search loading overlay styles
+ * Displays a centered loading spinner during location search
+ */
+
+.search-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.95);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.search-loading-overlay--visible {
+  display: flex;
+  opacity: 1;
+}
+
+.search-loading-content {
+  text-align: center;
+  max-width: 400px;
+  padding: 2rem;
+}
+
+.search-loading-spinner {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1.5rem;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #1d70b8; /* '' GDS blue */
+  border-radius: 50%;
+  animation: search-loading-spin 1s linear infinite;
+}
+
+@keyframes search-loading-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.search-loading-text {
+  font-size: 1.1875rem; /* '' 19px GDS body */
+  font-weight: 400;
+  color: #0b0c0c;
+  margin: 0;
+}
+
+/* '' Prevent body scroll when loading */
+.search-loading-active {
+  overflow: hidden;
+}
+
+/* '' High contrast mode support */
+@media (prefers-contrast: high) {
+  .search-loading-overlay {
+    background-color: rgba(0, 0, 0, 0.9);
+  }
+  
+  .search-loading-text {
+    color: #ffffff;
+  }
+  
+  .search-loading-spinner {
+    border-color: #ffffff;
+    border-top-color: #ffdd00; /* '' High contrast yellow */
+  }
+}
+
+/* '' Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .search-loading-overlay {
+    transition: none;
+  }
+  
+  .search-loading-spinner {
+    animation: none;
+    border: 4px solid #1d70b8;
+    opacity: 0.6;
+  }
+}
