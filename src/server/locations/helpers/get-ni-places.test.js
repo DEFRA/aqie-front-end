@@ -8,6 +8,11 @@ const defaultConfigValues = {
   niApiMaxRetries: 1,
   niApiRetryDelayMs: 1,
   niApiTimeoutMs: 10,
+  niApiCircuitBreakerEnabled: true,
+  niApiCircuitBreakerFailureThreshold: 2,
+  niApiCircuitBreakerOpenMs: 60000,
+  niApiCacheEnabled: true,
+  niApiCacheTtlMs: 60000,
   log: '{ "enabled": true }'
 }
 
@@ -54,7 +59,7 @@ vi.mock('./extracted/util-helpers.js', () => ({
 }))
 
 // Now import after mocks are set up
-const { getNIPlaces } = await import('./get-ni-places.js')
+const { getNIPlaces, resetNiPlacesState } = await import('./get-ni-places.js')
 
 describe('getNIPlaces', () => {
   let catchProxyFetchError
@@ -67,6 +72,7 @@ describe('getNIPlaces', () => {
     ))
     ;({ config } = await import('../../../config/index.js'))
     ;({ refreshOAuthToken } = await import('./extracted/util-helpers.js'))
+    catchProxyFetchError.mockReset()
     config.get.mockImplementation((key) => {
       const value = defaultConfigValues[key] ?? ''
       if (key === 'log' && typeof value === 'string') {
@@ -85,6 +91,7 @@ describe('getNIPlaces', () => {
       STATUS_OK,
       { results: [{ id: 'test' }] }
     ])
+    resetNiPlacesState()
   })
 
   it('should call getNIPlaces function without errors', async () => {
@@ -181,5 +188,56 @@ describe('getNIPlaces', () => {
 
     expect(catchProxyFetchError).toHaveBeenCalledTimes(2)
     expect(result.results).toEqual([{ id: 'retry' }])
+  })
+
+  it('should return cached result when NI API fails', async () => {
+    const cachedData = { results: [{ id: 'cached' }] }
+    catchProxyFetchError.mockReset()
+    catchProxyFetchError
+      .mockResolvedValueOnce([STATUS_OK, cachedData])
+      .mockResolvedValueOnce([null, { error: 'service-unavailable' }])
+
+    const firstResult = await getNIPlaces('BT1 1AA')
+    expect(firstResult.results).toEqual([{ id: 'cached' }])
+
+    const cachedResult = await getNIPlaces('BT1 1AA')
+    expect(cachedResult.results).toEqual([{ id: 'cached' }])
+  })
+
+  it('should short-circuit when circuit breaker is open', async () => {
+    config.get.mockImplementation((key) => {
+      const overrideValues = {
+        ...defaultConfigValues,
+        niApiMaxRetries: 0,
+        niApiCacheEnabled: false,
+        niApiCircuitBreakerFailureThreshold: 1,
+        niApiCircuitBreakerOpenMs: 60000
+      }
+      const value = overrideValues[key] ?? ''
+      if (key === 'log' && typeof value === 'string') {
+        try {
+          return JSON.parse(value)
+        } catch {
+          return value
+        }
+      }
+      if (key === 'enabledMock') {
+        return value === 'true'
+      }
+      return value
+    })
+
+    catchProxyFetchError.mockReset()
+    catchProxyFetchError.mockResolvedValueOnce([
+      null,
+      { error: 'service-unavailable' }
+    ])
+
+    const firstResult = await getNIPlaces('BT1 1AA')
+    expect(firstResult).toEqual({ results: [], error: 'service-unavailable' })
+
+    const secondResult = await getNIPlaces('BT1 1AA')
+    expect(secondResult).toEqual({ results: [], error: 'service-unavailable' })
+    expect(catchProxyFetchError).toHaveBeenCalledTimes(1)
   })
 })

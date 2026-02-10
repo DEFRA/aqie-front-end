@@ -61,6 +61,15 @@ class SearchLoading {
     // '' Only create once
     if (this.loadingOverlay) return
 
+    const existingOverlay = document.querySelector('.search-loading-overlay')
+    if (existingOverlay) {
+      this.loadingOverlay = existingOverlay
+      this.loadingOverlay.setAttribute('aria-live', 'polite')
+      this.loadingOverlay.setAttribute('aria-busy', 'true')
+      this.loadingOverlay.setAttribute('role', 'status')
+      return
+    }
+
     // '' Create overlay element
     this.loadingOverlay = document.createElement('div')
     this.loadingOverlay.className = 'search-loading-overlay'
