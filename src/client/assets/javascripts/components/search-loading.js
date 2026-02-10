@@ -40,21 +40,20 @@ class SearchLoading {
   checkLoadingState() {
     // '' Check if we should show loading (from previous page navigation)
     if (sessionStorage.getItem(this.storageKey) === 'true') {
-      // '' Create and show overlay immediately
+      // '' Remove the inline loading class
+      document.documentElement.classList.remove('search-loading-init')
+
+      // '' Create and show proper overlay
       this.createLoadingOverlay()
       this.showLoading()
 
       // '' Hide once page is loaded
-      if (document.readyState === 'complete') {
-        this.clearLoadingState()
-      } else {
-        window.addEventListener('load', () => {
-          // '' Small delay to ensure content is rendered
-          setTimeout(() => {
-            this.clearLoadingState()
-          }, 100)
-        })
-      }
+      window.addEventListener('load', () => {
+        // '' Small delay to ensure content is rendered
+        setTimeout(() => {
+          this.clearLoadingState()
+        }, 100)
+      })
     }
   }
 
