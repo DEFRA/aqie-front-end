@@ -8,6 +8,10 @@ class SearchLoading {
   constructor() {
     this.form = document.querySelector('form[name="search-form"]')
     this.loadingOverlay = null
+    this.storageKey = 'search-loading-active'
+
+    // '' Check if we're returning from a search
+    this.checkLoadingState()
 
     if (this.form) {
       this.init()
@@ -20,23 +24,44 @@ class SearchLoading {
 
     // '' Add submit event listener
     this.form.addEventListener('submit', () => {
+      // '' Set flag in sessionStorage to show loading on next page
+      sessionStorage.setItem(this.storageKey, 'true')
       this.showLoading()
     })
 
     // '' Hide loading on page show (handles back button)
     window.addEventListener('pageshow', (event) => {
       if (event.persisted) {
-        this.hideLoading()
+        this.clearLoadingState()
       }
     })
+  }
 
-    // '' Hide loading if page is visible (handles redirect completion)
-    if (document.visibilityState === 'visible') {
-      this.hideLoading()
+  checkLoadingState() {
+    // '' Check if we should show loading (from previous page navigation)
+    if (sessionStorage.getItem(this.storageKey) === 'true') {
+      // '' Create and show overlay immediately
+      this.createLoadingOverlay()
+      this.showLoading()
+
+      // '' Hide once page is loaded
+      if (document.readyState === 'complete') {
+        this.clearLoadingState()
+      } else {
+        window.addEventListener('load', () => {
+          // '' Small delay to ensure content is rendered
+          setTimeout(() => {
+            this.clearLoadingState()
+          }, 100)
+        })
+      }
     }
   }
 
   createLoadingOverlay() {
+    // '' Only create once
+    if (this.loadingOverlay) return
+
     // '' Create overlay element
     this.loadingOverlay = document.createElement('div')
     this.loadingOverlay.className = 'search-loading-overlay'
@@ -48,7 +73,7 @@ class SearchLoading {
     this.loadingOverlay.innerHTML = `
       <div class="search-loading-content">
         <div class="search-loading-spinner" aria-hidden="true"></div>
-        <p class="search-loading-text">Searching for location...</p>
+        <p class="search-loading-text">Loading air quality data...</p>
       </div>
     `
 
@@ -57,13 +82,18 @@ class SearchLoading {
   }
 
   showLoading() {
-    if (this.loadingOverlay) {
-      this.loadingOverlay.classList.add('search-loading-overlay--visible')
-      document.body.classList.add('search-loading-active')
+    if (!this.loadingOverlay) {
+      this.createLoadingOverlay()
     }
+    this.loadingOverlay.classList.add('search-loading-overlay--visible')
+    document.body.classList.add('search-loading-active')
   }
 
-  hideLoading() {
+  clearLoadingState() {
+    // '' Remove from sessionStorage
+    sessionStorage.removeItem(this.storageKey)
+
+    // '' Hide overlay
     if (this.loadingOverlay) {
       this.loadingOverlay.classList.remove('search-loading-overlay--visible')
       document.body.classList.remove('search-loading-active')
