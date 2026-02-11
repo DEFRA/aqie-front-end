@@ -452,6 +452,19 @@ const searchMiddleware = async (request, h) => {
   const searchTerms = query?.searchTerms?.toUpperCase()
   const secondSearchTerm = query?.secondSearchTerm?.toUpperCase()
 
+  // '' Ensure notification flow is preserved when search form includes flow flags
+  const fromSmsFlow =
+    payload?.fromSmsFlow === 'true' || query?.fromSmsFlow === 'true'
+  const fromEmailFlow =
+    payload?.fromEmailFlow === 'true' || query?.fromEmailFlow === 'true'
+  const existingNotificationFlow = request.yar.get('notificationFlow')
+
+  if (!existingNotificationFlow && fromSmsFlow) {
+    request.yar.set('notificationFlow', 'sms')
+  } else if (!existingNotificationFlow && fromEmailFlow) {
+    request.yar.set('notificationFlow', 'email')
+  }
+
   // '' Set searchTermsSaved early in UK location processing
   if (searchTerms) {
     request.yar.set('searchTermsSaved', searchTerms)

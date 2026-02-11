@@ -38,6 +38,42 @@ describe('searchMiddleware - UK location processing', () => {
     setupMocks()
   })
 
+  it('should set notificationFlow from payload when provided', async () => {
+    const { mockRequest, mockH } = mocks
+    // '' Provide SMS flow flag in payload
+    mockRequest.payload = { fromSmsFlow: 'true' }
+    mockRequest.query = {
+      searchTerms: 'cardiff',
+      secondSearchTerm: 'wales'
+    }
+    mockRequest.yar.get.mockImplementation((key) => {
+      if (key === 'notificationFlow') return null
+      return null
+    })
+
+    vi.mocked(transformKeys).mockReturnValue({
+      transformedDailySummary: MOCK_DATE_OBJECT
+    })
+
+    vi.mocked(fetchData).mockResolvedValue({
+      getDailySummary: { issue_date: MOCK_DATE_STRING, today: {} },
+      getForecasts: { forecasts: [] },
+      getOSPlaces: { results: [{ id: '1', name: 'Cardiff' }] },
+      getNIPlaces: null
+    })
+
+    vi.mocked(handleErrorInputAndRedirect).mockReturnValue({
+      locationType: LOCATION_TYPE_UK,
+      userLocation: 'Cardiff',
+      locationNameOrPostcode: 'Cardiff'
+    })
+
+    const result = await searchMiddleware(mockRequest, mockH)
+
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('notificationFlow', 'sms')
+    expect(result).toBe('uk-location-result')
+  })
+
   it('should handle UK location type processing successfully', async () => {
     const { mockRequest, mockH } = mocks
     // Patch transformKeys to return expected object

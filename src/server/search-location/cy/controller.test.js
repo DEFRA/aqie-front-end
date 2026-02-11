@@ -110,7 +110,9 @@ describe('searchLocationController - Welsh Content', () => {
       backlink: MOCK_CONTENT.backlink,
       cookieBanner: MOCK_CONTENT.cookieBanner,
       lang: 'cy',
-      currentPath: SEARCH_LOCATION_PATH_CY
+      currentPath: SEARCH_LOCATION_PATH_CY,
+      fromSmsFlow: false,
+      fromEmailFlow: false
     })
   })
 })
@@ -167,7 +169,9 @@ describe('searchLocationController - Welsh Language Handling', () => {
       backlink: MOCK_CONTENT.backlink,
       cookieBanner: MOCK_CONTENT.cookieBanner,
       lang: mockRequest.query.lang,
-      currentPath: SEARCH_LOCATION_PATH_CY
+      currentPath: SEARCH_LOCATION_PATH_CY,
+      fromSmsFlow: false,
+      fromEmailFlow: false
     })
   })
 })

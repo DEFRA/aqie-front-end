@@ -14,7 +14,9 @@ function buildSearchLocationViewData({
   lang,
   errors = null,
   errorMessage = null,
-  locationType = null
+  locationType = null,
+  fromSmsFlow = false,
+  fromEmailFlow = false
 }) {
   const baseData = {
     description: welsh.searchLocation.description,
@@ -29,7 +31,9 @@ function buildSearchLocationViewData({
     backlink: welsh.backlink,
     cookieBanner: welsh.cookieBanner,
     currentPath: SEARCH_LOCATION_PATH_CY,
-    lang
+    lang,
+    fromSmsFlow,
+    fromEmailFlow
   }
 
   if (errors) {
@@ -75,6 +79,16 @@ const searchLocationController = {
     request.yar.set('locationNameOrPostcode', '')
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
+    // '' Check if user is coming from notification registration flow (SMS or Email)
+    const fromSmsFlow = request.query?.fromSmsFlow === 'true'
+    const fromEmailFlow = request.query?.fromEmailFlow === 'true'
+
+    if (fromSmsFlow) {
+      request.yar.set('notificationFlow', 'sms')
+    } else if (fromEmailFlow) {
+      request.yar.set('notificationFlow', 'email')
+    }
+
     let lang = query?.lang?.slice(0, 2)
     if (
       lang !== LANG_CY &&
@@ -104,7 +118,9 @@ const searchLocationController = {
       lang,
       errors,
       errorMessage,
-      locationType
+      locationType,
+      fromSmsFlow,
+      fromEmailFlow
     })
 
     return h.view('search-location/index', viewData)

@@ -103,6 +103,13 @@
         }) }}
 
         <input type="hidden" name="aq" value="{{ airQuality.value }}" />
+        {# '' Preserve notification flow flags for POST #}
+        {% if fromSmsFlow %}
+          <input type="hidden" name="fromSmsFlow" value="true" />
+        {% endif %}
+        {% if fromEmailFlow %}
+          <input type="hidden" name="fromEmailFlow" value="true" />
+        {% endif %}
       </form>
     </div>
   </div>
