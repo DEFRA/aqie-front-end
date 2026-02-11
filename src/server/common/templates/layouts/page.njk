@@ -112,6 +112,11 @@
       }
 
       if (sessionStorage.getItem(storageKey) === 'true') {
+        if (document.readyState !== 'loading') {
+          sessionStorage.removeItem(storageKey)
+          return
+        }
+
         var referrer = document.referrer || ''
         var referrerPath = ''
         try {
