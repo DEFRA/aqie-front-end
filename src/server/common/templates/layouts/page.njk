@@ -116,6 +116,12 @@
         var style = document.createElement('style');
         style.textContent = '.search-loading-init { overflow: hidden; } .search-loading-init .search-loading-overlay { display: flex; opacity: 1; background-color: rgba(255, 255, 255, 0.95); }';
         document.head.appendChild(style);
+
+        // '' Safety timeout: clear loader if app JS fails to run
+        window.setTimeout(function() {
+          document.documentElement.classList.remove('search-loading-init');
+          sessionStorage.removeItem(storageKey);
+        }, 15000);
       }
     })();
   </script>
