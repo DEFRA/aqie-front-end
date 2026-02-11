@@ -225,27 +225,30 @@ export async function sendSmsCode(phoneNumber, request = null) {
   const mockOtpEnabled = config.get('notify.mockOtpEnabled')
   const mockOtpCode = config.get('notify.mockOtpCode') || '12345'
 
-  // '' If mock OTP is enabled, bypass the backend service entirely
+  // '' Use real backend service
+  const result = await postToBackend(request, smsPath, { phoneNumber })
+
+  // '' If mock OTP is enabled, allow mock verification while still calling backend
   if (mockOtpEnabled) {
-    logger.info('Mock OTP enabled, bypassing backend service', {
+    logger.info('Mock OTP enabled, backend still called', {
       mockOtpCode
     })
     // '' Store mock OTP in session for verification with timestamp and sequence
-    if (request) {
+    if (request && result.ok) {
       const currentSequence = request.yar.get('otpGenerationSequence') || 1
       request.yar.set('mockOtp', mockOtpCode)
       request.yar.set('mockOtpTimestamp', Date.now())
       request.yar.set('mockOtpSequence', currentSequence)
     }
-    return {
-      ok: true,
-      data: { status: 'mock_otp_enabled', mockOtpCode },
-      mock: true
+    if (result.ok) {
+      return {
+        ok: true,
+        data: { status: 'mock_otp_enabled', mockOtpCode },
+        mock: true
+      }
     }
+    return result
   }
-
-  // '' Use real backend service
-  const result = await postToBackend(request, smsPath, { phoneNumber })
 
   // '' Clear mock OTP if real service succeeded
   if (request && result.ok) {
