@@ -47,13 +47,20 @@ class SearchLoading {
       this.createLoadingOverlay()
       this.showLoading()
 
-      // '' Hide once page is loaded
-      window.addEventListener('load', () => {
+      const clearAfterRender = () => {
         // '' Small delay to ensure content is rendered
         setTimeout(() => {
           this.clearLoadingState()
         }, 100)
-      })
+      }
+
+      // '' Hide once page is loaded (or immediately if already loaded)
+      if (document.readyState === 'complete') {
+        clearAfterRender()
+        return
+      }
+
+      window.addEventListener('load', clearAfterRender)
     }
   }
 
