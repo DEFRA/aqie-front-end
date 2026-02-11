@@ -28,6 +28,12 @@
 {% set htmlLang = lang %}
 {% block bodyStart %}
 {% include "cookie-banner.njk" %}
+  <div class="search-loading-overlay" aria-live="polite" aria-busy="true" role="status">
+    <div class="search-loading-content">
+      <div class="search-loading-spinner" aria-hidden="true"></div>
+      <p class="search-loading-text">Loading air quality data...</p>
+    </div>
+  </div>
 {% endblock %}
 
 {% block headIcons %}
@@ -55,16 +61,6 @@
         var style = document.createElement('style');
         style.textContent = '.search-loading-init { overflow: hidden; } .search-loading-init .search-loading-overlay { display: flex; opacity: 1; background-color: rgba(255, 255, 255, 0.95); }';
         document.head.appendChild(style);
-
-        if (!document.querySelector('.search-loading-overlay')) {
-          var overlay = document.createElement('div');
-          overlay.className = 'search-loading-overlay search-loading-overlay--visible';
-          overlay.setAttribute('aria-live', 'polite');
-          overlay.setAttribute('aria-busy', 'true');
-          overlay.setAttribute('role', 'status');
-          overlay.innerHTML = '<div class="search-loading-content"><div class="search-loading-spinner" aria-hidden="true"></div><p class="search-loading-text">Loading air quality data...</p></div>';
-          (document.body || document.documentElement).appendChild(overlay);
-        }
       }
     })();
   </script>
