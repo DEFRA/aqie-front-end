@@ -3,6 +3,7 @@ import { home } from './home/index.js'
 import { homeCy } from './home/cy/index.js'
 import { searchLocation } from './search-location/index.js'
 import { searchLocationCy } from './search-location/cy/index.js'
+import { loading } from './loading/index.js'
 import { locations } from './locations/index.js'
 import { locationsCy } from './locations/cy/index.js'
 import { locationId } from './location-id/index.js'
@@ -61,6 +62,7 @@ const getAllPlugins = () => [
   homeCy,
   searchLocation,
   searchLocationCy,
+  loading,
   locations,
   locationsCy,
   locationId,

@@ -1,0 +1,52 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <p class="govuk-body">Loading air quality data…</p>
+    </div>
+  </div>
+
+  {# '' Keep the loader visible while the request runs #}
+  <script>
+    (function() {
+      document.documentElement.classList.add('search-loading-init')
+
+      const payload = {{ payload | dump | safe }}
+      const lang = '{{ lang }}'
+      const actionPath = lang === 'cy' ? '/lleoliad' : '/location'
+      const fallbackPath = lang === 'cy' ? '/chwilio-lleoliad/cy' : '/search-location'
+
+      const body = new URLSearchParams()
+      if (payload && typeof payload === 'object') {
+        Object.entries(payload).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            body.append(key, value)
+          }
+        })
+      }
+
+      fetch(actionPath, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+        body: body.toString(),
+        credentials: 'same-origin'
+      })
+        .then(async (response) => {
+          const html = await response.text()
+          document.open()
+          document.write(html)
+          document.close()
+
+          if (response.url && response.url !== window.location.href) {
+            window.history.replaceState({}, '', response.url)
+          }
+        })
+        .catch(() => {
+          window.location.assign(fallbackPath)
+        })
+    })()
+  </script>
+{% endblock %}
