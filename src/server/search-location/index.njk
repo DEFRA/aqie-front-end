@@ -6,8 +6,8 @@
       {% if errors %}
         {{ govukErrorSummary(errors) }}
       {% endif %}
-      {% set queryhrefEn = "/location" %}
-      {% set queryhrefCy = "/lleoliad" %}
+      {% set queryhrefEn = "/loading" %}
+      {% set queryhrefCy = "/loading" %}
       <form id="itembox" action="{% if htmlLang == 'en' %}{{ queryhrefEn }}{% else %}{{ queryhrefCy }}{% endif %}" method="POST" name="search-form" value="search">
         {% if locationType | length %}
           {% set errorMessage = "" %}
@@ -103,6 +103,7 @@
         }) }}
 
         <input type="hidden" name="aq" value="{{ airQuality.value }}" />
+        <input type="hidden" name="lang" value="{{ lang }}" />
         {# '' Preserve notification flow flags for POST #}
         {% if fromSmsFlow %}
           <input type="hidden" name="fromSmsFlow" value="true" />
