@@ -112,10 +112,32 @@
       }
 
       if (sessionStorage.getItem(storageKey) === 'true') {
+        var referrer = document.referrer || ''
+        var referrerPath = ''
+        try {
+          referrerPath = new URL(referrer).pathname
+        } catch (error) {
+          referrerPath = ''
+        }
+
+        var allowedReferrers = ['/search-location', '/chwilio-lleoliad/cy']
+        var isAllowedReferrer = allowedReferrers.includes(referrerPath)
+
+        if (!isAllowedReferrer) {
+          sessionStorage.removeItem(storageKey)
+          return
+        }
+
         document.documentElement.classList.add('search-loading-init');
         var style = document.createElement('style');
         style.textContent = '.search-loading-init { overflow: hidden; } .search-loading-init .search-loading-overlay { display: flex; opacity: 1; background-color: rgba(255, 255, 255, 0.95); }';
         document.head.appendChild(style);
+
+        // '' Safety timeout: clear loader if app JS fails to run
+        window.setTimeout(function() {
+          document.documentElement.classList.remove('search-loading-init');
+          sessionStorage.removeItem(storageKey);
+        }, 15000);
       }
     })();
   </script>
