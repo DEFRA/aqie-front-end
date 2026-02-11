@@ -53,10 +53,65 @@
   <meta name="google-site-verification" content="kK4-XyhL8lJqQ4AkkeB6GVwxm3NrhvUFt4g7TE1m7vc" />
   <link href="{{ getAssetPath('stylesheets/application.scss') }}" rel="stylesheet">
   
+  {# '' Inline handler to set preloader flag before navigation #}
+  <script>
+    (function() {
+      var storageKey = 'search-loading-active'
+
+      function isLocationTarget(href) {
+        return href && (href.startsWith('/location') || href.startsWith('/lleoliad'))
+      }
+
+      document.addEventListener(
+        'submit',
+        function(event) {
+          var target = event.target
+          if (!target || !target.getAttribute) return
+
+          var action = target.getAttribute('action') || ''
+          var formName = target.getAttribute('name') || ''
+
+          if (formName === 'search-form' || isLocationTarget(action)) {
+            sessionStorage.setItem(storageKey, 'true')
+          }
+        },
+        true
+      )
+
+      document.addEventListener(
+        'click',
+        function(event) {
+          var target = event.target
+          if (!target || !target.closest) return
+
+          var link = target.closest('a')
+          if (!link) return
+
+          var href = link.getAttribute('href') || ''
+          if (isLocationTarget(href)) {
+            sessionStorage.setItem(storageKey, 'true')
+          }
+        },
+        true
+      )
+    })();
+  </script>
+
   {# '' Inline script to show loading overlay immediately if flag is set - must run before page renders #}
   <script>
     (function() {
-      if (sessionStorage.getItem('search-loading-active') === 'true') {
+      var storageKey = 'search-loading-active'
+      var pathname = window.location.pathname || ''
+      var isSearchLocationPage =
+        pathname === '/search-location' || pathname === '/chwilio-lleoliad/cy'
+
+      // '' Avoid showing the loader on search-location pages
+      if (isSearchLocationPage) {
+        sessionStorage.removeItem(storageKey)
+        return
+      }
+
+      if (sessionStorage.getItem(storageKey) === 'true') {
         document.documentElement.classList.add('search-loading-init');
         var style = document.createElement('style');
         style.textContent = '.search-loading-init { overflow: hidden; } .search-loading-init .search-loading-overlay { display: flex; opacity: 1; background-color: rgba(255, 255, 255, 0.95); }';

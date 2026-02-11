@@ -62,7 +62,9 @@ const prepareViewModel = ({
   errors,
   errorMessage,
   locationType,
-  isError
+  isError,
+  fromSmsFlow,
+  fromEmailFlow
 }) => {
   const { searchLocation, footerTxt, phaseBanner, backlink, cookieBanner } =
     english
@@ -101,7 +103,9 @@ const prepareViewModel = ({
     backlink,
     cookieBanner,
     currentPath: '/search-location',
-    lang
+    lang,
+    fromSmsFlow,
+    fromEmailFlow
   }
 }
 
@@ -137,7 +141,9 @@ const searchLocationController = {
       errors,
       errorMessage,
       locationType,
-      isError: !!errors
+      isError: !!errors,
+      fromSmsFlow,
+      fromEmailFlow
     })
 
     return h.view('search-location/index', viewModel)
