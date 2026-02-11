@@ -9,6 +9,7 @@ class SearchLoading {
     this.form = document.querySelector('form[name="search-form"]')
     this.loadingOverlay = null
     this.storageKey = 'search-loading-active'
+    this.isSubmitting = false
 
     // '' Check if we're returning from a search
     this.checkLoadingState()
@@ -23,10 +24,22 @@ class SearchLoading {
     this.createLoadingOverlay()
 
     // '' Add submit event listener
-    this.form.addEventListener('submit', () => {
+    this.form.addEventListener('submit', (event) => {
+      if (this.isSubmitting) return
+
       // '' Set flag in sessionStorage to show loading on next page
       sessionStorage.setItem(this.storageKey, 'true')
       this.showLoading()
+
+      // '' Allow the loader to paint before navigating
+      event.preventDefault()
+      this.isSubmitting = true
+
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          this.form.submit()
+        })
+      })
     })
 
     // '' Hide loading on page show (handles back button)
