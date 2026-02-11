@@ -104,6 +104,8 @@
       var pathname = window.location.pathname || ''
       var isSearchLocationPage =
         pathname === '/search-location' || pathname === '/chwilio-lleoliad/cy'
+      var isLocationPage =
+        pathname.startsWith('/location') || pathname.startsWith('/lleoliad')
 
       // '' Avoid showing the loader on search-location pages
       if (isSearchLocationPage) {
@@ -111,7 +113,9 @@
         return
       }
 
-      if (sessionStorage.getItem(storageKey) === 'true') {
+      var shouldShowLoader = isLocationPage || sessionStorage.getItem(storageKey) === 'true'
+
+      if (shouldShowLoader) {
         if (document.readyState !== 'loading') {
           sessionStorage.removeItem(storageKey)
           return
@@ -125,18 +129,35 @@
           referrerPath = ''
         }
 
-        var allowedReferrers = ['/search-location', '/chwilio-lleoliad/cy']
-        var isAllowedReferrer = allowedReferrers.includes(referrerPath)
+        if (!isLocationPage) {
+          var allowedReferrers = ['/search-location', '/chwilio-lleoliad/cy']
+          var isAllowedReferrer = allowedReferrers.includes(referrerPath)
 
-        if (!isAllowedReferrer) {
-          sessionStorage.removeItem(storageKey)
-          return
+          if (!isAllowedReferrer) {
+            sessionStorage.removeItem(storageKey)
+            return
+          }
         }
 
         document.documentElement.classList.add('search-loading-init');
         var style = document.createElement('style');
         style.textContent = '.search-loading-init { overflow: hidden; } .search-loading-init .search-loading-overlay { display: flex; opacity: 1; background-color: rgba(255, 255, 255, 0.95); }';
         document.head.appendChild(style);
+
+        function clearInlineLoader() {
+          document.documentElement.classList.remove('search-loading-init');
+          sessionStorage.removeItem(storageKey);
+        }
+
+        // '' Clear on first paint or DOM ready to avoid late overlays
+        if (document.readyState === 'loading') {
+          window.requestAnimationFrame(function() {
+            window.requestAnimationFrame(clearInlineLoader);
+          });
+          document.addEventListener('DOMContentLoaded', clearInlineLoader, { once: true });
+        } else {
+          clearInlineLoader();
+        }
 
         // '' Safety timeout: clear loader if app JS fails to run
         window.setTimeout(function() {

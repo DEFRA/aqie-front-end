@@ -43,24 +43,30 @@ class SearchLoading {
       // '' Remove the inline loading class
       document.documentElement.classList.remove('search-loading-init')
 
-      // '' Create and show proper overlay
+      // '' Create proper overlay
       this.createLoadingOverlay()
-      this.showLoading()
 
-      const clearAfterRender = () => {
-        // '' Small delay to ensure content is rendered
-        setTimeout(() => {
-          this.clearLoadingState()
-        }, 100)
-      }
+      if (document.readyState === 'loading') {
+        this.showLoading()
 
-      // '' Hide once page is loaded (or immediately if already loaded)
-      if (document.readyState === 'complete') {
-        clearAfterRender()
+        const clearAfterPaint = () => {
+          window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
+              this.clearLoadingState()
+            })
+          })
+        }
+
+        // '' Clear on first paint or DOM ready to avoid late overlays
+        clearAfterPaint()
+        document.addEventListener('DOMContentLoaded', clearAfterPaint, {
+          once: true
+        })
         return
       }
 
-      window.addEventListener('load', clearAfterRender)
+      // '' Avoid showing overlay after content is visible
+      this.clearLoadingState()
     }
   }
 
