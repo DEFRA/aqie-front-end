@@ -29,7 +29,7 @@ The application provides a mock OTP mode that **bypasses the backend service ent
 
 When `mockOtpEnabled: true`:
 
-1. **Backend service is bypassed** - No API call to backend
+1. **Backend service is still called** - Failures do not block local verification
 2. **Mock OTP code is used** - The configured code (default: `12345`) is stored in session
 3. **Server logs show**: `Mock OTP enabled, backend still called`
 

@@ -234,20 +234,24 @@ export async function sendSmsCode(phoneNumber, request = null) {
       mockOtpCode
     })
     // '' Store mock OTP in session for verification with timestamp and sequence
-    if (request && result.ok) {
+    if (request) {
       const currentSequence = request.yar.get('otpGenerationSequence') || 1
       request.yar.set('mockOtp', mockOtpCode)
       request.yar.set('mockOtpTimestamp', Date.now())
       request.yar.set('mockOtpSequence', currentSequence)
     }
-    if (result.ok) {
-      return {
-        ok: true,
-        data: { status: 'mock_otp_enabled', mockOtpCode },
-        mock: true
-      }
+    if (!result.ok) {
+      logger.warn('Mock OTP enabled, backend send failed', {
+        status: result.status,
+        error: result.error,
+        body: result.body
+      })
     }
-    return result
+    return {
+      ok: true,
+      data: { status: 'mock_otp_enabled', mockOtpCode },
+      mock: true
+    }
   }
 
   // '' Clear mock OTP if real service succeeded
