@@ -536,6 +536,16 @@ const searchMiddleware = async (request, h) => {
   const { transformedDailySummary, englishDate, welshDate } =
     prepareDateFormatting(getDailySummary, lang)
 
+  // '' Temporary debug log for summary date gating
+  const issueTime = getIssueTime(getDailySummary?.issue_date)
+  const showSummaryDate = isSummaryDateToday(getDailySummary?.issue_date)
+  logger.info('[DEBUG summary-date] issueTime/showSummaryDate', {
+    locationType: redirectError.locationType,
+    issueDate: getDailySummary?.issue_date,
+    issueTime,
+    showSummaryDate
+  })
+
   const contexts = buildLocationContexts({
     userLocation,
     locationNameOrPostcode,
