@@ -268,6 +268,19 @@ async function fetchAndExtractForecasts(deps, diRequest, diOverrides) {
     request: diRequest
   })
   const getDailySummary = extractDailySummary(getForecasts)
+  // '' Log issue_date when first received from forecasts API
+  const logInfo =
+    typeof deps.logger?.info === 'function'
+      ? deps.logger.info.bind(deps.logger)
+      : logger.info.bind(logger)
+  logInfo(
+    `[DEBUG issue_date] received from forecasts: ${getDailySummary?.issue_date ?? 'N/A'}`,
+    {
+      issueDate: getDailySummary?.issue_date,
+      requestPath: diRequest?.path,
+      requestId: diRequest?.info?.id
+    }
+  )
   return { getForecasts, getDailySummary }
 }
 

@@ -167,7 +167,9 @@
             errorContainer.classList.add('govuk-!-display-none')
           }
           document.documentElement.classList.add('search-loading-init')
-          submitFallback()
+          didComplete = false
+          // '' Retry lookup via fetch to keep loader visible
+          runLookup()
         })
       }
 

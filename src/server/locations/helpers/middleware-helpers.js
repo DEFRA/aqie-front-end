@@ -73,6 +73,16 @@ const handleSingleMatch = async (
   const showSummaryDate = isSummaryDateToday(getDailySummary?.issue_date)
   const issueTime = getIssueTime(getDailySummary?.issue_date)
 
+  // '' Log issue_date when passing dailySummary into session location data
+  logger.info(
+    `[DEBUG issue_date] passing to session dailySummary: ${getDailySummary?.issue_date ?? 'N/A'}`,
+    {
+      issueDate: getDailySummary?.issue_date,
+      locationType,
+      customId
+    }
+  )
+
   request.yar.set('locationData', {
     results: selectedMatches,
     getForecasts: getForecasts?.forecasts,
