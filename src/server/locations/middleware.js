@@ -215,6 +215,16 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
   const showSummaryDate = isSummaryDateToday(getDailySummary?.issue_date)
   const issueTime = getIssueTime(getDailySummary?.issue_date)
 
+  // '' Log issue_date when passing dailySummary into session location data
+  logger.info(
+    `[DEBUG issue_date] passing to session dailySummary (NI): ${getDailySummary?.issue_date ?? 'N/A'}`,
+    {
+      issueDate: getDailySummary?.issue_date,
+      locationType: redirectError.locationType,
+      locationTitle
+    }
+  )
+
   const locationData = {
     results: getNIPlaces?.results,
     urlRoute: `${getNIPlaces?.results[0].postcode.toLowerCase()}`.replace(
