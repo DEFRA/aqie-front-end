@@ -46,7 +46,9 @@ vi.mock('../helpers/transform-summary-keys.js', () => ({
 
 vi.mock('../helpers/middleware-helpers.js', () => ({
   getFormattedDateSummary: vi.fn(),
-  getLanguageDates: vi.fn()
+  getLanguageDates: vi.fn(),
+  isSummaryDateToday: vi.fn(),
+  getIssueTime: vi.fn()
 }))
 
 vi.mock('../helpers/extra-middleware-helpers.js', () => ({

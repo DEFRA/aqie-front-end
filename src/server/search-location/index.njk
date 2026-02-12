@@ -6,9 +6,10 @@
       {% if errors %}
         {{ govukErrorSummary(errors) }}
       {% endif %}
-      {% set queryhrefEn = "/loading" %}
-      {% set queryhrefCy = "/loading" %}
-      <form id="itembox" action="{% if htmlLang == 'en' %}{{ queryhrefEn }}{% else %}{{ queryhrefCy }}{% endif %}" method="POST" name="search-form" value="search">
+      {% set queryhrefEn = "/location" %}
+      {% set queryhrefCy = "/lleoliad" %}
+      {% set queryhrefNi = "/loading" %}
+      <form id="itembox" action="{% if htmlLang == 'en' %}{{ queryhrefEn }}{% else %}{{ queryhrefCy }}{% endif %}" method="POST" name="search-form" value="search" data-default-action="{% if htmlLang == 'en' %}{{ queryhrefEn }}{% else %}{{ queryhrefCy }}{% endif %}" data-ni-action="{{ queryhrefNi }}">
         {% if locationType | length %}
           {% set errorMessage = "" %}
         {% endif %}
@@ -112,6 +113,35 @@
           <input type="hidden" name="fromEmailFlow" value="true" />
         {% endif %}
       </form>
+      {# '' Switch the form action to the loader only for NI searches #}
+      <script>
+        (function () {
+          const form = document.getElementById('itembox')
+          if (!form) {
+            return
+          }
+
+          const defaultAction = form.getAttribute('data-default-action')
+          const niAction = form.getAttribute('data-ni-action')
+          const radios = form.querySelectorAll('input[name="locationType"]')
+
+          const updateAction = () => {
+            const selected = form.querySelector('input[name="locationType"]:checked')
+            if (selected && selected.value === 'ni-location') {
+              form.action = niAction
+              return
+            }
+
+            form.action = defaultAction
+          }
+
+          radios.forEach((radio) => {
+            radio.addEventListener('change', updateAction)
+          })
+
+          updateAction()
+        })()
+      </script>
     </div>
   </div>
 {% endblock %}
