@@ -113,6 +113,7 @@ const handleSendNewCodePost = async (request, h, content = english) => {
   // Reset failed attempts counter when sending new code ''
   request.yar.clear('otpFailedAttempts')
   request.yar.clear('otpLastFailedTime')
+  request.yar.set('codeVerified', false)
 
   // Store that a new code was requested ''
   request.yar.set('newCodeRequested', true)

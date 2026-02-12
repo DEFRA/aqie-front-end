@@ -115,6 +115,7 @@ export const handleSendActivationPost = async (request, h) => {
   request.yar.set('activationSent', Date.now())
   request.yar.set('otpGenerationSequence', 1)
   request.yar.set('otpGeneratedAt', Date.now())
+  request.yar.set('codeVerified', false)
 
   try {
     // Send OTP request to backend (backend generates and sends the code) ''
