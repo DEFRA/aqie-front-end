@@ -4,7 +4,9 @@ import { calendarWelsh } from '../data/cy/cy.js'
 import { transformKeys } from './helpers/transform-summary-keys.js'
 import {
   getFormattedDateSummary,
-  getLanguageDates
+  getLanguageDates,
+  getIssueTime,
+  isSummaryDateToday
 } from './helpers/middleware-helpers.js'
 import {
   LANG_EN,
@@ -210,6 +212,8 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
   const postcode = getNIPlaces?.results[0].postcode
   const town = sentenceCase(getNIPlaces?.results[0].town)
   const locationTitle = `${postcode}, ${town}`
+  const showSummaryDate = isSummaryDateToday(getDailySummary?.issue_date)
+  const issueTime = getIssueTime(getDailySummary?.issue_date)
 
   const locationData = {
     results: getNIPlaces?.results,
@@ -222,6 +226,8 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
     englishDate,
     dailySummary: getDailySummary,
     welshDate,
+    showSummaryDate,
+    issueTime,
     getMonth: month,
     title: `${multipleLocations.titlePrefix} ${convertFirstLetterIntoUppercase(locationTitle)}`,
     pageTitle: `${multipleLocations.titlePrefix} ${convertFirstLetterIntoUppercase(locationTitle)} - ${home.pageTitle}`,

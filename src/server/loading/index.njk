@@ -116,11 +116,28 @@
 
         fetch(actionPath, requestOptions)
           .then(async (response) => {
+            const html = await response.text()
+
             if (!response.ok) {
+              // '' Render server error HTML when available instead of hiding it
+              if (html && html.trim()) {
+                didComplete = true
+                window.clearTimeout(hardTimeoutId)
+
+                if (response.url && response.url !== window.location.href) {
+                  window.location.replace(response.url)
+                  return
+                }
+
+                document.open()
+                document.write(html)
+                document.close()
+                return
+              }
+
               throw new Error('Search lookup failed')
             }
 
-            const html = await response.text()
             if (!html || !html.trim()) {
               throw new Error('Empty search response')
             }
