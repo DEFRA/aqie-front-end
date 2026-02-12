@@ -61,7 +61,29 @@
         })
       }
 
+      const submitFallback = () => {
+        const form = document.createElement('form')
+        form.method = 'POST'
+        form.action = actionPath
+
+        for (const [key, value] of body.entries()) {
+          const input = document.createElement('input')
+          input.type = 'hidden'
+          input.name = key
+          input.value = value
+          form.appendChild(input)
+        }
+
+        document.body.appendChild(form)
+        form.submit()
+      }
+
+      let didComplete = false
       const showError = () => {
+        if (didComplete) {
+          return
+        }
+        didComplete = true
         document.documentElement.classList.remove('search-loading-init')
         if (!errorContainer) {
           window.location.assign(fallbackPath)
@@ -76,18 +98,23 @@
       }
 
       const runLookup = () => {
-        const controller = new AbortController()
-        const timeoutId = window.setTimeout(() => controller.abort(), 45000)
-
-        fetch(actionPath, {
+        const hardTimeoutId = window.setTimeout(showError, 20000)
+        const controller = window.AbortController ? new AbortController() : null
+        const requestOptions = {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
           },
           body: body.toString(),
-          credentials: 'same-origin',
-          signal: controller.signal
-        })
+          credentials: 'same-origin'
+        }
+
+        if (controller) {
+          requestOptions.signal = controller.signal
+          window.setTimeout(() => controller.abort(), 45000)
+        }
+
+        fetch(actionPath, requestOptions)
           .then(async (response) => {
             if (!response.ok) {
               throw new Error('Search lookup failed')
@@ -98,6 +125,8 @@
               throw new Error('Empty search response')
             }
 
+            didComplete = true
+            window.clearTimeout(hardTimeoutId)
             document.open()
             document.write(html)
             document.close()
@@ -108,7 +137,7 @@
           })
           .catch(showError)
           .finally(() => {
-            window.clearTimeout(timeoutId)
+            window.clearTimeout(hardTimeoutId)
           })
       }
 
@@ -118,7 +147,7 @@
             errorContainer.classList.add('govuk-!-display-none')
           }
           document.documentElement.classList.add('search-loading-init')
-          runLookup()
+          submitFallback()
         })
       }
 
