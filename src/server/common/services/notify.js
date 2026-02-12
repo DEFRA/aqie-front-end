@@ -368,7 +368,6 @@ export async function setupAlert(
   const setupPath = config.get('notify.setupAlertPath')
   const alertBackendBaseUrl = config.get('notify.alertBackendBaseUrl')
   const mockSetupAlertEnabled = config.get('notify.mockSetupAlertEnabled')
-  const mockOtpEnabled = config.get('notify.mockOtpEnabled')
 
   // Convert coordinates to numbers if they're strings ''
   // MongoDB may expect numeric values for geospatial queries
@@ -420,9 +419,9 @@ export async function setupAlert(
     )
   }
 
-  // '' If mock OTP is enabled, bypass backend service entirely and use mock storage
-  if (mockOtpEnabled) {
-    logger.info('Mock OTP enabled, bypassing backend for setup-alert')
+  // '' If mock setup alert is enabled, bypass backend service entirely and use mock storage
+  if (mockSetupAlertEnabled) {
+    logger.info('Mock setup alert enabled, bypassing backend for setup-alert')
 
     // Check if phone number already has 5 alerts (max limit) ''
     const normalizedPhone = normalizePhoneNumber(phoneNumber)
@@ -435,7 +434,7 @@ export async function setupAlert(
       return {
         ok: false,
         status: 400,
-        body: {
+        data: {
           message: `Maximum of ${MOCK_ALERTS_MAX_PER_PHONE} alerts allowed per phone number`,
           mock: true
         }
@@ -458,7 +457,7 @@ export async function setupAlert(
       return {
         ok: false,
         status: 409,
-        body: { message: 'Alert already exists for this location', mock: true }
+        data: { message: 'Alert already exists for this location', mock: true }
       }
     }
 
@@ -480,8 +479,9 @@ export async function setupAlert(
       ok: true,
       data: {
         status: 'mock_alert_created',
-        phoneNumber: normalizedPhone,
-        locationId
+        phoneNumber: maskPhoneNumberForResponse(normalizedPhone),
+        locationId,
+        mock: true
       },
       mock: true
     }

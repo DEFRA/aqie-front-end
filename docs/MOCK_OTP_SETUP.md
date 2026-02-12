@@ -31,7 +31,7 @@ When `mockOtpEnabled: true`:
 
 1. **Backend service is bypassed** - No API call to backend
 2. **Mock OTP code is used** - The configured code (default: `12345`) is stored in session
-3. **Server logs show**: `Mock OTP enabled, bypassing backend service`
+3. **Server logs show**: `Mock OTP enabled, backend still called`
 
 When `mockOtpEnabled: false`:
 
@@ -132,7 +132,8 @@ NOTIFY_MOCK_OTP_CODE=99999
 
 ## Important Notes
 
-- **Mock bypasses backend** - When enabled, no backend API calls are made
+- **Mock OTP does not bypass alert registration** - It only affects OTP verification, not alert setup
+- **Alert setup mocking is separate** - Use `notify.mockSetupAlertEnabled` if you want to mock alert registration
 - **No code changes needed** - Just toggle config setting
 - **Session-based** - Mock OTP stored securely in encrypted session
 - **Development only** - Production config should have `mockOtpEnabled: false`
@@ -181,6 +182,16 @@ NOTIFY_MOCK_OTP_ENABLED=false
 ```
 
 This ensures mock OTP is never used in production environments.
+
+## Alert Registration Mocking (Optional)
+
+If you need to mock alert registration (instead of writing to the real backend), enable mock setup alerts:
+
+```bash
+NOTIFY_MOCK_SETUP_ALERT_ENABLED=true
+```
+
+To keep real alert registration while still mocking OTP, leave it unset or `false`.
 
 ## Deployment Instructions for Testers
 
