@@ -79,6 +79,10 @@
       }
 
       let didComplete = false
+      let retryCount = 0
+      // '' Keep timeout aligned with NI API retry budget
+      const hardTimeoutMs = 35000
+      const abortTimeoutMs = 60000
       const showError = () => {
         if (didComplete) {
           return
@@ -97,8 +101,41 @@
         }
       }
 
+      const logEndpoint = '/test/client-log'
+      const logClient = (message, details = {}) => {
+        const logPayload = {
+          message,
+          retryCount,
+          actionPath,
+          href: window.location.href,
+          timestamp: new Date().toISOString(),
+          ...details
+        }
+        if (window?.console?.info) {
+          console.info('[loading-retry]', logPayload)
+        }
+        if (window?.fetch) {
+          fetch(logEndpoint, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            keepalive: true,
+            body: JSON.stringify(logPayload)
+          }).catch(() => {
+            // '' Ignore client log failures
+          })
+        }
+      }
+
       const runLookup = () => {
-        const hardTimeoutId = window.setTimeout(showError, 20000)
+        retryCount += 1
+        logClient('Starting lookup', {
+          hardTimeoutMs,
+          abortTimeoutMs
+        })
+        const hardTimeoutId = window.setTimeout(showError, hardTimeoutMs)
         const controller = window.AbortController ? new AbortController() : null
         const requestOptions = {
           method: 'POST',
@@ -111,12 +148,21 @@
 
         if (controller) {
           requestOptions.signal = controller.signal
-          window.setTimeout(() => controller.abort(), 45000)
+          window.setTimeout(() => controller.abort(), abortTimeoutMs)
         }
 
         fetch(actionPath, requestOptions)
           .then(async (response) => {
+            logClient('Response received', {
+              ok: response.ok,
+              status: response.status,
+              redirected: response.redirected,
+              url: response.url
+            })
             const html = await response.text()
+            logClient('Response body length', {
+              length: html ? html.length : 0
+            })
 
             if (!response.ok) {
               // '' Render server error HTML when available instead of hiding it
@@ -155,14 +201,21 @@
             document.write(html)
             document.close()
           })
-          .catch(showError)
+          .catch((error) => {
+            logClient('Lookup failed', {
+              errorMessage: error?.message
+            })
+            showError()
+          })
           .finally(() => {
+            logClient('Lookup finished')
             window.clearTimeout(hardTimeoutId)
           })
       }
 
       if (retryButton) {
         retryButton.addEventListener('click', () => {
+          logClient('Retry clicked')
           if (errorContainer) {
             errorContainer.classList.add('govuk-!-display-none')
           }
