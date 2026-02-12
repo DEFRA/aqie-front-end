@@ -221,14 +221,24 @@ const handleCheckMessagePost = async (request, h, content = english) => {
     return h.redirect('/notify/register/sms-mobile-number')
   }
 
-  // If code already verified, redirect forward to confirm details ''
+  const submitted = (request.payload?.[FIELD_NAME] || '').trim()
+  const mockOtpCode = config.get('notify.mockOtpCode') || '12345'
+
+  // If code already verified, allow forward unless a different code is entered ''
   const codeVerified = request.yar.get('codeVerified')
   if (codeVerified) {
+    if (submitted && submitted !== mockOtpCode) {
+      const vm = buildErrorViewModel(
+        request,
+        mobileNumber,
+        'Enter the 5 digit activation code shown in the text message',
+        content
+      )
+      return h.view(VIEW_PATH, vm)
+    }
     logger.info('Code already verified, redirecting to confirm details')
     return h.redirect('/notify/register/sms-confirm-details')
   }
-
-  const submitted = (request.payload?.[FIELD_NAME] || '').trim()
 
   const validation = validateOtpFormat(submitted)
   if (!validation.isValid) {
