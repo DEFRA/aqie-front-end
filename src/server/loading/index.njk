@@ -1,11 +1,13 @@
 {% extends 'layouts/page.njk' %}
 
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <p class="govuk-body">Loading air quality data…</p>
-    </div>
-  </div>
+  <div class="loading-page">
+    <div class="loading-page__content">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <p class="govuk-body">Loading air quality data…</p>
+        </div>
+      </div>
 
   {% if lang == 'cy' %}
     {% set fallbackHeading = 'Nid oedd modd llwytho eich canlyniadau' %}
@@ -21,15 +23,17 @@
     {% set fallbackPath = '/search-location' %}
   {% endif %}
 
-  <div id="loading-error" class="govuk-grid-row govuk-!-display-none" role="alert">
-    <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l" id="loading-error-heading">{{ fallbackHeading }}</h1>
-      <p class="govuk-body">{{ fallbackBody }}</p>
-      <div class="govuk-button-group">
-        <button type="button" class="govuk-button" data-module="govuk-button" id="loading-retry">
-          {{ fallbackCta }}
-        </button>
-        <a class="govuk-link" id="loading-fallback" href="{{ fallbackPath }}">{{ fallbackLink }}</a>
+      <div id="loading-error" class="govuk-grid-row govuk-!-display-none" role="alert">
+        <div class="govuk-grid-column-two-thirds">
+          <h1 class="govuk-heading-l" id="loading-error-heading">{{ fallbackHeading }}</h1>
+          <p class="govuk-body">{{ fallbackBody }}</p>
+          <div class="govuk-button-group">
+            <button type="button" class="govuk-button" data-module="govuk-button" id="loading-retry">
+              {{ fallbackCta }}
+            </button>
+            <a class="govuk-link" id="loading-fallback" href="{{ fallbackPath }}">{{ fallbackLink }}</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
