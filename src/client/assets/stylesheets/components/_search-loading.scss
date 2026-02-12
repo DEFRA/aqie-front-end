@@ -59,14 +59,20 @@
 
 /* '' Center loading page content */
 .loading-page {
-  min-height: 60vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 3rem 0;
 }
 
 .loading-page__content {
   width: 100%;
+  text-align: center;
+}
+
+.loading-page .search-loading-spinner {
+  margin: 0 auto 1.5rem;
 }
 
 /* '' Prevent body scroll when loading */
