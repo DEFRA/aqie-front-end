@@ -7,6 +7,33 @@
     </div>
   </div>
 
+  {% if lang == 'cy' %}
+    {% set fallbackHeading = 'Nid oedd modd llwytho eich canlyniadau' %}
+    {% set fallbackBody = 'Rhowch gynnig arall arni neu ddychwelyd i chwilio.' %}
+    {% set fallbackCta = 'Rhowch gynnig arall arni' %}
+    {% set fallbackLink = 'Yn ôl i chwilio' %}
+    {% set fallbackPath = '/chwilio-lleoliad/cy' %}
+  {% else %}
+    {% set fallbackHeading = 'We could not load your results' %}
+    {% set fallbackBody = 'Try again or return to search.' %}
+    {% set fallbackCta = 'Try again' %}
+    {% set fallbackLink = 'Back to search' %}
+    {% set fallbackPath = '/search-location' %}
+  {% endif %}
+
+  <div id="loading-error" class="govuk-grid-row govuk-!-display-none" role="alert">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l" id="loading-error-heading">{{ fallbackHeading }}</h1>
+      <p class="govuk-body">{{ fallbackBody }}</p>
+      <div class="govuk-button-group">
+        <button type="button" class="govuk-button" data-module="govuk-button" id="loading-retry">
+          {{ fallbackCta }}
+        </button>
+        <a class="govuk-link" id="loading-fallback" href="{{ fallbackPath }}">{{ fallbackLink }}</a>
+      </div>
+    </div>
+  </div>
+
   {# '' Keep the loader visible while the request runs #}
   <script>
     (function() {
@@ -16,6 +43,9 @@
       const lang = '{{ lang }}'
       const actionPath = lang === 'cy' ? '/lleoliad' : '/location'
       const fallbackPath = lang === 'cy' ? '/chwilio-lleoliad/cy' : '/search-location'
+      const errorContainer = document.getElementById('loading-error')
+      const retryButton = document.getElementById('loading-retry')
+      const errorHeading = document.getElementById('loading-error-heading')
 
       const body = new URLSearchParams()
       if (payload && typeof payload === 'object') {
@@ -26,27 +56,68 @@
         })
       }
 
-      fetch(actionPath, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-        },
-        body: body.toString(),
-        credentials: 'same-origin'
-      })
-        .then(async (response) => {
-          const html = await response.text()
-          document.open()
-          document.write(html)
-          document.close()
-
-          if (response.url && response.url !== window.location.href) {
-            window.history.replaceState({}, '', response.url)
-          }
-        })
-        .catch(() => {
+      const showError = () => {
+        document.documentElement.classList.remove('search-loading-init')
+        if (!errorContainer) {
           window.location.assign(fallbackPath)
+          return
+        }
+
+        errorContainer.classList.remove('govuk-!-display-none')
+        if (errorHeading && typeof errorHeading.focus === 'function') {
+          errorHeading.setAttribute('tabindex', '-1')
+          errorHeading.focus()
+        }
+      }
+
+      const runLookup = () => {
+        const controller = new AbortController()
+        const timeoutId = window.setTimeout(() => controller.abort(), 45000)
+
+        fetch(actionPath, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+          },
+          body: body.toString(),
+          credentials: 'same-origin',
+          signal: controller.signal
         })
+          .then(async (response) => {
+            if (!response.ok) {
+              throw new Error('Search lookup failed')
+            }
+
+            const html = await response.text()
+            if (!html || !html.trim()) {
+              throw new Error('Empty search response')
+            }
+
+            document.open()
+            document.write(html)
+            document.close()
+
+            if (response.url && response.url !== window.location.href) {
+              window.history.replaceState({}, '', response.url)
+            }
+          })
+          .catch(showError)
+          .finally(() => {
+            window.clearTimeout(timeoutId)
+          })
+      }
+
+      if (retryButton) {
+        retryButton.addEventListener('click', () => {
+          if (errorContainer) {
+            errorContainer.classList.add('govuk-!-display-none')
+          }
+          document.documentElement.classList.add('search-loading-init')
+          runLookup()
+        })
+      }
+
+      runLookup()
     })()
   </script>
 {% endblock %}
