@@ -485,9 +485,15 @@ const isSummaryDateToday = (issueDate) => {
   if (!issueDate) {
     return false
   }
-  const today = moment().format('YYYY-MM-DD')
-  const issueDateFormatted = moment(issueDate).format('YYYY-MM-DD')
-  return today === issueDateFormatted
+
+  // '' Compare in UK timezone to avoid midnight boundary mismatches
+  const nowUk = moment.tz('Europe/London')
+  const issueDateUk = moment.tz(issueDate, 'Europe/London')
+  if (!issueDateUk.isValid()) {
+    return false
+  }
+
+  return nowUk.isSame(issueDateUk, 'day')
 }
 
 // '' Helper function to extract time from issue_date in H:mm format

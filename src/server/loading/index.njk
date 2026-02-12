@@ -127,13 +127,16 @@
 
             didComplete = true
             window.clearTimeout(hardTimeoutId)
+
+            // '' Prefer a full navigation so app scripts re-run reliably
+            if (response.url && response.url !== window.location.href) {
+              window.location.replace(response.url)
+              return
+            }
+
             document.open()
             document.write(html)
             document.close()
-
-            if (response.url && response.url !== window.location.href) {
-              window.history.replaceState({}, '', response.url)
-            }
           })
           .catch(showError)
           .finally(() => {
