@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 0
 
       - name: Build and Publish
-        uses: DEFRA/cdp-build-action/build@6bc276d9c3a038ccb04307247623de821361eca3 # main
+        uses: DEFRA/cdp-build-action/build@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
