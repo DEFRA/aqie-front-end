@@ -174,6 +174,26 @@ describe('searchLocationController - Welsh Language Handling', () => {
       fromEmailFlow: false
     })
   })
+
+  it('should set notificationFlow when SMS flow flag is present', () => {
+    // '' Ensure SMS flow is captured
+    mockRequest = {
+      query: {
+        lang: 'cy',
+        fromSmsFlow: 'true'
+      },
+      path: SEARCH_LOCATION_PATH_CY,
+      yar: {
+        set: vi.fn(),
+        get: vi.fn()
+      }
+    }
+
+    const result = searchLocationController.handler(mockRequest, mockH)
+
+    expect(result).toBe(VIEW_RENDERED)
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('notificationFlow', 'sms')
+  })
 })
 
 describe('searchLocationController - Welsh Error Handling', () => {

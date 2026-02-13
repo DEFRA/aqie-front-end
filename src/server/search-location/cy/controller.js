@@ -9,6 +9,49 @@ import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
 const SEARCH_LOCATION_PATH_CY = '/chwilio-lleoliad/cy'
 
+const getNotificationFlow = (fromSmsFlow = false, fromEmailFlow = false) => {
+  if (fromSmsFlow) {
+    return 'sms'
+  }
+
+  if (fromEmailFlow) {
+    return 'email'
+  }
+
+  return null
+}
+
+const getRequestLang = (query = {}, path = '') => {
+  const lang = query?.lang?.slice(0, 2)
+
+  if (
+    lang !== LANG_CY &&
+    lang !== LANG_EN &&
+    path === SEARCH_LOCATION_PATH_CY
+  ) {
+    return LANG_CY
+  }
+
+  if (!lang && path === SEARCH_LOCATION_PATH_CY) {
+    return LANG_CY
+  }
+
+  return lang
+}
+
+const clearRequestErrors = (request) => {
+  const errors = request.yar.get('errors')
+  const errorMessage = request.yar.get('errorMessage')
+  const locationType = request.yar.get('locationType')
+
+  if (errors) {
+    request.yar.set('errors', null)
+    request.yar.set('errorMessage', null)
+  }
+
+  return { errors, errorMessage, locationType }
+}
+
 function buildSearchLocationViewData({
   metaSiteUrl,
   lang,
@@ -82,36 +125,20 @@ const searchLocationController = {
     // '' Check if user is coming from notification registration flow (SMS or Email)
     const fromSmsFlow = request.query?.fromSmsFlow === 'true'
     const fromEmailFlow = request.query?.fromEmailFlow === 'true'
+    // ''
+    const notificationFlow = getNotificationFlow(fromSmsFlow, fromEmailFlow)
+    // ''
 
-    if (fromSmsFlow) {
-      request.yar.set('notificationFlow', 'sms')
-    } else if (fromEmailFlow) {
-      request.yar.set('notificationFlow', 'email')
+    if (notificationFlow) {
+      request.yar.set('notificationFlow', notificationFlow)
     }
 
-    let lang = query?.lang?.slice(0, 2)
-    if (
-      lang !== LANG_CY &&
-      lang !== LANG_EN &&
-      path === SEARCH_LOCATION_PATH_CY
-    ) {
-      lang = LANG_CY
-    }
     // Ensure lang defaults to CY for Welsh search-location path
-    if (!lang && path === SEARCH_LOCATION_PATH_CY) {
-      lang = LANG_CY
-    }
+    const lang = getRequestLang(query, path)
     if (lang === LANG_EN) {
       return h.redirect(SEARCH_LOCATION_ROUTE_EN).code(REDIRECT_STATUS_CODE)
     }
-    const errors = request.yar.get('errors')
-    const errorMessage = request.yar.get('errorMessage')
-    const locationType = request.yar.get('locationType')
-
-    if (errors) {
-      request.yar.set('errors', null)
-      request.yar.set('errorMessage', null)
-    }
+    const { errors, errorMessage, locationType } = clearRequestErrors(request)
 
     const viewData = buildSearchLocationViewData({
       metaSiteUrl,
