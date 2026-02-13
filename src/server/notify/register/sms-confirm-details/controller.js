@@ -5,6 +5,7 @@ import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 
 // Constants ''
 const LOCATION_PLACEHOLDER = '{location}'
+const MISSING_VALUE = 'MISSING'
 
 // Create a logger instance ''
 const logger = createLogger()
@@ -76,13 +77,15 @@ const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
       values: {
         mobileNumber:
           mobileNumber !== 'Not provided' ? '[REDACTED]' : 'Not provided',
-        location: location || 'MISSING',
-        locationId: locationId || 'MISSING',
-        latitude: lat || 'MISSING',
-        longitude: long || 'MISSING',
-        locationDataKeys: locationData ? Object.keys(locationData) : 'MISSING',
-        notificationFlow: notificationFlow || 'MISSING',
-        searchTermsSaved: searchTermsSaved || 'MISSING'
+        location: location || MISSING_VALUE,
+        locationId: locationId || MISSING_VALUE,
+        latitude: lat || MISSING_VALUE,
+        longitude: long || MISSING_VALUE,
+        locationDataKeys: locationData
+          ? Object.keys(locationData)
+          : MISSING_VALUE,
+        notificationFlow: notificationFlow || MISSING_VALUE,
+        searchTermsSaved: searchTermsSaved || MISSING_VALUE
       }
     })
 
