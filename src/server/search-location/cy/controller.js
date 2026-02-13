@@ -9,8 +9,17 @@ import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
 const SEARCH_LOCATION_PATH_CY = '/chwilio-lleoliad/cy'
 
-const getNotificationFlow = (fromSmsFlow = false, fromEmailFlow = false) =>
-  fromSmsFlow ? 'sms' : fromEmailFlow ? 'email' : null
+const getNotificationFlow = (fromSmsFlow = false, fromEmailFlow = false) => {
+  if (fromSmsFlow) {
+    return 'sms'
+  }
+
+  if (fromEmailFlow) {
+    return 'email'
+  }
+
+  return null
+}
 
 const getRequestLang = (query = {}, path = '') => {
   const lang = query?.lang?.slice(0, 2)
