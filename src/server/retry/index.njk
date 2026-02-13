@@ -3,13 +3,6 @@
 {% block content %}
   <div class="retry-page">
     <div class="retry-page__content">
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-          <div class="retry-loading-spinner" aria-hidden="true"></div>
-          <p class="govuk-body retry-loading-text">Retrying air quality data…</p>
-        </div>
-      </div>
-
   {% if lang == 'cy' %}
     {% set fallbackHeading = 'Nid oedd modd llwytho eich canlyniadau' %}
     {% set fallbackBody = 'Rhowch gynnig arall arni neu ddychwelyd i chwilio.' %}
@@ -24,10 +17,14 @@
     {% set fallbackPath = '/search-location' %}
   {% endif %}
 
-      <div id="retry-error" class="govuk-grid-row govuk-!-display-none" role="alert">
+      <div class="govuk-grid-row" role="alert">
         <div class="govuk-grid-column-two-thirds">
           <h1 class="govuk-heading-l" id="retry-error-heading">{{ fallbackHeading }}</h1>
           <p class="govuk-body">{{ fallbackBody }}</p>
+          <div class="retry-loading-status govuk-!-display-none" aria-live="polite">
+            <div class="retry-loading-spinner" aria-hidden="true"></div>
+            <p class="govuk-body retry-loading-text">Retrying air quality data…</p>
+          </div>
           <div class="govuk-button-group">
             <button type="button" class="govuk-button" data-module="govuk-button" id="retry-action">
               {{ fallbackCta }}
@@ -46,9 +43,9 @@
       const lang = '{{ lang }}'
       const actionPath = lang === 'cy' ? '/lleoliad' : '/location'
       const fallbackPath = lang === 'cy' ? '/chwilio-lleoliad/cy' : '/search-location'
-      const errorContainer = document.getElementById('retry-error')
       const retryButton = document.getElementById('retry-action')
       const errorHeading = document.getElementById('retry-error-heading')
+      const loadingStatus = document.querySelector('.retry-loading-status')
 
       const body = new URLSearchParams()
       if (payload && typeof payload === 'object') {
@@ -62,21 +59,33 @@
       const hasPayload = body.toString().length > 0
 
       const showError = () => {
-        if (!errorContainer) {
-          window.location.assign(fallbackPath)
-          return
+        if (loadingStatus) {
+          loadingStatus.classList.add('govuk-!-display-none')
         }
 
-        errorContainer.classList.remove('govuk-!-display-none')
+        if (retryButton) {
+          retryButton.disabled = false
+        }
+
         if (errorHeading && typeof errorHeading.focus === 'function') {
           errorHeading.setAttribute('tabindex', '-1')
           errorHeading.focus()
         }
       }
 
+      const showLoading = () => {
+        if (loadingStatus) {
+          loadingStatus.classList.remove('govuk-!-display-none')
+        }
+        if (retryButton) {
+          retryButton.disabled = true
+        }
+      }
+
       const runLookup = () => {
         const hardTimeoutMs = 35000
         const abortTimeoutMs = 60000
+        showLoading()
         const hardTimeoutId = window.setTimeout(showError, hardTimeoutMs)
         const controller = window.AbortController ? new AbortController() : null
         const requestOptions = {
@@ -140,9 +149,6 @@
 
       if (retryButton) {
         retryButton.addEventListener('click', () => {
-          if (errorContainer) {
-            errorContainer.classList.add('govuk-!-display-none')
-          }
           runLookup()
         })
       }
@@ -151,8 +157,6 @@
         showError()
         return
       }
-
-      runLookup()
     })()
   </script>
 {% endblock %}
