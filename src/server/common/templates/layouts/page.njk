@@ -28,12 +28,7 @@
 {% set htmlLang = lang %}
 {% block bodyStart %}
 {% include "cookie-banner.njk" %}
-  <div class="search-loading-overlay" aria-live="polite" aria-busy="true" role="status">
-    <div class="search-loading-content">
-      <div class="search-loading-spinner" aria-hidden="true"></div>
-      <p class="search-loading-text">Loading air quality data...</p>
-    </div>
-  </div>
+  {# '' Search preloader removed #}
 {% endblock %}
 
 {% block headIcons %}
@@ -53,127 +48,7 @@
   <meta name="google-site-verification" content="kK4-XyhL8lJqQ4AkkeB6GVwxm3NrhvUFt4g7TE1m7vc" />
   <link href="{{ getAssetPath('stylesheets/application.scss') }}" rel="stylesheet">
   
-  {# '' Inline handler to set preloader flag before navigation #}
-  <script>
-    (function() {
-      var storageKey = 'search-loading-active'
-
-      function isLocationTarget(href) {
-        return href && (href.startsWith('/location') || href.startsWith('/lleoliad'))
-      }
-
-      document.addEventListener(
-        'submit',
-        function(event) {
-          var target = event.target
-          if (!target || !target.getAttribute) return
-
-          var action = target.getAttribute('action') || ''
-          var formName = target.getAttribute('name') || ''
-
-          if (formName === 'search-form' || isLocationTarget(action)) {
-            sessionStorage.setItem(storageKey, 'true')
-          }
-        },
-        true
-      )
-
-      document.addEventListener(
-        'click',
-        function(event) {
-          var target = event.target
-          if (!target || !target.closest) return
-
-          var link = target.closest('a')
-          if (!link) return
-
-          var href = link.getAttribute('href') || ''
-          if (isLocationTarget(href)) {
-            sessionStorage.setItem(storageKey, 'true')
-          }
-        },
-        true
-      )
-    })();
-  </script>
-
-  {# '' Inline script to show loading overlay immediately if flag is set - must run before page renders #}
-  <script>
-    (function() {
-      var storageKey = 'search-loading-active'
-      var pathname = window.location.pathname || ''
-      var isSearchLocationPage =
-        pathname === '/search-location' || pathname === '/chwilio-lleoliad/cy'
-      var isLocationPage =
-        pathname.startsWith('/location') || pathname.startsWith('/lleoliad')
-
-      // '' Avoid showing the loader on search-location pages
-      if (isSearchLocationPage) {
-        sessionStorage.removeItem(storageKey)
-        return
-      }
-
-      var shouldShowLoader = isLocationPage || sessionStorage.getItem(storageKey) === 'true'
-
-      if (shouldShowLoader) {
-        if (document.readyState !== 'loading') {
-          sessionStorage.removeItem(storageKey)
-          return
-        }
-
-        var referrer = document.referrer || ''
-        var referrerPath = ''
-        try {
-          referrerPath = new URL(referrer).pathname
-        } catch (error) {
-          referrerPath = ''
-        }
-
-        if (!isLocationPage) {
-          var allowedReferrers = ['/search-location', '/chwilio-lleoliad/cy']
-          var isAllowedReferrer = allowedReferrers.includes(referrerPath)
-
-          if (!isAllowedReferrer) {
-            sessionStorage.removeItem(storageKey)
-            return
-          }
-        }
-
-        document.documentElement.classList.add('search-loading-init');
-        var style = document.createElement('style');
-        style.textContent = '.search-loading-init { overflow: hidden; } .search-loading-init .search-loading-overlay { display: flex; opacity: 1; background-color: rgba(255, 255, 255, 0.95); }';
-        document.head.appendChild(style);
-
-        function clearInlineLoader() {
-          document.documentElement.classList.remove('search-loading-init');
-          sessionStorage.removeItem(storageKey);
-        }
-
-        // '' Clear on first paint or DOM ready to avoid late overlays
-        if (document.readyState === 'loading') {
-          window.requestAnimationFrame(function() {
-            window.requestAnimationFrame(clearInlineLoader);
-          });
-          document.addEventListener('DOMContentLoaded', clearInlineLoader, { once: true });
-        } else {
-          clearInlineLoader();
-        }
-
-        // '' Safety timeout: clear loader if app JS fails to run
-        window.setTimeout(function() {
-          document.documentElement.classList.remove('search-loading-init');
-          sessionStorage.removeItem(storageKey);
-        }, 15000);
-      }
-    })();
-  </script>
-  {# '' Ensure page still loads if JavaScript is disabled #}
-  <noscript>
-    <style>
-      .search-loading-init { overflow: auto !important; }
-      .search-loading-init::before { display: none !important; }
-    </style>
-  </noscript>
+  {# '' Search preloader scripts removed #}
 {% endblock %}
 
 {% block header %}

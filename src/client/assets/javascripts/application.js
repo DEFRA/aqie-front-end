@@ -115,8 +115,7 @@ createAll(Tabs)
 import daqiColumns from './daqi-columns.js'
 // DAQI accessibility enhancements: improve screen reader support and keyboard navigation
 import daqiAccessibility from './daqi-accessibility.js'
-// '' Search loading indicator: show spinner during location search
-import './components/search-loading.js'
+// '' Search loading preloader removed
 
 if (daqiColumns && typeof daqiColumns.init === 'function') {
   if (

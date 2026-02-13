@@ -82,11 +82,20 @@ const searchLocationController = {
     // '' Check if user is coming from notification registration flow (SMS or Email)
     const fromSmsFlow = request.query?.fromSmsFlow === 'true'
     const fromEmailFlow = request.query?.fromEmailFlow === 'true'
-
+    // ''
+    let notificationFlow = null
     if (fromSmsFlow) {
-      request.yar.set('notificationFlow', 'sms')
+      notificationFlow = 'sms'
     } else if (fromEmailFlow) {
-      request.yar.set('notificationFlow', 'email')
+      notificationFlow = 'email'
+    } else {
+      // ''
+      notificationFlow = null
+    }
+    // ''
+
+    if (notificationFlow) {
+      request.yar.set('notificationFlow', notificationFlow)
     }
 
     let lang = query?.lang?.slice(0, 2)

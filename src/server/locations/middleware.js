@@ -33,6 +33,114 @@ import { config } from '../../config/index.js'
 
 const logger = createLogger()
 
+// '' Notification flow helpers
+const getNotificationFlowFromFlags = (
+  existingNotificationFlow = null,
+  fromSmsFlow = false,
+  fromEmailFlow = false
+) => {
+  if (existingNotificationFlow) {
+    return null
+  }
+
+  if (fromSmsFlow) {
+    return 'sms'
+  }
+
+  if (fromEmailFlow) {
+    return 'email'
+  }
+
+  return null
+}
+
+const applyNotificationFlowFlags = (request, payload = {}, query = {}) => {
+  const fromSmsFlow =
+    payload?.fromSmsFlow === 'true' || query?.fromSmsFlow === 'true'
+  const fromEmailFlow =
+    payload?.fromEmailFlow === 'true' || query?.fromEmailFlow === 'true'
+  const existingNotificationFlow = request.yar.get('notificationFlow')
+  const notificationFlow = getNotificationFlowFromFlags(
+    existingNotificationFlow,
+    fromSmsFlow,
+    fromEmailFlow
+  )
+
+  if (notificationFlow) {
+    request.yar.set('notificationFlow', notificationFlow)
+  }
+}
+
+const persistSearchTerms = (request, searchTerms = '') => {
+  if (searchTerms) {
+    request.yar.set('searchTermsSaved', searchTerms)
+  }
+}
+
+const getServiceUnavailableResponse = (
+  request,
+  h,
+  locationType,
+  getNIPlaces,
+  userLocation = '',
+  lang = LANG_EN
+) => {
+  if (
+    locationType === LOCATION_TYPE_NI &&
+    getNIPlaces?.error === 'service-unavailable'
+  ) {
+    logger.error(
+      '[NI API UNAVAILABLE] Upstream NI API failed - showing service error'
+    )
+    logger.error(
+      `[NI API UNAVAILABLE] This is NOT a wrong postcode - API connectivity issue for: ${userLocation}`
+    )
+    return handleServiceUnavailable(request, h, lang, {
+      breakerOpen: !!getNIPlaces?.breakerOpen
+    })
+  }
+
+  return null
+}
+
+const getNotFoundResponse = (
+  request,
+  h,
+  redirectError,
+  getNIPlaces,
+  userLocation,
+  getOSPlaces,
+  getDailySummary,
+  locationNameOrPostcode,
+  lang = LANG_EN,
+  searchTerms = ''
+) => {
+  const shouldRedirect =
+    shouldReturnNotFound(
+      redirectError,
+      getNIPlaces,
+      userLocation,
+      getOSPlaces
+    ) || isInvalidDailySummary(getDailySummary, redirectError.locationType)
+
+  if (!shouldRedirect) {
+    return null
+  }
+
+  logger.info(
+    `[DEBUG] Redirecting to location-not-found. shouldReturnNotFound: ${shouldReturnNotFound(redirectError, getNIPlaces, userLocation, getOSPlaces)}, isInvalidDailySummary: ${isInvalidDailySummary(getDailySummary, redirectError.locationType)}`
+  )
+  logger.info(`[DEBUG] getDailySummary: ${JSON.stringify(getDailySummary)}`)
+
+  return handleLocationDataNotFound(
+    request,
+    h,
+    locationNameOrPostcode,
+    lang,
+    searchTerms
+  )
+}
+
 const handleLocationDataNotFound = (
   request,
   h,
@@ -472,22 +580,9 @@ const searchMiddleware = async (request, h) => {
   const secondSearchTerm = query?.secondSearchTerm?.toUpperCase()
 
   // '' Ensure notification flow is preserved when search form includes flow flags
-  const fromSmsFlow =
-    payload?.fromSmsFlow === 'true' || query?.fromSmsFlow === 'true'
-  const fromEmailFlow =
-    payload?.fromEmailFlow === 'true' || query?.fromEmailFlow === 'true'
-  const existingNotificationFlow = request.yar.get('notificationFlow')
-
-  if (!existingNotificationFlow && fromSmsFlow) {
-    request.yar.set('notificationFlow', 'sms')
-  } else if (!existingNotificationFlow && fromEmailFlow) {
-    request.yar.set('notificationFlow', 'email')
-  }
-
+  applyNotificationFlowFlags(request, payload, query)
   // '' Set searchTermsSaved early in UK location processing
-  if (searchTerms) {
-    request.yar.set('searchTermsSaved', searchTerms)
-  }
+  persistSearchTerms(request, searchTerms)
 
   const redirectError = handleErrorInputAndRedirect(
     request,
@@ -511,41 +606,32 @@ const searchMiddleware = async (request, h) => {
     )
 
   // '' Handle upstream NI API failure - show 500 service error (not 404 postcode error)
-  if (
-    redirectError.locationType === LOCATION_TYPE_NI &&
-    getNIPlaces?.error === 'service-unavailable'
-  ) {
-    logger.error(
-      '[NI API UNAVAILABLE] Upstream NI API failed - showing service error'
-    )
-    logger.error(
-      `[NI API UNAVAILABLE] This is NOT a wrong postcode - API connectivity issue for: ${userLocation}`
-    )
-    return handleServiceUnavailable(request, h, lang, {
-      breakerOpen: !!getNIPlaces?.breakerOpen
-    })
+  const serviceUnavailableResponse = getServiceUnavailableResponse(
+    request,
+    h,
+    redirectError.locationType,
+    getNIPlaces,
+    userLocation,
+    lang
+  )
+  if (serviceUnavailableResponse) {
+    return serviceUnavailableResponse
   }
 
-  if (
-    shouldReturnNotFound(
-      redirectError,
-      getNIPlaces,
-      userLocation,
-      getOSPlaces
-    ) ||
-    isInvalidDailySummary(getDailySummary, redirectError.locationType)
-  ) {
-    logger.info(
-      `[DEBUG] Redirecting to location-not-found. shouldReturnNotFound: ${shouldReturnNotFound(redirectError, getNIPlaces, userLocation, getOSPlaces)}, isInvalidDailySummary: ${isInvalidDailySummary(getDailySummary, redirectError.locationType)}`
-    )
-    logger.info(`[DEBUG] getDailySummary: ${JSON.stringify(getDailySummary)}`)
-    return handleLocationDataNotFound(
-      request,
-      h,
-      locationNameOrPostcode,
-      lang,
-      searchTerms
-    )
+  const notFoundResponse = getNotFoundResponse(
+    request,
+    h,
+    redirectError,
+    getNIPlaces,
+    userLocation,
+    getOSPlaces,
+    getDailySummary,
+    locationNameOrPostcode,
+    lang,
+    searchTerms
+  )
+  if (notFoundResponse) {
+    return notFoundResponse
   }
 
   const { transformedDailySummary, englishDate, welshDate } =

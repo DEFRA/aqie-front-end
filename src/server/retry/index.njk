@@ -1,12 +1,12 @@
 {% extends 'layouts/page.njk' %}
 
 {% block content %}
-  <div class="loading-page">
-    <div class="loading-page__content">
+  <div class="retry-page">
+    <div class="retry-page__content">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-          <div class="search-loading-spinner" aria-hidden="true"></div>
-          <p class="govuk-body">Retrying air quality data…</p>
+          <div class="retry-loading-spinner" aria-hidden="true"></div>
+          <p class="govuk-body retry-loading-text">Retrying air quality data…</p>
         </div>
       </div>
 
@@ -24,15 +24,15 @@
     {% set fallbackPath = '/search-location' %}
   {% endif %}
 
-      <div id="loading-error" class="govuk-grid-row govuk-!-display-none" role="alert">
+      <div id="retry-error" class="govuk-grid-row govuk-!-display-none" role="alert">
         <div class="govuk-grid-column-two-thirds">
-          <h1 class="govuk-heading-l" id="loading-error-heading">{{ fallbackHeading }}</h1>
+          <h1 class="govuk-heading-l" id="retry-error-heading">{{ fallbackHeading }}</h1>
           <p class="govuk-body">{{ fallbackBody }}</p>
           <div class="govuk-button-group">
-            <button type="button" class="govuk-button" data-module="govuk-button" id="loading-retry">
+            <button type="button" class="govuk-button" data-module="govuk-button" id="retry-action">
               {{ fallbackCta }}
             </button>
-            <a class="govuk-link" id="loading-fallback" href="{{ fallbackPath }}">{{ fallbackLink }}</a>
+            <a class="govuk-link" id="retry-fallback" href="{{ fallbackPath }}">{{ fallbackLink }}</a>
           </div>
         </div>
       </div>
@@ -42,15 +42,13 @@
   {# '' Keep the loader visible while the request runs #}
   <script>
     (function() {
-      document.documentElement.classList.add('search-loading-init')
-
       const payload = {{ payload | dump | safe }}
       const lang = '{{ lang }}'
       const actionPath = lang === 'cy' ? '/lleoliad' : '/location'
       const fallbackPath = lang === 'cy' ? '/chwilio-lleoliad/cy' : '/search-location'
-      const errorContainer = document.getElementById('loading-error')
-      const retryButton = document.getElementById('loading-retry')
-      const errorHeading = document.getElementById('loading-error-heading')
+      const errorContainer = document.getElementById('retry-error')
+      const retryButton = document.getElementById('retry-action')
+      const errorHeading = document.getElementById('retry-error-heading')
 
       const body = new URLSearchParams()
       if (payload && typeof payload === 'object') {
@@ -64,7 +62,6 @@
       const hasPayload = body.toString().length > 0
 
       const showError = () => {
-        document.documentElement.classList.remove('search-loading-init')
         if (!errorContainer) {
           window.location.assign(fallbackPath)
           return
@@ -146,7 +143,6 @@
           if (errorContainer) {
             errorContainer.classList.add('govuk-!-display-none')
           }
-          document.documentElement.classList.add('search-loading-init')
           runLookup()
         })
       }
