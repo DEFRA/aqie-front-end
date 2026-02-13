@@ -80,7 +80,8 @@ const handleLocationDataNotFound = (
 }
 
 // '' Helper: Render service unavailable page for upstream failures
-const handleServiceUnavailable = (request, h, lang) => {
+const handleServiceUnavailable = (request, h, lang, options = {}) => {
+  const { breakerOpen = false } = options
   // '' Check if user is in notification flow (SMS or Email)
   const notificationFlow = request.yar.get('notificationFlow')
   const mobileNumber = request.yar.get('mobileNumber')
@@ -110,6 +111,7 @@ const handleServiceUnavailable = (request, h, lang) => {
         message: english.notFoundUrl.serviceAPI.heading,
         url: request.path,
         notFoundUrl: english.notFoundUrl,
+        breakerOpen,
         displayBacklink: true,
         customBackLink: true,
         backLinkUrl: backlinkUrl,
@@ -134,6 +136,7 @@ const handleServiceUnavailable = (request, h, lang) => {
       message: english.notFoundUrl.serviceAPI.heading,
       url: request.path,
       notFoundUrl: english.notFoundUrl,
+      breakerOpen,
       displayBacklink: false,
       phaseBanner: english.phaseBanner,
       footerTxt: english.footerTxt,
@@ -518,7 +521,9 @@ const searchMiddleware = async (request, h) => {
     logger.error(
       `[NI API UNAVAILABLE] This is NOT a wrong postcode - API connectivity issue for: ${userLocation}`
     )
-    return handleServiceUnavailable(request, h, lang)
+    return handleServiceUnavailable(request, h, lang, {
+      breakerOpen: !!getNIPlaces?.breakerOpen
+    })
   }
 
   if (

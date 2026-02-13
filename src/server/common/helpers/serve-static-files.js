@@ -93,7 +93,8 @@ export const serveStaticFiles = {
           path: `${config.get('assetPath')}/{param*}`,
           handler: {
             directory: {
-              path: '.',
+              // ''
+              path: path.resolve(process.cwd(), '.public'),
               redirectToSlash: true
             }
           }

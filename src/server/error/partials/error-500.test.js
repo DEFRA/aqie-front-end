@@ -60,4 +60,23 @@ describe('Nunjucks Template', () => {
       '<p class="govuk-body">Sorry, something went wrong on our end.</p>'
     )
   })
+
+  it('should render breaker-open message when provided', () => {
+    const context = {
+      breakerOpen: true,
+      notFoundUrl: {
+        serviceAPI: {
+          heading: 'Service unavailable',
+          breakerOpenMessage: 'Please wait a minute and try again.',
+          paragraphs: {
+            a: 'Try again later.'
+          }
+        }
+      }
+    }
+    const result = env.render('error-500.njk', context)
+    expect(result.replace(/\s+/g, ' ')).toContain(
+      '<p class="govuk-body">Please wait a minute and try again.</p>'
+    )
+  })
 })
