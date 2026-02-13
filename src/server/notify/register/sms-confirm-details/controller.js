@@ -58,6 +58,33 @@ const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
     const locationId = request.yar.get('locationId')
     const lat = request.yar.get('latitude')
     const long = request.yar.get('longitude')
+    const locationData = request.yar.get('locationData')
+    const notificationFlow = request.yar.get('notificationFlow')
+    const searchTermsSaved = request.yar.get('searchTermsSaved')
+
+    // '' DEBUG: Log all session keys to identify what's missing
+    logger.info('Session debug - checking all keys', {
+      hasMobileNumber: !!mobileNumber && mobileNumber !== 'Not provided',
+      hasLocation: !!location,
+      hasLocationId: !!locationId,
+      hasLatitude: !!lat,
+      hasLongitude: !!long,
+      hasLocationData: !!locationData,
+      hasNotificationFlow: !!notificationFlow,
+      hasSearchTermsSaved: !!searchTermsSaved,
+      sessionId: request.yar.id,
+      values: {
+        mobileNumber:
+          mobileNumber !== 'Not provided' ? '[REDACTED]' : 'Not provided',
+        location: location || 'MISSING',
+        locationId: locationId || 'MISSING',
+        latitude: lat || 'MISSING',
+        longitude: long || 'MISSING',
+        locationDataKeys: locationData ? Object.keys(locationData) : 'MISSING',
+        notificationFlow: notificationFlow || 'MISSING',
+        searchTermsSaved: searchTermsSaved || 'MISSING'
+      }
+    })
 
     // '' If location is missing but locationId exists, reload location to repopulate session
     if (!location && locationId) {
