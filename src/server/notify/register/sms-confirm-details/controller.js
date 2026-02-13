@@ -1,6 +1,6 @@
 import { createLogger } from '../../../common/helpers/logging/logger.js'
 import { english } from '../../../data/en/en.js'
-import { LANG_EN } from '../../../data/constants.js'
+import { LANG_EN, NOT_PROVIDED } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 
 // Constants ''
@@ -54,7 +54,7 @@ const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
     }
 
     // Get data from session ''
-    const mobileNumber = request.yar.get('mobileNumber') || 'Not provided'
+    const mobileNumber = request.yar.get('mobileNumber') || NOT_PROVIDED
     const location = request.yar.get('location')
     const locationId = request.yar.get('locationId')
     const lat = request.yar.get('latitude')
@@ -65,7 +65,7 @@ const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
 
     // '' DEBUG: Log all session keys to identify what's missing
     logger.info('Session debug - checking all keys', {
-      hasMobileNumber: !!mobileNumber && mobileNumber !== 'Not provided',
+      hasMobileNumber: !!mobileNumber && mobileNumber !== NOT_PROVIDED,
       hasLocation: !!location,
       hasLocationId: !!locationId,
       hasLatitude: !!lat,
@@ -76,7 +76,7 @@ const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
       sessionId: request.yar.id,
       values: {
         mobileNumber:
-          mobileNumber !== 'Not provided' ? '[REDACTED]' : 'Not provided',
+          mobileNumber !== NOT_PROVIDED ? '[REDACTED]' : NOT_PROVIDED,
         location: location || MISSING_VALUE,
         locationId: locationId || MISSING_VALUE,
         latitude: lat || MISSING_VALUE,
