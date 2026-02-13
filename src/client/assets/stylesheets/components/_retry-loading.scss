@@ -4,9 +4,9 @@
  */
 
 .retry-loading-spinner {
-  width: 60px;
-  height: 60px;
-  margin: 0 auto 1.5rem;
+  width: 48px;
+  height: 48px;
+  margin: 0 0 0.75rem;
   border: 4px solid #f3f3f3;
   border-top: 4px solid #1d70b8; /* '' GDS blue */
   border-radius: 50%;
@@ -31,40 +31,27 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 1.5rem 0 4rem;
+  padding: 2rem 0 4rem;
 }
 
 .retry-page__content {
   width: 100%;
-  text-align: center;
-}
-
-/* '' Align error content and retry actions to the center */
-.retry-page__content #retry-error {
-  text-align: center;
-  margin-top: 0;
-  display: flex;
-  justify-content: center;
-  /* '' */
-  padding-top: 0.75rem;
-}
-
-.retry-page__content #retry-error .govuk-grid-column-two-thirds {
   max-width: 40rem;
-  margin: 0 auto;
+  text-align: left;
+  padding: 0 1rem;
 }
 
-.retry-page__content #retry-error .govuk-button-group {
+.retry-loading-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.retry-page__content .govuk-button-group {
   align-items: center;
-  justify-content: center;
-}
-
-.retry-page__content #retry-error .govuk-button-group .govuk-link {
-  text-align: center;
-}
-
-.retry-page .retry-loading-spinner {
-  margin: 0 auto 1.5rem;
+  gap: 1rem;
 }
 
 /* '' High contrast mode support */
