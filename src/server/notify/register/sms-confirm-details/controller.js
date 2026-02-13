@@ -1,10 +1,11 @@
 import { createLogger } from '../../../common/helpers/logging/logger.js'
 import { english } from '../../../data/en/en.js'
-import { LANG_EN } from '../../../data/constants.js'
+import { LANG_EN, NOT_PROVIDED } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 
 // Constants ''
 const LOCATION_PLACEHOLDER = '{location}'
+const MISSING_VALUE = 'MISSING'
 
 // Create a logger instance ''
 const logger = createLogger()
@@ -53,11 +54,40 @@ const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
     }
 
     // Get data from session ''
-    const mobileNumber = request.yar.get('mobileNumber') || 'Not provided'
+    const mobileNumber = request.yar.get('mobileNumber') || NOT_PROVIDED
     const location = request.yar.get('location')
     const locationId = request.yar.get('locationId')
     const lat = request.yar.get('latitude')
     const long = request.yar.get('longitude')
+    const locationData = request.yar.get('locationData')
+    const notificationFlow = request.yar.get('notificationFlow')
+    const searchTermsSaved = request.yar.get('searchTermsSaved')
+
+    // '' DEBUG: Log all session keys to identify what's missing
+    logger.info('Session debug - checking all keys', {
+      hasMobileNumber: !!mobileNumber && mobileNumber !== NOT_PROVIDED,
+      hasLocation: !!location,
+      hasLocationId: !!locationId,
+      hasLatitude: !!lat,
+      hasLongitude: !!long,
+      hasLocationData: !!locationData,
+      hasNotificationFlow: !!notificationFlow,
+      hasSearchTermsSaved: !!searchTermsSaved,
+      sessionId: request.yar.id,
+      values: {
+        mobileNumber:
+          mobileNumber !== NOT_PROVIDED ? '[REDACTED]' : NOT_PROVIDED,
+        location: location || MISSING_VALUE,
+        locationId: locationId || MISSING_VALUE,
+        latitude: lat || MISSING_VALUE,
+        longitude: long || MISSING_VALUE,
+        locationDataKeys: locationData
+          ? Object.keys(locationData)
+          : MISSING_VALUE,
+        notificationFlow: notificationFlow || MISSING_VALUE,
+        searchTermsSaved: searchTermsSaved || MISSING_VALUE
+      }
+    })
 
     // '' If location is missing but locationId exists, reload location to repopulate session
     if (!location && locationId) {

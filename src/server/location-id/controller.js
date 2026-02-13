@@ -684,6 +684,26 @@ async function processLocationWorkflow({
       request.yar.set('locationId', locationId)
       request.yar.set('latitude', lat)
       request.yar.set('longitude', lon)
+
+      // '' DEBUG: Log session data immediately after setting to verify persistence
+      logger.info('Session debug - SET operation complete', {
+        sessionId: request.yar.id,
+        operation: 'SET',
+        keysSet: ['location', 'locationId', 'latitude', 'longitude'],
+        values: {
+          location: locationTitle,
+          locationId,
+          latitude: lat,
+          longitude: lon
+        },
+        verifyImmediate: {
+          location: request.yar.get('location'),
+          locationId: request.yar.get('locationId'),
+          latitude: request.yar.get('latitude'),
+          longitude: request.yar.get('longitude')
+        }
+      })
+
       logger.info(
         `[DEBUG processLocationWorkflow] Updated session location data:`,
         {

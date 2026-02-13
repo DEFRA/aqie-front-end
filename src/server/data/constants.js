@@ -151,3 +151,6 @@ export const MAX_ERROR_BODY_LENGTH = 500
 
 // '' - Constant for the server directory name
 export const SERVER_DIRNAME = dirname(fileURLToPath(import.meta.url))
+
+// '' - Session and notification constants
+export const NOT_PROVIDED = 'Not provided'
