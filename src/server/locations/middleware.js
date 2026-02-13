@@ -103,7 +103,7 @@ const getServiceUnavailableResponse = (
   return null
 }
 
-const getNotFoundResponse = (
+const getNotFoundResponse = ({
   request,
   h,
   redirectError,
@@ -114,7 +114,7 @@ const getNotFoundResponse = (
   locationNameOrPostcode,
   lang = LANG_EN,
   searchTerms = ''
-) => {
+}) => {
   const shouldRedirect =
     shouldReturnNotFound(
       redirectError,
@@ -618,7 +618,7 @@ const searchMiddleware = async (request, h) => {
     return serviceUnavailableResponse
   }
 
-  const notFoundResponse = getNotFoundResponse(
+  const notFoundResponse = getNotFoundResponse({
     request,
     h,
     redirectError,
@@ -629,7 +629,7 @@ const searchMiddleware = async (request, h) => {
     locationNameOrPostcode,
     lang,
     searchTerms
-  )
+  })
   if (notFoundResponse) {
     return notFoundResponse
   }
