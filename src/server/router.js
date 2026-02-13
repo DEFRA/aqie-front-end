@@ -3,7 +3,7 @@ import { home } from './home/index.js'
 import { homeCy } from './home/cy/index.js'
 import { searchLocation } from './search-location/index.js'
 import { searchLocationCy } from './search-location/cy/index.js'
-import { loading } from './loading/index.js'
+import { retry } from './retry/index.js'
 import { locations } from './locations/index.js'
 import { locationsCy } from './locations/cy/index.js'
 import { locationId } from './location-id/index.js'
@@ -62,7 +62,7 @@ const getAllPlugins = () => [
   homeCy,
   searchLocation,
   searchLocationCy,
-  loading,
+  retry,
   locations,
   locationsCy,
   locationId,
@@ -148,7 +148,8 @@ const setupStaticRoutes = (server) => {
       path: '/public/{param*}',
       handler: {
         directory: {
-          path: path.resolve(SERVER_DIRNAME, '../../public'),
+          // ''
+          path: path.resolve(SERVER_DIRNAME, '../../.public'),
           redirectToSlash: true,
           index: true
         }

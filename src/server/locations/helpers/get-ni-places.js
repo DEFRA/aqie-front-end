@@ -12,7 +12,8 @@ const SERVICE_UNAVAILABLE_ERROR = 'service-unavailable'
 const niPlacesCache = new Map()
 const circuitBreakerState = {
   failureCount: 0,
-  openUntilMs: 0
+  openUntilMs: 0,
+  halfOpenInFlight: false
 }
 
 function getCacheKey(normalizedPostcode = '') {
@@ -65,13 +66,33 @@ function setCachedResult(cacheKey = '', data = null, nowMs = Date.now()) {
   })
 }
 
-function isCircuitBreakerOpen(nowMs = Date.now()) {
+function getCircuitBreakerDecision(nowMs = Date.now()) {
   const { enabled } = getCircuitBreakerConfig()
   if (!enabled) {
-    return false
+    return { shouldShortCircuit: false, isHalfOpenProbe: false }
   }
 
-  return circuitBreakerState.openUntilMs > nowMs
+  if (circuitBreakerState.openUntilMs > nowMs) {
+    return { shouldShortCircuit: true, isHalfOpenProbe: false }
+  }
+
+  // '' Allow a single probe request after open duration expires
+  if (
+    circuitBreakerState.openUntilMs > 0 &&
+    !circuitBreakerState.halfOpenInFlight
+  ) {
+    circuitBreakerState.halfOpenInFlight = true
+    return { shouldShortCircuit: false, isHalfOpenProbe: true }
+  }
+
+  if (
+    circuitBreakerState.openUntilMs > 0 &&
+    circuitBreakerState.halfOpenInFlight
+  ) {
+    return { shouldShortCircuit: true, isHalfOpenProbe: false }
+  }
+
+  return { shouldShortCircuit: false, isHalfOpenProbe: false }
 }
 
 function recordCircuitBreakerFailure(nowMs = Date.now()) {
@@ -81,10 +102,16 @@ function recordCircuitBreakerFailure(nowMs = Date.now()) {
     return
   }
 
+  const wasHalfOpen = circuitBreakerState.halfOpenInFlight
   circuitBreakerState.failureCount += 1
+  circuitBreakerState.halfOpenInFlight = false
 
-  if (circuitBreakerState.failureCount >= failureThreshold) {
+  if (wasHalfOpen || circuitBreakerState.failureCount >= failureThreshold) {
     circuitBreakerState.openUntilMs = nowMs + openDurationMs
+    circuitBreakerState.failureCount = Math.max(
+      circuitBreakerState.failureCount,
+      failureThreshold
+    )
     logger.warn(
       `[getNIPlaces] Circuit breaker opened for ${openDurationMs}ms after ${circuitBreakerState.failureCount} failures`
     )
@@ -94,6 +121,7 @@ function recordCircuitBreakerFailure(nowMs = Date.now()) {
 function resetCircuitBreaker() {
   circuitBreakerState.failureCount = 0
   circuitBreakerState.openUntilMs = 0
+  circuitBreakerState.halfOpenInFlight = false
 }
 
 function resetNiPlacesState() {
@@ -122,7 +150,8 @@ async function getNIPlaces(userLocation, request) {
     : `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(normalizedUserLocation)}&maxresults=1`
 
   // '' Check circuit breaker before calling upstream
-  if (isCircuitBreakerOpen()) {
+  const { shouldShortCircuit, isHalfOpenProbe } = getCircuitBreakerDecision()
+  if (shouldShortCircuit) {
     logger.warn(
       `[getNIPlaces] Circuit breaker open - skipping NI API call for ${normalizedUserLocation}`
     )
@@ -135,7 +164,7 @@ async function getNIPlaces(userLocation, request) {
       return cachedResult
     }
 
-    return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
+    return { results: [], error: SERVICE_UNAVAILABLE_ERROR, breakerOpen: true }
   }
 
   // Build OAuth options if not in mock mode
@@ -174,6 +203,12 @@ async function getNIPlaces(userLocation, request) {
   )
   logger.info(`[getNIPlaces] OAuth options: ${JSON.stringify(optionsOAuth)}`)
 
+  if (isHalfOpenProbe) {
+    logger.warn(
+      `[getNIPlaces] Circuit breaker half-open probe for ${normalizedUserLocation}`
+    )
+  }
+
   // '' Wrap NI API call with retry logic for better reliability
   const runNiRequest = async (requestOptions) =>
     fetchWithRetry(
@@ -206,7 +241,8 @@ async function getNIPlaces(userLocation, request) {
       },
       {
         operationName: `NI API call for ${normalizedUserLocation}`,
-        maxRetries: isMockEnabled ? 0 : config.get('niApiMaxRetries'),
+        maxRetries:
+          isMockEnabled || isHalfOpenProbe ? 0 : config.get('niApiMaxRetries'),
         retryDelayMs: config.get('niApiRetryDelayMs'),
         timeoutMs: config.get('niApiTimeoutMs')
       }

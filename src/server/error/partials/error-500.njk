@@ -3,5 +3,9 @@
     <h1 class="govuk-heading-xl">{{ notFoundUrl.serviceAPI.heading }}</h1>
   </div>
 </div>
+{# '' #}
+{% if breakerOpen %}
+  <p class="govuk-body">{{ notFoundUrl.serviceAPI.breakerOpenMessage }}</p>
+{% endif %}
 <p class="govuk-body">{{ notFoundUrl.serviceAPI.paragraphs.a }}</p>
 <p class="govuk-body">{{ notFoundUrl.serviceAPI.paragraphs.b }} <a href="mailto:checklocalairquality@defra.gov.uk">{{ notFoundUrl.serviceAPI.paragraphs.c }}</a>{{ notFoundUrl.serviceAPI.paragraphs.d }}</p>

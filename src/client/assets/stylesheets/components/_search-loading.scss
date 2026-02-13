@@ -71,22 +71,28 @@
   text-align: center;
 }
 
-/* '' Align error content and retry actions to the left */
+/* '' Align error content and retry actions to the center */
 .loading-page__content #loading-error {
-  text-align: left;
-  margin-top: 1.5rem;
+  text-align: center;
+  margin-top: 0;
+  display: flex;
+  justify-content: center;
+  /* '' */
+  padding-top: 0.75rem;
 }
 
 .loading-page__content #loading-error .govuk-grid-column-two-thirds {
   max-width: 40rem;
+  margin: 0 auto;
 }
 
 .loading-page__content #loading-error .govuk-button-group {
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
 }
 
 .loading-page__content #loading-error .govuk-button-group .govuk-link {
-  text-align: left;
+  text-align: center;
 }
 
 .loading-page .search-loading-spinner {

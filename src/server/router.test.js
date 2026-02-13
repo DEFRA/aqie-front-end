@@ -72,7 +72,7 @@ vi.mock('./search-location/index.js', () => ({
 vi.mock('./search-location/cy/index.js', () => ({
   searchLocationCy: mockRouteModule
 }))
-vi.mock('./loading/index.js', () => ({ loading: mockRouteModule }))
+vi.mock('./retry/index.js', () => ({ retry: mockRouteModule }))
 vi.mock('./locations/index.js', () => ({ locations: mockRouteModule }))
 vi.mock('./locations/cy/index.js', () => ({ locationsCy: mockRouteModule }))
 vi.mock('./location-id/index.js', () => ({ locationId: mockRouteModule }))

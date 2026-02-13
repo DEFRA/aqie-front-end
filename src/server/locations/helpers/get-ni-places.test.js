@@ -237,7 +237,61 @@ describe('getNIPlaces', () => {
     expect(firstResult).toEqual({ results: [], error: 'service-unavailable' })
 
     const secondResult = await getNIPlaces('BT1 1AA')
-    expect(secondResult).toEqual({ results: [], error: 'service-unavailable' })
+    expect(secondResult).toEqual({
+      results: [],
+      error: 'service-unavailable',
+      breakerOpen: true
+    })
     expect(catchProxyFetchError).toHaveBeenCalledTimes(1)
+  })
+
+  it('should allow a half-open probe after the open duration expires', async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2024-01-01T00:00:00.000Z'))
+
+    config.get.mockImplementation((key) => {
+      const overrideValues = {
+        ...defaultConfigValues,
+        niApiMaxRetries: 0,
+        niApiCacheEnabled: false,
+        niApiCircuitBreakerFailureThreshold: 1,
+        niApiCircuitBreakerOpenMs: 1000
+      }
+      const value = overrideValues[key] ?? ''
+      if (key === 'log' && typeof value === 'string') {
+        try {
+          return JSON.parse(value)
+        } catch {
+          return value
+        }
+      }
+      if (key === 'enabledMock') {
+        return value === 'true'
+      }
+      return value
+    })
+
+    catchProxyFetchError.mockReset()
+    catchProxyFetchError
+      .mockResolvedValueOnce([null, { error: 'service-unavailable' }])
+      .mockResolvedValueOnce([STATUS_OK, { results: [{ id: 'probe' }] }])
+
+    const firstResult = await getNIPlaces('BT1 1AA')
+    expect(firstResult).toEqual({ results: [], error: 'service-unavailable' })
+
+    const secondResult = await getNIPlaces('BT1 1AA')
+    expect(secondResult).toEqual({
+      results: [],
+      error: 'service-unavailable',
+      breakerOpen: true
+    })
+
+    vi.advanceTimersByTime(1001)
+
+    const thirdResult = await getNIPlaces('BT1 1AA')
+    expect(thirdResult.results).toEqual([{ id: 'probe' }])
+    expect(catchProxyFetchError).toHaveBeenCalledTimes(2)
+
+    vi.useRealTimers()
   })
 })
