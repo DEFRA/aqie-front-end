@@ -45,10 +45,11 @@ const loadingController = {
 
     // '' Check if NI processing is active in session
     const niProcessing = request.yar?.get('niProcessing')
-    
+
     if (!niProcessing) {
       // '' No active processing, redirect to search
-      const searchPath = lang === LANG_CY ? '/chwilio-lleoliad/cy' : '/search-location'
+      const searchPath =
+        lang === LANG_CY ? '/chwilio-lleoliad/cy' : '/search-location'
       return h.redirect(searchPath)
     }
 

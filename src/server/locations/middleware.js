@@ -48,7 +48,7 @@ const processNILocationAsync = async (request, options) => {
 
   try {
     logger.info(`[ASYNC NI] Starting background processing for ${userLocation}`)
-    
+
     // '' Fetch NI data with retries
     const { getDailySummary, getForecasts, getNIPlaces } =
       await processLocationData(
@@ -73,7 +73,10 @@ const processNILocationAsync = async (request, options) => {
     if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
       logger.warn(`[ASYNC NI] No results found for ${userLocation}`)
       request.yar.set('niProcessing', false)
-      request.yar.set('locationDataNotFound', { locationNameOrPostcode: userLocation, lang })
+      request.yar.set('locationDataNotFound', {
+        locationNameOrPostcode: userLocation,
+        lang
+      })
       request.yar.set('niRedirectTo', `${LOCATION_NOT_FOUND_URL}?lang=${lang}`)
       return
     }
@@ -92,7 +95,10 @@ const processNILocationAsync = async (request, options) => {
 
     const locationData = {
       results: getNIPlaces.results,
-      urlRoute: `${getNIPlaces.results[0].postcode.toLowerCase()}`.replace(/\s+/g, ''),
+      urlRoute: `${getNIPlaces.results[0].postcode.toLowerCase()}`.replace(
+        /\s+/g,
+        ''
+      ),
       locationType: redirectError.locationType,
       transformedDailySummary,
       englishDate,
@@ -110,14 +116,22 @@ const processNILocationAsync = async (request, options) => {
     request.yar.clear('locationData')
     request.yar.set('locationData', locationData)
     request.yar.set('niProcessing', false)
-    request.yar.set('niRedirectTo', `/location/${locationData.urlRoute}?lang=${lang}`)
-    
+    request.yar.set(
+      'niRedirectTo',
+      `/location/${locationData.urlRoute}?lang=${lang}`
+    )
+
     logger.info(`[ASYNC NI] Completed processing for ${userLocation}`)
   } catch (error) {
-    logger.error(`[ASYNC NI] Error processing ${userLocation}: ${error.message}`)
+    logger.error(
+      `[ASYNC NI] Error processing ${userLocation}: ${error.message}`
+    )
     request.yar.set('niProcessing', false)
     request.yar.set('niError', 'service-unavailable')
-    request.yar.set('niRedirectTo', `/retry?postcode=${encodeURIComponent(userLocation)}&lang=${lang}`)
+    request.yar.set(
+      'niRedirectTo',
+      `/retry?postcode=${encodeURIComponent(userLocation)}&lang=${lang}`
+    )
   }
 }
 
@@ -688,14 +702,14 @@ const searchMiddleware = async (request, h) => {
   // '' Check if this is a NI postcode - trigger async processing
   if (redirectError.locationType === LOCATION_TYPE_NI) {
     logger.info(`[ASYNC NI] Detected NI postcode: ${userLocation}`)
-    
+
     // '' Set session state for async processing
     request.yar.set('niProcessing', true)
     request.yar.set('niPostcode', userLocation)
     request.yar.set('lang', lang)
     request.yar.clear('niError')
     request.yar.clear('niRedirectTo')
-    
+
     // '' Trigger background processing (non-blocking)
     processNILocationAsync(request, {
       redirectError,
@@ -709,9 +723,11 @@ const searchMiddleware = async (request, h) => {
     }).catch((error) => {
       logger.error(`[ASYNC NI] Background processing error: ${error.message}`)
     })
-    
+
     // '' Immediately redirect to loading page
-    return h.redirect(`/loading?postcode=${encodeURIComponent(userLocation)}`).code(REDIRECT_STATUS_CODE)
+    return h
+      .redirect(`/loading?postcode=${encodeURIComponent(userLocation)}`)
+      .code(REDIRECT_STATUS_CODE)
   }
 
   const { getDailySummary, getForecasts, getOSPlaces, getNIPlaces } =

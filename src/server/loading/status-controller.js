@@ -12,31 +12,39 @@ const loadingStatusController = {
         // '' Failed - redirect to retry page
         const postcode = request.yar?.get('niPostcode') || ''
         const lang = request.yar?.get('lang') || 'en'
-        return h.response({
-          status: 'failed',
-          redirectTo: `/retry?postcode=${encodeURIComponent(postcode)}&lang=${lang}`
-        }).code(200)
+        return h
+          .response({
+            status: 'failed',
+            redirectTo: `/retry?postcode=${encodeURIComponent(postcode)}&lang=${lang}`
+          })
+          .code(200)
       }
 
       if (redirectTo) {
         // '' Success - redirect to results
-        return h.response({
-          status: 'complete',
-          redirectTo
-        }).code(200)
+        return h
+          .response({
+            status: 'complete',
+            redirectTo
+          })
+          .code(200)
       }
 
       // '' No active processing, redirect to search
-      return h.response({
-        status: 'failed',
-        redirectTo: '/search-location'
-      }).code(200)
+      return h
+        .response({
+          status: 'failed',
+          redirectTo: '/search-location'
+        })
+        .code(200)
     }
 
     // '' Still processing
-    return h.response({
-      status: 'processing'
-    }).code(200)
+    return h
+      .response({
+        status: 'processing'
+      })
+      .code(200)
   }
 }
 
