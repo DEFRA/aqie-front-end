@@ -728,6 +728,7 @@ const searchMiddleware = async (request, h) => {
     return h
       .redirect(`/loading?postcode=${encodeURIComponent(userLocation)}`)
       .code(REDIRECT_STATUS_CODE)
+      .takeover()
   }
 
   const { getDailySummary, getForecasts, getOSPlaces, getNIPlaces } =
