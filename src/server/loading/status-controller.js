@@ -1,6 +1,8 @@
 // ''
 import { STATUS_OK } from '../data/constants.js'
-import logger from '../common/helpers/logging/logger.js'
+import { createLogger } from '../common/helpers/logging/logger.js'
+
+const logger = createLogger()
 
 const loadingStatusController = {
   handler: (request, h) => {
