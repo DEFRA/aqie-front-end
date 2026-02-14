@@ -3,11 +3,11 @@ import { loadingStatusController } from './status-controller.js'
 
 // '' Mock logger
 vi.mock('../common/helpers/logging/logger.js', () => ({
-  default: {
+  createLogger: () => ({
     info: vi.fn(),
     warn: vi.fn(),
     error: vi.fn()
-  }
+  })
 }))
 
 const buildRequest = ({ yar = null } = {}) => ({
