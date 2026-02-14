@@ -33,6 +33,94 @@ import { config } from '../../config/index.js'
 
 const logger = createLogger()
 
+// '' Async NI location processing - runs in background
+const processNILocationAsync = async (request, options) => {
+  const {
+    redirectError,
+    userLocation,
+    searchTerms,
+    secondSearchTerm,
+    lang,
+    month,
+    home,
+    multipleLocations
+  } = options
+
+  try {
+    logger.info(`[ASYNC NI] Starting background processing for ${userLocation}`)
+    
+    // '' Fetch NI data with retries
+    const { getDailySummary, getForecasts, getNIPlaces } =
+      await processLocationData(
+        request,
+        redirectError,
+        userLocation,
+        searchTerms,
+        secondSearchTerm
+      )
+
+    // '' Check if API failed
+    if (getNIPlaces?.error === 'service-unavailable') {
+      logger.error(`[ASYNC NI] API failed for ${userLocation}`)
+      request.yar.set('niProcessing', false)
+      request.yar.set('niError', 'service-unavailable')
+      const retryUrl = `/retry?postcode=${encodeURIComponent(userLocation)}&lang=${lang}`
+      request.yar.set('niRedirectTo', retryUrl)
+      return
+    }
+
+    // '' Check if no results found
+    if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
+      logger.warn(`[ASYNC NI] No results found for ${userLocation}`)
+      request.yar.set('niProcessing', false)
+      request.yar.set('locationDataNotFound', { locationNameOrPostcode: userLocation, lang })
+      request.yar.set('niRedirectTo', `${LOCATION_NOT_FOUND_URL}?lang=${lang}`)
+      return
+    }
+
+    // '' Success - prepare location data
+    const { transformedDailySummary, englishDate, welshDate } =
+      prepareDateFormatting(getDailySummary, lang)
+
+    const postcode = getNIPlaces.results[0].postcode
+    const town = sentenceCase(getNIPlaces.results[0].town)
+    const locationTitle = `${postcode}, ${town}`
+    const showSummaryDate = isSummaryDateToday(getDailySummary?.issue_date)
+    const issueTime = getIssueTime(getDailySummary?.issue_date)
+
+    logger.info(`[ASYNC NI] Success for ${userLocation} - ${locationTitle}`)
+
+    const locationData = {
+      results: getNIPlaces.results,
+      urlRoute: `${getNIPlaces.results[0].postcode.toLowerCase()}`.replace(/\s+/g, ''),
+      locationType: redirectError.locationType,
+      transformedDailySummary,
+      englishDate,
+      dailySummary: getDailySummary,
+      welshDate,
+      showSummaryDate,
+      issueTime,
+      getMonth: month,
+      title: `${multipleLocations.titlePrefix} ${convertFirstLetterIntoUppercase(locationTitle)}`,
+      pageTitle: `${multipleLocations.titlePrefix} ${convertFirstLetterIntoUppercase(locationTitle)} - ${home.pageTitle}`,
+      getForecasts: getForecasts?.forecasts,
+      lang
+    }
+
+    request.yar.clear('locationData')
+    request.yar.set('locationData', locationData)
+    request.yar.set('niProcessing', false)
+    request.yar.set('niRedirectTo', `/location/${locationData.urlRoute}?lang=${lang}`)
+    
+    logger.info(`[ASYNC NI] Completed processing for ${userLocation}`)
+  } catch (error) {
+    logger.error(`[ASYNC NI] Error processing ${userLocation}: ${error.message}`)
+    request.yar.set('niProcessing', false)
+    request.yar.set('niError', 'service-unavailable')
+    request.yar.set('niRedirectTo', `/retry?postcode=${encodeURIComponent(userLocation)}&lang=${lang}`)
+  }
+}
+
 // '' Notification flow helpers
 const getNotificationFlowFromFlags = (
   existingNotificationFlow = null,
@@ -596,6 +684,36 @@ const searchMiddleware = async (request, h) => {
   }
 
   const { userLocation, locationNameOrPostcode } = redirectError
+
+  // '' Check if this is a NI postcode - trigger async processing
+  if (redirectError.locationType === LOCATION_TYPE_NI) {
+    logger.info(`[ASYNC NI] Detected NI postcode: ${userLocation}`)
+    
+    // '' Set session state for async processing
+    request.yar.set('niProcessing', true)
+    request.yar.set('niPostcode', userLocation)
+    request.yar.set('lang', lang)
+    request.yar.clear('niError')
+    request.yar.clear('niRedirectTo')
+    
+    // '' Trigger background processing (non-blocking)
+    processNILocationAsync(request, {
+      redirectError,
+      userLocation,
+      searchTerms,
+      secondSearchTerm,
+      lang,
+      month,
+      home,
+      multipleLocations
+    }).catch((error) => {
+      logger.error(`[ASYNC NI] Background processing error: ${error.message}`)
+    })
+    
+    // '' Immediately redirect to loading page
+    return h.redirect(`/loading?postcode=${encodeURIComponent(userLocation)}`).code(REDIRECT_STATUS_CODE)
+  }
+
   const { getDailySummary, getForecasts, getOSPlaces, getNIPlaces } =
     await processLocationData(
       request,
