@@ -10,16 +10,13 @@ import {
   isValidPartialPostcodeNI,
   isValidPartialPostcodeUK
 } from './helpers/convert-string.js'
-import { sentenceCase } from '../common/helpers/sentence-case.js'
-import { convertFirstLetterIntoUppercase } from './helpers/convert-first-letter-into-upper-case.js'
 import {
   LANG_EN,
   LOCATION_TYPE_UK,
   LOCATION_TYPE_NI,
   LOCATION_NOT_FOUND_URL,
   WRONG_POSTCODE,
-  STATUS_NOT_FOUND,
-  STATUS_INTERNAL_SERVER_ERROR
+  STATUS_NOT_FOUND
 } from '../data/constants.js'
 import {
   PAGE_NOT_FOUND,
@@ -134,10 +131,6 @@ describe('searchMiddleware - NI location processing', () => {
 
   it('should handle NI location type processing successfully', async () => {
     const { mockRequest, mockH } = mocks
-    // Patch transformKeys to return expected object
-    vi.mocked(transformKeys).mockReturnValue({
-      transformedDailySummary: MOCK_DATE_OBJECT
-    })
     mockRequest.query = {
       searchTerms: 'belfast',
       secondSearchTerm: 'ni'
@@ -149,39 +142,13 @@ describe('searchMiddleware - NI location processing', () => {
       locationNameOrPostcode: 'Belfast'
     })
 
-    vi.mocked(fetchData).mockResolvedValue({
-      getDailySummary: { issue_date: MOCK_DATE_STRING, today: {} },
-      getForecasts: { forecasts: [] },
-      getOSPlaces: null,
-      getNIPlaces: {
-        results: [
-          {
-            postcode: 'BT1 1AA',
-            town: 'belfast',
-            id: '1'
-          }
-        ]
-      }
-    })
-
-    vi.mocked(sentenceCase).mockReturnValue('Belfast')
-    vi.mocked(convertFirstLetterIntoUppercase).mockReturnValue(
-      'BT1 1AA, Belfast'
-    )
-
     const result = await searchMiddleware(mockRequest, mockH)
 
-    expect(fetchData).toHaveBeenCalledWith(mockRequest, {
-      locationType: LOCATION_TYPE_NI,
-      userLocation: 'Belfast',
-      searchTerms: 'BELFAST',
-      secondSearchTerm: 'NI'
-    })
-
-    expect(mockRequest.yar.set).toHaveBeenCalledWith(
-      'locationData',
-      expect.anything()
-    )
+    // '' NI searches now redirect to async loading page
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('niProcessing', true)
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('niPostcode', 'Belfast')
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('lang', 'en')
+    expect(mockH.redirect).toHaveBeenCalledWith('/loading?postcode=Belfast')
     expect(handleUKLocationType).not.toHaveBeenCalled()
     expect(result).toBe(TAKEOVER_RESULT)
   })
@@ -199,6 +166,12 @@ describe('searchMiddleware - location not found scenarios', () => {
       secondSearchTerm: 'location'
     }
 
+    vi.mocked(handleErrorInputAndRedirect).mockReturnValue({
+      locationType: LOCATION_TYPE_UK,
+      userLocation: 'Unknown',
+      locationNameOrPostcode: 'Unknown'
+    })
+
     vi.mocked(fetchData).mockResolvedValue({
       getDailySummary: { issue_date: MOCK_DATE_STRING },
       getForecasts: { forecasts: [] },
@@ -212,7 +185,7 @@ describe('searchMiddleware - location not found scenarios', () => {
     const result = await searchMiddleware(mockRequest, mockH)
 
     expect(mockRequest.yar.set).toHaveBeenCalledWith('locationDataNotFound', {
-      locationNameOrPostcode: 'Belfast',
+      locationNameOrPostcode: 'Unknown',
       lang: LANG_EN
     })
 
@@ -229,7 +202,7 @@ describe('searchMiddleware - location not found scenarios', () => {
   })
 
   it('should handle NI location with no results', async () => {
-    const { mockRequest, mockH, mockView } = mocks
+    const { mockRequest, mockH } = mocks
     mockRequest.query = {
       searchTerms: 'unknown',
       secondSearchTerm: 'ni'
@@ -241,32 +214,18 @@ describe('searchMiddleware - location not found scenarios', () => {
       locationNameOrPostcode: 'Unknown'
     })
 
-    vi.mocked(fetchData).mockResolvedValue({
-      getDailySummary: { issue_date: MOCK_DATE_STRING },
-      getForecasts: { forecasts: [] },
-      getOSPlaces: null,
-      getNIPlaces: { results: [] } // Empty results
-    })
+    const result = await searchMiddleware(mockRequest, mockH)
 
-    await searchMiddleware(mockRequest, mockH)
-
-    expect(mockRequest.yar.set).toHaveBeenCalledWith('locationDataNotFound', {
-      locationNameOrPostcode: 'Unknown',
-      lang: LANG_EN
-    })
-
-    expect(mockRequest.yar.clear).toHaveBeenCalledWith('searchTermsSaved')
-    expect(mockView).toHaveBeenCalledWith(
-      ERROR_INDEX,
-      expect.objectContaining({
-        statusCode: STATUS_NOT_FOUND
-      })
-    )
+    // '' NI searches redirect to loading, error handling happens in background
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('niProcessing', true)
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('niPostcode', 'Unknown')
+    expect(mockH.redirect).toHaveBeenCalledWith('/loading?postcode=Unknown')
+    expect(result).toBe(TAKEOVER_RESULT)
   })
 
   it('should show service unavailable when NI API fails', async () => {
-    // '' Shows 500 service error (not 404) to distinguish API failure from wrong postcode
-    const { mockRequest, mockH, mockView } = mocks
+    // '' NI API failures handled in async background processing
+    const { mockRequest, mockH } = mocks
     mockRequest.query = {
       searchTerms: 'bt1 1fb'
     }
@@ -277,22 +236,12 @@ describe('searchMiddleware - location not found scenarios', () => {
       locationNameOrPostcode: 'BT1 1FB'
     })
 
-    vi.mocked(fetchData).mockResolvedValue({
-      getDailySummary: { issue_date: MOCK_DATE_STRING, today: {} },
-      getForecasts: { forecasts: [] },
-      getOSPlaces: null,
-      getNIPlaces: { results: [], error: 'service-unavailable' }
-    })
+    const result = await searchMiddleware(mockRequest, mockH)
 
-    await searchMiddleware(mockRequest, mockH)
-
-    expect(mockView).toHaveBeenCalledWith(
-      ERROR_INDEX,
-      expect.objectContaining({
-        statusCode: STATUS_INTERNAL_SERVER_ERROR,
-        heading: 'Sorry, there is a problem with the service'
-      })
-    )
+    // '' Immediately redirects to loading page, error handling happens in background
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('niProcessing', true)
+    expect(mockH.redirect).toHaveBeenCalledWith('/loading?postcode=BT1%201FB')
+    expect(result).toBe(TAKEOVER_RESULT)
   })
 })
 
@@ -526,17 +475,12 @@ describe('searchMiddleware - NI WRONG_POSTCODE handling', () => {
       getNIPlaces: WRONG_POSTCODE
     })
 
-    vi.mocked(transformKeys).mockReturnValue({
-      transformedDailySummary: MOCK_DATE_OBJECT
-    })
-
     const result = await searchMiddleware(mockRequest, mockH)
 
-    expect(mockRequest.yar.set).toHaveBeenCalledWith('locationDataNotFound', {
-      locationNameOrPostcode: 'Invalid',
-      lang: LANG_EN
-    })
-    expect(mockRequest.yar.clear).toHaveBeenCalledWith('searchTermsSaved')
+    // '' NI searches redirect to loading, validation happens in background
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('niProcessing', true)
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('niPostcode', 'Invalid')
+    expect(mockH.redirect).toHaveBeenCalledWith('/loading?postcode=Invalid')
     expect(result).toBe(TAKEOVER_RESULT)
   })
 })
@@ -566,20 +510,12 @@ describe('searchMiddleware - NI empty results handling', () => {
       getNIPlaces: { results: [] }
     })
 
-    vi.mocked(transformKeys).mockReturnValue({
-      transformedDailySummary: MOCK_DATE_OBJECT
-    })
-
-    vi.mocked(isValidPartialPostcodeNI).mockReturnValue(false)
-    vi.mocked(isValidPartialPostcodeUK).mockReturnValue(false)
-
     const result = await searchMiddleware(mockRequest, mockH)
 
-    expect(mockRequest.yar.set).toHaveBeenCalledWith('locationDataNotFound', {
-      locationNameOrPostcode: 'Unknown',
-      lang: LANG_EN
-    })
-    expect(mockRequest.yar.clear).toHaveBeenCalledWith('searchTermsSaved')
+    // '' NI searches redirect to loading, empty results handled in background
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('niProcessing', true)
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('niPostcode', 'Unknown')
+    expect(mockH.redirect).toHaveBeenCalledWith('/loading?postcode=Unknown')
     expect(result).toBe(TAKEOVER_RESULT)
   })
 })

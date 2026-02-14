@@ -430,7 +430,7 @@ export const config = convict({
   niApiTimeoutMs: {
     doc: 'Northern Ireland API request timeout in milliseconds',
     format: Number,
-    default: 8000,
+    default: 4000,
     env: 'NI_API_TIMEOUT_MS'
   },
   niApiMaxRetries: {

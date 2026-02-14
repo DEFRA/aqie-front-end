@@ -154,3 +154,4 @@ export const SERVER_DIRNAME = dirname(fileURLToPath(import.meta.url))
 
 // '' - Session and notification constants
 export const NOT_PROVIDED = 'Not provided'
+export const SERVICE_UNAVAILABLE = 'service-unavailable'
