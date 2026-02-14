@@ -117,21 +117,30 @@ const processNILocationAsync = async (request, options) => {
     request.yar.clear('locationData')
     request.yar.set('locationData', locationData)
     request.yar.set('niProcessing', false)
-    request.yar.set(
-      'niRedirectTo',
-      `/location/${locationData.urlRoute}?lang=${lang}`
-    )
+    const redirectUrl = `/location/${locationData.urlRoute}?lang=${lang}`
+    request.yar.set('niRedirectTo', redirectUrl)
 
     logger.info(`[ASYNC NI] Completed processing for ${userLocation}`)
+    logger.info(
+      `[ASYNC NI] Set niProcessing=false, niRedirectTo=${redirectUrl}`
+    )
+    logger.info(
+      `[ASYNC NI] Session state: ${JSON.stringify({ niProcessing: request.yar.get('niProcessing'), niRedirectTo: request.yar.get('niRedirectTo'), niError: request.yar.get('niError') })}`
+    )
   } catch (error) {
     logger.error(
       `[ASYNC NI] Error processing ${userLocation}: ${error.message}`
     )
+    logger.error(`[ASYNC NI] Error stack: ${error.stack}`)
     request.yar.set('niProcessing', false)
     request.yar.set('niError', SERVICE_UNAVAILABLE)
-    request.yar.set(
-      'niRedirectTo',
-      `/retry?postcode=${encodeURIComponent(userLocation)}&lang=${lang}`
+    const retryUrl = `/retry?postcode=${encodeURIComponent(userLocation)}&lang=${lang}`
+    request.yar.set('niRedirectTo', retryUrl)
+    logger.error(
+      `[ASYNC NI] Set niProcessing=false, niError=service-unavailable, niRedirectTo=${retryUrl}`
+    )
+    logger.error(
+      `[ASYNC NI] Session state after error: ${JSON.stringify({ niProcessing: request.yar.get('niProcessing'), niRedirectTo: request.yar.get('niRedirectTo'), niError: request.yar.get('niError') })}`
     )
   }
 }

@@ -1,7 +1,14 @@
 import { describe, expect, test, vi, beforeEach } from 'vitest'
 import { loadingStatusController } from './status-controller.js'
 
-// ''
+// '' Mock logger
+vi.mock('../common/helpers/logging/logger.js', () => ({
+  default: {
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn()
+  }
+}))
 
 const buildRequest = ({ yar = null } = {}) => ({
   yar:

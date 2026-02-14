@@ -1,11 +1,18 @@
 // ''
 import { STATUS_OK } from '../data/constants.js'
+import logger from '../common/helpers/logging/logger.js'
 
 const loadingStatusController = {
   handler: (request, h) => {
     const niProcessing = request.yar?.get('niProcessing')
     const niError = request.yar?.get('niError')
     const redirectTo = request.yar?.get('niRedirectTo')
+    const lang = request.yar?.get('lang') || 'en'
+    const postcode = request.yar?.get('niPostcode') || ''
+
+    logger.info(
+      `[LOADING STATUS] Poll check: niProcessing=${niProcessing}, niError=${niError}, redirectTo=${redirectTo}, lang=${lang}, postcode=${postcode}`
+    )
 
     // '' Check if processing is complete
     if (!niProcessing) {
@@ -13,6 +20,9 @@ const loadingStatusController = {
         // '' Failed - redirect to retry page
         const postcode = request.yar?.get('niPostcode') || ''
         const lang = request.yar?.get('lang') || 'en'
+        logger.info(
+          `[LOADING STATUS] Returning FAILED status with retry redirect`
+        )
         return h
           .response({
             status: 'failed',
@@ -23,6 +33,9 @@ const loadingStatusController = {
 
       if (redirectTo) {
         // '' Success - redirect to results
+        logger.info(
+          `[LOADING STATUS] Returning COMPLETE status with redirectTo=${redirectTo}`
+        )
         return h
           .response({
             status: 'complete',
@@ -32,6 +45,9 @@ const loadingStatusController = {
       }
 
       // '' No active processing, redirect to search
+      logger.warn(
+        `[LOADING STATUS] No processing and no redirectTo - returning FAILED with search redirect`
+      )
       return h
         .response({
           status: 'failed',
@@ -41,6 +57,7 @@ const loadingStatusController = {
     }
 
     // '' Still processing
+    logger.info(`[LOADING STATUS] Still processing...`)
     return h
       .response({
         status: 'processing'
