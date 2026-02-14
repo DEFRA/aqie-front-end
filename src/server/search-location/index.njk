@@ -8,8 +8,7 @@
       {% endif %}
       {% set queryhrefEn = "/location" %}
       {% set queryhrefCy = "/lleoliad" %}
-      {% set queryhrefNi = "/retry" %}
-      <form id="itembox" action="{% if htmlLang == 'en' %}{{ queryhrefEn }}{% else %}{{ queryhrefCy }}{% endif %}" method="POST" name="search-form" value="search" data-default-action="{% if htmlLang == 'en' %}{{ queryhrefEn }}{% else %}{{ queryhrefCy }}{% endif %}" data-ni-action="{{ queryhrefNi }}">
+      <form id="itembox" action="{% if htmlLang == 'en' %}{{ queryhrefEn }}{% else %}{{ queryhrefCy }}{% endif %}" method="POST" name="search-form" value="search">
         {% if locationType | length %}
           {% set errorMessage = "" %}
         {% endif %}

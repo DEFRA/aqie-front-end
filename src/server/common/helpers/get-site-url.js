@@ -1,7 +1,5 @@
 import { config } from '../../../config/index.js'
-import { createLogger } from './logging/logger.js'
 
-const logger = createLogger()
 function getAirQualitySiteUrl(request) {
   let airQualityUrl = config.get('airQualityDomainUrl') + request.path
 
@@ -10,7 +8,6 @@ function getAirQualitySiteUrl(request) {
     airQualityUrl += queryParams ? `?${queryParams}` : ''
   }
 
-  logger.info(`Complete URL with query params:::::::: , ${airQualityUrl}`)
   return airQualityUrl
 }
 
