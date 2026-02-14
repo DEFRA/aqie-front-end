@@ -1,4 +1,5 @@
 // ''
+import { STATUS_OK } from '../data/constants.js'
 
 const loadingStatusController = {
   handler: (request, h) => {
@@ -17,7 +18,7 @@ const loadingStatusController = {
             status: 'failed',
             redirectTo: `/retry?postcode=${encodeURIComponent(postcode)}&lang=${lang}`
           })
-          .code(200)
+          .code(STATUS_OK)
       }
 
       if (redirectTo) {
@@ -27,7 +28,7 @@ const loadingStatusController = {
             status: 'complete',
             redirectTo
           })
-          .code(200)
+          .code(STATUS_OK)
       }
 
       // '' No active processing, redirect to search
@@ -36,7 +37,7 @@ const loadingStatusController = {
           status: 'failed',
           redirectTo: '/search-location'
         })
-        .code(200)
+        .code(STATUS_OK)
     }
 
     // '' Still processing
@@ -44,7 +45,7 @@ const loadingStatusController = {
       .response({
         status: 'processing'
       })
-      .code(200)
+      .code(STATUS_OK)
   }
 }
 

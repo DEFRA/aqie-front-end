@@ -16,7 +16,8 @@ import {
   WRONG_POSTCODE,
   STATUS_NOT_FOUND,
   STATUS_INTERNAL_SERVER_ERROR,
-  REDIRECT_STATUS_CODE
+  REDIRECT_STATUS_CODE,
+  SERVICE_UNAVAILABLE
 } from '../data/constants.js'
 import { handleUKLocationType } from './helpers/extra-middleware-helpers.js'
 import { handleErrorInputAndRedirect } from './helpers/error-input-and-redirect.js'
@@ -60,10 +61,10 @@ const processNILocationAsync = async (request, options) => {
       )
 
     // '' Check if API failed
-    if (getNIPlaces?.error === 'service-unavailable') {
+    if (getNIPlaces?.error === SERVICE_UNAVAILABLE) {
       logger.error(`[ASYNC NI] API failed for ${userLocation}`)
       request.yar.set('niProcessing', false)
-      request.yar.set('niError', 'service-unavailable')
+      request.yar.set('niError', SERVICE_UNAVAILABLE)
       const retryUrl = `/retry?postcode=${encodeURIComponent(userLocation)}&lang=${lang}`
       request.yar.set('niRedirectTo', retryUrl)
       return
@@ -95,7 +96,7 @@ const processNILocationAsync = async (request, options) => {
 
     const locationData = {
       results: getNIPlaces.results,
-      urlRoute: `${getNIPlaces.results[0].postcode.toLowerCase()}`.replace(
+      urlRoute: `${getNIPlaces.results[0].postcode.toLowerCase()}`.replaceAll(
         /\s+/g,
         ''
       ),
@@ -127,7 +128,7 @@ const processNILocationAsync = async (request, options) => {
       `[ASYNC NI] Error processing ${userLocation}: ${error.message}`
     )
     request.yar.set('niProcessing', false)
-    request.yar.set('niError', 'service-unavailable')
+    request.yar.set('niError', SERVICE_UNAVAILABLE)
     request.yar.set(
       'niRedirectTo',
       `/retry?postcode=${encodeURIComponent(userLocation)}&lang=${lang}`
@@ -189,7 +190,7 @@ const getServiceUnavailableResponse = (
 ) => {
   if (
     locationType === LOCATION_TYPE_NI &&
-    getNIPlaces?.error === 'service-unavailable'
+    getNIPlaces?.error === SERVICE_UNAVAILABLE
   ) {
     logger.error(
       '[NI API UNAVAILABLE] Upstream NI API failed - showing service error'
@@ -440,7 +441,7 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
 
   const locationData = {
     results: getNIPlaces?.results,
-    urlRoute: `${getNIPlaces?.results[0].postcode.toLowerCase()}`.replace(
+    urlRoute: `${getNIPlaces?.results[0].postcode.toLowerCase()}`.replaceAll(
       /\s+/g,
       ''
     ),
