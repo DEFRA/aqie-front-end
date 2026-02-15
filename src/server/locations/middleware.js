@@ -34,8 +34,67 @@ import { config } from '../../config/index.js'
 
 const logger = createLogger()
 
+// '' Helper to update session via cache directly (bypasses yar for async contexts)
+const updateSessionInCache = async (server, sessionId, updates) => {
+  try {
+    // '' Get cache instance using server._core.caches (direct access to avoid provisioning conflict)
+    const sessionCacheName = config.get('session.cache.name')
+    const caches = server._core?.caches
+    if (!caches) {
+      logger.error('[CACHE] server._core.caches not available')
+      return false
+    }
+
+    const cacheEntry = caches.get(sessionCacheName)
+    if (!cacheEntry) {
+      logger.error(`[CACHE] Cache '${sessionCacheName}' not found`)
+      return false
+    }
+
+    const cache = cacheEntry.client
+    logger.info(`[CACHE] Accessing cache for session ${sessionId}`)
+
+    // '' Read current session data with small retry/backoff to avoid transient cache misses
+    const maxAttempts = 3
+    const baseDelayMs = 50
+    let currentSession
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      currentSession = await cache.get(sessionId)
+      if (currentSession) {
+        break
+      }
+      if (attempt < maxAttempts) {
+        const delayMs = baseDelayMs * attempt
+        logger.warn(
+          `[CACHE] Session ${sessionId} not found (attempt ${attempt}); retrying in ${delayMs}ms`
+        )
+        await new Promise((resolve) => setTimeout(resolve, delayMs))
+      }
+    }
+    if (!currentSession) {
+      logger.error(`[CACHE] Session ${sessionId} not found after retries`)
+      return false
+    }
+
+    // '' Merge updates into session
+    const updatedSession = { ...currentSession, ...updates }
+
+    // '' Write back to cache (using yar's format: cache.set(id, store, 0))
+    await cache.set(sessionId, updatedSession, 0)
+    logger.info(
+      `[CACHE] Successfully updated session ${sessionId} with keys: ${Object.keys(updates).join(', ')}`
+    )
+    return true
+  } catch (error) {
+    logger.error(
+      `[CACHE] Failed to update session ${sessionId}: ${error.message}`
+    )
+    return false
+  }
+}
+
 // '' Async NI location processing - runs in background with overall timeout
-const processNILocationAsync = async (request, options) => {
+const processNILocationAsync = async (request, server, sessionId, options) => {
   const {
     redirectError,
     userLocation,
@@ -74,36 +133,31 @@ const processNILocationAsync = async (request, options) => {
         `[ASYNC NI] processLocationData completed for ${userLocation}`
       )
 
-      logger.info(
-        `[ASYNC NI] processLocationData completed for ${userLocation}`
-      )
-
       // '' Check if API failed
       if (getNIPlaces?.error === SERVICE_UNAVAILABLE) {
         logger.error(`[ASYNC NI] API failed for ${userLocation}`)
-        request.yar.set('niProcessing', false)
-        request.yar.set('niError', SERVICE_UNAVAILABLE)
         const retryUrl = `/retry?postcode=${encodeURIComponent(userLocation)}&lang=${lang}`
-        request.yar.set('niRedirectTo', retryUrl)
-        await request.yar.commit() // '' Persist session changes
-        logger.info(`[ASYNC NI] Session committed after API failure`)
+        await updateSessionInCache(server, sessionId, {
+          niProcessing: false,
+          niError: SERVICE_UNAVAILABLE,
+          niRedirectTo: retryUrl
+        })
+        logger.info(`[ASYNC NI] Session updated via cache after API failure`)
         return
       }
 
       // '' Check if no results found
       if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
         logger.warn(`[ASYNC NI] No results found for ${userLocation}`)
-        request.yar.set('niProcessing', false)
-        request.yar.set('locationDataNotFound', {
-          locationNameOrPostcode: userLocation,
-          lang
+        await updateSessionInCache(server, sessionId, {
+          niProcessing: false,
+          locationDataNotFound: {
+            locationNameOrPostcode: userLocation,
+            lang
+          },
+          niRedirectTo: `${LOCATION_NOT_FOUND_URL}?lang=${lang}`
         })
-        request.yar.set(
-          'niRedirectTo',
-          `${LOCATION_NOT_FOUND_URL}?lang=${lang}`
-        )
-        await request.yar.commit() // '' Persist session changes
-        logger.info(`[ASYNC NI] Session committed after no results`)
+        logger.info(`[ASYNC NI] Session updated via cache after no results`)
         return
       }
 
@@ -140,43 +194,38 @@ const processNILocationAsync = async (request, options) => {
         lang
       }
 
-      logger.info(
-        `[ASYNC NI] Setting locationData in session for ${userLocation}`
-      )
-      request.yar.clear('locationData')
-      request.yar.set('locationData', locationData)
-      request.yar.set('niProcessing', false)
       const redirectUrl = `/location/${locationData.urlRoute}?lang=${lang}`
-      request.yar.set('niRedirectTo', redirectUrl)
 
-      // '' CRITICAL: Persist session changes to Redis
-      await request.yar.commit()
+      // '' CRITICAL: Persist session changes via direct cache access
+      logger.info(`[ASYNC NI] Writing to cache - session ${sessionId}`)
+      await updateSessionInCache(server, sessionId, {
+        locationData,
+        niProcessing: false,
+        niRedirectTo: redirectUrl,
+        niError: null,
+        locationDataNotFound: null
+      })
 
       logger.info(`[ASYNC NI] Completed processing for ${userLocation}`)
       logger.info(
         `[ASYNC NI] Set niProcessing=false, niRedirectTo=${redirectUrl}`
       )
-      logger.info(
-        `[ASYNC NI] Session state: ${JSON.stringify({ niProcessing: request.yar.get('niProcessing'), niRedirectTo: request.yar.get('niRedirectTo'), niError: request.yar.get('niError') })}`
-      )
-      logger.info(`[ASYNC NI] Session committed to Redis successfully`)
+      logger.info(`[ASYNC NI] Cache write successful`)
     } catch (error) {
       logger.error(
         `[ASYNC NI] Error processing ${userLocation}: ${error.message}`
       )
       logger.error(`[ASYNC NI] Error stack: ${error.stack}`)
-      request.yar.set('niProcessing', false)
-      request.yar.set('niError', SERVICE_UNAVAILABLE)
       const retryUrl = `/retry?postcode=${encodeURIComponent(userLocation)}&lang=${lang}`
-      request.yar.set('niRedirectTo', retryUrl)
-      await request.yar.commit() // '' Persist session changes
+      await updateSessionInCache(server, sessionId, {
+        niProcessing: false,
+        niError: SERVICE_UNAVAILABLE,
+        niRedirectTo: retryUrl
+      })
       logger.error(
         `[ASYNC NI] Set niProcessing=false, niError=service-unavailable, niRedirectTo=${retryUrl}`
       )
-      logger.info(`[ASYNC NI] Session committed after error`)
-      logger.error(
-        `[ASYNC NI] Session state after error: ${JSON.stringify({ niProcessing: request.yar.get('niProcessing'), niRedirectTo: request.yar.get('niRedirectTo'), niError: request.yar.get('niError') })}`
-      )
+      logger.info(`[ASYNC NI] Session updated via cache after error`)
     }
   })()
 
@@ -187,13 +236,13 @@ const processNILocationAsync = async (request, options) => {
     logger.error(
       `[ASYNC NI] Overall timeout for ${userLocation}: ${timeoutError.message}`
     )
-    request.yar.set('niProcessing', false)
-    request.yar.set('niError', SERVICE_UNAVAILABLE)
     const retryUrl = `/retry?postcode=${encodeURIComponent(userLocation)}&lang=${lang}`
-    request.yar.set('niRedirectTo', retryUrl)
-    logger.error(
-      `[ASYNC NI] Timeout - Set niProcessing=false, niError=service-unavailable, niRedirectTo=${retryUrl}`
-    )
+    await updateSessionInCache(server, sessionId, {
+      niProcessing: false,
+      niError: SERVICE_UNAVAILABLE,
+      niRedirectTo: retryUrl
+    })
+    logger.error(`[ASYNC NI] Timeout - Session updated via cache`)
   }
 } // '' Notification flow helpers
 const getNotificationFlowFromFlags = (
@@ -767,6 +816,10 @@ const searchMiddleware = async (request, h) => {
   if (redirectError.locationType === LOCATION_TYPE_NI) {
     logger.info(`[ASYNC NI] Detected NI postcode: ${userLocation}`)
 
+    // '' Capture session ID and server before sending response
+    const sessionId = request.yar.id
+    const server = request.server
+
     // '' Set session state for async processing
     request.yar.set('niProcessing', true)
     request.yar.set('niPostcode', userLocation)
@@ -774,8 +827,10 @@ const searchMiddleware = async (request, h) => {
     request.yar.clear('niError')
     request.yar.clear('niRedirectTo')
 
+    logger.info(`[ASYNC NI] Session ID: ${sessionId}`)
+
     // '' Trigger background processing (non-blocking)
-    processNILocationAsync(request, {
+    processNILocationAsync(request, server, sessionId, {
       redirectError,
       userLocation,
       searchTerms,
