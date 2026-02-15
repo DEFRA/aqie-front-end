@@ -89,14 +89,17 @@ const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
       }
     })
 
-    // '' If location is missing but locationId exists, reload location to repopulate session
+    // '' If location is missing but locationId exists, return to search within SMS flow
     if (!location && locationId) {
-      logger.warn('Missing location in session, reloading location page', {
-        hasLocationId: true,
-        locationId
-      })
+      logger.warn(
+        'Missing location in session, redirecting to search for SMS flow',
+        {
+          hasLocationId: true,
+          locationId
+        }
+      )
       request.yar.set('notificationFlow', 'sms')
-      return h.redirect(`/location/${locationId}`)
+      return h.redirect('/search-location?fromSmsFlow=true')
     }
 
     // '' If location and locationId are missing, redirect to search to avoid 500

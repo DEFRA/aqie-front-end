@@ -141,6 +141,17 @@ Polling endpoint should see updated state:
 
 User should be redirected to results page within 2-5 seconds instead of hanging for 32+ seconds.
 
+## SMS Journey Behavior
+
+When the user is in the SMS notification journey, location searches should redirect to
+`/notify/register/sms-confirm-details` instead of the location page. The notification
+flow flag is preserved until the user navigates to the home page or directly visits
+a location page without the `fromSmsFlow` query flag.
+
+For NI async results, the cache update now includes `location`, `locationId`, and
+coordinates (when available) so the SMS confirm details page has the required session
+data without bouncing through the location page.
+
 ## Risk Assessment
 
 - **Original Risk**: 5% (cache access 2%, data format 2%, key format 1%)

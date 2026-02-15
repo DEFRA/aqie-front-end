@@ -6,8 +6,9 @@
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <h1 class="govuk-heading-l">{{title}} '{{ userLocation }}'</h1>
     <p class="govuk-body">{{paragraphs.a}}</p>
-    {% set queryhref %}?lang=en{% endset %}
-    {% set queryhrefCy %}?lang=cy{% endset %}
+    {% set flowQuery %}{% if notificationFlow == 'sms' %}&fromSmsFlow=true{% endif %}{% endset %}
+    {% set queryhref %}?lang=en{{ flowQuery }}{% endset %}
+    {% set queryhrefCy %}?lang=cy{{ flowQuery }}{% endset %}
     <ul class="govuk-list govuk-!-margin-bottom-2 odd-page">  {% for item in results %}
         <li>
           <a href={%if htmlLang == 'en' %}{{['/location/',item.GAZETTEER_ENTRY.ID, queryhref] | join}}{%else%}{{['/lleoliad/',item.GAZETTEER_ENTRY.ID, queryhrefCy] | join}}{%endif%} class="govuk-link">
