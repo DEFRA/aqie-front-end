@@ -1,16 +1,59 @@
 // ''
 import { STATUS_OK } from '../data/constants.js'
+import { config } from '../../config/index.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
 
 const logger = createLogger()
 
+const SESSION_CACHE_SEGMENT = '!@hapi/yar'
+let sessionCachePolicy
+
+const getSessionCachePolicy = (server) => {
+  if (sessionCachePolicy) {
+    return sessionCachePolicy
+  }
+
+  const sessionCacheName = config.get('session.cache.name')
+  sessionCachePolicy = server.cache({
+    cache: sessionCacheName,
+    segment: SESSION_CACHE_SEGMENT,
+    shared: true,
+    expiresIn: config.get('session.cache.ttl')
+  })
+
+  return sessionCachePolicy
+}
+
+const getSessionStore = async (request) => {
+  const sessionCacheName = config.get('session.cache.name')
+  const sessionCookie = request.state?.[sessionCacheName]
+  const sessionId = sessionCookie?.id
+
+  if (!sessionId) {
+    return null
+  }
+
+  try {
+    const cachePolicy = getSessionCachePolicy(request.server)
+    return await cachePolicy.get(sessionId)
+  } catch (error) {
+    logger.warn(`[LOADING STATUS] Cache read failed: ${error.message}`)
+    return null
+  }
+}
+
 const loadingStatusController = {
-  handler: (request, h) => {
-    const niProcessing = request.yar?.get('niProcessing')
-    const niError = request.yar?.get('niError')
-    const redirectTo = request.yar?.get('niRedirectTo')
-    const lang = request.yar?.get('lang') || 'en'
-    const postcode = request.yar?.get('niPostcode') || ''
+  handler: async (request, h) => {
+    const sessionStore = await getSessionStore(request)
+
+    const niProcessing =
+      sessionStore?.niProcessing ?? request.yar?.get('niProcessing')
+    const niError = sessionStore?.niError ?? request.yar?.get('niError')
+    const redirectTo =
+      sessionStore?.niRedirectTo ?? request.yar?.get('niRedirectTo')
+    const lang = (sessionStore?.lang ?? request.yar?.get('lang')) || 'en'
+    const postcode =
+      (sessionStore?.niPostcode ?? request.yar?.get('niPostcode')) || ''
 
     logger.info(
       `[LOADING STATUS] Poll check: niProcessing=${niProcessing}, niError=${niError}, redirectTo=${redirectTo}, lang=${lang}, postcode=${postcode}`
@@ -20,8 +63,9 @@ const loadingStatusController = {
     if (!niProcessing) {
       if (niError) {
         // '' Failed - redirect to retry page
-        const postcode = request.yar?.get('niPostcode') || ''
-        const lang = request.yar?.get('lang') || 'en'
+        const postcode =
+          (sessionStore?.niPostcode ?? request.yar?.get('niPostcode')) || ''
+        const lang = (sessionStore?.lang ?? request.yar?.get('lang')) || 'en'
         logger.info(
           `[LOADING STATUS] Returning FAILED status with retry redirect`
         )

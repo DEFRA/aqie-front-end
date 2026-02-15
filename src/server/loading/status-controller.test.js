@@ -41,13 +41,13 @@ describe('loadingStatusController', () => {
     mockH = buildH()
   })
 
-  test('should return processing status when NI processing is active', () => {
+  test('should return processing status when NI processing is active', async () => {
     mockYar.get.mockImplementation((key) => {
       if (key === 'niProcessing') return true
       return null
     })
 
-    const result = loadingStatusController.handler(mockRequest, mockH)
+    const result = await loadingStatusController.handler(mockRequest, mockH)
 
     expect(mockYar.get).toHaveBeenCalledWith('niProcessing')
     expect(mockH.response).toHaveBeenCalledWith({
@@ -56,14 +56,14 @@ describe('loadingStatusController', () => {
     expect(result.statusCode).toBe(200)
   })
 
-  test('should return complete status when redirectTo is set', () => {
+  test('should return complete status when redirectTo is set', async () => {
     mockYar.get.mockImplementation((key) => {
       if (key === 'niProcessing') return false
       if (key === 'niRedirectTo') return '/location/bt11aa?lang=en'
       return null
     })
 
-    const result = loadingStatusController.handler(mockRequest, mockH)
+    const result = await loadingStatusController.handler(mockRequest, mockH)
 
     expect(mockYar.get).toHaveBeenCalledWith('niRedirectTo')
     expect(mockH.response).toHaveBeenCalledWith({
@@ -73,7 +73,7 @@ describe('loadingStatusController', () => {
     expect(result.statusCode).toBe(200)
   })
 
-  test('should return failed status when niError is set', () => {
+  test('should return failed status when niError is set', async () => {
     mockYar.get.mockImplementation((key) => {
       if (key === 'niProcessing') return false
       if (key === 'niError') return 'service-unavailable'
@@ -82,7 +82,7 @@ describe('loadingStatusController', () => {
       return null
     })
 
-    const result = loadingStatusController.handler(mockRequest, mockH)
+    const result = await loadingStatusController.handler(mockRequest, mockH)
 
     expect(mockYar.get).toHaveBeenCalledWith('niError')
     expect(mockYar.get).toHaveBeenCalledWith('niPostcode')
@@ -94,7 +94,7 @@ describe('loadingStatusController', () => {
     expect(result.statusCode).toBe(200)
   })
 
-  test('should return failed status with default lang when lang not in session', () => {
+  test('should return failed status with default lang when lang not in session', async () => {
     mockYar.get.mockImplementation((key) => {
       if (key === 'niProcessing') return false
       if (key === 'niError') return 'service-unavailable'
@@ -102,7 +102,7 @@ describe('loadingStatusController', () => {
       return null
     })
 
-    loadingStatusController.handler(mockRequest, mockH)
+    await loadingStatusController.handler(mockRequest, mockH)
 
     expect(mockH.response).toHaveBeenCalledWith({
       status: 'failed',
@@ -110,7 +110,7 @@ describe('loadingStatusController', () => {
     })
   })
 
-  test('should return failed status with default postcode when not in session', () => {
+  test('should return failed status with default postcode when not in session', async () => {
     mockYar.get.mockImplementation((key) => {
       if (key === 'niProcessing') return false
       if (key === 'niError') return 'service-unavailable'
@@ -118,7 +118,7 @@ describe('loadingStatusController', () => {
       return null
     })
 
-    loadingStatusController.handler(mockRequest, mockH)
+    await loadingStatusController.handler(mockRequest, mockH)
 
     expect(mockH.response).toHaveBeenCalledWith({
       status: 'failed',
@@ -126,10 +126,10 @@ describe('loadingStatusController', () => {
     })
   })
 
-  test('should return failed status with search redirect when no error or redirectTo', () => {
+  test('should return failed status with search redirect when no error or redirectTo', async () => {
     mockYar.get.mockReturnValue(false)
 
-    const result = loadingStatusController.handler(mockRequest, mockH)
+    const result = await loadingStatusController.handler(mockRequest, mockH)
 
     expect(mockH.response).toHaveBeenCalledWith({
       status: 'failed',
@@ -138,7 +138,7 @@ describe('loadingStatusController', () => {
     expect(result.statusCode).toBe(200)
   })
 
-  test('should prioritize error over redirectTo when both are set', () => {
+  test('should prioritize error over redirectTo when both are set', async () => {
     mockYar.get.mockImplementation((key) => {
       if (key === 'niProcessing') return false
       if (key === 'niError') return 'service-unavailable'
@@ -148,7 +148,7 @@ describe('loadingStatusController', () => {
       return null
     })
 
-    loadingStatusController.handler(mockRequest, mockH)
+    await loadingStatusController.handler(mockRequest, mockH)
 
     // Error check happens before redirectTo check
     expect(mockH.response).toHaveBeenCalledWith({
@@ -157,7 +157,7 @@ describe('loadingStatusController', () => {
     })
   })
 
-  test('should handle Welsh language in error redirect', () => {
+  test('should handle Welsh language in error redirect', async () => {
     mockYar.get.mockImplementation((key) => {
       if (key === 'niProcessing') return false
       if (key === 'niError') return 'service-unavailable'
@@ -166,7 +166,7 @@ describe('loadingStatusController', () => {
       return null
     })
 
-    loadingStatusController.handler(mockRequest, mockH)
+    await loadingStatusController.handler(mockRequest, mockH)
 
     expect(mockH.response).toHaveBeenCalledWith({
       status: 'failed',
