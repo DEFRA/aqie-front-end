@@ -749,6 +749,10 @@ const searchMiddleware = async (request, h) => {
 
   const { userLocation, locationNameOrPostcode } = redirectError
 
+  logger.info(
+    `[DEBUG LOCATION TYPE] userLocation=${userLocation}, locationType=${redirectError.locationType}, isNI=${redirectError.locationType === LOCATION_TYPE_NI}, LOCATION_TYPE_NI=${LOCATION_TYPE_NI}`
+  )
+
   // '' Check if this is a NI postcode - trigger async processing
   if (redirectError.locationType === LOCATION_TYPE_NI) {
     logger.info(`[ASYNC NI] Detected NI postcode: ${userLocation}`)
