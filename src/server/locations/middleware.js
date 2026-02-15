@@ -85,6 +85,8 @@ const processNILocationAsync = async (request, options) => {
         request.yar.set('niError', SERVICE_UNAVAILABLE)
         const retryUrl = `/retry?postcode=${encodeURIComponent(userLocation)}&lang=${lang}`
         request.yar.set('niRedirectTo', retryUrl)
+        await request.yar.commit() // '' Persist session changes
+        logger.info(`[ASYNC NI] Session committed after API failure`)
         return
       }
 
@@ -100,6 +102,8 @@ const processNILocationAsync = async (request, options) => {
           'niRedirectTo',
           `${LOCATION_NOT_FOUND_URL}?lang=${lang}`
         )
+        await request.yar.commit() // '' Persist session changes
+        logger.info(`[ASYNC NI] Session committed after no results`)
         return
       }
 
@@ -145,6 +149,9 @@ const processNILocationAsync = async (request, options) => {
       const redirectUrl = `/location/${locationData.urlRoute}?lang=${lang}`
       request.yar.set('niRedirectTo', redirectUrl)
 
+      // '' CRITICAL: Persist session changes to Redis
+      await request.yar.commit()
+
       logger.info(`[ASYNC NI] Completed processing for ${userLocation}`)
       logger.info(
         `[ASYNC NI] Set niProcessing=false, niRedirectTo=${redirectUrl}`
@@ -152,6 +159,7 @@ const processNILocationAsync = async (request, options) => {
       logger.info(
         `[ASYNC NI] Session state: ${JSON.stringify({ niProcessing: request.yar.get('niProcessing'), niRedirectTo: request.yar.get('niRedirectTo'), niError: request.yar.get('niError') })}`
       )
+      logger.info(`[ASYNC NI] Session committed to Redis successfully`)
     } catch (error) {
       logger.error(
         `[ASYNC NI] Error processing ${userLocation}: ${error.message}`
@@ -161,9 +169,11 @@ const processNILocationAsync = async (request, options) => {
       request.yar.set('niError', SERVICE_UNAVAILABLE)
       const retryUrl = `/retry?postcode=${encodeURIComponent(userLocation)}&lang=${lang}`
       request.yar.set('niRedirectTo', retryUrl)
+      await request.yar.commit() // '' Persist session changes
       logger.error(
         `[ASYNC NI] Set niProcessing=false, niError=service-unavailable, niRedirectTo=${retryUrl}`
       )
+      logger.info(`[ASYNC NI] Session committed after error`)
       logger.error(
         `[ASYNC NI] Session state after error: ${JSON.stringify({ niProcessing: request.yar.get('niProcessing'), niRedirectTo: request.yar.get('niRedirectTo'), niError: request.yar.get('niError') })}`
       )
