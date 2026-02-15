@@ -34,11 +34,75 @@ import { config } from '../../config/index.js'
 
 const logger = createLogger()
 
+const SESSION_CACHE_SEGMENT = 'session'
+let sessionCachePolicy
+
+// '' Helper to lazily create a session cache policy for async updates
+const getSessionCachePolicy = (server) => {
+  if (sessionCachePolicy) {
+    return sessionCachePolicy
+  }
+
+  const sessionCacheName = config.get('session.cache.name')
+  sessionCachePolicy = server.cache({
+    cache: sessionCacheName,
+    segment: SESSION_CACHE_SEGMENT,
+    expiresIn: config.get('session.cache.ttl')
+  })
+
+  return sessionCachePolicy
+}
+
 // '' Helper to update session via cache directly (bypasses yar for async contexts)
 const updateSessionInCache = async (server, sessionId, updates) => {
   try {
-    // '' Get cache instance using server._core.caches (direct access to avoid provisioning conflict)
     const sessionCacheName = config.get('session.cache.name')
+    const sessionCacheKey = { id: sessionId, segment: SESSION_CACHE_SEGMENT }
+    let cachePolicy
+
+    try {
+      cachePolicy = getSessionCachePolicy(server)
+    } catch (error) {
+      logger.warn(`[CACHE] Failed to create cache policy: ${error.message}`)
+    }
+
+    if (cachePolicy) {
+      logger.info(`[CACHE] Accessing cache policy for session ${sessionId}`)
+
+      // '' Read current session data with small retry/backoff to avoid transient cache misses
+      const maxAttempts = 3
+      const baseDelayMs = 50
+      let currentSession
+      for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        currentSession = await cachePolicy.get(sessionId)
+        if (currentSession) {
+          break
+        }
+        if (attempt < maxAttempts) {
+          const delayMs = baseDelayMs * attempt
+          logger.warn(
+            `[CACHE] Session ${sessionId} not found (attempt ${attempt}); retrying in ${delayMs}ms`
+          )
+          await new Promise((resolve) => setTimeout(resolve, delayMs))
+        }
+      }
+      if (!currentSession) {
+        logger.error(`[CACHE] Session ${sessionId} not found after retries`)
+        return false
+      }
+
+      // '' Merge updates into session
+      const updatedSession = { ...currentSession, ...updates }
+
+      // '' Write back to cache (using yar's format: cache.set(id, store, 0))
+      await cachePolicy.set(sessionId, updatedSession, 0)
+      logger.info(
+        `[CACHE] Successfully updated session ${sessionId} with keys: ${Object.keys(updates).join(', ')}`
+      )
+      return true
+    }
+
+    // '' Fallback: use cache client directly (requires full cache key)
     const caches = server._core?.caches
     if (!caches) {
       logger.error('[CACHE] server._core.caches not available')
@@ -51,15 +115,15 @@ const updateSessionInCache = async (server, sessionId, updates) => {
       return false
     }
 
-    const cache = cacheEntry.client
-    logger.info(`[CACHE] Accessing cache for session ${sessionId}`)
+    const cacheClient = cacheEntry.client
+    logger.info(`[CACHE] Accessing cache client for session ${sessionId}`)
 
     // '' Read current session data with small retry/backoff to avoid transient cache misses
     const maxAttempts = 3
     const baseDelayMs = 50
     let currentSession
     for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-      currentSession = await cache.get(sessionId)
+      currentSession = await cacheClient.get(sessionCacheKey)
       if (currentSession) {
         break
       }
@@ -79,15 +143,20 @@ const updateSessionInCache = async (server, sessionId, updates) => {
     // '' Merge updates into session
     const updatedSession = { ...currentSession, ...updates }
 
-    // '' Write back to cache (using yar's format: cache.set(id, store, 0))
-    await cache.set(sessionId, updatedSession, 0)
+    // '' Write back to cache (using yar's format: cache.set(key, store, 0))
+    await cacheClient.set(sessionCacheKey, updatedSession, 0)
     logger.info(
       `[CACHE] Successfully updated session ${sessionId} with keys: ${Object.keys(updates).join(', ')}`
     )
     return true
   } catch (error) {
+    // '' Diagnostic key/segment log for cache update failures
     logger.error(
-      `[CACHE] Failed to update session ${sessionId}: ${error.message}`
+      `[CACHE] Failed to update session ${sessionId}: ${error.message}`,
+      {
+        cacheName: config.get('session.cache.name'),
+        cacheKey: { id: sessionId, segment: SESSION_CACHE_SEGMENT }
+      }
     )
     return false
   }
@@ -198,7 +267,7 @@ const processNILocationAsync = async (request, server, sessionId, options) => {
 
       // '' CRITICAL: Persist session changes via direct cache access
       logger.info(`[ASYNC NI] Writing to cache - session ${sessionId}`)
-      await updateSessionInCache(server, sessionId, {
+      const cacheUpdated = await updateSessionInCache(server, sessionId, {
         locationData,
         niProcessing: false,
         niRedirectTo: redirectUrl,
@@ -210,7 +279,15 @@ const processNILocationAsync = async (request, server, sessionId, options) => {
       logger.info(
         `[ASYNC NI] Set niProcessing=false, niRedirectTo=${redirectUrl}`
       )
-      logger.info(`[ASYNC NI] Cache write successful`)
+      if (cacheUpdated) {
+        logger.info(`[ASYNC NI] Cache write successful`)
+      } else {
+        // '' Diagnostic key/segment log for cache update failures
+        logger.error(`[ASYNC NI] Cache write failed`, {
+          cacheName: config.get('session.cache.name'),
+          cacheKey: { id: sessionId, segment: SESSION_CACHE_SEGMENT }
+        })
+      }
     } catch (error) {
       logger.error(
         `[ASYNC NI] Error processing ${userLocation}: ${error.message}`
