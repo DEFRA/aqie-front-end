@@ -34,7 +34,7 @@ import { config } from '../../config/index.js'
 
 const logger = createLogger()
 
-// '' Async NI location processing - runs in background
+// '' Async NI location processing - runs in background with overall timeout
 const processNILocationAsync = async (request, options) => {
   const {
     redirectError,
@@ -47,105 +47,145 @@ const processNILocationAsync = async (request, options) => {
     multipleLocations
   } = options
 
-  try {
-    logger.info(`[ASYNC NI] Starting background processing for ${userLocation}`)
+  // '' Wrap entire async process with 35-second timeout (allows for 3 retries @ 10s each)
+  const timeoutPromise = new Promise((_resolve, reject) => {
+    setTimeout(() => {
+      reject(new Error('Overall async processing timeout after 35s'))
+    }, 35000)
+  })
 
-    // '' Fetch NI data with retries
-    const { getDailySummary, getForecasts, getNIPlaces } =
-      await processLocationData(
-        request,
-        redirectError,
-        userLocation,
-        searchTerms,
-        secondSearchTerm
+  const processingPromise = (async () => {
+    try {
+      logger.info(
+        `[ASYNC NI] Starting background processing for ${userLocation}`
       )
 
-    // '' Check if API failed
-    if (getNIPlaces?.error === SERVICE_UNAVAILABLE) {
-      logger.error(`[ASYNC NI] API failed for ${userLocation}`)
+      // '' Fetch NI data with retries
+      logger.info(`[ASYNC NI] Calling processLocationData...`)
+      const { getDailySummary, getForecasts, getNIPlaces } =
+        await processLocationData(
+          request,
+          redirectError,
+          userLocation,
+          searchTerms,
+          secondSearchTerm
+        )
+      logger.info(
+        `[ASYNC NI] processLocationData completed for ${userLocation}`
+      )
+
+      logger.info(
+        `[ASYNC NI] processLocationData completed for ${userLocation}`
+      )
+
+      // '' Check if API failed
+      if (getNIPlaces?.error === SERVICE_UNAVAILABLE) {
+        logger.error(`[ASYNC NI] API failed for ${userLocation}`)
+        request.yar.set('niProcessing', false)
+        request.yar.set('niError', SERVICE_UNAVAILABLE)
+        const retryUrl = `/retry?postcode=${encodeURIComponent(userLocation)}&lang=${lang}`
+        request.yar.set('niRedirectTo', retryUrl)
+        return
+      }
+
+      // '' Check if no results found
+      if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
+        logger.warn(`[ASYNC NI] No results found for ${userLocation}`)
+        request.yar.set('niProcessing', false)
+        request.yar.set('locationDataNotFound', {
+          locationNameOrPostcode: userLocation,
+          lang
+        })
+        request.yar.set(
+          'niRedirectTo',
+          `${LOCATION_NOT_FOUND_URL}?lang=${lang}`
+        )
+        return
+      }
+
+      // '' Success - prepare location data
+      logger.info(`[ASYNC NI] Preparing location data for ${userLocation}`)
+      const { transformedDailySummary, englishDate, welshDate } =
+        prepareDateFormatting(getDailySummary, lang)
+
+      const postcode = getNIPlaces.results[0].postcode
+      const town = sentenceCase(getNIPlaces.results[0].town)
+      const locationTitle = `${postcode}, ${town}`
+      const showSummaryDate = isSummaryDateToday(getDailySummary?.issue_date)
+      const issueTime = getIssueTime(getDailySummary?.issue_date)
+
+      logger.info(`[ASYNC NI] Success for ${userLocation} - ${locationTitle}`)
+
+      const locationData = {
+        results: getNIPlaces.results,
+        urlRoute: `${getNIPlaces.results[0].postcode.toLowerCase()}`.replaceAll(
+          /\s+/g,
+          ''
+        ),
+        locationType: redirectError.locationType,
+        transformedDailySummary,
+        englishDate,
+        dailySummary: getDailySummary,
+        welshDate,
+        showSummaryDate,
+        issueTime,
+        getMonth: month,
+        title: `${multipleLocations.titlePrefix} ${convertFirstLetterIntoUppercase(locationTitle)}`,
+        pageTitle: `${multipleLocations.titlePrefix} ${convertFirstLetterIntoUppercase(locationTitle)} - ${home.pageTitle}`,
+        getForecasts: getForecasts?.forecasts,
+        lang
+      }
+
+      logger.info(
+        `[ASYNC NI] Setting locationData in session for ${userLocation}`
+      )
+      request.yar.clear('locationData')
+      request.yar.set('locationData', locationData)
+      request.yar.set('niProcessing', false)
+      const redirectUrl = `/location/${locationData.urlRoute}?lang=${lang}`
+      request.yar.set('niRedirectTo', redirectUrl)
+
+      logger.info(`[ASYNC NI] Completed processing for ${userLocation}`)
+      logger.info(
+        `[ASYNC NI] Set niProcessing=false, niRedirectTo=${redirectUrl}`
+      )
+      logger.info(
+        `[ASYNC NI] Session state: ${JSON.stringify({ niProcessing: request.yar.get('niProcessing'), niRedirectTo: request.yar.get('niRedirectTo'), niError: request.yar.get('niError') })}`
+      )
+    } catch (error) {
+      logger.error(
+        `[ASYNC NI] Error processing ${userLocation}: ${error.message}`
+      )
+      logger.error(`[ASYNC NI] Error stack: ${error.stack}`)
       request.yar.set('niProcessing', false)
       request.yar.set('niError', SERVICE_UNAVAILABLE)
       const retryUrl = `/retry?postcode=${encodeURIComponent(userLocation)}&lang=${lang}`
       request.yar.set('niRedirectTo', retryUrl)
-      return
+      logger.error(
+        `[ASYNC NI] Set niProcessing=false, niError=service-unavailable, niRedirectTo=${retryUrl}`
+      )
+      logger.error(
+        `[ASYNC NI] Session state after error: ${JSON.stringify({ niProcessing: request.yar.get('niProcessing'), niRedirectTo: request.yar.get('niRedirectTo'), niError: request.yar.get('niError') })}`
+      )
     }
+  })()
 
-    // '' Check if no results found
-    if (!getNIPlaces?.results || getNIPlaces?.results.length === 0) {
-      logger.warn(`[ASYNC NI] No results found for ${userLocation}`)
-      request.yar.set('niProcessing', false)
-      request.yar.set('locationDataNotFound', {
-        locationNameOrPostcode: userLocation,
-        lang
-      })
-      request.yar.set('niRedirectTo', `${LOCATION_NOT_FOUND_URL}?lang=${lang}`)
-      return
-    }
-
-    // '' Success - prepare location data
-    const { transformedDailySummary, englishDate, welshDate } =
-      prepareDateFormatting(getDailySummary, lang)
-
-    const postcode = getNIPlaces.results[0].postcode
-    const town = sentenceCase(getNIPlaces.results[0].town)
-    const locationTitle = `${postcode}, ${town}`
-    const showSummaryDate = isSummaryDateToday(getDailySummary?.issue_date)
-    const issueTime = getIssueTime(getDailySummary?.issue_date)
-
-    logger.info(`[ASYNC NI] Success for ${userLocation} - ${locationTitle}`)
-
-    const locationData = {
-      results: getNIPlaces.results,
-      urlRoute: `${getNIPlaces.results[0].postcode.toLowerCase()}`.replaceAll(
-        /\s+/g,
-        ''
-      ),
-      locationType: redirectError.locationType,
-      transformedDailySummary,
-      englishDate,
-      dailySummary: getDailySummary,
-      welshDate,
-      showSummaryDate,
-      issueTime,
-      getMonth: month,
-      title: `${multipleLocations.titlePrefix} ${convertFirstLetterIntoUppercase(locationTitle)}`,
-      pageTitle: `${multipleLocations.titlePrefix} ${convertFirstLetterIntoUppercase(locationTitle)} - ${home.pageTitle}`,
-      getForecasts: getForecasts?.forecasts,
-      lang
-    }
-
-    request.yar.clear('locationData')
-    request.yar.set('locationData', locationData)
-    request.yar.set('niProcessing', false)
-    const redirectUrl = `/location/${locationData.urlRoute}?lang=${lang}`
-    request.yar.set('niRedirectTo', redirectUrl)
-
-    logger.info(`[ASYNC NI] Completed processing for ${userLocation}`)
-    logger.info(
-      `[ASYNC NI] Set niProcessing=false, niRedirectTo=${redirectUrl}`
-    )
-    logger.info(
-      `[ASYNC NI] Session state: ${JSON.stringify({ niProcessing: request.yar.get('niProcessing'), niRedirectTo: request.yar.get('niRedirectTo'), niError: request.yar.get('niError') })}`
-    )
-  } catch (error) {
+  // '' Race between processing and timeout
+  try {
+    await Promise.race([processingPromise, timeoutPromise])
+  } catch (timeoutError) {
     logger.error(
-      `[ASYNC NI] Error processing ${userLocation}: ${error.message}`
+      `[ASYNC NI] Overall timeout for ${userLocation}: ${timeoutError.message}`
     )
-    logger.error(`[ASYNC NI] Error stack: ${error.stack}`)
     request.yar.set('niProcessing', false)
     request.yar.set('niError', SERVICE_UNAVAILABLE)
     const retryUrl = `/retry?postcode=${encodeURIComponent(userLocation)}&lang=${lang}`
     request.yar.set('niRedirectTo', retryUrl)
     logger.error(
-      `[ASYNC NI] Set niProcessing=false, niError=service-unavailable, niRedirectTo=${retryUrl}`
-    )
-    logger.error(
-      `[ASYNC NI] Session state after error: ${JSON.stringify({ niProcessing: request.yar.get('niProcessing'), niRedirectTo: request.yar.get('niRedirectTo'), niError: request.yar.get('niError') })}`
+      `[ASYNC NI] Timeout - Set niProcessing=false, niError=service-unavailable, niRedirectTo=${retryUrl}`
     )
   }
-}
-
-// '' Notification flow helpers
+} // '' Notification flow helpers
 const getNotificationFlowFromFlags = (
   existingNotificationFlow = null,
   fromSmsFlow = false,

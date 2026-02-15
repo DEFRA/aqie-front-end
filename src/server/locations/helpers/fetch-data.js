@@ -310,12 +310,18 @@ async function fetchData(
 
   const diRequest = diOverrides?.request ?? request
 
+  logger.info(
+    `[FETCH DATA] Starting data fetch for ${locationType}: ${userLocation}`
+  )
+  logger.info(`[FETCH DATA] Step 1: Building OAuth for NI (if needed)...`)
   const optionsOAuth = await buildOAuthForNI(locationType, deps, request)
+  logger.info(`[FETCH DATA] Step 2: Fetching forecasts...`)
   const { getForecasts, getDailySummary } = await fetchAndExtractForecasts(
     deps,
     diRequest,
     diOverrides
   )
+  logger.info(`[FETCH DATA] Step 3: Forecast fetch complete`)
 
   if (deps.isTestMode()) {
     return handleTestModeFetchData({
@@ -347,6 +353,9 @@ async function fetchData(
 
   // ''  Handle NI locations
   if (locationType === LOCATION_TYPE_NI) {
+    logger.info(
+      `[FETCH DATA] Step 4: Calling NI Places API for ${userLocation}...`
+    )
     const getNIPlaces = await handleNILocation(
       userLocation,
       searchTerms,
@@ -354,6 +363,9 @@ async function fetchData(
       optionsOAuth,
       deps,
       diRequest
+    )
+    logger.info(
+      `[FETCH DATA] Step 5: NI Places API complete. Results: ${getNIPlaces?.results?.length ?? 0}`
     )
     return { getDailySummary, getForecasts, getNIPlaces }
   }
