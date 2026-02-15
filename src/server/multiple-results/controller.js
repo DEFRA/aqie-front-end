@@ -25,7 +25,8 @@ const buildMultipleLocationsViewModel = (
     welshDate,
     getMonth,
     lang,
-    userLocation
+    userLocation,
+    notificationFlow
   } = locationData
   const {
     backlink,
@@ -59,7 +60,8 @@ const buildMultipleLocationsViewModel = (
     welshMonth: calendarWelsh[getMonth],
     summaryDate: lang === LANG_CY ? welshDate : englishDate,
     currentPath: '/multiple-results',
-    lang: 'en'
+    lang: 'en',
+    notificationFlow
   }
 }
 
@@ -88,6 +90,7 @@ const buildErrorViewModel = (languageData, request, lang, statusCode) => {
 const getLocationDataController = {
   handler: async (request, h) => {
     const locationData = request.yar.get('locationData') || []
+    const notificationFlow = request.yar.get('notificationFlow')
     const { query } = request
 
     if (query?.lang === LANG_CY) {
@@ -98,7 +101,10 @@ const getLocationDataController = {
 
     try {
       const viewModel = buildMultipleLocationsViewModel(
-        locationData,
+        {
+          ...locationData,
+          notificationFlow
+        },
         english,
         metaSiteUrl
       )

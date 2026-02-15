@@ -624,7 +624,9 @@ async function processLocationWorkflow({
 }) {
   // '' Check if user is in notification registration flow (SMS or Email) from multiple-results page
   const notificationFlow = request.yar.get('notificationFlow')
-  if (notificationFlow) {
+  const fromSmsFlow = request.query?.fromSmsFlow === 'true'
+
+  if (notificationFlow && fromSmsFlow) {
     // '' Update session with location data for notification
     if (
       locationData &&
@@ -719,8 +721,6 @@ async function processLocationWorkflow({
       )
     }
 
-    // '' Clear the flow flag and redirect to appropriate confirm details page
-    request.yar.clear('notificationFlow')
     logger.info(
       `[DEBUG processLocationWorkflow] Redirecting to ${notificationFlow} confirm details (notificationFlow=${notificationFlow})`
     )
@@ -742,7 +742,7 @@ async function processLocationWorkflow({
 
   // '' If user is viewing a location page (not in notification flow), clear any stale notification flags
   // '' This prevents the notification loop from persisting when user navigates away
-  if (!notificationFlow) {
+  if (notificationFlow && !fromSmsFlow) {
     request.yar.clear('notificationFlow')
   }
 

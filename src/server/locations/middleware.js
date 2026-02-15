@@ -28,6 +28,7 @@ import {
   isValidPartialPostcodeUK
 } from './helpers/convert-string.js'
 import { sentenceCase } from '../common/helpers/sentence-case.js'
+import { convertPointToLonLat } from './helpers/location-util.js'
 import { convertFirstLetterIntoUppercase } from './helpers/convert-first-letter-into-upper-case.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
 import { config } from '../../config/index.js'
@@ -174,7 +175,8 @@ const processNILocationAsync = async (request, server, sessionId, options) => {
     lang,
     month,
     home,
-    multipleLocations
+    multipleLocations,
+    notificationFlow
   } = options
 
   // '' Wrap entire async process with 35-second timeout (allows for 3 retries @ 10s each)
@@ -191,7 +193,6 @@ const processNILocationAsync = async (request, server, sessionId, options) => {
       )
 
       // '' Fetch NI data with retries
-      logger.info(`[ASYNC NI] Calling processLocationData...`)
       const { getDailySummary, getForecasts, getNIPlaces } =
         await processLocationData(
           request,
@@ -200,9 +201,6 @@ const processNILocationAsync = async (request, server, sessionId, options) => {
           searchTerms,
           secondSearchTerm
         )
-      logger.info(
-        `[ASYNC NI] processLocationData completed for ${userLocation}`
-      )
 
       // '' Check if API failed
       if (getNIPlaces?.error === SERVICE_UNAVAILABLE) {
@@ -265,7 +263,20 @@ const processNILocationAsync = async (request, server, sessionId, options) => {
         lang
       }
 
-      const redirectUrl = `/location/${locationData.urlRoute}?lang=${lang}`
+      const isSmsFlow = notificationFlow === 'sms'
+      const redirectUrl = isSmsFlow
+        ? `/notify/register/sms-confirm-details?lang=${lang}`
+        : `/location/${locationData.urlRoute}?lang=${lang}`
+
+      const niLatLon = convertPointToLonLat(getNIPlaces.results, 'ni-location')
+      const smsLocationUpdates = isSmsFlow
+        ? {
+            location: locationTitle,
+            locationId: locationData.urlRoute,
+            latitude: niLatLon?.lat,
+            longitude: niLatLon?.lon
+          }
+        : {}
 
       // '' CRITICAL: Persist session changes via direct cache access
       logger.info(`[ASYNC NI] Writing to cache - session ${sessionId}`)
@@ -274,7 +285,8 @@ const processNILocationAsync = async (request, server, sessionId, options) => {
         niProcessing: false,
         niRedirectTo: redirectUrl,
         niError: null,
-        locationDataNotFound: null
+        locationDataNotFound: null,
+        ...smsLocationUpdates
       })
 
       logger.info(`[ASYNC NI] Completed processing for ${userLocation}`)
@@ -898,6 +910,7 @@ const searchMiddleware = async (request, h) => {
     // '' Capture session ID and server before sending response
     const sessionId = request.yar.id
     const server = request.server
+    const notificationFlow = request.yar.get('notificationFlow')
 
     // '' Set session state for async processing
     request.yar.set('niProcessing', true)
@@ -917,7 +930,8 @@ const searchMiddleware = async (request, h) => {
       lang,
       month,
       home,
-      multipleLocations
+      multipleLocations,
+      notificationFlow
     }).catch((error) => {
       logger.error(`[ASYNC NI] Background processing error: ${error.message}`)
     })

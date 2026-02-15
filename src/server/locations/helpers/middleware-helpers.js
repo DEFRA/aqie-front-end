@@ -180,8 +180,7 @@ const handleSingleMatch = async (
       )
     }
 
-    // '' Clear the flow flag and redirect to appropriate confirm details page
-    request.yar.clear('notificationFlow')
+    // '' Keep flow flag for the session and redirect to confirm details page
     logger.info(
       `[DEBUG handleSingleMatch] Redirecting to ${notificationFlow} confirm details (notificationFlow=${notificationFlow})`
     )

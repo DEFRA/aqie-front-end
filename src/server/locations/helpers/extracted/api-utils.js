@@ -270,47 +270,61 @@ function selectMeasurementsUrlAndOptions(latitude, longitude, di = {}) {
     request
   } = di
 
-  logger.info(
-    `[URL BUILD DEBUG] Using measurements with latitude: ${latitude}, longitude: ${longitude}`
-  )
+  if (!config.get('isProduction')) {
+    logger.info(
+      `[URL BUILD DEBUG] Using measurements with latitude: ${latitude}, longitude: ${longitude}`
+    )
+  }
 
   const queryParams = buildMeasurementsQueryParams(latitude, longitude)
   const baseUrl = apiConfig.get('ricardoMeasurementsApiUrl')
 
-  logger.info(`[URL BUILD DEBUG] Base URL from config: ${baseUrl}`)
-  logger.info(`[URL BUILD DEBUG] Query params: ${queryParams.toString()}`)
+  if (!config.get('isProduction')) {
+    logger.info(`[URL BUILD DEBUG] Base URL from config: ${baseUrl}`)
+    logger.info(`[URL BUILD DEBUG] Query params: ${queryParams.toString()}`)
+  }
 
   const ricardoMeasurementsApiUrl = `${baseUrl}${queryParams.toString()}`
 
-  logger.info(
-    `[URL BUILD DEBUG] Full Ricardo measurements API URL: ${ricardoMeasurementsApiUrl}`
-  )
-  logger.info(`[URL BUILD DEBUG] Is local request: ${isLocalRequest(request)}`)
+  if (!config.get('isProduction')) {
+    logger.info(
+      `[URL BUILD DEBUG] Full Ricardo measurements API URL: ${ricardoMeasurementsApiUrl}`
+    )
+    logger.info(
+      `[URL BUILD DEBUG] Is local request: ${isLocalRequest(request)}`
+    )
+  }
 
   if (isLocalRequest(request)) {
     const ephemeralProtectedDevApiUrl = apiConfig.get(
       'ephemeralProtectedDevApiUrl'
     )
-    logger.info(
-      `[URL BUILD DEBUG] Ephemeral protected dev API URL: ${ephemeralProtectedDevApiUrl}`
-    )
-    logger.info(
-      `[URL BUILD DEBUG] Measurements API path: ${MEASUREMENTS_API_PATH}`
-    )
+    if (!config.get('isProduction')) {
+      logger.info(
+        `[URL BUILD DEBUG] Ephemeral protected dev API URL: ${ephemeralProtectedDevApiUrl}`
+      )
+      logger.info(
+        `[URL BUILD DEBUG] Measurements API path: ${MEASUREMENTS_API_PATH}`
+      )
+    }
 
     const result = buildLocalMeasurementsUrlAndOpts(
       queryParams,
       apiConfig,
       optionsEphemeralProtected
     )
-    logger.info(`[URL BUILD DEBUG] Using LOCAL URL: ${result.url}`)
+    if (!config.get('isProduction')) {
+      logger.info(`[URL BUILD DEBUG] Using LOCAL URL: ${result.url}`)
+    }
     return result
   } else {
     const result = buildRemoteMeasurementsUrlAndOpts(
       ricardoMeasurementsApiUrl,
       options
     )
-    logger.info(`[URL BUILD DEBUG] Using REMOTE URL: ${result.url}`)
+    if (!config.get('isProduction')) {
+      logger.info(`[URL BUILD DEBUG] Using REMOTE URL: ${result.url}`)
+    }
     return result
   }
 }
@@ -322,15 +336,22 @@ async function callAndHandleMeasurementsResponse(
   catchFetchError,
   logger
 ) {
-  logger.info(`[API DEBUG] Calling measurements API: ${url}`)
-  logger.info(`[API DEBUG] Request options:`, JSON.stringify(opts, null, 2))
+  if (!config.get('isProduction')) {
+    logger.info(`[API DEBUG] Calling measurements API: ${url}`)
+    logger.info(`[API DEBUG] Request options:`, JSON.stringify(opts, null, 2))
+  }
 
   const [status, data] = await catchFetchError(url, opts)
 
-  logger.info(`[API DEBUG] Response status: ${status}`)
-  logger.info(`[API DEBUG] Response data type: ${typeof data}`)
-  logger.info(`[API DEBUG] Response data is array: ${Array.isArray(data)}`)
-  logger.info(`[API DEBUG] Full response data:`, JSON.stringify(data, null, 2))
+  if (!config.get('isProduction')) {
+    logger.info(`[API DEBUG] Response status: ${status}`)
+    logger.info(`[API DEBUG] Response data type: ${typeof data}`)
+    logger.info(`[API DEBUG] Response data is array: ${Array.isArray(data)}`)
+    logger.info(
+      `[API DEBUG] Full response data:`,
+      JSON.stringify(data, null, 2)
+    )
+  }
 
   if (status !== STATUS_OK) {
     logger.error(`Error fetching data: ${data?.message}`)
