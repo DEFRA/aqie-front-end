@@ -34,7 +34,8 @@ import { config } from '../../config/index.js'
 
 const logger = createLogger()
 
-const SESSION_CACHE_SEGMENT = 'session'
+// '' Match yar's default segment when not explicitly configured
+const SESSION_CACHE_SEGMENT = '!@hapi/yar'
 let sessionCachePolicy
 
 // '' Helper to lazily create a session cache policy for async updates
@@ -47,6 +48,7 @@ const getSessionCachePolicy = (server) => {
   sessionCachePolicy = server.cache({
     cache: sessionCacheName,
     segment: SESSION_CACHE_SEGMENT,
+    shared: true,
     expiresIn: config.get('session.cache.ttl')
   })
 
