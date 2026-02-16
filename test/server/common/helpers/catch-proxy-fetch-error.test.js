@@ -47,7 +47,10 @@ describe('catchProxyFetchError - basic behavior', () => {
     const mockResponse = {
       ok: true,
       status: STATUS_OK,
-      json: vi.fn().mockResolvedValue(mockData)
+      json: vi.fn().mockResolvedValue(mockData),
+      headers: {
+        get: vi.fn().mockReturnValue('10')
+      }
     }
     proxyFetch.mockResolvedValue(mockResponse)
 
@@ -69,7 +72,10 @@ describe('catchProxyFetchError - basic behavior', () => {
     const mockResponse = {
       ok: true,
       status: STATUS_OK,
-      json: vi.fn().mockResolvedValue(mockData)
+      json: vi.fn().mockResolvedValue(mockData),
+      headers: {
+        get: vi.fn().mockReturnValue('10')
+      }
     }
     proxyFetch.mockResolvedValue(mockResponse)
 

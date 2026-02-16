@@ -22,6 +22,13 @@ async function catchProxyFetchError(url, options, shouldCallApi) {
         )
         throw new Error(`HTTP error! status from ${url}: ${response.status}`)
       }
+      // '' Skip JSON parsing for 204/empty bodies to avoid parse errors
+      const contentLength = response.headers.get('content-length')
+      const isEmptyBody = response.status === 204 || contentLength === '0'
+      if (isEmptyBody) {
+        return [statusCode, null]
+      }
+
       const data = await response.json()
       return [statusCode, data]
     } catch (error) {
