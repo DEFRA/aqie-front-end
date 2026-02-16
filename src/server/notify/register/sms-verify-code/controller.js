@@ -194,7 +194,10 @@ const handleCheckMessageRequest = (request, h, content = english) => {
     footerTxt,
     phaseBanner,
     cookieBanner,
-    displayBacklink: false,
+    displayBacklink: true,
+    customBackLink: true,
+    backLinkText: 'Back',
+    backLinkUrl: '/notify/register/sms-send-activation',
     mobileNumber,
     formData: request.yar.get('formData') || {},
     debugToken: config.get('isProduction')

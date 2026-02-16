@@ -60,6 +60,11 @@
     padding-top: 0;
 }
 
+// '' Align loading page top padding with other SMS journey pages.
+.govuk-main-wrapper:has(.loading-page){
+    padding-top: 0;
+}
+
 .govuk-back-link::before {
     // stylelint-disable-next-line declaration-no-important
     margin-top: 5px!important;

@@ -25,20 +25,18 @@
   margin: 0;
 }
 
-/* '' Center loading page content */
+/* '' Align retry page content with standard page layout */
 .retry-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 2rem 0 4rem;
+  min-height: auto;
+  display: block;
+  padding: 0;
 }
 
 .retry-page__content {
   width: 100%;
-  max-width: 40rem;
+  max-width: none;
   text-align: left;
-  padding: 0 1rem;
+  padding: 0;
 }
 
 .retry-loading-status {
@@ -50,7 +48,7 @@
 }
 
 .retry-page__content .govuk-button-group {
-  align-items: center;
+  align-items: flex-start;
   gap: 1rem;
 }
 
