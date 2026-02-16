@@ -35,23 +35,34 @@ function getCircuitBreakerConfig() {
   }
 }
 
-function getCachedResult(cacheKey = '', nowMs = Date.now()) {
-  const { enabled } = getCacheConfig()
+// '' Helper to read cached data with metadata for logging
+function getCachedResultWithMeta(cacheKey = '', nowMs = Date.now()) {
+  const { enabled, ttlMs } = getCacheConfig()
   if (!enabled || !cacheKey) {
-    return null
+    return { data: null, meta: null }
   }
 
   const cachedEntry = niPlacesCache.get(cacheKey)
   if (!cachedEntry) {
-    return null
+    return { data: null, meta: null }
   }
 
   if (cachedEntry.expiresAtMs <= nowMs) {
     niPlacesCache.delete(cacheKey)
-    return null
+    return { data: null, meta: null }
   }
 
-  return cachedEntry.data
+  const ageMs = nowMs - cachedEntry.storedAtMs
+  const expiresInMs = cachedEntry.expiresAtMs - nowMs
+
+  return {
+    data: cachedEntry.data,
+    meta: {
+      ageMs,
+      ttlMs,
+      expiresInMs
+    }
+  }
 }
 
 function setCachedResult(cacheKey = '', data = null, nowMs = Date.now()) {
@@ -62,6 +73,7 @@ function setCachedResult(cacheKey = '', data = null, nowMs = Date.now()) {
 
   niPlacesCache.set(cacheKey, {
     data,
+    storedAtMs: nowMs,
     expiresAtMs: nowMs + ttlMs
   })
 }
@@ -156,10 +168,17 @@ async function getNIPlaces(userLocation, request) {
       `[getNIPlaces] Circuit breaker open - skipping NI API call for ${normalizedUserLocation}`
     )
 
-    const cachedResult = getCachedResult(cacheKey)
+    const { data: cachedResult, meta: cacheMeta } =
+      getCachedResultWithMeta(cacheKey)
     if (cachedResult) {
       logger.info(
-        `[getNIPlaces] Returning cached NI result for ${normalizedUserLocation}`
+        `[getNIPlaces] Returning cached NI result for ${normalizedUserLocation}`,
+        {
+          cacheAgeMs: cacheMeta?.ageMs,
+          cacheTtlMs: cacheMeta?.ttlMs,
+          cacheExpiresInMs: cacheMeta?.expiresInMs,
+          breakerOpen: true
+        }
       )
       return cachedResult
     }
@@ -252,14 +271,34 @@ async function getNIPlaces(userLocation, request) {
   try {
     ;[statusCodeNI, niPlacesData] = await runNiRequest(optionsOAuth)
   } catch (error) {
+    const errorType =
+      error.name === 'AbortError' || error.message?.includes('Timeout')
+        ? 'timeout'
+        : 'error'
     logger.error(
-      `[getNIPlaces] NI API call failed after retries: ${error.message}`
+      `[getNIPlaces] NI API call failed after retries: ${error.message}`,
+      {
+        errorType,
+        timeoutMs: config.get('niApiTimeoutMs'),
+        maxRetries: config.get('niApiMaxRetries'),
+        retryDelayMs: config.get('niApiRetryDelayMs'),
+        breakerFailureCount: circuitBreakerState.failureCount,
+        breakerOpenUntilMs: circuitBreakerState.openUntilMs,
+        halfOpenProbe: isHalfOpenProbe
+      }
     )
     recordCircuitBreakerFailure()
-    const cachedResult = getCachedResult(cacheKey)
+    const { data: cachedResult, meta: cacheMeta } =
+      getCachedResultWithMeta(cacheKey)
     if (cachedResult) {
       logger.info(
-        `[getNIPlaces] Returning cached NI result for ${normalizedUserLocation}`
+        `[getNIPlaces] Returning cached NI result for ${normalizedUserLocation}`,
+        {
+          cacheAgeMs: cacheMeta?.ageMs,
+          cacheTtlMs: cacheMeta?.ttlMs,
+          cacheExpiresInMs: cacheMeta?.expiresInMs,
+          errorType
+        }
       )
       return cachedResult
     }
@@ -316,13 +355,24 @@ async function getNIPlaces(userLocation, request) {
     !statusCodeNI || niPlacesData?.error === SERVICE_UNAVAILABLE_ERROR
   if (isServiceUnavailable) {
     logger.error(
-      `[getNIPlaces] NI API unavailable - statusCodeNI: ${statusCodeNI}`
+      `[getNIPlaces] NI API unavailable - statusCodeNI: ${statusCodeNI}`,
+      {
+        statusCodeNI,
+        breakerFailureCount: circuitBreakerState.failureCount,
+        breakerOpenUntilMs: circuitBreakerState.openUntilMs
+      }
     )
     recordCircuitBreakerFailure()
-    const cachedResult = getCachedResult(cacheKey)
+    const { data: cachedResult, meta: cacheMeta } =
+      getCachedResultWithMeta(cacheKey)
     if (cachedResult) {
       logger.info(
-        `[getNIPlaces] Returning cached NI result for ${normalizedUserLocation}`
+        `[getNIPlaces] Returning cached NI result for ${normalizedUserLocation}`,
+        {
+          cacheAgeMs: cacheMeta?.ageMs,
+          cacheTtlMs: cacheMeta?.ttlMs,
+          cacheExpiresInMs: cacheMeta?.expiresInMs
+        }
       )
       return cachedResult
     }
