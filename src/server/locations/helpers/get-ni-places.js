@@ -339,8 +339,10 @@ async function getNIPlaces(userLocation, request) {
     }
   }
 
-  logger.info(`[getNIPlaces] Response status: ${statusCodeNI}`)
-  logger.info(`[getNIPlaces] Response data: ${JSON.stringify(niPlacesData)}`)
+  const normalizedStatus = statusCodeNI ?? 'unknown'
+  const normalizedData = niPlacesData ?? null
+  logger.info(`[getNIPlaces] Response status: ${normalizedStatus}`)
+  logger.info(`[getNIPlaces] Response data: ${JSON.stringify(normalizedData)}`)
 
   // '' Handle 204 No Content as "postcode not found" (not a service error)
   if (statusCodeNI === 204) {
