@@ -1,13 +1,21 @@
 import { createLogger } from '../../../common/helpers/logging/logger.js'
 import { english } from '../../../data/en/en.js'
-import { LANG_EN } from '../../../data/constants.js'
+import { welsh } from '../../../data/cy/cy.js'
+import { LANG_CY } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
+import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
 
 // Constants ''
-const PAGE_HEADING = 'This alert has already been set up'
+const DEFAULT_SERVICE_NAME = 'Check air quality'
 
 // Create a logger instance ''
 const logger = createLogger()
+
+const formatTemplate = (template = '', replacements = {}) => {
+  return Object.keys(replacements).reduce((value, key) => {
+    return value.replace(`{${key}}`, replacements[key])
+  }, template)
+}
 
 const handleDuplicateSubscriptionRequest = (request, h, content = english) => {
   logger.info('Showing duplicate subscription page')
@@ -24,28 +32,38 @@ const handleDuplicateSubscriptionRequest = (request, h, content = english) => {
   // '' Use full phone number for display
   const maskedPhoneNumber = mobileNumber
 
-  const { footerTxt, phaseBanner, cookieBanner } = content
+  const lang = resolveNotifyLanguage(request)
+  const languageContent = lang === LANG_CY ? welsh : content
+  const { footerTxt, phaseBanner, cookieBanner } = languageContent
+  const common = languageContent.common || english.common
+  const smsDuplicate = languageContent.smsDuplicate || english.smsDuplicate
   const metaSiteUrl = getAirQualitySiteUrl(request)
+  const serviceName = common?.serviceName || DEFAULT_SERVICE_NAME
+  const pageTitle = smsDuplicate.pageTitle
 
   // '' Content structure ready for Welsh translation
   const pageContent = {
-    heading: PAGE_HEADING,
-    description: `You are already getting alerts for ${location} to ${maskedPhoneNumber}.`,
-    searchLink: 'Search for town or postcode',
-    searchText: 'to set up a different air pollution alert.'
+    heading: smsDuplicate.heading,
+    description: formatTemplate(smsDuplicate.description, {
+      location,
+      mobileNumber: maskedPhoneNumber
+    }),
+    searchLink: smsDuplicate.searchLinkText,
+    searchText: smsDuplicate.searchText
   }
 
   const viewModel = {
-    pageTitle: `${PAGE_HEADING} - Check air quality - GOV.UK`,
+    pageTitle: `${pageTitle} - ${serviceName} - GOV.UK`,
     heading: pageContent.heading,
     page: pageContent.heading,
-    serviceName: 'Check air quality',
-    lang: LANG_EN,
+    serviceName,
+    lang,
     metaSiteUrl,
     footerTxt,
     phaseBanner,
     cookieBanner,
     displayBacklink: false,
+    common,
     content: pageContent,
     location,
     maskedPhoneNumber

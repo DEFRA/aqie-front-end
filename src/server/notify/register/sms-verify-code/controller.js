@@ -2,16 +2,14 @@
 import { createLogger } from '../../../common/helpers/logging/logger.js'
 import { config } from '../../../../config/index.js'
 import { english } from '../../../data/en/en.js'
-import { LANG_EN } from '../../../data/constants.js'
+import { welsh } from '../../../data/cy/cy.js'
+import { LANG_CY } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { verifyOtp } from '../../../common/services/notify.js'
+import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
 
 // Constants ''
-const PAGE_HEADING = 'Check your mobile phone'
-const PAGE_TITLE = 'Check your mobile phone - Check air quality - GOV.UK'
-const ERROR_PAGE_TITLE =
-  'Error: Check your mobile phone - Check air quality - GOV.UK'
-const SERVICE_NAME = 'Check air quality'
+const DEFAULT_SERVICE_NAME = 'Check air quality'
 const VIEW_PATH = 'notify/register/sms-verify-code/index'
 const FIELD_NAME = 'activation-code'
 const MAX_FAILED_ATTEMPTS = 3
@@ -23,27 +21,53 @@ const FIVE_MINUTES_MS = FIVE_MINUTES * SIXTY_SECONDS * ONE_THOUSAND
 // Create a logger instance ''
 const logger = createLogger()
 
+const buildPageTitle = (title = '', serviceName = DEFAULT_SERVICE_NAME) => {
+  return `${title} - ${serviceName} - GOV.UK`
+}
+
+const getSmsVerifyContent = (request, content = english) => {
+  const lang = resolveNotifyLanguage(request)
+  const languageContent = lang === LANG_CY ? welsh : content
+  const smsVerifyCode = languageContent.smsVerifyCode || english.smsVerifyCode
+  const common = languageContent.common || english.common
+  const serviceName = common?.serviceName || DEFAULT_SERVICE_NAME
+
+  return { lang, languageContent, smsVerifyCode, common, serviceName }
+}
+
 /**
  * Build error view model ''
  */
-function buildErrorViewModel(request, mobileNumber, errorMessage, content) {
+function buildErrorViewModel(
+  request,
+  mobileNumber,
+  errorMessage,
+  smsVerifyCode,
+  common,
+  lang,
+  content
+) {
   const { footerTxt, phaseBanner, cookieBanner } = content
+  const serviceName = common?.serviceName || DEFAULT_SERVICE_NAME
+  const pageTitle = buildPageTitle(smsVerifyCode.errorPageTitle, serviceName)
   return {
-    pageTitle: ERROR_PAGE_TITLE,
-    heading: PAGE_HEADING,
-    page: PAGE_HEADING,
-    serviceName: SERVICE_NAME,
-    lang: LANG_EN,
+    pageTitle,
+    heading: smsVerifyCode.heading,
+    page: smsVerifyCode.heading,
+    serviceName,
+    lang,
     metaSiteUrl: getAirQualitySiteUrl(request),
     footerTxt,
     phaseBanner,
     backlink: {
-      text: 'Back'
+      text: common?.backLinkText || 'Back'
     },
     cookieBanner,
+    common,
+    content: smsVerifyCode,
     displayBacklink: true,
     customBackLink: true,
-    backLinkText: 'Back',
+    backLinkText: common?.backLinkText || 'Back',
     backLinkUrl: '/notify/register/sms-send-activation',
     mobileNumber,
     error: { message: errorMessage, field: FIELD_NAME },
@@ -65,40 +89,45 @@ function shouldResetAttempts(lastFailedTime) {
 /**
  * Determine error message based on failure type and attempt count ''
  */
-function getErrorMessage(errorMessage, failedAttempts, lastFailedTime) {
+function getErrorMessage(
+  errorMessage,
+  failedAttempts,
+  lastFailedTime,
+  smsVerifyCode
+) {
   const isExpired = errorMessage === 'Secret has expired'
   const isSuperseded = errorMessage.includes('no longer valid')
   const exceedsMaxAttempts =
     failedAttempts >= MAX_FAILED_ATTEMPTS && lastFailedTime
 
   if (exceedsMaxAttempts && !shouldResetAttempts(lastFailedTime)) {
-    return 'Wait 5 minutes, then get a new code using the link on this page'
+    return smsVerifyCode.errors.waitFiveMinutes
   }
 
   if (isSuperseded) {
-    return 'This code is no longer valid. A newer code has been sent. Please use the most recent code'
+    return smsVerifyCode.errors.superseded
   }
 
   if (isExpired) {
-    return 'This code has expired. Get a new code using the link on this page'
+    return smsVerifyCode.errors.expired
   }
 
-  return 'Enter the 5 digit activation code shown in the text message'
+  return smsVerifyCode.errors.enterCodeShown
 }
 
 /**
  * Validate submitted OTP code format ''
  */
-function validateOtpFormat(submitted) {
+function validateOtpFormat(submitted, smsVerifyCode) {
   if (!submitted) {
-    return { isValid: false, error: 'Enter your 5 digit activation code' }
+    return { isValid: false, error: smsVerifyCode.errors.enterCode }
   }
 
   const codePattern = /^\d{5}$/
   if (!codePattern.test(submitted)) {
     return {
       isValid: false,
-      error: 'Enter your 5 digit activation code, like 01234'
+      error: smsVerifyCode.errors.enterCodeExample
     }
   }
 
@@ -114,6 +143,9 @@ function handleVerificationFailure(
   result,
   failedAttempts,
   lastFailedTime,
+  smsVerifyCode,
+  common,
+  lang,
   content,
   h
 ) {
@@ -138,12 +170,16 @@ function handleVerificationFailure(
   const userErrorMessage = getErrorMessage(
     errorMessage,
     attemptsToUse,
-    lastFailedTime
+    lastFailedTime,
+    smsVerifyCode
   )
   const vm = buildErrorViewModel(
     request,
     mobileNumber,
     userErrorMessage,
+    smsVerifyCode,
+    common,
+    lang,
     content
   )
   return h.view(VIEW_PATH, vm)
@@ -181,28 +217,42 @@ const handleCheckMessageRequest = (request, h, content = english) => {
     return h.redirect('/notify/register/sms-mobile-number')
   }
 
-  const { footerTxt, phaseBanner, cookieBanner } = content
+  const { lang, languageContent, smsVerifyCode, common, serviceName } =
+    getSmsVerifyContent(request, content)
+  const { footerTxt, phaseBanner, cookieBanner } = languageContent
   const metaSiteUrl = getAirQualitySiteUrl(request)
+  const bodyText = smsVerifyCode.bodyText.replace(
+    '{mobileNumber}',
+    `<strong>${mobileNumber}</strong>`
+  )
+  const developerHint = config.get('isProduction')
+    ? undefined
+    : smsVerifyCode.developerHint.replace(
+        '{code}',
+        request.yar.get('smsVerificationToken')
+      )
+  const pageTitle = buildPageTitle(smsVerifyCode.pageTitle, serviceName)
 
   const viewModel = {
-    pageTitle: PAGE_TITLE,
-    heading: PAGE_HEADING,
-    page: PAGE_HEADING,
-    serviceName: SERVICE_NAME,
-    lang: LANG_EN,
+    pageTitle,
+    heading: smsVerifyCode.heading,
+    page: smsVerifyCode.heading,
+    serviceName,
+    lang,
     metaSiteUrl,
     footerTxt,
     phaseBanner,
     cookieBanner,
+    common,
+    content: smsVerifyCode,
+    bodyText,
     displayBacklink: true,
     customBackLink: true,
-    backLinkText: 'Back',
+    backLinkText: common?.backLinkText || 'Back',
     backLinkUrl: '/notify/register/sms-send-activation',
     mobileNumber,
     formData: request.yar.get('formData') || {},
-    debugToken: config.get('isProduction')
-      ? undefined
-      : request.yar.get('smsVerificationToken')
+    debugToken: developerHint
   }
 
   return h.view(VIEW_PATH, viewModel)
@@ -219,6 +269,10 @@ const handleCheckMessagePost = async (request, h, content = english) => {
   logger.info('Processing SMS verify code request')
 
   const mobileNumber = request.yar.get('mobileNumber')
+  const { lang, languageContent, smsVerifyCode, common } = getSmsVerifyContent(
+    request,
+    content
+  )
 
   if (!mobileNumber) {
     return h.redirect('/notify/register/sms-mobile-number')
@@ -234,8 +288,11 @@ const handleCheckMessagePost = async (request, h, content = english) => {
       const vm = buildErrorViewModel(
         request,
         mobileNumber,
-        'Enter the 5 digit activation code shown in the text message',
-        content
+        smsVerifyCode.errors.enterCodeShown,
+        smsVerifyCode,
+        common,
+        lang,
+        languageContent
       )
       return h.view(VIEW_PATH, vm)
     }
@@ -243,13 +300,16 @@ const handleCheckMessagePost = async (request, h, content = english) => {
     return h.redirect('/notify/register/sms-confirm-details')
   }
 
-  const validation = validateOtpFormat(submitted)
+  const validation = validateOtpFormat(submitted, smsVerifyCode)
   if (!validation.isValid) {
     const vm = buildErrorViewModel(
       request,
       mobileNumber,
       validation.error,
-      content
+      smsVerifyCode,
+      common,
+      lang,
+      languageContent
     )
     return h.view(VIEW_PATH, vm)
   }
@@ -276,7 +336,10 @@ const handleCheckMessagePost = async (request, h, content = english) => {
       result,
       failedAttempts,
       lastFailedTime,
-      content,
+      smsVerifyCode,
+      common,
+      lang,
+      languageContent,
       h
     )
   }

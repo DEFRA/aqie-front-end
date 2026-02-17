@@ -1,7 +1,9 @@
 import { createLogger } from '../../../common/helpers/logging/logger.js'
 import { english } from '../../../data/en/en.js'
-import { LANG_EN, NOT_PROVIDED } from '../../../data/constants.js'
+import { welsh } from '../../../data/cy/cy.js'
+import { LANG_CY, NOT_PROVIDED } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
+import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
 
 // Constants ''
 const LOCATION_PLACEHOLDER = '{location}'
@@ -9,6 +11,8 @@ const MISSING_VALUE = 'MISSING'
 
 // Create a logger instance ''
 const logger = createLogger()
+
+const DEFAULT_SERVICE_NAME = 'Check air quality'
 
 const buildSmsMobileNumberUrl = ({
   location = '',
@@ -40,7 +44,12 @@ const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
   logger.info('Showing confirm alert details page')
 
   try {
-    const { footerTxt, phaseBanner, cookieBanner, smsConfirmDetails } = content
+    const lang = resolveNotifyLanguage(request)
+    const languageContent = lang === LANG_CY ? welsh : content
+    const { footerTxt, phaseBanner, cookieBanner } = languageContent
+    const smsConfirmDetails =
+      languageContent.smsConfirmDetails || english.smsConfirmDetails
+    const common = languageContent.common || english.common
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     // '' Check for duplicate alert error
@@ -133,22 +142,24 @@ const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
       safeLocation
     )
 
+    const serviceName = common?.serviceName || DEFAULT_SERVICE_NAME
     const viewModel = {
       pageTitle: duplicateAlertError
-        ? `Error: ${smsConfirmDetails.pageTitle} - Check air quality - GOV.UK`
-        : `${smsConfirmDetails.pageTitle} - Check air quality - GOV.UK`,
+        ? `Error: ${smsConfirmDetails.pageTitle} - ${serviceName} - GOV.UK`
+        : `${smsConfirmDetails.pageTitle} - ${serviceName} - GOV.UK`,
       heading,
       page: heading,
-      serviceName: 'Check air quality',
-      lang: LANG_EN,
+      serviceName,
+      lang,
       metaSiteUrl,
       footerTxt,
       phaseBanner,
       cookieBanner,
       displayBacklink: true,
       customBackLink: true,
-      backLinkText: 'Back',
+      backLinkText: common?.backLinkText || 'Back',
       backLinkUrl: '/notify/register/sms-verify-code',
+      common,
       content: smsConfirmDetails,
       changeMobileNumberUrl,
       mobileNumber,
@@ -158,9 +169,11 @@ const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
       formData: request.yar.get('formData') || {},
       duplicateAlertError: duplicateAlertError
         ? {
-            summary: `You have already set up an alert for ${duplicateAlertLocation || safeLocation}. Choose a different location or mobile phone number.`,
-            message:
-              'Select yes if you want to receive air quality alerts for a different location'
+            summary: smsConfirmDetails.errors.duplicateAlert.summary.replace(
+              LOCATION_PLACEHOLDER,
+              duplicateAlertLocation || safeLocation
+            ),
+            message: smsConfirmDetails.errors.duplicateAlert.field
           }
         : null
     }
