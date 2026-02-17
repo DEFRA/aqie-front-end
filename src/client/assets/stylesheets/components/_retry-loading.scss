@@ -1,30 +1,3 @@
-/**
- * Retry loading styles
- * Displays a centered loading spinner during retry flow
- */
-
-.retry-loading-spinner {
-  width: 48px;
-  height: 48px;
-  margin: 0 0 0.75rem;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #1d70b8; /* '' GDS blue */
-  border-radius: 50%;
-  animation: retry-loading-spin 1s linear infinite;
-}
-
-@keyframes retry-loading-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.retry-loading-text {
-  font-size: 1.1875rem; /* '' 19px GDS body */
-  font-weight: 400;
-  color: #0b0c0c;
-  margin: 0;
-}
-
 /* '' Align retry page content with standard page layout */
 .retry-page {
   min-height: auto;
@@ -50,25 +23,4 @@
 .retry-page__content .govuk-button-group {
   align-items: flex-start;
   gap: 1rem;
-}
-
-/* '' High contrast mode support */
-@media (prefers-contrast: high) {
-  .retry-loading-text {
-    color: #ffffff;
-  }
-  
-  .retry-loading-spinner {
-    border-color: #ffffff;
-    border-top-color: #ffdd00; /* '' High contrast yellow */
-  }
-}
-
-/* '' Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .retry-loading-spinner {
-    animation: none;
-    border: 4px solid #1d70b8;
-    opacity: 0.6;
-  }
 }

@@ -1,46 +1,42 @@
 import { english } from '../data/en/en.js'
+import {
+  LANG_CY,
+  SEARCH_LOCATION_PATH_CY,
+  SEARCH_LOCATION_PATH_EN
+} from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
-import { LANG_CY } from '../data/constants.js'
+import {
+  buildPreloaderViewModel,
+  resolvePreloaderLanguage
+} from '../common/helpers/preloader.js'
 
 // ''
 
 const LOADING_PATH = '/loading'
 const WELSH_SEARCH_PATH = '/chwilio-lleoliad/cy'
 
-const determineLanguage = (request) => {
-  const lang = request.payload?.lang || request.query?.lang
-  if (lang === LANG_CY) {
-    return LANG_CY
+const buildLoadingCopy = (lang) => {
+  if (lang === 'cy') {
+    return {
+      heading: 'Yn llwytho data ansawdd aer',
+      body: 'Rydym yn casglu gwybodaeth am ansawdd aer yn eich ardal.',
+      statusText: 'Yn llwytho…'
+    }
   }
 
-  const referer = request.headers?.referer || ''
-  if (referer.includes(WELSH_SEARCH_PATH)) {
-    return LANG_CY
-  }
-
-  return 'en'
-}
-
-const buildViewModel = ({ metaSiteUrl, lang, postcode }) => {
   return {
-    pageTitle: 'Loading air quality data',
-    description: 'Loading air quality data for your location.',
-    metaSiteUrl,
-    page: english.searchLocation.page,
-    serviceName: english.searchLocation.serviceName,
-    phaseBanner: english.phaseBanner,
-    footerTxt: english.footerTxt,
-    cookieBanner: english.cookieBanner,
-    currentPath: LOADING_PATH,
-    lang,
-    postcode
+    heading: 'Loading air quality data',
+    body: 'We are gathering air quality information for your area.',
+    statusText: 'Loading…'
   }
 }
 
 const loadingController = {
   handler: (request, h) => {
     const metaSiteUrl = getAirQualitySiteUrl(request)
-    const lang = determineLanguage(request)
+    const lang = resolvePreloaderLanguage(request, {
+      welshSearchPath: WELSH_SEARCH_PATH
+    })
     const postcode = request.query?.postcode || ''
 
     // '' Check if NI processing is active in session
@@ -49,11 +45,31 @@ const loadingController = {
     if (!niProcessing) {
       // '' No active processing, redirect to search
       const searchPath =
-        lang === LANG_CY ? '/chwilio-lleoliad/cy' : '/search-location'
+        lang === LANG_CY ? SEARCH_LOCATION_PATH_CY : SEARCH_LOCATION_PATH_EN
       return h.redirect(searchPath)
     }
 
-    const viewModel = buildViewModel({ metaSiteUrl, lang, postcode })
+    const copy = buildLoadingCopy(lang)
+    const retryUrl = `/retry?postcode=${encodeURIComponent(postcode)}&lang=${lang}`
+    const viewModel = buildPreloaderViewModel({
+      lang,
+      metaSiteUrl,
+      pageTitle: 'Loading air quality data',
+      description: 'Loading air quality data for your location.',
+      page: english.searchLocation.page,
+      serviceName: english.searchLocation.serviceName,
+      phaseBanner: english.phaseBanner,
+      footerTxt: english.footerTxt,
+      cookieBanner: english.cookieBanner,
+      currentPath: LOADING_PATH,
+      heading: copy.heading,
+      body: copy.body,
+      statusText: copy.statusText,
+      retryUrl,
+      preloaderConfig: {
+        statusUrl: '/loading-status'
+      }
+    })
 
     return h.view('loading/index', viewModel)
   }

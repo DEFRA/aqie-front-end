@@ -16,7 +16,12 @@ import {
   removeUACookies
 } from './components/cookie-functions.mjs'
 import CookiesPage from './components/cookies-page.mjs'
-import { COOKIE_BANNER_SELECTOR, COOKIES_PAGE_SELECTOR } from './constants.mjs'
+import Preloader from './components/preloader.js'
+import {
+  COOKIE_BANNER_SELECTOR,
+  COOKIES_PAGE_SELECTOR,
+  PRELOADER_SELECTOR
+} from './constants.mjs'
 
 /**
  * Initialise a component with a given constructor and element.
@@ -90,6 +95,10 @@ if ($cookiesPage) {
 } else {
   console.warn('Cookies page element not found') // eslint-disable-line no-console
 }
+
+// '' Initialise preloaders
+const $preloaders = document.querySelectorAll(PRELOADER_SELECTOR)
+$preloaders.forEach(($preloader) => initializeComponent(Preloader, $preloader))
 
 // Initialise all GOV.UK Frontend components
 // Initialise all GOV.UK Frontend components

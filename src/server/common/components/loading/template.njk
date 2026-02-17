@@ -1,0 +1,20 @@
+{# '' #}
+<div
+  class="loading-page"
+  data-module="app-preloader"
+  data-status-url="{{ params.statusUrl | default('/loading-status') }}"
+  data-retry-url="{{ params.retryUrl | default('') }}"
+  data-max-polls="{{ params.maxPolls | default(15) }}"
+  data-poll-interval="{{ params.pollIntervalMs | default(2000) }}"
+  data-initial-delay="{{ params.initialDelayMs | default(1000) }}"
+>
+  <div class="loading-page__content">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">{{ params.heading }}</h1>
+        <p class="govuk-body">{{ params.body }}</p>
+        {%- include "./status.njk" -%}
+      </div>
+    </div>
+  </div>
+</div>

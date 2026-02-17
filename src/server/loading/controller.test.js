@@ -83,7 +83,11 @@ describe('loadingController', () => {
       expect.objectContaining({
         pageTitle: 'Loading air quality data',
         lang: 'en',
-        postcode: 'BT1 1AA'
+        preloader: expect.objectContaining({
+          heading: 'Loading air quality data',
+          statusUrl: '/loading-status',
+          retryUrl: '/retry?postcode=BT1%201AA&lang=en'
+        })
       })
     )
   })
@@ -116,7 +120,7 @@ describe('loadingController', () => {
     )
   })
 
-  test('should default to empty postcode when not provided', () => {
+  test('should default to empty postcode in retry URL when not provided', () => {
     mockYar.get.mockReturnValue(true)
 
     loadingController.handler(mockRequest, mockH)
@@ -124,7 +128,9 @@ describe('loadingController', () => {
     expect(mockH.view).toHaveBeenCalledWith(
       'loading/index',
       expect.objectContaining({
-        postcode: ''
+        preloader: expect.objectContaining({
+          retryUrl: '/retry?postcode=&lang=en'
+        })
       })
     )
   })
@@ -150,6 +156,6 @@ describe('loadingController', () => {
     expect(viewModel).toHaveProperty('footerTxt')
     expect(viewModel).toHaveProperty('description')
     expect(viewModel).toHaveProperty('metaSiteUrl')
-    expect(viewModel).toHaveProperty('postcode', 'BT1 1AA')
+    expect(viewModel).toHaveProperty('preloader')
   })
 })
