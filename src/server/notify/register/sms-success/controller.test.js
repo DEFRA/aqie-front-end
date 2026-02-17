@@ -40,6 +40,7 @@ describe('Alerts Success Controller', () => {
         lang: 'en',
         mobileNumber: '07123456789',
         location: 'London',
+        smsSuccessHeading: 'You have set up air pollution alerts for London',
         alertDetailsConfirmed: true,
         footerTxt: 'Footer text',
         phaseBanner: 'Phase banner',

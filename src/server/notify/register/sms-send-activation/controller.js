@@ -1,12 +1,15 @@
 // Controller for SMS send activation page ''
 import { createLogger } from '../../../common/helpers/logging/logger.js'
 import { english } from '../../../data/en/en.js'
-import { LANG_EN } from '../../../data/constants.js'
+import { welsh } from '../../../data/cy/cy.js'
+import { LANG_CY } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { sendSmsCode } from '../../../common/services/notify.js'
+import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
 
 // Constants ''
 const MOBILE_NUMBER_PAGE_PATH = '/notify/register/sms-mobile-number'
+const DEFAULT_SERVICE_NAME = 'Check air quality'
 
 // Create a logger instance ''
 const logger = createLogger()
@@ -35,6 +38,14 @@ const buildSmsMobileNumberUrl = ({
   return queryString
     ? `${MOBILE_NUMBER_PAGE_PATH}?${queryString}`
     : MOBILE_NUMBER_PAGE_PATH
+}
+
+const formatBodyText = (template = '', mobileNumber = '') => {
+  if (!template) {
+    return ''
+  }
+
+  return template.replace('{mobileNumber}', mobileNumber)
 }
 
 /**
@@ -66,26 +77,39 @@ export const handleSendActivationRequest = (request, h, content = english) => {
     long
   })
 
-  const { footerTxt, phaseBanner, cookieBanner } = content
+  const lang = resolveNotifyLanguage(request)
+  const languageContent = lang === LANG_CY ? welsh : content
+  const { footerTxt, phaseBanner, cookieBanner } = languageContent
+  const common = languageContent.common || english.common
+  const smsSendActivation =
+    languageContent.smsSendActivation || english.smsSendActivation
   const metaSiteUrl = getAirQualitySiteUrl(request)
+  const serviceName = common?.serviceName || DEFAULT_SERVICE_NAME
+  const pageTitle = smsSendActivation.pageTitle
+  const bodyText = formatBodyText(
+    smsSendActivation.bodyText,
+    `<strong>${mobileNumber}</strong>`
+  )
 
   const viewModel = {
-    pageTitle:
-      'We are going to send you an activation code - Check air quality - GOV.UK',
-    heading: 'We are going to send you an activation code',
-    page: 'We are going to send you an activation code',
-    serviceName: 'Check air quality',
-    lang: LANG_EN,
+    pageTitle: `${pageTitle} - ${serviceName} - GOV.UK`,
+    heading: smsSendActivation.heading,
+    page: smsSendActivation.heading,
+    serviceName,
+    lang,
     metaSiteUrl,
     footerTxt,
     phaseBanner,
     backlink: {
-      text: 'Back'
+      text: common?.backLinkText || 'Back'
     },
     cookieBanner,
+    common,
+    content: smsSendActivation,
+    bodyText,
     displayBacklink: true,
     customBackLink: true,
-    backLinkText: 'Back',
+    backLinkText: common?.backLinkText || 'Back',
     backLinkUrl,
     changeMobileNumberUrl: backLinkUrl,
     mobileNumber

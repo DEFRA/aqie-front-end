@@ -1,13 +1,14 @@
 import { createLogger } from '../../../common/helpers/logging/logger.js'
 import { english } from '../../../data/en/en.js'
-import { notificationTranslations } from '../../../data/en/notifications.js'
-import { LANG_EN } from '../../../data/constants.js'
+import { welsh } from '../../../data/cy/cy.js'
+import { LANG_CY } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { recordSmsCapture } from '../../../common/services/subscription.js'
 import { validateUKMobile } from '../../../common/helpers/validate-uk-mobile.js'
+import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
 
-// Constants for repeated strings
-const PAGE_HEADING = 'What is your mobile phone number?'
+// Constants for repeated strings ''
+const DEFAULT_SERVICE_NAME = 'Check air quality'
 
 // Create a logger instance ''
 const logger = createLogger()
@@ -76,41 +77,51 @@ const handleNotifyRequest = (request, h, content = english) => {
   const locationId =
     request.query.locationId || request.yar.get('locationId') || ''
 
-  const { footerTxt, phaseBanner, cookieBanner } = content
+  const lang = resolveNotifyLanguage(request)
+  const languageContent = lang === LANG_CY ? welsh : content
+  const { footerTxt, phaseBanner, cookieBanner } = languageContent
+  const common = languageContent.common || english.common
+  const smsMobilePhone =
+    languageContent.smsMobilePhone || english.smsMobilePhone
+  const smsMobileNumber =
+    languageContent.smsMobileNumber || english.smsMobileNumber
   const metaSiteUrl = getAirQualitySiteUrl(request)
+  const pageTitle = smsMobilePhone.pageTitle
+  const serviceName = common?.serviceName || DEFAULT_SERVICE_NAME
 
   const viewModel = {
     pageTitle: maxAlertsError
-      ? `Error: ${PAGE_HEADING} - Check air quality - GOV.UK`
-      : `${PAGE_HEADING} - Check air quality - GOV.UK`,
-    heading: PAGE_HEADING,
-    page: PAGE_HEADING,
-    serviceName: 'Check air quality',
-    lang: LANG_EN,
+      ? `Error: ${pageTitle} - ${serviceName} - GOV.UK`
+      : `${pageTitle} - ${serviceName} - GOV.UK`,
+    heading: smsMobilePhone.heading,
+    page: smsMobilePhone.heading,
+    serviceName,
+    lang,
     metaSiteUrl,
     footerTxt,
     phaseBanner,
     backlink: {
-      text: 'Back'
+      text: common?.backLinkText || 'Back'
     },
     cookieBanner,
+    common,
+    content: smsMobilePhone,
     formData: request.yar.get('formData') || {}
   }
 
   // '' Add max alerts error if present
   if (maxAlertsError && maskedPhoneNumber) {
-    const errorMessages =
-      notificationTranslations.smsMobileNumber.errors.maxAlertsReached
+    const errorMessages = smsMobileNumber?.errors?.maxAlertsReached
     viewModel.error = {
-      message: errorMessages.field,
+      message: errorMessages?.field || '',
       field: 'notifyByText'
     }
     viewModel.maxAlertsError = {
-      summary: errorMessages.summary.replace(
+      summary: (errorMessages?.summary || '').replace(
         '{phoneNumber}',
         maskedPhoneNumber
       ),
-      field: errorMessages.field
+      field: errorMessages?.field || ''
     }
   }
 
@@ -118,7 +129,7 @@ const handleNotifyRequest = (request, h, content = english) => {
   if (locationId) {
     viewModel.displayBacklink = true
     viewModel.customBackLink = true
-    viewModel.backLinkText = 'Back'
+    viewModel.backLinkText = common?.backLinkText || 'Back'
     viewModel.backLinkUrl = `/location/${locationId}`
   }
 
@@ -129,29 +140,41 @@ const handleNotifyPost = async (request, h, content = english) => {
   const { notifyByText } = request.payload
 
   // Validate UK mobile number ''
-  const validation = validateUKMobile(notifyByText)
+  const lang = resolveNotifyLanguage(request)
+  const languageContent = lang === LANG_CY ? welsh : content
+  const { footerTxt, phaseBanner, cookieBanner } = languageContent
+  const common = languageContent.common || english.common
+  const smsMobilePhone =
+    languageContent.smsMobilePhone || english.smsMobilePhone
+  const serviceName = common?.serviceName || DEFAULT_SERVICE_NAME
+  const pageTitle = smsMobilePhone.pageTitle
+  const metaSiteUrl = getAirQualitySiteUrl(request)
+
+  const validation = validateUKMobile(notifyByText, {
+    empty: smsMobilePhone.errors?.empty,
+    format: smsMobilePhone.errors?.format
+  })
 
   if (!validation.isValid) {
     // Get locationId from session or query parameter to build back link ''
     const locationId =
       request.query.locationId || request.yar.get('locationId') || ''
 
-    const { footerTxt, phaseBanner, cookieBanner } = content
-    const metaSiteUrl = getAirQualitySiteUrl(request)
-
     const viewModel = {
-      pageTitle: `Error: ${PAGE_HEADING} - Check air quality - GOV.UK`,
-      heading: PAGE_HEADING,
-      page: PAGE_HEADING,
-      serviceName: 'Check air quality',
-      lang: LANG_EN,
+      pageTitle: `Error: ${pageTitle} - ${serviceName} - GOV.UK`,
+      heading: smsMobilePhone.heading,
+      page: smsMobilePhone.heading,
+      serviceName,
+      lang,
       metaSiteUrl,
       footerTxt,
       phaseBanner,
       backlink: {
-        text: 'Back'
+        text: common?.backLinkText || 'Back'
       },
       cookieBanner,
+      common,
+      content: smsMobilePhone,
       error: {
         message: validation.error,
         field: 'notifyByText'
@@ -163,7 +186,7 @@ const handleNotifyPost = async (request, h, content = english) => {
     if (locationId) {
       viewModel.displayBacklink = true
       viewModel.customBackLink = true
-      viewModel.backLinkText = 'Back'
+      viewModel.backLinkText = common?.backLinkText || 'Back'
       viewModel.backLinkUrl = `/location/${locationId}`
     }
 

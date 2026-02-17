@@ -5,14 +5,14 @@
   <div class="govuk-grid-column-two-thirds odd-page">
     <form class="form" action="/notify/register/sms-send-activation" method="post">
     <h1 class="govuk-heading-l">
-        We are going to send you an activation code
+      {{ content.heading }}
     </h1>
-    <p>We will send a text message to <b>{{ mobileNumber }}</b> with a 5-digit activation code.</p>
+    <p>{{ bodyText | safe }}</p>
 <button type="submit" class="govuk-button govuk-button--primary govuk-!-margin-bottom-8" data-module="govuk-button" data-govuk-button-init="">
-  Agree and continue
+    {{ content.continueButton }}
 </button>
     <div>
-        <a href="{{ changeMobileNumberUrl }}">I want to use a different mobile number</a>
+      <a href="{{ changeMobileNumberUrl }}">{{ content.changeNumberLinkText }}</a>
     </div>
     </form>
   </div>

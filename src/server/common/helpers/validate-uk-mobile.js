@@ -10,12 +10,15 @@ const ERROR_FORMAT = 'Enter a UK mobile phone number, like 07700 900000'
  * @param {string} phoneNumber - The phone number to validate
  * @returns {Object} - { isValid: boolean, formatted: string, error: string }
  */
-export function validateUKMobile(phoneNumber) {
+export function validateUKMobile(
+  phoneNumber,
+  errors = { empty: ERROR_EMPTY, format: ERROR_FORMAT }
+) {
   if (!phoneNumber || typeof phoneNumber !== 'string') {
     return {
       isValid: false,
       formatted: '',
-      error: ERROR_EMPTY
+      error: errors.empty || ERROR_EMPTY
     }
   }
 
@@ -27,7 +30,7 @@ export function validateUKMobile(phoneNumber) {
     return {
       isValid: false,
       formatted: '',
-      error: ERROR_EMPTY
+      error: errors.empty || ERROR_EMPTY
     }
   }
 
@@ -38,7 +41,7 @@ export function validateUKMobile(phoneNumber) {
     return {
       isValid: false,
       formatted: phoneNumber,
-      error: ERROR_FORMAT
+      error: errors.format || ERROR_FORMAT
     }
   }
 

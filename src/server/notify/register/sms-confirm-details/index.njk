@@ -5,7 +5,7 @@
       {# '' Error summary for duplicate alerts #}
       {% if duplicateAlertError %}
         {{ govukErrorSummary({
-          titleText: "There is a problem",
+          titleText: common.errorSummaryTitle,
           errorList: [
             {
               text: duplicateAlertError.summary,

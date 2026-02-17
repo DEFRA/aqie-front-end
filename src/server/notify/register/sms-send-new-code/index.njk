@@ -8,7 +8,7 @@
       {% if error %}
         <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
           <h2 class="govuk-error-summary__title" id="error-summary-title">
-            There is a problem
+            {{ common.errorSummaryTitle }}
           </h2>
           <div class="govuk-error-summary__body">
             <ul class="govuk-list govuk-error-summary__list">
@@ -20,16 +20,16 @@
         </div>
       {% endif %}
 
-      <h1 class="govuk-heading-l">Request a new activation code</h1>
+      <h1 class="govuk-heading-l">{{ content.heading }}</h1>
       <p class="govuk-body">
-        Text messages can take a few minutes to arrive.
+        {{ content.intro1 }}
       </p>
       <p class="govuk-body">
-        If the activation code has not arrived after 10 minutes, you can get a new code sent to:
+        {{ content.intro2 }}
       </p>
       <ul class="govuk-list govuk-list--bullet">
-        <li>the same mobile phone number, {{ mobileNumber }}</li>
-        <li>a different mobile phone number</li>
+        <li>{{ bulletSameNumber }}</li>
+        <li>{{ content.bulletDifferentNumber }}</li>
       </ul>
 
       <div class="govuk-!-padding-bottom-5"></div>
@@ -37,16 +37,16 @@
       <details class="govuk-details">
         <summary class="govuk-details__summary">
           <span class="govuk-details__summary-text">
-            Send the text to a different number
+            {{ content.detailsSummary }}
           </span>
         </summary>
         <div class="govuk-details__text">
           <div class="govuk-form-group{% if error and error.field === 'mobileNumberNew' %} govuk-form-group--error{% endif %}">
             <label class="govuk-label" for="mobile-number-new">
-              Enter mobile phone number (optional)
+              {{ content.detailsLabel }}
             </label>
             <div id="mobile-number-new-hint" class="govuk-hint">
-              Enter a UK mobile phone number, like 07700 900 982
+              {{ content.detailsHint }}
             </div>
             {% if error and error.field === 'mobileNumberNew' %}
               <p id="mobile-number-new-error" class="govuk-error-message">
@@ -65,7 +65,7 @@
       </details>
 
       <button type="submit" class="govuk-button" data-module="govuk-button">
-        Request a new code
+        {{ content.submitButton }}
       </button>
     </form>
   </div>
