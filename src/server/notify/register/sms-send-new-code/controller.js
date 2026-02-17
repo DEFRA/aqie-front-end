@@ -26,9 +26,9 @@ const handleSendNewCodeRequest = (request, h, content = english) => {
   const metaSiteUrl = getAirQualitySiteUrl(request)
 
   const viewModel = {
-    pageTitle: 'Send a new activation code - Check air quality - GOV.UK',
-    heading: 'Send a new activation code',
-    page: 'Send a new activation code',
+    pageTitle: 'Request a new activation code - Check air quality - GOV.UK',
+    heading: 'Request a new activation code',
+    page: 'Request a new activation code',
     serviceName: 'Check air quality',
     lang: LANG_EN,
     metaSiteUrl,

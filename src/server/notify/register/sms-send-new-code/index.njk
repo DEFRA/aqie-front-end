@@ -22,22 +22,32 @@
 
       <h1 class="govuk-heading-l">Request a new activation code</h1>
       <p class="govuk-body">
-        Text messages sometimes take a few minutes to arrive. If you do not receive the text message, you can request a new one.
+        Text messages can take a few minutes to arrive.
       </p>
+      <p class="govuk-body">
+        If the activation code has not arrived after 10 minutes, you can get a new code sent to:
+      </p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>the same mobile phone number, {{ mobileNumber }}</li>
+        <li>a different mobile phone number</li>
+      </ul>
 
       <div class="govuk-!-padding-bottom-5"></div>
 
-      <details class="govuk-details" open="">
+      <details class="govuk-details">
         <summary class="govuk-details__summary">
           <span class="govuk-details__summary-text">
-            Change where the text is sent
+            Send the text to a different number
           </span>
         </summary>
         <div class="govuk-details__text">
           <div class="govuk-form-group{% if error and error.field === 'mobileNumberNew' %} govuk-form-group--error{% endif %}">
             <label class="govuk-label" for="mobile-number-new">
-              Mobile number
+              Enter mobile phone number (optional)
             </label>
+            <div id="mobile-number-new-hint" class="govuk-hint">
+              Enter a UK mobile phone number, like 07700 900 982
+            </div>
             {% if error and error.field === 'mobileNumberNew' %}
               <p id="mobile-number-new-error" class="govuk-error-message">
                 <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
@@ -48,7 +58,7 @@
                    name="mobileNumberNew" 
                    type="tel"
                    autocomplete="tel"
-                   {% if error and error.field === 'mobileNumberNew' %}aria-describedby="mobile-number-new-error"{% endif %}
+                   aria-describedby="mobile-number-new-hint{% if error and error.field === 'mobileNumberNew' %} mobile-number-new-error{% endif %}"
                    value="{% if formData and formData.mobileNumberNew %}{{ formData.mobileNumberNew }}{% endif %}">
           </div>
         </div>

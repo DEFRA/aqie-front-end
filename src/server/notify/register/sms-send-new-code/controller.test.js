@@ -102,8 +102,8 @@ describe('SMS Send New Code Controller - handleSendNewCodeRequest with Mobile', 
     expect(mockH.view).toHaveBeenCalledWith(
       VIEW_PATH,
       expect.objectContaining({
-        pageTitle: 'Send a new activation code - Check air quality - GOV.UK',
-        heading: 'Send a new activation code',
+        pageTitle: 'Request a new activation code - Check air quality - GOV.UK',
+        heading: 'Request a new activation code',
         mobileNumber,
         serviceName: 'Check air quality'
       })
