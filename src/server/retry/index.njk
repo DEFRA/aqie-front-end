@@ -22,10 +22,12 @@
         <div class="govuk-grid-column-two-thirds">
           <h1 class="govuk-heading-l" id="retry-error-heading">{{ fallbackHeading }}</h1>
           <p class="govuk-body">{{ fallbackBody }}</p>
-          <div class="retry-loading-status govuk-!-display-none" aria-live="polite">
-            <div class="retry-loading-spinner" aria-hidden="true"></div>
-            <p class="govuk-body retry-loading-text">Retrying air quality data…</p>
-          </div>
+          {{
+            appLoadingStatus({
+              statusText: 'Retrying air quality data…',
+              classes: 'retry-loading-status govuk-!-display-none'
+            })
+          }}
           <div class="govuk-button-group">
             <button type="button" class="govuk-button" data-module="govuk-button" id="retry-action">
               {{ fallbackCta }}
