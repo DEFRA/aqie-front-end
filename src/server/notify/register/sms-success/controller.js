@@ -21,6 +21,12 @@ const formatSmsSuccessHeading = (template = '', location = '') => {
   return location ? `${template} ${location}` : template
 }
 
+const formatTemplate = (template = '', replacements = {}) => {
+  return Object.keys(replacements).reduce((value, key) => {
+    return value.replace(`{${key}}`, replacements[key])
+  }, template)
+}
+
 const handleAlertsSuccessRequest = (request, h, content = english) => {
   logger.info('Showing alerts success page')
 
@@ -51,6 +57,12 @@ const handleAlertsSuccessRequest = (request, h, content = english) => {
     smsSuccessHeadingTemplate,
     location
   )
+  const smsSuccessAnotherAlertPrefix = formatTemplate(
+    smsSuccess.anotherAlertPrefix,
+    {
+      mobileNumber
+    }
+  )
 
   const serviceName = common?.serviceName || 'Check air quality'
   const viewModel = {
@@ -69,6 +81,7 @@ const handleAlertsSuccessRequest = (request, h, content = english) => {
     common,
     content: smsSuccess,
     smsSuccessHeading,
+    smsSuccessAnotherAlertPrefix,
     alertDetailsConfirmed,
     formData: request.yar.get('formData') || {},
     userResearchPanelUrl: config.get('userResearchPanelUrl')

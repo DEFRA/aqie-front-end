@@ -149,16 +149,18 @@ export const notificationTranslationsWelsh = {
     confirmationText:
       'TODO Welsh: We have sent you a confirmation text message.',
     anotherAlertPrefix:
-      'TODO Welsh: If you want to set up another alert you can',
+      'TODO Welsh: If you want to set up another alert for {mobileNumber} you can',
     anotherAlertLinkText: 'TODO Welsh: search for another location',
     anotherAlertSuffix: '.',
     researchHeading: 'TODO Welsh: Help us make our service better',
-    researchBodyPrefix:
-      'TODO Welsh: Join our user research panel to share your feedback and contribute to the ongoing improvement of this service. By signing up, you agree to our ',
-    researchBodyLinkText: 'TODO Welsh: privacy statement',
-    researchBodySuffix:
-      'TODO Welsh: and consent to being contacted for research purposes.',
-    researchLinkText:
-      'TODO Welsh: I would like to join the user research panel to share my feedback'
+    researchSignupPrefix:
+      'TODO Welsh: This is a new service and we are looking for people to share their feedback with us.',
+    researchSignupLinkText:
+      'TODO Welsh: Sign up to participate in future research and help improve this service',
+    researchSignupSuffix: '.',
+    researchPrivacyPrefix: 'TODO Welsh: By signing up, you agree to our ',
+    researchPrivacyLinkText: 'TODO Welsh: privacy statement',
+    researchPrivacySuffix:
+      'TODO Welsh: and consent to being contacted for research purposes.'
   }
 }

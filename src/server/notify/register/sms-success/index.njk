@@ -20,7 +20,7 @@
       <p class="govuk-body">{{ content.confirmationText }}</p>
 
       <p class="govuk-body govuk-!-padding-bottom-6">
-        {{ content.anotherAlertPrefix }} <a href="/notify/register/check-max-alerts" class="govuk-link">{{ content.anotherAlertLinkText }}</a>{{ content.anotherAlertSuffix }}
+        {{ smsSuccessAnotherAlertPrefix }} <a href="/notify/register/check-max-alerts" class="govuk-link">{{ content.anotherAlertLinkText }}</a>{{ content.anotherAlertSuffix }}
       </p>
 
       <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
@@ -28,13 +28,13 @@
       <h2 class="govuk-heading-m">{{ content.researchHeading }}</h2>
 
       <p class="govuk-body">
-        {{ content.researchBodyPrefix }}
-        <a href="https://www.gov.uk/government/publications/defras-social-research-privacy-notice" class="govuk-link">{{ content.researchBodyLinkText }}</a>
-        {{ content.researchBodySuffix }}
+        {{ content.researchSignupPrefix }}
+        <a href="{{ userResearchPanelUrl }}" class="govuk-link">{{ content.researchSignupLinkText }}</a>{{ content.researchSignupSuffix }}
       </p>
 
       <p class="govuk-body">
-        <a href="{{ userResearchPanelUrl }}" class="govuk-link">{{ content.researchLinkText }}</a>
+        {{ content.researchPrivacyPrefix }}
+        <a href="https://www.gov.uk/government/publications/defras-social-research-privacy-notice" class="govuk-link">{{ content.researchPrivacyLinkText }}</a>{{ content.researchPrivacySuffix }}
       </p>
 
     </div>
