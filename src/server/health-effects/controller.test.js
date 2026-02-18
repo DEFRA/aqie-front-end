@@ -16,8 +16,7 @@ import {
 
 const MOCK_SITE_URL = 'https://example.test'
 // '' Define constant for duplicated string literal
-const HEALTH_EFFECTS_PAGE_TITLE =
-  'How you can reduce your exposure to air pollution'
+const HEALTH_EFFECTS_PAGE_TITLE = 'Health effects of air pollution'
 const MOCK_LOCATION = 'Mock Location'
 const LANG_EN = 'en'
 const LANG_CY = 'cy'

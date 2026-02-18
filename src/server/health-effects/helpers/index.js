@@ -89,13 +89,11 @@ const buildHealthEffectsViewModel = ({
   const backLinkUrl = generateBackLinkUrl(locationId, lang)
 
   return {
-    pageTitle:
-      healthEffects?.pageTitle ||
-      'How you can reduce your exposure to air pollution', // ''
+    pageTitle: healthEffects?.pageTitle || 'Health effects of air pollution', // ''
     description: healthEffects?.description || '', // ''
     metaSiteUrl, // ''
     healthEffects, // ''
-    page: 'How you can reduce your exposure to air pollution', // ''
+    page: 'Health effects of air pollution', // ''
     displayBacklink: true, // ''
     customBackLink: !!readableName, // '' Add for template compatibility
     backLinkUrl, // ''
