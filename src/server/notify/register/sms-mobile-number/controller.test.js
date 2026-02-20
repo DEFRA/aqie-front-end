@@ -125,7 +125,7 @@ describe('Notify Controller - handleNotifyPost', () => {
 
     expect(mockRequest.yar.set).toHaveBeenCalledWith(
       'mobileNumber',
-      '+447123456789'
+      '07123456789'
     )
     expect(mockH.redirect).toHaveBeenCalledWith(
       '/notify/register/sms-send-activation'

@@ -45,15 +45,14 @@ export function validateUKMobile(
     }
   }
 
-  // Format to +44 format for storage ''
+  // Normalise to 07... local format for storage and display ''
   let formatted
   if (cleaned.startsWith('+44')) {
-    formatted = cleaned
-  } else if (cleaned.startsWith('44')) {
-    formatted = `+${cleaned}`
+    formatted = `0${cleaned.substring(3)}`
+  } else if (cleaned.startsWith('44') && cleaned.length === UK_MOBILE_LENGTH_INTERNATIONAL - 1) {
+    formatted = `0${cleaned.substring(2)}`
   } else if (cleaned.startsWith('07')) {
-    const ONE = 1
-    formatted = `+44${cleaned.substring(ONE)}`
+    formatted = cleaned
   } else {
     formatted = cleaned
   }

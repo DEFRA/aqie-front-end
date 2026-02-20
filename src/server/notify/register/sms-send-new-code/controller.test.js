@@ -178,7 +178,7 @@ describe('SMS Send New Code Controller - handleSendNewCodePost', () => {
     // Assert ''
     expect(mockRequest.yar.set).toHaveBeenCalledWith(
       'mobileNumber',
-      '+447123456789'
+      '07123456789'
     )
     expect(mockRequest.yar.set).toHaveBeenCalledWith('newCodeRequested', true)
     expect(mockRequest.yar.set).toHaveBeenCalledWith(
@@ -203,7 +203,7 @@ describe('SMS Send New Code Controller - handleSendNewCodePost', () => {
     // Assert ''
     expect(mockRequest.yar.set).toHaveBeenCalledWith(
       'mobileNumber',
-      '+447123456789'
+      '07123456789'
     )
     expect(mockRequest.yar.set).toHaveBeenCalledWith('newCodeRequested', true)
     expect(mockRequest.yar.set).toHaveBeenCalledWith(
