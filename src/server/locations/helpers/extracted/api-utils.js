@@ -166,7 +166,7 @@ function selectForecastsUrlAndOptions({
   optionsEphemeralProtected: localOptionsEphemeralProtected,
   options: localOptions
 }) {
-  if (!config.get('isProduction')) {
+  if (isLocalRequest(request)) {
     return buildLocalForecastsUrlAndOpts(
       request,
       localOptionsEphemeralProtected
@@ -295,7 +295,7 @@ function selectMeasurementsUrlAndOptions(latitude, longitude, di = {}) {
     )
   }
 
-  if (!config.get('isProduction')) {
+  if (isLocalRequest(request)) {
     const ephemeralProtectedDevApiUrl = apiConfig.get(
       'ephemeralProtectedDevApiUrl'
     )
