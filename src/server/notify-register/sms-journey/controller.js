@@ -167,7 +167,8 @@ const getActivationCodeController = {
       footerTxt,
       phaseBanner,
       backlink,
-      cookieBanner
+      cookieBanner,
+      content: english.activationCode
     })
   }
 }
@@ -192,7 +193,8 @@ const postActivationCodeController = {
           footerTxt: english.footerTxt,
           phaseBanner: english.phaseBanner,
           backlink: english.backlink,
-          cookieBanner: english.cookieBanner
+          cookieBanner: english.cookieBanner,
+          content: english.activationCode
         })
       }
 
@@ -214,7 +216,8 @@ const postActivationCodeController = {
           footerTxt: english.footerTxt,
           phaseBanner: english.phaseBanner,
           backlink: english.backlink,
-          cookieBanner: english.cookieBanner
+          cookieBanner: english.cookieBanner,
+          content: english.activationCode
         })
       }
 
@@ -231,7 +234,8 @@ const postActivationCodeController = {
           footerTxt: english.footerTxt,
           phaseBanner: english.phaseBanner,
           backlink: english.backlink,
-          cookieBanner: english.cookieBanner
+          cookieBanner: english.cookieBanner,
+          content: english.activationCode
         })
       }
 

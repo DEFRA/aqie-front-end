@@ -9,6 +9,7 @@ import {
 import * as airQualityData from '../../data/en/air-quality.js'
 import { LANG_CY } from '../../data/constants.js'
 import { createLogger } from '../../common/helpers/logging/logger.js'
+import { config as appConfig } from '../../../config/index.js'
 
 const logger = createLogger()
 
@@ -79,7 +80,9 @@ const renderLocationDetailsView = (locationDetails, config, h) => {
     serviceName: multipleLocations.serviceName,
     lang,
     latlon,
-    locationId
+    locationId,
+    smsMobileNumberPath: appConfig.get('notify.smsMobileNumberPath'),
+    emailDetailsPath: appConfig.get('notify.emailDetailsPath')
   })
 }
 

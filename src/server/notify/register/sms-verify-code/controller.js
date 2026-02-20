@@ -20,6 +20,9 @@ const FIVE_MINUTES_MS = FIVE_MINUTES * SIXTY_SECONDS * ONE_THOUSAND
 
 // Create a logger instance ''
 const logger = createLogger()
+const SMS_SEND_ACTIVATION_PATH = config.get('notify.smsSendActivationPath')
+const SMS_MOBILE_NUMBER_PATH = config.get('notify.smsMobileNumberPath')
+const SMS_CONFIRM_DETAILS_PATH = config.get('notify.smsConfirmDetailsPath')
 
 const buildPageTitle = (title = '', serviceName = DEFAULT_SERVICE_NAME) => {
   return `${title} - ${serviceName} - GOV.UK`
@@ -68,7 +71,7 @@ function buildErrorViewModel(
     displayBacklink: true,
     customBackLink: true,
     backLinkText: common?.backLinkText || 'Back',
-    backLinkUrl: '/notify/register/sms-send-activation',
+    backLinkUrl: SMS_SEND_ACTIVATION_PATH,
     mobileNumber,
     error: { message: errorMessage, field: FIELD_NAME },
     formData: request.payload
@@ -196,7 +199,7 @@ function handleVerificationSuccess(request, mobileNumber, h) {
   logger.info(
     `User verified code successfully for mobile number: ${mobileNumber.substring(0, 4)}****`
   )
-  return h.redirect('/notify/register/sms-confirm-details')
+  return h.redirect(SMS_CONFIRM_DETAILS_PATH)
 }
 
 /**
@@ -214,7 +217,7 @@ const handleCheckMessageRequest = (request, h, content = english) => {
 
   if (!mobileNumber) {
     // If no mobile number in session, redirect back to mobile number page ''
-    return h.redirect('/notify/register/sms-mobile-number')
+    return h.redirect(SMS_MOBILE_NUMBER_PATH)
   }
 
   const { lang, languageContent, smsVerifyCode, common, serviceName } =
@@ -249,7 +252,7 @@ const handleCheckMessageRequest = (request, h, content = english) => {
     displayBacklink: true,
     customBackLink: true,
     backLinkText: common?.backLinkText || 'Back',
-    backLinkUrl: '/notify/register/sms-send-activation',
+    backLinkUrl: SMS_SEND_ACTIVATION_PATH,
     mobileNumber,
     formData: request.yar.get('formData') || {},
     debugToken: developerHint
@@ -275,7 +278,7 @@ const handleCheckMessagePost = async (request, h, content = english) => {
   )
 
   if (!mobileNumber) {
-    return h.redirect('/notify/register/sms-mobile-number')
+    return h.redirect(SMS_MOBILE_NUMBER_PATH)
   }
 
   const submitted = (request.payload?.[FIELD_NAME] || '').trim()
@@ -297,7 +300,7 @@ const handleCheckMessagePost = async (request, h, content = english) => {
       return h.view(VIEW_PATH, vm)
     }
     logger.info('Code already verified, redirecting to confirm details')
-    return h.redirect('/notify/register/sms-confirm-details')
+    return h.redirect(SMS_CONFIRM_DETAILS_PATH)
   }
 
   const validation = validateOtpFormat(submitted, smsVerifyCode)

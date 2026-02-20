@@ -1,13 +1,17 @@
 import { handleDuplicateSubscriptionRequest } from './controller.js'
+import { config } from '../../../../config/index.js'
 
 const smsDuplicate = {
   plugin: {
     name: 'notify-sms-duplicate',
     register: async (server) => {
+      const duplicateSubscriptionPath = config.get(
+        'notify.duplicateSubscriptionPath'
+      )
       server.route([
         {
           method: 'GET',
-          path: '/notify/register/duplicate-subscription',
+          path: duplicateSubscriptionPath,
           handler: handleDuplicateSubscriptionRequest
         }
       ])

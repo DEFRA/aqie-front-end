@@ -23,13 +23,13 @@
       <p class="govuk-body">{{ description }}</p>
       
       <ul class="govuk-list govuk-list--bullet">
-        <li>when the air quality forecast in {{ location.name }} is high or very high</li>
-        <li>if a nearby monitoring site detects high or very high pollution levels anywhere in the Greater London region</li>
+        <li>{{ content.bullet1 | replace('{location}', location.name) }}</li>
+        <li>{{ content.bullet2 }}</li>
       </ul>
 
       <form method="post">
         {{ govukButton({
-          text: "Continue",
+          text: content.continueButton,
           type: "submit"
         }) }}
       </form>

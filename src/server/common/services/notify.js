@@ -205,6 +205,60 @@ async function postToBackend(request, apiPath, body, customBaseUrl = null) {
 }
 
 /**
+ * Make GET request to backend notify API with automatic local/remote handling ''
+ * @param {Object} request - Hapi request object (optional)
+ * @param {string} apiPath - API path
+ * @param {string} customBaseUrl - Optional custom base URL to override default notify.baseUrl
+ * @returns {Object} Response object
+ */
+async function getFromBackend(request, apiPath, customBaseUrl = null) {
+  const enabled = config.get('notify.enabled')
+  const baseUrl = customBaseUrl || config.get('notify.baseUrl')
+
+  if (!enabled || !baseUrl) {
+    const notifyDisabledData = {
+      apiPath,
+      enabled,
+      baseUrl: baseUrl || '[not configured]'
+    }
+    logger.warn(
+      `Notify API disabled or baseUrl missing; skipping: ${JSON.stringify(notifyDisabledData)}`,
+      notifyDisabledData
+    )
+    return { skipped: true }
+  }
+
+  try {
+    const { url, fetchOptions } = buildBackendApiFetchOptions(
+      request,
+      baseUrl,
+      apiPath,
+      { method: 'GET' }
+    )
+
+    const [status, data] = await catchFetchError(url, fetchOptions)
+
+    if (status !== HTTP_STATUS_OK) {
+      const msg = `Notify API error ${status}`
+      const notifyErrorData = {
+        url,
+        status,
+        responseBody: data,
+        bodyStringified: JSON.stringify(data)?.slice(0, MAX_ERROR_BODY_LENGTH)
+      }
+      logger.warn(`${msg}: ${JSON.stringify(notifyErrorData)}`, notifyErrorData)
+
+      return { ok: false, status, body: data }
+    }
+
+    return { ok: true, data }
+  } catch (err) {
+    logger.error('Notify API request failed', err)
+    return { ok: false, error: err }
+  }
+}
+
+/**
  * Send email verification code via backend API ''
  * @param {string} emailAddress - Email address
  * @param {string} code - Verification code
@@ -213,6 +267,102 @@ async function postToBackend(request, apiPath, body, customBaseUrl = null) {
 export async function sendEmailCode(emailAddress, code, request = null) {
   const emailPath = config.get('notify.emailPath')
   return postToBackend(request, emailPath, { emailAddress, code })
+}
+
+/**
+ * Generate email verification link via backend API ''
+ * @param {string} emailAddress - Email address
+ * @param {string} location - Location name
+ * @param {string|number} lat - Latitude coordinate
+ * @param {string|number} long - Longitude coordinate
+ * @param {Object} request - Hapi request object (optional)
+ */
+export async function generateEmailLink(
+  emailAddress,
+  location,
+  lat,
+  long,
+  request = null
+) {
+  const emailGenerateLinkPath = config.get('notify.emailGenerateLinkPath')
+  const payload = {
+    emailAddress,
+    alertType: 'email',
+    location,
+    // '' Only include lat/long if they are valid numbers to avoid backend 400
+    ...(lat !== null && lat !== undefined ? { lat: parseFloat(lat) } : {}),
+    ...(long !== null && long !== undefined ? { long: parseFloat(long) } : {})
+  }
+  return postToBackend(request, emailGenerateLinkPath, payload)
+}
+
+/**
+ * Validate email verification link via backend API ''
+ * @param {string} token - Link token
+ * @param {Object} request - Hapi request object (optional)
+ */
+export async function validateEmailLink(token, request = null) {
+  const emailValidateLinkPath = config.get('notify.emailValidateLinkPath')
+  const normalizedPath = emailValidateLinkPath.replace(/\/$/, '')
+  const apiPath = `${normalizedPath}/${encodeURIComponent(token)}`
+  return getFromBackend(request, apiPath)
+}
+
+/**
+ * Setup email alert subscription via backend API ''
+ * @param {string} emailAddress - Email address
+ * @param {string} location - Location for alerts
+ * @param {string} locationId - Location ID
+ * @param {string|number} lat - Latitude coordinate
+ * @param {string|number} long - Longitude coordinate
+ * @param {Object} request - Hapi request object (optional)
+ * @returns {Promise<Object>} { ok: boolean, data: subscription details }
+ */
+export async function setupEmailAlert(
+  emailAddress,
+  location,
+  locationId,
+  lat,
+  long,
+  request = null
+) {
+  const setupPath = config.get('notify.setupAlertPath')
+  const alertBackendBaseUrl = config.get('notify.alertBackendBaseUrl')
+  const mockSetupAlertEnabled = config.get('notify.mockSetupAlertEnabled')
+
+  const latitude = lat
+    ? Math.round(Number.parseFloat(lat) * 1000000) / 1000000
+    : undefined
+  const longitude = long
+    ? Math.round(Number.parseFloat(long) * 1000000) / 1000000
+    : undefined
+
+  const sanitizedLocation = sanitizeLocationName(location)
+
+  const payload = {
+    emailAddress,
+    alertType: 'email',
+    location: sanitizedLocation,
+    locationId,
+    lat: latitude,
+    long: longitude
+  }
+
+  if (mockSetupAlertEnabled) {
+    logger.info('Mock setup alert enabled, bypassing backend for email setup')
+    return {
+      ok: true,
+      data: {
+        status: 'mock_alert_created',
+        emailAddress: emailAddress ? '***' : undefined,
+        locationId,
+        mock: true
+      },
+      mock: true
+    }
+  }
+
+  return postToBackend(request, setupPath, payload, alertBackendBaseUrl)
 }
 
 /**

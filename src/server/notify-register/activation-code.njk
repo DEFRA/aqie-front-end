@@ -58,26 +58,21 @@
                  value="{{ activationCode or '' }}">
         </div>
         
-        <p class="govuk-body">The code expires in 24 hours.</p>
+        <p class="govuk-body">{{ content.codeExpiry }}</p>
 
         {{ govukDetails({
-          summaryText: "Not received a text message?",
-          html: '<p class="govuk-body">Text messages sometimes take a few minutes to arrive.</p>
-                 <p class="govuk-body">If you do not receive a text message after 10 minutes, check that you have:</p>
-                 <ul class="govuk-list govuk-list--bullet">
-                   <li>entered your number correctly</li>
-                   <li>mobile phone signal</li>
-                 </ul>'
+          summaryText: content.notReceivedSummary,
+          html: '<p class="govuk-body">' + content.notReceivedDelay + '</p><p class="govuk-body">' + content.notReceivedCheckPrefix + '</p><ul class="govuk-list govuk-list--bullet"><li>' + content.notReceivedBullet1 + '</li><li>' + content.notReceivedBullet2 + '</li></ul>'
         }) }}
 
         {{ govukButton({
-          text: "Continue",
+          text: content.continueButton,
           type: "submit"
         }) }}
       </form>
       
       <p class="govuk-body">
-        <a href="/notify/confirm-mobile" class="govuk-link">Send a new activation code</a>
+        <a href="/notify/confirm-mobile" class="govuk-link">{{ content.sendNewCode }}</a>
       </p>
     </div>
   </div>

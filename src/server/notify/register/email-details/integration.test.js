@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import { createServer } from '../../../index.js'
+import { config } from '../../../../config/index.js'
 
 // Integration tests for email-details route ''
 describe('email-details integration', () => {
@@ -42,6 +43,6 @@ describe('email-details integration', () => {
       payload: { notifyByEmail: 'user@example.com' }
     })
     expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toBe('/notify/register/email-send-activation')
+    expect(res.headers.location).toBe(config.get('notify.emailVerifyEmailPath'))
   })
 })

@@ -52,10 +52,10 @@ export function buildBackendApiRequest(
   apiPath,
   additionalHeaders = {}
 ) {
-  const isLocal = request ? isLocalRequest(request) : false
+  const isProduction = config.get('isProduction')
 
-  if (isLocal) {
-    // Local development: use ephemeral URL with CDP_X_API_KEY
+  if (!isProduction) {
+    // '' Non-production: use ephemeral URL with CDP_X_API_KEY
     const ephemeralUrl = getEphemeralDevApiUrl()
     const cdpApiKey = getCdpApiKey()
 
@@ -78,7 +78,7 @@ export function buildBackendApiRequest(
 
     return { url, headers }
   } else {
-    // Production/remote: use production base URL
+    // '' Production: use service base URL without auth headers
     const baseUrl = productionBaseUrl.replace(/\/$/, '')
     const path = apiPath.startsWith('/') ? apiPath : `/${apiPath}`
     const url = `${baseUrl}${path}`

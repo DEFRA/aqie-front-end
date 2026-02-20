@@ -288,6 +288,90 @@ export const config = convict({
       default: '/send-email-code',
       env: 'NOTIFY_EMAIL_PATH'
     },
+    emailGenerateLinkPath: {
+      doc: 'Backend API path for generating email verification links',
+      format: String,
+      default: '/subscribe/generate-link',
+      env: 'NOTIFY_EMAIL_GENERATE_LINK_PATH'
+    },
+    emailValidateLinkPath: {
+      doc: 'Backend API path for validating email verification links',
+      format: String,
+      default: '/subscribe/validate-link',
+      env: 'NOTIFY_EMAIL_VALIDATE_LINK_PATH'
+    },
+    emailDetailsPath: {
+      doc: 'Frontend route for entering email address',
+      format: String,
+      default: '/notify/register/email-details',
+      env: 'NOTIFY_EMAIL_DETAILS_PATH'
+    },
+    emailVerifyEmailPath: {
+      doc: 'Frontend route for check your email page',
+      format: String,
+      default: '/notify/register/email-verify-email',
+      env: 'NOTIFY_EMAIL_VERIFY_EMAIL_PATH'
+    },
+    emailConfirmLinkPath: {
+      doc: 'Frontend route for email link callback',
+      format: String,
+      default: '/notify/register/email-confirm-link',
+      env: 'NOTIFY_EMAIL_CONFIRM_LINK_PATH'
+    },
+    emailSendActivationPath: {
+      doc: 'Frontend route for resending email activation link',
+      format: String,
+      default: '/notify/register/email-send-activation',
+      env: 'NOTIFY_EMAIL_SEND_ACTIVATION_PATH'
+    },
+    alertsSuccessPath: {
+      doc: 'Frontend route for alerts success page',
+      format: String,
+      default: '/notify/register/alerts-success',
+      env: 'NOTIFY_ALERTS_SUCCESS_PATH'
+    },
+    smsMobileNumberPath: {
+      doc: 'Frontend route for SMS mobile number entry',
+      format: String,
+      default: '/notify/register/sms-mobile-number',
+      env: 'NOTIFY_SMS_MOBILE_NUMBER_PATH'
+    },
+    smsSendActivationPath: {
+      doc: 'Frontend route for sending SMS activation code',
+      format: String,
+      default: '/notify/register/sms-send-activation',
+      env: 'NOTIFY_SMS_SEND_ACTIVATION_PATH'
+    },
+    smsVerifyCodePath: {
+      doc: 'Frontend route for SMS verify code page',
+      format: String,
+      default: '/notify/register/sms-verify-code',
+      env: 'NOTIFY_SMS_VERIFY_CODE_PATH'
+    },
+    smsConfirmDetailsPath: {
+      doc: 'Frontend route for confirming SMS alert details',
+      format: String,
+      default: '/notify/register/sms-confirm-details',
+      env: 'NOTIFY_SMS_CONFIRM_DETAILS_PATH'
+    },
+    smsSuccessPath: {
+      doc: 'Frontend route for SMS alerts success page',
+      format: String,
+      default: '/notify/register/sms-success',
+      env: 'NOTIFY_SMS_SUCCESS_PATH'
+    },
+    duplicateSubscriptionPath: {
+      doc: 'Frontend route for duplicate subscription page',
+      format: String,
+      default: '/notify/register/sms-duplicate',
+      env: 'NOTIFY_DUPLICATE_SUBSCRIPTION_PATH'
+    },
+    emailDuplicatePath: {
+      doc: 'Frontend route for duplicate email subscription page',
+      format: String,
+      default: '/notify/register/email-duplicate',
+      env: 'NOTIFY_EMAIL_DUPLICATE_PATH'
+    },
     smsPath: {
       doc: 'Backend API path for generating OTP (SMS)',
       format: String,

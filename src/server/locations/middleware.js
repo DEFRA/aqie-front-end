@@ -264,8 +264,9 @@ const processNILocationAsync = async (request, server, sessionId, options) => {
       }
 
       const isSmsFlow = notificationFlow === 'sms'
+      const smsConfirmDetailsPath = config.get('notify.smsConfirmDetailsPath')
       const redirectUrl = isSmsFlow
-        ? `/notify/register/sms-confirm-details?lang=${lang}`
+        ? `${smsConfirmDetailsPath}?lang=${lang}`
         : `/location/${locationData.urlRoute}?lang=${lang}`
 
       const niLatLon = convertPointToLonLat(getNIPlaces.results, 'ni-location')
