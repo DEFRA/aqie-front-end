@@ -244,7 +244,7 @@
               "host": ["{{ephemeralUrl}}"],
               "path": ["{{alertService}}", "setup-alert"]
             },
-            "description": "Test duplicate alert handling by submitting the same location and phone number twice. The second request should return a 409 Conflict status.\n\n**Expected Behavior:**\n1. First call: Returns 200/201 - Alert created\n2. Second call: Returns 409 - Alert already exists\n\n**Frontend Handling:**\nWhen 409 is received, the user is redirected to `/notify/register/duplicate-subscription` page showing:\n- \"This alert has already been set up\"\n- \"You are already getting alerts for [location] to [phone]\"\n- Link to search for a different location"
+            "description": "Test duplicate alert handling by submitting the same location and phone number twice. The second request should return a 409 Conflict status.\n\n**Expected Behavior:**\n1. First call: Returns 200/201 - Alert created\n2. Second call: Returns 409 - Alert already exists\n\n**Frontend Handling:**\nWhen 409 is received, the user is redirected to `/notify/register/sms-duplicate` page showing:\n- \"This alert has already been set up\"\n- \"You are already getting alerts for [location] to [phone]\"\n- Link to search for a different location"
           },
           "response": []
         },

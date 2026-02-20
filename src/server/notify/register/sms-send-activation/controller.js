@@ -4,11 +4,13 @@ import { english } from '../../../data/en/en.js'
 import { welsh } from '../../../data/cy/cy.js'
 import { LANG_CY } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
+import { config } from '../../../../config/index.js'
 import { sendSmsCode } from '../../../common/services/notify.js'
 import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
 
 // Constants ''
-const MOBILE_NUMBER_PAGE_PATH = '/notify/register/sms-mobile-number'
+const MOBILE_NUMBER_PAGE_PATH = config.get('notify.smsMobileNumberPath')
+const SMS_VERIFY_CODE_PATH = config.get('notify.smsVerifyCodePath')
 const DEFAULT_SERVICE_NAME = 'Check air quality'
 
 // Create a logger instance ''
@@ -132,7 +134,7 @@ export const handleSendActivationPost = async (request, h) => {
 
   if (!mobileNumber) {
     // If no mobile number in session, redirect back to mobile number page ''
-    return h.redirect('/notify/register/sms-mobile-number')
+    return h.redirect(MOBILE_NUMBER_PAGE_PATH)
   }
 
   // Store activation timestamp and initialize OTP generation sequence ''
@@ -184,5 +186,5 @@ export const handleSendActivationPost = async (request, h) => {
     `SMS activation code request sent for mobile number: ${mobileNumber.substring(0, 4)}****`
   )
 
-  return h.redirect('/notify/register/sms-verify-code')
+  return h.redirect(SMS_VERIFY_CODE_PATH)
 }

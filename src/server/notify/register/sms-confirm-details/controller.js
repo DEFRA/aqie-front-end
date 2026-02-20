@@ -4,6 +4,7 @@ import { welsh } from '../../../data/cy/cy.js'
 import { LANG_CY, NOT_PROVIDED } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
+import { config } from '../../../../config/index.js'
 
 // Constants ''
 const LOCATION_PLACEHOLDER = '{location}'
@@ -35,9 +36,10 @@ const buildSmsMobileNumberUrl = ({
   }
 
   const queryString = queryParams.toString()
+  const smsMobileNumberPath = config.get('notify.smsMobileNumberPath')
   return queryString
-    ? `/notify/register/sms-mobile-number?${queryString}`
-    : '/notify/register/sms-mobile-number'
+    ? `${smsMobileNumberPath}?${queryString}`
+    : smsMobileNumberPath
 }
 
 const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
@@ -158,7 +160,7 @@ const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
       displayBacklink: true,
       customBackLink: true,
       backLinkText: common?.backLinkText || 'Back',
-      backLinkUrl: '/notify/register/sms-verify-code',
+      backLinkUrl: config.get('notify.smsVerifyCodePath'),
       common,
       content: smsConfirmDetails,
       changeMobileNumberUrl,
@@ -278,7 +280,7 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
       request.yar.set('maxAlertsError', true)
       request.yar.set('maskedPhoneNumber', maskedNumber)
       request.yar.clear('mobileNumber')
-      return h.redirect('/notify/register/sms-mobile-number')
+      return h.redirect(config.get('notify.smsMobileNumberPath'))
     }
 
     // '' Handle 409 Conflict - Alert already exists for this location
@@ -292,7 +294,7 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
       // '' Keep notificationFlow active so user can search for different location
       // '' Don't clear it here - let user continue the flow with a different location
       // '' Redirect to duplicate subscription page
-      return h.redirect('/notify/register/duplicate-subscription')
+      return h.redirect(config.get('notify.duplicateSubscriptionPath'))
     }
 
     // '' Handle other errors - redirect back to mobile number page
@@ -306,7 +308,7 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
     // '' Store error and redirect back to mobile number page
     request.yar.set('setupAlertError', true)
     request.yar.clear('mobileNumber')
-    return h.redirect('/notify/register/sms-mobile-number')
+    return h.redirect(config.get('notify.smsMobileNumberPath'))
   }
 
   logger.info('Alert setup successful', { data: result.data })
@@ -315,7 +317,7 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
   request.yar.set('alertDetailsConfirmed', true)
 
   // Redirect to success page ''
-  return h.redirect('/notify/register/sms-success')
+  return h.redirect(config.get('notify.smsSuccessPath'))
 }
 
 export { handleConfirmAlertDetailsRequest, handleConfirmAlertDetailsPost }

@@ -1,0 +1,15 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full odd-page">
+      <h1 class="govuk-heading-l">{{ content.heading }}</h1>
+
+      <p class="govuk-body">{{ content.description }}</p>
+
+      <p class="govuk-body">
+        <a href="/search-location?fromEmailFlow=true" class="govuk-link">{{ content.searchLink }}</a> {{ content.searchText }}
+      </p>
+    </div>
+  </div>
+{% endblock %}

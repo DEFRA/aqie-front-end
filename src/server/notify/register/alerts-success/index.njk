@@ -3,32 +3,32 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-panel govuk-panel--confirmation">
-        <h1 class="govuk-panel__title">You have successfully signed up for air quality alerts</h1>
+        <h1 class="govuk-panel__title">{{ content.panelTitle }}</h1>
         <div class="govuk-panel__body">
-          You will receive email alerts at<br><strong>{{ emailAddress }}</strong>
+          {{ content.panelBodyPrefix }}<br><strong>{{ emailAddress }}</strong>
         </div>
       </div>
 
-      <p class="govuk-body">We have sent you a confirmation email.</p>
+      <p class="govuk-body">{{ content.confirmationEmail }}</p>
 
-      <h2 class="govuk-heading-m">What happens next</h2>
-      <p class="govuk-body">You will receive email alerts when:</p>
+      <h2 class="govuk-heading-m">{{ content.whatHappensNextHeading }}</h2>
+      <p class="govuk-body">{{ content.alertsWhenText }}</p>
       <ul class="govuk-list govuk-list--bullet">
-        <li>air pollution levels are forecast to be high or very high in your area</li>
-        <li>there are rapid changes in air quality that could affect your health</li>
+        <li>{{ content.alertBullet1 }}</li>
+        <li>{{ content.alertBullet2 }}</li>
       </ul>
 
       <div class="govuk-inset-text">
-        <p>You can unsubscribe from these alerts at any time using the unsubscribe link in any alert email.</p>
+        <p>{{ content.unsubscribeText }}</p>
       </div>
 
-      <h2 class="govuk-heading-m">Your alert details</h2>
+      <h2 class="govuk-heading-m">{{ content.alertDetailsHeading }}</h2>
       {# '' Summary list showing alert details #}
       {{ govukSummaryList({
         rows: [
           {
             key: {
-              text: "Email address"
+              text: content.emailAddressKey
             },
             value: {
               text: emailAddress
@@ -36,7 +36,7 @@
           },
           {
             key: {
-              text: "Location"
+              text: content.locationKey
             },
             value: {
               text: location
@@ -46,16 +46,17 @@
       }) }}
 
       <form action="/notify/register/alerts-success" method="post">
-        <button type="submit" class="govuk-button">Return to Check air quality</button>
+        <button type="submit" class="govuk-button">{{ content.returnButton }}</button>
       </form>
 
-      <h2 class="govuk-heading-m">Get more information</h2>
-      <p class="govuk-body">You can:</p>
+      <h2 class="govuk-heading-m">{{ content.moreInfoHeading }}</h2>
+      <p class="govuk-body">{{ content.moreInfoIntro }}</p>
       <ul class="govuk-list govuk-list--bullet">
-        <li><a href="/" class="govuk-link">check current air quality in your area</a></li>
-        <li><a href="/help" class="govuk-link">find out more about air pollution and health</a></li>
-        <li><a href="/privacy" class="govuk-link">read our privacy policy</a></li>
+        <li><a href="/" class="govuk-link">{{ content.moreInfoLink1 }}</a></li>
+        <li><a href="/help" class="govuk-link">{{ content.moreInfoLink2 }}</a></li>
+        <li><a href="/privacy" class="govuk-link">{{ content.moreInfoLink3 }}</a></li>
       </ul>
     </div>
   </div>
 {% endblock %}
+

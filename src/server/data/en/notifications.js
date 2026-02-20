@@ -119,6 +119,35 @@ export const notificationTranslations = {
       enterCodeExample: 'Enter your 5 digit activation code, like 01234'
     }
   },
+  // Email confirm link callback page
+  emailConfirmLink: {
+    errorPageTitle:
+      'There is a problem - Check your email - Check air quality - GOV.UK',
+    errorHeading: 'There is a problem with your activation link',
+    errorMissingToken:
+      'The activation link is missing or incomplete. Please request a new one.',
+    errorInvalidToken:
+      'This activation link is invalid or has expired. Please request a new one.',
+    errorSetupAlert:
+      'We could not finish setting up your alert. Please request a new activation link.',
+    requestNewLinkText: 'Request a new activation link',
+    changeEmailLinkText: 'Use a different email address'
+  },
+  // Email verify email page
+  emailVerifyEmail: {
+    pageTitle: 'Check your email',
+    heading: 'Check your email',
+    sentLinkText: "We've sent an activation link to {emailAddress}.",
+    confirmLinkText:
+      'Use the link in the email to confirm you want to get email notifications about air pollution in {location}.',
+    detailsSummary: 'Not received an email?',
+    detailsIntro:
+      'Emails sometimes take a few minutes to arrive. Check your spam or junk folder if it has not arrived.',
+    detailsBulletEmail: 'the email address shown here is correct',
+    detailsBulletSpam: 'it has not been filtered into your spam or junk folder',
+    requestNewLinkText: 'Request a new activation link',
+    setupTextMessageLinkText: 'Set up a text message alert instead'
+  },
   // SMS send new code page
   smsSendNewCode: {
     pageTitle: 'Request a new activation code',
@@ -142,6 +171,15 @@ export const notificationTranslations = {
     searchLinkText: 'Search for town or postcode',
     searchText: 'to set up a different air pollution alert.'
   },
+  // Email duplicate page
+  emailDuplicate: {
+    pageTitle: 'This alert has already been set up',
+    heading: 'This alert has already been set up',
+    description:
+      'You are already getting alerts for {location} to {emailAddress}.',
+    searchLinkText: 'Search for town or postcode',
+    searchText: 'to set up a different air pollution alert.'
+  },
   // SMS success page
   smsSuccess: {
     pageTitle: 'You have successfully signed up for air quality alerts',
@@ -153,7 +191,7 @@ export const notificationTranslations = {
       'If you want to set up another alert for {mobileNumber} you can',
     anotherAlertLinkText: 'search for another location',
     anotherAlertSuffix: '.',
-    researchHeading: 'Help us make our service better',
+    researchHeading: 'Help improve this service',
     researchSignupPrefix:
       'This is a new service and we are looking for people to share their feedback with us.',
     researchSignupLinkText:
@@ -162,6 +200,53 @@ export const notificationTranslations = {
     researchPrivacyPrefix: 'By signing up, you agree to our ',
     researchPrivacyLinkText: 'privacy statement',
     researchPrivacySuffix:
-      ' and consent to being contacted for research purposes.'
+      ' and consent to being contacted for research purposes.',
+    researchRadioLegend: 'Would you like to help improve this service?',
+    researchRadioHint: 'Select one option',
+    researchOptionYes: 'Yes',
+    researchOptionNo: 'No',
+    researchContinueButton: 'Continue'
+  },
+  // Email alerts success page
+  emailSuccess: {
+    panelTitle: 'You have successfully signed up for air quality alerts',
+    panelBodyPrefix: 'You will receive email alerts at',
+    confirmationEmail: 'We have sent you a confirmation email.',
+    whatHappensNextHeading: 'What happens next',
+    alertsWhenText: 'You will receive email alerts when:',
+    alertBullet1:
+      'air pollution levels are forecast to be high or very high in your area',
+    alertBullet2:
+      'there are rapid changes in air quality that could affect your health',
+    unsubscribeText:
+      'You can unsubscribe from these alerts at any time using the unsubscribe link in any alert email.',
+    alertDetailsHeading: 'Your alert details',
+    emailAddressKey: 'Email address',
+    locationKey: 'Location',
+    returnButton: 'Return to Check air quality',
+    moreInfoHeading: 'Get more information',
+    moreInfoIntro: 'You can:',
+    moreInfoLink1: 'check current air quality in your area',
+    moreInfoLink2: 'find out more about air pollution and health',
+    moreInfoLink3: 'read our privacy policy'
+  },
+  // Activation code page (legacy SMS journey)
+  activationCode: {
+    codeExpiry: 'The code expires in 24 hours.',
+    notReceivedSummary: 'Not received a text message?',
+    notReceivedDelay: 'Text messages sometimes take a few minutes to arrive.',
+    notReceivedCheckPrefix:
+      'If you do not receive a text message after 10 minutes, check that you have:',
+    notReceivedBullet1: 'entered your number correctly',
+    notReceivedBullet2: 'mobile phone signal',
+    continueButton: 'Continue',
+    sendNewCode: 'Send a new activation code'
+  },
+  // Confirm alert page (legacy SMS journey)
+  confirmAlert: {
+    bullet1: 'when the air quality forecast in {location} is high or very high',
+    bullet2:
+      'if a nearby monitoring site detects high or very high pollution levels anywhere in the Greater London region',
+    continueButton: 'Continue'
   }
 }

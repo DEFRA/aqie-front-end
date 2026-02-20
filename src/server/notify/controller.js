@@ -2,6 +2,7 @@ import { english } from '../data/en/en.js'
 import { LANG_EN } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
+import { config } from '../../config/index.js'
 
 // Create a logger instance ''
 const logger = createLogger()
@@ -59,7 +60,7 @@ const handleNotifyPost = (request, h) => {
   }
 
   // Redirect to verification code page ''
-  return h.redirect('/notify/register/sms-verify-code')
+  return h.redirect(config.get('notify.smsVerifyCodePath'))
 }
 
 const notifyController = {

@@ -13,49 +13,52 @@
         html: successMessage
       }) }}
       
-      <p class="govuk-body">{{ description }}</p>
-      
+      <p class="govuk-body">{{ content.confirmationText }}</p>
+
       <p class="govuk-body">
-        If you want to set up another alert for <strong>{{ mobilePhone }}</strong> you can 
-        <a href="/search-location" class="govuk-link">search for another location</a>.
+        {{ content.anotherAlertPrefix | replace('{mobileNumber}', phoneNumber) }} <a href="/search-location" class="govuk-link">{{ content.anotherAlertLinkText }}</a>{{ content.anotherAlertSuffix }}
       </p>
-      
+
       <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
-      
-      <h2 class="govuk-heading-m">Help us make our service better</h2>
-      
+
+      <h2 class="govuk-heading-m">{{ content.researchHeading }}</h2>
+
       <p class="govuk-body">
-        Join our user research panel to share your feedback and contribute to the ongoing improvement of this service. 
-        By signing up, you agree to our <a href="/privacy" class="govuk-link">privacy statement</a> and consent to being contacted for research purposes.
+        {{ content.researchSignupPrefix }}
+        <a href="#" class="govuk-link">{{ content.researchSignupLinkText }}</a>{{ content.researchSignupSuffix }}
       </p>
-      
+
+      <p class="govuk-body">
+        {{ content.researchPrivacyPrefix }}<a href="/privacy" class="govuk-link">{{ content.researchPrivacyLinkText }}</a>{{ content.researchPrivacySuffix }}
+      </p>
+
       <form method="post" action="#research-panel">
         {{ govukRadios({
           name: "research-panel",
           fieldset: {
             legend: {
-              text: "Would you like to help improve this service?",
+              text: content.researchRadioLegend,
               isPageHeading: false,
               classes: "govuk-fieldset__legend--s"
             }
           },
           hint: {
-            text: "Select one option"
+            text: content.researchRadioHint
           },
           items: [
             {
               value: "yes",
-              text: "Yes"
+              text: content.researchOptionYes
             },
             {
-              value: "no", 
-              text: "No"
+              value: "no",
+              text: content.researchOptionNo
             }
           ]
         }) }}
-        
+
         {{ govukButton({
-          text: "Continue",
+          text: content.researchContinueButton,
           type: "submit"
         }) }}
       </form>

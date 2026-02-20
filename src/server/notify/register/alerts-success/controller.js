@@ -41,6 +41,7 @@ export const handleAlertsSuccessRequest = (request, h, content = english) => {
     phaseBanner,
     backlink,
     cookieBanner,
+    content: english.emailSuccess,
     contactMethod: method,
     contactValue: value,
     mobileNumber: method === 'sms' ? value : undefined,

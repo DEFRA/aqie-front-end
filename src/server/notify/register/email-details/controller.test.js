@@ -3,6 +3,7 @@ import {
   handleEmailDetailsRequest,
   handleEmailDetailsPost
 } from './controller.js'
+import { config } from '../../../../config/index.js'
 
 // Simple harness mocks ''
 const mockH = () => {
@@ -46,7 +47,7 @@ describe('email-details controller', () => {
     const req = mockRequest({ notifyByEmail: 'user@example.com' }, session)
     const h = mockH()
     const res = await handleEmailDetailsPost(req, h)
-    expect(res.redirect).toBe('/notify/register/email-send-activation')
+    expect(res.redirect).toBe(config.get('notify.emailVerifyEmailPath'))
     expect(session.emailAddress).toBe('user@example.com')
   })
 })

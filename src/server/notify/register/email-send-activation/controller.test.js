@@ -3,12 +3,27 @@ import {
   handleEmailSendActivationRequest,
   handleEmailSendActivationPost
 } from './controller.js'
+import { config } from '../../../../config/index.js'
+import { generateEmailLink } from '../../../common/services/notify.js'
+
+vi.mock('../../../common/services/notify.js', () => ({
+  generateEmailLink: vi.fn()
+}))
 
 describe('Email Send Activation Controller', () => {
-  test('handleEmailSendActivationRequest returns correct view data when email exists', () => {
+  test('handleEmailSendActivationRequest redirects when email exists', async () => {
     const mockRequest = {
       yar: {
-        get: vi.fn().mockReturnValue('user@example.com')
+        get: vi.fn(
+          (key) =>
+            ({
+              emailAddress: 'user@example.com',
+              location: 'Test Location',
+              latitude: 51.5,
+              longitude: -0.12
+            })[key]
+        ),
+        set: vi.fn()
       }
     }
 
@@ -17,19 +32,27 @@ describe('Email Send Activation Controller', () => {
       redirect: vi.fn()
     }
 
-    handleEmailSendActivationRequest(mockRequest, mockH)
+    generateEmailLink.mockResolvedValue({ ok: true })
+    await handleEmailSendActivationRequest(mockRequest, mockH)
 
     expect(mockRequest.yar.get).toHaveBeenCalledWith('emailAddress')
-    expect(mockH.view).toHaveBeenCalledWith(
-      'notify/register/email-send-activation/index',
-      expect.objectContaining({
-        emailAddress: 'user@example.com'
-      })
+    expect(generateEmailLink).toHaveBeenCalledWith(
+      'user@example.com',
+      'Test Location',
+      51.5,
+      -0.12,
+      mockRequest
     )
-    expect(mockH.redirect).not.toHaveBeenCalled()
+    expect(mockRequest.yar.set).toHaveBeenCalledWith(
+      'emailActivationSent',
+      expect.any(Number)
+    )
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      config.get('notify.emailVerifyEmailPath')
+    )
   })
 
-  test('handleEmailSendActivationRequest redirects when no email in session', () => {
+  test('handleEmailSendActivationRequest redirects when no email in session', async () => {
     const mockRequest = {
       yar: {
         get: vi.fn().mockReturnValue('')
@@ -41,10 +64,10 @@ describe('Email Send Activation Controller', () => {
       redirect: vi.fn()
     }
 
-    handleEmailSendActivationRequest(mockRequest, mockH)
+    await handleEmailSendActivationRequest(mockRequest, mockH)
 
     expect(mockH.redirect).toHaveBeenCalledWith(
-      '/notify/register/email-details'
+      config.get('notify.emailDetailsPath')
     )
     expect(mockH.view).not.toHaveBeenCalled()
   })
@@ -61,6 +84,7 @@ describe('Email Send Activation Controller', () => {
       redirect: vi.fn()
     }
 
+    generateEmailLink.mockResolvedValue({ ok: true })
     await handleEmailSendActivationPost(mockRequest, mockH)
 
     expect(mockRequest.yar.get).toHaveBeenCalledWith('emailAddress')
@@ -69,7 +93,7 @@ describe('Email Send Activation Controller', () => {
       expect.any(Number)
     )
     expect(mockH.redirect).toHaveBeenCalledWith(
-      '/notify/register/email-verify-code'
+      config.get('notify.emailVerifyEmailPath')
     )
   })
 
@@ -88,7 +112,7 @@ describe('Email Send Activation Controller', () => {
     await handleEmailSendActivationPost(mockRequest, mockH)
 
     expect(mockH.redirect).toHaveBeenCalledWith(
-      '/notify/register/email-details'
+      config.get('notify.emailDetailsPath')
     )
     expect(mockRequest.yar.set).not.toHaveBeenCalled()
   })

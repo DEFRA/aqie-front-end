@@ -1,0 +1,1110 @@
+{
+  "info": {
+    "_postman_id": "037a14c2-7803-433c-8d18-c7925eb2798f",
+    "name": "AQIE-Alerts-New-Saranya",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "32225821"
+  },
+  "item": [
+    {
+      "name": "Dev-SetUpSMSForAlert",
+      "item": [
+        {
+          "name": "generate-otp",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "https://aqie-notify-service.dev.cdp-int.defra.cloud/subscribe/generate-otp",
+              "protocol": "https",
+              "host": [
+                "aqie-notify-service",
+                "dev",
+                "cdp-int",
+                "defra",
+                "cloud"
+              ],
+              "path": ["subscribe", "generate-otp"]
+            }
+          },
+          "response": [
+            {
+              "name": "happypath",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n          \"phoneNumber\": \"+447469296586\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://aqie-notify-service.dev.cdp-int.defra.cloud/subscribe/generate-otp",
+                  "protocol": "https",
+                  "host": [
+                    "aqie-notify-service",
+                    "dev",
+                    "cdp-int",
+                    "defra",
+                    "cloud"
+                  ],
+                  "path": ["subscribe", "generate-otp"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "Text",
+              "header": [
+                {
+                  "key": "Date",
+                  "value": "Thu, 25 Sep 2025 09:50:55 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "78"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "strict-transport-security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "x-frame-options",
+                  "value": "DENY"
+                },
+                {
+                  "key": "x-xss-protection",
+                  "value": "1; mode=block"
+                },
+                {
+                  "key": "x-download-options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "X-cdp-request-id",
+                  "value": "05ea1da238436990524a815def8866f7"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"notificationId\": \"8c778cd0-df1f-4eb4-83e3-5ae6798f1e5d\",\n    \"status\": \"submitted\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "validate-otp",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n          \"phoneNumber\": \"+447469296586\",\r\n          \"otp\": \"96620\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://aqie-notify-service.dev.cdp-int.defra.cloud/subscribe/validate-otp",
+              "protocol": "https",
+              "host": [
+                "aqie-notify-service",
+                "dev",
+                "cdp-int",
+                "defra",
+                "cloud"
+              ],
+              "path": ["subscribe", "validate-otp"]
+            }
+          },
+          "response": [
+            {
+              "name": "happypath",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n          \"phoneNumber\": \"+447469296586\",\r\n          \"otp\": \"96620\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://aqie-notify-service.dev.cdp-int.defra.cloud/subscribe/validate-otp",
+                  "protocol": "https",
+                  "host": [
+                    "aqie-notify-service",
+                    "dev",
+                    "cdp-int",
+                    "defra",
+                    "cloud"
+                  ],
+                  "path": ["subscribe", "validate-otp"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "Text",
+              "header": [
+                {
+                  "key": "Date",
+                  "value": "Thu, 25 Sep 2025 09:53:40 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "59"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "strict-transport-security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "x-frame-options",
+                  "value": "DENY"
+                },
+                {
+                  "key": "x-xss-protection",
+                  "value": "1; mode=block"
+                },
+                {
+                  "key": "x-download-options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "X-cdp-request-id",
+                  "value": "d3d6e9858bc20be24910af0316b8a354"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"message\": \"+447469296586 has been validated successfully\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "user-setup-alert-by-sms",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"phoneNumber\": \"07469296586\",\r\n  \"alertType\": \"sms\",\r\n  \"location\": \"tw183ht\",\r\n  \"lat\": 0.789,\r\n  \"long\": -0.876\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3001/setup-alert",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3001",
+              "path": ["setup-alert"]
+            }
+          },
+          "response": [
+            {
+              "name": "duplicate-email-location",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept-Encoding",
+                    "value": "*",
+                    "type": "text"
+                  },
+                  {
+                    "key": "x-api-key",
+                    "value": "{{xApiKey}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"emailAddress\": \"jayamurugan.parasuraman@cognizant.com\",\r\n  \"alertType\": \"email\",\r\n  \"location\": \"tw183ht\",\r\n  \"lat\": 0.789,\r\n  \"long\": -0.876\r\n}"
+                },
+                "url": {
+                  "raw": "https://{{baseUrl}}/aqie-alert-back-end-service/setup-alert",
+                  "protocol": "https",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["aqie-alert-back-end-service", "setup-alert"]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "Text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 409,\n  \"error\": \"Conflict\",\n  \"message\": \"Alert already exists for this email and location\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "user-setup-alert-by-email-AQC-710",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "*",
+                "type": "text"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{xApiKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"emailAddress\": \"jayamurugan.parasuraman@cognizant.com\",\r\n  \"alertType\": \"email\",\r\n  \"location\": \"tw183ht\",\r\n  \"lat\": 0.789,\r\n  \"long\": -0.876\r\n}"
+            },
+            "url": {
+              "raw": "https://{{baseUrl}}/aqie-alert-back-end-service/setup-alert",
+              "protocol": "https",
+              "host": ["{{baseUrl}}"],
+              "path": ["aqie-alert-back-end-service", "setup-alert"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/send-notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "*",
+                "type": "text"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{xApiKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"emailAddress\": \"jayamurugan.parasuraman@cognizant.com\",\r\n  \"templateId\": \"3b5eda82-638b-40b4-bbf5-93e103b5996e\",\r\n  \"personalisation\": {\r\n    \"datalink\": \"https://www.gov.uk/\"\r\n  }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://{{baseUrl}}/aqie-notify-service/send-notification",
+              "protocol": "https",
+              "host": ["{{baseUrl}}"],
+              "path": ["aqie-notify-service", "send-notification"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Set-up-Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Encoding",
+                "value": "*",
+                "type": "text"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{xApiKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"emailAddress\": \"jayamurugan.parasuraman@cognizant.com\",     // Required for SMS alerts\r\n   \"alertType\": \"email\",               // Required: \"sms\" or \"email\"\r\n  \"location\": \"gloucester\",         // Required: location\r\n  \"lat\": 51.5074,                   // Required: Latitude coordinate\r\n  \"long\": -0.1278                   // Required: Longitude coordinate\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://{{baseUrl}}/aqie-alert-back-end-service/setup-alert",
+              "protocol": "https",
+              "host": ["{{baseUrl}}"],
+              "path": ["aqie-alert-back-end-service", "setup-alert"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Dev-SetUpEmailForAlert",
+      "item": [
+        {
+          "name": "generate-link",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"emailAddress\": \"saranya.vinayagam@cognizant.com\",\r\n  \"alertType\": \"email\",\r\n  \"location\": \"tw183ht\",\r\n  \"lat\": 0.789,\r\n  \"long\": -0.876\r\n}"
+            },
+            "url": {
+              "raw": "https://ephemeral-protected.api.test.cdp-int.defra.cloud/aqie-notify-service/subscribe/generate-link",
+              "protocol": "https",
+              "host": [
+                "ephemeral-protected",
+                "api",
+                "test",
+                "cdp-int",
+                "defra",
+                "cloud"
+              ],
+              "path": ["aqie-notify-service", "subscribe", "generate-link"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "validate-link-AQC-598",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept-Encoding",
+                "value": "*",
+                "type": "text"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{xApiKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://{{baseUrl}}/aqie-notify-service/subscribe/validate-link/f3dbc2de-c6d2-4445-9e8e-da1e6b0db24d",
+              "protocol": "https",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "aqie-notify-service",
+                "subscribe",
+                "validate-link",
+                "f3dbc2de-c6d2-4445-9e8e-da1e6b0db24d"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Generate-OTP",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n          \"phoneNumber\": \"07469296586\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3001/subscribe/generate-otp",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3001",
+          "path": ["subscribe", "generate-otp"]
+        },
+        "description": "## Subscribe - Generate OTP\n\nThis endpoint is used to generate a One-Time Password (OTP) for a given phone number. It is typically used during the subscription process to verify the user's identity.\n\n### Request\n\n- **Method:** POST\n    \n- **URL:** `http://localhost:3001/subscribe/generate-otp`\n    \n- **Request Body:** The request body should be in JSON format and must include the following parameter:\n    \n    - `phoneNumber` (string): The phone number to which the OTP will be sent. This should be a valid phone number format.\n        \n\n### Example Request\n\n``` json\n{\n  \"phoneNumber\": \"07469296586\"\n}\n\n ```\n\n### Response\n\nUpon a successful request, the server will respond with a JSON object containing the following fields:\n\n- `notificationId` (string): An identifier for the notification sent, which can be used for tracking purposes.\n    \n- `status` (string): The status of the OTP generation process, indicating whether it was successful or if there was an error.\n    \n\n### Example Response\n\n``` json\n{\n  \"notificationId\": \"\",\n  \"status\": \"\"\n}\n\n ```\n\n### Notes\n\nEnsure that the phone number provided is valid and formatted correctly to avoid errors in OTP generation."
+      },
+      "response": [
+        {
+          "name": "happypath",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n          \"phoneNumber\": \"07469296586\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3001/subscribe/generate-otp",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3001",
+              "path": ["subscribe", "generate-otp"]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "Text",
+          "header": [
+            {
+              "key": "content-type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "strict-transport-security",
+              "value": "max-age=31536000; includeSubDomains"
+            },
+            {
+              "key": "x-frame-options",
+              "value": "DENY"
+            },
+            {
+              "key": "x-xss-protection",
+              "value": "1; mode=block"
+            },
+            {
+              "key": "x-download-options",
+              "value": "noopen"
+            },
+            {
+              "key": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "key": "cache-control",
+              "value": "no-cache"
+            },
+            {
+              "key": "content-length",
+              "value": "78"
+            },
+            {
+              "key": "Date",
+              "value": "Mon, 22 Sep 2025 23:08:42 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"notificationId\": \"d1433e58-fa52-4bf4-bca9-a8dae0f64954\",\n    \"status\": \"submitted\"\n}"
+        },
+        {
+          "name": "invalid-input-1",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n          \"phoneNumber\": \"123456778\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3001/subscribe/generate-otp",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3001",
+              "path": ["subscribe", "generate-otp"]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "Text",
+          "header": [
+            {
+              "key": "content-type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "strict-transport-security",
+              "value": "max-age=31536000; includeSubDomains"
+            },
+            {
+              "key": "x-frame-options",
+              "value": "DENY"
+            },
+            {
+              "key": "x-xss-protection",
+              "value": "1; mode=block"
+            },
+            {
+              "key": "x-download-options",
+              "value": "noopen"
+            },
+            {
+              "key": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "key": "cache-control",
+              "value": "no-cache"
+            },
+            {
+              "key": "content-length",
+              "value": "168"
+            },
+            {
+              "key": "Date",
+              "value": "Mon, 22 Sep 2025 23:14:42 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"statusCode\": 400,\n    \"error\": \"Bad Request\",\n    \"message\": \"\\\"phoneNumber\\\" length must be at least 10 characters long\",\n    \"validation\": {\n        \"source\": \"payload\",\n        \"keys\": [\n            \"phoneNumber\"\n        ]\n    }\n}"
+        },
+        {
+          "name": "invalid-input-2",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n          \"phoneNumber\": \"qwertvd\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3001/subscribe/generate-otp",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3001",
+              "path": ["subscribe", "generate-otp"]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "Text",
+          "header": [
+            {
+              "key": "content-type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "strict-transport-security",
+              "value": "max-age=31536000; includeSubDomains"
+            },
+            {
+              "key": "x-frame-options",
+              "value": "DENY"
+            },
+            {
+              "key": "x-xss-protection",
+              "value": "1; mode=block"
+            },
+            {
+              "key": "x-download-options",
+              "value": "noopen"
+            },
+            {
+              "key": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "key": "cache-control",
+              "value": "no-cache"
+            },
+            {
+              "key": "content-length",
+              "value": "285"
+            },
+            {
+              "key": "Date",
+              "value": "Mon, 22 Sep 2025 23:16:19 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"statusCode\": 400,\n    \"error\": \"Bad Request\",\n    \"message\": \"\\\"phoneNumber\\\" length must be at least 10 characters long. \\\"phoneNumber\\\" with value \\\"qwertvd\\\" fails to match the required pattern: /^[\\\\+\\\\d\\\\s\\\\-\\\\(\\\\)]+$/\",\n    \"validation\": {\n        \"source\": \"payload\",\n        \"keys\": [\n            \"phoneNumber\",\n            \"phoneNumber\"\n        ]\n    }\n}"
+        },
+        {
+          "name": "empty-input",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n          \"phoneNumber\": \" \"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3001/subscribe/generate-otp",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3001",
+              "path": ["subscribe", "generate-otp"]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "Text",
+          "header": [
+            {
+              "key": "content-type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "strict-transport-security",
+              "value": "max-age=31536000; includeSubDomains"
+            },
+            {
+              "key": "x-frame-options",
+              "value": "DENY"
+            },
+            {
+              "key": "x-xss-protection",
+              "value": "1; mode=block"
+            },
+            {
+              "key": "x-download-options",
+              "value": "noopen"
+            },
+            {
+              "key": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "key": "cache-control",
+              "value": "no-cache"
+            },
+            {
+              "key": "content-length",
+              "value": "168"
+            },
+            {
+              "key": "Date",
+              "value": "Mon, 22 Sep 2025 23:17:03 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"statusCode\": 400,\n    \"error\": \"Bad Request\",\n    \"message\": \"\\\"phoneNumber\\\" length must be at least 10 characters long\",\n    \"validation\": {\n        \"source\": \"payload\",\n        \"keys\": [\n            \"phoneNumber\"\n        ]\n    }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Validate-OTP",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n          \"phoneNumber\": \"+447469296586\",\r\n          \"otp\": \"97189\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3001/subscribe/validate-otp",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3001",
+          "path": ["subscribe", "validate-otp"]
+        }
+      },
+      "response": [
+        {
+          "name": "happypath",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n          \"phoneNumber\": \"+447469296586\",\r\n          \"otp\": \"97189\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3001/subscribe/validate-otp",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3001",
+              "path": ["subscribe", "validate-otp"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "Text",
+          "header": [
+            {
+              "key": "content-type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "strict-transport-security",
+              "value": "max-age=31536000; includeSubDomains"
+            },
+            {
+              "key": "x-frame-options",
+              "value": "DENY"
+            },
+            {
+              "key": "x-xss-protection",
+              "value": "1; mode=block"
+            },
+            {
+              "key": "x-download-options",
+              "value": "noopen"
+            },
+            {
+              "key": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "key": "cache-control",
+              "value": "no-cache"
+            },
+            {
+              "key": "content-length",
+              "value": "59"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 24 Sep 2025 23:53:12 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"message\": \"+447469296586 has been validated successfully\"\n}"
+        },
+        {
+          "name": "New Request",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n          \"phoneNumber\": \"+447469296586\",\r\n          \"otp\": \"97189\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3001/subscribe/validate-otp",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3001",
+              "path": ["subscribe", "validate-otp"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "Text",
+          "header": [
+            {
+              "key": "content-type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "strict-transport-security",
+              "value": "max-age=31536000; includeSubDomains"
+            },
+            {
+              "key": "x-frame-options",
+              "value": "DENY"
+            },
+            {
+              "key": "x-xss-protection",
+              "value": "1; mode=block"
+            },
+            {
+              "key": "x-download-options",
+              "value": "noopen"
+            },
+            {
+              "key": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "key": "cache-control",
+              "value": "no-cache"
+            },
+            {
+              "key": "content-length",
+              "value": "59"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 24 Sep 2025 23:53:12 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"message\": \"+447469296586 has been validated successfully\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "send-notification(SMS-OTP)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"phoneNumber\": \"07123456789\",\r\n  \"templateId\": \"your-template-id\",\r\n  \"personalisation\": {\r\n    \"name\": \"John Doe\",\r\n    \"code\": \"12345\"\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3001/send-notification",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3001",
+          "path": ["send-notification"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "send-notification(SMS-Confirm-Alert-Setup)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"phoneNumber\": \"07469296586\",\r\n  \"templateId\": \"73244097-acce-4e7b-84f2-3ddcd0e70fb5\",\r\n  \"personalisation\": {\r\n    \"location\": \"London\"\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/send-notification",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["send-notification"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "send-notification(email)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"phoneNumber\": \"07469296586\",\r\n  \"templateId\": \"73244097-acce-4e7b-84f2-3ddcd0e70fb5\",\r\n  \"personalisation\": {\r\n    \"location\": \"London\"\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/send-notification",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["send-notification"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Generate-OTP",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n          \"phoneNumber\": \"07469296586\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/subscribe/generate-otp",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["subscribe", "generate-otp"]
+        }
+      },
+      "response": []
+    }
+  ]
+}

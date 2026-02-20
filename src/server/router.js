@@ -41,11 +41,13 @@ import { confirmAlertDetails } from './notify/register/sms-confirm-details/index
 import { alertsSuccess } from './notify/register/sms-success/index.js'
 import { checkMaxAlerts } from './notify/register/check-max-alerts/index.js'
 import { smsDuplicate } from './notify/register/sms-duplicate/index.js'
+import { emailDuplicate } from './notify/register/email-duplicate/index.js'
 import { alertsSuccess as emailAlertsSuccess } from './notify/register/alerts-success/index.js'
 import { confirmAlertDetails as genericConfirmAlertDetails } from './notify/register/confirm-alert-details/index.js'
 import { emailDetails } from './notify/register/email-details/index.js'
 import { emailSendActivation } from './notify/register/email-send-activation/index.js'
-import { emailVerifyCode } from './notify/register/email-verify-code/index.js'
+import { emailVerifyEmail } from './notify/register/email-verify-email/index.js'
+import { emailConfirmLink } from './notify/register/email-confirm-link/index.js'
 import notifyDebugClearMockStorage from './notify/debug/clear-mock-storage.js'
 import path from 'node:path'
 import { createLogger } from './common/helpers/logging/logger.js'
@@ -103,11 +105,13 @@ const getAllPlugins = () => [
   alertsSuccess,
   checkMaxAlerts,
   smsDuplicate,
+  emailDuplicate,
   genericConfirmAlertDetails,
   emailAlertsSuccess,
   emailDetails,
   emailSendActivation,
-  emailVerifyCode,
+  emailVerifyEmail,
+  emailConfirmLink,
   notifyDebugClearMockStorage
 ]
 

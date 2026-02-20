@@ -381,6 +381,8 @@ export function buildLocationViewData({
     serviceName: components.multipleLocations.serviceName,
     latlon: extractCoordinates(locationDetails, locationData),
     locationId: extractLocationId(locationDetails),
+    smsMobileNumberPath: config.get('notify.smsMobileNumberPath'),
+    emailDetailsPath: config.get('notify.emailDetailsPath'),
     lang
   }
 }

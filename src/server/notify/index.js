@@ -1,18 +1,20 @@
 import { notifyController, notifyPostController } from './controller.js'
+import { config } from '../../config/index.js'
 
 const notify = {
   plugin: {
     name: 'notify-sms-subscription',
     register: async (server) => {
+      const smsMobileNumberPath = config.get('notify.smsMobileNumberPath')
       server.route([
         {
           method: 'GET',
-          path: '/notify/register/sms-mobile-number',
+          path: smsMobileNumberPath,
           ...notifyController
         },
         {
           method: 'POST',
-          path: '/notify/register/sms-mobile-number',
+          path: smsMobileNumberPath,
           ...notifyPostController
         }
       ])

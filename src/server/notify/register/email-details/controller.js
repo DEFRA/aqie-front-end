@@ -1,8 +1,10 @@
 import { createLogger } from '../../../common/helpers/logging/logger.js'
 import { english } from '../../../data/en/en.js'
+import { config } from '../../../../config/index.js'
 import { LANG_EN } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { recordEmailCapture } from '../../../common/services/subscription.js'
+import { generateEmailLink } from '../../../common/services/notify.js'
 
 // Constants for repeated strings
 const PAGE_HEADING = 'What is your email address?'
@@ -22,7 +24,27 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
 
     // Capture location from query parameter if provided
     if (request.query.location) {
-      request.yar.set('location', request.query.location)
+      const sanitizedLocation = request.query.location
+        .replace(/^\s*air\s+quality\s+in\s+/i, '')
+        .trim()
+      request.yar.set('location', sanitizedLocation)
+    }
+
+    // Capture latitude and longitude from query parameters ''
+    if (request.query.lat) {
+      const lat =
+        Math.round(Number.parseFloat(request.query.lat) * 1000000) / 1000000
+      request.yar.set('latitude', lat)
+    }
+    if (request.query.long) {
+      const lon =
+        Math.round(Number.parseFloat(request.query.long) * 1000000) / 1000000
+      request.yar.set('longitude', lon)
+    }
+
+    // Capture and store locationId in session for back navigation ''
+    if (request.query.locationId) {
+      request.yar.set('locationId', request.query.locationId)
     }
 
     const { footerTxt, phaseBanner, backlink, cookieBanner } = content
@@ -89,6 +111,9 @@ const handleEmailDetailsPost = async (request, h, content = english) => {
     // Store the email in session ''
     const email = notifyByEmail.trim()
     request.yar.set('emailAddress', email)
+    const location = request.yar.get('location') || ''
+    const lat = request.yar.get('latitude')
+    const long = request.yar.get('longitude')
 
     // Fire-and-forget capture to subscription backend ''
     try {
@@ -104,8 +129,17 @@ const handleEmailDetailsPost = async (request, h, content = english) => {
       logger.error('Error recording email capture', err)
     }
 
-    // Redirect to next step ''
-    return h.redirect('/notify/register/email-send-activation')
+    // Send activation link and redirect to check email page ''
+    try {
+      await generateEmailLink(email, location, lat, long, request)
+      request.yar.set('emailActivationSent', Date.now())
+      logger.info('Queued Notify email link for delivery')
+    } catch (err) {
+      logger.error('Notify email send failed', err)
+    }
+
+    const emailVerifyEmailPath = config.get('notify.emailVerifyEmailPath')
+    return h.redirect(emailVerifyEmailPath)
   } catch (error) {
     logger.error('Error processing email details submission', error)
     const metaSiteUrl = getAirQualitySiteUrl(request)

@@ -22,7 +22,8 @@ const getConfirmAlertController = {
       footerTxt,
       phaseBanner,
       backlink,
-      cookieBanner
+      cookieBanner,
+      content: english.confirmAlert
     })
   }
 }
@@ -152,12 +153,14 @@ const getSuccessController = {
       }
     }
 
+    const successContent = english.smsSuccess
     return h.view('notify-register/success', {
-      pageTitle: 'You have successfully signed up for air quality alerts',
+      pageTitle: successContent.pageTitle,
       metaSiteUrl,
-      heading: 'You have successfully signed up for air quality alerts',
+      heading: successContent.heading,
       phoneNumber,
       developmentInfo,
+      content: successContent,
       page: 'Text alerts',
       serviceName: 'Check air quality',
       footerTxt,

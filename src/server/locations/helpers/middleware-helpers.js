@@ -186,14 +186,15 @@ const handleSingleMatch = async (
     )
 
     if (notificationFlow === 'sms') {
+      const smsConfirmDetailsPath = config.get('notify.smsConfirmDetailsPath')
       return h
-        .redirect(`/notify/register/sms-confirm-details?lang=${lang}`)
+        .redirect(`${smsConfirmDetailsPath}?lang=${lang}`)
         .code(REDIRECT_STATUS_CODE)
         .takeover()
     } else if (notificationFlow === 'email') {
-      // '' Placeholder for email flow - will be implemented later
+      const emailDetailsPath = config.get('notify.emailDetailsPath')
       return h
-        .redirect(`/notify/register/email-confirm-details?lang=${lang}`)
+        .redirect(`${emailDetailsPath}?lang=${lang}`)
         .code(REDIRECT_STATUS_CODE)
         .takeover()
     }
