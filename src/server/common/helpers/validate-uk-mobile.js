@@ -49,7 +49,10 @@ export function validateUKMobile(
   let formatted
   if (cleaned.startsWith('+44')) {
     formatted = `0${cleaned.substring(3)}`
-  } else if (cleaned.startsWith('44') && cleaned.length === UK_MOBILE_LENGTH_INTERNATIONAL - 1) {
+  } else if (
+    cleaned.startsWith('44') &&
+    cleaned.length === UK_MOBILE_LENGTH_INTERNATIONAL - 1
+  ) {
     formatted = `0${cleaned.substring(2)}`
   } else if (cleaned.startsWith('07')) {
     formatted = cleaned
