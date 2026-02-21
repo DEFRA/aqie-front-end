@@ -1,33 +1,67 @@
 /* global vi */
-// Tests for alerts success controller (email) ''
+// '' Tests for alerts success controller (email)
 import {
   handleAlertsSuccessRequest,
   handleAlertsSuccessPost
 } from './controller.js'
 
 describe('Alerts Success Controller (email)', () => {
-  test('Request with email uses email template', () => {
+  test('handleAlertsSuccessRequest returns correct view data', () => {
     const mockRequest = {
       yar: {
         get: vi
           .fn()
           .mockReturnValueOnce('user@example.com') // emailAddress
-          .mockReturnValueOnce(null) // mobileNumber
           .mockReturnValueOnce('London') // location
           .mockReturnValueOnce(true) // alertDetailsConfirmed
           .mockReturnValueOnce({}) // formData
-      }
+      },
+      query: {},
+      headers: {}
     }
     const mockH = { view: vi.fn() }
-    handleAlertsSuccessRequest(mockRequest, mockH, {
-      footerTxt: '',
-      phaseBanner: '',
-      backlink: '',
-      cookieBanner: ''
-    })
+    handleAlertsSuccessRequest(mockRequest, mockH)
     expect(mockH.view).toHaveBeenCalledWith(
       'notify/register/alerts-success/index',
-      expect.any(Object)
+      expect.objectContaining({
+        pageTitle:
+          'You have successfully signed up for air quality alerts - Check air quality - GOV.UK',
+        heading: 'You have successfully signed up for air quality alerts',
+        serviceName: 'Check air quality',
+        lang: 'en',
+        emailAddress: 'user@example.com',
+        location: 'London',
+        emailSuccessHeading:
+          'You have set up air quality email alerts for London',
+        emailSuccessAnotherAlertPrefix:
+          'If you want to set up another alert for user@example.com you can',
+        alertDetailsConfirmed: true
+      })
+    )
+  })
+
+  test('handleAlertsSuccessRequest handles missing session data', () => {
+    const mockRequest = {
+      yar: {
+        get: vi
+          .fn()
+          .mockReturnValueOnce(null) // emailAddress
+          .mockReturnValueOnce(null) // location
+          .mockReturnValueOnce(null) // alertDetailsConfirmed
+          .mockReturnValueOnce({}) // formData
+      },
+      query: {},
+      headers: {}
+    }
+    const mockH = { view: vi.fn() }
+    handleAlertsSuccessRequest(mockRequest, mockH)
+    expect(mockH.view).toHaveBeenCalledWith(
+      'notify/register/alerts-success/index',
+      expect.objectContaining({
+        emailAddress: 'Not provided',
+        location: 'Not selected',
+        alertDetailsConfirmed: false
+      })
     )
   })
 
@@ -41,6 +75,7 @@ describe('Alerts Success Controller (email)', () => {
     expect(mockH.redirect).toHaveBeenCalledWith('/')
     expect(cleared).toContain('emailAddress')
     expect(cleared).toContain('alertDetailsConfirmed')
+    expect(cleared).toContain('notifyJourney')
   })
 })
 // ''

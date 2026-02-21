@@ -110,11 +110,17 @@ async function getOSPlaces(
   )
   if (statusCodeOSPlace === STATUS_CODE_SUCCESS) {
     logger.info(`osPlacesData fetched:`)
-    // Defensive: always return a defined object
+    // '' Defensive: always return a defined object
     return osPlacesData || { results: [] }
+  } else if (statusCodeOSPlace === 401) {
+    // '' 401 from OS Places API is typically caused by a missing VPN connection — the API key is correct
+    logger.warn(
+      `OS Names API returned 401 (unauthorized). This is usually caused by the VPN being disconnected rather than an invalid OS_NAMES_API_KEY.`
+    )
+    return { results: [] }
   } else {
     logger.error(`Error fetching statusCodeOSPlace data: ${statusCodeOSPlace}`)
-    // Always return a defined object, even on error
+    // '' Always return a defined object, even on error
     return { results: [] }
   }
 }

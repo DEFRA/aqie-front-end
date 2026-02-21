@@ -209,26 +209,25 @@ export const notificationTranslations = {
   },
   // Email alerts success page
   emailSuccess: {
-    panelTitle: 'You have successfully signed up for air quality alerts',
-    panelBodyPrefix: 'You will receive email alerts at',
-    confirmationEmail: 'We have sent you a confirmation email.',
-    whatHappensNextHeading: 'What happens next',
-    alertsWhenText: 'You will receive email alerts when:',
-    alertBullet1:
-      'air pollution levels are forecast to be high or very high in your area',
-    alertBullet2:
-      'there are rapid changes in air quality that could affect your health',
-    unsubscribeText:
-      'You can unsubscribe from these alerts at any time using the unsubscribe link in any alert email.',
-    alertDetailsHeading: 'Your alert details',
-    emailAddressKey: 'Email address',
-    locationKey: 'Location',
-    returnButton: 'Return to Check air quality',
-    moreInfoHeading: 'Get more information',
-    moreInfoIntro: 'You can:',
-    moreInfoLink1: 'check current air quality in your area',
-    moreInfoLink2: 'find out more about air pollution and health',
-    moreInfoLink3: 'read our privacy policy'
+    pageTitle: 'You have successfully signed up for air quality alerts',
+    heading: 'You have successfully signed up for air quality alerts',
+    successTitle: 'Success',
+    bannerHeading: 'You have set up air quality email alerts for {location}',
+    confirmationText: 'We have sent you a confirmation email.',
+    anotherAlertPrefix:
+      'If you want to set up another alert for {emailAddress} you can',
+    anotherAlertLinkText: 'search for another location',
+    anotherAlertSuffix: '.',
+    researchHeading: 'Help improve this service',
+    researchSignupPrefix:
+      'This is a new service and we are looking for people to share their feedback with us.',
+    researchSignupLinkText:
+      'Sign up to participate in future research and help improve this service',
+    researchSignupSuffix: '.',
+    researchPrivacyPrefix: 'By signing up, you agree to our ',
+    researchPrivacyLinkText: 'privacy statement',
+    researchPrivacySuffix:
+      ' and consent to being contacted for research purposes.'
   },
   // Activation code page (legacy SMS journey)
   activationCode: {
