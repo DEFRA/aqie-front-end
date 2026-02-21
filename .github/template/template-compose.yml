@@ -6,9 +6,7 @@ services:
     volumes:
       - ./tests/tls:/tls
       - ./redis.conf:/etc/redis.conf
-    command: [
-      "/etc/redis.conf"
-    ]
+    command: ['/etc/redis.conf']
   service:
     build:
       context: ../..
@@ -16,12 +14,12 @@ services:
     networks:
       - cdp-network
     ports:
-      - "8085:8085"
+      - '8085:8085'
     depends_on:
       - redis
     environment:
       PORT: 8085
-      TRUSTSTORE_REDIS: "${REDIS_TEST_CA}"
+      TRUSTSTORE_REDIS: '${REDIS_TEST_CA}'
       REDIS_HOST: redis
       REDIS_USERNAME: username
       REDIS_PASSWORD: password

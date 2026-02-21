@@ -1,377 +1,450 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DAQI Dividers Test</title>
     <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: Arial, sans-serif;
+      body {
+        margin: 0;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+      }
+
+      .test-container {
+        background: #f5f5f5;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+      }
+
+      .viewport-info {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: #333;
+        color: white;
+        padding: 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        z-index: 1000;
+      }
+
+      /* DAQI styles - simplified for testing */
+      .daqi-numbered {
+        position: relative;
+        background: white;
+        border: 1px solid #ccc;
+        margin: 20px 0;
+      }
+
+      .daqi-bar {
+        display: flex;
+        height: 40px;
+        position: relative;
+      }
+
+      .daqi-bar-segment {
+        flex: 1;
+        border-right: 1px solid #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      .daqi-bar-segment:last-child {
+        flex: 3;
+        border-right: none;
+      }
+
+      .daqi-bar-segment:nth-child(1) {
+        background-color: #9cdb7f;
+      }
+      .daqi-bar-segment:nth-child(2) {
+        background-color: #7fb069;
+      }
+      .daqi-bar-segment:nth-child(3) {
+        background-color: #6b9c5a;
+      }
+      .daqi-bar-segment:nth-child(4) {
+        background-color: #fce85b;
+      }
+      .daqi-bar-segment:nth-child(5) {
+        background-color: #f4d03f;
+      }
+      .daqi-bar-segment:nth-child(6) {
+        background-color: #f39c12;
+      }
+      .daqi-bar-segment:nth-child(7) {
+        background-color: #ff7979;
+      }
+      .daqi-bar-segment:nth-child(8) {
+        background-color: #e74c3c;
+      }
+      .daqi-bar-segment:nth-child(9) {
+        background-color: #c0392b;
+      }
+      .daqi-bar-segment:nth-child(10) {
+        background-color: #8e44ad;
+      }
+
+      .daqi-labels {
+        position: relative;
+        height: 24px;
+        background: #f8f9fa;
+      }
+
+      /* Media query for testing 768px-1019px */
+      @media (min-width: 768px) and (max-width: 1019px) {
+        .daqi-labels::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 24px;
+          background-image:
+            linear-gradient(
+              90deg,
+              transparent 1px,
+              #b1b4b6 1px 2px,
+              transparent 2px
+            ),
+            linear-gradient(
+              90deg,
+              transparent 1px,
+              #b1b4b6 1px 2px,
+              transparent 2px
+            ),
+            linear-gradient(
+              90deg,
+              transparent 1px,
+              #b1b4b6 1px 2px,
+              transparent 2px
+            );
+          background-position:
+            var(--daqi-divider-1, 150px) 0,
+            var(--daqi-divider-2, 301px) 0,
+            var(--daqi-divider-3, 454px) 0;
+          background-repeat: no-repeat;
+          background-size:
+            3px 100%,
+            3px 100%,
+            3px 100%;
+          pointer-events: none;
+          z-index: 1;
         }
-        
-        .test-container {
-            background: #f5f5f5;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-        }
-        
-        .viewport-info {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: #333;
-            color: white;
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            z-index: 1000;
-        }
-        
-        /* DAQI styles - simplified for testing */
-        .daqi-numbered {
-            position: relative;
-            background: white;
-            border: 1px solid #ccc;
-            margin: 20px 0;
-        }
-        
-        .daqi-bar {
-            display: flex;
-            height: 40px;
-            position: relative;
-        }
-        
-        .daqi-bar-segment {
-            flex: 1;
-            border-right: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        .daqi-bar-segment:last-child {
-            flex: 3;
-            border-right: none;
-        }
-        
-        .daqi-bar-segment:nth-child(1) { background-color: #9cdb7f; }
-        .daqi-bar-segment:nth-child(2) { background-color: #7fb069; }
-        .daqi-bar-segment:nth-child(3) { background-color: #6b9c5a; }
-        .daqi-bar-segment:nth-child(4) { background-color: #fce85b; }
-        .daqi-bar-segment:nth-child(5) { background-color: #f4d03f; }
-        .daqi-bar-segment:nth-child(6) { background-color: #f39c12; }
-        .daqi-bar-segment:nth-child(7) { background-color: #ff7979; }
-        .daqi-bar-segment:nth-child(8) { background-color: #e74c3c; }
-        .daqi-bar-segment:nth-child(9) { background-color: #c0392b; }
-        .daqi-bar-segment:nth-child(10) { background-color: #8e44ad; }
-        
-        .daqi-labels {
-            position: relative;
-            height: 24px;
-            background: #f8f9fa;
-        }
-        
-        /* Media query for testing 768px-1019px */
-        @media (min-width: 768px) and (max-width: 1019px) {
-            .daqi-labels::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: 24px;
-                background-image:
-                    linear-gradient(90deg, transparent 1px, #b1b4b6 1px 2px, transparent 2px),
-                    linear-gradient(90deg, transparent 1px, #b1b4b6 1px 2px, transparent 2px),
-                    linear-gradient(90deg, transparent 1px, #b1b4b6 1px 2px, transparent 2px);
-                background-position: var(--daqi-divider-1, 150px) 0, var(--daqi-divider-2, 301px) 0, var(--daqi-divider-3, 454px) 0;
-                background-repeat: no-repeat;
-                background-size: 3px 100%, 3px 100%, 3px 100%;
-                pointer-events: none;
-                z-index: 1;
-            }
-        }
-        
-        .debug-info {
-            margin: 10px 0;
-            padding: 10px;
-            background: #e3f2fd;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 12px;
-        }
+      }
+
+      .debug-info {
+        margin: 10px 0;
+        padding: 10px;
+        background: #e3f2fd;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 12px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="viewport-info" id="viewportInfo">
-        Viewport: <span id="viewportWidth">-</span>px
+      Viewport: <span id="viewportWidth">-</span>px
     </div>
-    
+
     <h1>DAQI Dividers Test</h1>
-    <p>This page tests the DAQI divider positioning for viewport 768px-1019px. Open browser dev tools and resize the window to test different viewport widths.</p>
-    
+    <p>
+      This page tests the DAQI divider positioning for viewport 768px-1019px.
+      Open browser dev tools and resize the window to test different viewport
+      widths.
+    </p>
+
     <div class="test-container">
-        <h2>Test DAQI Component</h2>
-        <div class="debug-info" id="debugInfo">
-            Debug info will appear here...
+      <h2>Test DAQI Component</h2>
+      <div class="debug-info" id="debugInfo">
+        Debug info will appear here...
+      </div>
+
+      <div class="daqi-numbered">
+        <div class="daqi-bar">
+          <div class="daqi-bar-segment">1</div>
+          <div class="daqi-bar-segment">2</div>
+          <div class="daqi-bar-segment">3</div>
+          <div class="daqi-bar-segment">4</div>
+          <div class="daqi-bar-segment">5</div>
+          <div class="daqi-bar-segment">6</div>
+          <div class="daqi-bar-segment">7</div>
+          <div class="daqi-bar-segment">8</div>
+          <div class="daqi-bar-segment">9</div>
+          <div class="daqi-bar-segment">10</div>
         </div>
-        
-        <div class="daqi-numbered">
-            <div class="daqi-bar">
-                <div class="daqi-bar-segment">1</div>
-                <div class="daqi-bar-segment">2</div>
-                <div class="daqi-bar-segment">3</div>
-                <div class="daqi-bar-segment">4</div>
-                <div class="daqi-bar-segment">5</div>
-                <div class="daqi-bar-segment">6</div>
-                <div class="daqi-bar-segment">7</div>
-                <div class="daqi-bar-segment">8</div>
-                <div class="daqi-bar-segment">9</div>
-                <div class="daqi-bar-segment">10</div>
-            </div>
-            <div class="daqi-labels"></div>
-        </div>
+        <div class="daqi-labels"></div>
+      </div>
     </div>
-    
+
     <div class="test-container">
-        <h2>Instructions</h2>
-        <ol>
-            <li>Open browser Developer Tools (F12)</li>
-            <li>Look at the Console tab for debug messages</li>
-            <li>Resize the browser window to 768px-1019px width</li>
-            <li>You should see dividers positioned using JavaScript adjustments:
-                <ul>
-                    <li>Divider 1: +2px adjustment</li>
-                    <li>Divider 2: +5px adjustment</li>
-                    <li>Divider 3: +10px adjustment</li>
-                </ul>
-            </li>
-            <li>Check the CSS custom properties in the Elements tab: <code>--daqi-divider-1</code>, <code>--daqi-divider-2</code>, <code>--daqi-divider-3</code></li>
-        </ol>
+      <h2>Instructions</h2>
+      <ol>
+        <li>Open browser Developer Tools (F12)</li>
+        <li>Look at the Console tab for debug messages</li>
+        <li>Resize the browser window to 768px-1019px width</li>
+        <li>
+          You should see dividers positioned using JavaScript adjustments:
+          <ul>
+            <li>Divider 1: +2px adjustment</li>
+            <li>Divider 2: +5px adjustment</li>
+            <li>Divider 3: +10px adjustment</li>
+          </ul>
+        </li>
+        <li>
+          Check the CSS custom properties in the Elements tab:
+          <code>--daqi-divider-1</code>, <code>--daqi-divider-2</code>,
+          <code>--daqi-divider-3</code>
+        </li>
+      </ol>
     </div>
 
     <script>
-        // Include the DAQI columns JavaScript
-        ''
-        // DAQI Columns Responsive Layout Handler
-        // 
-        // Development Mode: To manually test CSS custom properties in dev tools,
-        // add 'data-manual-dividers' attribute to the .daqi-numbered container:
-        // Example: document.querySelector('.daqi-numbered').setAttribute('data-manual-dividers', 'true')
-        // This will disable automatic JavaScript positioning and allow manual CSS testing.
-        //
-        // Only register DOM event listeners if running in a browser
-        if (typeof document !== 'undefined' && typeof window !== 'undefined') {
-          // Always recalculate when the tab is shown (including tab 1)
-          document.addEventListener('DOMContentLoaded', () => {
-            setDaqiColumns()
-            setTimeout(setDaqiColumns, 0)
-          })
-          // Listen for tab switches and force recalculation - only for DAQI tabs
-          document.addEventListener('click', (e) => {
-            if (
-              e.target &&
-              e.target.classList &&
-              e.target.classList.contains('govuk-tabs__tab') &&
-              e.target.closest('.daqi-tabs') // Only apply to DAQI tabs component
-            ) {
-              setTimeout(setDaqiColumns, 40)
-            }
-          })
-        }
-
-        function debounce(fn, wait = 100) {
-          let t
-          return (...args) => {
-            clearTimeout(t)
-            t = setTimeout(() => fn(...args), wait)
+      // Include the DAQI columns JavaScript
+      ''
+      // DAQI Columns Responsive Layout Handler
+      //
+      // Development Mode: To manually test CSS custom properties in dev tools,
+      // add 'data-manual-dividers' attribute to the .daqi-numbered container:
+      // Example: document.querySelector('.daqi-numbered').setAttribute('data-manual-dividers', 'true')
+      // This will disable automatic JavaScript positioning and allow manual CSS testing.
+      //
+      // Only register DOM event listeners if running in a browser
+      if (typeof document !== 'undefined' && typeof window !== 'undefined') {
+        // Always recalculate when the tab is shown (including tab 1)
+        document.addEventListener('DOMContentLoaded', () => {
+          setDaqiColumns()
+          setTimeout(setDaqiColumns, 0)
+        })
+        // Listen for tab switches and force recalculation - only for DAQI tabs
+        document.addEventListener('click', (e) => {
+          if (
+            e.target &&
+            e.target.classList &&
+            e.target.classList.contains('govuk-tabs__tab') &&
+            e.target.closest('.daqi-tabs') // Only apply to DAQI tabs component
+          ) {
+            setTimeout(setDaqiColumns, 40)
           }
+        })
+      }
+
+      function debounce(fn, wait = 100) {
+        let t
+        return (...args) => {
+          clearTimeout(t)
+          t = setTimeout(() => fn(...args), wait)
         }
+      }
 
-        function setDaqiColumns() {
-          
-          // Find all DAQI containers and process each one
-          const containers = document.querySelectorAll('.daqi-numbered')
-          if (!containers || containers.length === 0) return
+      function setDaqiColumns() {
+        // Find all DAQI containers and process each one
+        const containers = document.querySelectorAll('.daqi-numbered')
+        if (!containers || containers.length === 0) return
 
-          containers.forEach((container) => {
-            
-            // Skip if container is explicitly hidden
-            try {
-              const cs = window.getComputedStyle(container)
-              if (cs.display === 'none' || cs.visibility === 'hidden') {
-                return // Skip this container but continue with others
-              }
-            } catch (e) {
+        containers.forEach((container) => {
+          // Skip if container is explicitly hidden
+          try {
+            const cs = window.getComputedStyle(container)
+            if (cs.display === 'none' || cs.visibility === 'hidden') {
+              return // Skip this container but continue with others
             }
+          } catch (e) {}
 
-            const segments = container.querySelectorAll('.daqi-bar-segment')
-            if (!segments || segments.length === 0) return
+          const segments = container.querySelectorAll('.daqi-bar-segment')
+          if (!segments || segments.length === 0) return
 
-            const viewportWidth =
+          const viewportWidth =
+            (typeof window !== 'undefined' && window.innerWidth) ||
+            document.documentElement.clientWidth
+
+          // Define responsive thresholds for different viewport stages
+          const DESKTOP_THRESHOLD = 1020
+          const TABLET_LARGE_THRESHOLD = 768
+          const TABLET_SMALL_THRESHOLD = 640
+          const MOBILE_THRESHOLD = 321
+          const MOBILE_SMALL_THRESHOLD = 320
+
+          // Helper function to find available width
+          function findAvailableWidth(el) {
+            const MIN_REASONABLE = 40
+            let current = el
+            for (let i = 0; i < 8 && current; i++) {
+              const w =
+                current.clientWidth ||
+                Math.round(current.getBoundingClientRect().width)
+              if (w && w > MIN_REASONABLE) return w
+              current = current.parentElement
+            }
+            return (
               (typeof window !== 'undefined' && window.innerWidth) ||
-              document.documentElement.clientWidth
+              document.documentElement.clientWidth ||
+              0
+            )
+          }
 
-            // Define responsive thresholds for different viewport stages
-            const DESKTOP_THRESHOLD = 1020
-            const TABLET_LARGE_THRESHOLD = 768
-            const TABLET_SMALL_THRESHOLD = 640
-            const MOBILE_THRESHOLD = 321
-            const MOBILE_SMALL_THRESHOLD = 320
+          // Development mode: Add 'data-manual-dividers' attribute to container to disable automatic updates
+          if (container.hasAttribute('data-manual-dividers')) {
+            return
+          }
 
-            // Helper function to find available width
-            function findAvailableWidth(el) {
-              const MIN_REASONABLE = 40
-              let current = el
-              for (let i = 0; i < 8 && current; i++) {
-                const w =
-                  current.clientWidth ||
-                  Math.round(current.getBoundingClientRect().width)
-                if (w && w > MIN_REASONABLE) return w
-                current = current.parentElement
-              }
-              return (
-                (typeof window !== 'undefined' && window.innerWidth) ||
-                document.documentElement.clientWidth ||
-                0
-              )
-            }
+          // Debug viewport detection
 
-            // Development mode: Add 'data-manual-dividers' attribute to container to disable automatic updates
-            if (container.hasAttribute('data-manual-dividers')) {
-              return
-            }
-            
-            // Debug viewport detection
-            
-            // Determine which range we're in
-            let rangeDetected = 'UNKNOWN'
-            if (viewportWidth >= DESKTOP_THRESHOLD) {
-              rangeDetected = 'DESKTOP (≥1020px)'
-            } else if (viewportWidth >= TABLET_LARGE_THRESHOLD && viewportWidth < DESKTOP_THRESHOLD) {
-              rangeDetected = 'TABLET_LARGE (768-1019px)'
-            } else if (viewportWidth >= TABLET_SMALL_THRESHOLD && viewportWidth < TABLET_LARGE_THRESHOLD) {
-              rangeDetected = 'TABLET_SMALL (640-767px)'
-            } else if (viewportWidth >= MOBILE_THRESHOLD && viewportWidth < TABLET_SMALL_THRESHOLD) {
-              rangeDetected = 'MOBILE (321-639px)'
-            } else if (viewportWidth <= MOBILE_SMALL_THRESHOLD) {
-              rangeDetected = 'MOBILE_SMALL (≤320px)'
-            }
+          // Determine which range we're in
+          let rangeDetected = 'UNKNOWN'
+          if (viewportWidth >= DESKTOP_THRESHOLD) {
+            rangeDetected = 'DESKTOP (≥1020px)'
+          } else if (
+            viewportWidth >= TABLET_LARGE_THRESHOLD &&
+            viewportWidth < DESKTOP_THRESHOLD
+          ) {
+            rangeDetected = 'TABLET_LARGE (768-1019px)'
+          } else if (
+            viewportWidth >= TABLET_SMALL_THRESHOLD &&
+            viewportWidth < TABLET_LARGE_THRESHOLD
+          ) {
+            rangeDetected = 'TABLET_SMALL (640-767px)'
+          } else if (
+            viewportWidth >= MOBILE_THRESHOLD &&
+            viewportWidth < TABLET_SMALL_THRESHOLD
+          ) {
+            rangeDetected = 'MOBILE (321-639px)'
+          } else if (viewportWidth <= MOBILE_SMALL_THRESHOLD) {
+            rangeDetected = 'MOBILE_SMALL (≤320px)'
+          }
 
+          // Stage 2: Large tablet (768-1020px) - use consistent divider positioning like mobile
+          if (
+            viewportWidth > 0 &&
+            viewportWidth >= TABLET_LARGE_THRESHOLD &&
+            viewportWidth < DESKTOP_THRESHOLD &&
+            segments.length === 10
+          ) {
+            // Remove grid column CSS variables on large tablets to allow flexbox
+            container.style.removeProperty('--daqi-columns')
 
-            // Stage 2: Large tablet (768-1020px) - use consistent divider positioning like mobile
-            if (
-              viewportWidth > 0 &&
-              viewportWidth >= TABLET_LARGE_THRESHOLD &&
-              viewportWidth < DESKTOP_THRESHOLD &&
-              segments.length === 10
-            ) {
-              
-              // Remove grid column CSS variables on large tablets to allow flexbox
-              container.style.removeProperty('--daqi-columns')
-
-              // Apply consistent divider positioning for tablets with improved timing
-              const calculateDividers = () => {
-                const GAP = 0.5 // Consistent gap for proper spacing
-                const segmentWidths = Array.from(segments).map((seg) => {
-                  const rect = seg.getBoundingClientRect()
-                  const width = Math.round(rect.width)
-                  // Fallback calculation if getBoundingClientRect returns 0 or unreasonable values
-                  if (width <= 0 || width > container.clientWidth) {
-                    // Calculate expected width based on flex ratios: cells 1-9 = flex:1, cell 10 = flex:3
-                    // Total flex units = 9*1 + 1*3 = 12
-                    const containerWidth = container.clientWidth || findAvailableWidth(container)
-                    const cellIndex = Array.from(segments).indexOf(seg)
-                    if (cellIndex === 9) { // Cell 10
-                      return Math.round((containerWidth * 3) / 12) // 25% of container
-                    } else { // Cells 1-9
-                      return Math.round((containerWidth * 1) / 12) // ~8.33% of container each
-                    }
+            // Apply consistent divider positioning for tablets with improved timing
+            const calculateDividers = () => {
+              const GAP = 0.5 // Consistent gap for proper spacing
+              const segmentWidths = Array.from(segments).map((seg) => {
+                const rect = seg.getBoundingClientRect()
+                const width = Math.round(rect.width)
+                // Fallback calculation if getBoundingClientRect returns 0 or unreasonable values
+                if (width <= 0 || width > container.clientWidth) {
+                  // Calculate expected width based on flex ratios: cells 1-9 = flex:1, cell 10 = flex:3
+                  // Total flex units = 9*1 + 1*3 = 12
+                  const containerWidth =
+                    container.clientWidth || findAvailableWidth(container)
+                  const cellIndex = Array.from(segments).indexOf(seg)
+                  if (cellIndex === 9) {
+                    // Cell 10
+                    return Math.round((containerWidth * 3) / 12) // 25% of container
+                  } else {
+                    // Cells 1-9
+                    return Math.round((containerWidth * 1) / 12) // ~8.33% of container each
                   }
-                  return width
-                })
+                }
+                return width
+              })
 
-                // Calculate divider positions precisely between cell groups
-                // Divider 1: Between cells 3 and 4 (after cell 3, before cell 4)
-                const divider1Position = segmentWidths.slice(0, 3).reduce((s, v) => s + v, 0) + (GAP * 2) + (GAP / 2)
-                
-                // Divider 2: Between cells 6 and 7 (after cell 6, before cell 7) 
-                const divider2Position = segmentWidths.slice(0, 6).reduce((s, v) => s + v, 0) + (GAP * 5) + (GAP / 2)
-                
-                // Divider 3: Between cells 9 and 10 (after cell 9, before cell 10)
-                const divider3Position = segmentWidths.slice(0, 9).reduce((s, v) => s + v, 0) + (GAP * 8) + (GAP / 2)
+              // Calculate divider positions precisely between cell groups
+              // Divider 1: Between cells 3 and 4 (after cell 3, before cell 4)
+              const divider1Position =
+                segmentWidths.slice(0, 3).reduce((s, v) => s + v, 0) +
+                GAP * 2 +
+                GAP / 2
 
-                container.style.setProperty(
-                  '--daqi-divider-1',
-                  Math.round(divider1Position) + 2 + 'px' // Move first divider 2px to the right
-                )
-                container.style.setProperty(
-                  '--daqi-divider-2',
-                  Math.round(divider2Position) + 5 + 'px' // Move second divider 5px to the right
-                )
-                container.style.setProperty(
-                  '--daqi-divider-3',
-                  Math.round(divider3Position) + 10 + 'px' // Move third divider 10px to the right
-                )
-                
-                // Update debug info
-                updateDebugInfo(rangeDetected, {
-                  divider1: Math.round(divider1Position) + 2 + 'px',
-                  divider2: Math.round(divider2Position) + 5 + 'px', 
-                  divider3: Math.round(divider3Position) + 10 + 'px'
-                })
-              }
+              // Divider 2: Between cells 6 and 7 (after cell 6, before cell 7)
+              const divider2Position =
+                segmentWidths.slice(0, 6).reduce((s, v) => s + v, 0) +
+                GAP * 5 +
+                GAP / 2
 
-              // Execute immediately and also with a small delay to handle resize timing
-              calculateDividers()
-              setTimeout(calculateDividers, 16) // One frame delay for layout stability
-              return
-            } else {
-              // For other viewport ranges, show basic info
-              updateDebugInfo(rangeDetected, {})
+              // Divider 3: Between cells 9 and 10 (after cell 9, before cell 10)
+              const divider3Position =
+                segmentWidths.slice(0, 9).reduce((s, v) => s + v, 0) +
+                GAP * 8 +
+                GAP / 2
+
+              container.style.setProperty(
+                '--daqi-divider-1',
+                Math.round(divider1Position) + 2 + 'px' // Move first divider 2px to the right
+              )
+              container.style.setProperty(
+                '--daqi-divider-2',
+                Math.round(divider2Position) + 5 + 'px' // Move second divider 5px to the right
+              )
+              container.style.setProperty(
+                '--daqi-divider-3',
+                Math.round(divider3Position) + 10 + 'px' // Move third divider 10px to the right
+              )
+
+              // Update debug info
+              updateDebugInfo(rangeDetected, {
+                divider1: Math.round(divider1Position) + 2 + 'px',
+                divider2: Math.round(divider2Position) + 5 + 'px',
+                divider3: Math.round(divider3Position) + 10 + 'px'
+              })
             }
-          })
-        }
 
-        function updateDebugInfo(range, dividers) {
-          const debugInfo = document.getElementById('debugInfo')
-          if (debugInfo) {
-            debugInfo.innerHTML = `
+            // Execute immediately and also with a small delay to handle resize timing
+            calculateDividers()
+            setTimeout(calculateDividers, 16) // One frame delay for layout stability
+            return
+          } else {
+            // For other viewport ranges, show basic info
+            updateDebugInfo(rangeDetected, {})
+          }
+        })
+      }
+
+      function updateDebugInfo(range, dividers) {
+        const debugInfo = document.getElementById('debugInfo')
+        if (debugInfo) {
+          debugInfo.innerHTML = `
               <strong>Current Range:</strong> ${range}<br>
               <strong>Viewport Width:</strong> ${window.innerWidth}px<br>
-              ${Object.keys(dividers).length > 0 ? `
+              ${
+                Object.keys(dividers).length > 0
+                  ? `
               <strong>Divider Positions:</strong><br>
               &nbsp;&nbsp;--daqi-divider-1: ${dividers.divider1}<br>
               &nbsp;&nbsp;--daqi-divider-2: ${dividers.divider2}<br>
               &nbsp;&nbsp;--daqi-divider-3: ${dividers.divider3}
-              ` : '<em>No divider adjustments for this viewport range</em>'}
+              `
+                  : '<em>No divider adjustments for this viewport range</em>'
+              }
             `
-          }
         }
+      }
 
-        // Update viewport width display
-        function updateViewportInfo() {
-          const viewportWidth = document.getElementById('viewportWidth')
-          if (viewportWidth) {
-            viewportWidth.textContent = window.innerWidth
-          }
+      // Update viewport width display
+      function updateViewportInfo() {
+        const viewportWidth = document.getElementById('viewportWidth')
+        if (viewportWidth) {
+          viewportWidth.textContent = window.innerWidth
         }
+      }
 
-        // Initialize and listen for resize events
-        document.addEventListener('DOMContentLoaded', () => {
+      // Initialize and listen for resize events
+      document.addEventListener('DOMContentLoaded', () => {
+        updateViewportInfo()
+        setDaqiColumns()
+      })
+
+      window.addEventListener(
+        'resize',
+        debounce(() => {
           updateViewportInfo()
           setDaqiColumns()
-        })
-
-        window.addEventListener('resize', debounce(() => {
-          updateViewportInfo()
-          setDaqiColumns()
-        }, 100))
+        }, 100)
+      )
     </script>
-</body>
+  </body>
 </html>

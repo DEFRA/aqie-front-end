@@ -1,324 +1,399 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>✅ PROGRESSIVE MARGINS: Breathing Room as Window Closes In</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f8f9fa;
-        }
-        
-        /* Simulate the page layout structure exactly */
-        .page-container {
-            width: 100vw;
-            min-height: 100vh;
-            background: linear-gradient(45deg, #f0f8ff 0%, #e8f4f8 100%);
-            padding: 16px 0;
-            box-sizing: border-box;
-        }
-        
-        /* Main container simulating govuk-width-container */
-        .main-container {
-            max-width: 960px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            position: relative;
-        }
-        
-        /* Grid row simulation */
-        .grid-row {
-            display: block;
-            margin-bottom: 20px;
-        }
-        
-        /* Two-thirds column simulation */
-        .two-thirds-column {
-            max-width: 66.66%;
-            background-color: #e8f4f8;
-            padding: 20px;
-            border: 2px dashed #0066cc;
-            position: relative;
-            box-sizing: border-box;
-        }
-        
-        /* PROGRESSIVE MARGINS: Tabs container with increasing margins as viewport shrinks */
+      body {
+        margin: 0;
+        padding: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: #f8f9fa;
+      }
+
+      /* Simulate the page layout structure exactly */
+      .page-container {
+        width: 100vw;
+        min-height: 100vh;
+        background: linear-gradient(45deg, #f0f8ff 0%, #e8f4f8 100%);
+        padding: 16px 0;
+        box-sizing: border-box;
+      }
+
+      /* Main container simulating govuk-width-container */
+      .main-container {
+        max-width: 960px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+      }
+
+      /* Grid row simulation */
+      .grid-row {
+        display: block;
+        margin-bottom: 20px;
+      }
+
+      /* Two-thirds column simulation */
+      .two-thirds-column {
+        max-width: 66.66%;
+        background-color: #e8f4f8;
+        padding: 20px;
+        border: 2px dashed #0066cc;
+        position: relative;
+        box-sizing: border-box;
+      }
+
+      /* PROGRESSIVE MARGINS: Tabs container with increasing margins as viewport shrinks */
+      .tabs-container {
+        margin-bottom: 20px;
+        padding: 15px;
+        border: 2px solid #0066cc;
+        background-color: white;
+        position: relative;
+
+        /* Smart responsive width with progressive margins */
+        width: min(650px, 100vw - 32px);
+        max-width: 650px;
+        min-width: 320px;
+
+        /* Default: auto margins for centering */
+        margin-left: auto;
+        margin-right: auto;
+
+        /* Transition for visual feedback */
+        transition: all 0.3s ease;
+      }
+
+      /* Desktop: Fixed width with auto centering */
+      @media (min-width: 682px) {
         .tabs-container {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 2px solid #0066cc;
-            background-color: white;
-            position: relative;
-            
-            /* Smart responsive width with progressive margins */
-            width: min(650px, 100vw - 32px);
-            max-width: 650px;
-            min-width: 320px;
-            
-            /* Default: auto margins for centering */
-            margin-left: auto;
-            margin-right: auto;
-            
-            /* Transition for visual feedback */
-            transition: all 0.3s ease;
+          width: 650px;
+          margin-left: auto;
+          margin-right: auto;
+          border-color: #0066cc; /* Blue = Desktop */
         }
-        
-        /* Desktop: Fixed width with auto centering */
-        @media (min-width: 682px) {
-            .tabs-container {
-                width: 650px;
-                margin-left: auto;
-                margin-right: auto;
-                border-color: #0066cc; /* Blue = Desktop */
-            }
+      }
+
+      /* PROGRESSIVE MARGINS as viewport approaches component width */
+      @media (max-width: 681px) and (min-width: 670px) {
+        .tabs-container {
+          width: calc(100vw - 40px); /* 20px margins each side */
+          max-width: 650px;
+          margin-left: 20px;
+          margin-right: 20px;
+          border-color: #00aa00; /* Green = Light breathing room */
         }
-        
-        /* PROGRESSIVE MARGINS as viewport approaches component width */
-        @media (max-width: 681px) and (min-width: 670px) {
-            .tabs-container {
-                width: calc(100vw - 40px); /* 20px margins each side */
-                max-width: 650px;
-                margin-left: 20px;
-                margin-right: 20px;
-                border-color: #00aa00; /* Green = Light breathing room */
-            }
+      }
+
+      @media (max-width: 669px) and (min-width: 660px) {
+        .tabs-container {
+          width: calc(100vw - 48px); /* 24px margins each side */
+          max-width: 650px;
+          margin-left: 24px;
+          margin-right: 24px;
+          border-color: #ffaa00; /* Orange = Medium breathing room */
         }
-        
-        @media (max-width: 669px) and (min-width: 660px) {
-            .tabs-container {
-                width: calc(100vw - 48px); /* 24px margins each side */
-                max-width: 650px;
-                margin-left: 24px;
-                margin-right: 24px;
-                border-color: #ffaa00; /* Orange = Medium breathing room */
-            }
+      }
+
+      @media (max-width: 659px) and (min-width: 641px) {
+        .tabs-container {
+          width: calc(100vw - 56px); /* 28px margins each side */
+          max-width: 650px;
+          margin-left: 28px;
+          margin-right: 28px;
+          border-color: #ff6600; /* Red-orange = Maximum breathing room */
         }
-        
-        @media (max-width: 659px) and (min-width: 641px) {
-            .tabs-container {
-                width: calc(100vw - 56px); /* 28px margins each side */
-                max-width: 650px;
-                margin-left: 28px;
-                margin-right: 28px;
-                border-color: #ff6600; /* Red-orange = Maximum breathing room */
-            }
+      }
+
+      /* Mobile (640px and below): back to standard margins */
+      @media (max-width: 640px) {
+        .tabs-container {
+          width: calc(100vw - 32px);
+          max-width: 650px;
+          margin-left: 16px;
+          margin-right: 16px;
+          border-color: #ff0066; /* Pink = Mobile standard */
         }
-        
-        /* Mobile (640px and below): back to standard margins */
-        @media (max-width: 640px) {
-            .tabs-container {
-                width: calc(100vw - 32px);
-                max-width: 650px;
-                margin-left: 16px;
-                margin-right: 16px;
-                border-color: #ff0066; /* Pink = Mobile standard */
-            }
-        }
-        
-        /* Content inside tabs */
-        .tabs-content {
-            background: linear-gradient(to right, #00ff00 0%, #ffff00 30%, #ff8000 60%, #ff0000 100%);
-            height: 100px;
-            border: 1px solid #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: black;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
-            position: relative;
-        }
-        
-        /* Margin indicators */
-        .margin-indicator {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: rgba(255,0,0,0.7);
-            color: white;
-            padding: 5px;
-            border-radius: 3px;
-            font-size: 11px;
-            font-weight: bold;
-            z-index: 10;
-            border: 1px solid #ff0000;
-        }
-        
-        .margin-left {
-            left: -40px;
-        }
-        
-        .margin-right {
-            right: -40px;
-        }
-        
-        /* Viewport info display */
-        .viewport-info {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background-color: rgba(0,0,0,0.9);
-            color: white;
-            padding: 15px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 12px;
-            z-index: 1000;
-            min-width: 250px;
-        }
-        
-        .info-panel {
-            background-color: #f0f8ff;
-            border: 1px solid #0066cc;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-        }
-        
-        .progressive-guide {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        
-        .stage {
-            padding: 10px;
-            border-radius: 4px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 11px;
-        }
-        
-        .desktop { background-color: #e6f3ff; border: 2px solid #0066cc; color: #0066cc; }
-        .light { background-color: #e6ffe6; border: 2px solid #00aa00; color: #00aa00; }
-        .medium { background-color: #fff3e6; border: 2px solid #ffaa00; color: #ffaa00; }
-        .heavy { background-color: #ffe6cc; border: 2px solid #ff6600; color: #ff6600; }
-        .mobile { background-color: #ffe6f3; border: 2px solid #ff0066; color: #ff0066; }
-        
-        .measurement {
-            font-family: monospace;
-            font-weight: bold;
-            color: #0066cc;
-        }
-        
-        .breathing-room {
-            background: linear-gradient(45deg, transparent 0%, rgba(0,170,0,0.1) 50%, transparent 100%);
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            pointer-events: none;
-            border-radius: 4px;
-        }
+      }
+
+      /* Content inside tabs */
+      .tabs-content {
+        background: linear-gradient(
+          to right,
+          #00ff00 0%,
+          #ffff00 30%,
+          #ff8000 60%,
+          #ff0000 100%
+        );
+        height: 100px;
+        border: 1px solid #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: black;
+        font-weight: bold;
+        text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        position: relative;
+      }
+
+      /* Margin indicators */
+      .margin-indicator {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(255, 0, 0, 0.7);
+        color: white;
+        padding: 5px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: bold;
+        z-index: 10;
+        border: 1px solid #ff0000;
+      }
+
+      .margin-left {
+        left: -40px;
+      }
+
+      .margin-right {
+        right: -40px;
+      }
+
+      /* Viewport info display */
+      .viewport-info {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 15px;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 12px;
+        z-index: 1000;
+        min-width: 250px;
+      }
+
+      .info-panel {
+        background-color: #f0f8ff;
+        border: 1px solid #0066cc;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+
+      .progressive-guide {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+        gap: 10px;
+        margin: 20px 0;
+      }
+
+      .stage {
+        padding: 10px;
+        border-radius: 4px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 11px;
+      }
+
+      .desktop {
+        background-color: #e6f3ff;
+        border: 2px solid #0066cc;
+        color: #0066cc;
+      }
+      .light {
+        background-color: #e6ffe6;
+        border: 2px solid #00aa00;
+        color: #00aa00;
+      }
+      .medium {
+        background-color: #fff3e6;
+        border: 2px solid #ffaa00;
+        color: #ffaa00;
+      }
+      .heavy {
+        background-color: #ffe6cc;
+        border: 2px solid #ff6600;
+        color: #ff6600;
+      }
+      .mobile {
+        background-color: #ffe6f3;
+        border: 2px solid #ff0066;
+        color: #ff0066;
+      }
+
+      .measurement {
+        font-family: monospace;
+        font-weight: bold;
+        color: #0066cc;
+      }
+
+      .breathing-room {
+        background: linear-gradient(
+          45deg,
+          transparent 0%,
+          rgba(0, 170, 0, 0.1) 50%,
+          transparent 100%
+        );
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        border-radius: 4px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="viewport-info" id="viewportInfo">
-        <strong>🎯 PROGRESSIVE MARGINS</strong><br>
-        Viewport: <span id="viewportWidth"></span>px<br>
-        Stage: <span id="currentStage"></span><br>
-        <hr style="margin: 8px 0; border: 1px solid #666;">
-        <strong>📐 MARGINS</strong><br>
-        Left: <span id="leftMargin"></span><br>
-        Right: <span id="rightMargin"></span><br>
-        Total: <span id="totalMargins"></span><br>
-        <hr style="margin: 8px 0; border: 1px solid #666;">
-        <strong>🔧 BREATHING ROOM</strong><br>
-        Level: <span id="breathingLevel"></span><br>
-        Status: <span id="breathingStatus"></span>
+      <strong>🎯 PROGRESSIVE MARGINS</strong><br />
+      Viewport: <span id="viewportWidth"></span>px<br />
+      Stage: <span id="currentStage"></span><br />
+      <hr style="margin: 8px 0; border: 1px solid #666" />
+      <strong>📐 MARGINS</strong><br />
+      Left: <span id="leftMargin"></span><br />
+      Right: <span id="rightMargin"></span><br />
+      Total: <span id="totalMargins"></span><br />
+      <hr style="margin: 8px 0; border: 1px solid #666" />
+      <strong>🔧 BREATHING ROOM</strong><br />
+      Level: <span id="breathingLevel"></span><br />
+      Status: <span id="breathingStatus"></span>
     </div>
-    
+
     <div class="page-container">
-        <div class="main-container">
-            <h1>✅ PROGRESSIVE MARGINS: Breathing Room System</h1>
-            
+      <div class="main-container">
+        <h1>✅ PROGRESSIVE MARGINS: Breathing Room System</h1>
+
+        <div class="info-panel">
+          <h3>🎯 Smart Breathing Room Strategy</h3>
+          <p>
+            <strong>Problem:</strong> Component needed breathing room when
+            browser window gets close to component width.
+          </p>
+          <p>
+            <strong>Solution:</strong> Progressive margins that increase as
+            viewport shrinks, providing more breathing room when space gets
+            tight!
+          </p>
+        </div>
+
+        <div class="progressive-guide">
+          <div class="stage desktop">
+            <strong>🖥️ DESKTOP</strong><br />
+            ≥682px<br />
+            Auto margins<br />
+            <small>Natural centering</small>
+          </div>
+          <div class="stage light">
+            <strong>🌱 LIGHT</strong><br />
+            670px-681px<br />
+            20px margins<br />
+            <small>Light breathing</small>
+          </div>
+          <div class="stage medium">
+            <strong>🟡 MEDIUM</strong><br />
+            660px-669px<br />
+            24px margins<br />
+            <small>Medium breathing</small>
+          </div>
+          <div class="stage heavy">
+            <strong>🔥 HEAVY</strong><br />
+            641px-659px<br />
+            28px margins<br />
+            <small>Maximum breathing</small>
+          </div>
+          <div class="stage mobile">
+            <strong>📱 MOBILE</strong><br />
+            ≤640px<br />
+            16px margins<br />
+            <small>Mobile standard</small>
+          </div>
+        </div>
+
+        <div class="grid-row">
+          <div class="two-thirds-column">
+            <h2>Two-Thirds Column Container</h2>
+            <p>
+              Watch how the border color changes and margins increase as the
+              viewport approaches the component width!
+            </p>
+
+            <div class="tabs-container" id="tabsContainer">
+              <div class="breathing-room" id="breathingRoom"></div>
+              <div class="margin-indicator margin-left" id="leftIndicator">
+                L: <span id="leftValue">0px</span>
+              </div>
+              <div class="margin-indicator margin-right" id="rightIndicator">
+                R: <span id="rightValue">0px</span>
+              </div>
+
+              <h3>📊 DAQI Tabs Component</h3>
+              <p>
+                Progressive margins provide <strong>breathing room</strong> as
+                viewport gets close!
+              </p>
+
+              <div class="tabs-content">
+                <div>
+                  <strong>Smart Breathing Room</strong><br />
+                  <span class="measurement" id="componentWidth"
+                    >Width: 650px</span
+                  ><br />
+                  <span class="measurement" id="marginDisplay"
+                    >Margins: Auto</span
+                  >
+                </div>
+              </div>
+            </div>
+
             <div class="info-panel">
-                <h3>🎯 Smart Breathing Room Strategy</h3>
-                <p><strong>Problem:</strong> Component needed breathing room when browser window gets close to component width.</p>
-                <p><strong>Solution:</strong> Progressive margins that increase as viewport shrinks, providing more breathing room when space gets tight!</p>
+              <h3>🧪 Test the Progressive System:</h3>
+              <ol>
+                <li>
+                  <strong>Start wide (≥682px):</strong> 🔵 Blue border, auto
+                  margins
+                </li>
+                <li>
+                  <strong>Shrink to 670px-681px:</strong> 🟢 Green border, 20px
+                  breathing room
+                </li>
+                <li>
+                  <strong>Continue to 660px-669px:</strong> 🟡 Orange border,
+                  24px breathing room
+                </li>
+                <li>
+                  <strong>Tighten to 641px-659px:</strong> 🔥 Red-orange border,
+                  28px maximum breathing room
+                </li>
+                <li>
+                  <strong>Mobile ≤640px:</strong> 🔴 Pink border, 16px standard
+                  margins
+                </li>
+              </ol>
+              <div class="measurement" id="currentMeasurement">
+                Progressive margins adapt to give you breathing room! ↗️
+              </div>
             </div>
-            
-            <div class="progressive-guide">
-                <div class="stage desktop">
-                    <strong>🖥️ DESKTOP</strong><br>
-                    ≥682px<br>
-                    Auto margins<br>
-                    <small>Natural centering</small>
-                </div>
-                <div class="stage light">
-                    <strong>🌱 LIGHT</strong><br>
-                    670px-681px<br>
-                    20px margins<br>
-                    <small>Light breathing</small>
-                </div>
-                <div class="stage medium">
-                    <strong>🟡 MEDIUM</strong><br>
-                    660px-669px<br>
-                    24px margins<br>
-                    <small>Medium breathing</small>
-                </div>
-                <div class="stage heavy">
-                    <strong>🔥 HEAVY</strong><br>
-                    641px-659px<br>
-                    28px margins<br>
-                    <small>Maximum breathing</small>
-                </div>
-                <div class="stage mobile">
-                    <strong>📱 MOBILE</strong><br>
-                    ≤640px<br>
-                    16px margins<br>
-                    <small>Mobile standard</small>
-                </div>
-            </div>
-            
-            <div class="grid-row">
-                <div class="two-thirds-column">
-                    <h2>Two-Thirds Column Container</h2>
-                    <p>Watch how the border color changes and margins increase as the viewport approaches the component width!</p>
-                    
-                    <div class="tabs-container" id="tabsContainer">
-                        <div class="breathing-room" id="breathingRoom"></div>
-                        <div class="margin-indicator margin-left" id="leftIndicator">L: <span id="leftValue">0px</span></div>
-                        <div class="margin-indicator margin-right" id="rightIndicator">R: <span id="rightValue">0px</span></div>
-                        
-                        <h3>📊 DAQI Tabs Component</h3>
-                        <p>Progressive margins provide <strong>breathing room</strong> as viewport gets close!</p>
-                        
-                        <div class="tabs-content">
-                            <div>
-                                <strong>Smart Breathing Room</strong><br>
-                                <span class="measurement" id="componentWidth">Width: 650px</span><br>
-                                <span class="measurement" id="marginDisplay">Margins: Auto</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="info-panel">
-                        <h3>🧪 Test the Progressive System:</h3>
-                        <ol>
-                            <li><strong>Start wide (≥682px):</strong> 🔵 Blue border, auto margins</li>
-                            <li><strong>Shrink to 670px-681px:</strong> 🟢 Green border, 20px breathing room</li>
-                            <li><strong>Continue to 660px-669px:</strong> 🟡 Orange border, 24px breathing room</li>
-                            <li><strong>Tighten to 641px-659px:</strong> 🔥 Red-orange border, 28px maximum breathing room</li>
-                            <li><strong>Mobile ≤640px:</strong> 🔴 Pink border, 16px standard margins</li>
-                        </ol>
-                        <div class="measurement" id="currentMeasurement">
-                            Progressive margins adapt to give you breathing room! ↗️
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="info-panel">
-                <h3>🔧 Progressive Margin Implementation:</h3>
-                <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto;"><code>// PROGRESSIVE MARGINS: More breathing room as viewport shrinks
+          </div>
+        </div>
+
+        <div class="info-panel">
+          <h3>🔧 Progressive Margin Implementation:</h3>
+          <pre
+            style="
+              background: #f5f5f5;
+              padding: 10px;
+              border-radius: 4px;
+              overflow-x: auto;
+            "
+          ><code>// PROGRESSIVE MARGINS: More breathing room as viewport shrinks
 .defra-aq-tabs.daqi-tabs {
     margin-left: auto;
     margin-right: auto;
@@ -351,143 +426,152 @@
         margin-right: 16px;
     }
 }</code></pre>
-            </div>
         </div>
+      </div>
     </div>
-    
+
     <script>
-        function updateViewportInfo() {
-            const width = window.innerWidth;
-            const tabsContainer = document.getElementById('tabsContainer');
-            const widthElement = document.getElementById('viewportWidth');
-            const currentStageElement = document.getElementById('currentStage');
-            const leftMarginElement = document.getElementById('leftMargin');
-            const rightMarginElement = document.getElementById('rightMargin');
-            const totalMarginsElement = document.getElementById('totalMargins');
-            const breathingLevelElement = document.getElementById('breathingLevel');
-            const breathingStatusElement = document.getElementById('breathingStatus');
-            const componentWidthElement = document.getElementById('componentWidth');
-            const marginDisplayElement = document.getElementById('marginDisplay');
-            const leftValueElement = document.getElementById('leftValue');
-            const rightValueElement = document.getElementById('rightValue');
-            
-            widthElement.textContent = width;
-            
-            // Get computed style and position
-            const containerRect = tabsContainer.getBoundingClientRect();
-            const parentRect = tabsContainer.parentElement.getBoundingClientRect();
-            
-            // Calculate margins
-            const leftMargin = Math.round(containerRect.left - parentRect.left);
-            const rightMargin = Math.round(parentRect.right - containerRect.right);
-            const totalMargins = leftMargin + rightMargin;
-            
-            leftMarginElement.textContent = leftMargin + 'px';
-            rightMarginElement.textContent = rightMargin + 'px';
-            totalMarginsElement.textContent = totalMargins + 'px';
-            leftValueElement.textContent = leftMargin + 'px';
-            rightValueElement.textContent = rightMargin + 'px';
-            
-            // Determine current stage and breathing level
-            let stage, level, status;
-            if (width >= 682) {
-                stage = '🖥️ Desktop';
-                level = 'Natural';
-                status = 'Auto centering';
-            } else if (width >= 670) {
-                stage = '🌱 Light Breathing';
-                level = 'Level 1 (20px each)';
-                status = 'Light breathing room';
-            } else if (width >= 660) {
-                stage = '🟡 Medium Breathing';
-                level = 'Level 2 (24px each)';
-                status = 'Medium breathing room';
-            } else if (width >= 641) {
-                stage = '🔥 Heavy Breathing';
-                level = 'Level 3 (28px each)';
-                status = 'Maximum breathing room';
-            } else {
-                stage = '📱 Mobile';
-                level = 'Standard (16px each)';
-                status = 'Mobile standard margins';
-            }
-            
-            currentStageElement.textContent = stage;
-            breathingLevelElement.textContent = level;
-            breathingStatusElement.textContent = status;
-            
-            // Update component info
-            componentWidthElement.textContent = 'Width: ' + Math.round(containerRect.width) + 'px';
-            if (leftMargin === rightMargin) {
-                marginDisplayElement.textContent = 'Margins: ' + leftMargin + 'px each';
-            } else {
-                marginDisplayElement.textContent = 'Margins: ' + leftMargin + 'px / ' + rightMargin + 'px';
-            }
-            
-            // Color-code breathing status
-            if (width >= 682) {
-                breathingStatusElement.style.color = '#0066cc';
-            } else if (width >= 670) {
-                breathingStatusElement.style.color = '#00aa00';
-            } else if (width >= 660) {
-                breathingStatusElement.style.color = '#ffaa00';
-            } else if (width >= 641) {
-                breathingStatusElement.style.color = '#ff6600';
-            } else {
-                breathingStatusElement.style.color = '#ff0066';
-            }
+      function updateViewportInfo() {
+        const width = window.innerWidth
+        const tabsContainer = document.getElementById('tabsContainer')
+        const widthElement = document.getElementById('viewportWidth')
+        const currentStageElement = document.getElementById('currentStage')
+        const leftMarginElement = document.getElementById('leftMargin')
+        const rightMarginElement = document.getElementById('rightMargin')
+        const totalMarginsElement = document.getElementById('totalMargins')
+        const breathingLevelElement = document.getElementById('breathingLevel')
+        const breathingStatusElement =
+          document.getElementById('breathingStatus')
+        const componentWidthElement = document.getElementById('componentWidth')
+        const marginDisplayElement = document.getElementById('marginDisplay')
+        const leftValueElement = document.getElementById('leftValue')
+        const rightValueElement = document.getElementById('rightValue')
+
+        widthElement.textContent = width
+
+        // Get computed style and position
+        const containerRect = tabsContainer.getBoundingClientRect()
+        const parentRect = tabsContainer.parentElement.getBoundingClientRect()
+
+        // Calculate margins
+        const leftMargin = Math.round(containerRect.left - parentRect.left)
+        const rightMargin = Math.round(parentRect.right - containerRect.right)
+        const totalMargins = leftMargin + rightMargin
+
+        leftMarginElement.textContent = leftMargin + 'px'
+        rightMarginElement.textContent = rightMargin + 'px'
+        totalMarginsElement.textContent = totalMargins + 'px'
+        leftValueElement.textContent = leftMargin + 'px'
+        rightValueElement.textContent = rightMargin + 'px'
+
+        // Determine current stage and breathing level
+        let stage, level, status
+        if (width >= 682) {
+          stage = '🖥️ Desktop'
+          level = 'Natural'
+          status = 'Auto centering'
+        } else if (width >= 670) {
+          stage = '🌱 Light Breathing'
+          level = 'Level 1 (20px each)'
+          status = 'Light breathing room'
+        } else if (width >= 660) {
+          stage = '🟡 Medium Breathing'
+          level = 'Level 2 (24px each)'
+          status = 'Medium breathing room'
+        } else if (width >= 641) {
+          stage = '🔥 Heavy Breathing'
+          level = 'Level 3 (28px each)'
+          status = 'Maximum breathing room'
+        } else {
+          stage = '📱 Mobile'
+          level = 'Standard (16px each)'
+          status = 'Mobile standard margins'
         }
-        
-        // Update on load and resize
-        updateViewportInfo();
-        window.addEventListener('resize', updateViewportInfo);
-        
-        // Update every 100ms for smooth feedback during dragging
-        setInterval(updateViewportInfo, 100);
-        
-        // Visual feedback for margin indicators
-        function updateMarginIndicators() {
-            const width = window.innerWidth;
-            const leftMargin = parseInt(document.getElementById('leftValue').textContent);
-            const rightMargin = parseInt(document.getElementById('rightValue').textContent);
-            
-            const leftIndicator = document.getElementById('leftIndicator');
-            const rightIndicator = document.getElementById('rightIndicator');
-            
-            // Expected margins for each stage
-            let expectedMargin = 0;
-            if (width >= 682) {
-                // Auto margins - just check equality
-                expectedMargin = leftMargin; // Use left as reference
-            } else if (width >= 670) {
-                expectedMargin = 20;
-            } else if (width >= 660) {
-                expectedMargin = 24;
-            } else if (width >= 641) {
-                expectedMargin = 28;
-            } else {
-                expectedMargin = 16;
-            }
-            
-            const marginCorrect = (Math.abs(leftMargin - expectedMargin) <= 1 && 
-                                 Math.abs(rightMargin - expectedMargin) <= 1) ||
-                                (width >= 682 && Math.abs(leftMargin - rightMargin) <= 1);
-            
-            if (marginCorrect) {
-                leftIndicator.style.backgroundColor = 'rgba(0,170,0,0.8)';
-                rightIndicator.style.backgroundColor = 'rgba(0,170,0,0.8)';
-                leftIndicator.style.borderColor = '#00aa00';
-                rightIndicator.style.borderColor = '#00aa00';
-            } else {
-                leftIndicator.style.backgroundColor = 'rgba(255,0,0,0.8)';
-                rightIndicator.style.backgroundColor = 'rgba(255,0,0,0.8)';
-                leftIndicator.style.borderColor = '#ff0000';
-                rightIndicator.style.borderColor = '#ff0000';
-            }
+
+        currentStageElement.textContent = stage
+        breathingLevelElement.textContent = level
+        breathingStatusElement.textContent = status
+
+        // Update component info
+        componentWidthElement.textContent =
+          'Width: ' + Math.round(containerRect.width) + 'px'
+        if (leftMargin === rightMargin) {
+          marginDisplayElement.textContent =
+            'Margins: ' + leftMargin + 'px each'
+        } else {
+          marginDisplayElement.textContent =
+            'Margins: ' + leftMargin + 'px / ' + rightMargin + 'px'
         }
-        
-        // Update visual indicators
-        setInterval(updateMarginIndicators, 200);
+
+        // Color-code breathing status
+        if (width >= 682) {
+          breathingStatusElement.style.color = '#0066cc'
+        } else if (width >= 670) {
+          breathingStatusElement.style.color = '#00aa00'
+        } else if (width >= 660) {
+          breathingStatusElement.style.color = '#ffaa00'
+        } else if (width >= 641) {
+          breathingStatusElement.style.color = '#ff6600'
+        } else {
+          breathingStatusElement.style.color = '#ff0066'
+        }
+      }
+
+      // Update on load and resize
+      updateViewportInfo()
+      window.addEventListener('resize', updateViewportInfo)
+
+      // Update every 100ms for smooth feedback during dragging
+      setInterval(updateViewportInfo, 100)
+
+      // Visual feedback for margin indicators
+      function updateMarginIndicators() {
+        const width = window.innerWidth
+        const leftMargin = parseInt(
+          document.getElementById('leftValue').textContent
+        )
+        const rightMargin = parseInt(
+          document.getElementById('rightValue').textContent
+        )
+
+        const leftIndicator = document.getElementById('leftIndicator')
+        const rightIndicator = document.getElementById('rightIndicator')
+
+        // Expected margins for each stage
+        let expectedMargin = 0
+        if (width >= 682) {
+          // Auto margins - just check equality
+          expectedMargin = leftMargin // Use left as reference
+        } else if (width >= 670) {
+          expectedMargin = 20
+        } else if (width >= 660) {
+          expectedMargin = 24
+        } else if (width >= 641) {
+          expectedMargin = 28
+        } else {
+          expectedMargin = 16
+        }
+
+        const marginCorrect =
+          (Math.abs(leftMargin - expectedMargin) <= 1 &&
+            Math.abs(rightMargin - expectedMargin) <= 1) ||
+          (width >= 682 && Math.abs(leftMargin - rightMargin) <= 1)
+
+        if (marginCorrect) {
+          leftIndicator.style.backgroundColor = 'rgba(0,170,0,0.8)'
+          rightIndicator.style.backgroundColor = 'rgba(0,170,0,0.8)'
+          leftIndicator.style.borderColor = '#00aa00'
+          rightIndicator.style.borderColor = '#00aa00'
+        } else {
+          leftIndicator.style.backgroundColor = 'rgba(255,0,0,0.8)'
+          rightIndicator.style.backgroundColor = 'rgba(255,0,0,0.8)'
+          leftIndicator.style.borderColor = '#ff0000'
+          rightIndicator.style.borderColor = '#ff0000'
+        }
+      }
+
+      // Update visual indicators
+      setInterval(updateMarginIndicators, 200)
     </script>
-</body>
+  </body>
 </html>

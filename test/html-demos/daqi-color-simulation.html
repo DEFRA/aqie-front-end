@@ -1,486 +1,626 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DAQI Interactive Color Simulation (1-10)</title>
     <style>
-        body {
-            font-family: 'GDS Transport', arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f3f2f1;
-            color: #0b0c0c;
-        }
+      body {
+        font-family: 'GDS Transport', arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f3f2f1;
+        color: #0b0c0c;
+      }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
 
-        h1 {
-            text-align: center;
-            color: #0b0c0c;
-            margin-bottom: 30px;
-        }
+      h1 {
+        text-align: center;
+        color: #0b0c0c;
+        margin-bottom: 30px;
+      }
 
-        .controls {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+      .controls {
+        text-align: center;
+        margin-bottom: 30px;
+      }
 
-        .value-selector {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
+      .value-selector {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 20px 0;
+        flex-wrap: wrap;
+      }
 
-        .value-btn {
-            padding: 8px 12px;
-            border: 2px solid #b1b4b6;
-            background: white;
-            cursor: pointer;
-            font-weight: bold;
-            border-radius: 4px;
-            min-width: 40px;
-            transition: all 0.2s ease;
-        }
+      .value-btn {
+        padding: 8px 12px;
+        border: 2px solid #b1b4b6;
+        background: white;
+        cursor: pointer;
+        font-weight: bold;
+        border-radius: 4px;
+        min-width: 40px;
+        transition: all 0.2s ease;
+      }
 
-        .value-btn:hover {
-            border-color: #1d70b8;
-        }
+      .value-btn:hover {
+        border-color: #1d70b8;
+      }
 
-        .value-btn.active {
-            border-color: #1d70b8;
-            background: #1d70b8;
-            color: white;
-        }
+      .value-btn.active {
+        border-color: #1d70b8;
+        background: #1d70b8;
+        color: white;
+      }
 
-        /* DAQI Color Variables - From actual SCSS */
-        .daqi-simulation {
-            margin: 30px 0;
-        }
+      /* DAQI Color Variables - From actual SCSS */
+      .daqi-simulation {
+        margin: 30px 0;
+      }
 
-        .daqi-bar-container {
-            position: relative;
-            margin-bottom: 20px;
-        }
+      .daqi-bar-container {
+        position: relative;
+        margin-bottom: 20px;
+      }
 
-        .daqi-bar {
-            display: flex;
-            height: 50px;
-            margin-bottom: 15px;
-            border: 1px solid #b1b4b6;
-            border-radius: 4px;
-            overflow: hidden;
-        }
+      .daqi-bar {
+        display: flex;
+        height: 50px;
+        margin-bottom: 15px;
+        border: 1px solid #b1b4b6;
+        border-radius: 4px;
+        overflow: hidden;
+      }
 
-        .daqi-segment {
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-            position: relative;
-            border-right: 1px solid #b1b4b6;
-            transition: all 0.3s ease;
-            min-width: 45px;
-        }
+      .daqi-segment {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+        position: relative;
+        border-right: 1px solid #b1b4b6;
+        transition: all 0.3s ease;
+        min-width: 45px;
+      }
 
-        .daqi-segment:last-child {
-            border-right: none;
-            min-width: 90px; /* Last segment is wider */
-        }
+      .daqi-segment:last-child {
+        border-right: none;
+        min-width: 90px; /* Last segment is wider */
+      }
 
-        /* Default inactive state */
-        .daqi-segment {
-            background-color: #f3f2f1; /* light grey */
-            color: #505a5f;
-        }
+      /* Default inactive state */
+      .daqi-segment {
+        background-color: #f3f2f1; /* light grey */
+        color: #505a5f;
+      }
 
-        /* Active DAQI Colors - Based on actual SCSS color scheme */
-        .daqi-segment.daqi-1 { background-color: #00703c; color: white; } /* Green */
-        .daqi-segment.daqi-2 { background-color: #00703c; color: white; } /* Green */
-        .daqi-segment.daqi-3 { background-color: #00703c; color: white; } /* Green */
-        .daqi-segment.daqi-4 { background-color: #ffdd00; color: black; } /* Yellow */
-        .daqi-segment.daqi-5 { background-color: #ffdd00; color: black; } /* Yellow */
-        .daqi-segment.daqi-6 { background-color: #ffdd00; color: black; } /* Yellow */
-        .daqi-segment.daqi-7 { background-color: #d4351c; color: white; } /* Red */
-        .daqi-segment.daqi-8 { background-color: #d4351c; color: white; } /* Red */
-        .daqi-segment.daqi-9 { background-color: #d4351c; color: white; } /* Red */
-        .daqi-segment.daqi-10 { background-color: #4c2c92; color: white; } /* Purple */
+      /* Active DAQI Colors - Based on actual SCSS color scheme */
+      .daqi-segment.daqi-1 {
+        background-color: #00703c;
+        color: white;
+      } /* Green */
+      .daqi-segment.daqi-2 {
+        background-color: #00703c;
+        color: white;
+      } /* Green */
+      .daqi-segment.daqi-3 {
+        background-color: #00703c;
+        color: white;
+      } /* Green */
+      .daqi-segment.daqi-4 {
+        background-color: #ffdd00;
+        color: black;
+      } /* Yellow */
+      .daqi-segment.daqi-5 {
+        background-color: #ffdd00;
+        color: black;
+      } /* Yellow */
+      .daqi-segment.daqi-6 {
+        background-color: #ffdd00;
+        color: black;
+      } /* Yellow */
+      .daqi-segment.daqi-7 {
+        background-color: #d4351c;
+        color: white;
+      } /* Red */
+      .daqi-segment.daqi-8 {
+        background-color: #d4351c;
+        color: white;
+      } /* Red */
+      .daqi-segment.daqi-9 {
+        background-color: #d4351c;
+        color: white;
+      } /* Red */
+      .daqi-segment.daqi-10 {
+        background-color: #4c2c92;
+        color: white;
+      } /* Purple */
 
-        /* Selected state with border */
-        .daqi-segment.selected {
-            box-shadow: inset 0 0 0 3px #0b0c0c;
-            transform: scale(1.05);
-            z-index: 10;
-        }
+      /* Selected state with border */
+      .daqi-segment.selected {
+        box-shadow: inset 0 0 0 3px #0b0c0c;
+        transform: scale(1.05);
+        z-index: 10;
+      }
 
-        .daqi-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            color: #505a5f;
-            padding: 0 10px;
-        }
+      .daqi-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        color: #505a5f;
+        padding: 0 10px;
+      }
 
-        .info-panel {
-            background: #f3f2f1;
-            padding: 20px;
-            border-radius: 4px;
-            margin: 20px 0;
-            border-left: 5px solid #1d70b8;
-        }
+      .info-panel {
+        background: #f3f2f1;
+        padding: 20px;
+        border-radius: 4px;
+        margin: 20px 0;
+        border-left: 5px solid #1d70b8;
+      }
 
-        .current-value {
-            font-size: 24px;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 15px;
-        }
+      .current-value {
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 15px;
+      }
 
-        .advice-section {
-            margin: 15px 0;
-        }
+      .advice-section {
+        margin: 15px 0;
+      }
 
-        .advice-section h3 {
-            margin: 0 0 8px 0;
-            color: #0b0c0c;
-            font-size: 18px;
-        }
+      .advice-section h3 {
+        margin: 0 0 8px 0;
+        color: #0b0c0c;
+        font-size: 18px;
+      }
 
-        .advice-text {
-            margin: 5px 0;
-            line-height: 1.4;
-        }
+      .advice-text {
+        margin: 5px 0;
+        line-height: 1.4;
+      }
 
-        .band-info {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            margin-left: 10px;
-        }
+      .band-info {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-weight: bold;
+        margin-left: 10px;
+      }
 
-        .band-low { background: #00703c; color: white; }
-        .band-moderate { background: #ffdd00; color: black; }
-        .band-high { background: #d4351c; color: white; }
-        .band-very-high { background: #4c2c92; color: white; }
+      .band-low {
+        background: #00703c;
+        color: white;
+      }
+      .band-moderate {
+        background: #ffdd00;
+        color: black;
+      }
+      .band-high {
+        background: #d4351c;
+        color: white;
+      }
+      .band-very-high {
+        background: #4c2c92;
+        color: white;
+      }
 
-        .range-indicator {
-            text-align: center;
-            margin: 20px 0;
-            font-size: 16px;
-            font-weight: bold;
-        }
+      .range-indicator {
+        text-align: center;
+        margin: 20px 0;
+        font-size: 16px;
+        font-weight: bold;
+      }
 
-        .responsive-demo {
-            margin-top: 30px;
-            padding: 20px;
-            border: 2px dashed #b1b4b6;
-            border-radius: 4px;
-            background: #f8f8f8;
-        }
+      .responsive-demo {
+        margin-top: 30px;
+        padding: 20px;
+        border: 2px dashed #b1b4b6;
+        border-radius: 4px;
+        background: #f8f8f8;
+      }
 
-        .responsive-controls {
-            text-align: center;
-            margin-bottom: 15px;
-        }
+      .responsive-controls {
+        text-align: center;
+        margin-bottom: 15px;
+      }
 
-        .responsive-controls button {
-            margin: 0 5px;
-            padding: 8px 15px;
-            background: #1d70b8;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+      .responsive-controls button {
+        margin: 0 5px;
+        padding: 8px 15px;
+        background: #1d70b8;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
 
-        .responsive-controls button:hover {
-            background: #003078;
-        }
+      .responsive-controls button:hover {
+        background: #003078;
+      }
 
-        .mobile .daqi-bar {
-            max-width: 320px;
-            margin: 0 auto;
-        }
+      .mobile .daqi-bar {
+        max-width: 320px;
+        margin: 0 auto;
+      }
 
-        .tablet .daqi-bar {
-            max-width: 590px;
-            margin: 0 auto;
-        }
+      .tablet .daqi-bar {
+        max-width: 590px;
+        margin: 0 auto;
+      }
 
-        .desktop .daqi-bar {
-            max-width: 590px;
-            margin: 0 auto;
-        }
+      .desktop .daqi-bar {
+        max-width: 590px;
+        margin: 0 auto;
+      }
 
-        .auto-play {
-            text-align: center;
-            margin: 20px 0;
-        }
+      .auto-play {
+        text-align: center;
+        margin: 20px 0;
+      }
 
-        .auto-play button {
-            padding: 10px 20px;
-            background: #00703c;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
+      .auto-play button {
+        padding: 10px 20px;
+        background: #00703c;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
 
-        .auto-play button:hover {
-            background: #004225;
-        }
+      .auto-play button:hover {
+        background: #004225;
+      }
 
-        .auto-play button:disabled {
-            background: #b1b4b6;
-            cursor: not-allowed;
-        }
+      .auto-play button:disabled {
+        background: #b1b4b6;
+        cursor: not-allowed;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1>🌬️ DAQI Interactive Color Simulation</h1>
-        <p style="text-align: center; color: #505a5f; margin-bottom: 30px;">
-            Click values 1-10 to see the Daily Air Quality Index colors and health advice change in real-time
+      <h1>🌬️ DAQI Interactive Color Simulation</h1>
+      <p style="text-align: center; color: #505a5f; margin-bottom: 30px">
+        Click values 1-10 to see the Daily Air Quality Index colors and health
+        advice change in real-time
+      </p>
+
+      <div class="controls">
+        <div class="auto-play">
+          <button id="autoPlay">▶️ Auto-Play Simulation (1-10)</button>
+        </div>
+
+        <div class="value-selector">
+          <button class="value-btn" data-value="1">1</button>
+          <button class="value-btn" data-value="2">2</button>
+          <button class="value-btn" data-value="3">3</button>
+          <button class="value-btn" data-value="4">4</button>
+          <button class="value-btn active" data-value="5">5</button>
+          <button class="value-btn" data-value="6">6</button>
+          <button class="value-btn" data-value="7">7</button>
+          <button class="value-btn" data-value="8">8</button>
+          <button class="value-btn" data-value="9">9</button>
+          <button class="value-btn" data-value="10">10</button>
+        </div>
+      </div>
+
+      <div class="daqi-simulation">
+        <div class="current-value">
+          Current DAQI Value: <span id="currentValue">5</span>
+          <span id="bandInfo" class="band-info band-moderate">Moderate</span>
+        </div>
+
+        <div class="daqi-bar-container">
+          <div class="daqi-bar" id="daqiBar">
+            <div class="daqi-segment" data-value="1">1</div>
+            <div class="daqi-segment" data-value="2">2</div>
+            <div class="daqi-segment" data-value="3">3</div>
+            <div class="daqi-segment" data-value="4">4</div>
+            <div class="daqi-segment" data-value="5">5</div>
+            <div class="daqi-segment" data-value="6">6</div>
+            <div class="daqi-segment" data-value="7">7</div>
+            <div class="daqi-segment" data-value="8">8</div>
+            <div class="daqi-segment" data-value="9">9</div>
+            <div class="daqi-segment" data-value="10">10</div>
+          </div>
+
+          <div class="daqi-labels">
+            <span>Low (1-3)</span>
+            <span>Moderate (4-6)</span>
+            <span>High (7-9)</span>
+            <span>Very High (10)</span>
+          </div>
+        </div>
+
+        <div class="range-indicator" id="rangeIndicator">
+          🟡 Currently in MODERATE range (Values 4, 5, 6)
+        </div>
+      </div>
+
+      <div class="info-panel" id="infoPanel">
+        <div class="advice-section">
+          <h3>General Advice:</h3>
+          <div class="advice-text" id="generalAdvice">
+            For most people, short term exposure to moderate levels of air
+            pollution is not an issue.
+          </div>
+        </div>
+
+        <div class="advice-section">
+          <h3>At-Risk Groups:</h3>
+          <div class="advice-text" id="atRiskAdvice">
+            <strong>Adults with heart problems:</strong> Consider doing less
+            strenuous exercise, especially outside.<br />
+            <strong>People with asthma:</strong> Should be prepared to use their
+            reliever inhaler.<br />
+            <strong>Older people:</strong> Consider doing less strenuous
+            activity, especially outside.
+          </div>
+        </div>
+
+        <div class="advice-section">
+          <h3>Outlook:</h3>
+          <div class="advice-text" id="outlookAdvice">
+            The influx of warm air from the continent is resulting in moderate
+            air pollution levels throughout many areas today.
+          </div>
+        </div>
+      </div>
+
+      <div class="responsive-demo">
+        <h3>📱 Responsive Behavior Test</h3>
+        <div class="responsive-controls">
+          <button onclick="setViewport('mobile')">Mobile (320px)</button>
+          <button onclick="setViewport('tablet')">Tablet (590px)</button>
+          <button onclick="setViewport('desktop')">Desktop (590px+)</button>
+        </div>
+        <p style="text-align: center; color: #505a5f; font-size: 14px">
+          Test how the DAQI bar responds to different screen sizes
         </p>
-
-        <div class="controls">
-            <div class="auto-play">
-                <button id="autoPlay">▶️ Auto-Play Simulation (1-10)</button>
-            </div>
-            
-            <div class="value-selector">
-                <button class="value-btn" data-value="1">1</button>
-                <button class="value-btn" data-value="2">2</button>
-                <button class="value-btn" data-value="3">3</button>
-                <button class="value-btn" data-value="4">4</button>
-                <button class="value-btn active" data-value="5">5</button>
-                <button class="value-btn" data-value="6">6</button>
-                <button class="value-btn" data-value="7">7</button>
-                <button class="value-btn" data-value="8">8</button>
-                <button class="value-btn" data-value="9">9</button>
-                <button class="value-btn" data-value="10">10</button>
-            </div>
-        </div>
-
-        <div class="daqi-simulation">
-            <div class="current-value">
-                Current DAQI Value: <span id="currentValue">5</span>
-                <span id="bandInfo" class="band-info band-moderate">Moderate</span>
-            </div>
-
-            <div class="daqi-bar-container">
-                <div class="daqi-bar" id="daqiBar">
-                    <div class="daqi-segment" data-value="1">1</div>
-                    <div class="daqi-segment" data-value="2">2</div>
-                    <div class="daqi-segment" data-value="3">3</div>
-                    <div class="daqi-segment" data-value="4">4</div>
-                    <div class="daqi-segment" data-value="5">5</div>
-                    <div class="daqi-segment" data-value="6">6</div>
-                    <div class="daqi-segment" data-value="7">7</div>
-                    <div class="daqi-segment" data-value="8">8</div>
-                    <div class="daqi-segment" data-value="9">9</div>
-                    <div class="daqi-segment" data-value="10">10</div>
-                </div>
-
-                <div class="daqi-labels">
-                    <span>Low (1-3)</span>
-                    <span>Moderate (4-6)</span>
-                    <span>High (7-9)</span>
-                    <span>Very High (10)</span>
-                </div>
-            </div>
-
-            <div class="range-indicator" id="rangeIndicator">
-                🟡 Currently in MODERATE range (Values 4, 5, 6)
-            </div>
-        </div>
-
-        <div class="info-panel" id="infoPanel">
-            <div class="advice-section">
-                <h3>General Advice:</h3>
-                <div class="advice-text" id="generalAdvice">
-                    For most people, short term exposure to moderate levels of air pollution is not an issue.
-                </div>
-            </div>
-
-            <div class="advice-section">
-                <h3>At-Risk Groups:</h3>
-                <div class="advice-text" id="atRiskAdvice">
-                    <strong>Adults with heart problems:</strong> Consider doing less strenuous exercise, especially outside.<br>
-                    <strong>People with asthma:</strong> Should be prepared to use their reliever inhaler.<br>
-                    <strong>Older people:</strong> Consider doing less strenuous activity, especially outside.
-                </div>
-            </div>
-
-            <div class="advice-section">
-                <h3>Outlook:</h3>
-                <div class="advice-text" id="outlookAdvice">
-                    The influx of warm air from the continent is resulting in moderate air pollution levels throughout many areas today.
-                </div>
-            </div>
-        </div>
-
-        <div class="responsive-demo">
-            <h3>📱 Responsive Behavior Test</h3>
-            <div class="responsive-controls">
-                <button onclick="setViewport('mobile')">Mobile (320px)</button>
-                <button onclick="setViewport('tablet')">Tablet (590px)</button>
-                <button onclick="setViewport('desktop')">Desktop (590px+)</button>
-            </div>
-            <p style="text-align: center; color: #505a5f; font-size: 14px;">
-                Test how the DAQI bar responds to different screen sizes
-            </p>
-        </div>
+      </div>
     </div>
 
     <script>
-        // DAQI Data - From actual air-quality.js
-        const daqiData = {
-            1: { band: 'low', readableBand: 'low', advice: 'Enjoy your usual outdoor activities.', atrisk: 'Enjoy your usual outdoor activities.', outlook: 'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.' },
-            2: { band: 'low', readableBand: 'low', advice: 'Enjoy your usual outdoor activities.', atrisk: 'Enjoy your usual outdoor activities.', outlook: 'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.' },
-            3: { band: 'low', readableBand: 'low', advice: 'Enjoy your usual outdoor activities.', atrisk: 'Enjoy your usual outdoor activities.', outlook: 'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.' },
-            4: { band: 'moderate', readableBand: 'moderate', advice: 'For most people, short term exposure to moderate levels of air pollution is not an issue.', atrisk: '<strong>Adults with heart problems:</strong> Consider doing less strenuous exercise, especially outside.<br><strong>People with asthma:</strong> Should be prepared to use their reliever inhaler.<br><strong>Older people:</strong> Consider doing less strenuous activity, especially outside.', outlook: 'The influx of warm air from the continent is resulting in moderate air pollution levels throughout many areas today.' },
-            5: { band: 'moderate', readableBand: 'moderate', advice: 'For most people, short term exposure to moderate levels of air pollution is not an issue.', atrisk: '<strong>Adults with heart problems:</strong> Consider doing less strenuous exercise, especially outside.<br><strong>People with asthma:</strong> Should be prepared to use their reliever inhaler.<br><strong>Older people:</strong> Consider doing less strenuous activity, especially outside.', outlook: 'The influx of warm air from the continent is resulting in moderate air pollution levels throughout many areas today.' },
-            6: { band: 'moderate', readableBand: 'moderate', advice: 'For most people, short term exposure to moderate levels of air pollution is not an issue.', atrisk: '<strong>Adults with heart problems:</strong> Consider doing less strenuous exercise, especially outside.<br><strong>People with asthma:</strong> Should be prepared to use their reliever inhaler.<br><strong>Older people:</strong> Consider doing less strenuous activity, especially outside.', outlook: 'The influx of warm air from the continent is resulting in moderate air pollution levels throughout many areas today.' },
-            7: { band: 'high', readableBand: 'high', advice: 'Anyone experiencing discomfort such as sore eyes, cough or sore throat should consider reducing activity, particularly outdoors.', atrisk: '<strong>Adults with heart problems:</strong> Reduce strenuous physical exertion, particularly outdoors, especially if they experience symptoms.<br><strong>People with asthma:</strong> May find they need to use their reliever inhaler more often.<br><strong>Older people:</strong> Should reduce physical exertion.', outlook: 'Warm temperatures are expected to increase pollution levels to high across many areas today.' },
-            8: { band: 'high', readableBand: 'high', advice: 'Anyone experiencing discomfort such as sore eyes, cough or sore throat should consider reducing activity, particularly outdoors.', atrisk: '<strong>Adults with heart problems:</strong> Reduce strenuous physical exertion, particularly outdoors, especially if they experience symptoms.<br><strong>People with asthma:</strong> May find they need to use their reliever inhaler more often.<br><strong>Older people:</strong> Should reduce physical exertion.', outlook: 'Warm temperatures are expected to increase pollution levels to high across many areas today.' },
-            9: { band: 'high', readableBand: 'high', advice: 'Anyone experiencing discomfort such as sore eyes, cough or sore throat should consider reducing activity, particularly outdoors.', atrisk: '<strong>Adults with heart problems:</strong> Reduce strenuous physical exertion, particularly outdoors, especially if they experience symptoms.<br><strong>People with asthma:</strong> May find they need to use their reliever inhaler more often.<br><strong>Older people:</strong> Should reduce physical exertion.', outlook: 'Warm temperatures are expected to increase pollution levels to high across many areas today.' },
-            10: { band: 'veryHigh', readableBand: 'very high', advice: 'Reduce physical exertion, particularly outdoors, especially if you experience symptoms such as cough or sore throat.', atrisk: '<strong>Adults with heart problems:</strong> Should AVOID strenuous physical activity.<br><strong>People with asthma:</strong> May need to use their reliever inhaler more often.<br><strong>Older people:</strong> Should AVOID strenuous physical activity.', outlook: 'The current heatwave shows no signs of relenting, causing air pollution levels to remain very high across many areas today.' }
-        };
-
-        const rangeEmojis = {
-            'low': '🟢',
-            'moderate': '🟡', 
-            'high': '🟠',
-            'veryHigh': '🔴'
-        };
-
-        const rangeDescriptions = {
-            'low': 'Currently in LOW range (Values 1, 2, 3)',
-            'moderate': 'Currently in MODERATE range (Values 4, 5, 6)',
-            'high': 'Currently in HIGH range (Values 7, 8, 9)',
-            'veryHigh': 'Currently in VERY HIGH range (Value 10)'
-        };
-
-        let currentValue = 5;
-        let isAutoPlaying = false;
-
-        // Initialize
-        updateDAQI(currentValue);
-
-        // Event listeners
-        document.querySelectorAll('.value-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                if (isAutoPlaying) return;
-                const value = parseInt(e.target.dataset.value);
-                updateDAQI(value);
-            });
-        });
-
-        document.getElementById('autoPlay').addEventListener('click', startAutoPlay);
-
-        function updateDAQI(value) {
-            currentValue = value;
-            const data = daqiData[value];
-
-            // Update active button
-            document.querySelectorAll('.value-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (parseInt(btn.dataset.value) === value) {
-                    btn.classList.add('active');
-                }
-            });
-
-            // Update current value display
-            document.getElementById('currentValue').textContent = value;
-            
-            // Update band info
-            const bandInfo = document.getElementById('bandInfo');
-            bandInfo.textContent = data.readableBand.charAt(0).toUpperCase() + data.readableBand.slice(1);
-            bandInfo.className = `band-info band-${data.band === 'veryHigh' ? 'very-high' : data.band}`;
-
-            // Update DAQI bar - reset all segments first
-            document.querySelectorAll('.daqi-segment').forEach(segment => {
-                segment.classList.remove('selected');
-                // Remove all daqi-X classes
-                for (let i = 1; i <= 10; i++) {
-                    segment.classList.remove(`daqi-${i}`);
-                }
-            });
-
-            // Activate segments up to current value
-            document.querySelectorAll('.daqi-segment').forEach(segment => {
-                const segmentValue = parseInt(segment.dataset.value);
-                if (segmentValue <= value) {
-                    segment.classList.add(`daqi-${segmentValue}`);
-                    if (segmentValue === value) {
-                        segment.classList.add('selected');
-                    }
-                }
-            });
-
-            // Update range indicator
-            const rangeIndicator = document.getElementById('rangeIndicator');
-            rangeIndicator.textContent = rangeEmojis[data.band] + ' ' + rangeDescriptions[data.band];
-
-            // Update advice
-            document.getElementById('generalAdvice').textContent = data.advice;
-            document.getElementById('atRiskAdvice').innerHTML = data.atrisk;
-            document.getElementById('outlookAdvice').textContent = data.outlook;
-
-            console.log(`🌬️ DAQI ${value} (${data.band}): ${data.advice.substring(0, 50)}...`);
+      // DAQI Data - From actual air-quality.js
+      const daqiData = {
+        1: {
+          band: 'low',
+          readableBand: 'low',
+          advice: 'Enjoy your usual outdoor activities.',
+          atrisk: 'Enjoy your usual outdoor activities.',
+          outlook:
+            'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.'
+        },
+        2: {
+          band: 'low',
+          readableBand: 'low',
+          advice: 'Enjoy your usual outdoor activities.',
+          atrisk: 'Enjoy your usual outdoor activities.',
+          outlook:
+            'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.'
+        },
+        3: {
+          band: 'low',
+          readableBand: 'low',
+          advice: 'Enjoy your usual outdoor activities.',
+          atrisk: 'Enjoy your usual outdoor activities.',
+          outlook:
+            'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.'
+        },
+        4: {
+          band: 'moderate',
+          readableBand: 'moderate',
+          advice:
+            'For most people, short term exposure to moderate levels of air pollution is not an issue.',
+          atrisk:
+            '<strong>Adults with heart problems:</strong> Consider doing less strenuous exercise, especially outside.<br><strong>People with asthma:</strong> Should be prepared to use their reliever inhaler.<br><strong>Older people:</strong> Consider doing less strenuous activity, especially outside.',
+          outlook:
+            'The influx of warm air from the continent is resulting in moderate air pollution levels throughout many areas today.'
+        },
+        5: {
+          band: 'moderate',
+          readableBand: 'moderate',
+          advice:
+            'For most people, short term exposure to moderate levels of air pollution is not an issue.',
+          atrisk:
+            '<strong>Adults with heart problems:</strong> Consider doing less strenuous exercise, especially outside.<br><strong>People with asthma:</strong> Should be prepared to use their reliever inhaler.<br><strong>Older people:</strong> Consider doing less strenuous activity, especially outside.',
+          outlook:
+            'The influx of warm air from the continent is resulting in moderate air pollution levels throughout many areas today.'
+        },
+        6: {
+          band: 'moderate',
+          readableBand: 'moderate',
+          advice:
+            'For most people, short term exposure to moderate levels of air pollution is not an issue.',
+          atrisk:
+            '<strong>Adults with heart problems:</strong> Consider doing less strenuous exercise, especially outside.<br><strong>People with asthma:</strong> Should be prepared to use their reliever inhaler.<br><strong>Older people:</strong> Consider doing less strenuous activity, especially outside.',
+          outlook:
+            'The influx of warm air from the continent is resulting in moderate air pollution levels throughout many areas today.'
+        },
+        7: {
+          band: 'high',
+          readableBand: 'high',
+          advice:
+            'Anyone experiencing discomfort such as sore eyes, cough or sore throat should consider reducing activity, particularly outdoors.',
+          atrisk:
+            '<strong>Adults with heart problems:</strong> Reduce strenuous physical exertion, particularly outdoors, especially if they experience symptoms.<br><strong>People with asthma:</strong> May find they need to use their reliever inhaler more often.<br><strong>Older people:</strong> Should reduce physical exertion.',
+          outlook:
+            'Warm temperatures are expected to increase pollution levels to high across many areas today.'
+        },
+        8: {
+          band: 'high',
+          readableBand: 'high',
+          advice:
+            'Anyone experiencing discomfort such as sore eyes, cough or sore throat should consider reducing activity, particularly outdoors.',
+          atrisk:
+            '<strong>Adults with heart problems:</strong> Reduce strenuous physical exertion, particularly outdoors, especially if they experience symptoms.<br><strong>People with asthma:</strong> May find they need to use their reliever inhaler more often.<br><strong>Older people:</strong> Should reduce physical exertion.',
+          outlook:
+            'Warm temperatures are expected to increase pollution levels to high across many areas today.'
+        },
+        9: {
+          band: 'high',
+          readableBand: 'high',
+          advice:
+            'Anyone experiencing discomfort such as sore eyes, cough or sore throat should consider reducing activity, particularly outdoors.',
+          atrisk:
+            '<strong>Adults with heart problems:</strong> Reduce strenuous physical exertion, particularly outdoors, especially if they experience symptoms.<br><strong>People with asthma:</strong> May find they need to use their reliever inhaler more often.<br><strong>Older people:</strong> Should reduce physical exertion.',
+          outlook:
+            'Warm temperatures are expected to increase pollution levels to high across many areas today.'
+        },
+        10: {
+          band: 'veryHigh',
+          readableBand: 'very high',
+          advice:
+            'Reduce physical exertion, particularly outdoors, especially if you experience symptoms such as cough or sore throat.',
+          atrisk:
+            '<strong>Adults with heart problems:</strong> Should AVOID strenuous physical activity.<br><strong>People with asthma:</strong> May need to use their reliever inhaler more often.<br><strong>Older people:</strong> Should AVOID strenuous physical activity.',
+          outlook:
+            'The current heatwave shows no signs of relenting, causing air pollution levels to remain very high across many areas today.'
         }
+      }
 
-        function startAutoPlay() {
-            if (isAutoPlaying) return;
-            
-            isAutoPlaying = true;
-            const button = document.getElementById('autoPlay');
-            button.textContent = '⏸️ Playing... (1-10)';
-            button.disabled = true;
+      const rangeEmojis = {
+        low: '🟢',
+        moderate: '🟡',
+        high: '🟠',
+        veryHigh: '🔴'
+      }
 
-            let currentAutoValue = 1;
-            updateDAQI(currentAutoValue);
+      const rangeDescriptions = {
+        low: 'Currently in LOW range (Values 1, 2, 3)',
+        moderate: 'Currently in MODERATE range (Values 4, 5, 6)',
+        high: 'Currently in HIGH range (Values 7, 8, 9)',
+        veryHigh: 'Currently in VERY HIGH range (Value 10)'
+      }
 
-            const interval = setInterval(() => {
-                currentAutoValue++;
-                updateDAQI(currentAutoValue);
+      let currentValue = 5
+      let isAutoPlaying = false
 
-                if (currentAutoValue >= 10) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        isAutoPlaying = false;
-                        button.textContent = '▶️ Auto-Play Simulation (1-10)';
-                        button.disabled = false;
-                    }, 1000);
-                }
-            }, 1500); // 1.5 second intervals
-        }
+      // Initialize
+      updateDAQI(currentValue)
 
-        function setViewport(size) {
-            const container = document.querySelector('.daqi-bar-container');
-            container.className = `daqi-bar-container ${size}`;
-            
-            console.log(`📱 Viewport set to: ${size}`);
-        }
+      // Event listeners
+      document.querySelectorAll('.value-btn').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          if (isAutoPlaying) return
+          const value = parseInt(e.target.dataset.value)
+          updateDAQI(value)
+        })
+      })
 
-        // Simulate ResizeObserver behavior
-        window.addEventListener('resize', () => {
-            console.log('🔄 Window resized - DAQI responsive behavior would trigger');
-        });
+      document
+        .getElementById('autoPlay')
+        .addEventListener('click', startAutoPlay)
+
+      function updateDAQI(value) {
+        currentValue = value
+        const data = daqiData[value]
+
+        // Update active button
+        document.querySelectorAll('.value-btn').forEach((btn) => {
+          btn.classList.remove('active')
+          if (parseInt(btn.dataset.value) === value) {
+            btn.classList.add('active')
+          }
+        })
+
+        // Update current value display
+        document.getElementById('currentValue').textContent = value
+
+        // Update band info
+        const bandInfo = document.getElementById('bandInfo')
+        bandInfo.textContent =
+          data.readableBand.charAt(0).toUpperCase() + data.readableBand.slice(1)
+        bandInfo.className = `band-info band-${data.band === 'veryHigh' ? 'very-high' : data.band}`
+
+        // Update DAQI bar - reset all segments first
+        document.querySelectorAll('.daqi-segment').forEach((segment) => {
+          segment.classList.remove('selected')
+          // Remove all daqi-X classes
+          for (let i = 1; i <= 10; i++) {
+            segment.classList.remove(`daqi-${i}`)
+          }
+        })
+
+        // Activate segments up to current value
+        document.querySelectorAll('.daqi-segment').forEach((segment) => {
+          const segmentValue = parseInt(segment.dataset.value)
+          if (segmentValue <= value) {
+            segment.classList.add(`daqi-${segmentValue}`)
+            if (segmentValue === value) {
+              segment.classList.add('selected')
+            }
+          }
+        })
+
+        // Update range indicator
+        const rangeIndicator = document.getElementById('rangeIndicator')
+        rangeIndicator.textContent =
+          rangeEmojis[data.band] + ' ' + rangeDescriptions[data.band]
+
+        // Update advice
+        document.getElementById('generalAdvice').textContent = data.advice
+        document.getElementById('atRiskAdvice').innerHTML = data.atrisk
+        document.getElementById('outlookAdvice').textContent = data.outlook
+
+        console.log(
+          `🌬️ DAQI ${value} (${data.band}): ${data.advice.substring(0, 50)}...`
+        )
+      }
+
+      function startAutoPlay() {
+        if (isAutoPlaying) return
+
+        isAutoPlaying = true
+        const button = document.getElementById('autoPlay')
+        button.textContent = '⏸️ Playing... (1-10)'
+        button.disabled = true
+
+        let currentAutoValue = 1
+        updateDAQI(currentAutoValue)
+
+        const interval = setInterval(() => {
+          currentAutoValue++
+          updateDAQI(currentAutoValue)
+
+          if (currentAutoValue >= 10) {
+            clearInterval(interval)
+            setTimeout(() => {
+              isAutoPlaying = false
+              button.textContent = '▶️ Auto-Play Simulation (1-10)'
+              button.disabled = false
+            }, 1000)
+          }
+        }, 1500) // 1.5 second intervals
+      }
+
+      function setViewport(size) {
+        const container = document.querySelector('.daqi-bar-container')
+        container.className = `daqi-bar-container ${size}`
+
+        console.log(`📱 Viewport set to: ${size}`)
+      }
+
+      // Simulate ResizeObserver behavior
+      window.addEventListener('resize', () => {
+        console.log(
+          '🔄 Window resized - DAQI responsive behavior would trigger'
+        )
+      })
     </script>
-</body>
+  </body>
 </html>
