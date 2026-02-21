@@ -1,4 +1,4 @@
-@include govuk-exports("govuk/component/footer") {
+@include govuk-exports('govuk/component/footer') {
   $govuk-footer-background: $govuk-template-background-colour;
   $govuk-footer-text: $govuk-text-colour;
   $govuk-footer-content-border: $govuk-border-colour;
@@ -9,13 +9,13 @@
 
   .govuk-footer {
     @include govuk-font($size: if($govuk-new-typography-scale, 19, 16));
-    @include govuk-responsive-padding(7, "top");
-    @include govuk-responsive-padding(5, "bottom");
+    @include govuk-responsive-padding(7, 'top');
+    @include govuk-responsive-padding(5, 'bottom');
 
     border-top: 10px solid $govuk-brand-colour;
     color: $govuk-footer-text;
     @include _govuk-rebrand(
-      "background",
+      'background',
       $from: $govuk-footer-background,
       $to: $_govuk-rebrand-template-background-colour
     );
@@ -32,11 +32,11 @@
 
   .govuk-footer__section-break {
     margin: 0; // Reset `<hr>` default margins
-    @include govuk-responsive-margin(8, "bottom");
+    @include govuk-responsive-margin(8, 'bottom');
     border: 0; // Reset `<hr>` default borders
     border-bottom: 1px solid;
     @include _govuk-rebrand(
-      "border-bottom-color",
+      'border-bottom-color',
       $from: $govuk-footer-content-border,
       $to: $_govuk-rebrand-border-colour-on-blue-tint-95
     );
@@ -85,14 +85,15 @@
   }
 
   .govuk-footer__copyright-logo::before {
-    content: "";
+    content: '';
     display: block;
     width: 100%;
     padding-top: ($govuk-footer-crest-image-height + govuk-spacing(2));
-    background-image: govuk-image-url("govuk-crest.svg");
+    background-image: govuk-image-url('govuk-crest.svg');
     background-repeat: no-repeat;
     background-position: 50% 0%;
-    background-size: $govuk-footer-crest-image-width $govuk-footer-crest-image-height;
+    background-size: $govuk-footer-crest-image-width
+      $govuk-footer-crest-image-height;
     text-align: center;
     white-space: nowrap;
 
@@ -103,14 +104,16 @@
     // positive in Edge 17.
     @supports ((-webkit-mask-position: initial) or (mask-position: initial)) {
       background: currentcolor;
-      -webkit-mask-image: govuk-image-url("govuk-crest.svg");
-              mask-image: govuk-image-url("govuk-crest.svg");
+      -webkit-mask-image: govuk-image-url('govuk-crest.svg');
+      mask-image: govuk-image-url('govuk-crest.svg');
       -webkit-mask-repeat: no-repeat;
-              mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
       -webkit-mask-position: 50% 0%;
-              mask-position: 50% 0%;
-      -webkit-mask-size: $govuk-footer-crest-image-width $govuk-footer-crest-image-height;
-              mask-size: $govuk-footer-crest-image-width $govuk-footer-crest-image-height;
+      mask-position: 50% 0%;
+      -webkit-mask-size: $govuk-footer-crest-image-width
+        $govuk-footer-crest-image-height;
+      mask-size: $govuk-footer-crest-image-width
+        $govuk-footer-crest-image-height;
 
       // currentcolor doesn't seem to be computed correctly in forced colors
       // mode so force the background color to match the system link color
@@ -147,7 +150,7 @@
 
     border-bottom: 1px solid;
     @include _govuk-rebrand(
-      "border-bottom-color",
+      'border-bottom-color',
       $from: $govuk-footer-content-border,
       $to: $_govuk-rebrand-border-colour-on-blue-tint-95
     );
@@ -183,7 +186,7 @@
   }
 
   .govuk-footer__list-item {
-    @include govuk-responsive-margin(4, "bottom");
+    @include govuk-responsive-margin(4, 'bottom');
   }
 
   .govuk-footer__list-item:last-child {

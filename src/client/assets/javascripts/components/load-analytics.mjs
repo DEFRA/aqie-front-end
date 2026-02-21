@@ -1,20 +1,24 @@
 // @ts-nocheck
 export default function loadAnalytics() {
-    if (!window.ga?.loaded) {
-      window.dataLayer = window.dataLayer || []
-      if(localStorage.getItem('consentMode') === null){
-        window.dataLayer.push('consent', 'default', {
-          'ad_storage': 'denied',
-          'analytics_storage': 'denied',
-          'personalization_storage': 'denied',
-          'functionality_storage': 'denied',
-          'security_storage': 'denied',
-        })
-      } else {
-        window.dataLayer.push('consent', 'default', JSON.parse(localStorage.getItem('consentMode')))
-      }
-      // prettier-ignore
-      ;(function (w, d, s, l, i) {
+  if (!window.ga?.loaded) {
+    window.dataLayer = window.dataLayer || []
+    if (localStorage.getItem('consentMode') === null) {
+      window.dataLayer.push('consent', 'default', {
+        ad_storage: 'denied',
+        analytics_storage: 'denied',
+        personalization_storage: 'denied',
+        functionality_storage: 'denied',
+        security_storage: 'denied'
+      })
+    } else {
+      window.dataLayer.push(
+        'consent',
+        'default',
+        JSON.parse(localStorage.getItem('consentMode'))
+      )
+    }
+    // prettier-ignore
+    ;(function (w, d, s, l, i) {
         w[l] = w[l] || []
         w[l].push({
           'gtm.start': new Date().getTime(),
@@ -59,5 +63,5 @@ export default function loadAnalytics() {
         j.src = `https://www.googletagmanager.com/gtm.js?id=${i}${dl}`
         f.parentNode.insertBefore(j, f)
       })(window, document, 'script', 'dataLayer', 'GTM-PBFV8FNC')
-    }
+  }
 }

@@ -211,27 +211,28 @@ export const notificationTranslationsWelsh = {
   },
   // Email alerts success page
   emailSuccess: {
-    panelTitle:
+    pageTitle:
       'TODO Welsh: You have successfully signed up for air quality alerts',
-    panelBodyPrefix: 'TODO Welsh: You will receive email alerts at',
-    confirmationEmail: 'TODO Welsh: We have sent you a confirmation email.',
-    whatHappensNextHeading: 'TODO Welsh: What happens next',
-    alertsWhenText: 'TODO Welsh: You will receive email alerts when:',
-    alertBullet1:
-      'TODO Welsh: air pollution levels are forecast to be high or very high in your area',
-    alertBullet2:
-      'TODO Welsh: there are rapid changes in air quality that could affect your health',
-    unsubscribeText:
-      'TODO Welsh: You can unsubscribe from these alerts at any time using the unsubscribe link in any alert email.',
-    alertDetailsHeading: 'TODO Welsh: Your alert details',
-    emailAddressKey: 'TODO Welsh: Email address',
-    locationKey: 'TODO Welsh: Location',
-    returnButton: 'TODO Welsh: Return to Check air quality',
-    moreInfoHeading: 'TODO Welsh: Get more information',
-    moreInfoIntro: 'TODO Welsh: You can:',
-    moreInfoLink1: 'TODO Welsh: check current air quality in your area',
-    moreInfoLink2: 'TODO Welsh: find out more about air pollution and health',
-    moreInfoLink3: 'TODO Welsh: read our privacy policy'
+    heading:
+      'TODO Welsh: You have successfully signed up for air quality alerts',
+    successTitle: 'TODO Welsh: Success',
+    bannerHeading:
+      'TODO Welsh: You have set up air quality email alerts for {location}',
+    confirmationText: 'TODO Welsh: We have sent you a confirmation email.',
+    anotherAlertPrefix:
+      'TODO Welsh: If you want to set up another alert for {emailAddress} you can',
+    anotherAlertLinkText: 'TODO Welsh: search for another location',
+    anotherAlertSuffix: '.',
+    researchHeading: 'TODO Welsh: Help improve this service',
+    researchSignupPrefix:
+      'TODO Welsh: This is a new service and we are looking for people to share their feedback with us.',
+    researchSignupLinkText:
+      'TODO Welsh: Sign up to participate in future research and help improve this service',
+    researchSignupSuffix: '.',
+    researchPrivacyPrefix: 'TODO Welsh: By signing up, you agree to our ',
+    researchPrivacyLinkText: 'TODO Welsh: privacy statement',
+    researchPrivacySuffix:
+      'TODO Welsh: and consent to being contacted for research purposes.'
   },
   // Activation code page (legacy SMS journey)
   activationCode: {

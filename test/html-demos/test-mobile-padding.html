@@ -1,327 +1,383 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>✅ FIXED: Tabs Respect Container Structure - No Left Margin</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-                          <h3>🔧 Container Structure Implementation:</h3>
-                <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto;"><code>// ✅ FIXED: Respect container structure
-.defra-aq-tabs.daqi-tabs {
-    width: min(650px, 100vw - 15px);  // Only account for right margin
-    margin-left: 0;      // No left margin (container provides it)
-    margin-right: 15px;  // Only right margin for balance
-    
-    // Inside govuk-width-container which provides:
-    // margin-left: 15px;   // Container's left spacing
-    // margin-right: 15px;  // Container's right spacing
-}</code></pre> -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f8f9fa;
-        }
-        
-        /* Page container */
-        .page-container {
-            width: 100vw;
-            min-height: 100vh;
-            background: linear-gradient(45deg, #f0f8ff 0%, #e8f4f8 100%);
-            padding: 16px 0;
-            box-sizing: border-box;
-        }
-        
-        /* Main container - represents govuk-width-container */
-        .main-container {
-            max-width: 960px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            position: relative;
-            
-            /* Container provides left spacing for all contents */
-            margin-left: 15px;  /* Container's left margin */
-            margin-right: 15px; /* Container's right margin */
-        }
-        
-        /* Grid row */
-        .grid-row {
-            display: block;
-            margin-bottom: 20px;
-        }
-        
-        /* Two-thirds column */
-        .two-thirds-column {
-            max-width: 66.66%;
-            background-color: #e8f4f8;
-            padding: 20px;
-            border: 2px dashed #0066cc;
-            position: relative;
-            box-sizing: border-box;
-        }
-        
-        /* Tabs container - respects container structure */
-        .tabs-container {
-            margin-bottom: 20px;
-            border: 2px solid #0066cc;
-            background-color: white;
-            position: relative;
-            
-            /* FIXED: Respect container structure */
-            width: min(650px, 100vw - 15px); /* Only account for right margin */
-            max-width: 650px;
-            min-width: 320px;
-            margin-left: 0;     /* No left margin (container provides left spacing) */
-            margin-right: 15px; /* Only right margin to balance container */
-            
-            /* Default internal padding */
-            padding: 15px;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
-        
-        /* Desktop: respect container structure */
-        @media (min-width: 665px) {
-            .tabs-container {
-                width: 650px;
-                margin-left: 0;     /* No left margin (container provides it) */
-                margin-right: 15px; /* Only right margin for balance */
-                padding: 15px;
-                border-color: #0066cc; /* Blue = Desktop respecting container */
-            }
-        }
-        
-        /* Progressive breakpoints: respect container structure */
-        @media (max-width: 664px) and (min-width: 655px) {
-            .tabs-container {
-                width: calc(100vw - 15px); /* Full width minus right margin only */
-                max-width: 650px;
-                margin-left: 0;     /* No left margin (container provides it) */
-                margin-right: 15px; /* Only right margin for balance */
-                padding-left: 8px;
-                padding-right: 8px;
-                padding-top: 15px;
-                padding-bottom: 15px;
-                border-color: #ff8800; /* Orange = Progressive respecting container */
-                box-sizing: border-box;
-            }
-        }
-        
-        @media (max-width: 654px) and (min-width: 645px) {
-            .tabs-container {
-                width: calc(100vw - 15px);
-                max-width: 650px;
-                margin-left: 0;
-                margin-right: 15px;
-                padding-left: 8px;
-                padding-right: 8px;
-                padding-top: 15px;
-                padding-bottom: 15px;
-                border-color: #ff8800;
-                box-sizing: border-box;
-            }
-        }
-        
-        @media (max-width: 644px) and (min-width: 641px) {
-            .tabs-container {
-                width: calc(100vw - 15px);
-                max-width: 650px;
-                margin-left: 0;
-                margin-right: 15px;
-                padding-left: 8px;
-                padding-right: 8px;
-                padding-top: 15px;
-                padding-bottom: 15px;
-                border-color: #ff8800;
-                box-sizing: border-box;
-            }
-        }
-        
-        /* Mobile: respect container structure */
-        @media (max-width: 640px) {
-            .tabs-container {
-                width: calc(100vw - 15px); /* Full width minus right margin only */
-                max-width: 650px;
-                margin-left: 0;     /* No left margin (container provides it) */
-                margin-right: 15px; /* Only right margin for balance */
-                /* Additional internal padding for mobile comfort */
-                padding-left: 12px;
-                padding-right: 12px;
-                padding-top: 15px;
-                padding-bottom: 15px;
-                border-color: #ff0066; /* Pink = Mobile respecting container */
-            }
-        }
-        
-        /* Content inside tabs */
-        .tabs-content {
-            background: linear-gradient(to right, #00ff00 0%, #ffff00 30%, #ff8000 60%, #ff0000 100%);
-            height: 100px;
-            border: 1px solid #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: black;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
-            position: relative;
-            margin: 10px 0;
-        }
-        
-        /* DAQI component simulation */
-        .daqi-simulation {
-            background-color: #f5f5f5;
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 4px;
-            position: relative;
-        }
-        
-        /* Padding indicators */
-        .padding-indicator {
-            position: absolute;
-            background-color: rgba(0,170,0,0.7);
-            color: white;
-            padding: 3px 6px;
-            border-radius: 2px;
-            font-size: 10px;
-            font-weight: bold;
-            z-index: 10;
-        }
-        
-        .padding-left {
-            top: 5px;
-            left: 5px;
-        }
-        
-        .padding-right {
-            top: 5px;
-            right: 5px;
-        }
-        
-        /* Viewport info display */
-        .viewport-info {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background-color: rgba(0,0,0,0.9);
-            color: white;
-            padding: 15px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 12px;
-            z-index: 1000;
-            min-width: 220px;
-        }
-        
-        .info-panel {
-            background-color: #f0f8ff;
-            border: 1px solid #0066cc;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-        }
-        
-        .mobile-focus {
-            background-color: #ffe6f3;
-            border: 2px solid #ff0066;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-        }
-        
-        .measurement {
-            font-family: monospace;
-            font-weight: bold;
-            color: #0066cc;
-        }
-        
-        .fixed { color: #00aa00; font-weight: bold; }
-        .mobile { color: #ff0066; font-weight: bold; }
+              body {
+                  margin: 0;
+                  padding: 0;
+                                <h3>🔧 Container Structure Implementation:</h3>
+                      <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto;"><code>// ✅ FIXED: Respect container structure
+      .defra-aq-tabs.daqi-tabs {
+          width: min(650px, 100vw - 15px);  // Only account for right margin
+          margin-left: 0;      // No left margin (container provides it)
+          margin-right: 15px;  // Only right margin for balance
+
+          // Inside govuk-width-container which provides:
+          // margin-left: 15px;   // Container's left spacing
+          // margin-right: 15px;  // Container's right spacing
+      }</code></pre> -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                  background-color: #f8f9fa;
+              }
+
+              /* Page container */
+              .page-container {
+                  width: 100vw;
+                  min-height: 100vh;
+                  background: linear-gradient(45deg, #f0f8ff 0%, #e8f4f8 100%);
+                  padding: 16px 0;
+                  box-sizing: border-box;
+              }
+
+              /* Main container - represents govuk-width-container */
+              .main-container {
+                  max-width: 960px;
+                  margin: 0 auto;
+                  background-color: white;
+                  padding: 20px;
+                  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                  position: relative;
+
+                  /* Container provides left spacing for all contents */
+                  margin-left: 15px;  /* Container's left margin */
+                  margin-right: 15px; /* Container's right margin */
+              }
+
+              /* Grid row */
+              .grid-row {
+                  display: block;
+                  margin-bottom: 20px;
+              }
+
+              /* Two-thirds column */
+              .two-thirds-column {
+                  max-width: 66.66%;
+                  background-color: #e8f4f8;
+                  padding: 20px;
+                  border: 2px dashed #0066cc;
+                  position: relative;
+                  box-sizing: border-box;
+              }
+
+              /* Tabs container - respects container structure */
+              .tabs-container {
+                  margin-bottom: 20px;
+                  border: 2px solid #0066cc;
+                  background-color: white;
+                  position: relative;
+
+                  /* FIXED: Respect container structure */
+                  width: min(650px, 100vw - 15px); /* Only account for right margin */
+                  max-width: 650px;
+                  min-width: 320px;
+                  margin-left: 0;     /* No left margin (container provides left spacing) */
+                  margin-right: 15px; /* Only right margin to balance container */
+
+                  /* Default internal padding */
+                  padding: 15px;
+                  box-sizing: border-box;
+                  transition: all 0.3s ease;
+              }
+
+              /* Desktop: respect container structure */
+              @media (min-width: 665px) {
+                  .tabs-container {
+                      width: 650px;
+                      margin-left: 0;     /* No left margin (container provides it) */
+                      margin-right: 15px; /* Only right margin for balance */
+                      padding: 15px;
+                      border-color: #0066cc; /* Blue = Desktop respecting container */
+                  }
+              }
+
+              /* Progressive breakpoints: respect container structure */
+              @media (max-width: 664px) and (min-width: 655px) {
+                  .tabs-container {
+                      width: calc(100vw - 15px); /* Full width minus right margin only */
+                      max-width: 650px;
+                      margin-left: 0;     /* No left margin (container provides it) */
+                      margin-right: 15px; /* Only right margin for balance */
+                      padding-left: 8px;
+                      padding-right: 8px;
+                      padding-top: 15px;
+                      padding-bottom: 15px;
+                      border-color: #ff8800; /* Orange = Progressive respecting container */
+                      box-sizing: border-box;
+                  }
+              }
+
+              @media (max-width: 654px) and (min-width: 645px) {
+                  .tabs-container {
+                      width: calc(100vw - 15px);
+                      max-width: 650px;
+                      margin-left: 0;
+                      margin-right: 15px;
+                      padding-left: 8px;
+                      padding-right: 8px;
+                      padding-top: 15px;
+                      padding-bottom: 15px;
+                      border-color: #ff8800;
+                      box-sizing: border-box;
+                  }
+              }
+
+              @media (max-width: 644px) and (min-width: 641px) {
+                  .tabs-container {
+                      width: calc(100vw - 15px);
+                      max-width: 650px;
+                      margin-left: 0;
+                      margin-right: 15px;
+                      padding-left: 8px;
+                      padding-right: 8px;
+                      padding-top: 15px;
+                      padding-bottom: 15px;
+                      border-color: #ff8800;
+                      box-sizing: border-box;
+                  }
+              }
+
+              /* Mobile: respect container structure */
+              @media (max-width: 640px) {
+                  .tabs-container {
+                      width: calc(100vw - 15px); /* Full width minus right margin only */
+                      max-width: 650px;
+                      margin-left: 0;     /* No left margin (container provides it) */
+                      margin-right: 15px; /* Only right margin for balance */
+                      /* Additional internal padding for mobile comfort */
+                      padding-left: 12px;
+                      padding-right: 12px;
+                      padding-top: 15px;
+                      padding-bottom: 15px;
+                      border-color: #ff0066; /* Pink = Mobile respecting container */
+                  }
+              }
+
+              /* Content inside tabs */
+              .tabs-content {
+                  background: linear-gradient(to right, #00ff00 0%, #ffff00 30%, #ff8000 60%, #ff0000 100%);
+                  height: 100px;
+                  border: 1px solid #ccc;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  color: black;
+                  font-weight: bold;
+                  text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+                  position: relative;
+                  margin: 10px 0;
+              }
+
+              /* DAQI component simulation */
+              .daqi-simulation {
+                  background-color: #f5f5f5;
+                  border: 1px solid #ccc;
+                  padding: 10px;
+                  margin: 10px 0;
+                  border-radius: 4px;
+                  position: relative;
+              }
+
+              /* Padding indicators */
+              .padding-indicator {
+                  position: absolute;
+                  background-color: rgba(0,170,0,0.7);
+                  color: white;
+                  padding: 3px 6px;
+                  border-radius: 2px;
+                  font-size: 10px;
+                  font-weight: bold;
+                  z-index: 10;
+              }
+
+              .padding-left {
+                  top: 5px;
+                  left: 5px;
+              }
+
+              .padding-right {
+                  top: 5px;
+                  right: 5px;
+              }
+
+              /* Viewport info display */
+              .viewport-info {
+                  position: fixed;
+                  top: 10px;
+                  right: 10px;
+                  background-color: rgba(0,0,0,0.9);
+                  color: white;
+                  padding: 15px;
+                  border-radius: 4px;
+                  font-family: monospace;
+                  font-size: 12px;
+                  z-index: 1000;
+                  min-width: 220px;
+              }
+
+              .info-panel {
+                  background-color: #f0f8ff;
+                  border: 1px solid #0066cc;
+                  padding: 15px;
+                  margin: 20px 0;
+                  border-radius: 4px;
+              }
+
+              .mobile-focus {
+                  background-color: #ffe6f3;
+                  border: 2px solid #ff0066;
+                  padding: 15px;
+                  margin: 20px 0;
+                  border-radius: 4px;
+              }
+
+              .measurement {
+                  font-family: monospace;
+                  font-weight: bold;
+                  color: #0066cc;
+              }
+
+              .fixed { color: #00aa00; font-weight: bold; }
+              .mobile { color: #ff0066; font-weight: bold; }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="viewport-info" id="viewportInfo">
-        <strong>📱 MOBILE PADDING TEST</strong><br>
-        Viewport: <span id="viewportWidth"></span>px<br>
-        Mode: <span id="currentMode"></span><br>
-        <hr style="margin: 8px 0; border: 1px solid #666;">
-        <strong>📐 MOBILE PADDING</strong><br>
-        Left: <span id="leftPadding"></span><br>
-        Right: <span id="rightPadding"></span><br>
-        <hr style="margin: 8px 0; border: 1px solid #666;">
-        <strong>🔧 STATUS</strong><br>
-        Mobile: <span id="mobileStatus"></span><br>
-        Padding: <span id="paddingStatus"></span>
+      <strong>📱 MOBILE PADDING TEST</strong><br />
+      Viewport: <span id="viewportWidth"></span>px<br />
+      Mode: <span id="currentMode"></span><br />
+      <hr style="margin: 8px 0; border: 1px solid #666" />
+      <strong>📐 MOBILE PADDING</strong><br />
+      Left: <span id="leftPadding"></span><br />
+      Right: <span id="rightPadding"></span><br />
+      <hr style="margin: 8px 0; border: 1px solid #666" />
+      <strong>🔧 STATUS</strong><br />
+      Mobile: <span id="mobileStatus"></span><br />
+      Padding: <span id="paddingStatus"></span>
     </div>
-    
+
     <div class="page-container">
-        <div class="main-container">
-            <h1>✅ FIXED: Tabs Respect Container Structure</h1>
-            
-            <div class="info-panel">
-                <h3>🎯 Problem & Solution</h3>
-                <p><strong>Issue:</strong> Elements inside main container shouldn't have left margin since container provides it.</p>
-                <p><strong>Solution:</strong> Removed left margin, kept only <strong>15px right margin</strong> to balance container's left spacing</p>
-            </div>
-            
-            <div class="mobile-focus">
-                <h3>� Container Structure - Proper Layout</h3>
-                <ul>
-                    <li><strong>Container:</strong> Provides 15px left margin for all contents</li>
-                    <li><strong>Tabs component:</strong> <span class="fixed">0px left margin</span> + <span class="fixed">15px right margin</span></li>
-                    <li><strong>Result:</strong> Balanced spacing without double-margins</li>
-                    <li><strong>All breakpoints:</strong> Respect container's left spacing provision</li>
-                </ul>
-                <p><span class="mobile">🔴 Pink border = Mobile (≤640px)</span></p>
-                <p><span style="color: #ff8800; font-weight: bold;">🟠 Orange border = Progressive with left padding (641px-681px)</span></p>
-            </div>
-            
-            <div class="grid-row">
-                <div class="two-thirds-column">
-                    <h2>Two-Thirds Column Container</h2>
-                    <p>Resize to ≤640px to see the mobile padding in action!</p>
-                    
-                    <div class="tabs-container" id="tabsContainer">
-                        <div class="padding-indicator padding-left" id="leftIndicator">L: <span id="leftValue">15px</span></div>
-                        <div class="padding-indicator padding-right" id="rightIndicator">R: <span id="rightValue">15px</span></div>
-                        
-                        <h3>📊 DAQI Tabs Component</h3>
-                        <p><strong>Mobile padding ensures content doesn't touch edges!</strong></p>
-                        
-                        <div class="tabs-content">
-                            <div>
-                                <strong>Content with Padding</strong><br>
-                                <span class="measurement" id="paddingDisplay">Padding: 15px all sides</span>
-                            </div>
-                        </div>
-                        
-                        <div class="daqi-simulation">
-                            <strong>DAQI Component Simulation</strong><br>
-                            <small>This content now has proper mobile padding and won't touch the component edges on mobile devices.</small>
-                        </div>
-                    </div>
-                    
-                    <div class="info-panel">
-                        <h3>🧪 Test Instructions:</h3>
-                        <ol>
-                            <li><strong>Desktop (≥665px):</strong> 🔵 Blue border, 0px left + 15px right margin</li>
-                            <li><strong>Progressive (641px-664px):</strong> 🟠 Orange border, <strong>0px left + 15px right margin</strong></li>
-                            <li><strong>Mobile (≤640px):</strong> 🔴 Pink border, <strong>0px left + 15px right margin</strong></li>
-                            <li><strong>Container structure:</strong> Main container provides left spacing for all contents</li>
-                        </ol>
-                        <div class="measurement" id="currentMeasurement">
-                            Mobile mode should show asymmetric padding! ↗️
-                        </div>
-                    </div>
+      <div class="main-container">
+        <h1>✅ FIXED: Tabs Respect Container Structure</h1>
+
+        <div class="info-panel">
+          <h3>🎯 Problem & Solution</h3>
+          <p>
+            <strong>Issue:</strong> Elements inside main container shouldn't
+            have left margin since container provides it.
+          </p>
+          <p>
+            <strong>Solution:</strong> Removed left margin, kept only
+            <strong>15px right margin</strong> to balance container's left
+            spacing
+          </p>
+        </div>
+
+        <div class="mobile-focus">
+          <h3>� Container Structure - Proper Layout</h3>
+          <ul>
+            <li>
+              <strong>Container:</strong> Provides 15px left margin for all
+              contents
+            </li>
+            <li>
+              <strong>Tabs component:</strong>
+              <span class="fixed">0px left margin</span> +
+              <span class="fixed">15px right margin</span>
+            </li>
+            <li>
+              <strong>Result:</strong> Balanced spacing without double-margins
+            </li>
+            <li>
+              <strong>All breakpoints:</strong> Respect container's left spacing
+              provision
+            </li>
+          </ul>
+          <p><span class="mobile">🔴 Pink border = Mobile (≤640px)</span></p>
+          <p>
+            <span style="color: #ff8800; font-weight: bold"
+              >🟠 Orange border = Progressive with left padding
+              (641px-681px)</span
+            >
+          </p>
+        </div>
+
+        <div class="grid-row">
+          <div class="two-thirds-column">
+            <h2>Two-Thirds Column Container</h2>
+            <p>Resize to ≤640px to see the mobile padding in action!</p>
+
+            <div class="tabs-container" id="tabsContainer">
+              <div class="padding-indicator padding-left" id="leftIndicator">
+                L: <span id="leftValue">15px</span>
+              </div>
+              <div class="padding-indicator padding-right" id="rightIndicator">
+                R: <span id="rightValue">15px</span>
+              </div>
+
+              <h3>📊 DAQI Tabs Component</h3>
+              <p>
+                <strong
+                  >Mobile padding ensures content doesn't touch edges!</strong
+                >
+              </p>
+
+              <div class="tabs-content">
+                <div>
+                  <strong>Content with Padding</strong><br />
+                  <span class="measurement" id="paddingDisplay"
+                    >Padding: 15px all sides</span
+                  >
                 </div>
+              </div>
+
+              <div class="daqi-simulation">
+                <strong>DAQI Component Simulation</strong><br />
+                <small
+                  >This content now has proper mobile padding and won't touch
+                  the component edges on mobile devices.</small
+                >
+              </div>
             </div>
-            
+
             <div class="info-panel">
-                <h3>🔧 Mobile Padding Implementation:</h3>
-                <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto;"><code>// FIXED: Added mobile-specific padding
+              <h3>🧪 Test Instructions:</h3>
+              <ol>
+                <li>
+                  <strong>Desktop (≥665px):</strong> 🔵 Blue border, 0px left +
+                  15px right margin
+                </li>
+                <li>
+                  <strong>Progressive (641px-664px):</strong> 🟠 Orange border,
+                  <strong>0px left + 15px right margin</strong>
+                </li>
+                <li>
+                  <strong>Mobile (≤640px):</strong> 🔴 Pink border,
+                  <strong>0px left + 15px right margin</strong>
+                </li>
+                <li>
+                  <strong>Container structure:</strong> Main container provides
+                  left spacing for all contents
+                </li>
+              </ol>
+              <div class="measurement" id="currentMeasurement">
+                Mobile mode should show asymmetric padding! ↗️
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-panel">
+          <h3>🔧 Mobile Padding Implementation:</h3>
+          <pre
+            style="
+              background: #f5f5f5;
+              padding: 10px;
+              border-radius: 4px;
+              overflow-x: auto;
+            "
+          ><code>// FIXED: Added mobile-specific padding
 @media (max-width: 640px) {
     .defra-aq-tabs.daqi-tabs {
         width: calc(100vw - 32px);
@@ -334,104 +390,108 @@
         box-sizing: border-box;           // Include padding in width
     }
 }</code></pre>
-            </div>
         </div>
+      </div>
     </div>
-    
+
     <script>
-        function updateViewportInfo() {
-            const width = window.innerWidth;
-            const tabsContainer = document.getElementById('tabsContainer');
-            const widthElement = document.getElementById('viewportWidth');
-            const currentModeElement = document.getElementById('currentMode');
-            const leftPaddingElement = document.getElementById('leftPadding');
-            const rightPaddingElement = document.getElementById('rightPadding');
-            const mobileStatusElement = document.getElementById('mobileStatus');
-            const paddingStatusElement = document.getElementById('paddingStatus');
-            const paddingDisplayElement = document.getElementById('paddingDisplay');
-            const leftValueElement = document.getElementById('leftValue');
-            const rightValueElement = document.getElementById('rightValue');
-            
-            widthElement.textContent = width;
-            
-            // Get computed style for padding
-            const computedStyle = getComputedStyle(tabsContainer);
-            const leftPadding = parseInt(computedStyle.paddingLeft) || 0;
-            const rightPadding = parseInt(computedStyle.paddingRight) || 0;
-            
-            leftPaddingElement.textContent = leftPadding + 'px';
-            rightPaddingElement.textContent = rightPadding + 'px';
-            leftValueElement.textContent = leftPadding + 'px';
-            rightValueElement.textContent = rightPadding + 'px';
-            
-            // Determine current mode
-            let mode, isMobile = false, hasLeftPadding = false;
-            if (width <= 640) {
-                mode = '📱 Mobile';
-                isMobile = true;
-                hasLeftPadding = true;
-                mobileStatusElement.textContent = '✅ Active';
-                mobileStatusElement.style.color = '#ff0066';
-                
-                // Check if mobile padding is correct
-                if (leftPadding === 12 && rightPadding === 12) {
-                    paddingStatusElement.textContent = '✅ Symmetrical (12px + 12px)';
-                    paddingStatusElement.style.color = '#00aa00';
-                } else {
-                    paddingStatusElement.textContent = '❌ Not symmetrical';
-                    paddingStatusElement.style.color = '#ff0000';
-                }
-                
-                paddingDisplayElement.textContent = `Padding: ${leftPadding}px left, ${rightPadding}px right`;
-            } else if (width >= 682) {
-                mode = '🖥️ Desktop';
-                mobileStatusElement.textContent = '❌ Inactive';
-                mobileStatusElement.style.color = '#666666';
-                paddingStatusElement.textContent = 'Standard 15px all sides';
-                paddingStatusElement.style.color = '#0066cc';
-                paddingDisplayElement.textContent = 'Padding: 15px all sides';
-            } else {
-                mode = '📱 Progressive + Left Padding';
-                hasLeftPadding = true;
-                mobileStatusElement.textContent = '🟠 Progressive';
-                mobileStatusElement.style.color = '#ff8800';
-                
-                // Check if progressive left padding is correct
-                if (leftPadding === 8 && rightPadding === 8) {
-                    paddingStatusElement.textContent = '✅ Symmetrical progressive (8px + 8px)';
-                    paddingStatusElement.style.color = '#ff8800';
-                } else {
-                    paddingStatusElement.textContent = '❌ Progressive padding not symmetrical';
-                    paddingStatusElement.style.color = '#ff0000';
-                }
-                
-                paddingDisplayElement.textContent = `Padding: ${leftPadding}px left, ${rightPadding}px right`;
-            }
-            
-            currentModeElement.textContent = mode;
-            
-            // Update padding indicators color
-            const leftIndicator = document.getElementById('leftIndicator');
-            const rightIndicator = document.getElementById('rightIndicator');
-            
-            if (isMobile) {
-                leftIndicator.style.backgroundColor = 'rgba(255,0,102,0.8)';
-                rightIndicator.style.backgroundColor = 'rgba(255,0,102,0.8)';
-            } else if (hasLeftPadding) {
-                leftIndicator.style.backgroundColor = 'rgba(255,136,0,0.8)'; // Orange for progressive
-                rightIndicator.style.backgroundColor = 'rgba(0,102,204,0.8)'; // Blue for standard right
-            } else {
-                leftIndicator.style.backgroundColor = 'rgba(0,102,204,0.8)';
-                rightIndicator.style.backgroundColor = 'rgba(0,102,204,0.8)';
-            }
+      function updateViewportInfo() {
+        const width = window.innerWidth
+        const tabsContainer = document.getElementById('tabsContainer')
+        const widthElement = document.getElementById('viewportWidth')
+        const currentModeElement = document.getElementById('currentMode')
+        const leftPaddingElement = document.getElementById('leftPadding')
+        const rightPaddingElement = document.getElementById('rightPadding')
+        const mobileStatusElement = document.getElementById('mobileStatus')
+        const paddingStatusElement = document.getElementById('paddingStatus')
+        const paddingDisplayElement = document.getElementById('paddingDisplay')
+        const leftValueElement = document.getElementById('leftValue')
+        const rightValueElement = document.getElementById('rightValue')
+
+        widthElement.textContent = width
+
+        // Get computed style for padding
+        const computedStyle = getComputedStyle(tabsContainer)
+        const leftPadding = parseInt(computedStyle.paddingLeft) || 0
+        const rightPadding = parseInt(computedStyle.paddingRight) || 0
+
+        leftPaddingElement.textContent = leftPadding + 'px'
+        rightPaddingElement.textContent = rightPadding + 'px'
+        leftValueElement.textContent = leftPadding + 'px'
+        rightValueElement.textContent = rightPadding + 'px'
+
+        // Determine current mode
+        let mode,
+          isMobile = false,
+          hasLeftPadding = false
+        if (width <= 640) {
+          mode = '📱 Mobile'
+          isMobile = true
+          hasLeftPadding = true
+          mobileStatusElement.textContent = '✅ Active'
+          mobileStatusElement.style.color = '#ff0066'
+
+          // Check if mobile padding is correct
+          if (leftPadding === 12 && rightPadding === 12) {
+            paddingStatusElement.textContent = '✅ Symmetrical (12px + 12px)'
+            paddingStatusElement.style.color = '#00aa00'
+          } else {
+            paddingStatusElement.textContent = '❌ Not symmetrical'
+            paddingStatusElement.style.color = '#ff0000'
+          }
+
+          paddingDisplayElement.textContent = `Padding: ${leftPadding}px left, ${rightPadding}px right`
+        } else if (width >= 682) {
+          mode = '🖥️ Desktop'
+          mobileStatusElement.textContent = '❌ Inactive'
+          mobileStatusElement.style.color = '#666666'
+          paddingStatusElement.textContent = 'Standard 15px all sides'
+          paddingStatusElement.style.color = '#0066cc'
+          paddingDisplayElement.textContent = 'Padding: 15px all sides'
+        } else {
+          mode = '📱 Progressive + Left Padding'
+          hasLeftPadding = true
+          mobileStatusElement.textContent = '🟠 Progressive'
+          mobileStatusElement.style.color = '#ff8800'
+
+          // Check if progressive left padding is correct
+          if (leftPadding === 8 && rightPadding === 8) {
+            paddingStatusElement.textContent =
+              '✅ Symmetrical progressive (8px + 8px)'
+            paddingStatusElement.style.color = '#ff8800'
+          } else {
+            paddingStatusElement.textContent =
+              '❌ Progressive padding not symmetrical'
+            paddingStatusElement.style.color = '#ff0000'
+          }
+
+          paddingDisplayElement.textContent = `Padding: ${leftPadding}px left, ${rightPadding}px right`
         }
-        
-        // Update on load and resize
-        updateViewportInfo();
-        window.addEventListener('resize', updateViewportInfo);
-        
-        // Update every 100ms for smooth feedback
-        setInterval(updateViewportInfo, 100);
+
+        currentModeElement.textContent = mode
+
+        // Update padding indicators color
+        const leftIndicator = document.getElementById('leftIndicator')
+        const rightIndicator = document.getElementById('rightIndicator')
+
+        if (isMobile) {
+          leftIndicator.style.backgroundColor = 'rgba(255,0,102,0.8)'
+          rightIndicator.style.backgroundColor = 'rgba(255,0,102,0.8)'
+        } else if (hasLeftPadding) {
+          leftIndicator.style.backgroundColor = 'rgba(255,136,0,0.8)' // Orange for progressive
+          rightIndicator.style.backgroundColor = 'rgba(0,102,204,0.8)' // Blue for standard right
+        } else {
+          leftIndicator.style.backgroundColor = 'rgba(0,102,204,0.8)'
+          rightIndicator.style.backgroundColor = 'rgba(0,102,204,0.8)'
+        }
+      }
+
+      // Update on load and resize
+      updateViewportInfo()
+      window.addEventListener('resize', updateViewportInfo)
+
+      // Update every 100ms for smooth feedback
+      setInterval(updateViewportInfo, 100)
     </script>
-</body>
+  </body>
 </html>

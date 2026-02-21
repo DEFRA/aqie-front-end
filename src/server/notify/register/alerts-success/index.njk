@@ -1,61 +1,42 @@
 {% extends 'layouts/page.njk' %}
+
 {% block content %}
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <div class="govuk-panel govuk-panel--confirmation">
-        <h1 class="govuk-panel__title">{{ content.panelTitle }}</h1>
-        <div class="govuk-panel__body">
-          {{ content.panelBodyPrefix }}<br><strong>{{ emailAddress }}</strong>
+    <div class="govuk-grid-column-two-thirds odd-page">
+
+      <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+        <div class="govuk-notification-banner__header">
+          <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+            {{ content.successTitle }}
+          </h2>
+        </div>
+        <div class="govuk-notification-banner__content">
+          <h1 class="govuk-notification-banner__heading">
+            {{ emailSuccessHeading }}
+          </h1>
         </div>
       </div>
 
-      <p class="govuk-body">{{ content.confirmationEmail }}</p>
+      <p class="govuk-body">{{ content.confirmationText }}</p>
 
-      <h2 class="govuk-heading-m">{{ content.whatHappensNextHeading }}</h2>
-      <p class="govuk-body">{{ content.alertsWhenText }}</p>
-      <ul class="govuk-list govuk-list--bullet">
-        <li>{{ content.alertBullet1 }}</li>
-        <li>{{ content.alertBullet2 }}</li>
-      </ul>
+      <p class="govuk-body govuk-!-padding-bottom-6">
+        {{ emailSuccessAnotherAlertPrefix }} <a href="/notify/register/check-max-alerts" class="govuk-link">{{ content.anotherAlertLinkText }}</a>{{ content.anotherAlertSuffix }}
+      </p>
 
-      <div class="govuk-inset-text">
-        <p>{{ content.unsubscribeText }}</p>
-      </div>
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
-      <h2 class="govuk-heading-m">{{ content.alertDetailsHeading }}</h2>
-      {# '' Summary list showing alert details #}
-      {{ govukSummaryList({
-        rows: [
-          {
-            key: {
-              text: content.emailAddressKey
-            },
-            value: {
-              text: emailAddress
-            }
-          },
-          {
-            key: {
-              text: content.locationKey
-            },
-            value: {
-              text: location
-            }
-          }
-        ]
-      }) }}
+      <h2 class="govuk-heading-m">{{ content.researchHeading }}</h2>
 
-      <form action="/notify/register/alerts-success" method="post">
-        <button type="submit" class="govuk-button">{{ content.returnButton }}</button>
-      </form>
+      <p class="govuk-body">
+        {{ content.researchSignupPrefix }}
+        <a href="{{ userResearchPanelUrl }}" class="govuk-link">{{ content.researchSignupLinkText }}</a>{{ content.researchSignupSuffix }}
+      </p>
 
-      <h2 class="govuk-heading-m">{{ content.moreInfoHeading }}</h2>
-      <p class="govuk-body">{{ content.moreInfoIntro }}</p>
-      <ul class="govuk-list govuk-list--bullet">
-        <li><a href="/" class="govuk-link">{{ content.moreInfoLink1 }}</a></li>
-        <li><a href="/help" class="govuk-link">{{ content.moreInfoLink2 }}</a></li>
-        <li><a href="/privacy" class="govuk-link">{{ content.moreInfoLink3 }}</a></li>
-      </ul>
+      <p class="govuk-body">
+        {{ content.researchPrivacyPrefix }}
+        <a href="https://www.gov.uk/government/publications/defras-social-research-privacy-notice" class="govuk-link">{{ content.researchPrivacyLinkText }}</a>{{ content.researchPrivacySuffix }}
+      </p>
+
     </div>
   </div>
 {% endblock %}

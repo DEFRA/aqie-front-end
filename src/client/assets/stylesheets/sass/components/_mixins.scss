@@ -1,17 +1,17 @@
 // Define the mixin for .govuk-table styles
 @mixin govuk-table {
-    // Add the styles for .govuk-table here
-    // For example:
-    width: 100%;
-    border-collapse: collapse;
-    // Add other styles as needed
-  }
-  
-  @mixin govuk-table-cell {
-    // Add the styles for .govuk-table__cell here
-    // Example styles:
-    padding: 10px;
-    border: 0 solid #cccccc;
-    border-right: 2px solid #ffffff;
-    // Add other styles as needed
-  }
+  // Add the styles for .govuk-table here
+  // For example:
+  width: 100%;
+  border-collapse: collapse;
+  // Add other styles as needed
+}
+
+@mixin govuk-table-cell {
+  // Add the styles for .govuk-table__cell here
+  // Example styles:
+  padding: 10px;
+  border: 0 solid #cccccc;
+  border-right: 2px solid #ffffff;
+  // Add other styles as needed
+}

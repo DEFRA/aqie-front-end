@@ -70,17 +70,35 @@ export const handleEmailConfirmLinkRequest = async (request, h) => {
     request.yar.set('emailConfirmed', true)
     request.yar.set('emailLinkToken', token)
 
-    const emailAddress = request.yar.get('emailAddress')
-    const location = request.yar.get('location') || ''
+    // '' Prefer data embedded in the token validation response (works when session has expired
+    // '' or the link was opened in a different browser/tab), then fall back to session.
+    const tokenData = result.data || {}
+    const emailAddress =
+      tokenData.emailAddress || request.yar.get('emailAddress')
+    const location = tokenData.location || request.yar.get('location') || ''
     const locationId = request.yar.get('locationId') || ''
-    const lat = request.yar.get('latitude')
-    const long = request.yar.get('longitude')
+    const lat =
+      tokenData.lat !== undefined ? tokenData.lat : request.yar.get('latitude')
+    const long =
+      tokenData.long !== undefined
+        ? tokenData.long
+        : request.yar.get('longitude')
+
+    logger.info(
+      `[EMAIL CONFIRM] Resolved emailAddress from ${tokenData.emailAddress ? 'token' : 'session'}`
+    )
 
     if (!emailAddress) {
-      const error = new Error('Missing email address in session')
+      const error = new Error(
+        'Missing email address in both token response and session'
+      )
       error.code = 'setup_alert'
       throw error
     }
+
+    // '' Re-hydrate session with resolved values so the success page renders correctly
+    request.yar.set('emailAddress', emailAddress)
+    if (location) request.yar.set('location', location)
 
     const setupResult = await setupEmailAlert(
       emailAddress,

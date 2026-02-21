@@ -1,298 +1,352 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Test Current DAQI Implementation</title>
     <style>
-        body {
-            font-family: 'GDS Transport', arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f3f2f1;
-            color: #0b0c0c;
-        }
+      body {
+        font-family: 'GDS Transport', arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f3f2f1;
+        color: #0b0c0c;
+      }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
 
-        .controls {
-            text-align: center;
-            margin: 30px 0;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
+      .controls {
+        text-align: center;
+        margin: 30px 0;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+      }
 
-        .test-button {
-            background: #1d70b8;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 5px;
-            transition: background 0.2s;
-        }
+      .test-button {
+        background: #1d70b8;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        margin: 5px;
+        transition: background 0.2s;
+      }
 
-        .test-button:hover {
-            background: #003078;
-        }
+      .test-button:hover {
+        background: #003078;
+      }
 
-        .level-buttons {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 10px;
-            margin: 20px 0;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
+      .level-buttons {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        gap: 10px;
+        margin: 20px 0;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
 
-        .level-button {
-            background: #f3f2f1;
-            border: 2px solid #ccc;
-            color: #0b0c0c;
-            padding: 10px 5px;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+      .level-button {
+        background: #f3f2f1;
+        border: 2px solid #ccc;
+        color: #0b0c0c;
+        padding: 10px 5px;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
 
-        .level-button:hover {
-            background: #e2e8f0;
-            border-color: #1d70b8;
-        }
+      .level-button:hover {
+        background: #e2e8f0;
+        border-color: #1d70b8;
+      }
 
-        .console-output {
-            background: #2d3748;
-            color: #e2e8f0;
-            padding: 20px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            white-space: pre-wrap;
-            max-height: 500px;
-            overflow-y: auto;
-            margin: 20px 0;
-        }
+      .console-output {
+        background: #2d3748;
+        color: #e2e8f0;
+        padding: 20px;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        white-space: pre-wrap;
+        max-height: 500px;
+        overflow-y: auto;
+        margin: 20px 0;
+      }
 
-        .status {
-            text-align: center;
-            padding: 15px;
-            border-radius: 4px;
-            margin: 20px 0;
-        }
+      .status {
+        text-align: center;
+        padding: 15px;
+        border-radius: 4px;
+        margin: 20px 0;
+      }
 
-        .status.ready {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
+      .status.ready {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
 
-        .status.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
+      .status.error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
 
-        .instructions {
-            background: #e3f2fd;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-            border-left: 4px solid #1976d2;
-        }
+      .instructions {
+        background: #e3f2fd;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        border-left: 4px solid #1976d2;
+      }
 
-        .instructions h3 {
-            margin-top: 0;
-            color: #1976d2;
-        }
+      .instructions h3 {
+        margin-top: 0;
+        color: #1976d2;
+      }
 
-        .current-daqi-container {
-            border: 2px dashed #ccc;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-            text-align: center;
-            min-height: 100px;
-            background: #fafafa;
-        }
+      .current-daqi-container {
+        border: 2px dashed #ccc;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+        text-align: center;
+        min-height: 100px;
+        background: #fafafa;
+      }
 
-        .mock-daqi {
-            margin: 20px 0;
-        }
+      .mock-daqi {
+        margin: 20px 0;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1>🧪 Test Current DAQI Implementation</h1>
-        <p style="text-align: center; color: #505a5f;">
-            This tool tests DAQI levels directly on your current implementation
+      <h1>🧪 Test Current DAQI Implementation</h1>
+      <p style="text-align: center; color: #505a5f">
+        This tool tests DAQI levels directly on your current implementation
+      </p>
+
+      <div class="instructions">
+        <h3>📋 How to Use:</h3>
+        <ol>
+          <li>
+            <strong>On Air Quality Page:</strong> Navigate to a page with actual
+            DAQI data (air quality results page)
+          </li>
+          <li>
+            <strong>Include This Script:</strong> Add this script to the page or
+            paste it in browser console
+          </li>
+          <li>
+            <strong>Test Levels:</strong> Click buttons below to test different
+            DAQI levels on the real implementation
+          </li>
+          <li>
+            <strong>Observe Changes:</strong> Watch how the actual DAQI cells
+            change colors and styles
+          </li>
+        </ol>
+      </div>
+
+      <div id="status" class="status error">
+        ❌ Waiting for DAQI container to be found...
+      </div>
+
+      <div class="controls">
+        <button class="test-button" onclick="initializeTester()">
+          🔄 Initialize Tester
+        </button>
+        <button class="test-button" onclick="testAllLevels()">
+          🧪 Test All Levels
+        </button>
+        <button class="test-button" onclick="testResponsive()">
+          📱 Test Responsive
+        </button>
+        <button class="test-button" onclick="testColors()">
+          🎨 Test Colors
+        </button>
+        <button class="test-button" onclick="restoreOriginal()">
+          🔄 Restore Original
+        </button>
+        <button class="test-button" onclick="clearConsole()">
+          🗑️ Clear Output
+        </button>
+      </div>
+
+      <div class="level-buttons" id="levelButtons">
+        <!-- Will be populated by JavaScript -->
+      </div>
+
+      <div class="current-daqi-container" id="daqiContainer">
+        <p><strong>Current DAQI Implementation Will Be Tested Here</strong></p>
+        <p style="color: #666; font-size: 14px">
+          This tester works with your actual .daqi-numbered containers on air
+          quality pages.
+          <br />If you're not on an air quality page, use the mock DAQI below
+          for demonstration.
         </p>
+      </div>
 
-        <div class="instructions">
-            <h3>📋 How to Use:</h3>
-            <ol>
-                <li><strong>On Air Quality Page:</strong> Navigate to a page with actual DAQI data (air quality results page)</li>
-                <li><strong>Include This Script:</strong> Add this script to the page or paste it in browser console</li>
-                <li><strong>Test Levels:</strong> Click buttons below to test different DAQI levels on the real implementation</li>
-                <li><strong>Observe Changes:</strong> Watch how the actual DAQI cells change colors and styles</li>
-            </ol>
-        </div>
-
-        <div id="status" class="status error">
-            ❌ Waiting for DAQI container to be found...
-        </div>
-
-        <div class="controls">
-            <button class="test-button" onclick="initializeTester()">🔄 Initialize Tester</button>
-            <button class="test-button" onclick="testAllLevels()">🧪 Test All Levels</button>
-            <button class="test-button" onclick="testResponsive()">📱 Test Responsive</button>
-            <button class="test-button" onclick="testColors()">🎨 Test Colors</button>
-            <button class="test-button" onclick="restoreOriginal()">🔄 Restore Original</button>
-            <button class="test-button" onclick="clearConsole()">🗑️ Clear Output</button>
-        </div>
-
-        <div class="level-buttons" id="levelButtons">
-            <!-- Will be populated by JavaScript -->
-        </div>
-
-        <div class="current-daqi-container" id="daqiContainer">
-            <p><strong>Current DAQI Implementation Will Be Tested Here</strong></p>
-            <p style="color: #666; font-size: 14px;">
-                This tester works with your actual .daqi-numbered containers on air quality pages.
-                <br>If you're not on an air quality page, use the mock DAQI below for demonstration.
-            </p>
-        </div>
-
-        <div class="console-output" id="consoleOutput">
-Ready to test current DAQI implementation!
-
-To test on a real air quality page:
-1. Navigate to an air quality page with DAQI data
-2. Include this script or paste in browser console
-3. Use the commands: testCurrentDAQI.testLevel(5)
-
-For demo purposes, a mock DAQI will be created below if no real one is found.
-        </div>
+      <div class="console-output" id="consoleOutput">
+        Ready to test current DAQI implementation! To test on a real air quality
+        page: 1. Navigate to an air quality page with DAQI data 2. Include this
+        script or paste in browser console 3. Use the commands:
+        testCurrentDAQI.testLevel(5) For demo purposes, a mock DAQI will be
+        created below if no real one is found.
+      </div>
     </div>
 
     <!-- Mock DAQI for testing if no real one exists -->
-    <div class="mock-daqi" id="mockDaqi" style="display: none;">
-        <div class="daqi-numbered" style="position: relative;">
-            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='24' fill='%23000'%3E5%3C/text%3E%3C/svg%3E" alt="moderate 5" style="width: 50px; height: 50px;">
-            <div class="daqi-bar">
-                <div class="daqi-bar-segment daqi-0"><span class="daqi-number">1</span></div>
-                <div class="daqi-bar-segment daqi-0"><span class="daqi-number">2</span></div>
-                <div class="daqi-bar-segment daqi-0"><span class="daqi-number">3</span></div>
-                <div class="daqi-bar-segment daqi-0"><span class="daqi-number">4</span></div>
-                <div class="daqi-bar-segment daqi-5"><span class="daqi-number">5</span></div>
-                <div class="daqi-bar-segment daqi-0"><span class="daqi-number">6</span></div>
-                <div class="daqi-bar-segment daqi-0"><span class="daqi-number">7</span></div>
-                <div class="daqi-bar-segment daqi-0"><span class="daqi-number">8</span></div>
-                <div class="daqi-bar-segment daqi-0"><span class="daqi-number">9</span></div>
-                <div class="daqi-bar-segment daqi-0"><span class="daqi-number">10</span></div>
-            </div>
-            <div class="daqi-labels" aria-hidden="true">
-                <span class="daqi-band daqi-band-low">Low</span>
-                <span class="daqi-band daqi-band-moderate" style="text-align:center">Moderate</span>
-                <span class="daqi-band daqi-band-high" style="text-align:center">High</span>
-                <span class="daqi-band daqi-band-very-high">Very high</span>
-            </div>
+    <div class="mock-daqi" id="mockDaqi" style="display: none">
+      <div class="daqi-numbered" style="position: relative">
+        <img
+          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='24' fill='%23000'%3E5%3C/text%3E%3C/svg%3E"
+          alt="moderate 5"
+          style="width: 50px; height: 50px"
+        />
+        <div class="daqi-bar">
+          <div class="daqi-bar-segment daqi-0">
+            <span class="daqi-number">1</span>
+          </div>
+          <div class="daqi-bar-segment daqi-0">
+            <span class="daqi-number">2</span>
+          </div>
+          <div class="daqi-bar-segment daqi-0">
+            <span class="daqi-number">3</span>
+          </div>
+          <div class="daqi-bar-segment daqi-0">
+            <span class="daqi-number">4</span>
+          </div>
+          <div class="daqi-bar-segment daqi-5">
+            <span class="daqi-number">5</span>
+          </div>
+          <div class="daqi-bar-segment daqi-0">
+            <span class="daqi-number">6</span>
+          </div>
+          <div class="daqi-bar-segment daqi-0">
+            <span class="daqi-number">7</span>
+          </div>
+          <div class="daqi-bar-segment daqi-0">
+            <span class="daqi-number">8</span>
+          </div>
+          <div class="daqi-bar-segment daqi-0">
+            <span class="daqi-number">9</span>
+          </div>
+          <div class="daqi-bar-segment daqi-0">
+            <span class="daqi-number">10</span>
+          </div>
         </div>
+        <div class="daqi-labels" aria-hidden="true">
+          <span class="daqi-band daqi-band-low">Low</span>
+          <span class="daqi-band daqi-band-moderate" style="text-align: center"
+            >Moderate</span
+          >
+          <span class="daqi-band daqi-band-high" style="text-align: center"
+            >High</span
+          >
+          <span class="daqi-band daqi-band-very-high">Very high</span>
+        </div>
+      </div>
     </div>
 
     <script src="../daqi-current-implementation-tester.js"></script>
     <script>
-        // ''
-        const ERROR_MESSAGE_TESTER = 'Tester not loaded';
-        const TEST_ALL_DELAY_MS = 1500;
-        
-        // Override console.log to capture output
-        const originalLog = console.log;
-        const originalError = console.error;
-        const originalWarn = console.warn;
-        
-        function getLogPrefix(type) {
-            if (type === 'error') {
-                return '❌ ';
-            }
-            if (type === 'warn') {
-                return '⚠️ ';
-            }
-            return '';
-        }
-        
-        function addToOutput(...args) {
-            const type = args[args.length - 1];
-            const message = args.slice(0, -1).join(' ');
-            originalLog.apply(console, args);
-            const output = document.getElementById('consoleOutput');
-            const prefix = getLogPrefix(type);
-            output.textContent += `${prefix}${message}\n`;
-            output.scrollTop = output.scrollHeight;
-        }
-        
-        console.log = (...args) => addToOutput(args.join(' '), 'log');
-        console.error = (...args) => addToOutput(args.join(' '), 'error');
-        console.warn = (...args) => addToOutput(args.join(' '), 'warn');
+      // ''
+      const ERROR_MESSAGE_TESTER = 'Tester not loaded'
+      const TEST_ALL_DELAY_MS = 1500
 
-        // Create level buttons
-        function createLevelButtons() {
-            const container = document.getElementById('levelButtons');
-            container.innerHTML = '';
-            
-            for (let i = 1; i <= 10; i++) {
-                const button = document.createElement('button');
-                button.className = 'level-button';
-                button.textContent = i;
-                button.title = `Test DAQI Level ${i}`;
-                button.onclick = () => testLevel(i);
-                container.appendChild(button);
-            }
+      // Override console.log to capture output
+      const originalLog = console.log
+      const originalError = console.error
+      const originalWarn = console.warn
+
+      function getLogPrefix(type) {
+        if (type === 'error') {
+          return '❌ '
         }
+        if (type === 'warn') {
+          return '⚠️ '
+        }
+        return ''
+      }
 
-        // Initialize the tester
-        function initializeTester() {
-            if (typeof testCurrentDAQI === 'undefined') {
-                updateStatus('❌ Tester script not loaded', 'error');
-                return;
-            }
+      function addToOutput(...args) {
+        const type = args[args.length - 1]
+        const message = args.slice(0, -1).join(' ')
+        originalLog.apply(console, args)
+        const output = document.getElementById('consoleOutput')
+        const prefix = getLogPrefix(type)
+        output.textContent += `${prefix}${message}\n`
+        output.scrollTop = output.scrollHeight
+      }
 
-            const success = testCurrentDAQI.init();
-            if (success) {
-                updateStatus('✅ Tester initialized successfully', 'ready');
-            } else {
-                updateStatus('❌ No DAQI container found - creating mock for demo', 'error');
-                createMockDAQI();
-            }
+      console.log = (...args) => addToOutput(args.join(' '), 'log')
+      console.error = (...args) => addToOutput(args.join(' '), 'error')
+      console.warn = (...args) => addToOutput(args.join(' '), 'warn')
+
+      // Create level buttons
+      function createLevelButtons() {
+        const container = document.getElementById('levelButtons')
+        container.innerHTML = ''
+
+        for (let i = 1; i <= 10; i++) {
+          const button = document.createElement('button')
+          button.className = 'level-button'
+          button.textContent = i
+          button.title = `Test DAQI Level ${i}`
+          button.onclick = () => testLevel(i)
+          container.appendChild(button)
+        }
+      }
+
+      // Initialize the tester
+      function initializeTester() {
+        if (typeof testCurrentDAQI === 'undefined') {
+          updateStatus('❌ Tester script not loaded', 'error')
+          return
         }
 
-        // Create mock DAQI if no real one exists
-        function createMockDAQI() {
-            const container = document.getElementById('daqiContainer');
-            const mockElement = document.getElementById('mockDaqi');
-            
-            // Move mock DAQI into the test container
-            const mockClone = mockElement.cloneNode(true);
-            mockClone.style.display = 'block';
-            mockClone.id = 'activeMockDaqi';
-            
-            container.innerHTML = '';
-            container.appendChild(mockClone);
-            
-            // Add CSS for mock DAQI (simplified version of your actual CSS)
-            const style = document.createElement('style');
-            style.textContent = `
+        const success = testCurrentDAQI.init()
+        if (success) {
+          updateStatus('✅ Tester initialized successfully', 'ready')
+        } else {
+          updateStatus(
+            '❌ No DAQI container found - creating mock for demo',
+            'error'
+          )
+          createMockDAQI()
+        }
+      }
+
+      // Create mock DAQI if no real one exists
+      function createMockDAQI() {
+        const container = document.getElementById('daqiContainer')
+        const mockElement = document.getElementById('mockDaqi')
+
+        // Move mock DAQI into the test container
+        const mockClone = mockElement.cloneNode(true)
+        mockClone.style.display = 'block'
+        mockClone.id = 'activeMockDaqi'
+
+        container.innerHTML = ''
+        container.appendChild(mockClone)
+
+        // Add CSS for mock DAQI (simplified version of your actual CSS)
+        const style = document.createElement('style')
+        style.textContent = `
                 .daqi-numbered {
                     position: relative;
                     width: 100%;
@@ -333,89 +387,89 @@ For demo purposes, a mock DAQI will be created below if no real one is found.
                 .daqi-4, .daqi-5, .daqi-6 { background-color: #ffdd00; color: #0b0c0c; font-weight: bold; }
                 .daqi-7, .daqi-8, .daqi-9 { background-color: #d4351c; color: white; font-weight: bold; }
                 .daqi-10 { background-color: #4c2c92; color: white; font-weight: bold; }
-            `;
-            document.head.appendChild(style);
-            
-            // Try to initialize again with mock
-            setTimeout(() => {
-                const success = testCurrentDAQI.init();
-                if (success) {
-                    updateStatus('✅ Mock DAQI created and tester initialized', 'ready');
-                }
-            }, 100);
-        }
+            `
+        document.head.appendChild(style)
 
-        // Test a specific level
-        function testLevel(level) {
-            if (typeof testCurrentDAQI === 'undefined') {
-                console.error(ERROR_MESSAGE_TESTER);
-                return;
-            }
-            clearConsole();
-            testCurrentDAQI.testLevel(level, true);
-        }
+        // Try to initialize again with mock
+        setTimeout(() => {
+          const success = testCurrentDAQI.init()
+          if (success) {
+            updateStatus('✅ Mock DAQI created and tester initialized', 'ready')
+          }
+        }, 100)
+      }
 
-        // Test all levels
-        function testAllLevels() {
-            if (typeof testCurrentDAQI === 'undefined') {
-                console.error(ERROR_MESSAGE_TESTER);
-                return;
-            }
-            clearConsole();
-            testCurrentDAQI.testAll(TEST_ALL_DELAY_MS);
+      // Test a specific level
+      function testLevel(level) {
+        if (typeof testCurrentDAQI === 'undefined') {
+          console.error(ERROR_MESSAGE_TESTER)
+          return
         }
+        clearConsole()
+        testCurrentDAQI.testLevel(level, true)
+      }
 
-        // Test responsive behavior
-        function testResponsive() {
-            if (typeof testCurrentDAQI === 'undefined') {
-                console.error(ERROR_MESSAGE_TESTER);
-                return;
-            }
-            clearConsole();
-            testCurrentDAQI.testResponsive();
+      // Test all levels
+      function testAllLevels() {
+        if (typeof testCurrentDAQI === 'undefined') {
+          console.error(ERROR_MESSAGE_TESTER)
+          return
         }
+        clearConsole()
+        testCurrentDAQI.testAll(TEST_ALL_DELAY_MS)
+      }
 
-        // Test color accuracy
-        function testColors() {
-            if (typeof testCurrentDAQI === 'undefined') {
-                console.error(ERROR_MESSAGE_TESTER);
-                return;
-            }
-            clearConsole();
-            testCurrentDAQI.testColors();
+      // Test responsive behavior
+      function testResponsive() {
+        if (typeof testCurrentDAQI === 'undefined') {
+          console.error(ERROR_MESSAGE_TESTER)
+          return
         }
+        clearConsole()
+        testCurrentDAQI.testResponsive()
+      }
 
-        // Restore original
-        function restoreOriginal() {
-            if (typeof testCurrentDAQI === 'undefined') {
-                console.error('Tester not loaded');
-                return;
-            }
-            testCurrentDAQI.restore();
-            console.log('🔄 Restored to original state');
+      // Test color accuracy
+      function testColors() {
+        if (typeof testCurrentDAQI === 'undefined') {
+          console.error(ERROR_MESSAGE_TESTER)
+          return
         }
+        clearConsole()
+        testCurrentDAQI.testColors()
+      }
 
-        // Update status display
-        function updateStatus(message, type) {
-            const status = document.getElementById('status');
-            status.textContent = message;
-            status.className = `status ${type}`;
+      // Restore original
+      function restoreOriginal() {
+        if (typeof testCurrentDAQI === 'undefined') {
+          console.error('Tester not loaded')
+          return
         }
+        testCurrentDAQI.restore()
+        console.log('🔄 Restored to original state')
+      }
 
-        // Clear console output
-        function clearConsole() {
-            document.getElementById('consoleOutput').textContent = '';
-        }
+      // Update status display
+      function updateStatus(message, type) {
+        const status = document.getElementById('status')
+        status.textContent = message
+        status.className = `status ${type}`
+      }
 
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            createLevelButtons();
-            
-            // Wait a bit for the tester script to load
-            setTimeout(() => {
-                initializeTester();
-            }, 1000);
-        });
+      // Clear console output
+      function clearConsole() {
+        document.getElementById('consoleOutput').textContent = ''
+      }
+
+      // Initialize when page loads
+      document.addEventListener('DOMContentLoaded', () => {
+        createLevelButtons()
+
+        // Wait a bit for the tester script to load
+        setTimeout(() => {
+          initializeTester()
+        }, 1000)
+      })
     </script>
-</body>
+  </body>
 </html>

@@ -16,11 +16,11 @@
   grid-auto-rows: 1fr;
   grid-template-columns: 1fr;
 
-  @include govuk-media-query($from: "tablet") {
+  @include govuk-media-query($from: 'tablet') {
     grid-template-columns: 1fr;
   }
 
-  @include govuk-media-query($from: "desktop") {
+  @include govuk-media-query($from: 'desktop') {
     // Note that browsers that don't support CSS grid display the component as
     // one column on all breakpoints
     grid-template-columns: 1fr 1fr;
@@ -37,7 +37,7 @@
 }
 
 .app-cards__list--two-column-desktop {
-  @include govuk-media-query($from: "desktop") {
+  @include govuk-media-query($from: 'desktop') {
     grid-template-columns: 1fr 1fr;
   }
 }
@@ -66,7 +66,7 @@
   // Make the entire list item area clickable
   &::after {
     bottom: 0;
-    content: "";
+    content: '';
     left: 0;
     position: absolute;
     right: 0;
@@ -79,7 +79,7 @@
 
     border-right: $width solid $govuk-brand-colour;
     border-top: $width solid $govuk-brand-colour;
-    content: "";
+    content: '';
     height: $dimension;
     position: absolute;
     right: govuk-spacing(1);
