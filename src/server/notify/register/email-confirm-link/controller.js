@@ -60,6 +60,15 @@ export const handleEmailConfirmLinkRequest = async (request, h) => {
 
     const result = await validateEmailLink(token, request)
 
+    // '' Log the full validateEmailLink response
+    logger.info('[EMAIL CONFIRM] validateEmailLink raw response', {
+      ok: result.ok,
+      status: result.status,
+      skipped: result.skipped,
+      dataKeys: result.data ? Object.keys(result.data) : undefined,
+      body: result.body
+    })
+
     if (!result.ok) {
       const error = new Error('Email link validation failed')
       error.code = 'invalid_token'
@@ -109,6 +118,16 @@ export const handleEmailConfirmLinkRequest = async (request, h) => {
       request
     )
 
+    // '' Log the full setupEmailAlert response so we can see exactly what the backend returns
+    logger.info('[EMAIL CONFIRM] setupEmailAlert raw response', {
+      ok: setupResult.ok,
+      status: setupResult.status,
+      skipped: setupResult.skipped,
+      body: setupResult.body,
+      data: setupResult.data,
+      error: setupResult.error ? String(setupResult.error) : undefined
+    })
+
     // '' If notify is disabled/not configured, treat as success (dev/test mode)
     if (setupResult.skipped) {
       logger.warn(
@@ -125,27 +144,22 @@ export const handleEmailConfirmLinkRequest = async (request, h) => {
         const emailDuplicatePath = config.get('notify.emailDuplicatePath')
         return h.redirect(emailDuplicatePath)
       }
-      // '' Handle any 4xx response as "maximum locations reached" - the backend may
-      // '' return 400, 422 or another 4xx code when the subscription limit is hit.
-      // '' We redirect back to email-details with session flags so the user sees a
-      // '' clear, actionable error rather than the generic activation-link error page.
-      if (setupResult.status >= 400 && setupResult.status < 500) {
-        logger.warn(
-          'Email alert setup rejected by backend (max locations or validation error)',
-          {
-            status: setupResult.status,
-            message: setupResult.body?.message
-          }
-        )
-        request.yar.set('maxAlertsEmailError', true)
-        request.yar.set('maxAlertsEmail', emailAddress)
-        const emailDetailsPath = config.get('notify.emailDetailsPath')
-        return h.redirect(emailDetailsPath)
-      }
-      // '' 5xx / network error - show generic error page
-      const error = new Error('Setup alert failed')
-      error.code = 'setup_alert'
-      throw error
+      // '' Any other failure from setupEmailAlert (4xx, 5xx, network error) is treated
+      // '' as a subscription-limit error. The token was already validated successfully,
+      // '' so the most likely cause is the 5-location cap. Redirecting back to
+      // '' email-details with maxAlertsEmailError gives the user a clear, actionable
+      // '' message rather than the generic "problem with your activation link" page.
+      logger.warn(
+        '[EMAIL CONFIRM] setupEmailAlert failed – redirecting to email-details with maxAlerts flag',
+        {
+          status: setupResult.status,
+          message: setupResult.body?.message
+        }
+      )
+      request.yar.set('maxAlertsEmailError', true)
+      request.yar.set('maxAlertsEmail', emailAddress)
+      const emailDetailsPath = config.get('notify.emailDetailsPath')
+      return h.redirect(emailDetailsPath)
     }
 
     logger.info('[EMAIL CONFIRM] Token accepted, redirecting to success')
