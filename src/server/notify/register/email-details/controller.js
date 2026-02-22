@@ -4,10 +4,7 @@ import { config } from '../../../../config/index.js'
 import { LANG_EN } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { recordEmailCapture } from '../../../common/services/subscription.js'
-import {
-  generateEmailLink,
-  getSubscriptionCount
-} from '../../../common/services/notify.js'
+import { generateEmailLink } from '../../../common/services/notify.js'
 
 // Constants for repeated strings
 const PAGE_HEADING = 'What is your email address?'
@@ -142,43 +139,10 @@ const handleEmailDetailsPost = async (request, h, content = english) => {
     const lat = request.yar.get('latitude')
     const long = request.yar.get('longitude')
 
-    // '' Check whether this email already has the maximum 5 locations before sending link
-    try {
-      const subscriptionCheck = await getSubscriptionCount(email, request)
-      if (subscriptionCheck.maxReached) {
-        logger.warn('Email address has reached max 5 locations', {
-          emailLast6: email.slice(-6)
-        })
-        const { footerTxt, phaseBanner, backlink, cookieBanner } = content
-        const metaSiteUrl = getAirQualitySiteUrl(request)
-        const emailDetailsErrors =
-          content.emailDetails?.errors || english.emailDetails?.errors || {}
-        return h.view(VIEW_PATH, {
-          pageTitle: ERROR_PAGE_TITLE,
-          heading: PAGE_HEADING,
-          page: PAGE_HEADING,
-          serviceName: SERVICE_NAME,
-          lang: LANG_EN,
-          metaSiteUrl,
-          footerTxt,
-          phaseBanner,
-          backlink,
-          cookieBanner,
-          formData: request.payload,
-          maxAlertsError: {
-            summary: (
-              emailDetailsErrors.maxAlertsReached?.summary || ''
-            ).replace('{email}', email),
-            field: emailDetailsErrors.maxAlertsReached?.field || ''
-          }
-        })
-      }
-    } catch (err) {
-      // '' Fail open — if the check fails, allow the journey to continue
-      logger.warn('Subscription count check failed, proceeding', {
-        error: err.message
-      })
-    }
+    // '' Note: the backend has no GET /api/subscriptions endpoint for email.
+    // '' Max-5 enforcement happens at POST /setup-alert (after the user clicks
+    // '' the activation link). The email-confirm-link controller handles the 400
+    // '' and redirects back here with maxAlertsEmailError + maxAlertsEmail flags.
     try {
       const res = await recordEmailCapture(email)
       if (res?.ok) {

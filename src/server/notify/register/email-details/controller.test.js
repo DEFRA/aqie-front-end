@@ -4,14 +4,10 @@ import {
   handleEmailDetailsPost
 } from './controller.js'
 import { config } from '../../../../config/index.js'
-import { getSubscriptionCount } from '../../../common/services/notify.js'
 
 // '' Mock notify service so unit tests never make real HTTP calls
 vi.mock('../../../common/services/notify.js', () => ({
-  generateEmailLink: vi.fn().mockResolvedValue(undefined),
-  getSubscriptionCount: vi
-    .fn()
-    .mockResolvedValue({ ok: true, maxReached: false })
+  generateEmailLink: vi.fn().mockResolvedValue(undefined)
 }))
 
 // '' Mock subscription service to avoid real HTTP calls
@@ -95,35 +91,5 @@ describe('email-details controller', () => {
     const res = handleEmailDetailsRequest(req, h)
     expect(res.vm.maxAlertsError).toBeFalsy()
     expect(res.vm.pageTitle).not.toContain('Error:')
-  })
-
-  it('POST shows inline max-alerts error when subscription limit reached', async () => {
-    // '' Arrange: getSubscriptionCount reports maxReached
-    getSubscriptionCount.mockResolvedValueOnce({ ok: true, maxReached: true })
-    const session = {}
-    const req = mockRequest({ notifyByEmail: 'full@example.com' }, session)
-    const h = mockH()
-
-    const res = await handleEmailDetailsPost(req, h)
-
-    // '' Should re-render the form — NOT redirect
-    expect(res.tpl).toBe('notify/register/email-details/index')
-    expect(res.vm.maxAlertsError).toBeTruthy()
-    expect(res.vm.maxAlertsError.summary).toContain('full@example.com')
-    expect(res.vm.maxAlertsError.field).toBeTruthy()
-    expect(res.vm.pageTitle).toContain('Error:')
-  })
-
-  it('POST continues to redirect when subscription check throws', async () => {
-    // '' Arrange: getSubscriptionCount throws (network error) → fail open
-    getSubscriptionCount.mockRejectedValueOnce(new Error('Network error'))
-    const session = {}
-    const req = mockRequest({ notifyByEmail: 'user@example.com' }, session)
-    const h = mockH()
-
-    const res = await handleEmailDetailsPost(req, h)
-
-    // '' Should still redirect (fail open)
-    expect(res.redirect).toBe(config.get('notify.emailVerifyEmailPath'))
   })
 })
