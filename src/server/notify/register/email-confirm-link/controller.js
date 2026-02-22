@@ -109,13 +109,40 @@ export const handleEmailConfirmLinkRequest = async (request, h) => {
       request
     )
 
+    // '' If notify is disabled/not configured, treat as success (dev/test mode)
+    if (setupResult.skipped) {
+      logger.warn(
+        '[EMAIL CONFIRM] setupEmailAlert skipped (notify disabled) - redirecting to success'
+      )
+      const alertsSuccessPath = config.get('notify.alertsSuccessPath')
+      return h.redirect(alertsSuccessPath)
+    }
+
     if (!setupResult.ok) {
-      // '' Handle duplicate email alert
+      // '' Handle duplicate email alert (409 Conflict)
       if (setupResult.status === 409) {
         request.yar.set('notificationFlow', 'email')
         const emailDuplicatePath = config.get('notify.emailDuplicatePath')
         return h.redirect(emailDuplicatePath)
       }
+      // '' Handle any 4xx response as "maximum locations reached" - the backend may
+      // '' return 400, 422 or another 4xx code when the subscription limit is hit.
+      // '' We redirect back to email-details with session flags so the user sees a
+      // '' clear, actionable error rather than the generic activation-link error page.
+      if (setupResult.status >= 400 && setupResult.status < 500) {
+        logger.warn(
+          'Email alert setup rejected by backend (max locations or validation error)',
+          {
+            status: setupResult.status,
+            message: setupResult.body?.message
+          }
+        )
+        request.yar.set('maxAlertsEmailError', true)
+        request.yar.set('maxAlertsEmail', emailAddress)
+        const emailDetailsPath = config.get('notify.emailDetailsPath')
+        return h.redirect(emailDetailsPath)
+      }
+      // '' 5xx / network error - show generic error page
       const error = new Error('Setup alert failed')
       error.code = 'setup_alert'
       throw error
