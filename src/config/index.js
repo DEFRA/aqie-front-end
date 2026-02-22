@@ -270,6 +270,12 @@ export const config = convict({
       default: false,
       env: 'NOTIFY_MOCK_SETUP_ALERT_ENABLED'
     },
+    mockSubscriptionCheckMaxReached: {
+      doc: 'Force getSubscriptionCount to return maxReached:true — used locally to test the max-5 validation UI without a live backend (never use in production)',
+      format: Boolean,
+      default: false,
+      env: 'NOTIFY_MOCK_SUBSCRIPTION_CHECK_MAX_REACHED'
+    },
     baseUrl: {
       doc: 'Backend notify wrapper API base URL',
       format: String,

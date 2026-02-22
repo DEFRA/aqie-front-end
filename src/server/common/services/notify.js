@@ -781,7 +781,7 @@ export async function setupAlert(
 
 /**
  * Check if user has reached maximum alerts ''
- * @param {string} phoneNumber - Phone number to check
+ * @param {string} phoneNumber - Phone number or email address to check
  * @param {Object} request - Hapi request object (optional)
  * @returns {Promise<Object>} { ok: boolean, maxReached: boolean }
  */
@@ -790,10 +790,15 @@ export async function getSubscriptionCount(phoneNumber, request = null) {
   const getSubscriptionsPath =
     config.get('notify.getSubscriptionsPath') || '/api/subscriptions'
 
+  // '' Detect whether the contact is an email address to pass the correct alertType
+  const isEmail = typeof phoneNumber === 'string' && phoneNumber.includes('@')
+  const alertType = isEmail ? 'email' : 'sms'
+
   const maxAlertsCheckLog = {
     alertBackendBaseUrl,
     getSubscriptionsPath,
-    phoneNumberLast4: phoneNumber ? phoneNumber.slice(-4) : undefined
+    alertType,
+    contactLast6: phoneNumber ? phoneNumber.slice(-6) : undefined
   }
   logger.info(
     `Checking maximum alerts: ${JSON.stringify(maxAlertsCheckLog)}`,
@@ -817,15 +822,42 @@ export async function getSubscriptionCount(phoneNumber, request = null) {
       return { ok: true, maxReached: false }
     }
 
+    // '' Mock override for local dev/testing — set notify.mockSubscriptionCheckMaxReached:true
+    // in local.json to force the max-5 error without a live backend
+    const mockMaxReached = config.get('notify.mockSubscriptionCheckMaxReached')
+    if (mockMaxReached) {
+      logger.warn(
+        'mockSubscriptionCheckMaxReached is enabled — returning maxReached:true',
+        {
+          alertType,
+          contactLast6: phoneNumber ? phoneNumber.slice(-6) : undefined
+        }
+      )
+      return { ok: true, maxReached: true }
+    }
+
+    // '' Append alertType as query param so the backend can filter by subscription type
+    const encodedContact = encodeURIComponent(phoneNumber)
+    const apiPath = `${getSubscriptionsPath}/${encodedContact}?alertType=${alertType}`
+
     // Use reusable helper to build URL and options based on environment ''
     const { url, fetchOptions } = buildBackendApiFetchOptions(
       request,
       baseUrl,
-      `${getSubscriptionsPath}/${encodeURIComponent(phoneNumber)}`,
-      { method: 'GET', body: null }
+      apiPath,
+      { method: 'GET' }
     )
 
     const [status, data] = await catchFetchError(url, fetchOptions)
+
+    logger.info(
+      `Subscriptions API response: status=${status}, alertType=${alertType}`,
+      {
+        status,
+        alertType,
+        contactLast6: phoneNumber ? phoneNumber.slice(-6) : undefined
+      }
+    )
 
     // '' Backend returns 400 with specific message when max locations reached
     if (status === 400) {
@@ -841,16 +873,34 @@ export async function getSubscriptionCount(phoneNumber, request = null) {
       return { ok: true, maxReached: true }
     }
 
-    // '' 200 OK means user can add more locations
+    // '' 200 OK — check response body in case backend includes a count field
     if (status === HTTP_STATUS_OK) {
-      logger.info('User can add more locations')
+      const subscriptions = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.subscriptions)
+          ? data.subscriptions
+          : null
+      const count =
+        typeof data?.count === 'number'
+          ? data.count
+          : subscriptions !== null
+            ? subscriptions.length
+            : 0
+      if (count >= 5) {
+        logger.warn(
+          `Subscription count ${count} >= 5 from 200 response — treating as maxReached`,
+          { alertType, count }
+        )
+        return { ok: true, maxReached: true }
+      }
+      logger.info(`User can add more ${alertType} locations (count=${count})`)
       return { ok: true, maxReached: false }
     }
 
-    // '' Any other status is treated as an error - fail open for better UX
-    const unexpectedResponseLog = { status, data }
+    // '' Any other status (e.g. 401 expired key, 403, 503) — fail open with clear log
+    const unexpectedResponseLog = { status, alertType, data }
     logger.warn(
-      `Unexpected response from subscriptions API: ${JSON.stringify(unexpectedResponseLog)}`,
+      `Unexpected response from subscriptions API (status=${status}) — if this is 401/403 your CDP API key may have expired. Failing open.`,
       unexpectedResponseLog
     )
     return { ok: false, maxReached: false }
