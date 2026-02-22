@@ -1,9 +1,23 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import {
   handleEmailDetailsRequest,
   handleEmailDetailsPost
 } from './controller.js'
 import { config } from '../../../../config/index.js'
+import { getSubscriptionCount } from '../../../common/services/notify.js'
+
+// '' Mock notify service so unit tests never make real HTTP calls
+vi.mock('../../../common/services/notify.js', () => ({
+  generateEmailLink: vi.fn().mockResolvedValue(undefined),
+  getSubscriptionCount: vi
+    .fn()
+    .mockResolvedValue({ ok: true, maxReached: false })
+}))
+
+// '' Mock subscription service to avoid real HTTP calls
+vi.mock('../../../common/services/subscription.js', () => ({
+  recordEmailCapture: vi.fn().mockResolvedValue({ ok: true })
+}))
 
 // Simple harness mocks ''
 const mockH = () => {
@@ -16,10 +30,14 @@ const mockH = () => {
 const mockRequest = (payload = {}, session = {}) => {
   return {
     payload,
+    query: {},
     yar: {
       get: (k) => session[k],
       set: (k, v) => {
         session[k] = v
+      },
+      clear: (k) => {
+        delete session[k]
       }
     }
   }
@@ -49,5 +67,63 @@ describe('email-details controller', () => {
     const res = await handleEmailDetailsPost(req, h)
     expect(res.redirect).toBe(config.get('notify.emailVerifyEmailPath'))
     expect(session.emailAddress).toBe('user@example.com')
+  })
+
+  it('GET shows max-alerts error when session flag is set', () => {
+    const session = {
+      maxAlertsEmailError: true,
+      maxAlertsEmail: 'test@example.com'
+    }
+    const req = mockRequest({}, session)
+    const h = mockH()
+    const res = handleEmailDetailsRequest(req, h)
+    expect(res.tpl).toBe('notify/register/email-details/index')
+    // '' Error flag should be cleared from session after reading
+    expect(session.maxAlertsEmailError).toBeUndefined()
+    expect(session.maxAlertsEmail).toBeUndefined()
+    // '' Summary message should contain the email address
+    expect(res.vm.maxAlertsError).toBeTruthy()
+    expect(res.vm.maxAlertsError.summary).toContain('test@example.com')
+    expect(res.vm.maxAlertsError.field).toBeTruthy()
+    // '' Page title should include Error: prefix
+    expect(res.vm.pageTitle).toContain('Error:')
+  })
+
+  it('GET shows no max-alerts error when session flag is absent', () => {
+    const req = mockRequest()
+    const h = mockH()
+    const res = handleEmailDetailsRequest(req, h)
+    expect(res.vm.maxAlertsError).toBeFalsy()
+    expect(res.vm.pageTitle).not.toContain('Error:')
+  })
+
+  it('POST shows inline max-alerts error when subscription limit reached', async () => {
+    // '' Arrange: getSubscriptionCount reports maxReached
+    getSubscriptionCount.mockResolvedValueOnce({ ok: true, maxReached: true })
+    const session = {}
+    const req = mockRequest({ notifyByEmail: 'full@example.com' }, session)
+    const h = mockH()
+
+    const res = await handleEmailDetailsPost(req, h)
+
+    // '' Should re-render the form — NOT redirect
+    expect(res.tpl).toBe('notify/register/email-details/index')
+    expect(res.vm.maxAlertsError).toBeTruthy()
+    expect(res.vm.maxAlertsError.summary).toContain('full@example.com')
+    expect(res.vm.maxAlertsError.field).toBeTruthy()
+    expect(res.vm.pageTitle).toContain('Error:')
+  })
+
+  it('POST continues to redirect when subscription check throws', async () => {
+    // '' Arrange: getSubscriptionCount throws (network error) → fail open
+    getSubscriptionCount.mockRejectedValueOnce(new Error('Network error'))
+    const session = {}
+    const req = mockRequest({ notifyByEmail: 'user@example.com' }, session)
+    const h = mockH()
+
+    const res = await handleEmailDetailsPost(req, h)
+
+    // '' Should still redirect (fail open)
+    expect(res.redirect).toBe(config.get('notify.emailVerifyEmailPath'))
   })
 })

@@ -4,7 +4,10 @@ import { config } from '../../../../config/index.js'
 import { LANG_EN } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { recordEmailCapture } from '../../../common/services/subscription.js'
-import { generateEmailLink } from '../../../common/services/notify.js'
+import {
+  generateEmailLink,
+  getSubscriptionCount
+} from '../../../common/services/notify.js'
 
 // Constants for repeated strings
 const PAGE_HEADING = 'What is your email address?'
@@ -21,6 +24,14 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
   try {
     logger.info('Starting email notify journey')
     request.yar.set('notifyJourney', 'email-started') // ''
+
+    // '' Read max-alerts error flag set by email-confirm-link after a 400 response
+    const maxAlertsEmailError = request.yar.get('maxAlertsEmailError')
+    const maxAlertsEmail = request.yar.get('maxAlertsEmail')
+    if (maxAlertsEmailError) {
+      request.yar.clear('maxAlertsEmailError')
+      request.yar.clear('maxAlertsEmail')
+    }
 
     // Capture location from query parameter if provided
     if (request.query.location) {
@@ -50,8 +61,23 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
     const { footerTxt, phaseBanner, backlink, cookieBanner } = content
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
+    // '' Build error objects for max-alerts condition
+    const emailDetailsErrors =
+      content.emailDetails?.errors || english.emailDetails?.errors || {}
+    const maxAlertsErrorObj =
+      maxAlertsEmailError && maxAlertsEmail
+        ? {
+            summary: (
+              emailDetailsErrors.maxAlertsReached?.summary || ''
+            ).replace('{email}', maxAlertsEmail),
+            field: emailDetailsErrors.maxAlertsReached?.field || ''
+          }
+        : null
+
     const viewModel = {
-      pageTitle: `${PAGE_HEADING} - ${SERVICE_NAME} - GOV.UK`,
+      pageTitle: maxAlertsErrorObj
+        ? `Error: ${PAGE_HEADING} - ${SERVICE_NAME} - GOV.UK`
+        : `${PAGE_HEADING} - ${SERVICE_NAME} - GOV.UK`,
       heading: PAGE_HEADING,
       page: PAGE_HEADING,
       serviceName: SERVICE_NAME,
@@ -61,7 +87,8 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
       phaseBanner,
       backlink,
       cookieBanner,
-      formData: request.yar.get('formData') || {}
+      formData: request.yar.get('formData') || {},
+      maxAlertsError: maxAlertsErrorObj
     }
 
     return h.view(VIEW_PATH, viewModel)
@@ -115,7 +142,43 @@ const handleEmailDetailsPost = async (request, h, content = english) => {
     const lat = request.yar.get('latitude')
     const long = request.yar.get('longitude')
 
-    // Fire-and-forget capture to subscription backend ''
+    // '' Check whether this email already has the maximum 5 locations before sending link
+    try {
+      const subscriptionCheck = await getSubscriptionCount(email, request)
+      if (subscriptionCheck.maxReached) {
+        logger.warn('Email address has reached max 5 locations', {
+          emailLast6: email.slice(-6)
+        })
+        const { footerTxt, phaseBanner, backlink, cookieBanner } = content
+        const metaSiteUrl = getAirQualitySiteUrl(request)
+        const emailDetailsErrors =
+          content.emailDetails?.errors || english.emailDetails?.errors || {}
+        return h.view(VIEW_PATH, {
+          pageTitle: ERROR_PAGE_TITLE,
+          heading: PAGE_HEADING,
+          page: PAGE_HEADING,
+          serviceName: SERVICE_NAME,
+          lang: LANG_EN,
+          metaSiteUrl,
+          footerTxt,
+          phaseBanner,
+          backlink,
+          cookieBanner,
+          formData: request.payload,
+          maxAlertsError: {
+            summary: (
+              emailDetailsErrors.maxAlertsReached?.summary || ''
+            ).replace('{email}', email),
+            field: emailDetailsErrors.maxAlertsReached?.field || ''
+          }
+        })
+      }
+    } catch (err) {
+      // '' Fail open — if the check fails, allow the journey to continue
+      logger.warn('Subscription count check failed, proceeding', {
+        error: err.message
+      })
+    }
     try {
       const res = await recordEmailCapture(email)
       if (res?.ok) {
