@@ -60,12 +60,17 @@ export const handleEmailConfirmLinkRequest = async (request, h) => {
 
     const result = await validateEmailLink(token, request)
 
-    // '' Log the full validateEmailLink response
+    // '' Log the full validateEmailLink response to confirm what the backend returns
     logger.info('[EMAIL CONFIRM] validateEmailLink raw response', {
       ok: result.ok,
       status: result.status,
       skipped: result.skipped,
       dataKeys: result.data ? Object.keys(result.data) : undefined,
+      // '' Log whether the token response itself carries email/location data (session-independent)
+      tokenHasEmail: !!result.data?.emailAddress,
+      tokenHasLocation: !!result.data?.location,
+      tokenHasLatLong:
+        result.data?.lat !== undefined && result.data?.long !== undefined,
       body: result.body
     })
 
@@ -96,6 +101,15 @@ export const handleEmailConfirmLinkRequest = async (request, h) => {
     logger.info(
       `[EMAIL CONFIRM] Resolved emailAddress from ${tokenData.emailAddress ? 'token' : 'session'}`
     )
+    logger.info('[EMAIL CONFIRM] Resolved data sources', {
+      emailAddressSource: tokenData.emailAddress ? 'token' : 'session',
+      locationSource: tokenData.location ? 'token' : 'session',
+      latSource: tokenData.lat !== undefined ? 'token' : 'session',
+      longSource: tokenData.long !== undefined ? 'token' : 'session',
+      // '' Mask the actual email but confirm it exists
+      hasEmailAddress: !!emailAddress,
+      hasLocation: !!location
+    })
 
     if (!emailAddress) {
       const error = new Error(
