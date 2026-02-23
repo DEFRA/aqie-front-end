@@ -209,6 +209,16 @@ export const notificationTranslationsWelsh = {
     researchOptionNo: 'TODO Welsh: No',
     researchContinueButton: 'TODO Welsh: Continue'
   },
+  // Email details page errors
+  emailDetails: {
+    errors: {
+      maxAlertsReached: {
+        summary:
+          'TODO Welsh: You have already added the maximum of 5 alerts for {email}. Enter a different email address.',
+        field: 'TODO Welsh: Enter a different email address.'
+      }
+    }
+  },
   // Email alerts success page
   emailSuccess: {
     pageTitle:

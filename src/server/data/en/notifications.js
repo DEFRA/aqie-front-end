@@ -207,6 +207,16 @@ export const notificationTranslations = {
     researchOptionNo: 'No',
     researchContinueButton: 'Continue'
   },
+  // Email details page errors
+  emailDetails: {
+    errors: {
+      maxAlertsReached: {
+        summary:
+          'You have already added the maximum of 5 alerts for {email}. Enter a different email address.',
+        field: 'Enter a different email address.'
+      }
+    }
+  },
   // Email alerts success page
   emailSuccess: {
     pageTitle: 'You have successfully signed up for air quality alerts',

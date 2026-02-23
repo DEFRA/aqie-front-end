@@ -387,6 +387,7 @@ async function getNearestLocationData(
       locationType,
       0,
       lang,
+      true,
       request
     )
     // '' Ensure distance has valid latlon structure even when forecasts fail
@@ -423,6 +424,7 @@ async function getNearestLocationData(
       locationType,
       locationIndex,
       lang,
+      true,
       request
     )
 

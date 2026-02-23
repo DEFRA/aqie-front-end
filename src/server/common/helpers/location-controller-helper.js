@@ -154,6 +154,7 @@ export async function processLocationData(
       locationType,
       0,
       lang,
+      true,
       request
     )
     const niDataResult = getNIData(locationData, distance, locationType)
@@ -175,6 +176,7 @@ export async function processLocationData(
       locationType,
       locationIndex,
       lang,
+      true,
       request
     )
 

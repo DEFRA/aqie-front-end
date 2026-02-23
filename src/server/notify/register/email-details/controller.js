@@ -22,6 +22,14 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
     logger.info('Starting email notify journey')
     request.yar.set('notifyJourney', 'email-started') // ''
 
+    // '' Read max-alerts error flag set by email-confirm-link after a 400 response
+    const maxAlertsEmailError = request.yar.get('maxAlertsEmailError')
+    const maxAlertsEmail = request.yar.get('maxAlertsEmail')
+    if (maxAlertsEmailError) {
+      request.yar.clear('maxAlertsEmailError')
+      request.yar.clear('maxAlertsEmail')
+    }
+
     // Capture location from query parameter if provided
     if (request.query.location) {
       const sanitizedLocation = request.query.location
@@ -50,8 +58,23 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
     const { footerTxt, phaseBanner, backlink, cookieBanner } = content
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
+    // '' Build error objects for max-alerts condition
+    const emailDetailsErrors =
+      content.emailDetails?.errors || english.emailDetails?.errors || {}
+    const maxAlertsErrorObj =
+      maxAlertsEmailError && maxAlertsEmail
+        ? {
+            summary: (
+              emailDetailsErrors.maxAlertsReached?.summary || ''
+            ).replace('{email}', maxAlertsEmail),
+            field: emailDetailsErrors.maxAlertsReached?.field || ''
+          }
+        : null
+
     const viewModel = {
-      pageTitle: `${PAGE_HEADING} - ${SERVICE_NAME} - GOV.UK`,
+      pageTitle: maxAlertsErrorObj
+        ? `Error: ${PAGE_HEADING} - ${SERVICE_NAME} - GOV.UK`
+        : `${PAGE_HEADING} - ${SERVICE_NAME} - GOV.UK`,
       heading: PAGE_HEADING,
       page: PAGE_HEADING,
       serviceName: SERVICE_NAME,
@@ -61,7 +84,8 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
       phaseBanner,
       backlink,
       cookieBanner,
-      formData: request.yar.get('formData') || {}
+      formData: request.yar.get('formData') || {},
+      maxAlertsError: maxAlertsErrorObj
     }
 
     return h.view(VIEW_PATH, viewModel)
@@ -115,7 +139,10 @@ const handleEmailDetailsPost = async (request, h, content = english) => {
     const lat = request.yar.get('latitude')
     const long = request.yar.get('longitude')
 
-    // Fire-and-forget capture to subscription backend ''
+    // '' Note: the backend has no GET /api/subscriptions endpoint for email.
+    // '' Max-5 enforcement happens at POST /setup-alert (after the user clicks
+    // '' the activation link). The email-confirm-link controller handles the 400
+    // '' and redirects back here with maxAlertsEmailError + maxAlertsEmail flags.
     try {
       const res = await recordEmailCapture(email)
       if (res?.ok) {
