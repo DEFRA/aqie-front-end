@@ -850,12 +850,14 @@ export async function getSubscriptionCount(phoneNumber, request = null) {
 
     const [status, data] = await catchFetchError(url, fetchOptions)
 
+    // '' Log the full raw response so we can diagnose unexpected backend behaviour
     logger.info(
-      `Subscriptions API response: status=${status}, alertType=${alertType}`,
+      `Subscriptions API response: status=${status}, alertType=${alertType}, body=${JSON.stringify(data)}`,
       {
         status,
         alertType,
-        contactLast6: phoneNumber ? phoneNumber.slice(-6) : undefined
+        contactLast6: phoneNumber ? phoneNumber.slice(-6) : undefined,
+        responseBody: data
       }
     )
 

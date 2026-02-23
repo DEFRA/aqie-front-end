@@ -1,28 +1,60 @@
-{% extends 'layouts/page.njk' %}
-{% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      {% if error %}
-        <div class="govuk-error-summary" role="alert" aria-labelledby="error-summary-title" data-module="govuk-error-summary">
-          <h2 class="govuk-error-summary__title" id="error-summary-title">There is a problem</h2>
-          <div class="govuk-error-summary__body">
-            <ul class="govuk-list govuk-error-summary__list">
-              <li><a href="#notifyByEmail">{{ error.message }}</a></li>
-            </ul>
-          </div>
-        </div>
-      {% endif %}
-
-      <h1 class="govuk-heading-l">{{ heading }}</h1>
-      <form method="post" novalidate>
-        <div class="govuk-form-group {% if error %}govuk-form-group--error{% endif %}">
-          <label class="govuk-label" for="notifyByEmail">Email address</label>
-          {% if error %}<p id="notifyByEmail-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ error.message }}</p>{% endif %}
-          <input class="govuk-input govuk-!-width-two-thirds" id="notifyByEmail" name="notifyByEmail" type="email" spellcheck="false" autocomplete="email" value="{{ formData.notifyByEmail }}" />
-        </div>
-        <button class="govuk-button" data-module="govuk-button">Continue</button>
-      </form>
-      <p class="govuk-body"><a class="govuk-link" href="/">Cancel and return to home</a></p>
+{% extends 'layouts/page.njk' %} {% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    {% if error or maxAlertsError %}
+    <div
+      class="govuk-error-summary"
+      role="alert"
+      aria-labelledby="error-summary-title"
+      data-module="govuk-error-summary"
+    >
+      <h2 class="govuk-error-summary__title" id="error-summary-title">
+        There is a problem
+      </h2>
+      <div class="govuk-error-summary__body">
+        <ul class="govuk-list govuk-error-summary__list">
+          <li>
+            <a href="#notifyByEmail"
+              >{% if maxAlertsError %}{{ maxAlertsError.summary }}{% else %}{{
+              error.message }}{% endif %}</a
+            >
+          </li>
+        </ul>
+      </div>
     </div>
+    {% endif %}
+
+    <h1 class="govuk-heading-l">{{ heading }}</h1>
+    <form method="post" novalidate>
+      <div
+        class="govuk-form-group {% if error or maxAlertsError %}govuk-form-group--error{% endif %}"
+      >
+        <label class="govuk-label" for="notifyByEmail">Email address</label>
+        {% if error %}
+        <p id="notifyByEmail-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
+        </p>
+        {% endif %} {% if maxAlertsError %}
+        <p id="notifyByEmail-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{
+          maxAlertsError.field }}
+        </p>
+        {% endif %}
+        <input
+          class="govuk-input govuk-!-width-two-thirds{% if error or maxAlertsError %} govuk-input--error{% endif %}"
+          id="notifyByEmail"
+          name="notifyByEmail"
+          type="email"
+          spellcheck="false"
+          autocomplete="email"
+          value="{{ formData.notifyByEmail }}"
+        />
+      </div>
+      <button class="govuk-button" data-module="govuk-button">Continue</button>
+    </form>
+    <p class="govuk-body">
+      <a class="govuk-link" href="/">Cancel and return to home</a>
+    </p>
   </div>
+</div>
 {% endblock %}
