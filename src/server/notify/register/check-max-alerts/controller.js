@@ -4,13 +4,27 @@ import { getSubscriptionCount } from '../../../common/services/notify.js'
 const logger = createLogger()
 
 /**
- * Check if user has reached maximum alerts and redirect accordingly
+ * Check if user has reached maximum alerts and redirect accordingly.
+ * '' Handles both email and SMS journeys based on notificationFlow session value.
  */
 const checkMaxAlertsController = {
   handler: async (request, h) => {
     logger.info('Checking maximum alerts before adding another location')
 
-    // '' Get mobile number from session
+    // '' Determine which journey the user came from
+    const notificationFlow = request.yar.get('notificationFlow')
+
+    // '' Email journey: no server-side subscription count endpoint exists for email.
+    // '' Max-5 enforcement happens at POST /setup-alert (email-confirm-link handles 400).
+    // '' Simply redirect to location search preserving the email flow context.
+    if (notificationFlow === 'email') {
+      logger.info(
+        'Email journey detected, skipping subscription count check and redirecting to search'
+      )
+      return h.redirect('/search-location?fromEmailFlow=true')
+    }
+
+    // '' SMS journey: check subscription count before allowing another location
     const mobileNumber = request.yar.get('mobileNumber')
 
     if (!mobileNumber) {

@@ -125,6 +125,7 @@ export const handleEmailConfirmLinkRequest = async (request, h) => {
       logger.warn(
         '[EMAIL CONFIRM] setupEmailAlert skipped (notify disabled) - redirecting to success'
       )
+      request.yar.set('notificationFlow', 'email')
       const alertsSuccessPath = config.get('notify.alertsSuccessPath')
       return h.redirect(alertsSuccessPath)
     }
@@ -151,6 +152,9 @@ export const handleEmailConfirmLinkRequest = async (request, h) => {
     }
 
     logger.info('[EMAIL CONFIRM] Token accepted, redirecting to success')
+    // '' Mark this as an email journey so the success page "add another location" link
+    // '' routes back to the email flow, not the SMS flow
+    request.yar.set('notificationFlow', 'email')
     const alertsSuccessPath = config.get('notify.alertsSuccessPath')
     return h.redirect(alertsSuccessPath)
   } catch (error) {
