@@ -48,7 +48,7 @@ export const notificationTranslationsWelsh = {
       'A ydych chi am dderbyn rhybuddion ansawdd aer ar gyfer y lleoliad hwn?',
     radioYes: 'Ydw, anfonwch rybuddion ansawdd aer ataf',
     radioNo: 'Nac ydw, nid wyf am dderbyn rhybuddion',
-    continueButton: 'Parhau',
+    continueButton: 'TODO Welsh: Confirm and set up alert',
     errors: {
       required: 'Dewiswch ie os ydych chi am dderbyn rhybuddion ansawdd aer',
       duplicateAlert: {

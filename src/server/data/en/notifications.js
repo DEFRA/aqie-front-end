@@ -56,7 +56,7 @@ export const notificationTranslations = {
     question: 'Do you want to receive air quality alerts for this location?',
     radioYes: 'Yes, send me air quality alerts',
     radioNo: 'No, I do not want to receive alerts',
-    continueButton: 'Continue',
+    continueButton: 'Confirm and set up alert',
     errors: {
       required: 'Select yes if you want to receive air quality alerts',
       duplicateAlert: {
