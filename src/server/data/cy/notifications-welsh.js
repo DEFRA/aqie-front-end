@@ -34,7 +34,7 @@ export const notificationTranslationsWelsh = {
       forecast:
         "pan fydd y rhagolwg ansawdd aer yn {location} yn uchel neu'n uchel iawn",
       monitoring:
-        'os bydd safle monitro cyfagos yn canfod lefelau llygredd uchel neu uchel iawn unrhyw le o fewn 25 milltir o {location}'
+        'TODO Welsh: if a monitoring site measures high or very high pollution levels in this area'
     },
     summaryList: {
       mobileLabel: 'Rhif ffôn symudol',
