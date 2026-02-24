@@ -59,8 +59,9 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     // '' Build error objects for max-alerts condition
-    const emailDetailsErrors =
-      content.emailDetails?.errors || english.emailDetails?.errors || {}
+    const emailDetailsContent =
+      content.emailDetails || english.emailDetails || {}
+    const emailDetailsErrors = emailDetailsContent.errors || {}
     const maxAlertsErrorObj =
       maxAlertsEmailError && maxAlertsEmail
         ? {
@@ -85,7 +86,11 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
       backlink,
       cookieBanner,
       formData: request.yar.get('formData') || {},
-      maxAlertsError: maxAlertsErrorObj
+      maxAlertsError: maxAlertsErrorObj,
+      alertLimitHint:
+        emailDetailsContent.alertLimitHint ||
+        english.emailDetails?.alertLimitHint ||
+        ''
     }
 
     return h.view(VIEW_PATH, viewModel)

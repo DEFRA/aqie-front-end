@@ -211,6 +211,8 @@ export const notificationTranslationsWelsh = {
   },
   // Email details page errors
   emailDetails: {
+    alertLimitHint:
+      'TODO Welsh: You can add up to 5 alerts for each email address.',
     errors: {
       maxAlertsReached: {
         summary:

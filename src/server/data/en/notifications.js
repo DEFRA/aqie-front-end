@@ -209,6 +209,7 @@ export const notificationTranslations = {
   },
   // Email details page errors
   emailDetails: {
+    alertLimitHint: 'You can add up to 5 alerts for each email address.',
     errors: {
       maxAlertsReached: {
         summary:

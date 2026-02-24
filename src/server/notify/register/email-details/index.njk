@@ -50,6 +50,9 @@
           value="{{ formData.notifyByEmail }}"
         />
       </div>
+      {% if alertLimitHint %}
+      <p class="govuk-body">{{ alertLimitHint }}</p>
+      {% endif %}
       <button class="govuk-button" data-module="govuk-button">Continue</button>
     </form>
     <p class="govuk-body">
