@@ -43,7 +43,7 @@ export const notificationTranslations = {
       forecast:
         'when the air quality forecast in {location} is high or very high',
       monitoring:
-        'if a nearby monitoring site detects high or very high pollution levels anywhere within 25 miles of {location}'
+        'if a monitoring site measures high or very high pollution levels in this area'
     },
     summaryList: {
       mobileLabel: 'Mobile phone number',
