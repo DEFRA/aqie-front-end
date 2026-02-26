@@ -38,10 +38,16 @@ export const navigationTranslationsWelsh = {
     paragraphs: {
       a: 'Defnyddiwch y gwasanaeth yma:',
       b: 'i wirio ansawdd yr aer mewn ardal leol',
-      c: 'i ddod o hyd i wybodaeth am lygryddion aer',
-      d: 'i ddod o hyd i wybodaeth a chyfarwyddyd ar iechyd'
+      c: 'TODO Welsh: get air pollution alerts',
+      d: 'TODO Welsh: You can also find out about:',
+      e: 'TODO Welsh: the health effects of air pollution',
+      f: 'TODO Welsh: what you can do to minimise your exposure to air pollution',
+      g: 'TODO Welsh: air pollutants and how air pollution is measured',
+      h: 'TODO Welsh: You can also:',
+      i: 'TODO Welsh: get air pollution data for the UK',
+      j: 'TODO Welsh: see when air pollution has gone over the legal limits'
     },
-    button: 'Dechrau nawr',
+    button: 'Dechrau',
     description:
       "Gwiriwch ansawdd aer eich ardal leol a'r rhagolygon llygredd aer am y 5 diwrnod nesaf. Hefyd, mynnwch gyngor iechyd i leihau'ch amlygiad i lygryddion."
   },
