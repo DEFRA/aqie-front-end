@@ -41,6 +41,7 @@ import { confirmAlertDetails } from './notify/register/sms-confirm-details/index
 import { alertsSuccess } from './notify/register/sms-success/index.js'
 import { checkMaxAlerts } from './notify/register/check-max-alerts/index.js'
 import { smsDuplicate } from './notify/register/sms-duplicate/index.js'
+import { smsMaxEmails } from './notify/register/sms-max-emails/index.js'
 import { emailDuplicate } from './notify/register/email-duplicate/index.js'
 import { alertsSuccess as emailAlertsSuccess } from './notify/register/alerts-success/index.js'
 import { confirmAlertDetails as genericConfirmAlertDetails } from './notify/register/confirm-alert-details/index.js'
@@ -105,6 +106,7 @@ const getAllPlugins = () => [
   alertsSuccess,
   checkMaxAlerts,
   smsDuplicate,
+  smsMaxEmails,
   emailDuplicate,
   genericConfirmAlertDetails,
   emailAlertsSuccess,

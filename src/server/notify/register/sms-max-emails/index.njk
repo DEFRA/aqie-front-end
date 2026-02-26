@@ -1,0 +1,23 @@
+{% extends 'layouts/page.njk' %}
+{# '' #}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full odd-page">
+      <h1 class="govuk-heading-l">{{ content.heading }}</h1>
+
+      <p class="govuk-body">{{ content.limitText }}</p>
+
+      <p class="govuk-body">{{ content.intro }}</p>
+
+      <ul class="govuk-list govuk-list--bullet govuk-!-margin-left-2">
+        <li>
+          <a href="{{ smsMobileNumberPath }}" class="govuk-link">{{ content.differentEmailLinkText }}</a>
+        </li>
+        <li>
+          {# TODO: update href when unsubscribe route is available '' #}
+          <a href="/notify/unsubscribe" class="govuk-link">{{ content.unsubscribeLinkText }}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}

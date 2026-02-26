@@ -174,6 +174,15 @@ export const notificationTranslations = {
     searchLinkText: 'Search for town or postcode',
     searchText: 'to set up a different air pollution alert.'
   },
+  // SMS max alerts page
+  smsMaxAlerts: {
+    pageTitle: 'You have added the maximum number of alerts',
+    heading: 'You have added the maximum number of alerts',
+    limitText: 'You can add up to 5 alerts for each email address.',
+    intro: 'To add an alert for this location you can either:',
+    differentEmailLinkText: 'add an alert for a different email address',
+    unsubscribeLinkText: 'unsubscribe from all alerts for this email address'
+  },
   // Email duplicate page
   emailDuplicate: {
     pageTitle: 'This alert has already been set up',
