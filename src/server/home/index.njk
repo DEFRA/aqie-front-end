@@ -6,16 +6,29 @@
       <h1 class="govuk-heading-xl">{{ heading }}</h1>
       <p class="govuk-body">{{ paragraphs.a }}</p>
 
-      <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-6">
+      <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-6 govuk-!-margin-left-2">
         <li>{{ paragraphs.b }}</li>
-        <li>{{ paragraphs.d }}</li>
         <li>{{ paragraphs.c }}</li>
-        <!-- That this is not required for the MVP <li>access the local authority website to find out what is being done to improve air quality</li> -->
+      </ul>
+
+      <p class="govuk-body">{{ paragraphs.d }}</p>
+
+      <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-6 govuk-!-margin-left-2">
+        <li>{{ paragraphs.e }}</li>
+        <li>{{ paragraphs.f }}</li>
+        <li>{{ paragraphs.g }}</li>
       </ul>
 
       {% include 'partials/inset-text.njk' %}
 
       {% include 'partials/start-button.njk' %}
+
+      <p class="govuk-body">{{ paragraphs.h }}</p>
+
+      <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-6 govuk-!-margin-left-2">
+        <li>{{ paragraphs.i }}</li>
+        <li>{{ paragraphs.j }}</li>
+      </ul>
     </div>
   </div>
 {% endblock %}

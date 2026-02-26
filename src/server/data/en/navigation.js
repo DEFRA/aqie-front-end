@@ -38,10 +38,16 @@ export const navigationTranslations = {
     paragraphs: {
       a: 'Use this service to:',
       b: 'check air quality in a local area',
-      c: 'find information on air pollutants',
-      d: 'find health information and guidance'
+      c: 'get air pollution alerts',
+      d: 'You can also find out about:',
+      e: 'the health effects of air pollution',
+      f: 'what you can do to minimise your exposure to air pollution',
+      g: 'air pollutants and how air pollution is measured',
+      h: 'You can also:',
+      i: 'get air pollution data for the UK',
+      j: 'see when air pollution has gone over the legal limits'
     },
-    button: 'Start now',
+    button: 'Start',
     description: `${SERVICE_NAME} in your local area and the air pollution forecast for the next 5 days. Also, get health advice to reduce your exposure to pollutants`
   },
   searchLocation: {
