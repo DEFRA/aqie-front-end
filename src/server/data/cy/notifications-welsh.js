@@ -171,6 +171,17 @@ export const notificationTranslationsWelsh = {
     searchLinkText: 'TODO Welsh: Search for town or postcode',
     searchText: 'TODO Welsh: to set up a different air pollution alert.'
   },
+  // SMS max alerts page
+  smsMaxAlerts: {
+    pageTitle: 'TODO Welsh: You have added the maximum number of alerts',
+    heading: 'TODO Welsh: You have added the maximum number of alerts',
+    limitText: 'TODO Welsh: You can add up to 5 alerts for each email address.',
+    intro: 'TODO Welsh: To add an alert for this location you can either:',
+    differentEmailLinkText:
+      'TODO Welsh: add an alert for a different email address',
+    unsubscribeLinkText:
+      'TODO Welsh: unsubscribe from all alerts for this email address'
+  },
   // Email duplicate page
   emailDuplicate: {
     pageTitle: 'TODO Welsh: This alert has already been set up',

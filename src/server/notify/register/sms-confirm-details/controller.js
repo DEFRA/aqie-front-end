@@ -275,12 +275,9 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
         message: result.body?.message,
         phoneLast4: phoneNumber ? phoneNumber.slice(-4) : undefined
       })
-      // '' Store error in session and redirect to mobile number page
-      const maskedNumber = phoneNumber
-      request.yar.set('maxAlertsError', true)
-      request.yar.set('maskedPhoneNumber', maskedNumber)
-      request.yar.clear('mobileNumber')
-      return h.redirect(config.get('notify.smsMobileNumberPath'))
+      // '' Max alerts reached - redirect to dedicated max alerts page
+      logger.warn('Redirecting to sms-max-emails page')
+      return h.redirect(config.get('notify.smsMaxAlertsPath'))
     }
 
     // '' Handle 409 Conflict - Alert already exists for this location

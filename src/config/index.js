@@ -372,6 +372,12 @@ export const config = convict({
       default: '/notify/register/sms-duplicate',
       env: 'NOTIFY_DUPLICATE_SUBSCRIPTION_PATH'
     },
+    smsMaxAlertsPath: {
+      doc: 'Frontend route for SMS maximum alerts reached page',
+      format: String,
+      default: '/notify/register/sms-max-emails',
+      env: 'NOTIFY_SMS_MAX_ALERTS_PATH'
+    },
     emailDuplicatePath: {
       doc: 'Frontend route for duplicate email subscription page',
       format: String,
