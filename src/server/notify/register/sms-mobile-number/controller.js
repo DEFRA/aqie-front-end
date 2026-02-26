@@ -106,11 +106,7 @@ const handleNotifyRequest = (request, h, content = english) => {
     cookieBanner,
     common,
     content: smsMobilePhone,
-    formData: request.yar.get('formData') || {},
-    alertLimitHint:
-      smsMobilePhone.alertLimitHint ||
-      english.smsMobilePhone?.alertLimitHint ||
-      ''
+    formData: request.yar.get('formData') || {}
   }
 
   // '' Add max alerts error if present

@@ -20,8 +20,6 @@ export const notificationTranslationsWelsh = {
       'TODO Welsh: We will send you a text message with a 5-digit activation code.',
     inputLabel: 'TODO Welsh: Enter your mobile phone number',
     continueButton: 'TODO Welsh: Continue',
-    alertLimitHint:
-      'TODO Welsh: You can add up to 5 alerts for each mobile phone number.',
     errors: {
       empty: 'TODO Welsh: Enter your mobile phone number',
       format: 'TODO Welsh: Enter a UK mobile phone number, like 07700 900 982'

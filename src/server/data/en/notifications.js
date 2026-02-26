@@ -22,7 +22,6 @@ export const notificationTranslations = {
       'We will send you a text message with a 5-digit activation code.',
     inputLabel: 'Enter your mobile phone number',
     continueButton: 'Continue',
-    alertLimitHint: 'You can add up to 5 alerts for each mobile phone number.',
     errors: {
       empty: 'Enter your mobile phone number',
       format: 'Enter a UK mobile phone number, like 07700 900 982'

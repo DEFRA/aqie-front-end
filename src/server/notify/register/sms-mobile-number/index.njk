@@ -45,10 +45,6 @@
                    value="{% if formData and formData.notifyByText %}{{ formData.notifyByText }}{% endif %}">
           </div>
 
-          {% if alertLimitHint %}
-          <p class="govuk-body">{{ alertLimitHint }}</p>
-          {% endif %}
-
           <button type="submit" class="govuk-button" data-module="govuk-button">
             {{ content.continueButton }}
           </button>
