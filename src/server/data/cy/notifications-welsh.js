@@ -154,12 +154,12 @@ export const notificationTranslationsWelsh = {
     intro2:
       'TODO Welsh: If the activation code has not arrived after 10 minutes, you can get a new code sent to:',
     bulletSameNumber:
-      'TODO Welsh: the same mobile phone number, {mobileNumber}',
+      'TODO Welsh: the same mobile phone number, <strong>{mobileNumber}</strong>',
     bulletDifferentNumber: 'TODO Welsh: a different mobile phone number',
     detailsSummary: 'TODO Welsh: Send the text to a different number',
     detailsLabel: 'TODO Welsh: Enter mobile phone number (optional)',
     detailsHint:
-      'TODO Welsh: Enter a UK mobile phone number, like 07700 900 982',
+      'TODO Welsh: Enter a UK mobile phone number, like <strong>07700 900 982</strong>',
     submitButton: 'TODO Welsh: Request a new code'
   },
   // SMS duplicate page
