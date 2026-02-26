@@ -1,4 +1,5 @@
 // Controller for SMS send new code page ''
+import { config } from '../../../../config/index.js'
 import { createLogger } from '../../../common/helpers/logging/logger.js'
 import { english } from '../../../data/en/en.js'
 import { welsh } from '../../../data/cy/cy.js'
@@ -12,6 +13,7 @@ import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
 const logger = createLogger()
 
 const DEFAULT_SERVICE_NAME = 'Check air quality'
+const SMS_MOBILE_NUMBER_PATH = config.get('notify.smsMobileNumberPath')
 
 const formatTemplate = (template = '', replacements = {}) => {
   return Object.keys(replacements).reduce((value, key) => {
@@ -29,8 +31,12 @@ const formatTemplate = (template = '', replacements = {}) => {
 const handleSendNewCodeRequest = (request, h, content = english) => {
   logger.info('Displaying SMS send new code page')
 
-  // Get the mobile number from session (optional) ''
-  const mobileNumber = request.yar.get('mobileNumber') || 'Your mobile number'
+  // Get the mobile number from session, redirect if not found ''
+  const mobileNumber = request.yar.get('mobileNumber')
+
+  if (!mobileNumber) {
+    return h.redirect(SMS_MOBILE_NUMBER_PATH)
+  }
 
   const lang = resolveNotifyLanguage(request)
   const languageContent = lang === LANG_CY ? welsh : content

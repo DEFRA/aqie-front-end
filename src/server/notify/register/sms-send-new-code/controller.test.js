@@ -46,7 +46,7 @@ describe('SMS Send New Code Controller - handleSendNewCodeRequest', () => {
     }
   })
 
-  it('should render the send new code page with default text if no mobile number in session', () => {
+  it('should redirect to mobile number page if no mobile number in session', () => {
     // Arrange ''
     mockRequest.yar.get.mockReturnValue(null)
 
@@ -54,12 +54,10 @@ describe('SMS Send New Code Controller - handleSendNewCodeRequest', () => {
     handleSendNewCodeRequest(mockRequest, mockH)
 
     // Assert ''
-    expect(mockH.view).toHaveBeenCalledWith(
-      VIEW_PATH,
-      expect.objectContaining({
-        mobileNumber: 'Your mobile number'
-      })
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      '/notify/register/sms-mobile-number'
     )
+    expect(mockH.view).not.toHaveBeenCalled()
   })
 })
 

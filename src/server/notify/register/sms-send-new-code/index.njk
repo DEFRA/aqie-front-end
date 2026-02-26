@@ -28,7 +28,7 @@
         {{ content.intro2 }}
       </p>
       <ul class="govuk-list govuk-list--bullet">
-        <li>{{ bulletSameNumber }}</li>
+        <li>{{ bulletSameNumber | safe }}</li>
         <li>{{ content.bulletDifferentNumber }}</li>
       </ul>
 
@@ -43,7 +43,7 @@
         <div class="govuk-details__text">
           <div class="govuk-form-group{% if error and error.field === 'mobileNumberNew' %} govuk-form-group--error{% endif %}">
             <div id="mobile-number-new-hint" class="{% if error and error.field === 'mobileNumberNew' %}govuk-error-message{% else %}govuk-hint{% endif %}">
-              {% if error and error.field === 'mobileNumberNew' %}<span class="govuk-visually-hidden">Error:</span> {% endif %}{{ content.detailsHint }}
+              {% if error and error.field === 'mobileNumberNew' %}<span class="govuk-visually-hidden">Error:</span> {% endif %}{{ content.detailsHint | safe }}
             </div>
             <input class="govuk-input govuk-input--width-20{% if error and error.field === 'mobileNumberNew' %} govuk-input--error{% endif %}" 
                    id="mobile-number-new" 
