@@ -141,6 +141,27 @@ function resetNiPlacesState() {
   resetCircuitBreaker()
 }
 
+function getRedactedOAuthLog(optionsOAuth = {}) {
+  const hasAuthHeader = Boolean(optionsOAuth?.headers?.Authorization)
+  return {
+    headers: {
+      Authorization: hasAuthHeader ? 'Bearer [REDACTED]' : undefined,
+      'Content-Type': optionsOAuth?.headers?.['Content-Type']
+    }
+  }
+}
+
+function getNiResponseSummary(niPlacesData = null) {
+  return {
+    hasData: Boolean(niPlacesData),
+    hasHeader: Boolean(niPlacesData?.header),
+    resultCount: Array.isArray(niPlacesData?.results)
+      ? niPlacesData.results.length
+      : 0,
+    hasInfo: Boolean(niPlacesData?._info)
+  }
+}
+
 // ''  Simplified - removed test-only DI parameters
 async function getNIPlaces(userLocation, request) {
   // Read configuration directly instead of via parameters
@@ -220,7 +241,9 @@ async function getNIPlaces(userLocation, request) {
   logger.info(
     `[getNIPlaces] Calling NI API with URL: ${postcodeNortherIrelandURL}`
   )
-  logger.info(`[getNIPlaces] OAuth options: ${JSON.stringify(optionsOAuth)}`)
+  logger.info(
+    `[getNIPlaces] OAuth options: ${JSON.stringify(getRedactedOAuthLog(optionsOAuth))}`
+  )
 
   if (isHalfOpenProbe) {
     logger.warn(
@@ -342,7 +365,9 @@ async function getNIPlaces(userLocation, request) {
   const normalizedStatus = statusCodeNI ?? 'unknown'
   const normalizedData = niPlacesData ?? null
   logger.info(`[getNIPlaces] Response status: ${normalizedStatus}`)
-  logger.info(`[getNIPlaces] Response data: ${JSON.stringify(normalizedData)}`)
+  logger.info(
+    `[getNIPlaces] Response summary: ${JSON.stringify(getNiResponseSummary(normalizedData))}`
+  )
 
   // '' Handle 204 No Content as "postcode not found" (not a service error)
   if (statusCodeNI === 204) {
@@ -400,10 +425,6 @@ async function getNIPlaces(userLocation, request) {
     resetCircuitBreaker()
     setCachedResult(cacheKey, niPlacesData)
     logger.info(`[getNIPlaces] NI data fetched successfully`)
-    logger.info(
-      `[getNIPlaces] Response structure:`,
-      JSON.stringify(niPlacesData, null, 2)
-    )
     logger.info(
       `[getNIPlaces] Number of results: ${niPlacesData?.results?.length}`
     )

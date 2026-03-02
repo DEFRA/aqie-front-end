@@ -148,14 +148,15 @@ export async function processLocationData(
   const indexNI = 0
 
   if (locationData.locationType === LOCATION_TYPE_NI) {
-    distance = getNearestLocation(
+    distance = await getNearestLocation(
       locationData?.results,
       getForecasts,
       locationType,
       0,
       lang,
       true,
-      request
+      request,
+      { skipMeasurements: true }
     )
     const niDataResult = getNIData(locationData, distance, locationType)
     resultNI = niDataResult.resultNI
