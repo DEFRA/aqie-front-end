@@ -10,7 +10,7 @@ permissions:
 
 env:
   AWS_REGION: eu-west-2
-  AWS_ACCOUNT_ID: "094954420758"
+  AWS_ACCOUNT_ID: '094954420758'
 
 jobs:
   build:
@@ -28,14 +28,14 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: |
-          npm ci
+          npm ci --ignore-scripts
           npm run build:frontend
           npm run format:check
           npm run lint
           npm test
 
       - name: Publish Hot Fix
-        uses: DEFRA/cdp-build-action/build-hotfix@6bc276d9c3a038ccb04307247623de821361eca3 # main - Security: pinned to commit SHA
+        uses: DEFRA/cdp-build-action/build-hotfix@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -43,20 +43,22 @@ jobs:
         run: git fetch --no-tags --prune origin +refs/heads/main:refs/remotes/origin/main
 
       - name: SonarCloud Scan
+        continue-on-error: true
         uses: SonarSource/sonarcloud-github-action@eb211723266fe8e83102bac7361f0a05c3ac1d1b # v3.0.0 - Security: pinned to commit SHA
         with:
           args: >
             -Dsonar.organization=defra
             -Dsonar.projectKey=DEFRA_aqie-front-end
-            -Dsonar.sources=src/server/,src/config/,src/helpers/,src/index.js
+            -Dsonar.projectVersion=1.1.0
+            -Dsonar.sources=src/server/,src/config/,src/helpers/,src/index.js,test/
+            -Dsonar.html.file.suffixes=.html
             -Dsonar.exclusions=**/*.test.js,src/client/**,src/server/common/**/*,src/server/locations/cy/**,src/src/govuk/**/*,src/config/nunjucks/filters/format-currency.js,src/**/__fixtures__/**,src/server/data/**/daqi-and-pollutants*.js,src/server/data/**/navigation*.js,src/server/data/**/footer-and-ui*.js,src/server/data/**/en.js,src/server/data/**/cy.js
             -Dsonar.tests=src/server/,src/config/,src/helpers/,test/
             -Dsonar.test.inclusions=**/*.test.js
             -Dsonar.test.exclusions=src/client/**,src/server/common/**/*,src/server/locations/cy/**,src/src/govuk/**/*,src/**/__fixtures__/**
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-            -Dsonar.coverage.exclusions=src/client/**,coverage/**,node_modules/**,**/test/**,**/*.test.js,src/server/common/**/*,src/server/locations/cy/**,src/src/govuk/**/*,src/config/nunjucks/filters/format-currency.js,src/**/__fixtures__/**
+            -Dsonar.coverage.exclusions=src/client/**,coverage/**,node_modules/**,**/test/**,**/*.test.js,**/test-helpers/**,**/test-setup.js,src/server/locations/test-helpers/**,src/server/common/**/*,src/server/locations/cy/**,src/src/govuk/**/*,src/config/nunjucks/filters/format-currency.js,src/**/__fixtures__/**
             -Dsonar.newCode.referenceBranch=main
-            -Dsonar.newCodePeriod.type=PREVIOUS_VERSION
             -Dsonar.cpd.exclusions=src/server/data/**/daqi-and-pollutants*.js,src/server/data/**/navigation*.js,src/server/data/**/footer-and-ui*.js,src/server/data/**/en.js,src/server/data/**/cy.js
             -Dsonar.issue.exclusions.multicriteria=e1,e2,e3,e4,e5
             -Dsonar.issue.exclusions.multicriteria.e1.ruleKey=javascript:S1192

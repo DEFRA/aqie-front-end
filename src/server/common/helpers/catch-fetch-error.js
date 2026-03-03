@@ -1,24 +1,32 @@
 import { createLogger } from './logging/logger.js'
 const logger = createLogger()
 
+/**
+ * Parse JSON response and handle parsing errors ''
+ */
+async function parseJsonResponse(url, status, response) {
+  try {
+    const data = await response.json()
+    if (data === undefined) {
+      logger.error(`Parsed JSON is undefined from ${url}`)
+    }
+    return [status, data]
+  } catch (jsonError) {
+    logger.error(`Failed to parse JSON from ${url}:`, jsonError)
+    const text = await response.text()
+    logger.error(`Raw response body: ${text}`)
+    return [status, undefined]
+  }
+}
+
 async function catchFetchError(url, options) {
   try {
     // Force Accept-Encoding: identity for all requests to avoid decompression issues
-    let safeOptions = options
-    if (options && options.headers) {
-      safeOptions = {
-        ...options,
-        headers: {
-          ...options.headers,
-          'Accept-Encoding': 'identity'
-        }
-      }
-    } else {
-      safeOptions = {
-        ...options,
-        headers: {
-          'Accept-Encoding': 'identity'
-        }
+    const safeOptions = {
+      ...options,
+      headers: {
+        ...options?.headers,
+        'Accept-Encoding': 'identity'
       }
     }
     const startTime = performance.now()
@@ -31,11 +39,26 @@ async function catchFetchError(url, options) {
     // Log the content-encoding header for debugging
     const encoding = response.headers.get('content-encoding')
     logger.info(`Content-Encoding for ${url}: ${encoding}`)
+
+    // Log all response headers and status for debugging
+    logger.info(`Response status for ${url}: ${status}`)
+    logger.info(
+      `Response headers for ${url}:`,
+      Object.fromEntries(response.headers.entries())
+    )
+
+    const contentType = response.headers.get('content-type') || ''
+    if (contentType.includes('application/json')) {
+      return await parseJsonResponse(url, status, response)
+    }
+
+    // Handle non-JSON responses
     if (!response.ok) {
       let errorText = ''
       try {
         errorText = await response.text()
       } catch (e) {
+        logger.warn('Unable to read response body', e)
         errorText = '[unable to read response body]'
       }
       logger.error(
@@ -43,31 +66,10 @@ async function catchFetchError(url, options) {
       )
       return [status, undefined]
     }
-    // Log all response headers and status for debugging
-    logger.info(`Response status for ${url}: ${status}`)
-    logger.info(
-      `Response headers for ${url}:`,
-      Object.fromEntries(response.headers.entries())
-    )
-    const contentType = response.headers.get('content-type') || ''
-    if (contentType.includes('application/json')) {
-      try {
-        const data = await response.json()
-        if (typeof data === 'undefined') {
-          logger.error(`Parsed JSON is undefined from ${url}`)
-        }
-        return [status, data]
-      } catch (jsonError) {
-        logger.error(`Failed to parse JSON from ${url}:`, jsonError)
-        const text = await response.text()
-        logger.error(`Raw response body: ${text}`)
-        return [status, undefined]
-      }
-    } else {
-      const text = await response.text()
-      logger.error(`Unexpected content-type: ${contentType}, body: ${text}`)
-      return [status, undefined]
-    }
+
+    const text = await response.text()
+    logger.error(`Unexpected content-type: ${contentType}, body: ${text}`)
+    return [status, undefined]
   } catch (error) {
     // Log full error object for better debugging (e.g., Z_DATA_ERROR)
     logger.error(`Failed to fetch data from ${url}:`, error)

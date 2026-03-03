@@ -1,0 +1,320 @@
+import { createLogger } from '../../../common/helpers/logging/logger.js'
+import { english } from '../../../data/en/en.js'
+import { welsh } from '../../../data/cy/cy.js'
+import { LANG_CY, NOT_PROVIDED } from '../../../data/constants.js'
+import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
+import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
+import { config } from '../../../../config/index.js'
+
+// Constants ''
+const LOCATION_PLACEHOLDER = '{location}'
+const MISSING_VALUE = 'MISSING'
+
+// Create a logger instance ''
+const logger = createLogger()
+
+const DEFAULT_SERVICE_NAME = 'Check air quality'
+
+const buildSmsMobileNumberUrl = ({
+  location = '',
+  locationId = '',
+  lat,
+  long
+} = {}) => {
+  const queryParams = new URLSearchParams()
+  if (location) {
+    queryParams.set('location', location)
+  }
+  if (locationId) {
+    queryParams.set('locationId', locationId)
+  }
+  if (lat) {
+    queryParams.set('lat', lat)
+  }
+  if (long) {
+    queryParams.set('long', long)
+  }
+
+  const queryString = queryParams.toString()
+  const smsMobileNumberPath = config.get('notify.smsMobileNumberPath')
+  return queryString
+    ? `${smsMobileNumberPath}?${queryString}`
+    : smsMobileNumberPath
+}
+
+const handleConfirmAlertDetailsRequest = (request, h, content = english) => {
+  logger.info('Showing confirm alert details page')
+
+  try {
+    const lang = resolveNotifyLanguage(request)
+    const languageContent = lang === LANG_CY ? welsh : content
+    const { footerTxt, phaseBanner, cookieBanner } = languageContent
+    const smsConfirmDetails =
+      languageContent.smsConfirmDetails || english.smsConfirmDetails
+    const common = languageContent.common || english.common
+    const metaSiteUrl = getAirQualitySiteUrl(request)
+
+    // '' Check for duplicate alert error
+    const duplicateAlertError = request.yar.get('duplicateAlertError')
+    const duplicateAlertLocation = request.yar.get('duplicateAlertLocation')
+
+    // '' Clear error flags after reading
+    if (duplicateAlertError) {
+      request.yar.clear('duplicateAlertError')
+      request.yar.clear('duplicateAlertLocation')
+    }
+
+    // Get data from session ''
+    const mobileNumber = request.yar.get('mobileNumber') || NOT_PROVIDED
+    const location = request.yar.get('location')
+    const locationId = request.yar.get('locationId')
+    const lat = request.yar.get('latitude')
+    const long = request.yar.get('longitude')
+    const locationData = request.yar.get('locationData')
+    const notificationFlow = request.yar.get('notificationFlow')
+    const searchTermsSaved = request.yar.get('searchTermsSaved')
+
+    // '' DEBUG: Log all session keys to identify what's missing
+    logger.info('Session debug - checking all keys', {
+      hasMobileNumber: !!mobileNumber && mobileNumber !== NOT_PROVIDED,
+      hasLocation: !!location,
+      hasLocationId: !!locationId,
+      hasLatitude: !!lat,
+      hasLongitude: !!long,
+      hasLocationData: !!locationData,
+      hasNotificationFlow: !!notificationFlow,
+      hasSearchTermsSaved: !!searchTermsSaved,
+      sessionId: request.yar.id,
+      values: {
+        mobileNumber:
+          mobileNumber !== NOT_PROVIDED ? '[REDACTED]' : NOT_PROVIDED,
+        location: location || MISSING_VALUE,
+        locationId: locationId || MISSING_VALUE,
+        latitude: lat || MISSING_VALUE,
+        longitude: long || MISSING_VALUE,
+        locationDataKeys: locationData
+          ? Object.keys(locationData)
+          : MISSING_VALUE,
+        notificationFlow: notificationFlow || MISSING_VALUE,
+        searchTermsSaved: searchTermsSaved || MISSING_VALUE
+      }
+    })
+
+    // '' If location is missing but locationId exists, return to search within SMS flow
+    if (!location && locationId) {
+      logger.warn(
+        'Missing location in session, redirecting to search for SMS flow',
+        {
+          hasLocationId: true,
+          locationId
+        }
+      )
+      request.yar.set('notificationFlow', 'sms')
+      return h.redirect('/search-location?fromSmsFlow=true')
+    }
+
+    // '' If location and locationId are missing, redirect to search to avoid 500
+    if (!location && !locationId) {
+      logger.error('Missing location and locationId in session', {
+        hasLocation: false,
+        hasLocationId: false
+      })
+      return h.redirect('/search-location?fromSmsFlow=true')
+    }
+
+    const safeLocation = location || 'Unknown location'
+    const changeMobileNumberUrl = buildSmsMobileNumberUrl({
+      location: safeLocation,
+      locationId,
+      lat,
+      long
+    })
+
+    // Replace {location} placeholder with actual location ''
+    const heading = smsConfirmDetails.heading.replace(
+      LOCATION_PLACEHOLDER,
+      safeLocation
+    )
+    const forecastAlert = smsConfirmDetails.alertTypes.forecast.replace(
+      LOCATION_PLACEHOLDER,
+      safeLocation
+    )
+    const monitoringAlert = smsConfirmDetails.alertTypes.monitoring.replace(
+      LOCATION_PLACEHOLDER,
+      safeLocation
+    )
+
+    const serviceName = common?.serviceName || DEFAULT_SERVICE_NAME
+    const viewModel = {
+      pageTitle: duplicateAlertError
+        ? `Error: ${smsConfirmDetails.pageTitle} - ${serviceName} - GOV.UK`
+        : `${smsConfirmDetails.pageTitle} - ${serviceName} - GOV.UK`,
+      heading,
+      page: heading,
+      serviceName,
+      lang,
+      metaSiteUrl,
+      footerTxt,
+      phaseBanner,
+      cookieBanner,
+      displayBacklink: true,
+      customBackLink: true,
+      backLinkText: common?.backLinkText || 'Back',
+      backLinkUrl: config.get('notify.smsVerifyCodePath'),
+      common,
+      content: smsConfirmDetails,
+      changeMobileNumberUrl,
+      mobileNumber,
+      location: safeLocation,
+      forecastAlert,
+      monitoringAlert,
+      formData: request.yar.get('formData') || {},
+      duplicateAlertError: duplicateAlertError
+        ? {
+            summary: smsConfirmDetails.errors.duplicateAlert.summary.replace(
+              LOCATION_PLACEHOLDER,
+              duplicateAlertLocation || safeLocation
+            ),
+            message: smsConfirmDetails.errors.duplicateAlert.field
+          }
+        : null
+    }
+
+    return h.view('notify/register/sms-confirm-details/index', viewModel)
+  } catch (error) {
+    logger.error('Failed to render sms-confirm-details page', {
+      error,
+      hasSession: Boolean(request?.yar),
+      hasLocation: Boolean(request?.yar?.get?.('location')),
+      hasLocationId: Boolean(request?.yar?.get?.('locationId')),
+      hasMobileNumber: Boolean(request?.yar?.get?.('mobileNumber'))
+    })
+    throw error
+  }
+}
+
+const handleConfirmAlertDetailsPost = async (request, h) => {
+  logger.info('Processing alert confirmation')
+
+  // Get data from session ''
+  const phoneNumber = request.yar.get('mobileNumber')
+  const location = request.yar.get('location')
+  const locationId = request.yar.get('locationId')
+  const lat = request.yar.get('latitude')
+  const long = request.yar.get('longitude')
+
+  // Log all session data for debugging ''
+  logger.info('Session data for alert setup', {
+    phoneNumber: phoneNumber ? '***' + phoneNumber.slice(-4) : undefined,
+    location,
+    locationStartsWith: location
+      ? location.substring(0, Math.min(20, location.length))
+      : undefined,
+    locationHasAirQuality: location
+      ? location.toLowerCase().includes('air quality')
+      : false,
+    locationId,
+    lat,
+    long,
+    hasLat: !!lat,
+    hasLong: !!long,
+    hasLocationId: !!locationId
+  })
+
+  // '' If phone number or location is missing, log error but continue
+  // '' The API call will fail and handle the error appropriately
+  if (!phoneNumber || !location) {
+    logger.error(
+      'Missing phone number or location in session - this should not happen',
+      {
+        hasPhoneNumber: !!phoneNumber,
+        hasLocation: !!location
+      }
+    )
+  }
+
+  if (!lat || !long) {
+    logger.warn('Missing coordinates in session', { lat, long })
+  }
+
+  // Call setup-alert API with all required fields ''
+  const { setupAlert } = await import('../../../common/services/notify.js')
+
+  // Log minimal, non-sensitive metadata only
+  logger.info('Submitting alert setup request', {
+    locationId,
+    hasCoordinates: Boolean(lat && long)
+  })
+
+  const result = await setupAlert(
+    phoneNumber,
+    'sms',
+    location,
+    locationId,
+    lat,
+    long,
+    request
+  )
+
+  // '' Debug logging to see actual result
+  logger.info('Setup alert result received', {
+    ok: result.ok,
+    status: result.status,
+    hasBody: !!result.body,
+    hasError: !!result.error,
+    bodyMessage: result.body?.message,
+    bodyStatusCode: result.body?.statusCode,
+    bodyError: result.body?.error
+  })
+
+  if (!result.ok) {
+    // '' Handle 400 Bad Request - Maximum 5 locations reached
+    if (result.status === 400) {
+      logger.warn('Maximum locations reached for this phone number', {
+        status: result.status,
+        message: result.body?.message,
+        phoneLast4: phoneNumber ? phoneNumber.slice(-4) : undefined
+      })
+      // '' Max alerts reached - redirect to dedicated max alerts page
+      logger.warn('Redirecting to sms-max-emails page')
+      return h.redirect(config.get('notify.smsMaxAlertsPath'))
+    }
+
+    // '' Handle 409 Conflict - Alert already exists for this location
+    if (result.status === 409) {
+      logger.warn('Alert already exists for this phone/location', {
+        status: result.status,
+        message: result.body?.message,
+        location,
+        phoneLast4: phoneNumber ? phoneNumber.slice(-4) : undefined
+      })
+      // '' Keep notificationFlow active so user can search for different location
+      // '' Don't clear it here - let user continue the flow with a different location
+      // '' Redirect to duplicate subscription page
+      return h.redirect(config.get('notify.duplicateSubscriptionPath'))
+    }
+
+    // '' Handle other errors - redirect back to mobile number page
+    logger.error('Failed to setup alert - unhandled error status', {
+      error: result.error,
+      status: result.status,
+      body: result.body,
+      statusType: typeof result.status,
+      bodyKeys: result.body ? Object.keys(result.body) : []
+    })
+    // '' Store error and redirect back to mobile number page
+    request.yar.set('setupAlertError', true)
+    request.yar.clear('mobileNumber')
+    return h.redirect(config.get('notify.smsMobileNumberPath'))
+  }
+
+  logger.info('Alert setup successful', { data: result.data })
+
+  // Store confirmation in session ''
+  request.yar.set('alertDetailsConfirmed', true)
+
+  // Redirect to success page ''
+  return h.redirect(config.get('notify.smsSuccessPath'))
+}
+
+export { handleConfirmAlertDetailsRequest, handleConfirmAlertDetailsPost }

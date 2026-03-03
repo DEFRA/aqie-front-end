@@ -1,0 +1,62 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds odd-page">
+      {% if error %}
+        {{ govukErrorSummary({
+          titleText: common.errorSummaryTitle,
+          errorList: [
+            {
+              text: error.message,
+              href: "#activation-code"
+            }
+          ]
+        }) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-l">{{ content.heading }}</h1>
+      <p class="govuk-body">
+        {{ bodyText | safe }}
+      </p>
+      {% if debugToken %}
+        <p class="govuk-hint">({{ debugToken }})</p>
+      {% endif %}
+      <form class="form" action="/notify/register/sms-verify-code" method="post" novalidate>
+        <div class="govuk-form-group{% if error %} govuk-form-group--error{% endif %}">
+          <label class="govuk-label" for="activation-code">
+            {{ content.label }}
+          </label>
+          {% if error %}
+            <p id="activation-code-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
+            </p>
+          {% endif %}
+          <input class="govuk-input govuk-!-width-one-third{% if error %} govuk-input--error{% endif %}" id="activation-code" name="activation-code" type="text"{% if error %} aria-describedby="activation-code-error"{% endif %}{% if formData and formData['activation-code'] %} value="{{ formData['activation-code'] }}"{% endif %}>
+        </div>
+        <p>
+          {{ content.codeExpiryText }}
+        </p>
+        <details class="govuk-details" open="">
+          <summary class="govuk-details__summary">
+            <span class="govuk-details__summary-text">
+              {{ content.detailsSummary }}
+            </span>
+          </summary>
+          <div class="govuk-details__text">
+            <p>{{ content.detailsIntro }}</p>
+            <p>{{ content.detailsChecklistIntro }}</p> 
+            <ul>
+              <li>{{ content.detailsBulletNumber }}</li>
+              <li>{{ content.detailsBulletSignal }}</li>
+            </ul>
+            <p>{{ content.detailsRequestNewCodePrefix }} <a href="/notify/register/sms-send-new-code">{{ content.detailsRequestNewCodeLinkText }}</a>.</p>
+          </div>
+        </details>
+        <button type="submit" class="govuk-button" data-module="govuk-button">
+          {{ content.continueButton }}
+        </button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

@@ -3,6 +3,7 @@ import { LANG_CY, LANG_EN } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
 const REDIRECT_STATUS_CODE = 301
+const WELSH_PATH = '/preifatrwydd/cy'
 
 const privacyController = {
   handler: (request, h) => {
@@ -29,11 +30,11 @@ const privacyController = {
       return h.redirect(`/privacy?lang=en`).code(REDIRECT_STATUS_CODE)
     }
     let lang = query?.lang?.slice(0, 2)
-    if (lang !== LANG_CY && lang !== LANG_EN && path === '/preifatrwydd/cy') {
+    if (lang !== LANG_CY && lang !== LANG_EN && path === WELSH_PATH) {
       lang = LANG_CY
     }
     // Ensure lang defaults to CY for Welsh privacy path
-    if (!lang && path === '/preifatrwydd/cy') {
+    if (!lang && path === WELSH_PATH) {
       lang = LANG_CY
     }
     return h.view('privacy/index', {
@@ -50,7 +51,7 @@ const privacyController = {
       cookieBanner,
       serviceName,
       page: 'privacy',
-      currentPath: '/preifatrwydd/cy',
+      currentPath: WELSH_PATH,
       lang
     })
   }

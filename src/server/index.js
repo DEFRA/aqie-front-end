@@ -1,4 +1,4 @@
-import path from 'path'
+import path from 'node:path'
 import hapi from '@hapi/hapi'
 
 import { config } from '../config/index.js'
@@ -62,6 +62,11 @@ async function createServer() {
     })
 
     logger.info('Server instance created')
+    // '' Log session cache configuration for deployment visibility
+    logger.info('Session cache configuration', {
+      cacheName: config.get('session.cache.name'),
+      cacheEngine: config.get('session.cache.engine')
+    })
 
     const plugins = [
       requestLogger,

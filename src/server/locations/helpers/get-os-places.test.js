@@ -1,4 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+
+// Constants
+const MOCK_API_URL = 'https://api.test.com/'
+const MOCK_API_KEY = 'test-key'
+const STATUS_CODE_SUCCESS = 200
+const STATUS_CODE_NOT_FOUND = 404
+const HEADER_OTHER = 'should-remain'
+const LOCAL_TEST_DATA = { data: 'local test' }
+
 // Use doMock to ensure mocks are hoisted before imports
 vi.mock('../common/helpers/catch-proxy-fetch-error.js', () => ({
   catchProxyFetchError: vi.fn()
@@ -14,12 +23,17 @@ vi.mock('../../config/index.js', () => ({
     get: vi.fn()
   }
 }))
+vi.mock('node:fs', () => ({
+  default: {
+    readFileSync: vi.fn()
+  }
+}))
 vi.mock('./convert-string.js', () => ({
   isValidFullPostcodeUK: vi.fn(),
   isValidPartialPostcodeUK: vi.fn()
 }))
 
-describe('getOSPlaces', () => {
+describe('getOSPlaces - basic functionality', () => {
   beforeEach(async () => {
     vi.clearAllMocks()
   })
@@ -28,8 +42,12 @@ describe('getOSPlaces', () => {
     vi.clearAllMocks()
     const { config } = await import('../../config/index.js')
     config.get.mockImplementation((key) => {
-      if (key === 'osNamesApiUrl') return 'https://api.test.com/'
-      if (key === 'osNamesApiKey') return 'test-key'
+      if (key === 'osNamesApiUrl') {
+        return MOCK_API_URL
+      }
+      if (key === 'osNamesApiKey') {
+        return MOCK_API_KEY
+      }
       return ''
     })
     const { isValidFullPostcodeUK, isValidPartialPostcodeUK } = await import(
@@ -41,7 +59,7 @@ describe('getOSPlaces', () => {
       '../common/helpers/catch-proxy-fetch-error.js'
     )
     catchProxyFetchError.mockResolvedValue([
-      200,
+      STATUS_CODE_SUCCESS,
       { results: [{ data: 'test' }] }
     ])
     const { getOSPlaces } = await import('./get-os-places.js')
@@ -57,13 +75,23 @@ describe('getOSPlaces', () => {
     expect(result).toBeDefined()
     expect(catchProxyFetchError).toHaveBeenCalled()
   })
+})
+
+describe('getOSPlaces - postcode handling', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('should handle postcode input', async () => {
     vi.clearAllMocks()
     const { config } = await import('../../config/index.js')
     config.get.mockImplementation((key) => {
-      if (key === 'osNamesApiUrl') return 'https://api.test.com/'
-      if (key === 'osNamesApiKey') return 'test-key'
+      if (key === 'osNamesApiUrl') {
+        return MOCK_API_URL
+      }
+      if (key === 'osNamesApiKey') {
+        return MOCK_API_KEY
+      }
       return ''
     })
     const { isValidFullPostcodeUK, isValidPartialPostcodeUK } = await import(
@@ -75,7 +103,7 @@ describe('getOSPlaces', () => {
       '../common/helpers/catch-proxy-fetch-error.js'
     )
     catchProxyFetchError.mockResolvedValue([
-      200,
+      STATUS_CODE_SUCCESS,
       { results: [{ data: 'postcode test' }] }
     ])
     const { getOSPlaces } = await import('./get-os-places.js')
@@ -91,13 +119,23 @@ describe('getOSPlaces', () => {
     expect(result).toBeDefined()
     expect(catchProxyFetchError).toHaveBeenCalled()
   })
+})
+
+describe('getOSPlaces - local requests', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('should handle local requests with localhost host', async () => {
     vi.clearAllMocks()
     const { config } = await import('../../config/index.js')
     config.get.mockImplementation((key) => {
-      if (key === 'osNamesApiUrl') return 'https://api.test.com/'
-      if (key === 'osNamesApiKey') return 'test-key'
+      if (key === 'osNamesApiUrl') {
+        return MOCK_API_URL
+      }
+      if (key === 'osNamesApiKey') {
+        return MOCK_API_KEY
+      }
       return ''
     })
     const { isValidFullPostcodeUK, isValidPartialPostcodeUK } = await import(
@@ -109,8 +147,8 @@ describe('getOSPlaces', () => {
       '../common/helpers/catch-proxy-fetch-error.js'
     )
     catchProxyFetchError.mockResolvedValue([
-      200,
-      { results: [{ data: 'local test' }] }
+      STATUS_CODE_SUCCESS,
+      { results: [LOCAL_TEST_DATA] }
     ])
 
     // Set up environment variable for CDP X-API key
@@ -142,13 +180,23 @@ describe('getOSPlaces', () => {
       delete process.env.CDP_X_API_KEY
     }
   })
+})
 
-  it('should handle local requests with 127.0.0.1 host', async () => {
+describe('getOSPlaces - CDP X-API key from file', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
+
+  it('should handle local requests without CDP_X_API_KEY env var', async () => {
     vi.clearAllMocks()
     const { config } = await import('../../config/index.js')
     config.get.mockImplementation((key) => {
-      if (key === 'osNamesApiUrl') return 'https://api.test.com/'
-      if (key === 'osNamesApiKey') return 'test-key'
+      if (key === 'osNamesApiUrl') {
+        return MOCK_API_URL
+      }
+      if (key === 'osNamesApiKey') {
+        return MOCK_API_KEY
+      }
       return ''
     })
     const { isValidFullPostcodeUK, isValidPartialPostcodeUK } = await import(
@@ -160,8 +208,76 @@ describe('getOSPlaces', () => {
       '../common/helpers/catch-proxy-fetch-error.js'
     )
     catchProxyFetchError.mockResolvedValue([
-      200,
-      { results: [{ data: 'local test' }] }
+      STATUS_CODE_SUCCESS,
+      { results: [LOCAL_TEST_DATA] }
+    ])
+
+    // Mock fs.readFileSync to simulate reading from local.json
+    const fs = await import('node:fs')
+    fs.default.readFileSync.mockReturnValue(
+      JSON.stringify({ cdpXApiKey: 'test-key-from-file' })
+    )
+
+    // Ensure CDP_X_API_KEY is NOT set to test file reading path
+    const originalEnv = process.env.CDP_X_API_KEY
+    delete process.env.CDP_X_API_KEY
+
+    const { getOSPlaces } = await import('./get-os-places.js')
+    const mockRequest = {
+      headers: {
+        host: 'localhost:3000'
+      }
+    }
+    const result = await getOSPlaces(
+      'London',
+      'London',
+      'England',
+      true,
+      {},
+      mockRequest,
+      catchProxyFetchError
+    )
+    expect(result).toBeDefined()
+    expect(catchProxyFetchError).toHaveBeenCalled()
+    // Verify x-api-key was added from local.json file
+    const callArgs = catchProxyFetchError.mock.calls[0]
+    expect(callArgs[1].headers).toHaveProperty('x-api-key')
+
+    // Restore environment variable
+    if (originalEnv) {
+      process.env.CDP_X_API_KEY = originalEnv
+    }
+  })
+})
+
+describe('getOSPlaces - 127.0.0.1 host', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
+
+  it('should handle local requests with 127.0.0.1 host', async () => {
+    vi.clearAllMocks()
+    const { config } = await import('../../config/index.js')
+    config.get.mockImplementation((key) => {
+      if (key === 'osNamesApiUrl') {
+        return MOCK_API_URL
+      }
+      if (key === 'osNamesApiKey') {
+        return MOCK_API_KEY
+      }
+      return ''
+    })
+    const { isValidFullPostcodeUK, isValidPartialPostcodeUK } = await import(
+      './convert-string.js'
+    )
+    isValidFullPostcodeUK.mockReturnValue(false)
+    isValidPartialPostcodeUK.mockReturnValue(false)
+    const { catchProxyFetchError } = await import(
+      '../common/helpers/catch-proxy-fetch-error.js'
+    )
+    catchProxyFetchError.mockResolvedValue([
+      STATUS_CODE_SUCCESS,
+      { results: [LOCAL_TEST_DATA] }
     ])
 
     // Set up environment variable for CDP X-API key
@@ -193,13 +309,23 @@ describe('getOSPlaces', () => {
       delete process.env.CDP_X_API_KEY
     }
   })
+})
+
+describe('getOSPlaces - non-local requests', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('should remove x-api-key header for non-local requests', async () => {
     vi.clearAllMocks()
     const { config } = await import('../../config/index.js')
     config.get.mockImplementation((key) => {
-      if (key === 'osNamesApiUrl') return 'https://api.test.com/'
-      if (key === 'osNamesApiKey') return 'test-key'
+      if (key === 'osNamesApiUrl') {
+        return MOCK_API_URL
+      }
+      if (key === 'osNamesApiKey') {
+        return MOCK_API_KEY
+      }
       return ''
     })
     const { isValidFullPostcodeUK, isValidPartialPostcodeUK } = await import(
@@ -211,7 +337,7 @@ describe('getOSPlaces', () => {
       '../common/helpers/catch-proxy-fetch-error.js'
     )
     catchProxyFetchError.mockResolvedValue([
-      200,
+      STATUS_CODE_SUCCESS,
       { results: [{ data: 'remote test' }] }
     ])
 
@@ -224,7 +350,7 @@ describe('getOSPlaces', () => {
     const optionsWithApiKey = {
       headers: {
         'x-api-key': 'should-be-removed',
-        'other-header': 'should-remain'
+        'other-header': HEADER_OTHER
       }
     }
     const result = await getOSPlaces(
@@ -239,13 +365,23 @@ describe('getOSPlaces', () => {
     expect(result).toBeDefined()
     expect(catchProxyFetchError).toHaveBeenCalled()
   })
+})
 
-  it('should return empty results on error status code', async () => {
+describe('getOSPlaces - non-local requests without x-api-key', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
+
+  it('should pass through options unchanged for non-local requests without x-api-key', async () => {
     vi.clearAllMocks()
     const { config } = await import('../../config/index.js')
     config.get.mockImplementation((key) => {
-      if (key === 'osNamesApiUrl') return 'https://api.test.com/'
-      if (key === 'osNamesApiKey') return 'test-key'
+      if (key === 'osNamesApiUrl') {
+        return MOCK_API_URL
+      }
+      if (key === 'osNamesApiKey') {
+        return MOCK_API_KEY
+      }
       return ''
     })
     const { isValidFullPostcodeUK, isValidPartialPostcodeUK } = await import(
@@ -256,7 +392,69 @@ describe('getOSPlaces', () => {
     const { catchProxyFetchError } = await import(
       '../common/helpers/catch-proxy-fetch-error.js'
     )
-    catchProxyFetchError.mockResolvedValue([404, null])
+    catchProxyFetchError.mockResolvedValue([
+      STATUS_CODE_SUCCESS,
+      { results: [{ data: 'remote test' }] }
+    ])
+
+    const { getOSPlaces } = await import('./get-os-places.js')
+    const mockRequest = {
+      headers: {
+        host: 'production.example.com'
+      }
+    }
+    const optionsWithoutApiKey = {
+      headers: {
+        'content-type': 'application/json',
+        'other-header': HEADER_OTHER
+      }
+    }
+    const result = await getOSPlaces(
+      'London',
+      'London',
+      'England',
+      true,
+      optionsWithoutApiKey,
+      mockRequest,
+      catchProxyFetchError
+    )
+    expect(result).toBeDefined()
+    expect(catchProxyFetchError).toHaveBeenCalled()
+    // Verify that catchProxyFetchError was called with options that still have the original headers
+    const callArgs = catchProxyFetchError.mock.calls[0]
+    expect(callArgs[1].headers).toEqual({
+      'content-type': 'application/json',
+      'other-header': HEADER_OTHER
+    })
+  })
+})
+
+describe('getOSPlaces - error handling', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
+
+  it('should return empty results on error status code', async () => {
+    vi.clearAllMocks()
+    const { config } = await import('../../config/index.js')
+    config.get.mockImplementation((key) => {
+      if (key === 'osNamesApiUrl') {
+        return MOCK_API_URL
+      }
+      if (key === 'osNamesApiKey') {
+        return MOCK_API_KEY
+      }
+      return ''
+    })
+    const { isValidFullPostcodeUK, isValidPartialPostcodeUK } = await import(
+      './convert-string.js'
+    )
+    isValidFullPostcodeUK.mockReturnValue(false)
+    isValidPartialPostcodeUK.mockReturnValue(false)
+    const { catchProxyFetchError } = await import(
+      '../common/helpers/catch-proxy-fetch-error.js'
+    )
+    catchProxyFetchError.mockResolvedValue([STATUS_CODE_NOT_FOUND, null])
 
     const { getOSPlaces } = await import('./get-os-places.js')
     const result = await getOSPlaces(
@@ -270,13 +468,23 @@ describe('getOSPlaces', () => {
     )
     expect(result).toEqual({ results: [] })
   })
+})
+
+describe('getOSPlaces - successful response', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('should return osPlacesData when successful', async () => {
     vi.clearAllMocks()
     const { config } = await import('../../config/index.js')
     config.get.mockImplementation((key) => {
-      if (key === 'osNamesApiUrl') return 'https://api.test.com/'
-      if (key === 'osNamesApiKey') return 'test-key'
+      if (key === 'osNamesApiUrl') {
+        return MOCK_API_URL
+      }
+      if (key === 'osNamesApiKey') {
+        return MOCK_API_KEY
+      }
       return ''
     })
     const { isValidFullPostcodeUK, isValidPartialPostcodeUK } = await import(
@@ -288,7 +496,7 @@ describe('getOSPlaces', () => {
       '../common/helpers/catch-proxy-fetch-error.js'
     )
     const mockData = { results: [{ name: 'London', type: 'City' }] }
-    catchProxyFetchError.mockResolvedValue([200, mockData])
+    catchProxyFetchError.mockResolvedValue([STATUS_CODE_SUCCESS, mockData])
 
     const { getOSPlaces } = await import('./get-os-places.js')
     const result = await getOSPlaces(

@@ -7,7 +7,7 @@ import {
 const logger = createLogger()
 
 function createURLRouteBookmarks(selectedMatchesAddedIDs) {
-  const normalizeString = (str) => str?.toLowerCase().replace(/\s+/g, '')
+  const normalizeString = (str) => str?.toLowerCase().replaceAll(/\s+/g, '')
   logger.info(
     `Creating URL route bookmarks for matches 1xxx: ${JSON.stringify(selectedMatchesAddedIDs)}`
   )
@@ -34,7 +34,7 @@ function createURLRouteBookmarks(selectedMatchesAddedIDs) {
         : `${item.GAZETTEER_ENTRY.NAME1}_${item.GAZETTEER_ENTRY.COUNTY_UNITARY}`
     }
     urlRoute = convertStringToHyphenatedLowercaseWords(urlRoute) // Use the helper function to generate the custom ID
-    urlRoute = urlRoute.replace(/-/g, ' ')
+    urlRoute = urlRoute.replaceAll('-', ' ')
     urlRoute = convertStringToHyphenatedLowercaseWords(urlRoute)
     item.GAZETTEER_ENTRY.ID = normalizeString(urlRoute) // Update the nested object property
     acc.push(item)

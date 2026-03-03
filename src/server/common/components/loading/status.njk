@@ -1,0 +1,9 @@
+{# '' #}
+<div
+  class="loading-status{{ ' ' + params.classes if params.classes }}"
+  aria-live="polite"
+  aria-atomic="true"
+>
+  <div class="loading-spinner" aria-hidden="true"></div>
+  <p class="govuk-body loading-text">{{ params.statusText }}</p>
+</div>

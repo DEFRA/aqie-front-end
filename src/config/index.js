@@ -98,12 +98,6 @@ export const config = convict({
     default: false,
     env: 'ENABLED_MOCK'
   },
-  useNewRicardoMeasurementsEnabled: {
-    doc: 'Falg To Use New Ricardo Measurements API',
-    format: Boolean,
-    default: true,
-    env: 'USE_NEW_RICARDO_MEASUREMENTS_ENABLED'
-  },
   log: {
     enabled: {
       doc: 'Is logging enabled',
@@ -251,29 +245,226 @@ export const config = convict({
     sensitive: true,
     env: 'CDP_X_API_KEY'
   },
+  notify: {
+    enabled: {
+      doc: 'Enable notify service (sends via backend wrapper API)',
+      format: Boolean,
+      default: false,
+      env: 'NOTIFY_ENABLED'
+    },
+    mockOtpEnabled: {
+      doc: 'Enable mock OTP mode (bypasses backend service entirely for local and test environments)',
+      format: Boolean,
+      default: false,
+      env: 'NOTIFY_MOCK_OTP_ENABLED'
+    },
+    mockOtpCode: {
+      doc: 'Mock OTP code to use when mock mode is active',
+      format: String,
+      default: '12345',
+      env: 'NOTIFY_MOCK_OTP_CODE'
+    },
+    mockSetupAlertEnabled: {
+      doc: 'Enable mock setup alert fallback when backend service fails (for local and test environments ONLY - never use in production)',
+      format: Boolean,
+      default: false,
+      env: 'NOTIFY_MOCK_SETUP_ALERT_ENABLED'
+    },
+    mockSubscriptionCheckMaxReached: {
+      doc: 'Force getSubscriptionCount to return maxReached:true — used locally to test the max-5 validation UI without a live backend (never use in production)',
+      format: Boolean,
+      default: false,
+      env: 'NOTIFY_MOCK_SUBSCRIPTION_CHECK_MAX_REACHED'
+    },
+    baseUrl: {
+      doc: 'Backend notify wrapper API base URL',
+      format: String,
+      default: 'https://aqie-notify-service.test.cdp-int.defra.cloud',
+      env: 'NOTIFY_BASE_URL'
+    },
+    alertBackendBaseUrl: {
+      doc: 'Alert backend service base URL for setup-alert endpoint',
+      format: String,
+      default: 'https://aqie-alert-back-end-service.test.cdp-int.defra.cloud',
+      env: 'ALERT_BACKEND_BASE_URL'
+    },
+    emailPath: {
+      doc: 'Backend API path for sending email codes',
+      format: String,
+      default: '/send-email-code',
+      env: 'NOTIFY_EMAIL_PATH'
+    },
+    emailGenerateLinkPath: {
+      doc: 'Backend API path for generating email verification links',
+      format: String,
+      default: '/subscribe/generate-link',
+      env: 'NOTIFY_EMAIL_GENERATE_LINK_PATH'
+    },
+    emailValidateLinkPath: {
+      doc: 'Backend API path for validating email verification links',
+      format: String,
+      default: '/subscribe/validate-link',
+      env: 'NOTIFY_EMAIL_VALIDATE_LINK_PATH'
+    },
+    emailDetailsPath: {
+      doc: 'Frontend route for entering email address',
+      format: String,
+      default: '/notify/register/email-details',
+      env: 'NOTIFY_EMAIL_DETAILS_PATH'
+    },
+    emailVerifyEmailPath: {
+      doc: 'Frontend route for check your email page',
+      format: String,
+      default: '/notify/register/email-verify-email',
+      env: 'NOTIFY_EMAIL_VERIFY_EMAIL_PATH'
+    },
+    emailConfirmLinkPath: {
+      doc: 'Frontend route for email link callback',
+      format: String,
+      default: '/notify/register/email-confirm-link',
+      env: 'NOTIFY_EMAIL_CONFIRM_LINK_PATH'
+    },
+    emailSendActivationPath: {
+      doc: 'Frontend route for resending email activation link',
+      format: String,
+      default: '/notify/register/email-send-activation',
+      env: 'NOTIFY_EMAIL_SEND_ACTIVATION_PATH'
+    },
+    alertsSuccessPath: {
+      doc: 'Frontend route for alerts success page',
+      format: String,
+      default: '/notify/register/alerts-success',
+      env: 'NOTIFY_ALERTS_SUCCESS_PATH'
+    },
+    smsMobileNumberPath: {
+      doc: 'Frontend route for SMS mobile number entry',
+      format: String,
+      default: '/notify/register/sms-mobile-number',
+      env: 'NOTIFY_SMS_MOBILE_NUMBER_PATH'
+    },
+    smsSendActivationPath: {
+      doc: 'Frontend route for sending SMS activation code',
+      format: String,
+      default: '/notify/register/sms-send-activation',
+      env: 'NOTIFY_SMS_SEND_ACTIVATION_PATH'
+    },
+    smsVerifyCodePath: {
+      doc: 'Frontend route for SMS verify code page',
+      format: String,
+      default: '/notify/register/sms-verify-code',
+      env: 'NOTIFY_SMS_VERIFY_CODE_PATH'
+    },
+    smsConfirmDetailsPath: {
+      doc: 'Frontend route for confirming SMS alert details',
+      format: String,
+      default: '/notify/register/sms-confirm-details',
+      env: 'NOTIFY_SMS_CONFIRM_DETAILS_PATH'
+    },
+    smsSuccessPath: {
+      doc: 'Frontend route for SMS alerts success page',
+      format: String,
+      default: '/notify/register/sms-success',
+      env: 'NOTIFY_SMS_SUCCESS_PATH'
+    },
+    duplicateSubscriptionPath: {
+      doc: 'Frontend route for duplicate subscription page',
+      format: String,
+      default: '/notify/register/sms-duplicate',
+      env: 'NOTIFY_DUPLICATE_SUBSCRIPTION_PATH'
+    },
+    smsMaxAlertsPath: {
+      doc: 'Frontend route for SMS maximum alerts reached page',
+      format: String,
+      default: '/notify/register/sms-max-emails',
+      env: 'NOTIFY_SMS_MAX_ALERTS_PATH'
+    },
+    emailDuplicatePath: {
+      doc: 'Frontend route for duplicate email subscription page',
+      format: String,
+      default: '/notify/register/email-duplicate',
+      env: 'NOTIFY_EMAIL_DUPLICATE_PATH'
+    },
+    smsPath: {
+      doc: 'Backend API path for generating OTP (SMS)',
+      format: String,
+      default: '/subscribe/generate-otp',
+      env: 'NOTIFY_SMS_PATH'
+    },
+    verifyOtpPath: {
+      doc: 'Backend API path for verifying OTP',
+      format: String,
+      default: '/subscribe/validate-otp',
+      env: 'NOTIFY_VERIFY_OTP_PATH'
+    },
+    setupAlertPath: {
+      doc: 'Backend API path for setting up alert subscription',
+      format: String,
+      default: '/setup-alert',
+      env: 'NOTIFY_SETUP_ALERT_PATH'
+    },
+    getSubscriptionsPath: {
+      doc: 'Backend API path for getting user subscriptions',
+      format: String,
+      default: '/api/subscriptions',
+      env: 'NOTIFY_GET_SUBSCRIPTIONS_PATH'
+    },
+    timeoutMs: {
+      doc: 'Request timeout in milliseconds',
+      format: 'int',
+      default: 5000,
+      env: 'NOTIFY_TIMEOUT_MS'
+    }
+  },
+  subscriptionApi: {
+    enabled: {
+      doc: 'Enable subscription capture API (for recording SMS/email captures)',
+      format: Boolean,
+      default: false,
+      env: 'SUBSCRIPTION_API_ENABLED'
+    },
+    baseUrl: {
+      doc: 'Subscription API base URL',
+      format: String,
+      default: '',
+      env: 'SUBSCRIPTION_API_BASE_URL'
+    },
+    apiKey: {
+      doc: 'Subscription API authentication key',
+      format: String,
+      default: '',
+      env: 'SUBSCRIPTION_API_KEY',
+      sensitive: true
+    },
+    emailPath: {
+      doc: 'API path for recording email captures',
+      format: String,
+      default: '/capture/email',
+      env: 'SUBSCRIPTION_API_EMAIL_PATH'
+    },
+    smsPath: {
+      doc: 'API path for recording SMS captures',
+      format: String,
+      default: '/capture/sms',
+      env: 'SUBSCRIPTION_API_SMS_PATH'
+    },
+    timeoutMs: {
+      doc: 'Request timeout in milliseconds',
+      format: 'int',
+      default: 5000,
+      env: 'SUBSCRIPTION_API_TIMEOUT_MS'
+    }
+  },
   ephemeralProtectedDevApiUrl: {
     doc: 'Ephemeral Protected Dev API url',
     format: String,
     default: `https://ephemeral-protected.api.test.cdp-int.defra.cloud`,
     env: 'EPHEMERAL_PROTECTED_DEV_API_URL'
   },
-  measurementsApiUrl: {
-    doc: 'Ricardo API url',
-    format: String,
-    default: `https://aqie-back-end.dev.cdp-int.defra.cloud/measurements`,
-    env: 'MEASUREMENTS_API_URL'
-  },
   ricardoMeasurementsApiUrl: {
-    doc: 'New Ricardo API url',
+    doc: 'Ricardo Measurements API url',
     format: String,
-    default: `https://aqie-back-end.dev.cdp-int.defra.cloud/monitoringStationInfo?`,
-    env: 'NEW_RICARDO_MEASUREMENTS_API_URL'
-  },
-  forecastSummaryUrl: {
-    doc: 'Summary forecast url',
-    format: String,
-    default: 'https://uk-air.defra.gov.uk/ajax/forecast_text_summary.php',
-    env: 'FORECAST_SUMMARY_URL'
+    default: `https://aqie-back-end.test.cdp-int.defra.cloud/monitoringStationInfo?`,
+    env: 'RICARDO_MEASUREMENTS_API_URL'
   },
   postcodeNortherIrelandUrl: {
     doc: 'Search postcode Northern Ireland url',
@@ -331,6 +522,54 @@ export const config = convict({
     sensitive: true,
     default: '',
     env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_CLIENT_SCOPE'
+  },
+  niApiTimeoutMs: {
+    doc: 'Northern Ireland API request timeout in milliseconds',
+    format: Number,
+    default: 8000,
+    env: 'NI_API_TIMEOUT_MS'
+  },
+  niApiMaxRetries: {
+    doc: 'Maximum number of retry attempts for Northern Ireland API calls',
+    format: Number,
+    default: 2,
+    env: 'NI_API_MAX_RETRIES'
+  },
+  niApiRetryDelayMs: {
+    doc: 'Delay in milliseconds between retry attempts for Northern Ireland API',
+    format: Number,
+    default: 1500,
+    env: 'NI_API_RETRY_DELAY_MS'
+  },
+  niApiCircuitBreakerEnabled: {
+    doc: 'Enable NI API circuit breaker to prevent repeated failures',
+    format: Boolean,
+    default: true,
+    env: 'NI_API_CIRCUIT_BREAKER_ENABLED'
+  },
+  niApiCircuitBreakerFailureThreshold: {
+    doc: 'Failures required to open NI API circuit breaker',
+    format: Number,
+    default: 3,
+    env: 'NI_API_CIRCUIT_BREAKER_FAILURE_THRESHOLD'
+  },
+  niApiCircuitBreakerOpenMs: {
+    doc: 'Time in milliseconds the NI API circuit breaker remains open',
+    format: Number,
+    default: 60000,
+    env: 'NI_API_CIRCUIT_BREAKER_OPEN_MS'
+  },
+  niApiCacheEnabled: {
+    doc: 'Enable NI API response cache fallback',
+    format: Boolean,
+    default: true,
+    env: 'NI_API_CACHE_ENABLED'
+  },
+  niApiCacheTtlMs: {
+    doc: 'NI API response cache TTL in milliseconds',
+    format: Number,
+    default: 600000,
+    env: 'NI_API_CACHE_TTL_MS'
   },
   redis: {
     host: {
@@ -390,6 +629,12 @@ export const config = convict({
       default: 'x-cdp-request-id',
       env: 'TRACING_HEADER'
     }
+  },
+  userResearchPanelUrl: {
+    doc: 'URL for user research panel sign up',
+    format: String,
+    default: 'https://defragroup.eu.qualtrics.com/jfe/form/SV_3JEDGo4ZaGtBpHw',
+    env: 'USER_RESEARCH_PANEL_URL'
   }
 })
 

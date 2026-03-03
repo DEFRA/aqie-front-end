@@ -1,7 +1,6 @@
 import path from 'node:path'
 import { config } from '../../../config/index.js'
 
-// ''
 // Serve favicon.ico and favicon.svg from the correct build output location
 export const serveStaticFiles = {
   plugin: {
@@ -94,7 +93,8 @@ export const serveStaticFiles = {
           path: `${config.get('assetPath')}/{param*}`,
           handler: {
             directory: {
-              path: '.',
+              // ''
+              path: path.resolve(process.cwd(), '.public'),
               redirectToSlash: true
             }
           }

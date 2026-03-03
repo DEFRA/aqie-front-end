@@ -1,0 +1,17 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  {# '' #}
+  {{
+    appLoading({
+      heading: preloader.heading,
+      body: preloader.body,
+      statusText: preloader.statusText,
+      statusUrl: preloader.statusUrl,
+      retryUrl: preloader.retryUrl,
+      maxPolls: preloader.maxPolls,
+      pollIntervalMs: preloader.pollIntervalMs,
+      initialDelayMs: preloader.initialDelayMs
+    })
+  }}
+{% endblock %}

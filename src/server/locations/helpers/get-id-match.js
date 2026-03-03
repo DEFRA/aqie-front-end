@@ -7,7 +7,7 @@ function getIdMatch(
   locationType,
   locationIndex
 ) {
-  const normalizeString = (str) => str?.toUpperCase().replace(/\s+/g, '')
+  const normalizeString = (str) => str?.toUpperCase().replaceAll(/\s+/g, '')
   let locationDetails
   if (locationType === LOCATION_TYPE_UK) {
     locationDetails = locationData?.results?.find((item, index) => {

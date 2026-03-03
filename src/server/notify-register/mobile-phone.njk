@@ -1,0 +1,59 @@
+{% extends 'layouts/page.njk' %}
+
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      
+      {% if error %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: [
+            {
+              text: error.text,
+              href: "#mobile-phone"
+            }
+          ]
+        }) }}
+      {% endif %}
+
+      <form method="post">
+        <div class="govuk-form-group{% if error %} govuk-form-group--error{% endif %}">
+          <h1 class="govuk-label-wrapper">
+            <label class="govuk-label govuk-label--xl" for="mobile-phone">
+              {{ heading }}
+            </label>
+          </h1>
+          
+          <div id="mobile-phone-hint" class="govuk-hint">
+            {{ description }}
+          </div>
+          
+          {% if error %}
+            <p id="mobile-phone-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ error.text }}
+            </p>
+          {% endif %}
+          
+          <p class="govuk-body">Enter your mobile phone number</p>
+          
+          <input class="govuk-input{% if error %} govuk-input--error{% endif %}" 
+                 id="mobile-phone" 
+                 name="mobilePhone" 
+                 type="tel" 
+                 autocomplete="tel"
+                 aria-describedby="mobile-phone-hint{% if error %} mobile-phone-error{% endif %}"
+                 value="{{ mobilePhone or '' }}">
+        </div>
+
+        {{ govukButton({
+          text: "Continue",
+          type: "submit"
+        }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

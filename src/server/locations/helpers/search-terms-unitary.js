@@ -1,5 +1,5 @@
 // '' Helper function to normalize strings for comparison
-const normalizeString = (str) => str?.toUpperCase().replace(/\s+/g, '')
+const normalizeString = (str) => str?.toUpperCase().replaceAll(/\s+/g, '')
 
 // '' Helper function to check if search term is undefined or empty
 const isSearchTermEmpty = (term) => term === 'UNDEFINED' || term === ''

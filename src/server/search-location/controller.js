@@ -62,7 +62,9 @@ const prepareViewModel = ({
   errors,
   errorMessage,
   locationType,
-  isError
+  isError,
+  fromSmsFlow,
+  fromEmailFlow
 }) => {
   const { searchLocation, footerTxt, phaseBanner, backlink, cookieBanner } =
     english
@@ -93,15 +95,17 @@ const prepareViewModel = ({
     locations: searchLocation.searchParams.locations,
     button: searchLocation.button,
     locationType: isError ? locationType : '',
-    errors: errors?.errors,
-    errorMessage: errorMessage?.errorMessage,
-    errorMessageRadio: errorMessage?.errorMessage,
+    errors: errors?.errors ?? null,
+    errorMessage: errorMessage?.errorMessage ?? null,
+    errorMessageRadio: errorMessage?.errorMessage ?? null,
     footerTxt,
     phaseBanner,
     backlink,
     cookieBanner,
     currentPath: '/search-location',
-    lang
+    lang,
+    fromSmsFlow,
+    fromEmailFlow
   }
 }
 
@@ -111,6 +115,17 @@ const prepareViewModel = ({
 const searchLocationController = {
   handler: (request, h) => {
     request.yar.set('locationNameOrPostcode', '')
+
+    // '' Check if user is coming from notification registration flow (SMS or Email)
+    const fromSmsFlow = request.query?.fromSmsFlow === 'true'
+    const fromEmailFlow = request.query?.fromEmailFlow === 'true'
+
+    if (fromSmsFlow) {
+      request.yar.set('notificationFlow', 'sms')
+    } else if (fromEmailFlow) {
+      request.yar.set('notificationFlow', 'email')
+    }
+
     const metaSiteUrl = getAirQualitySiteUrl(request)
     const lang = determineLanguage(request)
 
@@ -126,7 +141,9 @@ const searchLocationController = {
       errors,
       errorMessage,
       locationType,
-      isError: !!errors
+      isError: !!errors,
+      fromSmsFlow,
+      fromEmailFlow
     })
 
     return h.view('search-location/index', viewModel)

@@ -22,7 +22,7 @@ const healthEffectsCy = {
           const wantsCy =
             ((request.query.lang || '') + '').toLowerCase() === 'cy' // ''
           const m = request.path.match(/^\/location\/([^/]+)\/health-effects$/i) // '' Extract {id} from EN path
-          if (wantsCy && m && m[1]) {
+          if (wantsCy && m?.[1]) {
             const id = encodeURIComponent(m[1]) // '' URL-safe
             return h.redirect(`/lleoliad/${id}/effeithiau-iechyd`).takeover() // '' Redirect to CY dynamic
           }

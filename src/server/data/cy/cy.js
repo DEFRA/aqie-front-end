@@ -8,6 +8,7 @@ import {
   uiTranslationsWelsh,
   footerTranslationsWelsh
 } from './footer-and-ui-welsh.js'
+import { notificationTranslationsWelsh } from './notifications-welsh.js'
 
 /**
  * Consolidated Welsh translations for the air quality service
@@ -23,7 +24,8 @@ export const welsh = {
     heading: 'Effaith llygredd aer ar iechyd'
   },
   ...uiTranslationsWelsh,
-  ...footerTranslationsWelsh
+  ...footerTranslationsWelsh,
+  ...notificationTranslationsWelsh
 }
 
 // Re-export using export...from syntax for consistency

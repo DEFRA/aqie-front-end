@@ -12,7 +12,6 @@ export async function testRedisConnection() {
     redis.disconnect()
     return true
   } catch (error) {
-    // ''
     logger.error('Redis connection test failed:', error.message)
     redis.disconnect()
     return false

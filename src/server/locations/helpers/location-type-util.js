@@ -26,8 +26,8 @@ const handleRedirect = (h, redirectRoute) => {
 
 const getMonth = () => {
   const formattedDate = moment().format('DD MMMM YYYY').split(' ')
-  const getFormattedDate = calendarEnglish.findIndex(
-    (item) => item.indexOf(formattedDate[1]) !== -1
+  const getFormattedDate = calendarEnglish.findIndex((item) =>
+    item.includes(formattedDate[1])
   )
   return { getFormattedDate }
 }
@@ -97,10 +97,11 @@ const filteredAndSelectedLocationType = (
 ) => {
   // Regex patterns to check for full and partial postcodes
   const fullPostcodePattern = /^([A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2})$/
+  const INCODE_LENGTH = 3
 
   // Insert a space for full postcodes without a space
   if (fullPostcodePattern.test(userLocation) && !userLocation.includes(' ')) {
-    const spaceIndex = userLocation.length - 3
+    const spaceIndex = userLocation.length - INCODE_LENGTH
     userLocation = `${userLocation.slice(0, spaceIndex)} ${userLocation.slice(
       spaceIndex
     )}`

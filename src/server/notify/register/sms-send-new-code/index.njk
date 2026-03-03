@@ -1,0 +1,66 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+{# '' #}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds odd-page">
+    <form class="form" action="/notify/register/sms-send-new-code" method="post" novalidate>
+      {% if error %}
+        <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+          <h2 class="govuk-error-summary__title" id="error-summary-title">
+            {{ common.errorSummaryTitle }}
+          </h2>
+          <div class="govuk-error-summary__body">
+            <ul class="govuk-list govuk-error-summary__list">
+              <li>
+                <a href="#mobile-number-new">{{ error.message }}</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      {% endif %}
+
+      <h1 class="govuk-heading-l">{{ content.heading }}</h1>
+      <p class="govuk-body">
+        {{ content.intro1 }}
+      </p>
+      <p class="govuk-body">
+        {{ content.intro2 }}
+      </p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>{{ bulletSameNumber | safe }}</li>
+        <li>{{ content.bulletDifferentNumber }}</li>
+      </ul>
+
+      <div class="govuk-!-padding-bottom-5"></div>
+
+      <details class="govuk-details"{% if error and error.field === 'mobileNumberNew' %} open{% endif %}>
+        <summary class="govuk-details__summary">
+          <span class="govuk-details__summary-text">
+            {{ content.detailsSummary }}
+          </span>
+        </summary>
+        <div class="govuk-details__text">
+          <div class="govuk-form-group{% if error and error.field === 'mobileNumberNew' %} govuk-form-group--error{% endif %}">
+            <div id="mobile-number-new-hint" class="{% if error and error.field === 'mobileNumberNew' %}govuk-error-message{% else %}govuk-hint{% endif %}">
+              {% if error and error.field === 'mobileNumberNew' %}<span class="govuk-visually-hidden">Error:</span> {% endif %}{{ content.detailsHint | safe }}
+            </div>
+            <input class="govuk-input govuk-input--width-20{% if error and error.field === 'mobileNumberNew' %} govuk-input--error{% endif %}" 
+                   id="mobile-number-new" 
+                   name="mobileNumberNew" 
+                   type="tel"
+                   autocomplete="tel"
+                   aria-label="{{ content.detailsLabel }}"
+                   aria-describedby="mobile-number-new-hint"
+                   value="{% if formData and formData.mobileNumberNew %}{{ formData.mobileNumberNew }}{% endif %}">
+          </div>
+        </div>
+      </details>
+
+      <button type="submit" class="govuk-button" data-module="govuk-button">
+        {{ content.submitButton }}
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

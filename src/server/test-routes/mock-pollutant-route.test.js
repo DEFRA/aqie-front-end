@@ -3,11 +3,11 @@ import { describe, it, expect, vi } from 'vitest'
 
 // Mock dependencies ''
 vi.mock('../common/helpers/mock-pollutant-level.js', () => ({
-  mockPollutantBand: vi.fn((band, opts) => ({
+  mockPollutantBand: vi.fn((band, _opts) => ({
     NO2: { value: 10, band, daqi: 2 },
     PM25: { value: 20, band, daqi: 3 }
   })),
-  mockPollutantLevel: vi.fn((bands, opts) => ({
+  mockPollutantLevel: vi.fn((bands, _opts) => ({
     NO2: { value: 10, band: bands.NO2 || 'moderate', daqi: 2 },
     PM25: { value: 20, band: bands.PM25 || 'high', daqi: 3 }
   })),
@@ -36,82 +36,98 @@ const mockH = {
 }
 
 describe('mock-pollutant-route', () => {
-  it('GET /test-pollutants returns HTML for valid band', async () => {
-    const route = routes.find((r) => r.path === '/test-pollutants')
-    const request = { query: { band: 'high' } }
-    const result = await route.handler(request, mockH)
-    expect(result.type).toBe('text/html')
-    expect(result.code).toBe(200)
-    expect(result.payload).toContain('Mock Pollutant Band Test') // ''
+  const TEST_POLLUTANTS_PATH = '/test-pollutants'
+  const TEST_POLLUTANTS_CUSTOM_PATH = '/test-pollutants-custom'
+  const HTTP_OK = 200
+  const HTTP_BAD_REQUEST = 400
+  const HTTP_REDIRECT = 302
+  const FORMAT_JSON = 'json'
+  const JSON_FORMAT_TEST_NAME = 'returns JSON if format=json'
+
+  describe('GET /test-pollutants', () => {
+    it('returns HTML for valid band', async () => {
+      const route = routes.find((r) => r.path === TEST_POLLUTANTS_PATH)
+      const request = { query: { band: 'high' } }
+      const result = await route.handler(request, mockH)
+      expect(result.type).toBe('text/html')
+      expect(result.code).toBe(HTTP_OK)
+      expect(result.payload).toContain('Mock Pollutant Band Test') // ''
+    })
+
+    it('returns error for invalid band', async () => {
+      const route = routes.find((r) => r.path === TEST_POLLUTANTS_PATH)
+      const request = { query: { band: 'invalid' } }
+      const result = await route.handler(request, mockH)
+      expect(result.payload.error).toBe('Invalid band') // ''
+      expect(result.code).toBe(HTTP_BAD_REQUEST)
+    })
+
+    it(JSON_FORMAT_TEST_NAME, async () => {
+      const route = routes.find((r) => r.path === TEST_POLLUTANTS_PATH)
+      const request = { query: { band: 'low', format: FORMAT_JSON } }
+      const result = await route.handler(request, mockH)
+      expect(result.payload.band).toBe('low')
+      expect(result.code).toBe(HTTP_OK)
+      expect(result.payload.mockPollutants).toBeDefined() // ''
+    })
   })
 
-  it('GET /test-pollutants returns error for invalid band', async () => {
-    const route = routes.find((r) => r.path === '/test-pollutants')
-    const request = { query: { band: 'invalid' } }
-    const result = await route.handler(request, mockH)
-    expect(result.payload.error).toBe('Invalid band') // ''
-    expect(result.code).toBe(400)
+  describe('GET /test-pollutants-custom', () => {
+    it('returns HTML', async () => {
+      const route = routes.find((r) => r.path === TEST_POLLUTANTS_CUSTOM_PATH)
+      const request = { query: {}, url: { href: '/test-pollutants-custom' } } // ''
+      const result = await route.handler(request, mockH)
+      expect(result.type).toBe('text/html')
+      expect(result.code).toBe(HTTP_OK)
+      expect(result.payload).toContain('Custom Mock Pollutant Levels') // ''
+    })
+
+    it(JSON_FORMAT_TEST_NAME, async () => {
+      const route = routes.find((r) => r.path === TEST_POLLUTANTS_CUSTOM_PATH)
+      const request = {
+        query: { format: FORMAT_JSON, NO2: 'high' },
+        url: { href: '/test-pollutants-custom?format=json&NO2=high' }
+      } // ''
+      const result = await route.handler(request, mockH)
+      expect(result.code).toBe(HTTP_OK)
+      expect(result.payload.pollutantBands.NO2).toBe('high')
+      expect(result.payload.mockPollutants).toBeDefined() // ''
+    })
   })
 
-  it('GET /test-pollutants returns JSON if format=json', async () => {
-    const route = routes.find((r) => r.path === '/test-pollutants')
-    const request = { query: { band: 'low', format: 'json' } }
-    const result = await route.handler(request, mockH)
-    expect(result.payload.band).toBe('low')
-    expect(result.code).toBe(200)
-    expect(result.payload.mockPollutants).toBeDefined() // ''
+  describe('GET /test-pollutants-all', () => {
+    it('returns HTML', async () => {
+      const route = routes.find((r) => r.path === '/test-pollutants-all')
+      const request = { query: {} }
+      const result = await route.handler(request, mockH)
+      expect(result.type).toBe('text/html')
+      expect(result.code).toBe(HTTP_OK)
+      expect(result.payload).toContain('All Pollutant Bands Comparison') // ''
+    })
+
+    it(JSON_FORMAT_TEST_NAME, async () => {
+      const route = routes.find((r) => r.path === '/test-pollutants-all')
+      const request = { query: { format: FORMAT_JSON } }
+      const result = await route.handler(request, mockH)
+      expect(result.code).toBe(HTTP_OK)
+      expect(result.payload.bands).toBeDefined() // ''
+    })
   })
 
-  it('GET /test-pollutants-custom returns HTML', async () => {
-    const route = routes.find((r) => r.path === '/test-pollutants-custom')
-    const request = { query: {}, url: { href: '/test-pollutants-custom' } } // ''
-    const result = await route.handler(request, mockH)
-    expect(result.type).toBe('text/html')
-    expect(result.code).toBe(200)
-    expect(result.payload).toContain('Custom Mock Pollutant Levels') // ''
-  })
-
-  it('GET /test-pollutants-custom returns JSON if format=json', async () => {
-    const route = routes.find((r) => r.path === '/test-pollutants-custom')
-    const request = {
-      query: { format: 'json', NO2: 'high' },
-      url: { href: '/test-pollutants-custom?format=json&NO2=high' }
-    } // ''
-    const result = await route.handler(request, mockH)
-    expect(result.code).toBe(200)
-    expect(result.payload.pollutantBands.NO2).toBe('high')
-    expect(result.payload.mockPollutants).toBeDefined() // ''
-  })
-
-  it('GET /test-pollutants-all returns HTML', async () => {
-    const route = routes.find((r) => r.path === '/test-pollutants-all')
-    const request = { query: {} }
-    const result = await route.handler(request, mockH)
-    expect(result.type).toBe('text/html')
-    expect(result.code).toBe(200)
-    expect(result.payload).toContain('All Pollutant Bands Comparison') // ''
-  })
-
-  it('GET /test-pollutants-all returns JSON if format=json', async () => {
-    const route = routes.find((r) => r.path === '/test-pollutants-all')
-    const request = { query: { format: 'json' } }
-    const result = await route.handler(request, mockH)
-    expect(result.code).toBe(200)
-    expect(result.payload.bands).toBeDefined() // ''
-  })
-
-  it('GET /test/mock-pollutant/direct/{locationId} redirects', async () => {
-    const route = routes.find(
-      (r) => r.path === '/test/mock-pollutant/direct/{locationId}'
-    )
-    const request = {
-      params: { locationId: '123' },
-      query: { mockPollutantBand: 'high' },
-      yar: { set: vi.fn() }
-    }
-    const result = await route.handler(request, mockH)
-    expect(result.redirect).toContain('/location/123?mockPollutantBand=high') // ''
-    expect(result.code).toBe(302)
-    expect(request.yar.set).toHaveBeenCalledWith('searchTermsSaved', true) // ''
+  describe('GET /test/mock-pollutant/direct/{locationId}', () => {
+    it('redirects', async () => {
+      const route = routes.find(
+        (r) => r.path === '/test/mock-pollutant/direct/{locationId}'
+      )
+      const request = {
+        params: { locationId: '123' },
+        query: { mockPollutantBand: 'high' },
+        yar: { set: vi.fn() }
+      }
+      const result = await route.handler(request, mockH)
+      expect(result.redirect).toContain('/location/123?mockPollutantBand=high') // ''
+      expect(result.code).toBe(HTTP_REDIRECT)
+      expect(request.yar.set).toHaveBeenCalledWith('searchTermsSaved', true) // ''
+    })
   })
 })

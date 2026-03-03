@@ -1,0 +1,165 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  {# '' #}
+  <div class="loading-page retry-page">
+    <div class="loading-page__content retry-page__content">
+  {% if lang == 'cy' %}
+    {% set fallbackHeading = 'Nid oedd modd llwytho eich canlyniadau' %}
+    {% set fallbackBody = 'Rhowch gynnig arall arni neu ddychwelyd i chwilio.' %}
+    {% set fallbackCta = 'Rhowch gynnig arall arni' %}
+    {% set fallbackLink = 'Yn ôl i chwilio' %}
+    {% set fallbackPath = '/chwilio-lleoliad/cy' %}
+  {% else %}
+    {% set fallbackHeading = 'We could not load your results' %}
+    {% set fallbackBody = 'Try again or return to search.' %}
+    {% set fallbackCta = 'Try again' %}
+    {% set fallbackLink = 'Back to search' %}
+    {% set fallbackPath = '/search-location' %}
+  {% endif %}
+
+      <div class="govuk-grid-row" role="alert">
+        <div class="govuk-grid-column-two-thirds">
+          <h1 class="govuk-heading-l" id="retry-error-heading">{{ fallbackHeading }}</h1>
+          <p class="govuk-body">{{ fallbackBody }}</p>
+          {{
+            appLoadingStatus({
+              statusText: 'Retrying air quality data…',
+              classes: 'retry-loading-status govuk-!-display-none'
+            })
+          }}
+          <div class="govuk-button-group">
+            <button type="button" class="govuk-button" data-module="govuk-button" id="retry-action">
+              {{ fallbackCta }}
+            </button>
+            <a class="govuk-link" id="retry-fallback" href="{{ fallbackPath }}">{{ fallbackLink }}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# '' Keep the loader visible while the request runs #}
+  <script>
+    (function() {
+      const payload = {{ payload | dump | safe }}
+      const lang = '{{ lang }}'
+      const actionPath = lang === 'cy' ? '/lleoliad' : '/location'
+      const fallbackPath = lang === 'cy' ? '/chwilio-lleoliad/cy' : '/search-location'
+      const retryButton = document.getElementById('retry-action')
+      const errorHeading = document.getElementById('retry-error-heading')
+      const loadingStatus = document.querySelector('.retry-loading-status')
+
+      const body = new URLSearchParams()
+      if (payload && typeof payload === 'object') {
+        Object.entries(payload).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            body.append(key, value)
+          }
+        })
+      }
+
+      const hasPayload = body.toString().length > 0
+
+      const showError = () => {
+        if (loadingStatus) {
+          loadingStatus.classList.add('govuk-!-display-none')
+        }
+
+        if (retryButton) {
+          retryButton.disabled = false
+        }
+
+        if (errorHeading && typeof errorHeading.focus === 'function') {
+          errorHeading.setAttribute('tabindex', '-1')
+          errorHeading.focus()
+        }
+      }
+
+      const showLoading = () => {
+        if (loadingStatus) {
+          loadingStatus.classList.remove('govuk-!-display-none')
+        }
+        if (retryButton) {
+          retryButton.disabled = true
+        }
+      }
+
+      const runLookup = () => {
+        const hardTimeoutMs = 35000
+        const abortTimeoutMs = 60000
+        showLoading()
+        const hardTimeoutId = window.setTimeout(showError, hardTimeoutMs)
+        const controller = window.AbortController ? new AbortController() : null
+        const requestOptions = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+          },
+          body: body.toString(),
+          credentials: 'same-origin'
+        }
+
+        if (controller) {
+          requestOptions.signal = controller.signal
+          window.setTimeout(() => controller.abort(), abortTimeoutMs)
+        }
+
+        fetch(actionPath, requestOptions)
+          .then(async (response) => {
+            const html = await response.text()
+
+            if (!response.ok) {
+              if (html && html.trim()) {
+                window.clearTimeout(hardTimeoutId)
+
+                if (response.url && response.url !== window.location.href) {
+                  window.location.replace(response.url)
+                  return
+                }
+
+                document.open()
+                document.write(html)
+                document.close()
+                return
+              }
+
+              throw new Error('Search lookup failed')
+            }
+
+            if (!html || !html.trim()) {
+              throw new Error('Empty search response')
+            }
+
+            window.clearTimeout(hardTimeoutId)
+
+            if (response.url && response.url !== window.location.href) {
+              window.location.replace(response.url)
+              return
+            }
+
+            document.open()
+            document.write(html)
+            document.close()
+          })
+          .catch(() => {
+            showError()
+          })
+          .finally(() => {
+            window.clearTimeout(hardTimeoutId)
+          })
+      }
+
+      if (retryButton) {
+        retryButton.addEventListener('click', () => {
+          runLookup()
+        })
+      }
+
+      if (!hasPayload) {
+        showError()
+        return
+      }
+    })()
+  </script>
+{% endblock %}

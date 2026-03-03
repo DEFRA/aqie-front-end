@@ -8,6 +8,16 @@
  */
 
 import { mockLevelColor } from '../common/helpers/mock-daqi-level.js'
+import { STATUS_OK, STATUS_BAD_REQUEST } from '../data/constants.js'
+
+const MIN_DAQI_LEVEL = 0
+const MAX_DAQI_LEVEL = 10
+
+// Generate array of valid DAQI levels dynamically to avoid magic numbers
+const DAQI_LEVELS = Array.from(
+  { length: MAX_DAQI_LEVEL - MIN_DAQI_LEVEL + 1 },
+  (_, i) => MIN_DAQI_LEVEL + i
+)
 
 export default [
   {
@@ -19,17 +29,17 @@ export default [
       tags: ['api', 'testing', 'daqi']
     },
     handler: async (request, h) => {
-      const level = parseInt(request.query.level) || 0
+      const level = Number.parseInt(request.query.level, 10) || MIN_DAQI_LEVEL
 
       // Validate level
-      if (level < 0 || level > 10) {
+      if (level < MIN_DAQI_LEVEL || level > MAX_DAQI_LEVEL) {
         return h
           .response({
             error: 'Invalid level',
             message: 'Level must be between 0 and 10',
-            validLevels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            validLevels: DAQI_LEVELS
           })
-          .code(400)
+          .code(STATUS_BAD_REQUEST)
       }
 
       // Generate mock data
@@ -52,7 +62,7 @@ export default [
               viewFormat: `/test-daqi?level=${level}`
             }
           })
-          .code(200)
+          .code(STATUS_OK)
       }
 
       // Render in location view with mock data
@@ -78,10 +88,10 @@ export default [
       notes: 'Display all DAQI levels (0-10) for comparison',
       tags: ['api', 'testing', 'daqi']
     },
-    handler: async (request, h) => {
+    handler: async (_request, h) => {
       const allLevels = []
 
-      for (let level = 0; level <= 10; level++) {
+      for (let level = MIN_DAQI_LEVEL; level <= MAX_DAQI_LEVEL; level++) {
         const mockData = mockLevelColor(level, {
           includeForecast: false,
           logDetails: false
@@ -101,7 +111,7 @@ export default [
             documentation: 'Pass level parameter (0-10) to test specific level'
           }
         })
-        .code(200)
+        .code(STATUS_OK)
     }
   }
 ]

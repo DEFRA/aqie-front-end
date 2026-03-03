@@ -1,17 +1,32 @@
+// Air quality band constants
+const LOW_MIN = 1
+const LOW_MID = 2
+const LOW_MAX = 3
+const MODERATE_MIN = 4
+const MODERATE_MID = 5
+const MODERATE_MAX = 6
+const HIGH_MIN = 7
+const HIGH_MID = 8
+const HIGH_MAX = 9
+
+// Common advice messages
+const ENJOY_OUTDOOR_ACTIVITIES = 'Enjoy your usual outdoor activities.'
+const LOW_AT_RISK_ADVICE = {
+  adults: ENJOY_OUTDOOR_ACTIVITIES,
+  asthma: ENJOY_OUTDOOR_ACTIVITIES,
+  oldPeople: ENJOY_OUTDOOR_ACTIVITIES
+}
+
 export const commonMessages = {
   low: {
-    values: [1, 2, 3],
-    advice: 'Enjoy your usual outdoor activities.',
-    atrisk: {
-      adults: 'Enjoy your usual outdoor activities.',
-      asthma: 'Enjoy your usual outdoor activities.',
-      oldPeople: 'Enjoy your usual outdoor activities.'
-    },
+    values: [LOW_MIN, LOW_MID, LOW_MAX],
+    advice: ENJOY_OUTDOOR_ACTIVITIES,
+    atrisk: LOW_AT_RISK_ADVICE,
     outlook:
       'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.'
   },
   moderate: {
-    values: [4, 5, 6],
+    values: [MODERATE_MIN, MODERATE_MID, MODERATE_MAX],
     advice:
       'For most people, short term exposure to moderate levels of air pollution is not an issue.',
     atrisk: {
@@ -26,7 +41,7 @@ export const commonMessages = {
       'The influx of warm air from the continent is resulting in moderate air pollution levels throughout many areas today.'
   },
   high: {
-    values: [7, 8, 9],
+    values: [HIGH_MIN, HIGH_MID, HIGH_MAX],
     advice:
       'Anyone experiencing discomfort such as sore eyes, cough or sore throat should consider reducing activity, particularly outdoors.',
     atrisk: {
@@ -62,29 +77,25 @@ export function getCommonMessage(band) {
   return commonMessages[band] || commonMessages.unknown
 }
 
-export function getAirQuality(aqValue) {
-  const value = aqValue || '4'
-
-  const lookup = {
-    1: { band: 'low', readableBand: 'low' },
-    2: { band: 'low', readableBand: 'low' },
-    3: { band: 'low', readableBand: 'low' },
-    4: { band: 'moderate', readableBand: 'moderate' },
-    5: { band: 'moderate', readableBand: 'moderate' },
-    6: { band: 'moderate', readableBand: 'moderate' },
-    7: { band: 'high', readableBand: 'high' },
-    8: { band: 'high', readableBand: 'high' },
-    9: { band: 'high', readableBand: 'high' },
-    10: { band: 'veryHigh', readableBand: 'very high' }
+function getBandInfo(value) {
+  if (value >= LOW_MIN && value <= LOW_MAX) {
+    return { band: 'low', readableBand: 'low' }
   }
-
-  const bandInfo = lookup[value] || {
-    band: 'unknown',
-    readableBand: 'unknown'
+  if (value >= MODERATE_MIN && value <= MODERATE_MAX) {
+    return { band: 'moderate', readableBand: 'moderate' }
   }
-  const band = bandInfo.band
-  const readableBand = bandInfo.readableBand
+  if (value >= HIGH_MIN && value <= HIGH_MAX) {
+    return { band: 'high', readableBand: 'high' }
+  }
+  if (value === 10) {
+    return { band: 'veryHigh', readableBand: 'very high' }
+  }
+  return { band: 'unknown', readableBand: 'unknown' }
+}
 
+export function getAirQuality(aqValue = '4') {
+  const value = aqValue
+  const { band, readableBand } = getBandInfo(value)
   const message = getCommonMessage(band)
 
   return {

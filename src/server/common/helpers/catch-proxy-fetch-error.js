@@ -22,11 +22,33 @@ async function catchProxyFetchError(url, options, shouldCallApi) {
         )
         throw new Error(`HTTP error! status from ${url}: ${response.status}`)
       }
+      // '' Skip JSON parsing for 204/empty bodies to avoid parse errors
+      const contentLength = response.headers.get('content-length')
+      const isEmptyBody = response.status === 204 || contentLength === '0'
+      if (isEmptyBody) {
+        return [statusCode, null]
+      }
+
       const data = await response.json()
       return [statusCode, data]
     } catch (error) {
-      logger.error(`Failed to proxyFetch data from ${url}: ${error.message}`)
-      return [error]
+      // '' Check if error is due to timeout/abort
+      const isAbortError = error.name === 'AbortError'
+      const errorMsg = isAbortError ? 'Request timeout/aborted' : error.message
+
+      logger.error(
+        `Failed to proxyFetch data from ${url}: ${errorMsg}${isAbortError ? ' (timeout)' : ''}`
+      )
+
+      // '' Differentiate between bad postcode (404) and upstream failure
+      if (statusCode && statusCode !== 200) {
+        const isNotFound = statusCode === 404
+        return [
+          statusCode,
+          isNotFound ? WRONG_POSTCODE : { error: 'service-unavailable' }
+        ]
+      }
+      return [null, { error: 'service-unavailable' }]
     }
   }
   return [statusCode, WRONG_POSTCODE]

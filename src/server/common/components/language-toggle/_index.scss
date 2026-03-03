@@ -1,16 +1,16 @@
-@include govuk-exports("govuk/component/language-toggle") {
-    .dwp-language-toggle {
-        @include govuk-font($size: 19);
-        @include govuk-clearfix;
+@include govuk-exports('govuk/component/language-toggle') {
+  .dwp-language-toggle {
+    @include govuk-font($size: 19);
+    @include govuk-clearfix;
 
-        &__list {
-            margin-top: 15px;
-            float: right;
-            text-align: right;
-        }
-        
-        &__list-item {
-            display: inline-block;
-        }
+    &__list {
+      margin-top: 15px;
+      float: right;
+      text-align: right;
     }
-}        
+
+    &__list-item {
+      display: inline-block;
+    }
+  }
+}

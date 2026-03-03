@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 
 // Mock the helper modules
 vi.mock('./convert-string.js', () => ({
-  hasExactMatch: vi.fn((searchTerm, name1, name2) => true),
+  hasExactMatch: vi.fn(() => true),
   splitAndCheckSpecificWords: vi.fn(() => false)
 }))
 
@@ -25,7 +25,6 @@ describe('Filter Matches Tests', () => {
   }
 
   it('should handle search terms with borough', async () => {
-    // ''
     const { filterMatches } = await import('./filter-matches.js')
 
     const result = filterMatches(mockItem, {
@@ -39,7 +38,6 @@ describe('Filter Matches Tests', () => {
   })
 
   it('should handle search terms with unitary when no borough', async () => {
-    // ''
     const { filterMatches } = await import('./filter-matches.js')
     const itemNoBorough = {
       GAZETTEER_ENTRY: {
@@ -61,7 +59,6 @@ describe('Filter Matches Tests', () => {
   })
 
   it('should handle full postcode matching', async () => {
-    // ''
     const { filterMatches } = await import('./filter-matches.js')
     const postcodeItem = {
       GAZETTEER_ENTRY: {
@@ -83,7 +80,6 @@ describe('Filter Matches Tests', () => {
   })
 
   it('should handle generic matching when no specific criteria', async () => {
-    // ''
     const { filterMatches } = await import('./filter-matches.js')
     const genericItem = {
       GAZETTEER_ENTRY: {

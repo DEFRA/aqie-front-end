@@ -13,6 +13,9 @@ const handleHomeRequest = (request, h, content = english) => {
   // Check if request.yar and its set method exist before calling it ''
   if (request.yar && typeof request.yar.set === 'function') {
     request.yar.set('locationType', '') // ''
+    if (typeof request.yar.clear === 'function') {
+      request.yar.clear('notificationFlow')
+    }
   } else {
     // Optionally log a warning or handle the missing session gracefully ''
     logger.warn('Session (yar) is not available on the request object') // ''

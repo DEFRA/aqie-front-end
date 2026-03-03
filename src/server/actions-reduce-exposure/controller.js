@@ -3,6 +3,41 @@ import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 import { formatUKPostcode } from '../locations/helpers/convert-string.js'
 
+function buildWelshRedirectUrl(
+  locationId,
+  searchTerms,
+  locationName,
+  hasSearchTerms,
+  hasLocationName
+) {
+  let redirectUrl = `/lleoliad/${locationId}/camau-lleihau-amlygiad/cy?lang=cy`
+  if (hasSearchTerms) {
+    redirectUrl += `&searchTerms=${encodeURIComponent(searchTerms)}`
+  }
+  if (hasLocationName) {
+    redirectUrl += `&locationName=${encodeURIComponent(locationName)}`
+  }
+  return redirectUrl
+}
+
+function buildBackLinkText(
+  formattedPostcode,
+  locationName,
+  hasLocationName,
+  defaultText
+) {
+  if (formattedPostcode && hasLocationName) {
+    return `Air pollution in ${formattedPostcode}, ${locationName}`
+  }
+  if (formattedPostcode) {
+    return `Air pollution in ${formattedPostcode}`
+  }
+  if (hasLocationName) {
+    return `Air pollution in ${locationName}`
+  }
+  return defaultText
+}
+
 const actionsReduceExposureController = {
   handler: (request, h) => {
     const { actionsReduceExposure } = english
@@ -20,19 +55,21 @@ const actionsReduceExposureController = {
     // Get location ID from path parameters and location name from session/query
     const locationId = params.locationId
     const searchTerms = query?.searchTerms || ''
-    const locationName = query?.locationName || ''
+    // Handle locationName as array (when duplicated in query string) or string
+    const locationName = Array.isArray(query?.locationName)
+      ? query.locationName[0]
+      : query?.locationName || ''
     const hasSearchTerms = searchTerms.trim() !== ''
     const hasLocationName = locationName.trim() !== ''
 
     if (query?.lang && query?.lang === LANG_CY) {
-      // Build redirect URL with query parameters to preserve context
-      let redirectUrl = `/lleoliad/${locationId}/camau-lleihau-amlygiad/cy?lang=cy`
-      if (hasSearchTerms) {
-        redirectUrl += `&searchTerms=${encodeURIComponent(searchTerms)}`
-      }
-      if (hasLocationName) {
-        redirectUrl += `&locationName=${encodeURIComponent(locationName)}`
-      }
+      const redirectUrl = buildWelshRedirectUrl(
+        locationId,
+        searchTerms,
+        locationName,
+        hasSearchTerms,
+        hasLocationName
+      )
       return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE)
     }
 
@@ -46,13 +83,12 @@ const actionsReduceExposureController = {
         ? formatUKPostcode(searchTerms)
         : ''
 
-      if (formattedPostcode && hasLocationName) {
-        backLinkText = `Air pollution in ${formattedPostcode}, ${locationName}`
-      } else if (formattedPostcode) {
-        backLinkText = `Air pollution in ${formattedPostcode}`
-      } else if (hasLocationName) {
-        backLinkText = `Air pollution in ${locationName}`
-      }
+      backLinkText = buildBackLinkText(
+        formattedPostcode,
+        locationName,
+        hasLocationName,
+        backlink.text
+      )
       backLinkUrl = `/location/${locationId}?lang=en`
     }
 

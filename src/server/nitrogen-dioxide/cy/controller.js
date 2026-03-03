@@ -5,7 +5,7 @@ const nitrogenDioxideController = createWelshPollutantController({
   englishPath: '/pollutants/nitrogen-dioxide',
   viewTemplate: 'nitrogen-dioxide/index',
   welshPathKey: 'nitrogen-deuocsid',
-  pageIdentifier: 'Nitrogen dioxide (NO₂)'
+  pageIdentifier: 'nitrogen dioxide'
 })
 
 export { nitrogenDioxideController }

@@ -11,6 +11,40 @@ import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
 const logger = createLogger()
 
+const handleError = (
+  h,
+  error,
+  request,
+  lang,
+  footerTxt,
+  phaseBanner,
+  cookieBanner
+) => {
+  logger.error(
+    `error from location refresh outside fetch APIs: ${error.message}`
+  )
+  let statusCode = 500
+  if (
+    error.message ===
+    "Cannot read properties of undefined (reading 'access_token')"
+  ) {
+    const HTTP_UNAUTHORIZED = 401
+    statusCode = HTTP_UNAUTHORIZED
+  }
+  return h.view('error/index', {
+    pageTitle: english.notFoundUrl.serviceAPI.pageTitle,
+    footerTxt,
+    url: request.path,
+    phaseBanner,
+    displayBacklink: false,
+    cookieBanner,
+    serviceName: english.multipleLocations.serviceName,
+    notFoundUrl: english.notFoundUrl,
+    statusCode,
+    lang
+  })
+}
+
 const getLocationDataController = {
   handler: async (request, h) => {
     const locationData = request.yar.get('locationData') || []
@@ -36,13 +70,11 @@ const getLocationDataController = {
       siteTypeDescriptions,
       pollutantTypes
     } = welsh
-
     const { query } = request
     if (query?.lang === LANG_EN) {
       return h.redirect(MULTIPLE_LOCATIONS_ROUTE_EN).code(REDIRECT_STATUS_CODE)
     }
     const metaSiteUrl = getAirQualitySiteUrl(request)
-
     try {
       return h.view('multiple-results/multiple-locations', {
         results,
@@ -71,28 +103,15 @@ const getLocationDataController = {
         lang: LANG_CY
       })
     } catch (error) {
-      logger.error(
-        `error from location refresh outside fetch APIs: ${error.message}`
-      )
-      let statusCode = 500
-      if (
-        error.message ===
-        "Cannot read properties of undefined (reading 'access_token')"
-      ) {
-        statusCode = 401
-      }
-      return h.view('error/index', {
-        pageTitle: english.notFoundUrl.serviceAPI.pageTitle,
+      return handleError(
+        h,
+        error,
+        request,
+        lang,
         footerTxt,
-        url: request.path,
         phaseBanner,
-        displayBacklink: false,
-        cookieBanner,
-        serviceName: english.multipleLocations.serviceName,
-        notFoundUrl: english.notFoundUrl,
-        statusCode,
-        lang
-      })
+        cookieBanner
+      )
     }
   }
 }

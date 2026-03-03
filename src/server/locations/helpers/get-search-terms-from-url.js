@@ -96,12 +96,12 @@ const getSearchTermsFromUrl = (url) => {
       }
     }
 
-    // For simple location names (only words, no underscores), return undefined for secondSearchTerm
+    // For simple location names (only words, no underscores), return null for secondSearchTerm
     if (isOnlyWords(searchTerms)) {
       searchTermsLocationType = LOCATION_TYPE_UK
       return {
         searchTerms,
-        secondSearchTerm: undefined,
+        secondSearchTerm: null,
         searchTermsLang,
         searchTermsLocationType
       }

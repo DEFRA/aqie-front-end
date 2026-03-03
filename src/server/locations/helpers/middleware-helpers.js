@@ -8,6 +8,7 @@ import {
   isValidFullPostcodeUK,
   formatUKPostcode
 } from './convert-string.js'
+import OsGridRef from 'mt-osgridref'
 import { LANG_EN, LANG_CY, REDIRECT_STATUS_CODE } from '../../data/constants.js'
 import { createURLRouteBookmarks } from './create-bookmark-ids.js'
 import reduceMatches from './reduce-matches.js'
@@ -17,8 +18,38 @@ import { config } from '../../../config/index.js'
 
 const logger = createLogger()
 
+// Helper function to build mock query parameters
+const buildMockQueryParams = (request) => {
+  const mocksEnabled = config.get('disableTestMocks') === false
+
+  if (!mocksEnabled) {
+    return ''
+  }
+
+  const params = []
+  const mockLevel = request.query?.mockLevel
+  const mockDay = request.query?.mockDay
+  const mockPollutantBand = request.query?.mockPollutantBand
+  const testMode = request.query?.testMode
+
+  if (mockLevel !== undefined) {
+    params.push(`mockLevel=${encodeURIComponent(mockLevel)}`)
+  }
+  if (mockDay !== undefined) {
+    params.push(`mockDay=${encodeURIComponent(mockDay)}`)
+  }
+  if (mockPollutantBand !== undefined) {
+    params.push(`mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`)
+  }
+  if (testMode !== undefined) {
+    params.push(`testMode=${encodeURIComponent(testMode)}`)
+  }
+
+  return params.length > 0 ? `?${params.join('&')}` : ''
+}
+
 // Helper function to handle single match
-const handleSingleMatch = (
+const handleSingleMatch = async (
   h,
   request,
   {
@@ -42,6 +73,16 @@ const handleSingleMatch = (
   const showSummaryDate = isSummaryDateToday(getDailySummary?.issue_date)
   const issueTime = getIssueTime(getDailySummary?.issue_date)
 
+  // '' Log issue_date when passing dailySummary into session location data
+  logger.info(
+    `[DEBUG issue_date] passing to session dailySummary: ${getDailySummary?.issue_date ?? 'N/A'}`,
+    {
+      issueDate: getDailySummary?.issue_date,
+      locationType,
+      customId
+    }
+  )
+
   request.yar.set('locationData', {
     results: selectedMatches,
     getForecasts: getForecasts?.forecasts,
@@ -59,33 +100,108 @@ const handleSingleMatch = (
     showSummaryDate,
     issueTime
   })
+
+  // '' Set searchTermsSaved before redirect to prevent controller redirect loop
+  request.yar.set('searchTermsSaved', request.query.searchTerms || '')
+
   logger.info(`Redirecting to location with custom ID: ${customId}`)
 
-  // '' Disable mock parameters when configured (production by default)
-  const mocksDisabled = config.get('disableTestMocks')
+  // '' Check if user is in notification registration flow (SMS or Email)
+  const notificationFlow = request.yar.get('notificationFlow')
+  if (notificationFlow) {
+    // '' Update session with new location data for notification
+    const locationData = request.yar.get('locationData')
 
-  // Preserve mock parameters in redirect if present (only when mocks enabled)
-  const mockLevel = !mocksDisabled ? request.query?.mockLevel : undefined
-  const mockLevelParam =
-    mockLevel !== undefined ? `?mockLevel=${encodeURIComponent(mockLevel)}` : ''
+    logger.info(
+      `[DEBUG handleSingleMatch] Notification flow detected: ${notificationFlow}`,
+      {
+        flow: notificationFlow,
+        hasLocationData: !!locationData,
+        hasResults: !!locationData?.results,
+        resultsCount: locationData?.results?.length,
+        customId,
+        title: headerTitle || title
+      }
+    )
 
-  const mockDay = !mocksDisabled ? request.query?.mockDay : undefined
-  const mockDayParam =
-    mockDay !== undefined ? `&mockDay=${encodeURIComponent(mockDay)}` : ''
+    if (locationData && locationData.results && locationData.results[0]) {
+      const result = locationData.results[0]
+      const gazetteerEntry = result.GAZETTEER_ENTRY || result
 
-  const mockPollutantBand = !mocksDisabled
-    ? request.query?.mockPollutantBand
-    : undefined
-  const mockPollutantParam =
-    mockPollutantBand !== undefined
-      ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
-      : ''
+      // '' Convert British National Grid coordinates (GEOMETRY_X/Y) to lat/long
+      let lat, lon
+      if (gazetteerEntry.GEOMETRY_X && gazetteerEntry.GEOMETRY_Y) {
+        // '' Convert BNG coordinates to WGS84 lat/long
+        const point = new OsGridRef(
+          gazetteerEntry.GEOMETRY_X,
+          gazetteerEntry.GEOMETRY_Y
+        )
+        const latlon = OsGridRef.osGridToLatLong(point)
+        lat = latlon._lat
+        lon = latlon._lon
+      } else {
+        // '' Fallback to direct latitude/longitude if available
+        lat =
+          gazetteerEntry.LATITUDE || gazetteerEntry.latitude || result.latitude
+        lon =
+          gazetteerEntry.LONGITUDE ||
+          gazetteerEntry.longitude ||
+          result.longitude
+      }
 
-  const testMode = !mocksDisabled ? request.query?.testMode : undefined
-  const testModeParam =
-    testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
+      // '' Update session with new location data (overwrites previous alert's location)
+      request.yar.set('location', headerTitle || title)
+      request.yar.set('locationId', customId)
+      request.yar.set('latitude', lat)
+      request.yar.set('longitude', lon)
 
-  const queryParams = `${mockLevelParam}${mockDayParam}${mockPollutantParam}${testModeParam}`
+      const sessionLocationData = {
+        location: headerTitle || title,
+        locationId: customId,
+        lat,
+        lon,
+        hasLat: !!lat,
+        hasLon: !!lon,
+        geometryX: gazetteerEntry.GEOMETRY_X,
+        geometryY: gazetteerEntry.GEOMETRY_Y
+      }
+
+      logger.info(
+        `[DEBUG handleSingleMatch] Updated session location data for ${notificationFlow} flow: ${JSON.stringify(sessionLocationData)}`,
+        sessionLocationData
+      )
+    } else {
+      logger.warn(
+        `[DEBUG handleSingleMatch] No location data found in session for ${notificationFlow} flow`,
+        {
+          hasLocationData: !!locationData,
+          locationDataKeys: locationData ? Object.keys(locationData) : []
+        }
+      )
+    }
+
+    // '' Keep flow flag for the session and redirect to confirm details page
+    logger.info(
+      `[DEBUG handleSingleMatch] Redirecting to ${notificationFlow} confirm details (notificationFlow=${notificationFlow})`
+    )
+
+    if (notificationFlow === 'sms') {
+      const smsConfirmDetailsPath = config.get('notify.smsConfirmDetailsPath')
+      return h
+        .redirect(`${smsConfirmDetailsPath}?lang=${lang}`)
+        .code(REDIRECT_STATUS_CODE)
+        .takeover()
+    } else if (notificationFlow === 'email') {
+      const emailDetailsPath = config.get('notify.emailDetailsPath')
+      return h
+        .redirect(`${emailDetailsPath}?lang=${lang}`)
+        .code(REDIRECT_STATUS_CODE)
+        .takeover()
+    }
+  }
+
+  // '' Build query parameters for mock testing (only when mocks enabled)
+  const queryParams = buildMockQueryParams(request)
 
   return lang === LANG_EN
     ? h
@@ -204,6 +320,34 @@ const processMatches = (
   return { selectedMatches }
 }
 
+// Helper function to normalize POPULATED_PLACE (handles arrays consistently) ''
+const normalizePopulatedPlace = (populatedPlace) => {
+  if (!populatedPlace) return ''
+
+  // If it's an array, sort alphabetically and join with comma
+  if (Array.isArray(populatedPlace)) {
+    return populatedPlace.sort().join(', ')
+  }
+
+  // If it's already a string, return as-is
+  return String(populatedPlace)
+}
+
+// Helper function to get the appropriate location field for postcodes ''
+// '' For postcodes, use POPULATED_PLACE if it exists (for consistency), else DISTRICT_BOROUGH
+// '' This ensures we always get the same location name (e.g., "Hornsey") for the same postcode
+const getPostcodeLocationField = (gazetteerEntry) => {
+  const populatedPlace = normalizePopulatedPlace(
+    gazetteerEntry?.POPULATED_PLACE
+  )
+  if (populatedPlace) {
+    return populatedPlace
+  }
+  return (
+    gazetteerEntry?.DISTRICT_BOROUGH || gazetteerEntry?.COUNTY_UNITARY || ''
+  )
+}
+
 const getTitleAndHeaderTitle = (
   locationDetails,
   locationNameOrPostcode = 'Unknown Location'
@@ -217,7 +361,31 @@ const getTitleAndHeaderTitle = (
   if (locationDetails?.[0]) {
     const gazetteerEntry = locationDetails[0].GAZETTEER_ENTRY
 
-    if (gazetteerEntry?.DISTRICT_BOROUGH) {
+    // '' For postcodes, prefer POPULATED_PLACE when available
+    const isPostcode = gazetteerEntry?.LOCAL_TYPE === 'Postcode'
+    if (isPostcode) {
+      const locationField = getPostcodeLocationField(gazetteerEntry)
+      if (locationField) {
+        term1 = gazetteerEntry.NAME1
+        const isFullPostcode = isValidFullPostcodeUK(term1)
+        const formattedPostcode = isFullPostcode
+          ? formatUKPostcode(term1)
+          : term1
+        title = `${formattedPostcode}, ${locationField} - ${home.pageTitle}`
+        headerTitle = `${formattedPostcode}, ${locationField}`
+        urlRoute = `${gazetteerEntry.NAME1}_${locationField}`
+      } else {
+        // '' Fallback when no location field is available for postcode
+        term1 = gazetteerEntry.NAME1
+        const isFullPostcode = isValidFullPostcodeUK(term1)
+        const formattedPostcode = isFullPostcode
+          ? formatUKPostcode(term1)
+          : term1
+        title = `${formattedPostcode} - ${home.pageTitle}`
+        headerTitle = formattedPostcode
+        urlRoute = gazetteerEntry.NAME1
+      }
+    } else if (gazetteerEntry?.DISTRICT_BOROUGH) {
       ;({ title, headerTitle, urlRoute, term1 } = handleDistrictBorough(
         gazetteerEntry,
         home
@@ -317,24 +485,36 @@ const getFormattedDateSummary = (issueDate, calendarEnglish) => {
     .format('DD MMMM YYYY')
     .split(' ')
   const getMonthSummary = calendarEnglish.findIndex(function (item) {
-    return item.indexOf(formattedDateSummary[1]) !== -1
+    return item.includes(formattedDateSummary[1])
   })
   return { getMonthSummary, formattedDateSummary }
 }
 
 // Helper function to check if date is today
 const isSummaryDateToday = (issueDate) => {
-  if (!issueDate) return false
-  const today = moment().format('YYYY-MM-DD')
-  const issueDateFormatted = moment(issueDate).format('YYYY-MM-DD')
-  return today === issueDateFormatted
+  if (!issueDate) {
+    return false
+  }
+
+  // '' Compare in UK timezone to avoid midnight boundary mismatches
+  const nowUk = moment.tz('Europe/London')
+  const issueDateUk = moment.tz(issueDate, 'Europe/London')
+  if (!issueDateUk.isValid()) {
+    return false
+  }
+
+  return nowUk.isSame(issueDateUk, 'day')
 }
 
 // '' Helper function to extract time from issue_date in H:mm format
 const getIssueTime = (issueDate) => {
-  if (!issueDate) return '5:00am' // Default fallback
+  if (!issueDate) {
+    return '5:00am'
+  }
   const issueMoment = moment(issueDate)
-  if (!issueMoment.isValid()) return '5:00am' // Default fallback for invalid dates
+  if (!issueMoment.isValid()) {
+    return '5:00am'
+  }
   return issueMoment.format('h:mma') // Format as h:mma (e.g., "5:34am", "2:05pm")
 }
 

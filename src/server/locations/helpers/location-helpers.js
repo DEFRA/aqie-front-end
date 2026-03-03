@@ -1,5 +1,6 @@
 import { config } from '../../../config/index.js'
-import {
+import { STATUS_BAD_REQUEST } from '../../data/constants.js'
+export {
   isValidFullPostcodeUK,
   isValidPartialPostcodeUK
 } from './convert-string.js'
@@ -20,12 +21,12 @@ function combineUKSearchTerms(
   userLocation,
   searchTerms,
   secondSearchTerm,
-  isValidFullPostcodeUK,
-  isValidPartialPostcodeUK
+  isValidFullPostcode,
+  isValidPartialPostcode
 ) {
   if (
-    !isValidFullPostcodeUK(userLocation.toUpperCase()) &&
-    !isValidPartialPostcodeUK(userLocation.toUpperCase()) &&
+    !isValidFullPostcode(userLocation.toUpperCase()) &&
+    !isValidPartialPostcode(userLocation.toUpperCase()) &&
     searchTerms &&
     secondSearchTerm !== 'UNDEFINED'
   ) {
@@ -47,7 +48,7 @@ function formatUKApiResponse(getOSPlaces) {
     return { results: getOSPlaces.results }
   } else if (getOSPlaces && Array.isArray(getOSPlaces)) {
     return { results: getOSPlaces }
-  } else if (getOSPlaces && getOSPlaces.name) {
+  } else if (getOSPlaces?.name) {
     return { results: [getOSPlaces] }
   } else {
     return { results: [] }
@@ -57,20 +58,20 @@ function formatUKApiResponse(getOSPlaces) {
 // --- NI Location Data Helpers ---
 function buildNIPostcodeUrl(
   userLocation,
-  isMockEnabled,
-  config,
+  mockEnabled,
+  configObj,
   formatNorthernIrelandPostcode
 ) {
-  const osPlacesApiPostcodeNorthernIrelandUrl = config.get(
+  const osPlacesApiPostcodeNorthernIrelandUrl = configObj.get(
     'osPlacesApiPostcodeNorthernIrelandUrl'
   )
-  const mockOsPlacesApiPostcodeNorthernIrelandUrl = config.get(
+  const mockOsPlacesApiPostcodeNorthernIrelandUrl = configObj.get(
     'mockOsPlacesApiPostcodeNorthernIrelandUrl'
   )
   const userLocationLocal = formatNorthernIrelandPostcode(
     userLocation.toUpperCase()
   )
-  return isMockEnabled
+  return mockEnabled
     ? `${mockOsPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocationLocal)}&_limit=1`
     : `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(userLocation)}&maxresults=1`
 }
@@ -80,7 +81,7 @@ function formatNIResponse(getNIPlaces) {
     return { results: getNIPlaces.results }
   } else if (getNIPlaces && Array.isArray(getNIPlaces)) {
     return { results: getNIPlaces }
-  } else if (getNIPlaces && getNIPlaces.name) {
+  } else if (getNIPlaces?.name) {
     return { results: [getNIPlaces] }
   } else {
     return { results: [] }
@@ -88,6 +89,8 @@ function formatNIResponse(getNIPlaces) {
 }
 
 // --- General Utility Helpers ---
+const HTTP_STATUS_INTERNAL_ERROR = 500
+
 function isTestMode() {
   return process.env.NODE_ENV === 'test'
 }
@@ -96,20 +99,23 @@ function isProductionMode() {
   return process.env.NODE_ENV === 'production'
 }
 
-function errorResponse(message, statusCode = 500) {
+function errorResponse(message, statusCode = HTTP_STATUS_INTERNAL_ERROR) {
   return { error: true, message, statusCode }
 }
 
 function validateParams(params, requiredKeys = []) {
   for (const key of requiredKeys) {
     if (!params[key]) {
-      return errorResponse(`Missing required parameter: ${key}`, 400)
+      return errorResponse(
+        `Missing required parameter: ${key}`,
+        STATUS_BAD_REQUEST
+      )
     }
   }
   return null
 }
 
-async function fetchApi(url, options = {}, logger) {
+async function fetchApi(url, logger, options = {}) {
   try {
     const response = await fetch(url, options)
     if (!response.ok) {
@@ -122,7 +128,7 @@ async function fetchApi(url, options = {}, logger) {
     return { error: false, data }
   } catch (err) {
     logger.error('API request error:', err)
-    return errorResponse('API request error', 500)
+    return errorResponse('API request error', HTTP_STATUS_INTERNAL_ERROR)
   }
 }
 
@@ -132,13 +138,6 @@ function getToken(req) {
 
 function isMockEnabled() {
   const mockValue = config.get('enabledMock')
-  console.log(
-    '[DEBUG] isMockEnabled called, value:',
-    mockValue,
-    'type:',
-    typeof mockValue
-  )
-  console.log('[DEBUG] ENABLED_MOCK env var:', process.env.ENABLED_MOCK)
   return mockValue
 }
 
@@ -156,7 +155,5 @@ export {
   validateParams,
   fetchApi,
   getToken,
-  isValidFullPostcodeUK,
-  isValidPartialPostcodeUK,
   isMockEnabled
 }

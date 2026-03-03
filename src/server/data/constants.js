@@ -18,6 +18,7 @@ export const ERROR_INDEX_PATH = 'error/index'
 export const LOCATION_TYPE_UK = 'uk-location'
 export const LOCATION_TYPE_NI = 'ni-location'
 export const SEARCH_LOCATION_PATH_EN = '/search-location'
+export const SEARCH_LOCATION_PATH_CY = '/chwilio-lleoliad/cy'
 export const LOCATION_NOT_FOUND = 'location-not-found/index'
 export const LOCATION_NOT_FOUND_ROUTE_CY = '/lleoliad-heb-ei-ganfod/cy?lang=cy'
 export const LOCATION_NOT_FOUND_ROUTE_EN = '/location-not-found?lang=en'
@@ -32,6 +33,10 @@ export const ACTIONS_REDUCE_EXPOSURE_ROUTE_CY =
 export const HEALTH_EFFECTS_ROUTE_EN = '/location/{locationId}/health-effects'
 export const HEALTH_EFFECTS_ROUTE_CY =
   '/lleoliad/{locationId}/effeithiau-iechyd'
+export const OZONE_PATH_CY = '/llygryddion/oson/cy'
+export const STATUS_OK = 200
+export const STATUS_FOUND = 302
+export const STATUS_BAD_REQUEST = 400
 export const STATUS_UNAUTHORIZED = 401
 export const STATUS_NOT_FOUND = 404
 export const STATUS_INTERNAL_SERVER_ERROR = 500
@@ -128,6 +133,7 @@ export const BASE_URL = 'https://check-air-quality.service.gov.uk'
 export const REDIRECT_STATUS_CODE = 301
 export const SAMPLE_LOCATION_NAME = 'Sample Location'
 export const HTTP_STATUS_OK = 200
+export const HTTP_STATUS_CREATED = 201
 export const MINUTES_IN_HALF_HOUR = 30
 export const REFRESH_INTERVAL_MS = MINUTES_IN_HALF_HOUR * 60 * 1000
 export const AIR_QUALITY_THRESHOLD_1 = 1
@@ -140,5 +146,13 @@ export const ROUND_OF_SIX = 6
 export const FORECAST_ARRAY_INDEX_THIRD = 3
 export const MAX_FORECAST_DAYS = 6
 
+// '' - API service constants
+export const DEFAULT_TIMEOUT_MS = 5000
+export const MAX_ERROR_BODY_LENGTH = 500
+
 // '' - Constant for the server directory name
 export const SERVER_DIRNAME = dirname(fileURLToPath(import.meta.url))
+
+// '' - Session and notification constants
+export const NOT_PROVIDED = 'Not provided'
+export const SERVICE_UNAVAILABLE = 'service-unavailable'

@@ -15,7 +15,6 @@
 import Analytics from './load-analytics.mjs'
 import { logger } from '../common/helpers/logging/logger.js'
 
-
 /* Name of the cookie to save users cookie preferences to. */
 const CONSENT_COOKIE_NAME = 'airaqie_cookies_analytics'
 
@@ -252,7 +251,8 @@ function userAllowsCookie(cookieName) {
   }
 
   for (const category in COOKIE_CATEGORIES) {
-    if (Object.hasOwn(COOKIE_CATEGORIES, category)) { // Restrict loop to own properties
+    if (Object.hasOwn(COOKIE_CATEGORIES, category)) {
+      // Restrict loop to own properties
       const cookiesInCategory = COOKIE_CATEGORIES[category]
 
       if (cookiesInCategory.indexOf(cookieName) !== -1) {
@@ -279,7 +279,8 @@ function getCookie(name) {
     while (cookie.startsWith(' ')) {
       cookie = cookie.substring(1, cookie.length)
     }
-    if (cookie.startsWith(nameEQ)) { // Use String#startsWith instead of String#indexOf
+    if (cookie.startsWith(nameEQ)) {
+      // Use String#startsWith instead of String#indexOf
       return decodeURIComponent(cookie.substring(nameEQ.length))
     }
   }

@@ -97,6 +97,7 @@ describe('Middleware Helpers Tests', () => {
     }
 
     mockRequest = {
+      query: {}, // '' Add query object
       yar: {
         set: vi.fn(),
         get: vi.fn()

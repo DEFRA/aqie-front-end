@@ -5,7 +5,7 @@ import { searchTermsAndUnitary } from './search-terms-unitary.js'
 /**
  * '' Helper to normalize strings by converting to uppercase and removing spaces.
  */
-const normalizeString = (str) => str?.toUpperCase().replace(/\s+/g, '')
+const normalizeString = (str) => str?.toUpperCase().replaceAll(/\s+/g, '')
 
 /**
  * '' Handles search term and borough matching logic.
@@ -90,10 +90,10 @@ const filterMatches = (
   const name2 = normalizeString(item?.GAZETTEER_ENTRY.NAME2)
   const borough = normalizeString(
     item?.GAZETTEER_ENTRY?.DISTRICT_BOROUGH
-  )?.replace(/-/g, ' ')
+  )?.replaceAll('-', ' ')
   const unitary = normalizeString(
     item?.GAZETTEER_ENTRY?.COUNTY_UNITARY
-  )?.replace(/-/g, ' ')
+  )?.replaceAll('-', ' ')
 
   if (searchTerms && borough) {
     return handleSearchTermsAndBorough(

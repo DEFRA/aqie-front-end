@@ -1,6 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { createServer } from './index.js'
 
+// '' - Constants to avoid magic numbers and duplicated strings
+const TEST_PORT = 3000
+const PROXY_SETUP_FAILED_ERROR = 'Proxy setup failed'
+const CLEANUP_WARNING = 'Server cleanup warning:'
+
 // Mock all dependencies
 vi.mock('../config/index.js', () => ({
   config: {
@@ -12,7 +17,7 @@ vi.mock('../config/index.js', () => ({
         root: '/test',
         'session.cache.name': 'test-session-cache',
         'session.cache.engine': 'memory',
-        sessionPassword: 'test-session-password-at-least-32-chars',
+        sessionPassword: '',
         sessionTimeout: 3600000,
         serviceVersion: '1.0.0'
       }
@@ -32,7 +37,7 @@ vi.mock('~/src/config', () => ({
         root: '/test',
         'session.cache.name': 'test-session-cache',
         'session.cache.engine': 'memory',
-        sessionPassword: 'test-session-password-at-least-32-chars',
+        sessionPassword: '',
         sessionTimeout: 3600000,
         serviceVersion: '1.0.0'
       }
@@ -150,197 +155,248 @@ vi.mock('@hapi/cookie', () => ({
   }
 }))
 
-describe('Server Index', () => {
+describe('Server Index - Server Configuration', () => {
   let server
 
   afterEach(async () => {
-    if (server && server.stop) {
+    if (server?.stop) {
       try {
         await server.stop()
       } catch (error) {
-        // Ignore cleanup errors in tests
+        // '' - Cleanup errors are expected in test teardown when server is already stopped
+        console.warn(CLEANUP_WARNING, error.message)
       }
     }
     vi.clearAllMocks()
   })
 
-  describe('createServer', () => {
-    it('should create server with correct configuration', async () => {
-      server = await createServer()
+  it('should create server with correct configuration', async () => {
+    server = await createServer()
 
-      expect(server).toBeDefined()
-      expect(server.info).toBeDefined()
-      expect(server.info.port).toBe(3000)
-      expect(server.info.host).toBe('localhost') // Host as configured in mock
+    expect(server).toBeDefined()
+    expect(server.info).toBeDefined()
+    expect(server.info.port).toBe(TEST_PORT)
+    expect(server.info.host).toBe('localhost') // Host as configured in mock
+  })
+
+  it('should configure security settings correctly', async () => {
+    server = await createServer()
+
+    const settings = server.settings.routes.security
+    expect(settings).toBeDefined()
+    expect(settings.hsts).toEqual({
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: false
     })
+    expect(settings.xss).toBe('enabled')
+    expect(settings.noSniff).toBe(true)
+    expect(settings.xframe).toBe(true)
+  })
 
-    it('should configure security settings correctly', async () => {
-      server = await createServer()
+  it('should configure validation options', async () => {
+    server = await createServer()
 
-      const settings = server.settings.routes.security
-      expect(settings).toBeDefined()
-      expect(settings.hsts).toEqual({
-        maxAge: 31536000,
-        includeSubDomains: true,
-        preload: false
-      })
-      expect(settings.xss).toBe('enabled')
-      expect(settings.noSniff).toBe(true)
-      expect(settings.xframe).toBe(true)
-    })
+    const validateOptions = server.settings.routes.validate
+    expect(validateOptions).toBeDefined()
+    expect(validateOptions.options.abortEarly).toBe(false)
+  })
 
-    it('should configure validation options', async () => {
-      server = await createServer()
+  it('should configure file serving settings', async () => {
+    server = await createServer()
 
-      const validateOptions = server.settings.routes.validate
-      expect(validateOptions).toBeDefined()
-      expect(validateOptions.options.abortEarly).toBe(false)
-    })
+    const filesConfig = server.settings.routes.files
+    expect(filesConfig).toBeDefined()
+    expect(filesConfig.relativeTo).toContain('.public')
+  })
 
-    it('should configure file serving settings', async () => {
-      server = await createServer()
+  it('should configure router settings', async () => {
+    server = await createServer()
 
-      const filesConfig = server.settings.routes.files
-      expect(filesConfig).toBeDefined()
-      expect(filesConfig.relativeTo).toContain('.public')
-    })
+    const routerConfig = server.settings.router
+    expect(routerConfig).toBeDefined()
+    expect(routerConfig.stripTrailingSlash).toBe(true)
+  })
 
-    it('should configure router settings', async () => {
-      server = await createServer()
+  it('should configure cache settings', async () => {
+    server = await createServer()
 
-      const routerConfig = server.settings.router
-      expect(routerConfig).toBeDefined()
-      expect(routerConfig.stripTrailingSlash).toBe(true)
-    })
+    // Verify cache configuration exists on the server object
+    expect(server).toBeDefined()
+    // Verify server was created successfully (cache configuration is internal to Hapi)
+    expect(server.info).toBeDefined()
+    expect(server.info.port).toBe(TEST_PORT)
+  })
 
-    it('should configure cache settings', async () => {
-      server = await createServer()
+  it('should configure state settings', async () => {
+    server = await createServer()
 
-      // Verify cache configuration exists on the server object
-      expect(server).toBeDefined()
-      // Verify server was created successfully (cache configuration is internal to Hapi)
-      expect(server.info).toBeDefined()
-      expect(server.info.port).toBe(3000)
-    })
+    const stateConfig = server.settings.state
+    expect(stateConfig).toBeDefined()
+    expect(stateConfig.strictHeader).toBe(false)
+  })
+})
 
-    it('should configure state settings', async () => {
-      server = await createServer()
+describe('Server Index - Plugin Registration', () => {
+  let server
 
-      const stateConfig = server.settings.state
-      expect(stateConfig).toBeDefined()
-      expect(stateConfig.strictHeader).toBe(false)
-    })
-
-    it('should register all required plugins', async () => {
-      server = await createServer()
-
-      // Verify plugins are registered by checking registrations
-      const registrations = server.registrations
-      expect(registrations).toBeDefined()
-
-      // Check for key plugins
-      expect(Object.keys(registrations)).toContain('nunjucks-config')
-      expect(Object.keys(registrations)).toContain('router')
-      expect(Object.keys(registrations)).toContain('request-logger')
-    })
-
-    it('should setup proxy before server creation', async () => {
-      const { setupProxy } = await import(
-        './common/helpers/proxy/setup-proxy.js'
-      )
-
-      await createServer()
-
-      expect(setupProxy).toHaveBeenCalled()
-    })
-
-    it('should register onPreResponse extension', async () => {
-      server = await createServer()
-
-      // Verify the server has extension capabilities
-      expect(server.ext).toBeDefined()
-      expect(typeof server.ext).toBe('function')
-    })
-
-    it('should handle plugin registration with unnamed plugins', async () => {
-      const { createLogger } = await import(
-        './common/helpers/logging/logger.js'
-      )
-      const mockLogger = {
-        info: vi.fn(),
-        error: vi.fn(),
-        warn: vi.fn(),
-        debug: vi.fn()
+  afterEach(async () => {
+    if (server?.stop) {
+      try {
+        await server.stop()
+      } catch (error) {
+        // '' - Cleanup errors are expected in test teardown when server is already stopped
+        console.warn(CLEANUP_WARNING, error.message)
       }
-      createLogger.mockReturnValue(mockLogger)
+    }
+    vi.clearAllMocks()
+  })
 
-      // This test covers the fallback plugin name logic on line 83
-      server = await createServer()
+  it('should register all required plugins', async () => {
+    server = await createServer()
 
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        expect.stringContaining('Registering plugin 1:')
-      )
-    })
+    // Verify plugins are registered by checking registrations
+    const registrations = server.registrations
+    expect(registrations).toBeDefined()
 
-    it('should handle errors during server setup', async () => {
-      const { createLogger } = await import(
-        './common/helpers/logging/logger.js'
-      )
-      const mockLogger = {
-        info: vi.fn(),
-        error: vi.fn(),
-        warn: vi.fn(),
-        debug: vi.fn()
+    // Check for key plugins
+    expect(Object.keys(registrations)).toContain('nunjucks-config')
+    expect(Object.keys(registrations)).toContain('router')
+    expect(Object.keys(registrations)).toContain('request-logger')
+  })
+
+  it('should setup proxy before server creation', async () => {
+    const { setupProxy } = await import('./common/helpers/proxy/setup-proxy.js')
+
+    await createServer()
+
+    expect(setupProxy).toHaveBeenCalled()
+  })
+
+  it('should register onPreResponse extension', async () => {
+    server = await createServer()
+
+    // Verify the server has extension capabilities
+    expect(server.ext).toBeDefined()
+    expect(typeof server.ext).toBe('function')
+  })
+})
+
+describe('Server Index - Server Setup and Error Handling', () => {
+  let server
+
+  afterEach(async () => {
+    if (server?.stop) {
+      try {
+        await server.stop()
+      } catch (error) {
+        // '' - Cleanup errors are expected in test teardown when server is already stopped
+        console.warn(CLEANUP_WARNING, error.message)
       }
-      createLogger.mockReturnValue(mockLogger)
+    }
+    vi.clearAllMocks()
+  })
 
-      // Mock setupProxy to throw an error
-      const { setupProxy } = await import(
-        './common/helpers/proxy/setup-proxy.js'
-      )
-      setupProxy.mockImplementation(() => {
-        throw new Error('Proxy setup failed')
-      })
+  it('should handle plugin registration with unnamed plugins', async () => {
+    const { createLogger } = await import('./common/helpers/logging/logger.js')
+    const mockLogger = {
+      info: vi.fn(),
+      error: vi.fn(),
+      warn: vi.fn(),
+      debug: vi.fn()
+    }
+    createLogger.mockReturnValue(mockLogger)
 
-      await expect(createServer()).rejects.toThrow('Proxy setup failed')
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'Error during server setup',
-        expect.any(Error)
-      )
+    // This test covers the fallback plugin name logic on line 83
+    server = await createServer()
+
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      expect.stringContaining('Registering plugin 1:')
+    )
+  })
+
+  it('should handle errors during server setup', async () => {
+    const { createLogger } = await import('./common/helpers/logging/logger.js')
+    const mockLogger = {
+      info: vi.fn(),
+      error: vi.fn(),
+      warn: vi.fn(),
+      debug: vi.fn()
+    }
+    createLogger.mockReturnValue(mockLogger)
+
+    // Mock setupProxy to throw an error
+    const { setupProxy } = await import('./common/helpers/proxy/setup-proxy.js')
+    setupProxy.mockImplementation(() => {
+      throw new Error(PROXY_SETUP_FAILED_ERROR)
     })
 
-    it('should create logger and log initialization steps', async () => {
-      // Reset setupProxy mock to avoid interference from previous tests
-      const { setupProxy } = await import(
-        './common/helpers/proxy/setup-proxy.js'
-      )
-      setupProxy.mockReset()
-      setupProxy.mockResolvedValue()
+    await expect(createServer()).rejects.toThrow(PROXY_SETUP_FAILED_ERROR)
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      'Error during server setup',
+      expect.any(Error)
+    )
+  })
+})
 
-      const { createLogger } = await import(
-        './common/helpers/logging/logger.js'
-      )
-      const mockLogger = {
-        info: vi.fn(),
-        error: vi.fn(),
-        warn: vi.fn(),
-        debug: vi.fn()
+describe('Server Index - Logging', () => {
+  let server
+
+  afterEach(async () => {
+    if (server?.stop) {
+      try {
+        await server.stop()
+      } catch (error) {
+        // '' - Cleanup errors are expected in test teardown when server is already stopped
+        console.warn(CLEANUP_WARNING, error.message)
       }
-      createLogger.mockReturnValue(mockLogger)
+    }
+    vi.clearAllMocks()
+  })
 
-      server = await createServer()
+  it('should create logger and log initialization steps', async () => {
+    // Reset setupProxy mock to avoid interference from previous tests
+    const { setupProxy } = await import('./common/helpers/proxy/setup-proxy.js')
+    setupProxy.mockReset()
+    setupProxy.mockResolvedValue()
 
-      expect(createLogger).toHaveBeenCalled()
-      expect(mockLogger.info).toHaveBeenCalledWith('Initializing server setup')
-      expect(mockLogger.info).toHaveBeenCalledWith('Proxy setup completed')
-      expect(mockLogger.info).toHaveBeenCalledWith('Server instance created')
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Plugins registered successfully'
-      )
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Extensions added successfully'
-      )
-    })
+    const { createLogger } = await import('./common/helpers/logging/logger.js')
+    const mockLogger = {
+      info: vi.fn(),
+      error: vi.fn(),
+      warn: vi.fn(),
+      debug: vi.fn()
+    }
+    createLogger.mockReturnValue(mockLogger)
+
+    server = await createServer()
+
+    expect(createLogger).toHaveBeenCalled()
+    expect(mockLogger.info).toHaveBeenCalledWith('Initializing server setup')
+    expect(mockLogger.info).toHaveBeenCalledWith('Proxy setup completed')
+    expect(mockLogger.info).toHaveBeenCalledWith('Server instance created')
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'Plugins registered successfully'
+    )
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'Extensions added successfully'
+    )
+  })
+})
+
+describe('Server Index - Server Lifecycle', () => {
+  let server
+
+  afterEach(async () => {
+    if (server?.stop) {
+      try {
+        await server.stop()
+      } catch (error) {
+        // '' - Cleanup errors are expected in test teardown when server is already stopped
+        console.warn(CLEANUP_WARNING, error.message)
+      }
+    }
+    vi.clearAllMocks()
   })
 
   describe('Server Lifecycle', () => {
@@ -366,6 +422,22 @@ describe('Server Index', () => {
       expect(server.info.started).toBe(0)
     })
   })
+})
+
+describe('Server Index - Error Handling', () => {
+  let server
+
+  afterEach(async () => {
+    if (server?.stop) {
+      try {
+        await server.stop()
+      } catch (error) {
+        // '' - Cleanup errors are expected in test teardown when server is already stopped
+        console.warn(CLEANUP_WARNING, error.message)
+      }
+    }
+    vi.clearAllMocks()
+  })
 
   describe('Error Handling', () => {
     it('should log and rethrow setup errors', async () => {
@@ -385,10 +457,10 @@ describe('Server Index', () => {
         './common/helpers/proxy/setup-proxy.js'
       )
       setupProxy.mockImplementation(() => {
-        throw new Error('Proxy setup failed')
+        throw new Error(PROXY_SETUP_FAILED_ERROR)
       })
 
-      await expect(createServer()).rejects.toThrow('Proxy setup failed')
+      await expect(createServer()).rejects.toThrow(PROXY_SETUP_FAILED_ERROR)
       expect(mockLogger.error).toHaveBeenCalledWith(
         'Error during server setup',
         expect.any(Error)

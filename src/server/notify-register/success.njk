@@ -1,0 +1,67 @@
+{% extends 'layouts/page.njk' %}
+
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      
+      {{ govukPanel({
+        titleText: heading,
+        html: successMessage
+      }) }}
+      
+      <p class="govuk-body">{{ content.confirmationText }}</p>
+
+      <p class="govuk-body">
+        {{ content.anotherAlertPrefix | replace('{mobileNumber}', phoneNumber) }} <a href="/search-location" class="govuk-link">{{ content.anotherAlertLinkText }}</a>{{ content.anotherAlertSuffix }}
+      </p>
+
+      <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
+
+      <h2 class="govuk-heading-m">{{ content.researchHeading }}</h2>
+
+      <p class="govuk-body">
+        {{ content.researchSignupPrefix }}
+        <a href="#" class="govuk-link">{{ content.researchSignupLinkText }}</a>{{ content.researchSignupSuffix }}
+      </p>
+
+      <p class="govuk-body">
+        {{ content.researchPrivacyPrefix }}<a href="/privacy" class="govuk-link">{{ content.researchPrivacyLinkText }}</a>{{ content.researchPrivacySuffix }}
+      </p>
+
+      <form method="post" action="#research-panel">
+        {{ govukRadios({
+          name: "research-panel",
+          fieldset: {
+            legend: {
+              text: content.researchRadioLegend,
+              isPageHeading: false,
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          hint: {
+            text: content.researchRadioHint
+          },
+          items: [
+            {
+              value: "yes",
+              text: content.researchOptionYes
+            },
+            {
+              value: "no",
+              text: content.researchOptionNo
+            }
+          ]
+        }) }}
+
+        {{ govukButton({
+          text: content.researchContinueButton,
+          type: "submit"
+        }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

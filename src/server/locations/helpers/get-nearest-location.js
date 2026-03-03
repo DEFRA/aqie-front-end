@@ -176,8 +176,10 @@ async function getNearestLocation(
   index,
   lang,
   useNewRicardoMeasurementsEnabled,
-  request
+  request,
+  options = {}
 ) {
+  const skipMeasurements = Boolean(options?.skipMeasurements)
   const { latlon, forecastCoordinates } = getLatLonAndForecastCoords(
     matches,
     location,
@@ -195,28 +197,22 @@ async function getNearestLocation(
       ?.format('dddd')
       ?.substring(0, FORECAST_DAY_SLICE_LENGTH) || ''
 
-  if (!useNewRicardoMeasurementsEnabled) {
-    getMeasurments = await fetchMeasurements(
-      latlon.lat,
-      latlon.lon,
-      useNewRicardoMeasurementsEnabled,
-      { request }
-    )
+  if (!useNewRicardoMeasurementsEnabled && !skipMeasurements) {
+    getMeasurments = await fetchMeasurements(latlon.lat, latlon.lon, {
+      request
+    })
     nearestLocationsRange = buildNearestLocationsRange(
       matches,
       getMeasurments,
       latlon,
       lang
     )
-  } else {
+  } else if (!skipMeasurements) {
     let newMeasurements = []
     if (latlon?.lat && latlon?.lon) {
-      newMeasurements = await fetchMeasurements(
-        latlon.lat,
-        latlon.lon,
-        useNewRicardoMeasurementsEnabled,
-        { request }
-      )
+      newMeasurements = await fetchMeasurements(latlon.lat, latlon.lon, {
+        request
+      })
     }
 
     if (newMeasurements?.measurements) {

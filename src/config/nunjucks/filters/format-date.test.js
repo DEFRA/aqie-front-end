@@ -1,4 +1,5 @@
 import { formatDate } from '../../../config/nunjucks/filters/format-date.js'
+import { describe, test, expect, beforeAll, afterAll, vi } from 'vitest'
 
 // Migrated to Vitest
 // Added to comply with coding instructions
@@ -29,6 +30,13 @@ describe('#formatDate', () => {
           "h:mm aaa 'on' EEEE do MMMM yyyy"
         )
       ).toEqual('11:40 am on Monday 17th January 2022')
+    })
+  })
+
+  describe('With Date object input', () => {
+    test('Date object should be formatted correctly', () => {
+      const dateObj = new Date('2022-03-15T14:30:00.000Z')
+      expect(formatDate(dateObj)).toEqual('Tue 15th March 2022')
     })
   })
 })

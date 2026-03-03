@@ -48,9 +48,15 @@ class CookieBanner {
    * @returns {boolean} Returns true if all elements are initialized successfully
    */
   initializeElements() {
-    this.$acceptButton = this.$cookieBanner.querySelector(cookieBannerAcceptSelector)
-    this.$rejectButton = this.$cookieBanner.querySelector(cookieBannerRejectSelector)
-    this.$cookieMessage = this.$cookieBanner.querySelector(cookieMessageSelector)
+    this.$acceptButton = this.$cookieBanner.querySelector(
+      cookieBannerAcceptSelector
+    )
+    this.$rejectButton = this.$cookieBanner.querySelector(
+      cookieBannerRejectSelector
+    )
+    this.$cookieMessage = this.$cookieBanner.querySelector(
+      cookieMessageSelector
+    )
     this.$cookieConfirmationAccept = this.$cookieBanner.querySelector(
       cookieConfirmationAcceptSelector
     )
@@ -86,7 +92,11 @@ class CookieBanner {
    * @returns {boolean} Returns true if listeners are set up successfully
    */
   setupEventListeners() {
-    if (!this.$acceptButton || !this.$rejectButton || !this.$cookieBannerHideButtons) {
+    if (
+      !this.$acceptButton ||
+      !this.$rejectButton ||
+      !this.$cookieBannerHideButtons
+    ) {
       console.error('Missing elements for event listeners:', {
         acceptButton: this.$acceptButton,
         rejectButton: this.$rejectButton,

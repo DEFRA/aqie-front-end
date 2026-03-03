@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { addToSentenceCase } from './format-sentence.js'
 
+const TEST_STRING_HELLO = 'hello world'
+const TEST_STRING_CAPITALIZED = 'Hello world'
+const TEST_NUMBER = 123
+
 describe('format-sentence', () => {
   let mockEnv
 
@@ -45,14 +49,14 @@ describe('format-sentence', () => {
 
       it('should convert string to sentence case', () => {
         // ''
-        expect(filterFunction('hello world')).toBe('Hello world')
-        expect(filterFunction('HELLO WORLD')).toBe('Hello world')
-        expect(filterFunction('hELLO wORLD')).toBe('Hello world')
+        expect(filterFunction(TEST_STRING_HELLO)).toBe(TEST_STRING_CAPITALIZED)
+        expect(filterFunction('HELLO WORLD')).toBe(TEST_STRING_CAPITALIZED)
+        expect(filterFunction('hELLO wORLD')).toBe(TEST_STRING_CAPITALIZED)
       })
 
       it('should handle non-string inputs', () => {
         // ''
-        expect(filterFunction(123)).toBe(123)
+        expect(filterFunction(TEST_NUMBER)).toBe(TEST_NUMBER)
         expect(filterFunction(null)).toBe(null)
         expect(filterFunction(undefined)).toBe(undefined)
         expect(filterFunction({})).toEqual({})

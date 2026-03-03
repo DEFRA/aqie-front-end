@@ -1,0 +1,26 @@
+/* '' Align retry page content with standard page layout */
+.retry-page {
+  min-height: auto;
+  display: block;
+  padding: 0;
+}
+
+.retry-page__content {
+  width: 100%;
+  max-width: none;
+  text-align: left;
+  padding: 0;
+}
+
+.retry-loading-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.retry-page__content .govuk-button-group {
+  align-items: flex-start;
+  gap: 1rem;
+}

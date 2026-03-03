@@ -8,6 +8,7 @@ const BASE_ACCESSIBILITY_URL =
   'https://check-air-quality.service.gov.uk/accessibility'
 const BASE_WELSH_ACCESSIBILITY_URL =
   'https://check-air-quality.service.gov.uk/hygyrchedd'
+const WELSH_ACCESSIBILITY_PATH = '/hygyrchedd/cy'
 
 const setupMockRequest = (lang, _url) => ({
   query: { lang },
@@ -31,43 +32,39 @@ const validateRedirect = (
   expectedUrl,
   redirectPath,
   mockH,
-  mockContent
+  content
 ) => {
   const actualUrl = getAirQualitySiteUrl(mockRequest)
   expect(actualUrl).toBe(expectedUrl)
-  const result = accessibilityController.handler(
-    mockRequest,
-    mockH,
-    mockContent
-  )
+  const result = accessibilityController.handler(mockRequest, mockH, content)
   expect(result).toBe('redirected')
   expect(mockH.redirect).toHaveBeenCalledWith(redirectPath)
 }
 
-const validateRender = (mockRequest, expectedUrl, lang, mockH, mockContent) => {
+const validateRender = (mockRequest, expectedUrl, lang, mockH, content) => {
   const actualUrl = getAirQualitySiteUrl(mockRequest)
   expect(actualUrl).toBe(expectedUrl)
-  const result = accessibilityHandler(mockRequest, mockH, mockContent)
+  const result = accessibilityHandler(mockRequest, mockH, content)
   expect(result).toBe('view rendered')
   expect(mockH.view).toHaveBeenCalledWith('accessibility/index', {
-    pageTitle: mockContent.footer.accessibility.pageTitle,
-    description: mockContent.footer.accessibility.description,
+    pageTitle: content.footer.accessibility.pageTitle,
+    description: content.footer.accessibility.description,
     metaSiteUrl: actualUrl,
-    title: mockContent.footer.accessibility.title,
-    heading: mockContent.footer.accessibility.heading,
-    headings: mockContent.footer.accessibility.headings,
-    paragraphs: mockContent.footer.accessibility.paragraphs,
+    title: content.footer.accessibility.title,
+    heading: content.footer.accessibility.heading,
+    headings: content.footer.accessibility.headings,
+    paragraphs: content.footer.accessibility.paragraphs,
     displayBacklink: false,
-    phaseBanner: mockContent.phaseBanner,
-    footerTxt: mockContent.footerTxt,
-    serviceName: mockContent.multipleLocations.serviceName,
-    cookieBanner: mockContent.cookieBanner,
+    phaseBanner: content.phaseBanner,
+    footerTxt: content.footerTxt,
+    serviceName: content.multipleLocations.serviceName,
+    cookieBanner: content.cookieBanner,
     lang,
     currentPath: '/hygyrchedd/cy'
   })
 }
 
-const testRedirectToEnglish = (mockH, mockContent) => {
+const testRedirectToEnglish = (mockH, content) => {
   const mockRequest = setupMockRequest(LANG_EN, '/accessibility')
   const expectedUrl = `${BASE_ACCESSIBILITY_URL}?lang=en`
   validateRedirect(
@@ -75,20 +72,20 @@ const testRedirectToEnglish = (mockH, mockContent) => {
     expectedUrl,
     '/accessibility?lang=en',
     mockH,
-    mockContent
+    content
   )
 }
 
-const testRenderAccessibilityPage = (mockH, mockContent) => {
-  const mockRequest = setupMockRequest(LANG_CY, '/hygyrchedd/cy')
+const testRenderAccessibilityPage = (mockH, content) => {
+  const mockRequest = setupMockRequest(LANG_CY, WELSH_ACCESSIBILITY_PATH)
   const expectedUrl = `${BASE_WELSH_ACCESSIBILITY_URL}/cy?lang=cy`
-  validateRender(mockRequest, expectedUrl, LANG_CY, mockH, mockContent)
+  validateRender(mockRequest, expectedUrl, LANG_CY, mockH, content)
 }
 
-const testDefaultToWelsh = (mockH, mockContent) => {
-  const mockRequest = setupMockRequest('fr', '/hygyrchedd/cy')
+const testDefaultToWelsh = (mockH, content) => {
+  const mockRequest = setupMockRequest('fr', WELSH_ACCESSIBILITY_PATH)
   const expectedUrl = `${BASE_WELSH_ACCESSIBILITY_URL}/cy?lang=fr`
-  validateRender(mockRequest, expectedUrl, LANG_CY, mockH, mockContent)
+  validateRender(mockRequest, expectedUrl, LANG_CY, mockH, content)
 }
 
 const mockContent = welsh

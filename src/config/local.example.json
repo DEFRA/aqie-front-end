@@ -27,5 +27,21 @@
 
   "redis": {
     "password": "REPLACE-ME-REDIS-PASSWORD-IF-NEEDED"
+  },
+
+  "notify": {
+    "enabled": true,
+    "mockOtpEnabled": true,
+    "mockOtpCode": "12345",
+    "baseUrl": "https://aqie-notify-service.test.cdp-int.defra.cloud",
+    "smsPath": "/subscribe/generate-otp",
+    "verifyOtpPath": "/subscribe/validate-otp",
+    "setupAlertPath": "/setup-alert",
+    "alertBackendBaseUrl": "https://aqie-alert-back-end-service.test.cdp-int.defra.cloud",
+    "getSubscriptionsPath": "/api/subscriptions"
+  },
+
+  "subscriptionApi": {
+    "enabled": false
   }
 }

@@ -15,6 +15,9 @@ vi.mock('../config/index.js', () => ({
   }
 }))
 
+// '' Constants to avoid duplication
+const TEST_URL = 'https://example.com'
+
 describe('proxy-fetch', () => {
   let mockConfig
 
@@ -47,9 +50,9 @@ describe('proxy-fetch', () => {
     mockConfig.get.mockReturnValue(null)
 
     const module = await import('./proxy-fetch.js')
-    await module.proxyFetch('https://example.com', { method: 'GET' })
+    await module.proxyFetch(TEST_URL, { method: 'GET' })
 
-    expect(mockUndiciFetch).toHaveBeenCalledWith('https://example.com', {
+    expect(mockUndiciFetch).toHaveBeenCalledWith(TEST_URL, {
       method: 'GET'
     })
     expect(mockConfig.get).toHaveBeenCalledWith('httpsProxy')
@@ -59,14 +62,16 @@ describe('proxy-fetch', () => {
   test('should use proxy fetch when https proxy is configured', async () => {
     // ''
     mockConfig.get.mockImplementation((key) => {
-      if (key === 'httpsProxy') return 'https://proxy.example.com:8080'
+      if (key === 'httpsProxy') {
+        return 'https://proxy.example.com:8080'
+      }
       return null
     })
 
     const module = await import('./proxy-fetch.js')
-    await module.proxyFetch('https://example.com', { method: 'POST' })
+    await module.proxyFetch(TEST_URL, { method: 'POST' })
 
-    expect(mockUndiciFetch).toHaveBeenCalledWith('https://example.com', {
+    expect(mockUndiciFetch).toHaveBeenCalledWith(TEST_URL, {
       method: 'POST',
       dispatcher: expect.any(Object)
     })

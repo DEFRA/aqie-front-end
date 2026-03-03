@@ -1,0 +1,31 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds odd-page">
+
+      <h1 class="govuk-heading-l">{{ content.heading }}</h1>
+      <p class="govuk-body">{{ sentLinkText | safe }}</p>
+      <p class="govuk-body">{{ confirmLinkText | safe }}</p>
+
+      <details class="govuk-details" open="">
+        <summary class="govuk-details__summary">
+          <span class="govuk-details__summary-text">
+            {{ content.detailsSummary }}
+          </span>
+        </summary>
+        <div class="govuk-details__text">
+          <p>{{ content.detailsIntro }}</p>
+          <ul>
+            <li>{{ content.detailsBulletEmail }}</li>
+            <li>{{ content.detailsBulletSpam }}</li>
+          </ul>
+          <p><a href="{{ emailSendActivationPath }}" class="govuk-link">{{ content.requestNewLinkText }}</a></p>
+        </div>
+      </details>
+
+      <p class="govuk-body"><a href="{{ smsMobileNumberPath }}" class="govuk-link">{{ content.setupTextMessageLinkText }}</a></p>
+
+    </div>
+  </div>
+{% endblock %}

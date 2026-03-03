@@ -7,6 +7,16 @@ import {
 } from '../../data/constants.js'
 
 function airQualityValues(forecastNum, lang) {
+  // '' Handle missing or empty forecasts (e.g., NI locations with null today data in mock mode)
+  if (
+    !forecastNum ||
+    !Array.isArray(forecastNum) ||
+    forecastNum.length === 0 ||
+    !forecastNum[0]
+  ) {
+    return { airQuality: null }
+  }
+
   let airQuality = ''
   if (lang === LANG_EN) {
     airQuality = getAirQuality(

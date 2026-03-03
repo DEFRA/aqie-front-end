@@ -3,8 +3,7 @@ import {
   LANG_EN,
   LOCATION_NOT_FOUND,
   LOCATION_TYPE_NI,
-  LOCATION_TYPE_UK,
-  REDIRECT_STATUS_CODE
+  LOCATION_TYPE_UK
 } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from './get-site-url.js'
 import { english, calendarEnglish } from '../../data/en/en.js'
@@ -19,7 +18,6 @@ import { getIdMatch } from '../../locations/helpers/get-id-match.js'
 import { getNIData } from '../../locations/helpers/get-ni-single-data.js'
 import { createLogger } from './logging/logger.js'
 import sizeof from 'object-sizeof'
-import { mockLevelColor } from './mock-daqi-level.js'
 import { config } from '../../../config/index.js'
 import { getForecastWarning } from '../../locations/helpers/forecast-warning.js'
 import { getDetailedInfo as getDetailedInfoEn } from '../../data/en/air-quality.js'
@@ -84,6 +82,26 @@ export function initializeLocationVariables(request, lang) {
 }
 
 /**
+ * Handle setting a mock parameter in session
+ * @param {object} request - Hapi request object
+ * @param {string} paramName - Name of the parameter (mockLevel or mockDay)
+ * @param {*} paramValue - Value of the parameter
+ * @param {string} displayName - Display name for logging
+ */
+function handleMockParameter(request, paramName, paramValue, displayName) {
+  const isClearValue = paramValue === '' || paramValue === 'clear'
+
+  if (isClearValue) {
+    request.yar.set(paramName, null)
+    logger.info(`🎨 ${displayName} explicitly cleared from session`)
+    return
+  }
+
+  request.yar.set(paramName, paramValue)
+  logger.info(`🎨 ${displayName} ${paramValue} stored in session`)
+}
+
+/**
  * Initialize mock parameters in session from query parameters
  * '' Store mockLevel and mockDay in session to preserve across redirects
  */
@@ -91,36 +109,26 @@ export function initializeMockParameters(request) {
   const { query } = request
   const mocksDisabled = config.get('disableTestMocks')
 
-  // Store mockLevel in session if provided
-  if (query?.mockLevel !== undefined && !mocksDisabled) {
-    // Check if explicitly clearing
-    if (query.mockLevel === '' || query.mockLevel === 'clear') {
-      request.yar.set('mockLevel', null)
-      logger.info(`🎨 Mock level explicitly cleared from session`)
+  // Handle mockLevel parameter
+  if (query?.mockLevel !== undefined) {
+    if (mocksDisabled) {
+      logger.warn(
+        `🚫 Attempted to set mock level when mocks disabled (disableTestMocks=true) - ignoring parameter`
+      )
     } else {
-      request.yar.set('mockLevel', query.mockLevel)
-      logger.info(`🎨 Mock level ${query.mockLevel} stored in session`)
+      handleMockParameter(request, 'mockLevel', query.mockLevel, 'Mock level')
     }
-  } else if (mocksDisabled && query?.mockLevel !== undefined) {
-    logger.warn(
-      `🚫 Attempted to set mock level when mocks disabled (disableTestMocks=true) - ignoring parameter`
-    )
   }
 
-  // Store mockDay in session if provided
-  if (query?.mockDay !== undefined && !mocksDisabled) {
-    // Check if explicitly clearing
-    if (query.mockDay === '' || query.mockDay === 'clear') {
-      request.yar.set('mockDay', null)
-      logger.info(`🎨 Mock day explicitly cleared from session`)
+  // Handle mockDay parameter
+  if (query?.mockDay !== undefined) {
+    if (mocksDisabled) {
+      logger.warn(
+        `🚫 Attempted to set mock day when mocks disabled (disableTestMocks=true) - ignoring parameter`
+      )
     } else {
-      request.yar.set('mockDay', query.mockDay)
-      logger.info(`🎨 Mock day ${query.mockDay} stored in session`)
+      handleMockParameter(request, 'mockDay', query.mockDay, 'Mock day')
     }
-  } else if (mocksDisabled && query?.mockDay !== undefined) {
-    logger.warn(
-      `🚫 Attempted to set mock day when mocks disabled (disableTestMocks=true) - ignoring parameter`
-    )
   }
 }
 
@@ -131,8 +139,7 @@ export async function processLocationData(
   request,
   locationData,
   locationId,
-  lang,
-  useNewRicardoMeasurementsEnabled
+  lang
 ) {
   const { getForecasts } = locationData
   const locationType = getLocationType(locationData)
@@ -141,14 +148,15 @@ export async function processLocationData(
   const indexNI = 0
 
   if (locationData.locationType === LOCATION_TYPE_NI) {
-    distance = getNearestLocation(
+    distance = await getNearestLocation(
       locationData?.results,
       getForecasts,
       locationType,
       0,
       lang,
-      useNewRicardoMeasurementsEnabled,
-      request
+      true,
+      request,
+      { skipMeasurements: true }
     )
     const niDataResult = getNIData(locationData, distance, locationType)
     resultNI = niDataResult.resultNI
@@ -162,23 +170,98 @@ export async function processLocationData(
     indexNI
   )
 
-  const { forecastNum, nearestLocationsRange, nearestLocation } =
+  const { forecastNum, nearestLocationsRange, nearestLocation, latlon } =
     await getNearestLocation(
       locationData?.results,
       getForecasts,
       locationType,
       locationIndex,
       lang,
-      useNewRicardoMeasurementsEnabled,
+      true,
       request
     )
+
+  // Store calculated latlon from geolib in locationData ''
+  locationData.latlon = latlon
 
   return {
     locationDetails,
     forecastNum,
     nearestLocationsRange,
-    nearestLocation
+    nearestLocation,
+    latlon
   }
+}
+
+/**
+ * Validate and parse mock level value
+ * @returns {number|null} - Valid level (0-10) or null if invalid
+ */
+function parseAndValidateMockLevel(mockLevel) {
+  if (mockLevel === undefined || mockLevel === null) {
+    return null
+  }
+
+  const level = Number.parseInt(mockLevel, 10)
+  logger.info(`🔍 Parsed level:`, level, `isNaN:`, Number.isNaN(level))
+
+  if (Number.isNaN(level) || level < 0 || level > 10) {
+    logger.warn(`Invalid mock level: ${mockLevel}. Must be 0-10.`)
+    return null
+  }
+
+  return level
+}
+
+/**
+ * Apply mock level to a specific day only
+ */
+function applyMockToSpecificDay(airQuality, mockDay, level, getDetailedInfo) {
+  const mockDayData = getDetailedInfo(level)
+
+  // Start with existing airQuality or generate default forecast
+  const modifiedAirQuality =
+    airQuality && typeof airQuality === 'object'
+      ? {
+          today: airQuality.today ? { ...airQuality.today } : null,
+          day2: airQuality.day2 ? { ...airQuality.day2 } : null,
+          day3: airQuality.day3 ? { ...airQuality.day3 } : null,
+          day4: airQuality.day4 ? { ...airQuality.day4 } : null,
+          day5: airQuality.day5 ? { ...airQuality.day5 } : null
+        }
+      : {
+          today: getDetailedInfo(4),
+          day2: getDetailedInfo(4),
+          day3: getDetailedInfo(4),
+          day4: getDetailedInfo(4),
+          day5: getDetailedInfo(4)
+        }
+
+  // Override the specific day with the mock level
+  modifiedAirQuality[mockDay] = mockDayData
+
+  logger.info(
+    `🎯 Applied mock level ${level} to ${mockDay} only (value: ${mockDayData.value}, band: ${mockDayData.band}, readableBand: ${mockDayData.readableBand})`
+  )
+  return modifiedAirQuality
+}
+
+/**
+ * Apply mock level to all days
+ */
+function applyMockToAllDays(level, getDetailedInfo) {
+  const mockData = {
+    today: getDetailedInfo(level),
+    day2: getDetailedInfo(level),
+    day3: getDetailedInfo(level),
+    day4: getDetailedInfo(level),
+    day5: getDetailedInfo(level)
+  }
+
+  logger.info(
+    `🎨 Applied mock level ${level} to all days (readableBand: ${mockData.today.readableBand})`
+  )
+  return mockData
 }
 
 /**
@@ -210,75 +293,23 @@ export function applyMockLevel(request, airQuality, lang = LANG_EN) {
     lang
   )
 
-  if (mockLevel !== undefined && mockLevel !== null) {
-    const level = parseInt(mockLevel, 10)
-
-    logger.info(`🔍 Parsed level:`, level, `isNaN:`, isNaN(level))
-
-    // Validate level
-    if (!isNaN(level) && level >= 0 && level <= 10) {
-      logger.info(`🎨 Mock DAQI Level ${level} applied from session`)
-
-      // If mockDay is specified, apply mock level only to that specific day
-      if (
-        mockDay &&
-        ['today', 'day2', 'day3', 'day4', 'day5'].includes(mockDay)
-      ) {
-        // Generate mock data for the specific day using language-specific function
-        const mockDayData = getDetailedInfo(level)
-
-        // Start with existing airQuality or generate full forecast with current values
-        let modifiedAirQuality
-        if (airQuality && typeof airQuality === 'object') {
-          // Deep clone each day to avoid reference issues
-          modifiedAirQuality = {
-            today: airQuality.today ? { ...airQuality.today } : null,
-            day2: airQuality.day2 ? { ...airQuality.day2 } : null,
-            day3: airQuality.day3 ? { ...airQuality.day3 } : null,
-            day4: airQuality.day4 ? { ...airQuality.day4 } : null,
-            day5: airQuality.day5 ? { ...airQuality.day5 } : null
-          }
-        } else {
-          // If no airQuality exists, generate default forecast (all moderate level 4)
-          modifiedAirQuality = {
-            today: getDetailedInfo(4),
-            day2: getDetailedInfo(4),
-            day3: getDetailedInfo(4),
-            day4: getDetailedInfo(4),
-            day5: getDetailedInfo(4)
-          }
-        }
-
-        // Override the specific day with the mock level
-        modifiedAirQuality[mockDay] = mockDayData
-
-        logger.info(
-          `🎯 Applied mock level ${level} to ${mockDay} only (value: ${mockDayData.value}, band: ${mockDayData.band}, readableBand: ${mockDayData.readableBand})`
-        )
-        return modifiedAirQuality
-      } else {
-        // Generate mock data for all days using language-specific function
-        const mockData = {
-          today: getDetailedInfo(level),
-          day2: getDetailedInfo(level),
-          day3: getDetailedInfo(level),
-          day4: getDetailedInfo(level),
-          day5: getDetailedInfo(level)
-        }
-
-        logger.info(
-          `🎨 Applied mock level ${level} to all days (readableBand: ${mockData.today.readableBand})`
-        )
-        return mockData
-      }
-    } else {
-      logger.warn(`Invalid mock level: ${mockLevel}. Must be 0-10.`)
-    }
+  const level = parseAndValidateMockLevel(mockLevel)
+  if (level === null) {
+    logger.info(`🔍 Returning original airQuality (no mock)`)
+    return airQuality
   }
 
-  // Return original data if no mock level (default behavior unchanged)
-  logger.info(`🔍 Returning original airQuality (no mock)`)
-  return airQuality
+  logger.info(`🎨 Mock DAQI Level ${level} applied from session`)
+
+  // If mockDay is specified, apply mock level only to that specific day
+  const isValidMockDay =
+    mockDay && ['today', 'day2', 'day3', 'day4', 'day5'].includes(mockDay)
+
+  if (isValidMockDay) {
+    return applyMockToSpecificDay(airQuality, mockDay, level, getDetailedInfo)
+  }
+
+  return applyMockToAllDays(level, getDetailedInfo)
 }
 
 /**
@@ -351,8 +382,37 @@ export function buildLocationViewData({
     issueTime: locationData.issueTime,
     dailySummaryTexts: components.dailySummaryTexts,
     serviceName: components.multipleLocations.serviceName,
+    latlon: extractCoordinates(locationDetails, locationData),
+    locationId: extractLocationId(locationDetails),
+    smsMobileNumberPath: config.get('notify.smsMobileNumberPath'),
+    emailDetailsPath: config.get('notify.emailDetailsPath'),
     lang
   }
+}
+
+/**
+ * Extract coordinates from location details with fallbacks ''
+ */
+function extractCoordinates(locationDetails, locationData) {
+  const gazetteerEntry = locationDetails?.GAZETTEER_ENTRY || locationDetails
+  return {
+    lat:
+      gazetteerEntry?.LATITUDE ||
+      gazetteerEntry?.latitude ||
+      locationData?.latlon?.lat,
+    lon:
+      gazetteerEntry?.LONGITUDE ||
+      gazetteerEntry?.longitude ||
+      locationData?.latlon?.lon
+  }
+}
+
+/**
+ * Extract location ID from location details ''
+ */
+function extractLocationId(locationDetails) {
+  const gazetteerEntry = locationDetails?.GAZETTEER_ENTRY || locationDetails
+  return gazetteerEntry?.ID || gazetteerEntry?.id || locationDetails?.id || ''
 }
 
 /**
