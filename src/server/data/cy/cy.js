@@ -18,6 +18,10 @@ export const welsh = {
   ...daqiTranslationsWelsh,
   ...pollutantTranslationsWelsh,
   ...actionsReduceExposureTranslationsWelsh,
+  healthEffects: {
+    pageTitle: 'Effaith llygredd aer ar iechyd',
+    heading: 'Effaith llygredd aer ar iechyd'
+  },
   ...uiTranslationsWelsh,
   ...footerTranslationsWelsh
 }

@@ -27,7 +27,8 @@ vi.mock('../helpers/index.js', () => ({
   getReadableLocationName: vi.fn(() => 'Caerdydd'), // '' Default Welsh location name
   buildHealthEffectsViewModel: vi.fn(
     ({ readableName = 'Caerdydd', lang = 'cy' } = {}) => ({
-      pageTitle: 'How you can reduce your exposure to air pollution',
+      page: 'Effaith llygredd aer ar iechyd',
+      pageTitle: 'Effaith llygredd aer ar iechyd',
       backLinkUrl: 'javascript:history.back()',
       backLinkText: `Air pollution in ${readableName}`,
       locationName: readableName,
@@ -127,7 +128,7 @@ describe("'' healthEffectsHandlerCy", () => {
   it("'' applies custom content overrides", () => {
     getReadableLocationName.mockReturnValueOnce('Casnewydd')
     buildHealthEffectsViewModel.mockImplementationOnce(({ readableName }) => ({
-      pageTitle: 'Custom EN Title', // '' Will be overridden to Welsh
+      pageTitle: 'Custom EN Title',
       backLinkUrl: 'javascript:history.back()',
       backLinkText: `Air pollution in ${readableName}`,
       locationName: readableName,
@@ -144,7 +145,7 @@ describe("'' healthEffectsHandlerCy", () => {
     const h = createH()
     healthEffectsHandlerCy(request, h, customContent)
     const ctx = h.view.mock.calls[0][1]
-    expect(ctx.pageTitle).toBe('Effaith llygredd aer ar iechyd')
+    expect(ctx.pageTitle).toBe('Custom EN Title')
     expect(ctx.locationName).toBe('Casnewydd')
   })
 
