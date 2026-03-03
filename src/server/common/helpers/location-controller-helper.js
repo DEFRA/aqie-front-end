@@ -155,8 +155,7 @@ export async function processLocationData(
       0,
       lang,
       true,
-      request,
-      { skipMeasurements: true }
+      { request, skipMeasurements: true }
     )
     const niDataResult = getNIData(locationData, distance, locationType)
     resultNI = niDataResult.resultNI
@@ -178,7 +177,7 @@ export async function processLocationData(
       locationIndex,
       lang,
       true,
-      request
+      { request }
     )
 
   // Store calculated latlon from geolib in locationData ''

@@ -388,8 +388,7 @@ async function getNearestLocationData(
       0,
       lang,
       true,
-      request,
-      { skipMeasurements: true }
+      { request, skipMeasurements: true }
     )
     // '' Ensure distance has valid latlon structure even when forecasts fail
     if (
@@ -426,7 +425,7 @@ async function getNearestLocationData(
       locationIndex,
       lang,
       true,
-      request
+      { request }
     )
 
   // Store calculated latlon from geolib in locationData ''

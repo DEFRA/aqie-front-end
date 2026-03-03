@@ -176,10 +176,10 @@ async function getNearestLocation(
   index,
   lang,
   useNewRicardoMeasurementsEnabled,
-  request,
-  options = {}
+  context = {}
 ) {
-  const skipMeasurements = Boolean(options?.skipMeasurements)
+  const request = context?.request
+  const skipMeasurements = Boolean(context?.skipMeasurements)
   const { latlon, forecastCoordinates } = getLatLonAndForecastCoords(
     matches,
     location,
