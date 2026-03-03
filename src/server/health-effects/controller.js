@@ -37,8 +37,6 @@ const healthEffectsHandler = (request, h, customContent = undefined) => {
         lang: LANG_CY, // ''
         locationId: params.id // ''
       }) // ''
-      viewModel.page = 'Effaith llygredd aer ar iechyd' // ''
-      viewModel.pageTitle = 'Effaith llygredd aer ar iechyd' // ''
       // Restore original context-specific back link text
       viewModel.backLinkText = `Llygredd aer yn ${readableName || 'y lleoliad hwn'}`
       viewModel.backlink = {

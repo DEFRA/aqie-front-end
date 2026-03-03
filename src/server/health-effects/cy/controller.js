@@ -42,9 +42,6 @@ const healthEffectsHandlerCy = (request, h, content = welsh) => {
       lang: query.lang || LANG_CY
     })
 
-    // '' Force Welsh title/backlink (helpers supply EN defaults)
-    viewModel.page = 'Effaith llygredd aer ar iechyd'
-    viewModel.pageTitle = 'Effaith llygredd aer ar iechyd' // '' Unconditional Welsh title
     // Restore original context-specific back link text
     viewModel.backLinkText = `Llygredd aer yn ${readableName || 'y lleoliad hwn'}`
     viewModel.backlink = {

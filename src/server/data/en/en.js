@@ -17,6 +17,10 @@ export const english = {
   ...daqiTranslations,
   ...pollutantTranslations,
   ...actionsReduceExposureTranslations,
+  healthEffects: {
+    pageTitle: 'Health effects of air pollution',
+    heading: 'Health effects of air pollution'
+  },
   ...uiTranslations,
   ...footerTranslations,
   ...notificationTranslations
