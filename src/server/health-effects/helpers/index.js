@@ -71,13 +71,11 @@ const buildHealthEffectsViewModel = ({
       : '/search-location?lang=en'
 
   return {
-    pageTitle:
-      healthEffects?.pageTitle ||
-      'How you can reduce your exposure to air pollution', // ''
+    pageTitle: healthEffects?.pageTitle || '', // ''
     description: healthEffects?.description || '', // ''
     metaSiteUrl, // ''
     healthEffects, // ''
-    page: 'How you can reduce your exposure to air pollution', // ''
+    page: healthEffects?.heading || healthEffects?.pageTitle || '', // ''
     displayBacklink: true, // ''
     customBackLink: !!readableName, // '' Add for template compatibility
     backLinkUrl, // ''
