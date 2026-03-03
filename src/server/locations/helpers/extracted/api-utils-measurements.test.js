@@ -141,7 +141,7 @@ describe('api-utils - selectMeasurementsUrlAndOptions localhost handling', () =>
   it('should use ephemeral protected URL for localhost with new Ricardo', () => {
     mockConfig.get.mockImplementation((key) => {
       if (key === 'ricardoMeasurementsApiUrl') return RICARDO_API_URL
-      if (key === 'ephemeralProtectedDevApiUrl') return DEV_API_URL
+      if (key === 'ephemeralProtectedTestApiUrl') return DEV_API_URL
       return null
     })
     const mockOptionsEphemeralProtected = { headers: {} }
@@ -200,7 +200,7 @@ describe('api-utils - selectMeasurementsUrlAndOptions error handling', () => {
     globalThis.URLSearchParams = originalURLSearchParams
   })
 
-  it('should throw error when ephemeralProtectedDevApiUrl missing for local new Ricardo', () => {
+  it('should throw error when ephemeralProtectedTestApiUrl missing for local new Ricardo', () => {
     mockConfig.get
       .mockReturnValueOnce(RICARDO_API_URL)
       .mockReturnValueOnce(null)
@@ -215,7 +215,7 @@ describe('api-utils - selectMeasurementsUrlAndOptions error handling', () => {
         request: mockRequest
       })
     ).toThrow(
-      'ephemeralProtectedDevApiUrl must be provided in config for local requests'
+      'ephemeralProtectedTestApiUrl must be provided in config for local requests'
     )
   })
 })

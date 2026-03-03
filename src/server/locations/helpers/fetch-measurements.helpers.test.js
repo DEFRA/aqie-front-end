@@ -35,7 +35,7 @@ describe('selectMeasurementsUrlAndOptions', () => {
       if (key === 'ricardoMeasurementsApiUrl') {
         return 'ricardo-url?'
       }
-      if (key === 'ephemeralProtectedDevApiUrl') {
+      if (key === 'ephemeralProtectedTestApiUrl') {
         return 'dev-url'
       }
       if (key === 'measurementsApiUrl') {

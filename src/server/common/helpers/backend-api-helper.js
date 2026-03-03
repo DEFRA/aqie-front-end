@@ -33,7 +33,7 @@ export function getCdpApiKey() {
  */
 export function getEphemeralDevApiUrl() {
   if (config !== undefined && config.get) {
-    return config.get('ephemeralProtectedDevApiUrl')
+    return config.get('ephemeralProtectedTestApiUrl')
   }
   return null
 }
@@ -61,7 +61,7 @@ export function buildBackendApiRequest(
 
     if (!ephemeralUrl) {
       throw new Error(
-        'ephemeralProtectedDevApiUrl must be provided in config for local requests'
+        'ephemeralProtectedTestApiUrl must be provided in config for local requests'
       )
     }
 

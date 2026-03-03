@@ -109,10 +109,10 @@ function getCdpApiKey(localOptionsEphemeralProtected) {
 // Helper to get ephemeral protected dev API URL
 function getEphemeralDevApiUrl(request) {
   if (request?.app?.config) {
-    return request.app.config.ephemeralProtectedDevApiUrl
+    return request.app.config.ephemeralProtectedTestApiUrl
   }
   if (config !== undefined && config.get) {
-    return config.get('ephemeralProtectedDevApiUrl')
+    return config.get('ephemeralProtectedTestApiUrl')
   }
   return null
 }
@@ -122,12 +122,12 @@ function buildLocalForecastsUrlAndOpts(
   request,
   localOptionsEphemeralProtected
 ) {
-  const ephemeralProtectedDevApiUrl = getEphemeralDevApiUrl(request)
+  const ephemeralProtectedTestApiUrl = getEphemeralDevApiUrl(request)
   const cdpXApiKey = getCdpApiKey(localOptionsEphemeralProtected)
 
-  if (!ephemeralProtectedDevApiUrl) {
+  if (!ephemeralProtectedTestApiUrl) {
     throw new Error(
-      'ephemeralProtectedDevApiUrl must be provided in config for local requests'
+      'ephemeralProtectedTestApiUrl must be provided in config for local requests'
     )
   }
   if (!FORECASTS_API_PATH) {
@@ -136,7 +136,7 @@ function buildLocalForecastsUrlAndOpts(
     )
   }
 
-  const url = `${ephemeralProtectedDevApiUrl}${FORECASTS_API_PATH}`
+  const url = `${ephemeralProtectedTestApiUrl}${FORECASTS_API_PATH}`
   const opts = { ...localOptionsEphemeralProtected }
   opts.headers = {
     ...opts.headers,
@@ -202,14 +202,14 @@ function buildLocalMeasurementsUrlAndOpts(
   apiConfig,
   optionsEphemeralProtected
 ) {
-  const ephemeralProtectedDevApiUrl = apiConfig.get(
-    'ephemeralProtectedDevApiUrl'
+  const ephemeralProtectedTestApiUrl = apiConfig.get(
+    'ephemeralProtectedTestApiUrl'
   )
   const measurementsApiPath = MEASUREMENTS_API_PATH || ''
 
-  if (!ephemeralProtectedDevApiUrl) {
+  if (!ephemeralProtectedTestApiUrl) {
     throw new Error(
-      'ephemeralProtectedDevApiUrl must be provided in config for local requests'
+      'ephemeralProtectedTestApiUrl must be provided in config for local requests'
     )
   }
   if (!measurementsApiPath) {
@@ -230,7 +230,7 @@ function buildLocalMeasurementsUrlAndOpts(
   } else {
     separator = '?'
   }
-  const fullUrl = `${ephemeralProtectedDevApiUrl}${measurementsApiPath}${separator}${queryParams.toString()}`
+  const fullUrl = `${ephemeralProtectedTestApiUrl}${measurementsApiPath}${separator}${queryParams.toString()}`
 
   // '' Get API key and add to headers (required for ephemeral protected endpoint)
   const cdpXApiKey = getCdpApiKey(optionsEphemeralProtected)
@@ -296,12 +296,12 @@ function selectMeasurementsUrlAndOptions(latitude, longitude, di = {}) {
   }
 
   if (isLocalRequest(request)) {
-    const ephemeralProtectedDevApiUrl = apiConfig.get(
-      'ephemeralProtectedDevApiUrl'
+    const ephemeralProtectedTestApiUrl = apiConfig.get(
+      'ephemeralProtectedTestApiUrl'
     )
     if (!config.get('isProduction')) {
       logger.info(
-        `[URL BUILD DEBUG] Ephemeral protected dev API URL: ${ephemeralProtectedDevApiUrl}`
+        `[URL BUILD DEBUG] Ephemeral protected dev API URL: ${ephemeralProtectedTestApiUrl}`
       )
       logger.info(
         `[URL BUILD DEBUG] Measurements API path: ${MEASUREMENTS_API_PATH}`

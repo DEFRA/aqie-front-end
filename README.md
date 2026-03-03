@@ -11,6 +11,8 @@ Updated for SonarQube compliance
   - [Local JSON API](#local-json-api)
   - [Production](#production)
   - [Npm scripts](#npm-scripts)
+- [Documentation](#documentation)
+  - [API specifications](#api-specifications)
 - [Docker](#docker)
   - [Development Image](#development-image)
   - [Production Image](#production-image)
@@ -95,6 +97,12 @@ To view them in your command line run:
 ```bash
 npm run
 ```
+
+## Documentation
+
+### API specifications
+
+- [Air Pollution Alerts API spec](./docs/AIR_POLLUTION_ALERTS_API_SPEC.md)
 
 ## Docker
 
