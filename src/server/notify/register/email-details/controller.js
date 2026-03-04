@@ -81,6 +81,7 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
       serviceName: SERVICE_NAME,
       lang: LANG_EN,
       metaSiteUrl,
+      currentPath: request.path,
       footerTxt,
       phaseBanner,
       backlink,
@@ -105,6 +106,7 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
       serviceName: SERVICE_NAME,
       lang: LANG_EN,
       metaSiteUrl,
+      currentPath: request.path,
       error: { message: 'Sorry, there is a problem loading the page' },
       formData: {}
     })
@@ -127,6 +129,7 @@ const handleEmailDetailsPost = async (request, h, content = english) => {
         serviceName: SERVICE_NAME,
         lang: LANG_EN,
         metaSiteUrl,
+        currentPath: request.path,
         footerTxt,
         phaseBanner,
         backlink,
@@ -182,6 +185,7 @@ const handleEmailDetailsPost = async (request, h, content = english) => {
       serviceName: SERVICE_NAME,
       lang: LANG_EN,
       metaSiteUrl,
+      currentPath: request.path,
       error: { message: 'Sorry, there is a problem processing the form' },
       formData: request.payload || {}
     })

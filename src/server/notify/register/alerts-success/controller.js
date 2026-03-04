@@ -63,6 +63,7 @@ const handleAlertsSuccessRequest = (request, h, content = english) => {
     serviceName,
     lang,
     metaSiteUrl,
+    currentPath: request.path,
     footerTxt,
     phaseBanner,
     backlink,

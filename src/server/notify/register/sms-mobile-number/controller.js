@@ -98,6 +98,7 @@ const handleNotifyRequest = (request, h, content = english) => {
     serviceName,
     lang,
     metaSiteUrl,
+    currentPath: request.path,
     footerTxt,
     phaseBanner,
     backlink: {
@@ -171,6 +172,7 @@ const handleNotifyPost = async (request, h, content = english) => {
       serviceName,
       lang,
       metaSiteUrl,
+      currentPath: request.path,
       footerTxt,
       phaseBanner,
       backlink: {

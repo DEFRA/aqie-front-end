@@ -255,7 +255,8 @@
             {% if welshPath %}
               {% set fullHrefCy = welshPath + "?lang=cy" + queryString %}
             {% else %}
-              {% set fullHrefCy = "/cy?lang=cy" %}
+              {# '' No Welsh equivalent path — stay on the current page with lang=cy (e.g. notify journey pages) '' #}
+              {% set fullHrefCy = currentPath + "?lang=cy" + queryString %}
             {% endif %}
             {% set fullHrefEn = currentPath + "?lang=en" + queryString %}
           {% else %}
@@ -263,7 +264,8 @@
             {% if englishPath %}
               {% set fullHrefEn = englishPath + "?lang=en" + queryString %}
             {% else %}
-              {% set fullHrefEn = "/?lang=en" %}
+              {# '' No English equivalent path — stay on the current page with lang=en (e.g. notify journey pages) '' #}
+              {% set fullHrefEn = currentPath + "?lang=en" + queryString %}
             {% endif %}
             {% set fullHrefCy = currentPath + "?lang=cy" + queryString %}
           {% endif %}

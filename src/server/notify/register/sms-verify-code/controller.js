@@ -60,6 +60,7 @@ function buildErrorViewModel(
     serviceName,
     lang,
     metaSiteUrl: getAirQualitySiteUrl(request),
+    currentPath: request.path,
     footerTxt,
     phaseBanner,
     backlink: {
@@ -243,6 +244,7 @@ const handleCheckMessageRequest = (request, h, content = english) => {
     serviceName,
     lang,
     metaSiteUrl,
+    currentPath: request.path,
     footerTxt,
     phaseBanner,
     cookieBanner,
