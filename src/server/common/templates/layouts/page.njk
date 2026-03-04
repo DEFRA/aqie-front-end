@@ -135,6 +135,16 @@
             {% set fullHrefEn = englishPath + "?lang=en" + queryString %}
             {% set fullHrefCy = currentPath + "?lang=cy" + queryString %}
           {% endif %}
+        {% else %}
+          {# '' Non-pollutant pages with backlink (e.g. notify journey pages) — stay on current path with lang param '' #}
+          {% set currentPath = currentPath or '/' %}
+          {% if lang == 'en' %}
+            {% set fullHrefCy = currentPath + "?lang=cy" %}
+            {% set fullHrefEn = currentPath + "?lang=en" %}
+          {% else %}
+            {% set fullHrefEn = currentPath + "?lang=en" %}
+            {% set fullHrefCy = currentPath + "?lang=cy" %}
+          {% endif %}
         {% endif %}
       {% else %}
         {# '' General language toggle - works for all pages by translating the current path '' #}
