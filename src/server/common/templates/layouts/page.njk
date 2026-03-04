@@ -136,13 +136,57 @@
             {% set fullHrefCy = currentPath + "?lang=cy" + queryString %}
           {% endif %}
         {% else %}
-          {# '' Non-pollutant pages with backlink (e.g. notify journey pages) — stay on current path with lang param '' #}
+          {# '' Non-pollutant pages with backlink (e.g. notify journey pages) — use pathMappings to find Welsh/English equivalent '' #}
           {% set currentPath = currentPath or '/' %}
+          {% set notifyPathMappings = {
+            '/notify/register/sms-mobile-number': '/hysbysiad/cofrestru/sms-rhif-ffon',
+            '/notify/register/sms-send-activation': '/hysbysiad/cofrestru/sms-anfon-cod-actifadu',
+            '/notify/register/sms-verify-code': '/hysbysiad/cofrestru/sms-dilysu-cod',
+            '/notify/register/sms-send-new-code': '/hysbysiad/cofrestru/sms-anfon-cod-newydd',
+            '/notify/register/sms-confirm-details': '/hysbysiad/cofrestru/sms-cadarnhau-manylion',
+            '/notify/register/sms-success': '/hysbysiad/cofrestru/sms-llwyddiant',
+            '/notify/register/sms-duplicate': '/hysbysiad/cofrestru/sms-dyblyg',
+            '/notify/register/sms-max-emails': '/hysbysiad/cofrestru/sms-uchafswm',
+            '/notify/register/email-details': '/hysbysiad/cofrestru/ebost-manylion',
+            '/notify/register/email-send-activation': '/hysbysiad/cofrestru/ebost-anfon-actifadu',
+            '/notify/register/email-verify-email': '/hysbysiad/cofrestru/ebost-dilysu',
+            '/notify/register/email-confirm-link': '/hysbysiad/cofrestru/ebost-cadarnhau-dolen',
+            '/notify/register/email-duplicate': '/hysbysiad/cofrestru/ebost-dyblyg',
+            '/notify/register/confirm-alert-details': '/hysbysiad/cofrestru/cadarnhau-manylion-rhybudd',
+            '/notify/register/alerts-success': '/hysbysiad/cofrestru/rhybuddion-llwyddiant'
+          } %}
+          {% set notifyReversePathMappings = {
+            '/hysbysiad/cofrestru/sms-rhif-ffon': '/notify/register/sms-mobile-number',
+            '/hysbysiad/cofrestru/sms-anfon-cod-actifadu': '/notify/register/sms-send-activation',
+            '/hysbysiad/cofrestru/sms-dilysu-cod': '/notify/register/sms-verify-code',
+            '/hysbysiad/cofrestru/sms-anfon-cod-newydd': '/notify/register/sms-send-new-code',
+            '/hysbysiad/cofrestru/sms-cadarnhau-manylion': '/notify/register/sms-confirm-details',
+            '/hysbysiad/cofrestru/sms-llwyddiant': '/notify/register/sms-success',
+            '/hysbysiad/cofrestru/sms-dyblyg': '/notify/register/sms-duplicate',
+            '/hysbysiad/cofrestru/sms-uchafswm': '/notify/register/sms-max-emails',
+            '/hysbysiad/cofrestru/ebost-manylion': '/notify/register/email-details',
+            '/hysbysiad/cofrestru/ebost-anfon-actifadu': '/notify/register/email-send-activation',
+            '/hysbysiad/cofrestru/ebost-dilysu': '/notify/register/email-verify-email',
+            '/hysbysiad/cofrestru/ebost-cadarnhau-dolen': '/notify/register/email-confirm-link',
+            '/hysbysiad/cofrestru/ebost-dyblyg': '/notify/register/email-duplicate',
+            '/hysbysiad/cofrestru/cadarnhau-manylion-rhybudd': '/notify/register/confirm-alert-details',
+            '/hysbysiad/cofrestru/rhybuddion-llwyddiant': '/notify/register/alerts-success'
+          } %}
           {% if lang == 'en' %}
-            {% set fullHrefCy = currentPath + "?lang=cy" %}
+            {% set welshPath = notifyPathMappings[currentPath] %}
+            {% if welshPath %}
+              {% set fullHrefCy = welshPath + "?lang=cy" %}
+            {% else %}
+              {% set fullHrefCy = currentPath + "?lang=cy" %}
+            {% endif %}
             {% set fullHrefEn = currentPath + "?lang=en" %}
           {% else %}
-            {% set fullHrefEn = currentPath + "?lang=en" %}
+            {% set englishPath = notifyReversePathMappings[currentPath] %}
+            {% if englishPath %}
+              {% set fullHrefEn = englishPath + "?lang=en" %}
+            {% else %}
+              {% set fullHrefEn = currentPath + "?lang=en" %}
+            {% endif %}
             {% set fullHrefCy = currentPath + "?lang=cy" %}
           {% endif %}
         {% endif %}
@@ -223,7 +267,22 @@
             '/pollutants/nitrogen-dioxide': '/llygryddion/nitrogen-deuocsid/cy',
             '/pollutants/sulphur-dioxide': '/llygryddion/sylffwr-deuocsid/cy',
             '/pollutants/particulate-matter-10': '/llygryddion/mater-gronynnol-10/cy',
-            '/pollutants/particulate-matter-25': '/llygryddion/mater-gronynnol-25/cy'
+            '/pollutants/particulate-matter-25': '/llygryddion/mater-gronynnol-25/cy',
+            '/notify/register/sms-mobile-number': '/hysbysiad/cofrestru/sms-rhif-ffon',
+            '/notify/register/sms-send-activation': '/hysbysiad/cofrestru/sms-anfon-cod-actifadu',
+            '/notify/register/sms-verify-code': '/hysbysiad/cofrestru/sms-dilysu-cod',
+            '/notify/register/sms-send-new-code': '/hysbysiad/cofrestru/sms-anfon-cod-newydd',
+            '/notify/register/sms-confirm-details': '/hysbysiad/cofrestru/sms-cadarnhau-manylion',
+            '/notify/register/sms-success': '/hysbysiad/cofrestru/sms-llwyddiant',
+            '/notify/register/sms-duplicate': '/hysbysiad/cofrestru/sms-dyblyg',
+            '/notify/register/sms-max-emails': '/hysbysiad/cofrestru/sms-uchafswm',
+            '/notify/register/email-details': '/hysbysiad/cofrestru/ebost-manylion',
+            '/notify/register/email-send-activation': '/hysbysiad/cofrestru/ebost-anfon-actifadu',
+            '/notify/register/email-verify-email': '/hysbysiad/cofrestru/ebost-dilysu',
+            '/notify/register/email-confirm-link': '/hysbysiad/cofrestru/ebost-cadarnhau-dolen',
+            '/notify/register/email-duplicate': '/hysbysiad/cofrestru/ebost-dyblyg',
+            '/notify/register/confirm-alert-details': '/hysbysiad/cofrestru/cadarnhau-manylion-rhybudd',
+            '/notify/register/alerts-success': '/hysbysiad/cofrestru/rhybuddion-llwyddiant'
           } %}
           {# '' Reverse mappings for Welsh to English '' #}
           {% set reversePathMappings = {
@@ -239,7 +298,22 @@
             '/llygryddion/nitrogen-deuocsid/cy': '/pollutants/nitrogen-dioxide',
             '/llygryddion/sylffwr-deuocsid/cy': '/pollutants/sulphur-dioxide',
             '/llygryddion/mater-gronynnol-10/cy': '/pollutants/particulate-matter-10',
-            '/llygryddion/mater-gronynnol-25/cy': '/pollutants/particulate-matter-25'
+            '/llygryddion/mater-gronynnol-25/cy': '/pollutants/particulate-matter-25',
+            '/hysbysiad/cofrestru/sms-rhif-ffon': '/notify/register/sms-mobile-number',
+            '/hysbysiad/cofrestru/sms-anfon-cod-actifadu': '/notify/register/sms-send-activation',
+            '/hysbysiad/cofrestru/sms-dilysu-cod': '/notify/register/sms-verify-code',
+            '/hysbysiad/cofrestru/sms-anfon-cod-newydd': '/notify/register/sms-send-new-code',
+            '/hysbysiad/cofrestru/sms-cadarnhau-manylion': '/notify/register/sms-confirm-details',
+            '/hysbysiad/cofrestru/sms-llwyddiant': '/notify/register/sms-success',
+            '/hysbysiad/cofrestru/sms-dyblyg': '/notify/register/sms-duplicate',
+            '/hysbysiad/cofrestru/sms-uchafswm': '/notify/register/sms-max-emails',
+            '/hysbysiad/cofrestru/ebost-manylion': '/notify/register/email-details',
+            '/hysbysiad/cofrestru/ebost-anfon-actifadu': '/notify/register/email-send-activation',
+            '/hysbysiad/cofrestru/ebost-dilysu': '/notify/register/email-verify-email',
+            '/hysbysiad/cofrestru/ebost-cadarnhau-dolen': '/notify/register/email-confirm-link',
+            '/hysbysiad/cofrestru/ebost-dyblyg': '/notify/register/email-duplicate',
+            '/hysbysiad/cofrestru/cadarnhau-manylion-rhybudd': '/notify/register/confirm-alert-details',
+            '/hysbysiad/cofrestru/rhybuddion-llwyddiant': '/notify/register/alerts-success'
           } %}
           
           {# '' Determine the current path (without query string) '' #}
