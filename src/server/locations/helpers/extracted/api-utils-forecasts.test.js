@@ -141,7 +141,7 @@ describe('api-utils - selectForecastsUrlAndOptions localhost', () => {
   it('should use ephemeral protected URL for localhost requests', () => {
     const mockRequest = {
       headers: { host: LOCALHOST_HOST },
-      app: { config: { ephemeralProtectedDevApiUrl: DEV_API_URL } }
+      app: { config: { ephemeralProtectedTestApiUrl: DEV_API_URL } }
     }
     const mockOptionsEphemeralProtected = {
       headers: { 'x-api-key': 'test-key' }
@@ -179,7 +179,7 @@ describe('api-utils - selectForecastsUrlAndOptions localhost', () => {
   it('should handle 127.0.0.1 as local request', () => {
     const mockRequest = {
       headers: { host: '127.0.0.1:3000' },
-      app: { config: { ephemeralProtectedDevApiUrl: DEV_API_URL } }
+      app: { config: { ephemeralProtectedTestApiUrl: DEV_API_URL } }
     }
     const mockOptionsEphemeralProtected = {
       headers: { 'x-api-key': 'test-key' }
@@ -210,7 +210,7 @@ describe('api-utils - selectForecastsUrlAndOptions edge cases', () => {
     expect(result.url).toBe(PROD_API_URL)
   })
 
-  it('should throw error when ephemeralProtectedDevApiUrl missing for local', () => {
+  it('should throw error when ephemeralProtectedTestApiUrl missing for local', () => {
     const mockRequest = {
       headers: { host: LOCALHOST_HOST },
       app: { config: {} }
@@ -224,7 +224,7 @@ describe('api-utils - selectForecastsUrlAndOptions edge cases', () => {
         options: {}
       })
     ).toThrow(
-      'ephemeralProtectedDevApiUrl must be provided in config for local requests'
+      'ephemeralProtectedTestApiUrl must be provided in config for local requests'
     )
   })
 })

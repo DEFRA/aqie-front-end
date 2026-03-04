@@ -412,7 +412,7 @@ describe('getNearestLocation', () => {
       index,
       lang,
       useNewRicardoMeasurementsEnabled,
-      request
+      { request }
     )
 
     expect(result).toHaveProperty('forecastNum')
@@ -456,7 +456,7 @@ describe('getNearestLocation', () => {
       index,
       lang,
       useNewRicardoMeasurementsEnabled,
-      request
+      { request }
     )
 
     expect(result).toHaveProperty('forecastNum')
@@ -486,7 +486,7 @@ describe('getNearestLocation', () => {
       index,
       lang,
       useNewRicardoMeasurementsEnabled,
-      request
+      { request }
     )
 
     expect(result.forecastNum).toBe(0)

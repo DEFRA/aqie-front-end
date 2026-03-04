@@ -22,6 +22,24 @@ const isTest = process.env.NODE_ENV === 'test'
 const isDevelopment = process.env.NODE_ENV === 'development'
 const isPerfTest = process.env.NODE_ENV === 'perf-test'
 
+const EPHEMERAL_PROTECTED_API_URLS = {
+  development: 'https://ephemeral-protected.api.dev.cdp-int.defra.cloud',
+  test: 'https://ephemeral-protected.api.test.cdp-int.defra.cloud',
+  'perf-test': 'https://ephemeral-protected.api.perf.cdp-int.defra.cloud'
+}
+
+function getEnvironmentEphemeralProtectedApiUrl() {
+  if (isPerfTest) {
+    return EPHEMERAL_PROTECTED_API_URLS['perf-test']
+  }
+
+  if (isTest) {
+    return EPHEMERAL_PROTECTED_API_URLS.test
+  }
+
+  return EPHEMERAL_PROTECTED_API_URLS.development
+}
+
 convict.addFormats(convictFormatWithValidator)
 
 export const config = convict({
@@ -454,11 +472,23 @@ export const config = convict({
       env: 'SUBSCRIPTION_API_TIMEOUT_MS'
     }
   },
+  ephemeralProtectedTestApiUrl: {
+    doc: 'Ephemeral Protected Dev API url',
+    format: String,
+    default: getEnvironmentEphemeralProtectedApiUrl(),
+    env: 'EPHEMERAL_PROTECTED_TEST_API_URL'
+  },
   ephemeralProtectedDevApiUrl: {
     doc: 'Ephemeral Protected Dev API url',
     format: String,
-    default: `https://ephemeral-protected.api.test.cdp-int.defra.cloud`,
+    default: getEnvironmentEphemeralProtectedApiUrl(),
     env: 'EPHEMERAL_PROTECTED_DEV_API_URL'
+  },
+  ephemeralProtectedPerfTestApiUrl: {
+    doc: 'Ephemeral Protected Perf Test API url',
+    format: String,
+    default: getEnvironmentEphemeralProtectedApiUrl(),
+    env: 'EPHEMERAL_PROTECTED_PERF_TEST_API_URL'
   },
   ricardoMeasurementsApiUrl: {
     doc: 'Ricardo Measurements API url',
@@ -488,7 +518,8 @@ export const config = convict({
   osPlacesApiPostcodeNorthernIrelandUrl: {
     doc: 'Search postcode Northern Ireland with osPlaces url',
     format: String,
-    default: '',
+    default:
+      'https://tst-api-gateway.azure.defra.cloud/api/address-lookup/v2.1/addresses?postcode=',
     env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_URL'
   },
   mockOsPlacesApiPostcodeNorthernIrelandUrl: {

@@ -8,13 +8,13 @@ import {
 const ERROR_RESPONSE = 'error-response'
 
 describe('fetchForecasts edge branches', () => {
-  it('uses ephemeralProtectedDevApiUrl in development', async () => {
+  it('uses ephemeralProtectedTestApiUrl in development', async () => {
     const di = {
       isTestMode: () => false,
       logger: { info: vi.fn(), error: vi.fn() },
       config: {
         get: vi.fn((key) =>
-          key === 'ephemeralProtectedDevApiUrl' ? 'dev-url' : 'prod-url'
+          key === 'ephemeralProtectedTestApiUrl' ? 'dev-url' : 'prod-url'
         )
       },
       catchFetchError: vi.fn(async () => [STATUS_OK, { forecasts: 'dev' }]),
