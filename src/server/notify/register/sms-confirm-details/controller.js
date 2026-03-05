@@ -276,9 +276,18 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
         message: result.body?.message,
         phoneLast4: phoneNumber ? phoneNumber.slice(-4) : undefined
       })
-      // '' Max alerts reached - redirect to dedicated max alerts page
-      logger.warn('Redirecting to sms-max-emails page')
-      return h.redirect(config.get('notify.smsMaxAlertsPath'))
+
+      // '' Same UX as email flow: return to input page with an inline max-alerts error
+      if (phoneNumber) {
+        request.yar.set('maxAlertsError', true)
+        request.yar.set('maskedPhoneNumber', phoneNumber)
+      }
+
+      // '' Clear current phone so user can enter a different number
+      request.yar.clear('mobileNumber')
+
+      logger.warn('Redirecting to sms-mobile-number page with max alerts error')
+      return h.redirect(config.get('notify.smsMobileNumberPath'))
     }
 
     // '' Handle 409 Conflict - Alert already exists for this location
