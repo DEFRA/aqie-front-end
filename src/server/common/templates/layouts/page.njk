@@ -463,8 +463,8 @@
           {% set fullHrefCy = "/effeithiau-iechyd/cy?lang=cy" %}
         {% elif page == 'search-location' or page == 'chwilio-lleoliad' %}
           {% set fullHrefEn = "/search-location?lang=en" %}
-          {% set fullHrefCy = "/chwilio-lleoliad/cy?lang=cy" %}
-        {% else %}
+          {% set fullHrefCy = "/chwilio-lleoliad/cy?lang=cy" %}          {% elif currentPath and ('notify' in currentPath or 'hysbysiad' in currentPath) %}
+            {# '' Notify journey pages — fullHrefCy/fullHrefEn already set correctly in the language toggle block above '' #}        {% else %}
           {# '' Default fallback '' #}
           {% set fullHrefEn = "/?lang=en" %}
           {% set fullHrefCy = "/cy?lang=cy" %}
