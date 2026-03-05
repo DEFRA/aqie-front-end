@@ -17,10 +17,50 @@ export function isLocalRequest(request) {
  */
 export function getCdpApiKey() {
   if (config !== undefined && config.get) {
+    const isTest = config.get('isTest')
+    const isPerfTest = config.get('isPerfTest')
+
+    if (isPerfTest) {
+      const perfTestKey = config.get('cdpXApiKeyPerfTest')
+      if (perfTestKey) {
+        return perfTestKey
+      }
+    }
+
+    if (isTest) {
+      const testKey = config.get('cdpXApiKeyTest')
+      if (testKey) {
+        return testKey
+      }
+    }
+
+    const defaultTestKey = config.get('cdpXApiKeyTest')
+    if (defaultTestKey) {
+      return defaultTestKey
+    }
+
+    const devKey = config.get('cdpXApiKeyDev')
+    if (devKey) {
+      return devKey
+    }
+
     const configKey = config.get('cdpXApiKey')
     if (configKey) {
       return configKey
     }
+  }
+
+  if (process?.env?.NODE_ENV === 'perf-test' && process?.env?.CDP_X_API_KEY_PERF_TEST) {
+    return process.env.CDP_X_API_KEY_PERF_TEST
+  }
+  if (process?.env?.NODE_ENV === 'test' && process?.env?.CDP_X_API_KEY_TEST) {
+    return process.env.CDP_X_API_KEY_TEST
+  }
+  if (process?.env?.CDP_X_API_KEY_TEST) {
+    return process.env.CDP_X_API_KEY_TEST
+  }
+  if (process?.env?.CDP_X_API_KEY_DEV) {
+    return process.env.CDP_X_API_KEY_DEV
   }
   if (process?.env?.CDP_X_API_KEY) {
     return process.env.CDP_X_API_KEY
@@ -47,7 +87,10 @@ export function getEphemeralDevApiUrl() {
       return config.get('ephemeralProtectedTestApiUrl')
     }
 
-    return config.get('ephemeralProtectedDevApiUrl')
+    return (
+      config.get('ephemeralProtectedTestApiUrl') ||
+      config.get('ephemeralProtectedDevApiUrl')
+    )
   }
   return null
 }

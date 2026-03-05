@@ -90,15 +90,67 @@ function isLocalRequest(request) {
 }
 
 // Helper to get CDP API key from multiple sources
-function getCdpApiKey(localOptionsEphemeralProtected) {
+function resolveEnvironmentCdpApiKey(apiConfig, isTestEnvironment, isPerfTestEnvironment) {
+  if (isPerfTestEnvironment) {
+    return apiConfig.cdpXApiKeyPerfTest || apiConfig.cdpXApiKey || null
+  }
+
+  if (isTestEnvironment) {
+    return apiConfig.cdpXApiKeyTest || apiConfig.cdpXApiKey || null
+  }
+
+  return (
+    apiConfig.cdpXApiKeyTest ||
+    apiConfig.cdpXApiKeyDev ||
+    apiConfig.cdpXApiKey ||
+    null
+  )
+}
+
+function getCdpApiKey(localOptionsEphemeralProtected, request) {
   if (localOptionsEphemeralProtected?.headers?.['x-api-key']) {
     return localOptionsEphemeralProtected.headers['x-api-key']
   }
-  if (config !== undefined && config.get) {
-    const configKey = config.get('cdpXApiKey')
+
+  if (request?.app?.config) {
+    const env = request?.app?.config?.env || process.env.NODE_ENV
+    const configKey = resolveEnvironmentCdpApiKey(
+      request.app.config,
+      env === 'test',
+      env === 'perf-test'
+    )
     if (configKey) {
       return configKey
     }
+  }
+
+  if (config !== undefined && config.get) {
+    const configKey = resolveEnvironmentCdpApiKey(
+      {
+        cdpXApiKeyDev: config.get('cdpXApiKeyDev'),
+        cdpXApiKeyTest: config.get('cdpXApiKeyTest'),
+        cdpXApiKeyPerfTest: config.get('cdpXApiKeyPerfTest'),
+        cdpXApiKey: config.get('cdpXApiKey')
+      },
+      config.get('isTest'),
+      config.get('isPerfTest')
+    )
+    if (configKey) {
+      return configKey
+    }
+  }
+
+  if (process?.env?.NODE_ENV === 'perf-test' && process?.env?.CDP_X_API_KEY_PERF_TEST) {
+    return process.env.CDP_X_API_KEY_PERF_TEST
+  }
+  if (process?.env?.NODE_ENV === 'test' && process?.env?.CDP_X_API_KEY_TEST) {
+    return process.env.CDP_X_API_KEY_TEST
+  }
+  if (process?.env?.CDP_X_API_KEY_TEST) {
+    return process.env.CDP_X_API_KEY_TEST
+  }
+  if (process?.env?.CDP_X_API_KEY_DEV) {
+    return process.env.CDP_X_API_KEY_DEV
   }
   if (process?.env?.CDP_X_API_KEY) {
     return process.env.CDP_X_API_KEY
@@ -121,7 +173,11 @@ function resolveEphemeralProtectedApiUrl(
     return apiConfig.ephemeralProtectedTestApiUrl || null
   }
 
-  return apiConfig.ephemeralProtectedDevApiUrl || null
+  return (
+    apiConfig.ephemeralProtectedTestApiUrl ||
+    apiConfig.ephemeralProtectedDevApiUrl ||
+    null
+  )
 }
 
 function getEphemeralDevApiUrl(request) {
@@ -159,7 +215,7 @@ function buildLocalForecastsUrlAndOpts(
   localOptionsEphemeralProtected
 ) {
   const ephemeralProtectedTestApiUrl = getEphemeralDevApiUrl(request)
-  const cdpXApiKey = getCdpApiKey(localOptionsEphemeralProtected)
+  const cdpXApiKey = getCdpApiKey(localOptionsEphemeralProtected, request)
 
   if (!ephemeralProtectedTestApiUrl) {
     throw new Error(
@@ -238,7 +294,8 @@ function buildMeasurementsQueryParams(latitude, longitude) {
 function buildLocalMeasurementsUrlAndOpts(
   queryParams,
   ephemeralUrl,
-  optionsEphemeralProtected
+  optionsEphemeralProtected,
+  request
 ) {
   const ephemeralProtectedTestApiUrl = ephemeralUrl
   const measurementsApiPath = MEASUREMENTS_API_PATH || ''
@@ -269,7 +326,7 @@ function buildLocalMeasurementsUrlAndOpts(
   const fullUrl = `${ephemeralProtectedTestApiUrl}${measurementsApiPath}${separator}${queryParams.toString()}`
 
   // '' Get API key and add to headers (required for ephemeral protected endpoint)
-  const cdpXApiKey = getCdpApiKey(optionsEphemeralProtected)
+  const cdpXApiKey = getCdpApiKey(optionsEphemeralProtected, request)
   const opts = { ...optionsEphemeralProtected }
   opts.headers = {
     ...opts.headers,
@@ -348,7 +405,8 @@ function selectMeasurementsUrlAndOptions(latitude, longitude, di = {}) {
     const result = buildLocalMeasurementsUrlAndOpts(
       queryParams,
       ephemeralUrl,
-      optionsEphemeralProtected
+      optionsEphemeralProtected,
+      request
     )
     if (!config.get('isProduction')) {
       logger.info(`[URL BUILD DEBUG] Using LOCAL URL: ${result.url}`)
