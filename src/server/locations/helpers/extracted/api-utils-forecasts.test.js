@@ -210,21 +210,20 @@ describe('api-utils - selectForecastsUrlAndOptions edge cases', () => {
     expect(result.url).toBe(PROD_API_URL)
   })
 
-  it('should throw error when ephemeralProtectedTestApiUrl missing for local', () => {
+  it('should fall back to production URL when no ephemeral URL configured', () => {
+    // '' request.app.config exists but has no ephemeral URL \u2192 falls to remote/production URL
     const mockRequest = {
       headers: { host: LOCALHOST_HOST },
       app: { config: {} }
     }
 
-    expect(() =>
-      selectForecastsUrlAndOptions({
-        request: mockRequest,
-        forecastsApiUrl: PROD_API_URL,
-        optionsEphemeralProtected: {},
-        options: {}
-      })
-    ).toThrow(
-      'ephemeralProtectedTestApiUrl must be provided in config for local requests'
-    )
+    const result = selectForecastsUrlAndOptions({
+      request: mockRequest,
+      forecastsApiUrl: PROD_API_URL,
+      optionsEphemeralProtected: {},
+      options: {}
+    })
+
+    expect(result.url).toBe(PROD_API_URL)
   })
 })

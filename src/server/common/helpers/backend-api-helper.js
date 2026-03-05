@@ -29,11 +29,25 @@ export function getCdpApiKey() {
 }
 
 /**
- * Get ephemeral protected dev API URL
+ * Get the ephemeral protected API URL for the current environment.
+ * Returns an empty string (falsy) when no ephemeral URL is configured,
+ * which signals that we are running in production and should use the
+ * service's own production base URL instead.
  */
 export function getEphemeralDevApiUrl() {
   if (config !== undefined && config.get) {
-    return config.get('ephemeralProtectedTestApiUrl')
+    const isTest = config.get('isTest')
+    const isPerfTest = config.get('isPerfTest')
+
+    if (isPerfTest) {
+      return config.get('ephemeralProtectedPerfTestApiUrl')
+    }
+
+    if (isTest) {
+      return config.get('ephemeralProtectedTestApiUrl')
+    }
+
+    return config.get('ephemeralProtectedDevApiUrl')
   }
   return null
 }
@@ -47,48 +61,43 @@ export function getEphemeralDevApiUrl() {
  * @returns {Object} { url, headers } - Complete URL and headers for the API request
  */
 export function buildBackendApiRequest(
-  request,
+  _request,
   productionBaseUrl,
   apiPath,
   additionalHeaders = {}
 ) {
-  const isProduction = config.get('isProduction')
+  // '' If an ephemeral URL is configured for this environment, route through it.
+  // A missing/empty ephemeral URL means we are in production – use the service’s own base URL directly.
+  const ephemeralUrl = getEphemeralDevApiUrl()
 
-  if (!isProduction) {
-    // '' Non-production: use ephemeral URL with CDP_X_API_KEY
-    const ephemeralUrl = getEphemeralDevApiUrl()
-    const cdpApiKey = getCdpApiKey()
-
-    if (!ephemeralUrl) {
-      throw new Error(
-        'ephemeralProtectedTestApiUrl must be provided in config for local requests'
-      )
-    }
-
-    // Extract service name from production URL (e.g., 'aqie-notify-service' from 'https://aqie-notify-service.test.cdp-int.defra.cloud')
-    const urlObj = new URL(productionBaseUrl)
-    const serviceName = urlObj.hostname.split('.')[0]
-
-    const url = `${ephemeralUrl}/${serviceName}${apiPath}`
-    const headers = {
-      ...additionalHeaders,
-      'x-api-key': cdpApiKey,
-      'Content-Type': 'application/json'
-    }
-
-    return { url, headers }
-  } else {
-    // '' Production: use service base URL without auth headers
+  if (!ephemeralUrl) {
+    // '' Production: no ephemeral gateway – call the backend service directly
     const baseUrl = productionBaseUrl.replace(/\/$/, '')
     const path = apiPath.startsWith('/') ? apiPath : `/${apiPath}`
-    const url = `${baseUrl}${path}`
-    const headers = {
+    const productionUrl = `${baseUrl}${path}`
+    const productionHeaders = {
       ...additionalHeaders,
       'Content-Type': 'application/json'
     }
 
-    return { url, headers }
+    return { url: productionUrl, headers: productionHeaders }
   }
+
+  // '' Non-production: route through the ephemeral gateway with CDP_X_API_KEY
+  const cdpApiKey = getCdpApiKey()
+
+  // Extract service name from production URL (e.g. 'aqie-notify-service' from 'https://aqie-notify-service.test.cdp-int.defra.cloud')
+  const urlObj = new URL(productionBaseUrl)
+  const serviceName = urlObj.hostname.split('.')[0]
+
+  const url = `${ephemeralUrl}/${serviceName}${apiPath}`
+  const headers = {
+    ...additionalHeaders,
+    'x-api-key': cdpApiKey,
+    'Content-Type': 'application/json'
+  }
+
+  return { url, headers }
 }
 
 /**

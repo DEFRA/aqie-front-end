@@ -66,7 +66,12 @@ describe('selectMeasurementsUrlAndOptions', () => {
         config: injectedConfig,
         logger: injectedLogger,
         optionsEphemeralProtected: { headers: {} },
-        request: { headers: { host: 'localhost' } }
+        options: {},
+        // '' Pass ephemeral URL via request.app.config so getEphemeralDevApiUrl picks it up
+        request: {
+          headers: { host: 'localhost' },
+          app: { config: { ephemeralProtectedTestApiUrl: 'dev-url' } }
+        }
       }
     )
     expect(result.url).toContain('dev-url')
