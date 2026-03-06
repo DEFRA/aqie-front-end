@@ -12,87 +12,39 @@ export function isLocalRequest(request) {
   return host.includes('localhost') || host.includes('127.0.0.1')
 }
 
-/**
- * Get CDP API key from multiple sources
- */
 export function getCdpApiKey() {
-  if (config !== undefined && config.get) {
-    const isTest = config.get('isTest')
-    const isPerfTest = config.get('isPerfTest')
+  const env = process.env.NODE_ENV
 
-    if (isPerfTest) {
-      const perfTestKey = config.get('cdpXApiKeyPerfTest')
-      if (perfTestKey) {
-        return perfTestKey
-      }
-    }
-
-    if (isTest) {
-      const testKey = config.get('cdpXApiKeyTest')
-      if (testKey) {
-        return testKey
-      }
-    }
-
-    const defaultTestKey = config.get('cdpXApiKeyTest')
-    if (defaultTestKey) {
-      return defaultTestKey
-    }
-
-    const devKey = config.get('cdpXApiKeyDev')
-    if (devKey) {
-      return devKey
-    }
-
-    const configKey = config.get('cdpXApiKey')
-    if (configKey) {
-      return configKey
-    }
+  if (env === 'perf-test') {
+    return config.get('cdpXApiKeyPerfTest') || config.get('cdpXApiKey') || null
+  }
+  if (env === 'test') {
+    return config.get('cdpXApiKeyTest') || config.get('cdpXApiKey') || null
   }
 
-  if (process?.env?.NODE_ENV === 'perf-test' && process?.env?.CDP_X_API_KEY_PERF_TEST) {
-    return process.env.CDP_X_API_KEY_PERF_TEST
-  }
-  if (process?.env?.NODE_ENV === 'test' && process?.env?.CDP_X_API_KEY_TEST) {
-    return process.env.CDP_X_API_KEY_TEST
-  }
-  if (process?.env?.CDP_X_API_KEY_TEST) {
-    return process.env.CDP_X_API_KEY_TEST
-  }
-  if (process?.env?.CDP_X_API_KEY_DEV) {
-    return process.env.CDP_X_API_KEY_DEV
-  }
-  if (process?.env?.CDP_X_API_KEY) {
-    return process.env.CDP_X_API_KEY
-  }
-  return null
+  return (
+    config.get('cdpXApiKeyTest') ||
+    config.get('cdpXApiKeyDev') ||
+    config.get('cdpXApiKey') ||
+    null
+  )
 }
 
-/**
- * Get the ephemeral protected API URL for the current environment.
- * Returns an empty string (falsy) when no ephemeral URL is configured,
- * which signals that we are running in production and should use the
- * service's own production base URL instead.
- */
 export function getEphemeralDevApiUrl() {
-  if (config !== undefined && config.get) {
-    const isTest = config.get('isTest')
-    const isPerfTest = config.get('isPerfTest')
+  const env = process.env.NODE_ENV
 
-    if (isPerfTest) {
-      return config.get('ephemeralProtectedPerfTestApiUrl')
-    }
-
-    if (isTest) {
-      return config.get('ephemeralProtectedTestApiUrl')
-    }
-
-    return (
-      config.get('ephemeralProtectedTestApiUrl') ||
-      config.get('ephemeralProtectedDevApiUrl')
-    )
+  if (env === 'perf-test') {
+    return config.get('ephemeralProtectedPerfTestApiUrl') || null
   }
-  return null
+  if (env === 'test') {
+    return config.get('ephemeralProtectedTestApiUrl') || null
+  }
+
+  return (
+    config.get('ephemeralProtectedTestApiUrl') ||
+    config.get('ephemeralProtectedDevApiUrl') ||
+    null
+  )
 }
 
 /**
@@ -104,39 +56,34 @@ export function getEphemeralDevApiUrl() {
  * @returns {Object} { url, headers } - Complete URL and headers for the API request
  */
 export function buildBackendApiRequest(
-  _request,
+  request,
   productionBaseUrl,
   apiPath,
   additionalHeaders = {}
 ) {
-  // '' If an ephemeral URL is configured for this environment, route through it.
-  // A missing/empty ephemeral URL means we are in production – use the service’s own base URL directly.
+  const isLocal = isLocalRequest(request)
   const ephemeralUrl = getEphemeralDevApiUrl()
+  const normalizedApiPath = apiPath.startsWith('/') ? apiPath : `/${apiPath}`
 
-  if (!ephemeralUrl) {
-    // '' Production: no ephemeral gateway – call the backend service directly
-    const baseUrl = productionBaseUrl.replace(/\/$/, '')
-    const path = apiPath.startsWith('/') ? apiPath : `/${apiPath}`
-    const productionUrl = `${baseUrl}${path}`
-    const productionHeaders = {
-      ...additionalHeaders,
-      'Content-Type': 'application/json'
+  if (isLocal && ephemeralUrl) {
+    const cdpApiKey = getCdpApiKey()
+    const serviceName = new URL(productionBaseUrl).hostname.split('.')[0]
+
+    return {
+      url: `${ephemeralUrl}/${serviceName}${normalizedApiPath}`,
+      headers: {
+        ...additionalHeaders,
+        ...(cdpApiKey ? { 'x-api-key': cdpApiKey } : {}),
+        'Content-Type': 'application/json'
+      }
     }
-
-    return { url: productionUrl, headers: productionHeaders }
   }
 
-  // '' Non-production: route through the ephemeral gateway with CDP_X_API_KEY
-  const cdpApiKey = getCdpApiKey()
-
-  // Extract service name from production URL (e.g. 'aqie-notify-service' from 'https://aqie-notify-service.test.cdp-int.defra.cloud')
-  const urlObj = new URL(productionBaseUrl)
-  const serviceName = urlObj.hostname.split('.')[0]
-
-  const url = `${ephemeralUrl}/${serviceName}${apiPath}`
+  // '' Default to direct service-to-service URL
+  const baseUrl = productionBaseUrl.replace(/\/$/, '')
+  const url = `${baseUrl}${normalizedApiPath}`
   const headers = {
     ...additionalHeaders,
-    'x-api-key': cdpApiKey,
     'Content-Type': 'application/json'
   }
 

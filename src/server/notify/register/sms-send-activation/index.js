@@ -4,7 +4,8 @@ import {
 } from './controller.js'
 
 // '' Welsh placeholder path for sms-send-activation
-const SMS_SEND_ACTIVATION_PATH_CY = '/hysbysiad/cofrestru/sms-anfon-cod-actifadu'
+const SMS_SEND_ACTIVATION_PATH_CY =
+  '/hysbysiad/cofrestru/sms-anfon-cod-actifadu'
 
 const sendActivation = {
   plugin: {

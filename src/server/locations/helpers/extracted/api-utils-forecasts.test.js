@@ -137,7 +137,7 @@ describe('api-utils - callForecastsApi', () => {
   })
 })
 
-describe('api-utils - selectForecastsUrlAndOptions localhost', () => {
+describe('api-utils - selectForecastsUrlAndOptions', () => {
   it('should use ephemeral protected URL for localhost requests', () => {
     const mockRequest = {
       headers: { host: LOCALHOST_HOST },
@@ -210,10 +210,9 @@ describe('api-utils - selectForecastsUrlAndOptions edge cases', () => {
     expect(result.url).toBe(PROD_API_URL)
   })
 
-  it('should fall back to production URL when no ephemeral URL configured', () => {
-    // '' request.app.config exists but has no ephemeral URL \u2192 falls to remote/production URL
+  it('should use production URL when request config exists', () => {
     const mockRequest = {
-      headers: { host: LOCALHOST_HOST },
+      headers: { host: 'localhost:3000' },
       app: { config: {} }
     }
 

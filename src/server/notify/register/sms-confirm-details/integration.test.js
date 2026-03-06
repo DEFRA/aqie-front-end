@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest'
 
+import { setupAlert } from '../../../common/services/notify.js'
+import { createServer } from '../../../index.js'
+
 vi.mock('../../../common/services/notify.js', async (importOriginal) => {
   const actual = await importOriginal()
   return {
@@ -7,9 +10,6 @@ vi.mock('../../../common/services/notify.js', async (importOriginal) => {
     setupAlert: vi.fn()
   }
 })
-
-import { setupAlert } from '../../../common/services/notify.js'
-import { createServer } from '../../../index.js'
 
 const HTTP_STATUS_OK = 200
 const HTTP_STATUS_FOUND = 302

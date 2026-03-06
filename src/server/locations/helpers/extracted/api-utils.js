@@ -80,163 +80,6 @@ async function callForecastsApi({
   )
 }
 
-// Helper to check if request is from localhost
-function isLocalRequest(request) {
-  if (!request?.headers?.host) {
-    return false
-  }
-  const host = request.headers.host
-  return host.includes('localhost') || host.includes('127.0.0.1')
-}
-
-// Helper to get CDP API key from multiple sources
-function resolveEnvironmentCdpApiKey(apiConfig, isTestEnvironment, isPerfTestEnvironment) {
-  if (isPerfTestEnvironment) {
-    return apiConfig.cdpXApiKeyPerfTest || apiConfig.cdpXApiKey || null
-  }
-
-  if (isTestEnvironment) {
-    return apiConfig.cdpXApiKeyTest || apiConfig.cdpXApiKey || null
-  }
-
-  return (
-    apiConfig.cdpXApiKeyTest ||
-    apiConfig.cdpXApiKeyDev ||
-    apiConfig.cdpXApiKey ||
-    null
-  )
-}
-
-function getCdpApiKey(localOptionsEphemeralProtected, request) {
-  if (localOptionsEphemeralProtected?.headers?.['x-api-key']) {
-    return localOptionsEphemeralProtected.headers['x-api-key']
-  }
-
-  if (request?.app?.config) {
-    const env = request?.app?.config?.env || process.env.NODE_ENV
-    const configKey = resolveEnvironmentCdpApiKey(
-      request.app.config,
-      env === 'test',
-      env === 'perf-test'
-    )
-    if (configKey) {
-      return configKey
-    }
-  }
-
-  if (config !== undefined && config.get) {
-    const configKey = resolveEnvironmentCdpApiKey(
-      {
-        cdpXApiKeyDev: config.get('cdpXApiKeyDev'),
-        cdpXApiKeyTest: config.get('cdpXApiKeyTest'),
-        cdpXApiKeyPerfTest: config.get('cdpXApiKeyPerfTest'),
-        cdpXApiKey: config.get('cdpXApiKey')
-      },
-      config.get('isTest'),
-      config.get('isPerfTest')
-    )
-    if (configKey) {
-      return configKey
-    }
-  }
-
-  if (process?.env?.NODE_ENV === 'perf-test' && process?.env?.CDP_X_API_KEY_PERF_TEST) {
-    return process.env.CDP_X_API_KEY_PERF_TEST
-  }
-  if (process?.env?.NODE_ENV === 'test' && process?.env?.CDP_X_API_KEY_TEST) {
-    return process.env.CDP_X_API_KEY_TEST
-  }
-  if (process?.env?.CDP_X_API_KEY_TEST) {
-    return process.env.CDP_X_API_KEY_TEST
-  }
-  if (process?.env?.CDP_X_API_KEY_DEV) {
-    return process.env.CDP_X_API_KEY_DEV
-  }
-  if (process?.env?.CDP_X_API_KEY) {
-    return process.env.CDP_X_API_KEY
-  }
-  return null
-}
-
-// Helper to get ephemeral protected dev API URL.
-// Returns null when no environment-specific URL is configured (production).
-function resolveEphemeralProtectedApiUrl(
-  apiConfig,
-  isTestEnvironment,
-  isPerfTestEnvironment
-) {
-  if (isPerfTestEnvironment) {
-    return apiConfig.ephemeralProtectedPerfTestApiUrl || null
-  }
-
-  if (isTestEnvironment) {
-    return apiConfig.ephemeralProtectedTestApiUrl || null
-  }
-
-  return (
-    apiConfig.ephemeralProtectedTestApiUrl ||
-    apiConfig.ephemeralProtectedDevApiUrl ||
-    null
-  )
-}
-
-function getEphemeralDevApiUrl(request) {
-  if (request?.app?.config) {
-    const env = request?.app?.config?.env || process.env.NODE_ENV
-    return resolveEphemeralProtectedApiUrl(
-      request.app.config,
-      env === 'test',
-      env === 'perf-test'
-    )
-  }
-
-  if (config !== undefined && config.get) {
-    return resolveEphemeralProtectedApiUrl(
-      {
-        ephemeralProtectedDevApiUrl: config.get('ephemeralProtectedDevApiUrl'),
-        ephemeralProtectedTestApiUrl: config.get(
-          'ephemeralProtectedTestApiUrl'
-        ),
-        ephemeralProtectedPerfTestApiUrl: config.get(
-          'ephemeralProtectedPerfTestApiUrl'
-        )
-      },
-      config.get('isTest'),
-      config.get('isPerfTest')
-    )
-  }
-
-  return null
-}
-
-// Helper to build local forecasts URL and options
-function buildLocalForecastsUrlAndOpts(
-  request,
-  localOptionsEphemeralProtected
-) {
-  const ephemeralProtectedTestApiUrl = getEphemeralDevApiUrl(request)
-  const cdpXApiKey = getCdpApiKey(localOptionsEphemeralProtected, request)
-
-  if (!ephemeralProtectedTestApiUrl) {
-    throw new Error(
-      'ephemeral protected API URL must be provided in config for local requests'
-    )
-  }
-  if (!FORECASTS_API_PATH) {
-    throw new Error(
-      'FORECASTS_API_PATH constant must be defined for local requests'
-    )
-  }
-
-  const url = `${ephemeralProtectedTestApiUrl}${FORECASTS_API_PATH}`
-  const opts = { ...localOptionsEphemeralProtected }
-  opts.headers = {
-    ...opts.headers,
-    'x-api-key': cdpXApiKey
-  }
-  return { url, opts }
-}
-
 // Helper to build remote forecasts URL and options
 function buildRemoteForecastsUrlAndOpts(forecastsApiUrl, localOptions) {
   return {
@@ -251,19 +94,73 @@ function buildRemoteForecastsUrlAndOpts(forecastsApiUrl, localOptions) {
   }
 }
 
+function isLocalRequest(request) {
+  const host = request?.headers?.host
+  if (!host) {
+    return false
+  }
+  return host.includes('localhost') || host.includes('127.0.0.1')
+}
+
+function getEnvironmentName(request) {
+  return request?.app?.config?.env || process.env.NODE_ENV || 'development'
+}
+
+function getEphemeralProtectedApiUrl(request) {
+  const env = getEnvironmentName(request)
+  const configSource = request?.app?.config || config
+
+  if (!configSource) {
+    return null
+  }
+
+  const getValue = (key) =>
+    typeof configSource.get === 'function'
+      ? configSource.get(key)
+      : configSource?.[key]
+
+  if (env === 'perf-test') {
+    return getValue('ephemeralProtectedPerfTestApiUrl') || null
+  }
+  if (env === 'test') {
+    return getValue('ephemeralProtectedTestApiUrl') || null
+  }
+
+  return (
+    getValue('ephemeralProtectedTestApiUrl') ||
+    getValue('ephemeralProtectedDevApiUrl') ||
+    null
+  )
+}
+
+function buildLocalForecastsUrlAndOpts(
+  ephemeralUrl,
+  localOptionsEphemeralProtected
+) {
+  const url = `${ephemeralUrl}${FORECASTS_API_PATH}`
+  return {
+    url,
+    opts: {
+      ...localOptionsEphemeralProtected,
+      headers: {
+        ...localOptionsEphemeralProtected?.headers
+      }
+    }
+  }
+}
+
 // Helper to select the correct forecasts URL and options based on environment.
-// If an ephemeral URL is configured for this environment, route through it
-// (non-production). Otherwise fall back to the remote/production backend URL.
+// Forecasts always use direct environment backend service URL.
 function selectForecastsUrlAndOptions({
   request,
   forecastsApiUrl,
   optionsEphemeralProtected: localOptionsEphemeralProtected,
   options: localOptions
 }) {
-  const ephemeralUrl = getEphemeralDevApiUrl(request)
-  if (ephemeralUrl) {
+  const ephemeralUrl = getEphemeralProtectedApiUrl(request)
+  if (isLocalRequest(request) && ephemeralUrl) {
     return buildLocalForecastsUrlAndOpts(
-      request,
+      ephemeralUrl,
       localOptionsEphemeralProtected
     )
   }
@@ -290,55 +187,6 @@ function buildMeasurementsQueryParams(latitude, longitude) {
   })
 }
 
-// Helper to build local measurements URL and options
-function buildLocalMeasurementsUrlAndOpts(
-  queryParams,
-  ephemeralUrl,
-  optionsEphemeralProtected,
-  request
-) {
-  const ephemeralProtectedTestApiUrl = ephemeralUrl
-  const measurementsApiPath = MEASUREMENTS_API_PATH || ''
-
-  if (!ephemeralProtectedTestApiUrl) {
-    throw new Error(
-      'ephemeralProtectedTestApiUrl must be provided in config for local requests'
-    )
-  }
-  if (!measurementsApiPath) {
-    throw new Error(
-      'MEASUREMENTS_API_PATH constant must be set for local requests'
-    )
-  }
-
-  // If measurementsApiPath already ends with ?, don't add separator
-  // If it has ? in the middle, use &
-  // Otherwise use ?
-  const pathEndsWithQuestion = measurementsApiPath.endsWith('?')
-  let separator
-  if (pathEndsWithQuestion) {
-    separator = ''
-  } else if (measurementsApiPath.includes('?')) {
-    separator = '&'
-  } else {
-    separator = '?'
-  }
-  const fullUrl = `${ephemeralProtectedTestApiUrl}${measurementsApiPath}${separator}${queryParams.toString()}`
-
-  // '' Get API key and add to headers (required for ephemeral protected endpoint)
-  const cdpXApiKey = getCdpApiKey(optionsEphemeralProtected, request)
-  const opts = { ...optionsEphemeralProtected }
-  opts.headers = {
-    ...opts.headers,
-    'x-api-key': cdpXApiKey
-  }
-
-  return {
-    url: fullUrl,
-    opts
-  }
-}
-
 // Helper to build remote measurements URL and options
 function buildRemoteMeasurementsUrlAndOpts(url, options = {}) {
   return {
@@ -346,8 +194,41 @@ function buildRemoteMeasurementsUrlAndOpts(url, options = {}) {
     opts: {
       ...options,
       headers: {
-        ...(options.headers || {}),
+        ...options.headers,
         'Content-Type': 'application/json'
+      }
+    }
+  }
+}
+
+function buildLocalMeasurementsUrlAndOpts(
+  queryParams,
+  ephemeralUrl,
+  optionsEphemeralProtected
+) {
+  const measurementsApiPath = MEASUREMENTS_API_PATH || ''
+  if (!measurementsApiPath) {
+    throw new Error(
+      'MEASUREMENTS_API_PATH constant must be set for local requests'
+    )
+  }
+
+  let separator
+  if (measurementsApiPath.endsWith('?')) {
+    separator = ''
+  } else if (measurementsApiPath.includes('?')) {
+    separator = '&'
+  } else {
+    separator = '?'
+  }
+  const fullUrl = `${ephemeralUrl}${measurementsApiPath}${separator}${queryParams.toString()}`
+
+  return {
+    url: fullUrl,
+    opts: {
+      ...optionsEphemeralProtected,
+      headers: {
+        ...optionsEphemeralProtected?.headers
       }
     }
   }
@@ -385,43 +266,28 @@ function selectMeasurementsUrlAndOptions(latitude, longitude, di = {}) {
     )
   }
 
-  const ephemeralUrl = getEphemeralDevApiUrl(request)
-  if (!config.get('isProduction')) {
-    logger.info(
-      `[URL BUILD DEBUG] Is local request: ${isLocalRequest(request)}, ephemeral URL: ${ephemeralUrl || 'none'}`
-    )
-  }
-
-  if (ephemeralUrl) {
+  const ephemeralUrl = getEphemeralProtectedApiUrl(request)
+  if (isLocalRequest(request) && ephemeralUrl) {
     if (!config.get('isProduction')) {
       logger.info(
-        `[URL BUILD DEBUG] Ephemeral protected dev API URL: ${ephemeralUrl}`
-      )
-      logger.info(
-        `[URL BUILD DEBUG] Measurements API path: ${MEASUREMENTS_API_PATH}`
+        '[URL BUILD DEBUG] Using LOCAL ephemeral measurements API URL'
       )
     }
-
-    const result = buildLocalMeasurementsUrlAndOpts(
+    return buildLocalMeasurementsUrlAndOpts(
       queryParams,
       ephemeralUrl,
-      optionsEphemeralProtected,
-      request
+      optionsEphemeralProtected
     )
-    if (!config.get('isProduction')) {
-      logger.info(`[URL BUILD DEBUG] Using LOCAL URL: ${result.url}`)
-    }
-    return result
-  } else {
-    const result = buildRemoteMeasurementsUrlAndOpts(
-      ricardoMeasurementsApiUrl,
-      options
-    )
-    if (!config.get('isProduction')) {
-      logger.info(`[URL BUILD DEBUG] Using REMOTE URL: ${result.url}`)
-    }
-    return result
   }
+
+  const result = buildRemoteMeasurementsUrlAndOpts(
+    ricardoMeasurementsApiUrl,
+    options
+  )
+  if (!config.get('isProduction')) {
+    logger.info(`[URL BUILD DEBUG] Using REMOTE URL: ${result.url}`)
+  }
+  return result
 }
 
 // Helper to call the measurements API and handle the response

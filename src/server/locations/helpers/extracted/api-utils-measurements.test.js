@@ -140,11 +140,11 @@ describe('api-utils - selectMeasurementsUrlAndOptions localhost handling', () =>
 
   it('should use ephemeral protected URL when ephemeral URL configured', () => {
     mockConfig.get.mockImplementation((key) => {
-      if (key === 'ricardoMeasurementsApiUrl') return RICARDO_API_URL
+      if (key === 'ricardoMeasurementsApiUrl') {
+        return RICARDO_API_URL
+      }
       return null
     })
-    const mockOptionsEphemeralProtected = { headers: {} }
-    // '' Pass ephemeral URL via request.app.config so getEphemeralDevApiUrl picks it up
     const mockRequest = {
       headers: { host: LOCALHOST_HOST },
       app: { config: { ephemeralProtectedTestApiUrl: DEV_API_URL } }
@@ -156,7 +156,7 @@ describe('api-utils - selectMeasurementsUrlAndOptions localhost handling', () =>
       {
         config: mockConfig,
         logger: mockLogger,
-        optionsEphemeralProtected: mockOptionsEphemeralProtected,
+        optionsEphemeralProtected: { headers: {} },
         options: {},
         request: mockRequest
       }
@@ -203,10 +203,11 @@ describe('api-utils - selectMeasurementsUrlAndOptions error handling', () => {
     globalThis.URLSearchParams = originalURLSearchParams
   })
 
-  it('should fall back to remote URL when no ephemeral URL configured', () => {
-    // '' No ephemeral URL in request.app.config → global config returns empty → remote fallback
+  it('should use direct Ricardo URL when request config has no ephemeral URL', () => {
     mockConfig.get.mockImplementation((key) => {
-      if (key === 'ricardoMeasurementsApiUrl') return RICARDO_API_URL
+      if (key === 'ricardoMeasurementsApiUrl') {
+        return RICARDO_API_URL
+      }
       return null
     })
     const mockRequest = { headers: { host: LOCALHOST_HOST }, app: {} }
