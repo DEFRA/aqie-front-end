@@ -55,6 +55,8 @@ import { createLogger } from './common/helpers/logging/logger.js'
 import { SERVER_DIRNAME } from './data/constants.js'
 import { healthEffects } from './health-effects/index.js'
 import { healthEffectsCy } from './health-effects/cy/index.js'
+import { airPollutionBreaches } from './air-pollution-breaches/index.js'
+import { airPollutionBreachesCy } from './air-pollution-breaches/cy/index.js'
 
 const logger = createLogger() // ''
 
@@ -98,6 +100,8 @@ const getAllPlugins = () => [
   actionsReduceExposureCy, // ''
   healthEffects, // ''
   healthEffectsCy, // ''
+  airPollutionBreaches,
+  airPollutionBreachesCy,
   notify,
   sendActivation,
   checkMessage,

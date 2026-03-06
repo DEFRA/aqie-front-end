@@ -34,6 +34,8 @@ export const HEALTH_EFFECTS_ROUTE_EN = '/location/{locationId}/health-effects'
 export const HEALTH_EFFECTS_ROUTE_CY =
   '/lleoliad/{locationId}/effeithiau-iechyd'
 export const OZONE_PATH_CY = '/llygryddion/oson/cy'
+export const AIR_POLLUTION_BREACHES_PATH_EN = '/air-pollution-breaches'
+export const AIR_POLLUTION_BREACHES_PATH_CY = '/torriadau-llygredd-aer/cy'
 export const STATUS_OK = 200
 export const STATUS_FOUND = 302
 export const STATUS_BAD_REQUEST = 400

@@ -132,6 +132,12 @@ vi.mock('./health-effects/index.js', () => ({ healthEffects: mockRouteModule }))
 vi.mock('./health-effects/cy/index.js', () => ({
   healthEffectsCy: mockRouteModule
 }))
+vi.mock('./air-pollution-breaches/index.js', () => ({
+  airPollutionBreaches: mockRouteModule
+}))
+vi.mock('./air-pollution-breaches/cy/index.js', () => ({
+  airPollutionBreachesCy: mockRouteModule
+}))
 
 // Mock helper modules ''
 vi.mock('./common/helpers/serve-static-files.js', () => ({
@@ -145,7 +151,9 @@ vi.mock('./data/constants.js', () => ({
   ACTIONS_REDUCE_EXPOSURE_ROUTE_EN: '/mock/actions-reduce-exposure-en', // ''
   ACTIONS_REDUCE_EXPOSURE_ROUTE_CY: '/mock/actions-reduce-exposure-cy', // ''
   HEALTH_EFFECTS_ROUTE_EN: '/mock/health-effects-en', // ''
-  HEALTH_EFFECTS_ROUTE_CY: '/mock/health-effects-cy' // ''
+  HEALTH_EFFECTS_ROUTE_CY: '/mock/health-effects-cy', // ''
+  AIR_POLLUTION_BREACHES_PATH_EN: '/air-pollution-breaches',
+  AIR_POLLUTION_BREACHES_PATH_CY: '/torriadau-llygredd-aer/cy'
 }))
 
 // Mock Node.js modules ''
