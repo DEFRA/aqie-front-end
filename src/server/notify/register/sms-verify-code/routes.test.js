@@ -32,7 +32,30 @@ describe('SMS Verify Code Routes', () => {
     expect(postRoute.options.description).toBe('Post SMS verify code page')
   })
 
-  it('should have exactly 2 routes', () => {
-    expect(routes).toHaveLength(2)
+  it('should have GET and POST Welsh routes', () => {
+    const getWelshRoute = routes.find(
+      (route) =>
+        route.method === 'GET' &&
+        route.path === '/hysbysiad/cofrestru/sms-dilysu-cod'
+    )
+
+    const postWelshRoute = routes.find(
+      (route) =>
+        route.method === 'POST' &&
+        route.path === '/hysbysiad/cofrestru/sms-dilysu-cod'
+    )
+
+    expect(getWelshRoute).toBeDefined()
+    expect(getWelshRoute.options.description).toBe(
+      'Get SMS verify code page (Welsh)'
+    )
+    expect(postWelshRoute).toBeDefined()
+    expect(postWelshRoute.options.description).toBe(
+      'Post SMS verify code page (Welsh)'
+    )
+  })
+
+  it('should have exactly 4 routes', () => {
+    expect(routes).toHaveLength(4)
   })
 })
