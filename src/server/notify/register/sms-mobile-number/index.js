@@ -1,5 +1,8 @@
 import { handleNotifyRequest, handleNotifyPost } from './controller.js'
 
+// '' Welsh placeholder path for sms-mobile-number
+const SMS_MOBILE_NUMBER_PATH_CY = '/hysbysiad/cofrestru/sms-rhif-ffon'
+
 const notify = {
   plugin: {
     name: 'notify-sms-mobile-number',
@@ -13,6 +16,16 @@ const notify = {
         {
           method: 'POST',
           path: '/notify/register/sms-mobile-number',
+          handler: handleNotifyPost
+        },
+        {
+          method: 'GET',
+          path: SMS_MOBILE_NUMBER_PATH_CY,
+          handler: handleNotifyRequest
+        },
+        {
+          method: 'POST',
+          path: SMS_MOBILE_NUMBER_PATH_CY,
           handler: handleNotifyPost
         }
       ])

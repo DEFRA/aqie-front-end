@@ -138,14 +138,17 @@ describe('api-utils - selectMeasurementsUrlAndOptions localhost handling', () =>
     }
   })
 
-  it('should use ephemeral protected URL for localhost with new Ricardo', () => {
+  it('should use ephemeral protected URL when ephemeral URL configured', () => {
     mockConfig.get.mockImplementation((key) => {
-      if (key === 'ricardoMeasurementsApiUrl') return RICARDO_API_URL
-      if (key === 'ephemeralProtectedTestApiUrl') return DEV_API_URL
+      if (key === 'ricardoMeasurementsApiUrl') {
+        return RICARDO_API_URL
+      }
       return null
     })
-    const mockOptionsEphemeralProtected = { headers: {} }
-    const mockRequest = { headers: { host: LOCALHOST_HOST } }
+    const mockRequest = {
+      headers: { host: LOCALHOST_HOST },
+      app: { config: { ephemeralProtectedTestApiUrl: DEV_API_URL } }
+    }
 
     const result = selectMeasurementsUrlAndOptions(
       TEST_LATITUDE,
@@ -153,7 +156,7 @@ describe('api-utils - selectMeasurementsUrlAndOptions localhost handling', () =>
       {
         config: mockConfig,
         logger: mockLogger,
-        optionsEphemeralProtected: mockOptionsEphemeralProtected,
+        optionsEphemeralProtected: { headers: {} },
         options: {},
         request: mockRequest
       }
@@ -200,23 +203,29 @@ describe('api-utils - selectMeasurementsUrlAndOptions error handling', () => {
     globalThis.URLSearchParams = originalURLSearchParams
   })
 
-  it('should throw error when ephemeralProtectedTestApiUrl missing for local new Ricardo', () => {
-    mockConfig.get
-      .mockReturnValueOnce(RICARDO_API_URL)
-      .mockReturnValueOnce(null)
-    const mockRequest = { headers: { host: LOCALHOST_HOST } }
+  it('should use direct Ricardo URL when request config has no ephemeral URL', () => {
+    mockConfig.get.mockImplementation((key) => {
+      if (key === 'ricardoMeasurementsApiUrl') {
+        return RICARDO_API_URL
+      }
+      return null
+    })
+    const mockRequest = { headers: { host: LOCALHOST_HOST }, app: {} }
 
-    expect(() =>
-      selectMeasurementsUrlAndOptions(TEST_LATITUDE, TEST_LONGITUDE, {
+    const result = selectMeasurementsUrlAndOptions(
+      TEST_LATITUDE,
+      TEST_LONGITUDE,
+      {
         config: mockConfig,
         logger: mockLogger,
         optionsEphemeralProtected: {},
         options: {},
         request: mockRequest
-      })
-    ).toThrow(
-      'ephemeralProtectedTestApiUrl must be provided in config for local requests'
+      }
     )
+
+    // '' Falls back to direct Ricardo URL when no ephemeral URL available
+    expect(result.url).toContain(RICARDO_API_URL)
   })
 })
 

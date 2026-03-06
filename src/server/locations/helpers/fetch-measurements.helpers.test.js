@@ -35,9 +35,6 @@ describe('selectMeasurementsUrlAndOptions', () => {
       if (key === 'ricardoMeasurementsApiUrl') {
         return 'ricardo-url?'
       }
-      if (key === 'ephemeralProtectedTestApiUrl') {
-        return 'dev-url'
-      }
       if (key === 'measurementsApiUrl') {
         return 'old-url'
       }
@@ -58,7 +55,7 @@ describe('selectMeasurementsUrlAndOptions', () => {
     expect(result.url).toContain('ricardo-url?')
     expect(result.opts).toBeDefined()
   })
-  it('returns dev url and opts in development', () => {
+  it('returns ephemeral url and opts in development', () => {
     const result = selectMeasurementsUrlAndOptions(
       TEST_LATITUDE,
       TEST_LONGITUDE,
@@ -66,7 +63,11 @@ describe('selectMeasurementsUrlAndOptions', () => {
         config: injectedConfig,
         logger: injectedLogger,
         optionsEphemeralProtected: { headers: {} },
-        request: { headers: { host: 'localhost' } }
+        options: {},
+        request: {
+          headers: { host: 'localhost' },
+          app: { config: { ephemeralProtectedTestApiUrl: 'dev-url' } }
+        }
       }
     )
     expect(result.url).toContain('dev-url')

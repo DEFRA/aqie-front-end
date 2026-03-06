@@ -137,7 +137,7 @@ describe('api-utils - callForecastsApi', () => {
   })
 })
 
-describe('api-utils - selectForecastsUrlAndOptions localhost', () => {
+describe('api-utils - selectForecastsUrlAndOptions', () => {
   it('should use ephemeral protected URL for localhost requests', () => {
     const mockRequest = {
       headers: { host: LOCALHOST_HOST },
@@ -210,21 +210,19 @@ describe('api-utils - selectForecastsUrlAndOptions edge cases', () => {
     expect(result.url).toBe(PROD_API_URL)
   })
 
-  it('should throw error when ephemeralProtectedTestApiUrl missing for local', () => {
+  it('should use production URL when request config exists', () => {
     const mockRequest = {
-      headers: { host: LOCALHOST_HOST },
+      headers: { host: 'localhost:3000' },
       app: { config: {} }
     }
 
-    expect(() =>
-      selectForecastsUrlAndOptions({
-        request: mockRequest,
-        forecastsApiUrl: PROD_API_URL,
-        optionsEphemeralProtected: {},
-        options: {}
-      })
-    ).toThrow(
-      'ephemeralProtectedTestApiUrl must be provided in config for local requests'
-    )
+    const result = selectForecastsUrlAndOptions({
+      request: mockRequest,
+      forecastsApiUrl: PROD_API_URL,
+      optionsEphemeralProtected: {},
+      options: {}
+    })
+
+    expect(result.url).toBe(PROD_API_URL)
   })
 })

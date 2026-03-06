@@ -11,13 +11,12 @@ const TEST_LATITUDE = 51.5
 const TEST_LONGITUDE = -0.1
 
 describe('fetchMeasurements edge branches', () => {
-  it('uses ephemeralProtectedTestApiUrl in development for newRicardo', async () => {
+  it('uses direct ricardoMeasurementsApiUrl in development', async () => {
     const di = {
       isTestMode: () => false,
       logger: { info: vi.fn(), error: vi.fn() },
       config: {
         get: vi.fn((key) => {
-          if (key === 'ephemeralProtectedTestApiUrl') return 'dev-url'
           if (key === 'ricardoMeasurementsApiUrl') return 'ricardo-url?'
           return 'base-url'
         })

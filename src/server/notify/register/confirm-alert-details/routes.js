@@ -4,6 +4,10 @@ import {
   handleConfirmAlertDetailsPost
 } from './controller.js'
 
+// '' Welsh placeholder path for confirm-alert-details
+const CONFIRM_ALERT_DETAILS_PATH_CY =
+  '/hysbysiad/cofrestru/cadarnhau-manylion-rhybudd'
+
 const confirmAlertDetailsGetController = {
   handler: handleConfirmAlertDetailsRequest
 }
@@ -20,6 +24,16 @@ const configureRoutes = (getController, postController) => [
   {
     method: 'POST',
     path: '/notify/register/confirm-alert-details',
+    ...postController
+  },
+  {
+    method: 'GET',
+    path: CONFIRM_ALERT_DETAILS_PATH_CY,
+    ...getController
+  },
+  {
+    method: 'POST',
+    path: CONFIRM_ALERT_DETAILS_PATH_CY,
     ...postController
   }
 ]

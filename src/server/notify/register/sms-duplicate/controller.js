@@ -59,6 +59,7 @@ const handleDuplicateSubscriptionRequest = (request, h, content = english) => {
     serviceName,
     lang,
     metaSiteUrl,
+    currentPath: request.path,
     footerTxt,
     phaseBanner,
     cookieBanner,

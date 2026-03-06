@@ -3,6 +3,7 @@ import {
   handleConfirmAlertDetailsRequest,
   handleConfirmAlertDetailsPost
 } from './controller.js'
+import { setupAlert } from '../../../common/services/notify.js'
 
 // Mock the notify service
 vi.mock('../../../common/services/notify.js', () => ({
@@ -162,6 +163,58 @@ describe('Confirm Alert Details Controller - handleConfirmAlertDetailsPost', () 
       )
       expect(mockH.redirect).toHaveBeenCalledWith(
         '/notify/register/sms-success'
+      )
+    })
+
+    test('redirects to sms-mobile-number with max alerts error on 400 response', async () => {
+      setupAlert.mockResolvedValueOnce({
+        ok: false,
+        status: 400,
+        body: { message: 'Maximum number of locations reached' }
+      })
+
+      const mockRequest = {
+        payload: {
+          confirmDetails: 'yes'
+        },
+        yar: {
+          get: vi.fn((key) => {
+            const mockData = {
+              mobileNumber: '07123456789',
+              location: 'London',
+              locationId: 'london-123',
+              latitude: '51.5074',
+              longitude: '-0.1278'
+            }
+            return mockData[key] || ''
+          }),
+          set: vi.fn(),
+          clear: vi.fn()
+        }
+      }
+
+      const mockH = {
+        view: vi.fn(),
+        redirect: vi.fn()
+      }
+
+      const mockContent = {
+        footerTxt: FOOTER_TEXT,
+        phaseBanner: PHASE_BANNER,
+        backlink: 'Back link',
+        cookieBanner: COOKIE_BANNER
+      }
+
+      await handleConfirmAlertDetailsPost(mockRequest, mockH, mockContent)
+
+      expect(mockRequest.yar.set).toHaveBeenCalledWith('maxAlertsError', true)
+      expect(mockRequest.yar.set).toHaveBeenCalledWith(
+        'maskedPhoneNumber',
+        '07123456789'
+      )
+      expect(mockRequest.yar.clear).toHaveBeenCalledWith('mobileNumber')
+      expect(mockH.redirect).toHaveBeenCalledWith(
+        '/notify/register/sms-mobile-number'
       )
     })
   })
