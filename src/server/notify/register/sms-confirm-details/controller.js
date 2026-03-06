@@ -9,6 +9,7 @@ import { config } from '../../../../config/index.js'
 // Constants ''
 const LOCATION_PLACEHOLDER = '{location}'
 const MISSING_VALUE = 'MISSING'
+const SMS_MOBILE_NUMBER_PATH_KEY = 'notify.smsMobileNumberPath'
 
 // Create a logger instance ''
 const logger = createLogger()
@@ -36,7 +37,7 @@ const buildSmsMobileNumberUrl = ({
   }
 
   const queryString = queryParams.toString()
-  const smsMobileNumberPath = config.get('notify.smsMobileNumberPath')
+  const smsMobileNumberPath = config.get(SMS_MOBILE_NUMBER_PATH_KEY)
   return queryString
     ? `${smsMobileNumberPath}?${queryString}`
     : smsMobileNumberPath
@@ -287,7 +288,7 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
       request.yar.clear('mobileNumber')
 
       logger.warn('Redirecting to sms-mobile-number page with max alerts error')
-      return h.redirect(config.get('notify.smsMobileNumberPath'))
+      return h.redirect(config.get(SMS_MOBILE_NUMBER_PATH_KEY))
     }
 
     // '' Handle 409 Conflict - Alert already exists for this location
@@ -315,7 +316,7 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
     // '' Store error and redirect back to mobile number page
     request.yar.set('setupAlertError', true)
     request.yar.clear('mobileNumber')
-    return h.redirect(config.get('notify.smsMobileNumberPath'))
+    return h.redirect(config.get(SMS_MOBILE_NUMBER_PATH_KEY))
   }
 
   logger.info('Alert setup successful', { data: result.data })
