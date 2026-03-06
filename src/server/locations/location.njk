@@ -388,6 +388,27 @@
   {% endif %}
 {% endif %}
     </div>
+
+    <div class="govuk-grid-column-full-until-desktop govuk-grid-column-one-third-from-desktop">
+      <h2 class="govuk-heading-m">{% if lang == 'cy' %}Cynnwys cysylltiedig{% else %}Related content{% endif %}</h2>
+      <ul class="govuk-list govuk-list--spaced">
+        <li>
+          <a class="govuk-link" href="{% if lang == 'cy' %}/lleoliad/{{ locationId }}/effeithiau-iechyd?lang=cy{% else %}/location/{{ locationId }}/health-effects?lang=en{% endif %}{% if searchTerms %}&searchTerms={{ searchTerms | urlencode }}{% endif %}{% if locationName %}&locationName={{ locationName | urlencode }}{% endif %}">
+            {% if lang == 'cy' %}Effeithiau iechyd llygredd aer{% else %}Health effects of air pollution{% endif %}
+          </a>
+        </li>
+        <li>
+          <a class="govuk-link" href="{% if lang == 'cy' %}/lleoliad/{{ locationId }}/camau-lleihau-amlygiad/cy?lang=cy{% else %}/location/{{ locationId }}/actions-reduce-exposure?lang=en{% endif %}{% if searchTerms %}&searchTerms={{ searchTerms | urlencode }}{% endif %}{% if locationName %}&locationName={{ locationName | urlencode }}{% endif %}">
+            {% if lang == 'cy' %}Camau i leihau eich amlygiad i lygredd aer{% else %}Actions to reduce your exposure to air pollution{% endif %}
+          </a>
+        </li>
+        <li>
+          <a class="govuk-link" href="{{ smsMobileNumberPath or '/notify/register/sms-mobile-number' }}?location={{ headerTitle | urlencode }}&locationId={{ locationId | urlencode }}{% if latlon.lat %}&lat={{ latlon.lat }}{% endif %}{% if latlon.lon %}&long={{ latlon.lon }}{% endif %}">
+            {% if lang == 'cy' %}Rhybuddion llygredd aer{% else %}Air pollution breaches{% endif %}
+          </a>
+        </li>
+      </ul>
+    </div>
   </div>
 {% endblock %}
 
