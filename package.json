@@ -31,7 +31,17 @@
     "server:debug": "nodemon --inspect-brk=0.0.0.0 --ext js,json --legacy-watch ./src",
     "prestart": "npm run build:frontend",
     "start": "NODE_ENV=production node --use-strict .",
-    "setup:husky": "node -e \"try { (await import('husky')).default() } catch (e) { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e }\" --input-type module"
+    "setup:husky": "node -e \"try { (await import('husky')).default() } catch (e) { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e }\" --input-type module",
+    "bot:test:monitor:start": "bash scripts/bot-redis-monitor.sh start",
+    "bot:test:monitor:stop": "bash scripts/bot-redis-monitor.sh stop",
+    "bot:test:monitor:status": "bash scripts/bot-redis-monitor.sh status",
+    "bot:test:monitor:sample": "bash scripts/bot-redis-monitor.sh sample",
+    "bot:test:monitor": "bash scripts/bot-redis-monitor.sh monitor",
+    "bot:test:load": "npx autocannon -R ${BOT_RATE:-2} -d ${BOT_DURATION:-1800} ${BOT_URL:-http://localhost:3000/location/rawtenstall_rossendale}",
+    "bot:test:run": "npm run bot:test:monitor:start && npm run bot:test:load; EXIT_CODE=$?; npm run bot:test:monitor:stop; exit $EXIT_CODE",
+    "bot:test:server:redis": "cross-env SESSION_CACHE_ENGINE=redis npm run server:watch",
+    "bot:test:load:redis": "cross-env SESSION_CACHE_ENGINE=redis npm run bot:test:load",
+    "bot:test:run:redis": "cross-env SESSION_CACHE_ENGINE=redis npm run bot:test:run"
   },
   "author": "Defra DDTS",
   "license": "OGL-UK-3.0",

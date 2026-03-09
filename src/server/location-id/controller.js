@@ -5,10 +5,8 @@ import {
 import * as airQualityData from '../data/en/air-quality.js'
 import {
   LANG_CY,
-  LANG_EN,
   LOCATION_NOT_FOUND,
   LOCATION_TYPE_NI,
-  LOCATION_TYPE_UK,
   REDIRECT_STATUS_CODE,
   STATUS_INTERNAL_SERVER_ERROR
 } from '../data/constants.js'
@@ -25,215 +23,255 @@ import { airQualityValues } from '../locations/helpers/air-quality-values.js'
 import { getNearestLocation } from '../locations/helpers/get-nearest-location.js'
 import { getIdMatch } from '../locations/helpers/get-id-match.js'
 import { getNIData } from '../locations/helpers/get-ni-single-data.js'
-import { compareLastElements } from '../locations/helpers/convert-string.js'
+import {
+  compareLastElements,
+  formatNorthernIrelandPostcode
+} from '../locations/helpers/convert-string.js'
 import sizeof from 'object-sizeof'
 import { config } from '../../config/index.js'
-import { mockLevelColor } from '../common/helpers/mock-daqi-level.js'
+import {
+  processAirQualityMessages,
+  buildMockQueryParams,
+  initializeRequestData,
+  validateAndProcessSessionData as validateSessionData,
+  applyMockToDay,
+  applyMockPollutants as applyMockPollutantsHelper
+} from './controller-helpers.js'
+import {
+  applyTestModeChanges,
+  calculateSummaryDate,
+  determineLocationType
+} from './controller-workflow.js'
 import {
   mockPollutantBand as generateMockPollutantBand,
   applyMockPollutantsToSites
 } from '../common/helpers/mock-pollutant-level.js'
 import { getForecastWarning } from '../locations/helpers/forecast-warning.js'
-import { getIssueTime } from '../locations/helpers/middleware-helpers.js'
+import { getSessionRedisClient } from '../common/helpers/session-cache/cache-engine.js'
 
 const logger = createLogger()
+const DATE_FORMAT = 'DD MMMM YYYY'
+const DAILY_SUMMARY_KEY = 'dailySummary'
+const SESSION_GUARD_LOG_LIMIT_PER_REQUEST = 3
+const REDIS_PRESSURE_CHECK_INTERVAL_MS = 10000
+const REDIS_PRESSURE_WINDOW_MS = 30000
+const REDIS_PRESSURE_MIN_GROWTH_BYTES = 20 * 1024 * 1024
+const REDIS_PRESSURE_MIN_GROWTH_RATIO = 0.2
+const REDIS_PRESSURE_COOLDOWN_MS = 300000
 
-/**
- * Check if mock level is requested and override air quality data
- * Non-intrusive: only applies mock if explicitly enabled, otherwise returns original data
- */
-function applyMockLevel(request, airQuality) {
-  // '' Disable mock functionality when configured (production by default)
-  const mocksDisabled = config.get('disableTestMocks')
-  if (mocksDisabled) {
-    logger.info(`🚫 Mock DAQI levels disabled (disableTestMocks=true)`)
-    return airQuality
-  }
-
-  // Check session for mockLevel (preserved across redirects)
-  const mockLevel = request.yar.get('mockLevel')
-  const mockDay = request.yar.get('mockDay') // '' Optional: specific day to apply mock level
-
-  logger.info(
-    `🔍 applyMockLevel called - mockLevel from session:`,
-    mockLevel,
-    `(type: ${typeof mockLevel}), mockDay:`,
-    mockDay
-  )
-
-  if (mockLevel !== undefined && mockLevel !== null) {
-    const level = parseInt(mockLevel, 10)
-
-    logger.info(`🔍 Parsed level:`, level, `isNaN:`, isNaN(level))
-
-    // Validate level
-    if (!isNaN(level) && level >= 0 && level <= 10) {
-      logger.info(`🎨 Mock DAQI Level ${level} applied from session`)
-
-      // If mockDay is specified, apply mock level only to that specific day
-      if (
-        mockDay &&
-        ['today', 'day2', 'day3', 'day4', 'day5'].includes(mockDay)
-      ) {
-        // Generate mock data for the specific day only
-        const mockDayData = mockLevelColor(level, {
-          includeForecast: false,
-          allSameLevel: false,
-          logDetails: false
-        })
-
-        // Start with existing airQuality or generate full forecast with current values
-        let modifiedAirQuality
-        if (airQuality && typeof airQuality === 'object') {
-          // Deep clone each day to avoid reference issues
-          modifiedAirQuality = {
-            today: airQuality.today ? { ...airQuality.today } : null,
-            day2: airQuality.day2 ? { ...airQuality.day2 } : null,
-            day3: airQuality.day3 ? { ...airQuality.day3 } : null,
-            day4: airQuality.day4 ? { ...airQuality.day4 } : null,
-            day5: airQuality.day5 ? { ...airQuality.day5 } : null
-          }
-        } else {
-          // If no airQuality exists, generate default forecast (all moderate level 4)
-          const defaultData = mockLevelColor(4, {
-            includeForecast: true,
-            allSameLevel: true,
-            logDetails: false
-          })
-          modifiedAirQuality = defaultData
-        }
-
-        // Override the specific day with the mock level
-        modifiedAirQuality[mockDay] = mockDayData.today
-
-        logger.info(
-          `🎯 Applied mock level ${level} to ${mockDay} only (value: ${mockDayData.today.value}, band: ${mockDayData.today.band})`
-        )
-        return modifiedAirQuality
-      } else {
-        // Generate mock data for all days (default behavior)
-        const mockData = mockLevelColor(level, {
-          includeForecast: true,
-          allSameLevel: true,
-          logDetails: false
-        })
-
-        return mockData
-      }
-    } else {
-      logger.warn(`Invalid mock level: ${mockLevel}. Must be 0-10.`)
-    }
-  }
-
-  // Return original data if no mock level (default behavior unchanged)
-  logger.info(`🔍 Returning original airQuality (no mock)`)
-  return airQuality
+const redisPressureGuardState = {
+  lastCheckAtMs: 0,
+  lastUsedMemoryBytes: null,
+  activeUntilMs: 0,
+  inFlight: false
 }
 
-/**
- * Check if mock pollutant band is requested and override pollutant data in monitoring sites
- * '' - Non-intrusive: only applies mock if explicitly enabled
- */
-function applyMockPollutants(request, monitoringSites) {
-  // '' Disable mock functionality when configured (production by default)
-  const mocksDisabled = config.get('disableTestMocks')
-  if (mocksDisabled) {
-    logger.info(`🚫 Mock pollutant bands disabled (disableTestMocks=true)`)
-    return monitoringSites
+function hasSessionCookie(request) {
+  const sessionCookieName = config.get('session.cache.name')
+  return Boolean(request?.state?.[sessionCookieName])
+}
+
+function logSessionGuardSkip(request, operation, sessionKey, reason) {
+  const currentCount = request?.app?.sessionGuardSkipCount || 0
+  const nextCount = currentCount + 1
+
+  if (request?.app) {
+    request.app.sessionGuardSkipCount = nextCount
   }
 
-  // Check session for mockPollutantBand (preserved across redirects)
-  const mockPollutantBandFromSession = request.yar.get('mockPollutantBand')
+  if (nextCount <= SESSION_GUARD_LOG_LIMIT_PER_REQUEST) {
+    logger.info(
+      `[SESSION GUARD] Skipped session ${operation} for key='${sessionKey}' (${reason})`
+    )
+  }
+}
 
-  logger.info(
-    `🔍 applyMockPollutants called - mockPollutantBand from session:`,
-    mockPollutantBandFromSession,
-    `(type: ${typeof mockPollutantBandFromSession})`
-  )
+function parseRedisInfoValue(infoText, key) {
+  const match = infoText?.match(new RegExp(`^${key}:(.*)$`, 'm'))
+  return match && match[1] ? match[1].trim() : ''
+}
+
+function isRedisPressureGuardActive() {
+  return redisPressureGuardState.activeUntilMs > Date.now()
+}
+
+function maybeRefreshRedisPressureGuard() {
+  const nowMs = Date.now()
+
+  if (redisPressureGuardState.inFlight) {
+    return
+  }
 
   if (
-    mockPollutantBandFromSession !== undefined &&
-    mockPollutantBandFromSession !== null
+    nowMs - redisPressureGuardState.lastCheckAtMs <
+    REDIS_PRESSURE_CHECK_INTERVAL_MS
   ) {
-    const bandStr = mockPollutantBandFromSession.toString().toLowerCase()
-
-    logger.info(`🔍 Parsed band:`, bandStr)
-
-    // Validate band
-    const validBands = ['low', 'moderate', 'high', 'very-high', 'very high']
-    if (
-      validBands.includes(bandStr) ||
-      validBands.includes(bandStr.replace('-', ' '))
-    ) {
-      logger.info(`🎨 Mock Pollutant Band '${bandStr}' applied from session`)
-
-      // Generate mock pollutants using the renamed import
-      const mockPollutants = generateMockPollutantBand(bandStr, {
-        logDetails: false
-      })
-
-      // Apply to all monitoring sites
-      const modifiedSites = applyMockPollutantsToSites(
-        monitoringSites,
-        mockPollutants,
-        {
-          applyToAllSites: true,
-          logDetails: false
-        }
-      )
-
-      return modifiedSites
-    } else {
-      logger.warn(
-        `Invalid mock pollutant band: ${mockPollutantBandFromSession}. Must be one of: low, moderate, high, very-high.`
-      )
-    }
+    return
   }
 
-  // Return original data if no mock band (default behavior unchanged)
-  logger.info(`🔍 Returning original monitoringSites (no mock pollutants)`)
-  return monitoringSites
+  const redisClient = getSessionRedisClient()
+  if (!redisClient) {
+    return
+  }
+
+  const previousCheckAtMs = redisPressureGuardState.lastCheckAtMs
+  redisPressureGuardState.inFlight = true
+  redisPressureGuardState.lastCheckAtMs = nowMs
+
+  redisClient
+    .info('memory')
+    .then((memoryInfo) => {
+      const usedMemoryBytes = Number(
+        parseRedisInfoValue(memoryInfo, 'used_memory')
+      )
+
+      if (!Number.isFinite(usedMemoryBytes)) {
+        return
+      }
+
+      const previousUsedMemoryBytes =
+        redisPressureGuardState.lastUsedMemoryBytes
+      const elapsedMs = nowMs - previousCheckAtMs
+
+      if (
+        Number.isFinite(previousUsedMemoryBytes) &&
+        elapsedMs <= REDIS_PRESSURE_WINDOW_MS
+      ) {
+        const growthBytes = usedMemoryBytes - previousUsedMemoryBytes
+        const growthRatio =
+          previousUsedMemoryBytes > 0
+            ? growthBytes / previousUsedMemoryBytes
+            : 0
+
+        if (
+          growthBytes >= REDIS_PRESSURE_MIN_GROWTH_BYTES &&
+          growthRatio >= REDIS_PRESSURE_MIN_GROWTH_RATIO
+        ) {
+          redisPressureGuardState.activeUntilMs =
+            Date.now() + REDIS_PRESSURE_COOLDOWN_MS
+
+          logger.warn(
+            `[SESSION GUARD] Redis pressure guard activated growthBytes=${growthBytes} growthRatio=${growthRatio.toFixed(3)} cooldownMs=${REDIS_PRESSURE_COOLDOWN_MS}`
+          )
+        }
+      }
+
+      redisPressureGuardState.lastUsedMemoryBytes = usedMemoryBytes
+    })
+    .catch((error) => {
+      logger.warn(
+        `[SESSION GUARD] Redis pressure sample failed: ${error.message}`
+      )
+    })
+    .finally(() => {
+      redisPressureGuardState.inFlight = false
+    })
 }
 
-// Helper to handle redirection for Welsh language
+function isSessionMutationAllowed(request, operation, sessionKey) {
+  if (!hasSessionCookie(request)) {
+    logSessionGuardSkip(request, operation, sessionKey, 'no session cookie')
+    return false
+  }
+
+  maybeRefreshRedisPressureGuard()
+  if (isRedisPressureGuardActive()) {
+    logSessionGuardSkip(
+      request,
+      operation,
+      sessionKey,
+      'redis pressure guard active'
+    )
+    return false
+  }
+
+  return true
+}
+
+function clearSessionKeyIfExists(request, sessionKey) {
+  if (!isSessionMutationAllowed(request, 'clear', sessionKey)) {
+    return
+  }
+
+  const currentValue = request?.yar?.get?.(sessionKey)
+  if (currentValue !== undefined) {
+    request.yar.clear(sessionKey)
+  }
+}
+
+function setSessionKeyIfSessionExists(request, sessionKey, value) {
+  if (!isSessionMutationAllowed(request, 'set', sessionKey)) {
+    return
+  }
+
+  request.yar.set(sessionKey, value)
+}
+
+// '' Helper to resolve alert coordinates with NI-safe fallback
+function resolveAlertLatLon(locationData = {}, fallbackLatlon = {}) {
+  const isNILocation = locationData?.locationType === LOCATION_TYPE_NI
+  const firstResult = Array.isArray(locationData?.results)
+    ? locationData.results[0]
+    : null
+  const resultLat = Number(firstResult?.latitude)
+  const resultLon = Number(firstResult?.longitude)
+
+  if (
+    isNILocation &&
+    Number.isFinite(resultLat) &&
+    Number.isFinite(resultLon)
+  ) {
+    return { lat: resultLat, lon: resultLon }
+  }
+
+  const fallbackLat = Number(fallbackLatlon?.lat)
+  const fallbackLon = Number(fallbackLatlon?.lon)
+  if (Number.isFinite(fallbackLat) && Number.isFinite(fallbackLon)) {
+    return { lat: fallbackLat, lon: fallbackLon }
+  }
+
+  return { lat: undefined, lon: undefined }
+}
+
+function applyMockLevel(request, airQuality) {
+  const mocksDisabled = config.get('disableTestMocks')
+  if (mocksDisabled) {
+    return airQuality
+  }
+  const mockLevel = request.yar.get('mockLevel')
+  const mockDay = request.yar.get('mockDay')
+  if (mockLevel === undefined || mockLevel === null) {
+    return airQuality
+  }
+  const level = Number.parseInt(mockLevel, 10)
+  if (Number.isNaN(level) || level < 0 || level > 10) {
+    logger.warn(`Invalid mock level: ${mockLevel}. Must be 0-10.`)
+    return airQuality
+  }
+  return applyMockToDay(airQuality, level, mockDay)
+}
+function applyMockPollutants(request, monitoringSites) {
+  return applyMockPollutantsHelper(
+    request,
+    monitoringSites,
+    generateMockPollutantBand,
+    applyMockPollutantsToSites
+  )
+}
+
 function handleWelshRedirect(query, locationId, h) {
   if (query?.lang && query?.lang === LANG_CY && !query?.searchTerms) {
-    // '' Disable mock parameters when configured (production by default)
-    const mocksDisabled = config.get('disableTestMocks')
-
-    // Preserve mock parameters in redirect (only when mocks enabled)
-    const mockLevel = !mocksDisabled ? query?.mockLevel : undefined
-    const mockLevelParam =
-      mockLevel !== undefined
-        ? `&mockLevel=${encodeURIComponent(mockLevel)}`
-        : ''
-
-    const mockDay = !mocksDisabled ? query?.mockDay : undefined
-    const mockDayParam =
-      mockDay !== undefined ? `&mockDay=${encodeURIComponent(mockDay)}` : ''
-
-    const mockPollutantBand = !mocksDisabled
-      ? query?.mockPollutantBand
-      : undefined
-    const mockPollutantParam =
-      mockPollutantBand !== undefined
-        ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
-        : ''
-
-    const testMode = !mocksDisabled ? query?.testMode : undefined
-    const testModeParam =
-      testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
-
+    const mockParams = buildMockQueryParams(
+      { query },
+      config.get('disableTestMocks')
+    )
     return h
-      .redirect(
-        `/lleoliad/${locationId}/?lang=cy${mockLevelParam}${mockDayParam}${mockPollutantParam}${testModeParam}`
-      )
+      .redirect(`/lleoliad/${locationId}/?lang=cy${mockParams}`)
       .code(REDIRECT_STATUS_CODE)
   }
   return null
 }
 
-// Helper to handle redirection if search terms are missing
 function handleSearchTermsRedirect(
   headers,
   searchTermsSaved,
@@ -241,21 +279,48 @@ function handleSearchTermsRedirect(
   request,
   h
 ) {
+  logger.info(
+    `[DEBUG controller] handleSearchTermsRedirect - searchTermsSaved from session: ${searchTermsSaved}`
+  )
   const previousUrl = headers.referer || headers.referrer
+  logger.info(`[DEBUG controller] previousUrl: ${previousUrl}`)
+  logger.info(`[DEBUG controller] currentUrl: ${currentUrl}`)
   const isPreviousAndCurrentUrlEqual = compareLastElements(
     previousUrl,
     currentUrl
+  )
+  logger.info(
+    `[DEBUG controller] isPreviousAndCurrentUrlEqual: ${isPreviousAndCurrentUrlEqual}`
   )
   if (
     (previousUrl === undefined && !searchTermsSaved) ||
     (isPreviousAndCurrentUrlEqual && !searchTermsSaved)
   ) {
-    const { searchTerms, secondSearchTerm, searchTermsLocationType } =
+    logger.info(
+      `[DEBUG controller] REDIRECTING because searchTermsSaved is missing`
+    )
+
+    // '' Extract searchTerms from URL path (0.685.0 approach)
+    let { searchTerms, secondSearchTerm, searchTermsLocationType } =
       getSearchTermsFromUrl(currentUrl)
-    request.yar.clear('locationData')
+
+    // '' Check if searchTerms is a normalized Northern Ireland postcode (e.g., bt938ad)
+    // '' and convert it back to proper format (e.g., BT93 8AD)
+    const normalizedNIPostcodeRegex = /^bt\d{1,2}\d[a-z]{2}$/i
+    if (normalizedNIPostcodeRegex.test(searchTerms)) {
+      logger.info(
+        `[DEBUG controller] Detected normalized NI postcode: ${searchTerms}`
+      )
+      searchTerms = formatNorthernIrelandPostcode(searchTerms.toUpperCase())
+      logger.info(
+        `[DEBUG controller] Converted to formatted NI postcode: ${searchTerms}`
+      )
+    }
+
+    clearSessionKeyIfExists(request, 'locationData')
     logger.info('Redirecting to location search')
 
-    // '' Disable mock parameters when configured (production by default)
+    // '' Disable mock functionality when configured (production by default)
     const mocksDisabled = config.get('disableTestMocks')
 
     // Preserve mock parameters in redirect if present (only when mocks enabled)
@@ -288,7 +353,37 @@ function handleSearchTermsRedirect(
       .code(REDIRECT_STATUS_CODE)
       .takeover()
   }
+  logger.info(`[DEBUG controller] NOT redirecting - searchTermsSaved found`)
   return null
+}
+
+function prepareLocationTitles(locationDetails) {
+  const { title, headerTitle } = gazetteerEntryFilter(locationDetails)
+  return {
+    title: convertFirstLetterIntoUppercase(title),
+    headerTitle: convertFirstLetterIntoUppercase(headerTitle)
+  }
+}
+
+function prepareAirQuality(
+  forecastNum,
+  lang,
+  request,
+  locationData,
+  highestAQ
+) {
+  let { airQuality } = airQualityValues(forecastNum, lang)
+  const { transformedDailySummary } = locationData[DAILY_SUMMARY_KEY]
+    ? transformKeys(locationData[DAILY_SUMMARY_KEY], lang, highestAQ)
+    : { transformedDailySummary: null }
+  airQuality = applyMockLevel(request, airQuality)
+  return { airQuality, transformedDailySummary }
+}
+
+function extractLocationContext(request, headerTitle) {
+  const searchTerms = request?.query?.searchTerms || ''
+  const locationNameForTemplate = request?.query?.locationName || headerTitle
+  return { searchTerms, locationNameForTemplate }
 }
 
 // Helper to build view data for found location
@@ -303,131 +398,62 @@ function buildLocationViewData({
   request,
   locationId
 }) {
-  let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
-  title = convertFirstLetterIntoUppercase(title)
-  headerTitle = convertFirstLetterIntoUppercase(headerTitle)
+  const { title, headerTitle } = prepareLocationTitles(locationDetails)
 
-  // '' Handle case where dailySummary might be undefined (e.g., in test mode)
-  let { airQuality } = airQualityValues(forecastNum, lang)
-  const highestAQ = Math.max(...forecastNum)
-  const { transformedDailySummary } = locationData.dailySummary
-    ? transformKeys(locationData.dailySummary, lang, highestAQ)
-    : { transformedDailySummary: undefined }
+  // '' Handle missing or empty forecastNum gracefully - ensure it's always an array
+  const forecastNumSafe =
+    Array.isArray(forecastNum) && forecastNum.length > 0 ? forecastNum : []
+  const highestAQ =
+    forecastNumSafe.length > 0 ? Math.max(...forecastNumSafe) : 0
+  const { airQuality, transformedDailySummary } = prepareAirQuality(
+    forecastNumSafe,
+    lang,
+    request,
+    locationData,
+    highestAQ
+  )
 
-  // Apply mock level if requested
-  airQuality = applyMockLevel(request, airQuality)
-
-  // '' Apply mock pollutant bands if requested
   const modifiedMonitoringSites = applyMockPollutants(
     request,
     nearestLocationsRange
   )
 
-  // '' Get forecast warning for high/very high pollution levels
   const forecastWarning = getForecastWarning(airQuality, lang)
 
-  // '' Get searchTerms and locationName from request query for back link context
-  const searchTerms = request?.query?.searchTerms || ''
-  const locationNameFromQuery = request?.query?.locationName || ''
-  const locationNameForTemplate = locationNameFromQuery || headerTitle
-
-  logger.info('🔍 DEBUG - Location view data:', {
+  const { searchTerms, locationNameForTemplate } = extractLocationContext(
+    request,
+    headerTitle
+  )
+  const processedAirQualityData = processAirQualityMessages(
+    airQualityData,
+    locationId,
+    lang,
     searchTerms,
-    locationNameFromQuery,
-    headerTitle,
-    locationNameForTemplate,
-    locationId
-  })
+    locationNameForTemplate
+  )
 
-  // '' Process air quality messages to replace {locationId} placeholder and add query params
-  const processedAirQualityData = {}
-  if (airQualityData?.commonMessages) {
-    // Build query parameters for back link context
-    const queryParams = []
-    if (searchTerms) {
-      queryParams.push(`searchTerms=${encodeURIComponent(searchTerms)}`)
-    }
-    if (locationNameForTemplate) {
-      queryParams.push(
-        `locationName=${encodeURIComponent(locationNameForTemplate)}`
-      )
-    }
-    const queryString =
-      queryParams.length > 0 ? `&${queryParams.join('&')}` : ''
-
-    Object.keys(airQualityData.commonMessages).forEach((key) => {
-      const message = airQualityData.commonMessages[key]
-      if (message && typeof message === 'object') {
-        processedAirQualityData[key] = { ...message }
-        // Replace {locationId} in insetText if it exists
-        if (message.insetText && typeof message.insetText === 'string') {
-          let processedText = message.insetText.replace(
-            /{locationId}/g,
-            locationId
-          )
-          // Add query parameters to action links for proper back link context
-          if (queryString) {
-            if (lang === LANG_CY) {
-              processedText = processedText.replace(
-                /effeithiau-iechyd\?lang=cy/g,
-                `effeithiau-iechyd?lang=cy${queryString}`
-              )
-              processedText = processedText.replace(
-                /camau-lleihau-amlygiad\/cy\?lang=cy/g,
-                `camau-lleihau-amlygiad/cy?lang=cy${queryString}`
-              )
-            } else {
-              processedText = processedText.replace(
-                /health-effects\?lang=en/g,
-                `health-effects?lang=en${queryString}`
-              )
-              processedText = processedText.replace(
-                /actions-reduce-exposure\?lang=en/g,
-                `actions-reduce-exposure?lang=en${queryString}`
-              )
-            }
-          }
-          processedAirQualityData[key].insetText = processedText
-        }
-      } else {
-        processedAirQualityData[key] = message
-      }
-    })
-
-    // Also process exposureHtml in daqi object if it exists
-    if (airQualityData?.daqi?.exposureHtml) {
-      if (!processedAirQualityData.daqi) {
-        processedAirQualityData.daqi = { ...airQualityData.daqi }
-      }
-      let exposureHtml = airQualityData.daqi.exposureHtml.replace(
-        /{locationId}/g,
-        locationId
-      )
-      // Add query parameters to links in exposureHtml
-      if (queryString) {
-        if (lang === LANG_CY) {
-          exposureHtml = exposureHtml.replace(
-            /effeithiau-iechyd\?lang=cy/g,
-            `effeithiau-iechyd?lang=cy${queryString}`
-          )
-          exposureHtml = exposureHtml.replace(
-            /camau-lleihau-amlygiad\/cy\?lang=cy/g,
-            `camau-lleihau-amlygiad/cy?lang=cy${queryString}`
-          )
-        } else {
-          exposureHtml = exposureHtml.replace(
-            /health-effects\?lang=en/g,
-            `health-effects?lang=en${queryString}`
-          )
-          exposureHtml = exposureHtml.replace(
-            /actions-reduce-exposure\?lang=en/g,
-            `actions-reduce-exposure?lang=en${queryString}`
-          )
-        }
-      }
-      processedAirQualityData.daqi.exposureHtml = exposureHtml
-    }
+  // Use calculated coordinates from geolib (from getNearestLocation) ''
+  // '' Prefer NI search result coordinates for alert links to avoid forecast grid mismatches
+  // Format coordinates to 4 decimal places for alert links ''
+  const rawLatlon = resolveAlertLatLon(locationData, locationData.latlon)
+  const latlon = {
+    lat: Number.isFinite(rawLatlon.lat)
+      ? Number(rawLatlon.lat.toFixed(4))
+      : undefined,
+    lon: Number.isFinite(rawLatlon.lon)
+      ? Number(rawLatlon.lon.toFixed(4))
+      : undefined
   }
+
+  // Log coordinate availability for alert links ''
+  logger.info('🗺️ Building view data with coordinates')
+  logger.info('🗺️ locationData keys:', Object.keys(locationData))
+  logger.info('🗺️ locationData.latlon:', locationData.latlon)
+  logger.info('🗺️ latlon variable:', latlon)
+  logger.info('🗺️ latlon.lat:', latlon?.lat)
+  logger.info('🗺️ latlon.lon:', latlon?.lon)
+  logger.info('🗺️ locationId:', locationId)
+  logger.info('🗺️ title:', title)
 
   return {
     result: locationDetails,
@@ -440,8 +466,10 @@ function buildLocationViewData({
     metaSiteUrl,
     description: `${english.daqi.description.a} ${headerTitle}${english.daqi.description.b}`,
     title: `${english.multipleLocations.titlePrefix} ${headerTitle}`,
+    headerTitle,
     locationName: locationNameForTemplate,
     locationId,
+    latlon,
     searchTerms,
     displayBacklink: true,
     transformedDailySummary,
@@ -462,7 +490,6 @@ function buildLocationViewData({
   }
 }
 
-// Helper to build view data for not found location
 function buildNotFoundViewData(lang) {
   return {
     paragraph: english.notFoundLocation.paragraphs,
@@ -482,10 +509,22 @@ function updateSessionWithNearest(
   nearestLocation,
   nearestLocationsRange
 ) {
+  if (!isSessionMutationAllowed(request, 'set', 'locationData')) {
+    return
+  }
+
+  // '' Ensure we only assign valid arrays to prevent template errors
+  const nearestLocationSafe = Array.isArray(nearestLocation)
+    ? nearestLocation
+    : []
+  const nearestLocationsRangeSafe = Array.isArray(nearestLocationsRange)
+    ? nearestLocationsRange
+    : []
+
   // Replace the large getForecasts with a single-record version
-  locationData.getForecasts = nearestLocation
+  locationData.getForecasts = nearestLocationSafe
   // Replace the large getMeasurements with a filtered version
-  locationData.getMeasurements = nearestLocationsRange
+  locationData.getMeasurements = nearestLocationsRangeSafe
   // Save the updated locationData back into session
   request.yar.set('locationData', locationData)
 }
@@ -497,20 +536,36 @@ async function getNearestLocationData(
   locationType,
   locationId,
   lang,
-  useNewRicardoMeasurementsEnabled,
   request
 ) {
   let distance
   if (locationData.locationType === LOCATION_TYPE_NI) {
-    distance = getNearestLocation(
+    distance = await getNearestLocation(
       locationData?.results,
       getForecasts,
       locationType,
       0,
       lang,
-      useNewRicardoMeasurementsEnabled,
-      request
+      true,
+      { request, skipMeasurements: true }
     )
+    // '' Ensure distance has valid latlon structure even when forecasts fail
+    if (
+      !distance ||
+      !distance.latlon ||
+      distance.latlon.lat === undefined ||
+      distance.latlon.lon === undefined
+    ) {
+      // Fall back to using the first result's coordinates if available
+      const firstResult = Array.isArray(locationData?.results)
+        ? locationData.results[0]
+        : null
+      distance = distance || {}
+      distance.latlon = {
+        lat: firstResult?.latitude || 0,
+        lon: firstResult?.longitude || 0
+      }
+    }
   }
   const indexNI = 0
   const { resultNI } = getNIData(locationData, distance, locationType)
@@ -521,21 +576,32 @@ async function getNearestLocationData(
     locationType,
     indexNI
   )
-  const { forecastNum, nearestLocationsRange, nearestLocation } =
+  const { forecastNum, nearestLocationsRange, nearestLocation, latlon } =
     await getNearestLocation(
       locationData?.results,
       getForecasts,
       locationType,
       locationIndex,
       lang,
-      useNewRicardoMeasurementsEnabled,
-      request
+      true,
+      { request }
     )
+
+  // Store calculated latlon from geolib in locationData ''
+  locationData.latlon = latlon
+
+  // '' Ensure nearestLocation is an array; fallback to empty array if forecasts are missing
+  const nearestLocationSafe =
+    Array.isArray(nearestLocation) && nearestLocation.length > 0
+      ? nearestLocation
+      : []
+
   return {
     locationDetails,
     forecastNum,
     nearestLocationsRange,
-    nearestLocation
+    nearestLocation: nearestLocationSafe,
+    latlon
   }
 }
 
@@ -545,177 +611,47 @@ function validateAndProcessSessionData(
   currentUrl,
   lang,
   h,
-  request
+  request,
+  locationId
 ) {
-  if (!Array.isArray(locationData?.results) || !locationData?.getForecasts) {
-    const { searchTerms, secondSearchTerm, searchTermsLocationType } =
-      getSearchTermsFromUrl(currentUrl)
-    request.yar.clear('locationData')
-
-    const safeSearchTerms = searchTerms || ''
-    const safeSecondSearchTerm = secondSearchTerm || ''
-    const safeSearchTermsLocationType = searchTermsLocationType || ''
-    const searchParams =
-      safeSearchTerms || safeSecondSearchTerm || safeSearchTermsLocationType
-        ? `&searchTerms=${encodeURIComponent(safeSearchTerms)}&secondSearchTerm=${encodeURIComponent(safeSecondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(safeSearchTermsLocationType)}`
-        : ''
-
-    // Preserve mock parameters in redirect
-    const mockLevel = request.query?.mockLevel
-    const mockLevelParam =
-      mockLevel !== undefined
-        ? `&mockLevel=${encodeURIComponent(mockLevel)}`
-        : ''
-
-    const mockPollutantBand = request.query?.mockPollutantBand
-    const mockPollutantParam =
-      mockPollutantBand !== undefined
-        ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
-        : ''
-
-    const testMode = request.query?.testMode
-    const testModeParam =
-      testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
-
-    return h
-      .redirect(
-        `/location?lang=${encodeURIComponent(lang)}${searchParams}${mockLevelParam}${mockPollutantParam}${testModeParam}`
-      )
-      .code(REDIRECT_STATUS_CODE)
-      .takeover()
-  }
-  return null
-}
-
-// Helper to determine location type
-function determineLocationType(locationData) {
-  if (locationData?.locationType === LOCATION_TYPE_UK) {
-    return LOCATION_TYPE_UK
-  }
-  if (locationData?.locationType === LOCATION_TYPE_NI) {
-    return LOCATION_TYPE_NI
-  }
-  return LOCATION_TYPE_UK
+  return validateSessionData(
+    locationData,
+    currentUrl,
+    lang,
+    h,
+    request,
+    locationId
+  )
 }
 
 // Helper to initialize request data
-function initializeRequestData(request) {
-  const { query, headers } = request
-  const locationId = request.params.id
-  const searchTermsSaved = request.yar.get('searchTermsSaved')
-  const useNewRicardoMeasurementsEnabled = config.get(
-    'useNewRicardoMeasurementsEnabled'
-  )
-  const currentUrl = request.url.href
-  const lang = query?.lang ?? LANG_EN
-
-  // '' Disable mock functionality when configured (production by default)
-  const mocksDisabled = config.get('disableTestMocks')
-
-  // Store mockLevel in session if provided
-  // Note: We preserve mockLevel in session across redirects
-  // Only clear if explicitly set to empty string or 'clear'
-  if (query?.mockLevel !== undefined && !mocksDisabled) {
-    // Check if explicitly clearing
-    if (query.mockLevel === '' || query.mockLevel === 'clear') {
-      request.yar.set('mockLevel', null)
-      logger.info(`🎨 Mock level explicitly cleared from session`)
-    } else {
-      request.yar.set('mockLevel', query.mockLevel)
-      logger.info(`🎨 Mock level ${query.mockLevel} stored in session`)
-    }
-  } else if (mocksDisabled && query?.mockLevel !== undefined) {
-    logger.warn(
-      `🚫 Attempted to set mock level when mocks disabled (disableTestMocks=true) - ignoring parameter`
-    )
-  }
-  // If parameter is not present, preserve existing session value (don't clear)
-
-  // '' Store mockDay in session if provided (optional: specific day for mock level)
-  // Valid values: today, day2, day3, day4, day5
-  if (query?.mockDay !== undefined && !mocksDisabled) {
-    // Check if explicitly clearing
-    if (query.mockDay === '' || query.mockDay === 'clear') {
-      request.yar.set('mockDay', null)
-      logger.info(`🎨 Mock day explicitly cleared from session`)
-    } else {
-      request.yar.set('mockDay', query.mockDay)
-      logger.info(`🎨 Mock day ${query.mockDay} stored in session`)
-    }
-  } else if (mocksDisabled && query?.mockDay !== undefined) {
-    logger.warn(
-      `🚫 Attempted to set mock day when mocks disabled (disableTestMocks=true) - ignoring parameter`
-    )
-  }
-  // If parameter is not present, preserve existing session value (don't clear)
-
-  // '' Store mockPollutantBand in session if provided
-  // Note: We preserve mockPollutantBand in session across redirects
-  // Only clear if explicitly set to empty string or 'clear'
-  logger.info(
-    `🔍 DEBUG mockPollutantBand - query.mockPollutantBand:`,
-    query?.mockPollutantBand
-  )
-  logger.info(
-    `🔍 DEBUG mockPollutantBand - type:`,
-    typeof query?.mockPollutantBand
-  )
-  logger.info(
-    `🔍 DEBUG mockPollutantBand - full query object:`,
-    JSON.stringify(query)
-  )
-
-  if (query?.mockPollutantBand !== undefined && !mocksDisabled) {
-    // Check if explicitly clearing
-    if (query.mockPollutantBand === '' || query.mockPollutantBand === 'clear') {
-      request.yar.set('mockPollutantBand', null)
-      logger.info(`🎨 Mock pollutant band explicitly cleared from session`)
-    } else {
-      request.yar.set('mockPollutantBand', query.mockPollutantBand)
-      logger.info(
-        `🎨 Mock pollutant band '${query.mockPollutantBand}' stored in session`
-      )
-    }
-  } else if (mocksDisabled && query?.mockPollutantBand !== undefined) {
-    logger.warn(
-      `🚫 Attempted to set mock pollutant band when mocks disabled (disableTestMocks=true) - ignoring parameter`
-    )
-  }
-  // If parameter is not present, preserve existing session value (don't clear)
-
-  // '' Store testMode in session if provided (but DON'T clear it if not present - let it persist)
-  // Disable when mocks are disabled
-  if (query?.testMode !== undefined && !mocksDisabled) {
-    request.yar.set('testMode', query.testMode)
-    logger.info(`🧪 Test mode ${query.testMode} stored in session`)
-  } else if (mocksDisabled && query?.testMode !== undefined) {
-    logger.warn(
-      `🚫 Attempted to set test mode when mocks disabled (disableTestMocks=true) - ignoring parameter`
-    )
-  }
-  // Note: We don't clear testMode automatically - it persists across requests (when mocks enabled)
-  // To clear it, user must explicitly visit with ?testMode=clear or restart session
-
-  return {
-    query,
-    headers,
-    locationId,
-    searchTermsSaved,
-    useNewRicardoMeasurementsEnabled,
-    currentUrl,
-    lang
-  }
+function handleRequestData(request) {
+  return initializeRequestData(request)
 }
 
 // Helper to initialize common variables
 function initializeCommonVariables(request) {
-  request.yar.clear('searchTermsSaved')
-  const formattedDate = moment().format('DD MMMM YYYY').split(' ')
-  const getMonth = calendarEnglish.findIndex(
-    (item) => item.indexOf(formattedDate[1]) !== -1
+  // '' Clear searchTermsSaved after handleSearchTermsRedirect check (0.685.0 behavior)
+  clearSessionKeyIfExists(request, 'searchTermsSaved')
+  const formattedDate = moment().format(DATE_FORMAT).split(' ')
+  const getMonth = calendarEnglish.findIndex((item) =>
+    item.includes(formattedDate[1])
   )
   const metaSiteUrl = getAirQualitySiteUrl(request)
   const locationData = request.yar.get('locationData') || {}
+
+  logger.info(
+    `[DEBUG initializeCommonVariables] locationData exists: ${!!locationData}`
+  )
+  logger.info(
+    `[DEBUG initializeCommonVariables] locationData.results exists: ${!!locationData?.results}`
+  )
+  logger.info(
+    `[DEBUG initializeCommonVariables] locationData.results is array: ${Array.isArray(locationData?.results)}`
+  )
+  logger.info(
+    `[DEBUG initializeCommonVariables] locationData.getForecasts exists: ${!!locationData?.getForecasts}`
+  )
 
   return {
     getMonth,
@@ -751,15 +687,8 @@ function processLocationResult(
 // Helper to handle all initialization and validation steps
 async function initializeAndValidateRequest(request, h) {
   // Initialize request data
-  const {
-    query,
-    headers,
-    locationId,
-    searchTermsSaved,
-    useNewRicardoMeasurementsEnabled,
-    currentUrl,
-    lang
-  } = initializeRequestData(request)
+  const { query, headers, locationId, searchTermsSaved, currentUrl, lang } =
+    handleRequestData(request)
 
   // Handle Welsh redirect
   const welshRedirect = handleWelshRedirect(query, locationId, h)
@@ -789,7 +718,9 @@ async function initializeAndValidateRequest(request, h) {
     currentUrl,
     lang,
     h,
-    request
+    request,
+    locationId,
+    getSearchTermsFromUrl
   )
   if (sessionValidationResult) {
     return { redirect: sessionValidationResult }
@@ -798,7 +729,6 @@ async function initializeAndValidateRequest(request, h) {
   return {
     data: {
       locationData,
-      useNewRicardoMeasurementsEnabled,
       locationId,
       lang,
       getMonth,
@@ -807,22 +737,8 @@ async function initializeAndValidateRequest(request, h) {
   }
 }
 
-// Helper to process location data and return appropriate response
-async function processLocationWorkflow({
-  locationData,
-  useNewRicardoMeasurementsEnabled,
-  locationId,
-  lang,
-  getMonth,
-  metaSiteUrl,
-  request,
-  h
-}) {
-  // Process location data
-  const { getForecasts } = locationData
-  const locationType = determineLocationType(locationData)
-
-  // 🔍 DEBUG: Check if query params or session testMode are present
+// Helper to apply test mode and log debug info
+function applyTestModeAndLogDebug(request, locationData) {
   const testModeFromQuery = request.query?.testMode
   const testModeFromSession = request.yar.get('testMode')
   const testMode = testModeFromQuery || testModeFromSession
@@ -831,100 +747,169 @@ async function processLocationWorkflow({
   logger.info(`🔍 session testMode:`, testModeFromSession)
   logger.info(`🔍 final testMode:`, testMode)
 
-  // 🧪 TESTING: Temporary test modes for visual verification
-  // TODO: REMOVE THIS CODE AFTER TESTING!
   if (testMode) {
-    logger.info(`🧪 TEST MODE ACTIVE: ${testMode}`)
-
-    switch (testMode) {
-      case 'noDailySummary':
-        // '' Remove daily summary text only (keep date if today)
-        logger.info('🧪 TEST: Removing daily summary data')
-        locationData.dailySummary = undefined
-        break
-
-      case 'oldDate':
-        // '' Set date to yesterday (date should NOT show)
-        logger.info('🧪 TEST: Setting old issue_date (yesterday)')
-        if (locationData.dailySummary) {
-          const yesterday = moment().subtract(1, 'days')
-          locationData.dailySummary.issue_date = yesterday.format(
-            'YYYY-MM-DD HH:mm:ss'
-          )
-          locationData.englishDate = yesterday.format('DD MMMM YYYY')
-          locationData.welshDate = yesterday.format('DD MMMM YYYY')
-          logger.info(
-            `🧪 Changed issue_date to: ${locationData.dailySummary.issue_date}`
-          )
-        }
-        break
-
-      case 'todayDate': {
-        // '' Set date to today (date SHOULD show)
-        logger.info('🧪 TEST: Setting today issue_date')
-        const today = moment()
-        // Create dailySummary if it doesn't exist (only for test mode - real app should have API data)
-        if (!locationData.dailySummary) {
-          logger.info(
-            '🧪 TEST: Creating dailySummary object (test mode only - not production data)'
-          )
-          locationData.dailySummary = {}
-        }
-        locationData.dailySummary.issue_date = today.format(
-          'YYYY-MM-DD HH:mm:ss'
-        )
-        locationData.englishDate = today.format('DD MMMM YYYY')
-        locationData.welshDate = today.format('DD MMMM YYYY')
-        logger.info(
-          `🧪 Changed issue_date to: ${locationData.dailySummary.issue_date}`
-        )
-        logger.info(`🧪 Changed englishDate to: ${locationData.englishDate}`)
-        break
-      }
-
-      case 'noDataOldDate': {
-        // '' Remove daily summary AND set old date (nothing should show)
-        logger.info('🧪 TEST: Removing summary AND setting old date')
-        const yesterday = moment().subtract(1, 'days')
-        locationData.dailySummary = {
-          issue_date: yesterday.format('YYYY-MM-DD HH:mm:ss')
-        }
-        locationData.englishDate = yesterday.format('DD MMMM YYYY')
-        locationData.welshDate = yesterday.format('DD MMMM YYYY')
-        logger.info(
-          `🧪 Changed issue_date to: ${locationData.dailySummary.issue_date}`
-        )
-        logger.info(`🧪 Removed daily summary data (only kept issue_date)`)
-        break
-      }
-
-      default:
-        logger.warn(`🧪 Unknown testMode: ${testMode}`)
-    }
-
-    // Re-calculate showSummaryDate after any changes
-    const isSummaryDateToday = (issueDate) => {
-      if (!issueDate) return false
-      const today = moment().format('YYYY-MM-DD')
-      const issueDateFormatted = moment(issueDate).format('YYYY-MM-DD')
-      return today === issueDateFormatted
-    }
-
-    locationData.showSummaryDate = isSummaryDateToday(
-      locationData.dailySummary?.issue_date
-    )
-    locationData.issueTime = getIssueTime(locationData.dailySummary?.issue_date)
-
-    // Update session with modified data
-    request.yar.set('locationData', locationData)
-    logger.info('🧪 TEST: Updated locationData in session')
-    logger.info(
-      `🧪 TEST: Final showSummaryDate = ${locationData.showSummaryDate}`
-    )
+    applyTestModeChanges(locationData, testMode, logger)
+    setSessionKeyIfSessionExists(request, 'locationData', locationData)
   }
-  // END TEST CODE
+}
 
-  // Get nearest location and related data
+// Helper to log and calculate summary date
+function logAndCalculateSummaryDate(locationData) {
+  logger.info(`🔍 ========== SUMMARY DATE DEBUG ==========`)
+  logger.info(
+    `🔍 showSummaryDate (from session): ${locationData.showSummaryDate}`
+  )
+  logger.info(
+    `🔍 dailySummary object exists: ${!!locationData[DAILY_SUMMARY_KEY]}`
+  )
+  logger.info(
+    `🔍 dailySummary.issue_date (raw): ${locationData[DAILY_SUMMARY_KEY]?.issue_date}`
+  )
+
+  calculateSummaryDate(locationData, logger)
+
+  logger.info(`🔍 FINAL showSummaryDate: ${locationData.showSummaryDate}`)
+  logger.info(`🔍 FINAL issueTime: ${locationData.issueTime}`)
+  logger.info(`🔍 ========================================`)
+}
+
+// Helper to process location data and return appropriate response
+async function processLocationWorkflow({
+  locationData,
+  locationId,
+  lang,
+  getMonth,
+  metaSiteUrl,
+  request,
+  h
+}) {
+  // '' Check if user is in notification registration flow (SMS or Email) from multiple-results page
+  const notificationFlow = request.yar.get('notificationFlow')
+  const fromSmsFlow = request.query?.fromSmsFlow === 'true'
+
+  if (notificationFlow && fromSmsFlow) {
+    // '' Update session with location data for notification
+    if (
+      locationData &&
+      locationData.results &&
+      locationData.results.length > 0
+    ) {
+      // '' Find the result that matches the locationId (not just the first one)
+      let result = locationData.results.find((r) => {
+        const id = r.GAZETTEER_ENTRY?.ID || r.ID
+        return id === locationId
+      })
+
+      // '' Fallback to first result if no match found (shouldn't happen)
+      if (!result) {
+        logger.warn(
+          `No result found matching locationId: ${locationId}, using first result`
+        )
+        result = locationData.results[0]
+      }
+
+      const gazetteerEntry = result.GAZETTEER_ENTRY || result
+
+      // '' Build proper location title from gazetteerEntry instead of using page title
+      let locationTitle = locationData.headerTitle
+
+      // '' If headerTitle is not set or is a generic page title, build from gazetteerEntry
+      if (!locationTitle || locationTitle === 'Locations matching') {
+        const name = gazetteerEntry.NAME2 || gazetteerEntry.NAME1 || ''
+        const district =
+          gazetteerEntry.DISTRICT_BOROUGH || gazetteerEntry.COUNTY_UNITARY || ''
+        locationTitle = district ? `${name}, ${district}` : name
+      }
+
+      // '' Convert British National Grid coordinates (GEOMETRY_X/Y) to lat/long
+      let lat, lon
+      if (gazetteerEntry.GEOMETRY_X && gazetteerEntry.GEOMETRY_Y) {
+        // '' Import OsGridRef for coordinate conversion
+        const OsGridRef = (await import('mt-osgridref')).default
+        const point = new OsGridRef(
+          gazetteerEntry.GEOMETRY_X,
+          gazetteerEntry.GEOMETRY_Y
+        )
+        const latlon = OsGridRef.osGridToLatLong(point)
+        lat = latlon._lat
+        lon = latlon._lon
+      } else {
+        // '' Fallback to direct latitude/longitude if available
+        lat =
+          gazetteerEntry.LATITUDE || gazetteerEntry.latitude || result.latitude
+        lon =
+          gazetteerEntry.LONGITUDE ||
+          gazetteerEntry.longitude ||
+          result.longitude
+      }
+
+      setSessionKeyIfSessionExists(request, 'location', locationTitle)
+      setSessionKeyIfSessionExists(request, 'locationId', locationId)
+      setSessionKeyIfSessionExists(request, 'latitude', lat)
+      setSessionKeyIfSessionExists(request, 'longitude', lon)
+
+      // '' DEBUG: Log session data immediately after setting to verify persistence
+      logger.info('Session debug - SET operation complete', {
+        sessionId: request.yar.id,
+        operation: 'SET',
+        keysSet: ['location', 'locationId', 'latitude', 'longitude'],
+        values: {
+          location: locationTitle,
+          locationId,
+          latitude: lat,
+          longitude: lon
+        },
+        verifyImmediate: {
+          location: request.yar.get('location'),
+          locationId: request.yar.get('locationId'),
+          latitude: request.yar.get('latitude'),
+          longitude: request.yar.get('longitude')
+        }
+      })
+
+      logger.info(
+        `[DEBUG processLocationWorkflow] Updated session location data:`,
+        {
+          location: locationTitle,
+          locationId,
+          lat,
+          lon,
+          hasLat: !!lat,
+          hasLon: !!lon,
+          geometryX: gazetteerEntry.GEOMETRY_X,
+          geometryY: gazetteerEntry.GEOMETRY_Y
+        }
+      )
+    }
+
+    logger.info(
+      `[DEBUG processLocationWorkflow] Redirecting to ${notificationFlow} confirm details (notificationFlow=${notificationFlow})`
+    )
+
+    if (notificationFlow === 'sms') {
+      const smsConfirmDetailsPath = config.get('notify.smsConfirmDetailsPath')
+      return h
+        .redirect(`${smsConfirmDetailsPath}?lang=${lang}`)
+        .code(REDIRECT_STATUS_CODE)
+    } else if (notificationFlow === 'email') {
+      const emailDetailsPath = config.get('notify.emailDetailsPath')
+      return h
+        .redirect(`${emailDetailsPath}?lang=${lang}`)
+        .code(REDIRECT_STATUS_CODE)
+    }
+  }
+
+  const { getForecasts } = locationData
+  const locationType = determineLocationType(locationData)
+
+  // '' If user is viewing a location page (not in notification flow), clear any stale notification flags
+  // '' This prevents the notification loop from persisting when user navigates away
+  if (notificationFlow && !fromSmsFlow) {
+    clearSessionKeyIfExists(request, 'notificationFlow')
+  }
+
+  applyTestModeAndLogDebug(request, locationData)
+
   const {
     locationDetails,
     forecastNum,
@@ -936,72 +921,15 @@ async function processLocationWorkflow({
     locationType,
     locationId,
     lang,
-    useNewRicardoMeasurementsEnabled,
     request
   )
 
-  // 🔍 DEBUG: Log showSummaryDate value
-  logger.info(`🔍 ========== SUMMARY DATE DEBUG ==========`)
-  logger.info(
-    `🔍 showSummaryDate (from session): ${locationData.showSummaryDate}`
-  )
-  logger.info(`🔍 dailySummary object exists: ${!!locationData.dailySummary}`)
-  logger.info(
-    `🔍 dailySummary.issue_date (raw): ${locationData.dailySummary?.issue_date}`
-  )
-  logger.info(
-    `🔍 dailySummary.today exists: ${!!locationData.dailySummary?.today}`
-  )
-  logger.info(`🔍 dailySummary.today value:`, locationData.dailySummary?.today)
-  logger.info(
-    `🔍 dailySummary.issue_date (type): ${typeof locationData.dailySummary?.issue_date}`
-  )
-  logger.info(`🔍 Today's date: ${moment().format('YYYY-MM-DD')}`)
+  logAndCalculateSummaryDate(locationData)
 
-  // '' Calculate showSummaryDate if not already set (for direct access to location pages)
-  if (
-    locationData.showSummaryDate === undefined &&
-    locationData.dailySummary?.issue_date
-  ) {
-    const today = moment().format('YYYY-MM-DD')
-    const issueDate = moment(locationData.dailySummary.issue_date).format(
-      'YYYY-MM-DD'
-    )
-    locationData.showSummaryDate = today === issueDate
-    locationData.issueTime = getIssueTime(locationData.dailySummary.issue_date)
-    logger.info(`🔍 CALCULATED showSummaryDate:`)
-    logger.info(`🔍   - today: ${today}`)
-    logger.info(`🔍   - issueDate: ${issueDate}`)
-    logger.info(`🔍   - match: ${today === issueDate}`)
-    logger.info(`🔍   - result: ${locationData.showSummaryDate}`)
-    logger.info(`🔍   - issueTime: ${locationData.issueTime}`)
-  } else if (locationData.showSummaryDate !== undefined) {
-    logger.info(
-      `🔍 showSummaryDate already set to: ${locationData.showSummaryDate}`
-    )
-    // '' Ensure issueTime is also set
-    logger.info(
-      `🔍   - checking issueTime: ${locationData.issueTime}, has issue_date: ${!!locationData.dailySummary?.issue_date}`
-    )
-    if (!locationData.issueTime && locationData.dailySummary?.issue_date) {
-      locationData.issueTime = getIssueTime(
-        locationData.dailySummary.issue_date
-      )
-      logger.info(`🔍   - issueTime calculated: ${locationData.issueTime}`)
-      // '' Update session with the calculated issueTime
-      request.yar.set('locationData', locationData)
-      logger.info(`🔍   - issueTime saved to session`)
-    }
-  } else {
-    logger.info(
-      `🔍 No issue_date available, showSummaryDate will be false/undefined`
-    )
+  if (locationData.issueTime && !request.yar.get('locationData')?.issueTime) {
+    setSessionKeyIfSessionExists(request, 'locationData', locationData)
   }
-  logger.info(`🔍 FINAL showSummaryDate: ${locationData.showSummaryDate}`)
-  logger.info(`🔍 FINAL issueTime: ${locationData.issueTime}`)
-  logger.info(`🔍 ========================================`)
 
-  // Process result
   if (locationDetails) {
     const viewData = buildLocationViewData({
       locationDetails,
@@ -1029,10 +957,15 @@ async function processLocationWorkflow({
 
 const getLocationDetailsController = {
   handler: async (request, h) => {
+    logger.info(
+      `[DEBUG TOP OF HANDLER] Request to /location/${request.params.id} - URL: ${request.url.pathname}`
+    )
+
     try {
       // Handle initialization and validation
       const initResult = await initializeAndValidateRequest(request, h)
       if (initResult.redirect) {
+        logger.info(`[DEBUG TOP OF HANDLER] Returning redirect from initResult`)
         return initResult.redirect
       }
 
@@ -1044,6 +977,7 @@ const getLocationDetailsController = {
       })
     } catch (error) {
       logger.error(`error on single location ${error.message}`)
+      logger.error(`error stack: ${error.stack}`)
       return h
         .response('Internal Server Error')
         .code(STATUS_INTERNAL_SERVER_ERROR)
