@@ -179,7 +179,8 @@ vi.mock('../../config/index.js', () => ({
           useNewRicardoMeasurementsEnabled: true,
           metaSiteUrl: 'https://uk-air.defra.gov.uk',
           nodeEnv: 'test',
-          disableTestMocks: false
+          disableTestMocks: false,
+          'session.cache.name': 'session'
         })[key]
     )
   }

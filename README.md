@@ -13,6 +13,7 @@ Updated for SonarQube compliance
   - [Npm scripts](#npm-scripts)
 - [Documentation](#documentation)
   - [API specifications](#api-specifications)
+  - [Operational runbooks](#operational-runbooks)
 - [Docker](#docker)
   - [Development Image](#development-image)
   - [Production Image](#production-image)
@@ -103,6 +104,10 @@ npm run
 ### API specifications
 
 - [Air Pollution Alerts API spec](./docs/AIR_POLLUTION_ALERTS_API_SPEC.md)
+
+### Operational runbooks
+
+- [Bot traffic + Redis session monitoring runbook](./docs/BOT_REDIS_TEST_RUNBOOK.md)
 
 ## Docker
 

@@ -47,10 +47,165 @@ import {
   applyMockPollutantsToSites
 } from '../common/helpers/mock-pollutant-level.js'
 import { getForecastWarning } from '../locations/helpers/forecast-warning.js'
+import { getSessionRedisClient } from '../common/helpers/session-cache/cache-engine.js'
 
 const logger = createLogger()
 const DATE_FORMAT = 'DD MMMM YYYY'
 const DAILY_SUMMARY_KEY = 'dailySummary'
+const SESSION_GUARD_LOG_LIMIT_PER_REQUEST = 3
+const REDIS_PRESSURE_CHECK_INTERVAL_MS = 10000
+const REDIS_PRESSURE_WINDOW_MS = 30000
+const REDIS_PRESSURE_MIN_GROWTH_BYTES = 20 * 1024 * 1024
+const REDIS_PRESSURE_MIN_GROWTH_RATIO = 0.2
+const REDIS_PRESSURE_COOLDOWN_MS = 300000
+
+const redisPressureGuardState = {
+  lastCheckAtMs: 0,
+  lastUsedMemoryBytes: null,
+  activeUntilMs: 0,
+  inFlight: false
+}
+
+function hasSessionCookie(request) {
+  const sessionCookieName = config.get('session.cache.name')
+  return Boolean(request?.state?.[sessionCookieName])
+}
+
+function logSessionGuardSkip(request, operation, sessionKey, reason) {
+  const currentCount = request?.app?.sessionGuardSkipCount || 0
+  const nextCount = currentCount + 1
+
+  if (request?.app) {
+    request.app.sessionGuardSkipCount = nextCount
+  }
+
+  if (nextCount <= SESSION_GUARD_LOG_LIMIT_PER_REQUEST) {
+    logger.info(
+      `[SESSION GUARD] Skipped session ${operation} for key='${sessionKey}' (${reason})`
+    )
+  }
+}
+
+function parseRedisInfoValue(infoText, key) {
+  const match = infoText?.match(new RegExp(`^${key}:(.*)$`, 'm'))
+  return match && match[1] ? match[1].trim() : ''
+}
+
+function isRedisPressureGuardActive() {
+  return redisPressureGuardState.activeUntilMs > Date.now()
+}
+
+function maybeRefreshRedisPressureGuard() {
+  const nowMs = Date.now()
+
+  if (redisPressureGuardState.inFlight) {
+    return
+  }
+
+  if (
+    nowMs - redisPressureGuardState.lastCheckAtMs <
+    REDIS_PRESSURE_CHECK_INTERVAL_MS
+  ) {
+    return
+  }
+
+  const redisClient = getSessionRedisClient()
+  if (!redisClient) {
+    return
+  }
+
+  const previousCheckAtMs = redisPressureGuardState.lastCheckAtMs
+  redisPressureGuardState.inFlight = true
+  redisPressureGuardState.lastCheckAtMs = nowMs
+
+  redisClient
+    .info('memory')
+    .then((memoryInfo) => {
+      const usedMemoryBytes = Number(
+        parseRedisInfoValue(memoryInfo, 'used_memory')
+      )
+
+      if (!Number.isFinite(usedMemoryBytes)) {
+        return
+      }
+
+      const previousUsedMemoryBytes =
+        redisPressureGuardState.lastUsedMemoryBytes
+      const elapsedMs = nowMs - previousCheckAtMs
+
+      if (
+        Number.isFinite(previousUsedMemoryBytes) &&
+        elapsedMs <= REDIS_PRESSURE_WINDOW_MS
+      ) {
+        const growthBytes = usedMemoryBytes - previousUsedMemoryBytes
+        const growthRatio =
+          previousUsedMemoryBytes > 0
+            ? growthBytes / previousUsedMemoryBytes
+            : 0
+
+        if (
+          growthBytes >= REDIS_PRESSURE_MIN_GROWTH_BYTES &&
+          growthRatio >= REDIS_PRESSURE_MIN_GROWTH_RATIO
+        ) {
+          redisPressureGuardState.activeUntilMs =
+            Date.now() + REDIS_PRESSURE_COOLDOWN_MS
+
+          logger.warn(
+            `[SESSION GUARD] Redis pressure guard activated growthBytes=${growthBytes} growthRatio=${growthRatio.toFixed(3)} cooldownMs=${REDIS_PRESSURE_COOLDOWN_MS}`
+          )
+        }
+      }
+
+      redisPressureGuardState.lastUsedMemoryBytes = usedMemoryBytes
+    })
+    .catch((error) => {
+      logger.warn(
+        `[SESSION GUARD] Redis pressure sample failed: ${error.message}`
+      )
+    })
+    .finally(() => {
+      redisPressureGuardState.inFlight = false
+    })
+}
+
+function isSessionMutationAllowed(request, operation, sessionKey) {
+  if (!hasSessionCookie(request)) {
+    logSessionGuardSkip(request, operation, sessionKey, 'no session cookie')
+    return false
+  }
+
+  maybeRefreshRedisPressureGuard()
+  if (isRedisPressureGuardActive()) {
+    logSessionGuardSkip(
+      request,
+      operation,
+      sessionKey,
+      'redis pressure guard active'
+    )
+    return false
+  }
+
+  return true
+}
+
+function clearSessionKeyIfExists(request, sessionKey) {
+  if (!isSessionMutationAllowed(request, 'clear', sessionKey)) {
+    return
+  }
+
+  const currentValue = request?.yar?.get?.(sessionKey)
+  if (currentValue !== undefined) {
+    request.yar.clear(sessionKey)
+  }
+}
+
+function setSessionKeyIfSessionExists(request, sessionKey, value) {
+  if (!isSessionMutationAllowed(request, 'set', sessionKey)) {
+    return
+  }
+
+  request.yar.set(sessionKey, value)
+}
 
 // '' Helper to resolve alert coordinates with NI-safe fallback
 function resolveAlertLatLon(locationData = {}, fallbackLatlon = {}) {
@@ -162,7 +317,7 @@ function handleSearchTermsRedirect(
       )
     }
 
-    request.yar.clear('locationData')
+    clearSessionKeyIfExists(request, 'locationData')
     logger.info('Redirecting to location search')
 
     // '' Disable mock functionality when configured (production by default)
@@ -354,6 +509,10 @@ function updateSessionWithNearest(
   nearestLocation,
   nearestLocationsRange
 ) {
+  if (!isSessionMutationAllowed(request, 'set', 'locationData')) {
+    return
+  }
+
   // '' Ensure we only assign valid arrays to prevent template errors
   const nearestLocationSafe = Array.isArray(nearestLocation)
     ? nearestLocation
@@ -473,7 +632,7 @@ function handleRequestData(request) {
 // Helper to initialize common variables
 function initializeCommonVariables(request) {
   // '' Clear searchTermsSaved after handleSearchTermsRedirect check (0.685.0 behavior)
-  request.yar.clear('searchTermsSaved')
+  clearSessionKeyIfExists(request, 'searchTermsSaved')
   const formattedDate = moment().format(DATE_FORMAT).split(' ')
   const getMonth = calendarEnglish.findIndex((item) =>
     item.includes(formattedDate[1])
@@ -590,7 +749,7 @@ function applyTestModeAndLogDebug(request, locationData) {
 
   if (testMode) {
     applyTestModeChanges(locationData, testMode, logger)
-    request.yar.set('locationData', locationData)
+    setSessionKeyIfSessionExists(request, 'locationData', locationData)
   }
 }
 
@@ -684,10 +843,10 @@ async function processLocationWorkflow({
           result.longitude
       }
 
-      request.yar.set('location', locationTitle)
-      request.yar.set('locationId', locationId)
-      request.yar.set('latitude', lat)
-      request.yar.set('longitude', lon)
+      setSessionKeyIfSessionExists(request, 'location', locationTitle)
+      setSessionKeyIfSessionExists(request, 'locationId', locationId)
+      setSessionKeyIfSessionExists(request, 'latitude', lat)
+      setSessionKeyIfSessionExists(request, 'longitude', lon)
 
       // '' DEBUG: Log session data immediately after setting to verify persistence
       logger.info('Session debug - SET operation complete', {
@@ -746,7 +905,7 @@ async function processLocationWorkflow({
   // '' If user is viewing a location page (not in notification flow), clear any stale notification flags
   // '' This prevents the notification loop from persisting when user navigates away
   if (notificationFlow && !fromSmsFlow) {
-    request.yar.clear('notificationFlow')
+    clearSessionKeyIfExists(request, 'notificationFlow')
   }
 
   applyTestModeAndLogDebug(request, locationData)
@@ -768,7 +927,7 @@ async function processLocationWorkflow({
   logAndCalculateSummaryDate(locationData)
 
   if (locationData.issueTime && !request.yar.get('locationData')?.issueTime) {
-    request.yar.set('locationData', locationData)
+    setSessionKeyIfSessionExists(request, 'locationData', locationData)
   }
 
   if (locationDetails) {

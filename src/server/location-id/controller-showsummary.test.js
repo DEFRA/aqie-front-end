@@ -179,7 +179,8 @@ vi.mock('../../config/index.js', () => ({
           useNewRicardoMeasurementsEnabled: true,
           metaSiteUrl: 'https://uk-air.defra.gov.uk',
           nodeEnv: 'test',
-          disableTestMocks: false
+          disableTestMocks: false,
+          'session.cache.name': 'session'
         })[key]
     )
   }
@@ -227,9 +228,11 @@ describe('Location ID Controller - ShowSummaryDate Calculations', () => {
       showSummaryDate: undefined // NOSONAR
     }
 
-    mockRequest.yar.get
-      .mockReturnValueOnce(true)
-      .mockReturnValueOnce(mockLocationData)
+    mockRequest.yar.get.mockImplementation((key) => {
+      if (key === 'searchTermsSaved') return true
+      if (key === 'locationData') return mockLocationData
+      return null
+    })
 
     vi.mocked(getIdMatch).mockReturnValue({
       locationIndex: 0,
@@ -264,15 +267,11 @@ describe('Location ID Controller - ShowSummaryDate Calculations', () => {
       showSummaryDate: undefined // NOSONAR
     }
 
-    mockRequest.yar.get = vi
-      .fn()
-      .mockReturnValueOnce(true)
-      .mockReturnValueOnce(mockLocationData)
-      .mockReturnValueOnce(null)
-      .mockReturnValueOnce(null)
-      .mockReturnValueOnce(null)
-      .mockReturnValueOnce(null)
-      .mockReturnValue(null)
+    mockRequest.yar.get = vi.fn((key) => {
+      if (key === 'searchTermsSaved') return true
+      if (key === 'locationData') return mockLocationData
+      return null
+    })
 
     vi.mocked(getIdMatch).mockReturnValue({
       locationIndex: 0,
@@ -320,15 +319,11 @@ describe('Location ID Controller - ShowSummaryDate Preservation', () => {
       issueTime: '10:00'
     }
 
-    mockRequest.yar.get = vi
-      .fn()
-      .mockReturnValueOnce(true)
-      .mockReturnValueOnce(mockLocationData)
-      .mockReturnValueOnce(null)
-      .mockReturnValueOnce(null)
-      .mockReturnValueOnce(null)
-      .mockReturnValueOnce(null)
-      .mockReturnValue(null)
+    mockRequest.yar.get = vi.fn((key) => {
+      if (key === 'searchTermsSaved') return true
+      if (key === 'locationData') return mockLocationData
+      return null
+    })
 
     vi.mocked(getIdMatch).mockReturnValue({
       locationIndex: 0,

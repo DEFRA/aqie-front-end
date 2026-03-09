@@ -23,6 +23,7 @@ export function createMockRequestResponse() {
     query: { lang: 'en' },
     headers: { referer: 'https://example.com/previous' },
     url: { href: 'https://example.com/location/test-location-123?lang=en' },
+    state: { session: 'mock-session-cookie' },
     yar: {
       get: vi.fn(),
       set: vi.fn(),
