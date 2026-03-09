@@ -92,6 +92,38 @@ const activeBreachesEn = [
     pollutantLink: '/pollutants/ozone?lang=en',
     alertStartedText: 'About 10 hours ago (5:33am, 6 March 2026)',
     lastUpdatedText: '2 hours ago (1:42pm)'
+  },
+  {
+    region: 'Greater London',
+    monitoringLocation: 'London Bloomsbury',
+    pollutantName: 'PM2.5',
+    pollutantLink: '/pollutants/particulate-matter-25?lang=en',
+    alertStartedText: 'About 8 hours ago (7:18am, 6 March 2026)',
+    lastUpdatedText: '1 hour ago (2:37pm)'
+  },
+  {
+    region: 'West Midlands',
+    monitoringLocation: 'Birmingham Hall Green',
+    pollutantName: 'Nitrogen dioxide',
+    pollutantLink: '/pollutants/nitrogen-dioxide?lang=en',
+    alertStartedText: 'About 6 hours ago (9:06am, 6 March 2026)',
+    lastUpdatedText: '45 minutes ago (2:52pm)'
+  },
+  {
+    region: 'Yorkshire and the Humber',
+    monitoringLocation: 'Leeds Headingley',
+    pollutantName: 'PM10',
+    pollutantLink: '/pollutants/particulate-matter-10?lang=en',
+    alertStartedText: 'About 5 hours ago (10:11am, 6 March 2026)',
+    lastUpdatedText: '35 minutes ago (3:02pm)'
+  },
+  {
+    region: 'South East',
+    monitoringLocation: 'Portsmouth Centre',
+    pollutantName: 'Sulphur dioxide',
+    pollutantLink: '/pollutants/sulphur-dioxide?lang=en',
+    alertStartedText: 'About 4 hours ago (11:08am, 6 March 2026)',
+    lastUpdatedText: '20 minutes ago (3:17pm)'
   }
 ]
 
@@ -133,6 +165,167 @@ const pastBreachesEn = [
   },
   {
     title: 'London N. Kensington, Greater London, England (25 June 2025)',
+    noInformation: true
+  },
+  {
+    title: 'Southampton Centre, South East, England (17 June 2025)',
+    alertRegion: 'South East, England',
+    monitoringArea: 'Southampton Centre',
+    pollutantName: 'Nitrogen dioxide',
+    pollutantLink: '/pollutants/nitrogen-dioxide?lang=en',
+    dataSource: 'Automatic Urban and Rural Network (AURN)',
+    alertPeriodFrom: '10:14am, 17 June 2025',
+    alertPeriodTo: '10:14am, 18 June 2025'
+  },
+  {
+    title: 'Cardiff Centre, South Wales, Wales (9 June 2025)',
+    alertRegion: 'South Wales, Wales',
+    monitoringArea: 'Cardiff Centre',
+    pollutantName: 'PM10',
+    pollutantLink: '/pollutants/particulate-matter-10?lang=en',
+    dataSource: 'Automatic Urban and Rural Network (AURN)',
+    alertPeriodFrom: '2:32pm, 9 June 2025',
+    alertPeriodTo: '2:32pm, 10 June 2025'
+  },
+  {
+    title: 'Newcastle Centre, North East, England (28 May 2025)',
+    alertRegion: 'North East, England',
+    monitoringArea: 'Newcastle Centre',
+    pollutantName: 'Ozone',
+    pollutantLink: '/pollutants/ozone?lang=en',
+    dataSource: 'Automatic Urban and Rural Network (AURN)',
+    alertPeriodFrom: '9:06am, 28 May 2025',
+    alertPeriodTo: '9:06am, 29 May 2025'
+  },
+  {
+    title: 'Leicester University, East Midlands, England (15 May 2025)',
+    alertRegion: 'East Midlands, England',
+    monitoringArea: 'Leicester University',
+    pollutantName: 'PM2.5',
+    pollutantLink: '/pollutants/particulate-matter-25?lang=en',
+    dataSource: 'Automatic Urban and Rural Network (AURN)',
+    alertPeriodFrom: '6:48am, 15 May 2025',
+    alertPeriodTo: '6:48am, 16 May 2025'
+  },
+  {
+    title: 'Liverpool Speke, North West, England (2 May 2025)',
+    noInformation: true
+  },
+  {
+    title: 'Manchester Piccadilly, North West, England (20 April 2025)',
+    alertRegion: 'North West, England',
+    monitoringArea: 'Manchester Piccadilly',
+    pollutantName: 'Nitrogen dioxide',
+    pollutantLink: '/pollutants/nitrogen-dioxide?lang=en',
+    dataSource: 'Automatic Urban and Rural Network (AURN)',
+    alertPeriodFrom: '4:25pm, 20 April 2025',
+    alertPeriodTo: '4:25pm, 21 April 2025'
+  },
+  {
+    title: 'Plymouth Centre, South West, England (8 April 2025)',
+    alertRegion: 'South West, England',
+    monitoringArea: 'Plymouth Centre',
+    pollutantName: 'Sulphur dioxide',
+    pollutantLink: '/pollutants/sulphur-dioxide?lang=en',
+    dataSource: 'Automatic Urban and Rural Network (AURN)',
+    alertPeriodFrom: '1:11pm, 8 April 2025',
+    alertPeriodTo: '1:11pm, 9 April 2025'
+  },
+  {
+    title: 'Nottingham Centre, East Midlands, England (31 March 2025)',
+    alertRegion: 'East Midlands, England',
+    monitoringArea: 'Nottingham Centre',
+    pollutantName: 'PM10',
+    pollutantLink: '/pollutants/particulate-matter-10?lang=en',
+    dataSource: 'Automatic Urban and Rural Network (AURN)',
+    alertPeriodFrom: '11:58am, 31 March 2025',
+    alertPeriodTo: '11:58am, 1 April 2025'
+  },
+  {
+    title: 'Belfast Centre, Northern Ireland (23 March 2025)',
+    noInformation: true
+  },
+  {
+    title: 'Leeds Centre, Yorkshire and the Humber, England (14 March 2025)',
+    alertRegion: 'Yorkshire and the Humber, England',
+    monitoringArea: 'Leeds Centre',
+    pollutantName: 'Ozone',
+    pollutantLink: '/pollutants/ozone?lang=en',
+    dataSource: 'Automatic Urban and Rural Network (AURN)',
+    alertPeriodFrom: '3:05pm, 14 March 2025',
+    alertPeriodTo: '3:05pm, 15 March 2025'
+  },
+  {
+    title:
+      'Sheffield Tinsley, Yorkshire and the Humber, England (2 March 2025)',
+    alertRegion: 'Yorkshire and the Humber, England',
+    monitoringArea: 'Sheffield Tinsley',
+    pollutantName: 'PM2.5',
+    pollutantLink: '/pollutants/particulate-matter-25?lang=en',
+    dataSource: 'Automatic Urban and Rural Network (AURN)',
+    alertPeriodFrom: '9:44am, 2 March 2025',
+    alertPeriodTo: '9:44am, 3 March 2025'
+  },
+  {
+    title: 'Oxford Centre Roadside, South East, England (19 February 2025)',
+    noInformation: true
+  },
+  {
+    title: 'Bristol St Pauls, South West, England (11 February 2025)',
+    alertRegion: 'South West, England',
+    monitoringArea: 'Bristol St Pauls',
+    pollutantName: 'Nitrogen dioxide',
+    pollutantLink: '/pollutants/nitrogen-dioxide?lang=en',
+    dataSource: 'Automatic Urban and Rural Network (AURN)',
+    alertPeriodFrom: '7:20am, 11 February 2025',
+    alertPeriodTo: '7:20am, 12 February 2025'
+  },
+  {
+    title: 'Hull Freetown, Yorkshire and the Humber, England (26 January 2025)',
+    alertRegion: 'Yorkshire and the Humber, England',
+    monitoringArea: 'Hull Freetown',
+    pollutantName: 'PM10',
+    pollutantLink: '/pollutants/particulate-matter-10?lang=en',
+    dataSource: 'Automatic Urban and Rural Network (AURN)',
+    alertPeriodFrom: '5:10pm, 26 January 2025',
+    alertPeriodTo: '5:10pm, 27 January 2025'
+  },
+  {
+    title: 'Swansea Centre, South Wales, Wales (15 January 2025)',
+    alertRegion: 'South Wales, Wales',
+    monitoringArea: 'Swansea Centre',
+    pollutantName: 'Sulphur dioxide',
+    pollutantLink: '/pollutants/sulphur-dioxide?lang=en',
+    dataSource: 'Automatic Urban and Rural Network (AURN)',
+    alertPeriodFrom: '12:01pm, 15 January 2025',
+    alertPeriodTo: '12:01pm, 16 January 2025'
+  },
+  {
+    title: 'Cambridge Roadside, East of England (7 January 2025)',
+    noInformation: true
+  },
+  {
+    title: 'Derby Centre, East Midlands, England (29 December 2024)',
+    alertRegion: 'East Midlands, England',
+    monitoringArea: 'Derby Centre',
+    pollutantName: 'Ozone',
+    pollutantLink: '/pollutants/ozone?lang=en',
+    dataSource: 'Automatic Urban and Rural Network (AURN)',
+    alertPeriodFrom: '8:23am, 29 December 2024',
+    alertPeriodTo: '8:23am, 30 December 2024'
+  },
+  {
+    title: 'Reading New Town, South East, England (14 December 2024)',
+    alertRegion: 'South East, England',
+    monitoringArea: 'Reading New Town',
+    pollutantName: 'PM2.5',
+    pollutantLink: '/pollutants/particulate-matter-25?lang=en',
+    dataSource: 'Automatic Urban and Rural Network (AURN)',
+    alertPeriodFrom: '10:35am, 14 December 2024',
+    alertPeriodTo: '10:35am, 15 December 2024'
+  },
+  {
+    title: 'Exeter Centre, South West, England (3 December 2024)',
     noInformation: true
   }
 ]

@@ -54,8 +54,21 @@ const logger = createLogger()
 /**
  * ''  Build options with API key headers
  */
-function buildApiOptions() {
-  const cdpXApiKey = config.get('cdpXApiKey')
+function buildApiOptions(request) {
+  const env = request?.app?.config?.env || process.env.NODE_ENV
+  let cdpXApiKey
+
+  if (env === 'perf-test') {
+    cdpXApiKey = config.get('cdpXApiKeyPerfTest') || config.get('cdpXApiKey')
+  } else if (env === 'test') {
+    cdpXApiKey = config.get('cdpXApiKeyTest') || config.get('cdpXApiKey')
+  } else {
+    cdpXApiKey =
+      config.get('cdpXApiKeyTest') ||
+      config.get('cdpXApiKeyDev') ||
+      config.get('cdpXApiKey')
+  }
+
   if (cdpXApiKey) {
     return { headers: { 'x-api-key': cdpXApiKey } }
   }
@@ -90,7 +103,7 @@ const fetchForecasts = async (di = {}) => {
   const forecastsResult = await callForecastsApi({
     config: di.config || config,
     optionsEphemeralProtected:
-      di.optionsEphemeralProtected || buildApiOptions(),
+      di.optionsEphemeralProtected || buildApiOptions(di.request),
     options: di.options || {},
     catchFetchError: di.catchFetchError || catchFetchError,
     httpStatusOk: di.HTTP_STATUS_OK || STATUS_OK,
@@ -107,7 +120,7 @@ export const fetchMeasurements = async (latitude, longitude, di = {}) => {
   const diLogger = di.logger || logger
   const diConfig = di.config || config
   const diCatchFetchError = di.catchFetchError || catchFetchError
-  const diOptions = di.optionsEphemeralProtected || buildApiOptions()
+  const diOptions = di.optionsEphemeralProtected || buildApiOptions(di.request)
   const diExtraOptions = di.options || {}
   const diIsTestMode =
     typeof di.isTestMode === 'function' ? di.isTestMode : isTestMode

@@ -26,6 +26,53 @@ function mapActiveBreaches(activeBreaches, activeContent) {
   }))
 }
 
+function buildPastBreachHtml(breach, pastContent) {
+  if (breach.noInformation) {
+    return `<p class="govuk-body">${pastContent.noInformation}</p>`
+  }
+
+  return `
+    <dl class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-0">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">${pastContent.labels.alertRegion}</dt>
+        <dd class="govuk-summary-list__value">${breach.alertRegion}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">${pastContent.labels.monitoringArea}</dt>
+        <dd class="govuk-summary-list__value">${breach.monitoringArea}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">${pastContent.labels.pollutant}</dt>
+        <dd class="govuk-summary-list__value">
+          <a href="${breach.pollutantLink}" class="govuk-link">${breach.pollutantName}</a>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">${pastContent.labels.dataSource}</dt>
+        <dd class="govuk-summary-list__value">${breach.dataSource}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">${pastContent.labels.alertPeriod}</dt>
+        <dd class="govuk-summary-list__value">
+          ${pastContent.fromPrefix} ${breach.alertPeriodFrom}<br>
+          ${pastContent.toPrefix} ${breach.alertPeriodTo}
+        </dd>
+      </div>
+    </dl>
+  `
+}
+
+function mapPastBreachesToAccordionItems(pastBreaches, pastContent) {
+  return pastBreaches.map((breach) => ({
+    heading: {
+      text: breach.title
+    },
+    content: {
+      html: buildPastBreachHtml(breach, pastContent)
+    }
+  }))
+}
+
 function getViewModel(
   content,
   activeBreaches,
@@ -48,6 +95,10 @@ function getViewModel(
     past: content.past,
     activeBreaches: mapActiveBreaches(activeBreaches, content.active),
     pastBreaches,
+    pastAccordionItems: mapPastBreachesToAccordionItems(
+      pastBreaches,
+      content.past
+    ),
     currentPath,
     metaSiteUrl: getAirQualitySiteUrl(request),
     phaseBanner: sharedContent.phaseBanner,

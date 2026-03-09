@@ -1,4 +1,5 @@
 {% extends "layouts/page.njk" %}
+{% from "govuk/components/accordion/macro.njk" import govukAccordion %}
 
 {% set pageTitle = pageTitle %}
 
@@ -45,51 +46,47 @@
   <h2 class="govuk-heading-m">{{ past.heading }}</h2>
   <h3 class="govuk-heading-s">{{ past.subheading }}</h3>
 
-  <div class="govuk-accordion" data-module="govuk-accordion" id="past-breaches-accordion">
+  {% if pastBreaches.length > 1 %}
+    {{ govukAccordion({
+      id: "past-breaches-accordion",
+      showAllSectionsText: past.showText,
+      hideAllSectionsText: past.hideText,
+      items: pastAccordionItems
+    }) }}
+  {% else %}
     {% for breach in pastBreaches %}
-      <div class="govuk-accordion__section">
-        <div class="govuk-accordion__section-header">
-          <h4 class="govuk-accordion__section-heading">
-            <span class="govuk-accordion__section-button" id="past-breach-{{ loop.index }}-heading">
-              {{ breach.title }}
-            </span>
-          </h4>
-        </div>
-
-        <div id="past-breach-{{ loop.index }}-content" class="govuk-accordion__section-content" aria-labelledby="past-breach-{{ loop.index }}-heading">
-          {% if breach.noInformation %}
-            <p class="govuk-body">{{ past.noInformation }}</p>
-          {% else %}
-            <dl class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-0">
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">{{ past.labels.alertRegion }}</dt>
-                <dd class="govuk-summary-list__value">{{ breach.alertRegion }}</dd>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">{{ past.labels.monitoringArea }}</dt>
-                <dd class="govuk-summary-list__value">{{ breach.monitoringArea }}</dd>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">{{ past.labels.pollutant }}</dt>
-                <dd class="govuk-summary-list__value">
-                  <a href="{{ breach.pollutantLink }}" class="govuk-link">{{ breach.pollutantName }}</a>
-                </dd>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">{{ past.labels.dataSource }}</dt>
-                <dd class="govuk-summary-list__value">{{ breach.dataSource }}</dd>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">{{ past.labels.alertPeriod }}</dt>
-                <dd class="govuk-summary-list__value">
-                  {{ past.fromPrefix }} {{ breach.alertPeriodFrom }}<br>
-                  {{ past.toPrefix }} {{ breach.alertPeriodTo }}
-                </dd>
-              </div>
-            </dl>
-          {% endif %}
-        </div>
-      </div>
+      <h4 class="govuk-heading-s">{{ breach.title }}</h4>
+      {% if breach.noInformation %}
+        <p class="govuk-body">{{ past.noInformation }}</p>
+      {% else %}
+        <dl class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-0">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">{{ past.labels.alertRegion }}</dt>
+            <dd class="govuk-summary-list__value">{{ breach.alertRegion }}</dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">{{ past.labels.monitoringArea }}</dt>
+            <dd class="govuk-summary-list__value">{{ breach.monitoringArea }}</dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">{{ past.labels.pollutant }}</dt>
+            <dd class="govuk-summary-list__value">
+              <a href="{{ breach.pollutantLink }}" class="govuk-link">{{ breach.pollutantName }}</a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">{{ past.labels.dataSource }}</dt>
+            <dd class="govuk-summary-list__value">{{ breach.dataSource }}</dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">{{ past.labels.alertPeriod }}</dt>
+            <dd class="govuk-summary-list__value">
+              {{ past.fromPrefix }} {{ breach.alertPeriodFrom }}<br>
+              {{ past.toPrefix }} {{ breach.alertPeriodTo }}
+            </dd>
+          </div>
+        </dl>
+      {% endif %}
     {% endfor %}
-  </div>
+  {% endif %}
 {% endblock %}

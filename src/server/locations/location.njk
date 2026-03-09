@@ -403,8 +403,8 @@
           </a>
         </li>
         <li>
-          <a class="govuk-link" href="{{ smsMobileNumberPath or '/notify/register/sms-mobile-number' }}?location={{ headerTitle | urlencode }}&locationId={{ locationId | urlencode }}{% if latlon.lat %}&lat={{ latlon.lat }}{% endif %}{% if latlon.lon %}&long={{ latlon.lon }}{% endif %}">
-            {% if lang == 'cy' %}Rhybuddion llygredd aer{% else %}Air pollution breaches{% endif %}
+          <a class="govuk-link" href="{% if lang == 'cy' %}/torriadau-llygredd-aer/cy?lang=cy{% else %}/air-pollution-breaches?lang=en{% endif %}">
+            {% if lang == 'cy' %}Torriadau llygredd aer{% else %}Air pollution breaches{% endif %}
           </a>
         </li>
       </ul>
