@@ -196,6 +196,12 @@ export const config = convict({
         default: isProduction ? 'redis' : 'memory',
         env: 'SESSION_CACHE_ENGINE'
       },
+      maxByteSize: {
+        doc: 'Maximum in-memory cache size in bytes when SESSION_CACHE_ENGINE=memory',
+        format: Number,
+        default: 536870912, // 512MB
+        env: 'SESSION_CACHE_MEMORY_MAX_BYTE_SIZE'
+      },
       name: {
         doc: 'server side session cache name',
         format: String,

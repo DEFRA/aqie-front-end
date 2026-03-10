@@ -20,6 +20,7 @@ export function getCacheEngine(engine) {
     )
   }
 
+  const maxByteSize = config.get('session.cache.maxByteSize')
   logger.info('Using Catbox Memory session cache')
-  return new CatboxMemory()
+  return new CatboxMemory({ maxByteSize })
 }

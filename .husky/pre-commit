@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 
-# Ensure node and npm are in PATH
-export PATH=$PATH:/Users/2057586/.nvm/versions/node/v22.16.0/bin
+# # Ensure node and npm are in PATH
+# export PATH=$PATH:/Users/2057586/.nvm/versions/node/v22.16.0/bin
 
-/Users/2057586/.nvm/versions/node/v22.16.0/bin/npm test && /Users/2057586/.nvm/versions/node/v22.16.0/bin/npm run lint && /Users/2057586/.nvm/versions/node/v22.16.0/bin/npm run format:check
+# /Users/2057586/.nvm/versions/node/v22.16.0/bin/npm test && /Users/2057586/.nvm/versions/node/v22.16.0/bin/npm run lint && /Users/2057586/.nvm/versions/node/v22.16.0/bin/npm run format:check
+
+npm run git:pre-commit-hook
