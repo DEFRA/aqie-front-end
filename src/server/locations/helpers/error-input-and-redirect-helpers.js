@@ -9,13 +9,37 @@ import {
 import { english } from '../../data/en/en.js'
 import { welsh } from '../../data/cy/cy.js'
 
+const setSessionIfChanged = (request, key, value) => {
+  const currentValue = request?.yar?.get?.(key)
+  if (Object.is(currentValue, value)) {
+    return
+  }
+
+  if (
+    currentValue &&
+    value &&
+    typeof currentValue === 'object' &&
+    typeof value === 'object'
+  ) {
+    try {
+      if (JSON.stringify(currentValue) === JSON.stringify(value)) {
+        return
+      }
+    } catch {
+      // '' Ignore serialization errors and continue to set
+    }
+  }
+
+  request.yar.set(key, value)
+}
+
 /**
  * Handles missing location type and name/postcode.
  */
 const handleMissingLocation = (request, h, lang) => {
   const { searchLocation } = lang === LANG_EN ? english : welsh
 
-  request.yar.set('errors', {
+  setSessionIfChanged(request, 'errors', {
     errors: {
       titleText: searchLocation.errorText.radios.title,
       errorList: [
@@ -27,14 +51,14 @@ const handleMissingLocation = (request, h, lang) => {
     }
   })
 
-  request.yar.set('errorMessage', {
+  setSessionIfChanged(request, 'errorMessage', {
     errorMessage: {
       text: searchLocation.errorText.radios.list.text
     }
   })
 
-  request.yar.set('locationType', '')
-  request.yar.set('locationNameOrPostcode', '')
+  setSessionIfChanged(request, 'locationType', '')
+  setSessionIfChanged(request, 'locationNameOrPostcode', '')
 
   const redirectPath =
     lang === LANG_CY
@@ -49,7 +73,7 @@ const handleMissingLocation = (request, h, lang) => {
 const handleUKError = (request, h, lang, locationNameOrPostcode) => {
   const { searchLocation } = lang === LANG_EN ? english : welsh
 
-  request.yar.set('errors', {
+  setSessionIfChanged(request, 'errors', {
     errors: {
       titleText: searchLocation.errorText.uk.fields.title,
       errorList: [
@@ -61,13 +85,13 @@ const handleUKError = (request, h, lang, locationNameOrPostcode) => {
     }
   })
 
-  request.yar.set('errorMessage', {
+  setSessionIfChanged(request, 'errorMessage', {
     errorMessage: {
       text: searchLocation.errorText.uk.fields.list.text
     }
   })
 
-  request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
+  setSessionIfChanged(request, 'locationNameOrPostcode', locationNameOrPostcode)
 
   const redirectPath = lang === LANG_EN ? REDIRECT_PATH_EN : REDIRECT_PATH_CY
   return h.redirect(redirectPath).code(REDIRECT_STATUS_CODE).takeover()
@@ -79,7 +103,7 @@ const handleUKError = (request, h, lang, locationNameOrPostcode) => {
 const handleNIError = (request, h, lang, locationNameOrPostcode) => {
   const { searchLocation } = lang === LANG_EN ? english : welsh
 
-  request.yar.set('errors', {
+  setSessionIfChanged(request, 'errors', {
     errors: {
       titleText: searchLocation.errorText.ni.fields.title,
       errorList: [
@@ -91,13 +115,13 @@ const handleNIError = (request, h, lang, locationNameOrPostcode) => {
     }
   })
 
-  request.yar.set('errorMessage', {
+  setSessionIfChanged(request, 'errorMessage', {
     errorMessage: {
       text: searchLocation.errorText.ni.fields.list.text
     }
   })
 
-  request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
+  setSessionIfChanged(request, 'locationNameOrPostcode', locationNameOrPostcode)
 
   const redirectPath = lang === LANG_EN ? REDIRECT_PATH_EN : REDIRECT_PATH_CY
   return h.redirect(redirectPath).code(REDIRECT_STATUS_CODE).takeover()

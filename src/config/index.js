@@ -215,6 +215,12 @@ export const config = convict({
         format: Number,
         default: fourHoursMs,
         env: 'SESSION_CACHE_TTL'
+      },
+      globalGuardEnabled: {
+        doc: 'Master switch for session mutation guards. When false in non-production, both pressure and no-cookie guards are disabled for local simulation.',
+        format: Boolean,
+        default: true,
+        env: 'SESSION_GLOBAL_GUARD_ENABLED'
       }
     },
     cookie: {

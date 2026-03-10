@@ -10,6 +10,30 @@ import {
 import { calendarEnglish } from '../../data/en/en.js'
 import moment from 'moment-timezone'
 
+const setSessionIfChanged = (request, key, value) => {
+  const currentValue = request?.yar?.get?.(key)
+  if (Object.is(currentValue, value)) {
+    return
+  }
+
+  if (
+    currentValue &&
+    value &&
+    typeof currentValue === 'object' &&
+    typeof value === 'object'
+  ) {
+    try {
+      if (JSON.stringify(currentValue) === JSON.stringify(value)) {
+        return
+      }
+    } catch {
+      // '' Ignore serialization errors and continue to set
+    }
+  }
+
+  request.yar.set(key, value)
+}
+
 const getLocationNameOrPostcode = (locationType, payload) => {
   if (locationType === LOCATION_TYPE_UK) {
     return payload.engScoWal.trim()
@@ -55,13 +79,17 @@ const configureLocationTypeAndRedirects = (
     locationType = request.yar.get('locationType')
     locationNameOrPostcode = request.yar.get('locationNameOrPostcode')
   } else {
-    request.yar.set('locationType', locationType)
-    request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
-    request.yar.set('airQuality', airQuality)
+    setSessionIfChanged(request, 'locationType', locationType)
+    setSessionIfChanged(
+      request,
+      'locationNameOrPostcode',
+      locationNameOrPostcode
+    )
+    setSessionIfChanged(request, 'airQuality', airQuality)
   }
 
   if (!locationNameOrPostcode && !locationType) {
-    request.yar.set('errors', {
+    setSessionIfChanged(request, 'errors', {
       errors: {
         titleText: searchLocation.errorText.radios.title,
         errorList: [
@@ -72,7 +100,7 @@ const configureLocationTypeAndRedirects = (
         ]
       }
     })
-    request.yar.set('errorMessage', {
+    setSessionIfChanged(request, 'errorMessage', {
       errorMessage: { text: searchLocation.errorText.radios.list.text }
     })
 
@@ -108,7 +136,7 @@ const filteredAndSelectedLocationType = (
   }
 
   if (!userLocation && locationType === LOCATION_TYPE_UK) {
-    request.yar.set('errors', {
+    setSessionIfChanged(request, 'errors', {
       errors: {
         titleText: searchLocation.errorText.uk.fields.title, // 'There is a problem',
         errorList: [
@@ -119,7 +147,7 @@ const filteredAndSelectedLocationType = (
         ]
       }
     })
-    request.yar.set('errorMessage', {
+    setSessionIfChanged(request, 'errorMessage', {
       errorMessage: {
         text: searchLocation.errorText.uk.fields.list.text // 'Enter a location or postcode'
       }
@@ -127,7 +155,7 @@ const filteredAndSelectedLocationType = (
     return h.redirect(SEARCH_LOCATION_PATH_EN)
   }
   if (!userLocation && locationType === LOCATION_TYPE_NI) {
-    request.yar.set('errors', {
+    setSessionIfChanged(request, 'errors', {
       errors: {
         titleText: searchLocation.errorText.ni.fields.title, // 'There is a problem',
         errorList: [
@@ -138,7 +166,7 @@ const filteredAndSelectedLocationType = (
         ]
       }
     })
-    request.yar.set('errorMessage', {
+    setSessionIfChanged(request, 'errorMessage', {
       errorMessage: {
         text: searchLocation.errorText.ni.fields.list.text // 'Enter a postcode'
       }

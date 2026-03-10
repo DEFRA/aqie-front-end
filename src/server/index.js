@@ -15,6 +15,7 @@ import { setupProxy } from './common/helpers/proxy/setup-proxy.js'
 import { pulse } from './common/helpers/pulse.js'
 import { requestTracing } from './common/helpers/request-tracing.js'
 import { createLogger } from './common/helpers/logging/logger.js'
+import { registerServerCachePolicies } from './common/helpers/server-cache-policies.js'
 import { locationNotFoundCy } from './location-not-found/cy/index.js'
 
 async function createServer() {
@@ -24,6 +25,22 @@ async function createServer() {
   try {
     setupProxy()
     logger.info('Proxy setup completed')
+    const cacheEngine = getCacheEngine(config.get('session.cache.engine'))
+    const sessionCacheName = config.get('session.cache.name')
+    const cacheProviders = [
+      {
+        name: sessionCacheName,
+        engine: cacheEngine
+      }
+    ]
+
+    if (sessionCacheName !== 'serverCache') {
+      cacheProviders.push({
+        name: 'serverCache',
+        engine: cacheEngine
+      })
+    }
+
     const server = hapi.server({
       port: config.get('port'),
       host: config.get('host'),
@@ -50,18 +67,15 @@ async function createServer() {
       router: {
         stripTrailingSlash: true
       },
-      cache: [
-        {
-          name: config.get('session.cache.name'),
-          engine: getCacheEngine(config.get('session.cache.engine'))
-        }
-      ],
+      cache: cacheProviders,
       state: {
         strictHeader: false
       }
     })
 
     logger.info('Server instance created')
+    registerServerCachePolicies(server)
+    logger.info('Server cache policies initialized')
 
     const plugins = [
       requestLogger,
