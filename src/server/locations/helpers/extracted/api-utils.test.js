@@ -204,8 +204,28 @@ describe('api-utils', () => {
           options: {}
         })
       ).toThrow(
-        'ephemeralProtectedDevApiUrl must be provided in config for local requests'
+        'ephemeralProtectedTestApiUrl must be provided in config for local requests'
       )
+    })
+
+    it('should detect wrapped request shape for localhost requests', () => {
+      const wrappedRequest = {
+        request: {
+          headers: { host: 'localhost:3000' },
+          app: {
+            config: { ephemeralProtectedTestApiUrl: 'http://test.api.com' }
+          }
+        }
+      }
+
+      const result = selectForecastsUrlAndOptions({
+        request: wrappedRequest,
+        forecastsApiUrl: 'http://prod.api.com',
+        optionsEphemeralProtected: { headers: { 'x-api-key': 'test-key' } },
+        options: {}
+      })
+
+      expect(result.url).toContain('http://test.api.com')
     })
   })
 
@@ -324,8 +344,32 @@ describe('api-utils', () => {
           request: mockRequest
         })
       ).toThrow(
-        'ephemeralProtectedDevApiUrl must be provided in config for local requests'
+        'ephemeralProtectedTestApiUrl must be provided in config for local requests'
       )
+    })
+
+    it('should use ephemeral protected URL for wrapped localhost request with new Ricardo', () => {
+      mockConfig.get.mockImplementation((key) => {
+        if (key === 'ricardoMeasurementsApiUrl') {
+          return 'http://ricardo.api.com'
+        }
+        if (key === 'ephemeralProtectedTestApiUrl') {
+          return 'http://test.api.com'
+        }
+        return null
+      })
+
+      const result = selectMeasurementsUrlAndOptions(51.5074, -0.1278, true, {
+        injectedConfig: mockConfig,
+        injectedLogger: mockLogger,
+        injectedOptionsEphemeralProtected: {
+          headers: { 'x-api-key': 'test-key' }
+        },
+        injectedOptions: {},
+        request: { request: { headers: { host: 'localhost:3000' } } }
+      })
+
+      expect(result.url).toContain('http://test.api.com')
     })
   })
 

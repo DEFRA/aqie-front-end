@@ -259,6 +259,12 @@ export const config = convict({
     sensitive: true,
     env: 'CDP_X_API_KEY'
   },
+  ephemeralProtectedTestApiUrl: {
+    doc: 'Ephemeral Protected Test API url',
+    format: String,
+    default: `https://ephemeral-protected.api.test.cdp-int.defra.cloud`,
+    env: 'EPHEMERAL_PROTECTED_TEST_API_URL'
+  },
   ephemeralProtectedDevApiUrl: {
     doc: 'Ephemeral Protected Dev API url',
     format: String,

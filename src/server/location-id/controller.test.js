@@ -209,7 +209,8 @@ vi.mock('../../config/index.js', () => ({
         useNewRicardoMeasurementsEnabled: true,
         metaSiteUrl: 'https://uk-air.defra.gov.uk',
         nodeEnv: 'test',
-        disableTestMocks: false // '' Allow mock functionality in tests
+        disableTestMocks: false, // '' Allow mock functionality in tests
+        'session.cache.name': 'session'
       }
       return mockConfig[key]
     })
@@ -329,12 +330,74 @@ describe('Location ID Controller Tests', () => {
       // ''
       vi.mocked(compareLastElements).mockReturnValue(true)
 
+      mockRequest.state = { session: 'existing-session-cookie' }
       mockRequest.yar.get.mockReturnValueOnce(false) // searchTermsSaved
 
       await getLocationDetailsController.handler(mockRequest, mockH)
 
       expect(mockH.redirect).toHaveBeenCalledWith(
         expect.stringContaining('/location?lang=en&searchTerms=')
+      )
+    })
+
+    it('should redirect on same URL refresh when session cookie exists and searchTermsSaved is missing', async () => {
+      // '' Regression: keep refresh protection active for existing sessions
+      vi.mocked(compareLastElements).mockReturnValue(true)
+
+      mockRequest.state = { session: 'existing-session-cookie' }
+      mockRequest.yar.get.mockReturnValueOnce(false) // searchTermsSaved
+
+      await getLocationDetailsController.handler(mockRequest, mockH)
+
+      expect(mockH.redirect).toHaveBeenCalledWith(
+        expect.stringContaining('/location?lang=en&searchTerms=')
+      )
+    })
+
+    it('should not redirect bookmark first-hit when no referrer and no session cookie', async () => {
+      // '' Regression: prevent /location/{id} -> /location?... redirect loop for no-cookie bookmark hits
+      mockRequest.headers = {}
+      mockRequest.state = {}
+
+      const validLocationData = {
+        results: [{ id: 'test', name: 'Test Location' }],
+        getForecasts: [{ locationId: 'test' }],
+        locationType: 'uk'
+      }
+
+      mockRequest.yar.get.mockImplementation((key) => {
+        const values = {
+          searchTermsSaved: false,
+          locationData: validLocationData,
+          notificationFlow: undefined,
+          testMode: undefined
+        }
+        return values[key]
+      })
+
+      vi.mocked(compareLastElements).mockReturnValue(false)
+      vi.mocked(getIdMatch).mockReturnValue({
+        locationIndex: 0,
+        locationDetails: { id: 'test', name: 'Test Location' }
+      })
+
+      vi.mocked(getNearestLocation).mockResolvedValue({
+        forecastNum: [
+          [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
+        ],
+        nearestLocationsRange: [],
+        nearestLocation: [{ id: 'test' }],
+        latlon: { lat: 51.5, lon: -0.1 }
+      })
+
+      await getLocationDetailsController.handler(mockRequest, mockH)
+
+      expect(mockH.redirect).not.toHaveBeenCalledWith(
+        expect.stringContaining('/location?lang=en&searchTerms=')
+      )
+      expect(mockH.view).toHaveBeenCalledWith(
+        'locations/location',
+        expect.any(Object)
       )
     })
 
@@ -425,6 +488,8 @@ describe('Location ID Controller Tests', () => {
   describe('Location processing for UK locations', () => {
     it('should successfully process UK location and return view', async () => {
       // ''
+      mockRequest.state = { session: 'existing-session-cookie' }
+
       const mockLocationData = {
         results: [{ id: 'test-location', name: 'Test Location' }],
         getForecasts: [{ locationId: 'test-location', forecast: 4 }],
@@ -697,6 +762,8 @@ describe('Location ID Controller Tests', () => {
   describe('Session management', () => {
     it('should clear searchTermsSaved from session', async () => {
       // ''
+      mockRequest.state = { session: 'existing-session-cookie' }
+
       const mockLocationData = {
         results: [{ id: 'test' }],
         getForecasts: [{ locationId: 'test' }],
@@ -731,13 +798,15 @@ describe('Location ID Controller Tests', () => {
 
     it('should update locationData in session with nearest location info', async () => {
       // ''
+      mockRequest.state = { session: 'existing-session-cookie' }
+
       const mockLocationData = {
         results: [{ id: 'test' }],
         getForecasts: [{ locationId: 'test' }],
         locationType: 'uk'
       }
 
-      const nearestLocation = { id: 'test', forecast: 4 }
+      const nearestLocation = [{ id: 'test', forecast: 4 }]
       const nearestLocationsRange = [{ id: 'nearby-1' }]
 
       mockRequest.yar.get
@@ -1227,7 +1296,9 @@ describe('Location ID Controller Tests', () => {
 
     it('should preserve multiple mock parameters in search terms redirect', async () => {
       // ''
-      mockRequest.headers = {}
+      mockRequest.headers = { referer: 'https://example.com/previous' }
+      mockRequest.state = { session: 'existing-session-cookie' }
+      vi.mocked(compareLastElements).mockReturnValue(true)
       mockRequest.query = { lang: 'en', mockLevel: '6', mockDay: 'day2' }
       mockRequest.yar.get.mockReturnValueOnce(false) // searchTermsSaved
 
@@ -1280,6 +1351,7 @@ describe('Location ID Controller Tests', () => {
     it('should handle oldDate test mode - set date to yesterday', async () => {
       // ''
       mockRequest.query = { lang: 'en' }
+      mockRequest.state = { session: 'existing-session-cookie' }
 
       const mockLocationData = {
         results: [{ id: 'test' }],
@@ -1292,10 +1364,18 @@ describe('Location ID Controller Tests', () => {
         }
       }
 
-      mockRequest.yar.get
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
-        .mockReturnValueOnce('oldDate') // testMode from session
+      mockRequest.yar.get.mockImplementation((key) => {
+        const values = {
+          searchTermsSaved: true,
+          locationData: mockLocationData,
+          testMode: 'oldDate',
+          mockLevel: undefined,
+          mockDay: undefined,
+          mockPollutantBand: undefined,
+          notificationFlow: undefined
+        }
+        return values[key]
+      })
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
@@ -1326,6 +1406,7 @@ describe('Location ID Controller Tests', () => {
     it('should handle todayDate test mode - set date to today', async () => {
       // ''
       mockRequest.query = { lang: 'en' }
+      mockRequest.state = { session: 'existing-session-cookie' }
 
       const mockLocationData = {
         results: [{ id: 'test' }],
@@ -1338,10 +1419,18 @@ describe('Location ID Controller Tests', () => {
         }
       }
 
-      mockRequest.yar.get
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
-        .mockReturnValueOnce('todayDate') // testMode from session
+      mockRequest.yar.get.mockImplementation((key) => {
+        const values = {
+          searchTermsSaved: true,
+          locationData: mockLocationData,
+          testMode: 'todayDate',
+          mockLevel: undefined,
+          mockDay: undefined,
+          mockPollutantBand: undefined,
+          notificationFlow: undefined
+        }
+        return values[key]
+      })
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
@@ -1370,6 +1459,7 @@ describe('Location ID Controller Tests', () => {
     it('should handle noDataOldDate test mode - remove summary and set old date', async () => {
       // ''
       mockRequest.query = { lang: 'en' }
+      mockRequest.state = { session: 'existing-session-cookie' }
 
       const mockLocationData = {
         results: [{ id: 'test' }],
@@ -1382,10 +1472,18 @@ describe('Location ID Controller Tests', () => {
         }
       }
 
-      mockRequest.yar.get
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
-        .mockReturnValueOnce('noDataOldDate') // testMode from session
+      mockRequest.yar.get.mockImplementation((key) => {
+        const values = {
+          searchTermsSaved: true,
+          locationData: mockLocationData,
+          testMode: 'noDataOldDate',
+          mockLevel: undefined,
+          mockDay: undefined,
+          mockPollutantBand: undefined,
+          notificationFlow: undefined
+        }
+        return values[key]
+      })
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
@@ -1455,6 +1553,8 @@ describe('Location ID Controller Tests', () => {
   describe('issueTime calculation when showSummaryDate already set', () => {
     it('should calculate and save issueTime when showSummaryDate is set but issueTime is missing', async () => {
       // ''
+      mockRequest.state = { session: 'existing-session-cookie' }
+
       const today = new Date()
       const todayStr = today.toISOString().split('T')[0] + ' 10:00:00'
 
@@ -1470,9 +1570,18 @@ describe('Location ID Controller Tests', () => {
         // issueTime is missing
       }
 
-      mockRequest.yar.get
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
+      mockRequest.yar.get.mockImplementation((key) => {
+        const values = {
+          searchTermsSaved: true,
+          locationData: mockLocationData,
+          testMode: undefined,
+          mockLevel: undefined,
+          mockDay: undefined,
+          mockPollutantBand: undefined,
+          notificationFlow: undefined
+        }
+        return values[key]
+      })
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,

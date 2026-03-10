@@ -6,6 +6,30 @@ import {
   MEASUREMENTS_API_PATH
 } from '../../../data/constants.js'
 import { config } from '../../../../config/index.js'
+
+function getRequestFromInput(requestInput) {
+  // '' Support both direct request and wrapped shape: { request }
+  if (requestInput && requestInput.request) {
+    return requestInput.request
+  }
+
+  return requestInput
+}
+
+function isLocalRequest(requestInput) {
+  const normalizedRequest = getRequestFromInput(requestInput)
+
+  if (
+    normalizedRequest &&
+    normalizedRequest.headers &&
+    normalizedRequest.headers.host
+  ) {
+    const host = normalizedRequest.headers.host
+    return host.includes('localhost') || host.includes('127.0.0.1')
+  }
+
+  return false
+}
 async function callAndHandleForecastsResponse(
   url,
   opts,
@@ -68,21 +92,19 @@ function selectForecastsUrlAndOptions({
   optionsEphemeralProtected: localOptionsEphemeralProtected,
   options: localOptions
 }) {
-  // Only use the request object to determine if the call is local
-  let isLocal = false
-  if (request && request.headers && request.headers.host) {
-    const host = request.headers.host
-    isLocal = host.includes('localhost') || host.includes('127.0.0.1')
-  }
+  const isLocal = isLocalRequest(request)
+  const normalizedRequest = getRequestFromInput(request)
   let url, opts
   if (isLocal) {
     let cdpXApiKey
-    const ephemeralProtectedDevApiUrl =
-      request && request.app && request.app.config
-        ? request.app.config.ephemeralProtectedDevApiUrl
+    const ephemeralProtectedApiUrl =
+      normalizedRequest && normalizedRequest.app && normalizedRequest.app.config
+        ? normalizedRequest.app.config.ephemeralProtectedTestApiUrl ||
+          normalizedRequest.app.config.ephemeralProtectedDevApiUrl
         : typeof config !== 'undefined' &&
           config.get &&
-          config.get('ephemeralProtectedDevApiUrl')
+          (config.get('ephemeralProtectedTestApiUrl') ||
+            config.get('ephemeralProtectedDevApiUrl'))
     // fallback: try process.env for cdpXApiKey
     if (
       localOptionsEphemeralProtected &&
@@ -97,9 +119,9 @@ function selectForecastsUrlAndOptions({
     if (!cdpXApiKey && process && process.env && process.env.CDP_X_API_KEY) {
       cdpXApiKey = process.env.CDP_X_API_KEY
     }
-    if (!ephemeralProtectedDevApiUrl) {
+    if (!ephemeralProtectedApiUrl) {
       throw new Error(
-        'ephemeralProtectedDevApiUrl must be provided in config for local requests'
+        'ephemeralProtectedTestApiUrl must be provided in config for local requests'
       )
     }
     if (!FORECASTS_API_PATH) {
@@ -107,7 +129,7 @@ function selectForecastsUrlAndOptions({
         'FORECASTS_API_PATH constant must be defined for local requests'
       )
     }
-    url = `${ephemeralProtectedDevApiUrl}${FORECASTS_API_PATH}`
+    url = `${ephemeralProtectedApiUrl}${FORECASTS_API_PATH}`
     opts = { ...localOptionsEphemeralProtected }
     opts.headers = {
       ...(opts.headers || {}),
@@ -145,7 +167,7 @@ function selectMeasurementsUrlAndOptions(
   const formatCoordinate = (coord) => Number(coord).toFixed(ROUND_OF_SIX)
   if (useNewRicardoMeasurementsEnabled) {
     injectedLogger.info(
-      `Using mock measurements with latitude: ${latitude}, longitude: ${longitude}`
+      `Using measurements API with latitude: ${latitude}, longitude: ${longitude}`
     )
     if (!URLSearchParams) {
       throw new Error('URLSearchParams is not available in this environment')
@@ -164,22 +186,15 @@ function selectMeasurementsUrlAndOptions(
     })
     const baseUrl = injectedConfig.get('ricardoMeasurementsApiUrl')
     const newRicardoMeasurementsApiUrl = `${baseUrl}?${queryParams.toString()}`
-    injectedLogger.info(
-      `New Ricardo measurements API URL: ${newRicardoMeasurementsApiUrl}`
-    )
-    let isLocal = false
-    if (request && request.headers && request.headers.host) {
-      const host = request.headers.host
-      isLocal = host.includes('localhost') || host.includes('127.0.0.1')
-    }
+    const isLocal = isLocalRequest(request)
     if (isLocal) {
-      const ephemeralProtectedDevApiUrl = injectedConfig.get(
-        'ephemeralProtectedDevApiUrl'
-      )
+      const ephemeralProtectedApiUrl =
+        injectedConfig.get('ephemeralProtectedTestApiUrl') ||
+        injectedConfig.get('ephemeralProtectedDevApiUrl')
       const measurementsApiPath = MEASUREMENTS_API_PATH || ''
-      if (!ephemeralProtectedDevApiUrl) {
+      if (!ephemeralProtectedApiUrl) {
         throw new Error(
-          'ephemeralProtectedDevApiUrl must be provided in config for local requests'
+          'ephemeralProtectedTestApiUrl must be provided in config for local requests'
         )
       }
       if (!measurementsApiPath) {
@@ -187,11 +202,18 @@ function selectMeasurementsUrlAndOptions(
           'MEASUREMENTS_API_PATH constant must be set for local requests'
         )
       }
+      const effectiveMeasurementsApiUrl = `${ephemeralProtectedApiUrl}${measurementsApiPath}${queryParams.toString()}`
+      injectedLogger.info(
+        `New Ricardo measurements API URL: ${effectiveMeasurementsApiUrl}`
+      )
       return {
-        url: `${ephemeralProtectedDevApiUrl}${measurementsApiPath}${queryParams.toString()}`,
+        url: effectiveMeasurementsApiUrl,
         opts: injectedOptionsEphemeralProtected
       }
     } else {
+      injectedLogger.info(
+        `New Ricardo measurements API URL: ${newRicardoMeasurementsApiUrl}`
+      )
       // For remote, always set Content-Type: application/json
       const remoteHeaders = {
         ...(injectedOptions.headers || {}),

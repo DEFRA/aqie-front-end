@@ -285,17 +285,15 @@ function handleSearchTermsRedirect(
   const previousUrl = headers.referer || headers.referrer
   logger.info(`[DEBUG controller] previousUrl: ${previousUrl}`)
   logger.info(`[DEBUG controller] currentUrl: ${currentUrl}`)
-  const isPreviousAndCurrentUrlEqual = compareLastElements(
-    previousUrl,
-    currentUrl
-  )
+  const isPreviousAndCurrentUrlEqual = previousUrl
+    ? compareLastElements(previousUrl, currentUrl)
+    : false
+  // '' Allow first-hit bookmark requests without a session cookie to proceed statelessly
+  const hasSession = hasSessionCookie(request)
   logger.info(
     `[DEBUG controller] isPreviousAndCurrentUrlEqual: ${isPreviousAndCurrentUrlEqual}`
   )
-  if (
-    (previousUrl === undefined && !searchTermsSaved) ||
-    (isPreviousAndCurrentUrlEqual && !searchTermsSaved)
-  ) {
+  if (isPreviousAndCurrentUrlEqual && !searchTermsSaved && hasSession) {
     logger.info(
       `[DEBUG controller] REDIRECTING because searchTermsSaved is missing`
     )
