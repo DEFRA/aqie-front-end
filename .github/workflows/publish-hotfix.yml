@@ -34,6 +34,13 @@ jobs:
           npm run lint
           npm test
 
+      - name: Normalise local tag ref for tag-based runs
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          # ''
+          git tag -d "${GITHUB_REF_NAME}" || true
+          git fetch --tags --force
+
       - name: Publish Hot Fix
         uses: DEFRA/cdp-build-action/build-hotfix@6bc276d9c3a038ccb04307247623de821361eca3 # main - Security: pinned to commit SHA
         with:
