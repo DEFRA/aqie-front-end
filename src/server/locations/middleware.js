@@ -26,6 +26,30 @@ import {
 import { sentenceCase } from '../common/helpers/sentence-case.js'
 import { convertFirstLetterIntoUppercase } from './helpers/convert-first-letter-into-upper-case.js'
 
+const setSessionIfChanged = (request, key, value) => {
+  const currentValue = request?.yar?.get?.(key)
+  if (Object.is(currentValue, value)) {
+    return
+  }
+
+  if (
+    currentValue &&
+    value &&
+    typeof currentValue === 'object' &&
+    typeof value === 'object'
+  ) {
+    try {
+      if (JSON.stringify(currentValue) === JSON.stringify(value)) {
+        return
+      }
+    } catch {
+      // '' Ignore serialization issues and continue to set session value
+    }
+  }
+
+  request.yar.set(key, value)
+}
+
 const handleLocationDataNotFound = (
   request,
   h,
@@ -144,8 +168,7 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
     lang
   }
 
-  request.yar.clear('locationData')
-  request.yar.set('locationData', locationData)
+  setSessionIfChanged(request, 'locationData', locationData)
   return h
     .redirect(`/location/${locationData.urlRoute}?lang=en`)
     .code(REDIRECT_STATUS_CODE)
@@ -286,7 +309,7 @@ const searchMiddleware = async (request, h) => {
     calendarEnglish,
     calendarWelsh
   )
-  request.yar.set('searchTermsSaved', searchTerms)
+  setSessionIfChanged(request, 'searchTermsSaved', searchTerms)
 
   if (redirectError.locationType === LOCATION_TYPE_UK) {
     return processUKLocationType(request, h, redirectError, {

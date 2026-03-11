@@ -8,6 +8,30 @@ import {
 } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
+const setSessionIfChanged = (request, key, value) => {
+  const currentValue = request?.yar?.get?.(key)
+  if (Object.is(currentValue, value)) {
+    return
+  }
+
+  if (
+    currentValue &&
+    value &&
+    typeof currentValue === 'object' &&
+    typeof value === 'object'
+  ) {
+    try {
+      if (JSON.stringify(currentValue) === JSON.stringify(value)) {
+        return
+      }
+    } catch {
+      // '' Ignore serialization errors and continue to set
+    }
+  }
+
+  request.yar.set(key, value)
+}
+
 /**
  * Determines the language based on the request.
  * @param {Object} request - The Hapi request object.
@@ -36,10 +60,10 @@ const getSessionData = (request) => {
   const locationType = request.yar.get('locationType')
 
   if (errors) {
-    request.yar.set('errors', null)
-    request.yar.set('errorMessage', null)
+    setSessionIfChanged(request, 'errors', null)
+    setSessionIfChanged(request, 'errorMessage', null)
   } else {
-    request.yar.set('locationType', '')
+    setSessionIfChanged(request, 'locationType', '')
   }
 
   return { errors, errorMessage, locationType }
@@ -110,7 +134,7 @@ const prepareViewModel = ({
  */
 const searchLocationController = {
   handler: (request, h) => {
-    request.yar.set('locationNameOrPostcode', '')
+    setSessionIfChanged(request, 'locationNameOrPostcode', '')
     const metaSiteUrl = getAirQualitySiteUrl(request)
     const lang = determineLanguage(request)
 

@@ -146,6 +146,12 @@ vi.mock('../locations/helpers/forecast-warning.js', () => ({
   getForecastWarning: vi.fn(() => null)
 }))
 
+vi.mock('../common/helpers/user-data-cache.js', () => ({
+  buildUserLocationMetaCacheKey: vi.fn(() => 'userdata:location-meta:test-key'),
+  getUserDataPayload: vi.fn(async () => null),
+  setUserDataPayload: vi.fn(async () => true)
+}))
+
 vi.mock('../locations/helpers/middleware-helpers.js', () => ({
   getIssueTime: vi.fn((issueDate) => {
     if (!issueDate) return undefined
@@ -234,6 +240,9 @@ const { getNearestLocation } = await import(
 const { getIdMatch } = await import('../locations/helpers/get-id-match.js')
 const { compareLastElements } = await import(
   '../locations/helpers/convert-string.js'
+)
+const { getUserDataPayload, setUserDataPayload } = await import(
+  '../common/helpers/user-data-cache.js'
 )
 
 describe('Location ID Controller Tests', () => {
@@ -439,6 +448,143 @@ describe('Location ID Controller Tests', () => {
   })
 
   describe('Session data validation', () => {
+    it('should rehydrate session keys from userDataPolicy cache hit in notification SMS flow', async () => {
+      // '' Explicitly verify cache-hit behavior for userDataPolicy path
+      mockRequest.query = { lang: 'en', fromSmsFlow: 'true' }
+      mockRequest.state = { session: 'existing-session-cookie' }
+
+      const locationData = {
+        results: [
+          {
+            ID: 'test-location-123',
+            NAME1: 'Test Town',
+            DISTRICT_BOROUGH: 'Test Borough',
+            LATITUDE: 51.5,
+            LONGITUDE: -0.12
+          }
+        ],
+        getForecasts: [{ locationId: 'test-location-123' }],
+        locationType: 'uk',
+        headerTitle: 'Test Town, Test Borough'
+      }
+
+      vi.mocked(getUserDataPayload).mockResolvedValue({
+        location: 'Cached Location',
+        locationId: 'test-location-123',
+        latitude: 51.51,
+        longitude: -0.11
+      })
+
+      mockRequest.yar.get.mockImplementation((key) => {
+        const values = {
+          searchTermsSaved: true,
+          locationData,
+          notificationFlow: 'sms',
+          testMode: undefined
+        }
+        return values[key]
+      })
+
+      vi.mocked(getIdMatch).mockReturnValue({
+        locationIndex: 0,
+        locationDetails: { id: 'test-location-123', name: 'Test Town' }
+      })
+
+      vi.mocked(getNearestLocation).mockResolvedValue({
+        forecastNum: [
+          [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
+        ],
+        nearestLocationsRange: [],
+        nearestLocation: [{ id: 'test-location-123' }],
+        latlon: { lat: 51.5, lon: -0.12 }
+      })
+
+      await getLocationDetailsController.handler(mockRequest, mockH)
+
+      expect(getUserDataPayload).toHaveBeenCalled()
+      expect(mockRequest.yar.set).toHaveBeenCalledWith(
+        'location',
+        'Cached Location'
+      )
+      expect(mockRequest.yar.set).toHaveBeenCalledWith(
+        'locationId',
+        'test-location-123'
+      )
+      expect(mockRequest.yar.set).toHaveBeenCalledWith('latitude', 51.51)
+      expect(mockRequest.yar.set).toHaveBeenCalledWith('longitude', -0.11)
+    })
+
+    it('should fallback to computed values and write via setUserDataPayload on cache miss', async () => {
+      // '' Explicitly verify cache-miss behavior for userDataPolicy path
+      mockRequest.query = { lang: 'en', fromSmsFlow: 'true' }
+      mockRequest.state = { session: 'existing-session-cookie' }
+
+      const locationData = {
+        results: [
+          {
+            ID: 'test-location-123',
+            NAME1: 'Test Town',
+            DISTRICT_BOROUGH: 'Test Borough',
+            LATITUDE: 51.5,
+            LONGITUDE: -0.12
+          }
+        ],
+        getForecasts: [{ locationId: 'test-location-123' }],
+        locationType: 'uk',
+        headerTitle: 'Computed Location Title'
+      }
+
+      vi.mocked(getUserDataPayload).mockResolvedValue(null)
+
+      mockRequest.yar.get.mockImplementation((key) => {
+        const values = {
+          searchTermsSaved: true,
+          locationData,
+          notificationFlow: 'sms',
+          testMode: undefined
+        }
+        return values[key]
+      })
+
+      vi.mocked(getIdMatch).mockReturnValue({
+        locationIndex: 0,
+        locationDetails: { id: 'test-location-123', name: 'Test Town' }
+      })
+
+      vi.mocked(getNearestLocation).mockResolvedValue({
+        forecastNum: [
+          [{ today: 4 }, { day2: 5 }, { day3: 3 }, { day4: 2 }, { day5: 3 }]
+        ],
+        nearestLocationsRange: [],
+        nearestLocation: [{ id: 'test-location-123' }],
+        latlon: { lat: 51.5, lon: -0.12 }
+      })
+
+      await getLocationDetailsController.handler(mockRequest, mockH)
+
+      expect(getUserDataPayload).toHaveBeenCalled()
+      expect(setUserDataPayload).toHaveBeenCalledWith(
+        mockRequest,
+        expect.stringContaining('userdata:location-meta:'),
+        {
+          location: 'Computed Location Title',
+          locationId: 'test-location-123',
+          latitude: 51.5,
+          longitude: -0.12
+        }
+      )
+      expect(mockRequest.yar.set).toHaveBeenCalledWith(
+        'location',
+        'Computed Location Title'
+      )
+      expect(mockRequest.yar.set).toHaveBeenCalledWith(
+        'locationId',
+        'test-location-123'
+      )
+      expect(mockRequest.yar.set).toHaveBeenCalledWith('latitude', 51.5)
+      expect(mockRequest.yar.set).toHaveBeenCalledWith('longitude', -0.12)
+    })
+
     it('should redirect when locationData.results is not an array', async () => {
       // ''
       mockRequest.yar.get
