@@ -41,6 +41,11 @@ jobs:
           git tag -d "${GITHUB_REF_NAME}" || true
           git fetch --tags --force
 
+      - name: Set explicit hotfix tag
+        run: |
+          # ''
+          echo "CUSTOM_TAG=0.685.3" >> "$GITHUB_ENV"
+
       - name: Publish Hot Fix
         uses: DEFRA/cdp-build-action/build-hotfix@6bc276d9c3a038ccb04307247623de821361eca3 # main - Security: pinned to commit SHA
         with:
