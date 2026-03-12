@@ -4,10 +4,19 @@ import {
 } from '../data/en/monitoring-sites.js'
 import * as airQualityData from '../data/en/air-quality.js'
 import {
+  DAILY_SUMMARY_KEY,
+  DATE_FORMAT,
   LANG_CY,
   LOCATION_NOT_FOUND,
   LOCATION_TYPE_NI,
+  LOCATION_TYPE_UK,
+  REDIS_PRESSURE_CHECK_INTERVAL_MS,
+  REDIS_PRESSURE_COOLDOWN_MS,
+  REDIS_PRESSURE_MIN_GROWTH_BYTES,
+  REDIS_PRESSURE_MIN_GROWTH_RATIO,
+  REDIS_PRESSURE_WINDOW_MS,
   REDIRECT_STATUS_CODE,
+  SESSION_GUARD_LOG_LIMIT_PER_REQUEST,
   STATUS_INTERNAL_SERVER_ERROR
 } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
@@ -53,6 +62,8 @@ import {
   getSharedLocationPayload,
   setSharedLocationPayload
 } from '../common/helpers/location-shared-cache.js'
+import { fetchData } from '../locations/helpers/fetch-data.js'
+import { createURLRouteBookmarks } from '../locations/helpers/create-bookmark-ids.js'
 import {
   buildUserLocationMetaCacheKey,
   getUserDataPayload,
@@ -60,14 +71,6 @@ import {
 } from '../common/helpers/user-data-cache.js'
 
 const logger = createLogger()
-const DATE_FORMAT = 'DD MMMM YYYY'
-const DAILY_SUMMARY_KEY = 'dailySummary'
-const SESSION_GUARD_LOG_LIMIT_PER_REQUEST = 3
-const REDIS_PRESSURE_CHECK_INTERVAL_MS = 10000
-const REDIS_PRESSURE_WINDOW_MS = 30000
-const REDIS_PRESSURE_MIN_GROWTH_BYTES = 20 * 1024 * 1024
-const REDIS_PRESSURE_MIN_GROWTH_RATIO = 0.2
-const REDIS_PRESSURE_COOLDOWN_MS = 300000
 
 const redisPressureGuardState = {
   lastCheckAtMs: 0,
@@ -326,6 +329,92 @@ async function resolveLocationDataFromSessionOrSharedCache(request) {
   }
 
   return sessionLocationData
+}
+
+function normalizeLocationIdTerms(locationId = '') {
+  const decodedId = decodeURIComponent(locationId || '').toLowerCase()
+  const [primaryPart = '', ...secondaryParts] = decodedId.split('_')
+
+  return {
+    searchTerms: primaryPart.replace(/-/g, ' ').trim(),
+    secondSearchTerm: secondaryParts.join('_').replace(/-/g, ' ').trim()
+  }
+}
+
+async function hydrateLocationDataForStatelessLocationId(
+  request,
+  locationId,
+  lang
+) {
+  // '' Allow direct 2xx location-id rendering for first-hit/no-cookie traffic
+  const hasSession = hasSessionCookie(request)
+  if (hasSession || !locationId) {
+    return null
+  }
+
+  const { searchTerms, secondSearchTerm } = normalizeLocationIdTerms(locationId)
+  const userLocation = [searchTerms, secondSearchTerm].filter(Boolean).join(' ')
+
+  if (!userLocation) {
+    return null
+  }
+
+  try {
+    const { getOSPlaces, getForecasts, getDailySummary } = await fetchData(
+      request,
+      {
+        locationType: LOCATION_TYPE_UK,
+        userLocation,
+        searchTerms,
+        secondSearchTerm
+      }
+    )
+
+    if (
+      !Array.isArray(getOSPlaces?.results) ||
+      getOSPlaces.results.length === 0
+    ) {
+      return null
+    }
+
+    const { selectedMatchesAddedIDs } = createURLRouteBookmarks([
+      ...getOSPlaces.results
+    ])
+
+    const hasMatchingLocation = selectedMatchesAddedIDs.some(
+      (item) => item?.GAZETTEER_ENTRY?.ID === locationId
+    )
+
+    if (!hasMatchingLocation) {
+      return null
+    }
+
+    const hydratedLocationData = {
+      results: selectedMatchesAddedIDs,
+      getForecasts: getForecasts?.forecasts,
+      dailySummary: getDailySummary,
+      locationType: LOCATION_TYPE_UK,
+      lang,
+      urlRoute: locationId
+    }
+
+    const cacheKey = buildSharedLocationPayloadCacheKey(
+      request,
+      hydratedLocationData
+    )
+    await setSharedLocationPayload(request, cacheKey, hydratedLocationData)
+
+    logger.info(
+      `[STATLESS LOCATION-ID] Hydrated locationData for id='${locationId}'`
+    )
+
+    return hydratedLocationData
+  } catch (error) {
+    logger.warn(
+      `[STATLESS LOCATION-ID] Hydration failed for id='${locationId}': ${error.message}`
+    )
+    return null
+  }
 }
 
 // '' Helper to resolve alert coordinates with NI-safe fallback
@@ -745,7 +834,7 @@ function handleRequestData(request) {
 }
 
 // Helper to initialize common variables
-async function initializeCommonVariables(request) {
+async function initializeCommonVariables(request, locationId, lang) {
   // '' Clear searchTermsSaved after handleSearchTermsRedirect check (0.685.0 behavior)
   clearSessionKeyIfExists(request, 'searchTermsSaved')
   const formattedDate = moment().format(DATE_FORMAT).split(' ')
@@ -753,8 +842,17 @@ async function initializeCommonVariables(request) {
     item.includes(formattedDate[1])
   )
   const metaSiteUrl = getAirQualitySiteUrl(request)
-  const locationData =
-    await resolveLocationDataFromSessionOrSharedCache(request)
+  let locationData = await resolveLocationDataFromSessionOrSharedCache(request)
+
+  const hasLocationData =
+    Array.isArray(locationData?.results) && Boolean(locationData?.getForecasts)
+  if (!hasLocationData) {
+    const hydratedLocationData =
+      await hydrateLocationDataForStatelessLocationId(request, locationId, lang)
+    if (hydratedLocationData) {
+      locationData = hydratedLocationData
+    }
+  }
 
   logger.info(
     `[DEBUG initializeCommonVariables] locationData exists: ${!!locationData}`
@@ -827,7 +925,7 @@ async function initializeAndValidateRequest(request, h) {
 
   // Initialize common variables
   const { getMonth, metaSiteUrl, locationData } =
-    await initializeCommonVariables(request)
+    await initializeCommonVariables(request, locationId, lang)
 
   // Validate session data
   const sessionValidationResult = validateAndProcessSessionData(

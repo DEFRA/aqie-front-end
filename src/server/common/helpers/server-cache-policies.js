@@ -1,8 +1,6 @@
 // ''
 import { createLogger } from './logging/logger.js'
-
-const ONE_HOUR_MS = 60 * 60 * 1000
-const FIFTEEN_MINUTES_MS = ONE_HOUR_MS / 4
+import { ONE_HOUR_MS, FIFTEEN_MINUTES_MS } from '../../data/constants.js'
 
 const logger = createLogger()
 
