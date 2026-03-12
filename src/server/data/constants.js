@@ -152,6 +152,7 @@ export const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500
 export const ROUND_OF_SIX = 6
 export const FORECAST_ARRAY_INDEX_THIRD = 3
 export const MAX_FORECAST_DAYS = 6
+export const SHARED_LOCATION_CACHE_PREFIX = 'shared:location:'
 
 // '' - Constant for the server directory name
 export const SERVER_DIRNAME = dirname(fileURLToPath(import.meta.url))
