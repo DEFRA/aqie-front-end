@@ -56,7 +56,15 @@
     "redis:memory:frontend:bytes": "redis-cli --scan --pattern 'aqie-front-end:*' | xargs -I {} redis-cli memory usage {} | awk '{s+=$1} END {print s \" bytes\"}'",
     "redis:memory:frontend:mb": "redis-cli --scan --pattern 'aqie-front-end:*' | xargs -I {} redis-cli memory usage {} | awk '{s+=$1} END {printf \"%.2f MB\\n\", s/1024/1024}'",
     "redis:session:proof": "bash scripts/verify-redis-session.sh",
-    "redis:session:proof:clean": "bash scripts/verify-redis-session-clean.sh"
+    "redis:session:proof:clean": "bash scripts/verify-redis-session-clean.sh",
+    "perf:local:preflight": "cross-env PRECHECK_ONLY=1 bash scripts/local-perf-signoff.sh",
+    "perf:local:signoff": "bash scripts/local-perf-signoff.sh",
+    "perf:local:signoff:1h": "cross-env WARMUP_DURATION=600 DURATION=3600 bash scripts/local-perf-signoff.sh",
+    "perf:local:signoff:strict": "cross-env THRESHOLD_MODE=strict bash scripts/local-perf-signoff.sh",
+    "perf:local:signoff:local-realistic": "cross-env THRESHOLD_MODE=local-realistic bash scripts/local-perf-signoff.sh",
+    "perf:local:signoff:cache-active": "cross-env PERF_PROFILE=cache-active-local bash scripts/local-perf-signoff.sh",
+    "perf:local:signoff:cache-active:1h": "cross-env PERF_PROFILE=cache-active-local bash scripts/local-perf-signoff.sh",
+    "perf:local:canary:1h": "cross-env PERF_PROFILE=cache-active-local THRESHOLD_MODE=local-realistic bash scripts/local-perf-canary.sh"
   },
   "author": "Defra DDTS",
   "license": "OGL-UK-3.0",

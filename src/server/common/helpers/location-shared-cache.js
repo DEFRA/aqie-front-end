@@ -1,10 +1,12 @@
 import { config } from '../../../config/index.js'
 import { createLogger } from './logging/logger.js'
 import { getSessionRedisClient } from './session-cache/cache-engine.js'
+import {
+  ONE_HOUR_MS,
+  SHARED_LOCATION_CACHE_PREFIX
+} from '../../data/constants.js'
 
 const logger = createLogger()
-const SHARED_LOCATION_CACHE_PREFIX = 'shared:location:'
-const FIFTEEN_MINUTES_MS = 15 * 60 * 1000
 
 function normalizeSegment(value, fallback = 'na') {
   const normalized = String(value ?? fallback)
@@ -38,9 +40,9 @@ export function buildSharedLocationPayloadCacheKey(request, locationData = {}) {
 function getSharedLocationTtlMs() {
   const sessionTtlMs = Number(config.get('session.cache.ttl'))
   if (!Number.isFinite(sessionTtlMs) || sessionTtlMs <= 0) {
-    return FIFTEEN_MINUTES_MS
+    return ONE_HOUR_MS
   }
-  return Math.min(sessionTtlMs, FIFTEEN_MINUTES_MS)
+  return Math.min(sessionTtlMs, ONE_HOUR_MS)
 }
 
 function getServerPolicy(request) {

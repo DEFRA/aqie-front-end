@@ -2,10 +2,9 @@
 import { config } from '../../../config/index.js'
 import { createLogger } from './logging/logger.js'
 import { getSessionRedisClient } from './session-cache/cache-engine.js'
+import { FIFTEEN_MINUTES_MS } from '../../data/constants.js'
 
 const logger = createLogger()
-const ONE_HOUR_MS = 60 * 60 * 1000
-const FIFTEEN_MINUTES_MS = ONE_HOUR_MS / 4
 const USER_DATA_CACHE_PREFIX = 'userdata:'
 
 function normalizeSegment(value, fallback = 'na') {

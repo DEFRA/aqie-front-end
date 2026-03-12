@@ -224,12 +224,22 @@ vi.mock('../../config/index.js', () => ({
 }))
 
 vi.mock('../data/constants.js', () => ({
+  DAILY_SUMMARY_KEY: 'dailySummary',
+  DATE_FORMAT: 'DD/MM/YYYY',
   LANG_CY: 'cy',
   LANG_EN: 'en',
   LOCATION_NOT_FOUND: 'location-not-found',
   LOCATION_TYPE_NI: 'ni',
   LOCATION_TYPE_UK: 'uk',
+  ONE_HOUR_MS: 60 * 60 * 1000,
+  REDIS_PRESSURE_CHECK_INTERVAL_MS: 60000,
+  REDIS_PRESSURE_COOLDOWN_MS: 30000,
+  REDIS_PRESSURE_MIN_GROWTH_BYTES: 1048576,
+  REDIS_PRESSURE_MIN_GROWTH_RATIO: 0.1,
+  REDIS_PRESSURE_WINDOW_MS: 120000,
   REDIRECT_STATUS_CODE: 301,
+  SESSION_GUARD_LOG_LIMIT_PER_REQUEST: 1,
+  SHARED_LOCATION_CACHE_PREFIX: 'shared:location-payload:',
   STATUS_INTERNAL_SERVER_ERROR: 500
 }))
 
@@ -255,7 +265,10 @@ describe('Location ID Controller Tests', () => {
       params: { id: 'test-location-123' },
       query: { lang: 'en' },
       headers: { referer: 'https://example.com/previous' },
-      url: { href: 'https://example.com/location/test-location-123?lang=en' },
+      url: {
+        href: 'https://example.com/location/test-location-123?lang=en',
+        pathname: '/location/test-location-123'
+      },
       yar: {
         get: vi.fn(),
         set: vi.fn(),
@@ -1006,9 +1019,19 @@ describe('Location ID Controller Tests', () => {
         showSummaryDate: undefined // explicitly undefined
       }
 
-      mockRequest.yar.get
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData)
+      mockRequest.yar.get.mockImplementation((key) => {
+        const values = {
+          searchTermsSaved: true,
+          locationData: mockLocationData,
+          locationDataCacheKey: undefined,
+          notificationFlow: undefined,
+          testMode: undefined,
+          mockLevel: undefined,
+          mockDay: undefined,
+          mockPollutantBand: undefined
+        }
+        return values[key]
+      })
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
@@ -1048,15 +1071,19 @@ describe('Location ID Controller Tests', () => {
         showSummaryDate: undefined
       }
 
-      mockRequest.yar.get = vi
-        .fn()
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData) // locationData
-        .mockReturnValueOnce(null) // testMode
-        .mockReturnValueOnce(null) // mockLevel
-        .mockReturnValueOnce(null) // mockDay
-        .mockReturnValueOnce(null) // mockPollutantBand
-        .mockReturnValue(null) // Any additional calls
+      mockRequest.yar.get = vi.fn((key) => {
+        const values = {
+          searchTermsSaved: true,
+          locationData: mockLocationData,
+          locationDataCacheKey: undefined,
+          notificationFlow: undefined,
+          testMode: undefined,
+          mockLevel: undefined,
+          mockDay: undefined,
+          mockPollutantBand: undefined
+        }
+        return values[key]
+      })
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
@@ -1098,15 +1125,19 @@ describe('Location ID Controller Tests', () => {
         issueTime: '10:00' // already set
       }
 
-      mockRequest.yar.get = vi
-        .fn()
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData) // locationData
-        .mockReturnValueOnce(null) // testMode
-        .mockReturnValueOnce(null) // mockLevel
-        .mockReturnValueOnce(null) // mockDay
-        .mockReturnValueOnce(null) // mockPollutantBand
-        .mockReturnValue(null) // Any additional calls
+      mockRequest.yar.get = vi.fn((key) => {
+        const values = {
+          searchTermsSaved: true,
+          locationData: mockLocationData,
+          locationDataCacheKey: undefined,
+          notificationFlow: undefined,
+          testMode: undefined,
+          mockLevel: undefined,
+          mockDay: undefined,
+          mockPollutantBand: undefined
+        }
+        return values[key]
+      })
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
@@ -1770,15 +1801,19 @@ describe('Location ID Controller Tests', () => {
         issueTime: '10:00' // already set
       }
 
-      mockRequest.yar.get = vi
-        .fn()
-        .mockReturnValueOnce(true) // searchTermsSaved
-        .mockReturnValueOnce(mockLocationData) // locationData
-        .mockReturnValueOnce(null) // testMode
-        .mockReturnValueOnce(null) // mockLevel
-        .mockReturnValueOnce(null) // mockDay
-        .mockReturnValueOnce(null) // mockPollutantBand
-        .mockReturnValue(null) // Any additional calls
+      mockRequest.yar.get = vi.fn((key) => {
+        const values = {
+          searchTermsSaved: true,
+          locationData: mockLocationData,
+          locationDataCacheKey: undefined,
+          notificationFlow: undefined,
+          testMode: undefined,
+          mockLevel: undefined,
+          mockDay: undefined,
+          mockPollutantBand: undefined
+        }
+        return values[key]
+      })
 
       vi.mocked(getIdMatch).mockReturnValue({
         locationIndex: 0,
