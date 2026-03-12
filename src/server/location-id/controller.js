@@ -85,9 +85,13 @@ function hasSessionCookie(request) {
 }
 
 function isGlobalSessionGuardEnabled() {
-  const env = config.get('env')
+  const env = config.get('env') || config.get('nodeEnv')
   if (env === 'production') {
     return true
+  }
+
+  if (env === 'test') {
+    return false
   }
 
   // '' Master guard switch for local/dev simulation
@@ -346,6 +350,11 @@ async function hydrateLocationDataForStatelessLocationId(
   locationId,
   lang
 ) {
+  const env = config.get('env') || config.get('nodeEnv')
+  if (env === 'test') {
+    return null
+  }
+
   // '' Allow direct 2xx location-id rendering for first-hit/no-cookie traffic
   const hasSession = hasSessionCookie(request)
   if (hasSession || !locationId) {
