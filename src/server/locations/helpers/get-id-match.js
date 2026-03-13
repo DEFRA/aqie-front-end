@@ -11,9 +11,12 @@ function getIdMatch(
   let locationDetails
   if (locationType === LOCATION_TYPE_UK) {
     locationDetails = locationData?.results?.find((item, index) => {
-      if (item.GAZETTEER_ENTRY.ID === locationId) {
+      if (
+        normalizeString(item?.GAZETTEER_ENTRY?.ID) ===
+        normalizeString(locationId)
+      ) {
         locationIndex = index
-        return item.GAZETTEER_ENTRY.ID === locationId
+        return true
       }
       return null
     })

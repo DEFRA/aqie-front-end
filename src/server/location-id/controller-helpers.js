@@ -161,7 +161,7 @@ export function buildMockQueryParams(request, mocksDisabled) {
   }
 
   const params = []
-  const query = request.query || {}
+  const query = request?.query || {}
 
   addParamIfExists(params, 'mockLevel', query.mockLevel)
   addParamIfExists(params, 'mockDay', query.mockDay)
@@ -360,6 +360,10 @@ export function applyMockPollutants(
  * @param {string} paramLabel - Parameter label for logging
  */
 function storeSessionParameter(request, paramName, paramValue, paramLabel) {
+  if (!request?.yar?.set) {
+    return
+  }
+
   if (paramValue !== undefined) {
     if (paramValue === '' || paramValue === 'clear') {
       request.yar.set(paramName, null)
@@ -387,18 +391,25 @@ function logMocksDisabledWarning(paramLabel) {
  * @returns {object} Initialized request data
  */
 export function initializeRequestData(request) {
-  const { query, headers = {} } = request
-  const locationId = request.params.id
-  const searchTermsSaved = request.yar.get('searchTermsSaved')
-  const currentUrl = request.url.href
+  const safeRequest = request || {}
+  const query = safeRequest.query || {}
+  const headers = safeRequest.headers || {}
+  const locationId = safeRequest?.params?.id
+  const searchTermsSaved = safeRequest?.yar?.get?.('searchTermsSaved')
+  const currentUrl = safeRequest?.url?.href || ''
   const lang = query?.lang ?? LANG_EN
   const mocksDisabled = config.get('disableTestMocks')
   const mocksEnabled = !mocksDisabled
 
   // '' Store mock parameters in session (only if mocks enabled)
   if (mocksEnabled) {
-    storeSessionParameter(request, 'mockLevel', query?.mockLevel, 'Mock level')
-    storeSessionParameter(request, 'mockDay', query?.mockDay, 'Mock day')
+    storeSessionParameter(
+      safeRequest,
+      'mockLevel',
+      query?.mockLevel,
+      'Mock level'
+    )
+    storeSessionParameter(safeRequest, 'mockDay', query?.mockDay, 'Mock day')
 
     // '' Debug logging for mockPollutantBand
     if (query?.mockPollutantBand !== undefined) {
@@ -417,15 +428,15 @@ export function initializeRequestData(request) {
     }
 
     storeSessionParameter(
-      request,
+      safeRequest,
       'mockPollutantBand',
       query?.mockPollutantBand,
       'Mock pollutant band'
     )
 
     // '' Store testMode (persists across requests when mocks enabled)
-    if (query?.testMode !== undefined) {
-      request.yar.set('testMode', query.testMode)
+    if (query?.testMode !== undefined && safeRequest?.yar?.set) {
+      safeRequest.yar.set('testMode', query.testMode)
       logger.info(`🧪 Test mode ${query.testMode} stored in session`)
     }
   } else {
@@ -508,6 +519,7 @@ export function validateAndProcessSessionData(
   request,
   locationId
 ) {
+  const safeRequest = request || {}
   logger.info(
     `[DEBUG validateAndProcessSessionData] locationData exists: ${!!locationData}`
   )
@@ -534,8 +546,8 @@ export function validateAndProcessSessionData(
     const { searchTerms, secondSearchTerm, searchTermsLocationType } =
       getSearchTermsFromUrl(currentUrl)
 
-    request.yar.clear('locationData')
-    request.yar.clear('locationDataCacheKey')
+    safeRequest?.yar?.clear?.('locationData')
+    safeRequest?.yar?.clear?.('locationDataCacheKey')
 
     const safeSearchTerms = searchTerms || ''
     const safeSecondSearchTerm = secondSearchTerm || ''
@@ -546,19 +558,19 @@ export function validateAndProcessSessionData(
         : ''
 
     // '' Preserve mock parameters in redirect
-    const mockLevel = request.query?.mockLevel
+    const mockLevel = safeRequest?.query?.mockLevel
     const mockLevelParam =
       mockLevel !== undefined
         ? `&mockLevel=${encodeURIComponent(mockLevel)}`
         : ''
 
-    const mockPollutantBand = request.query?.mockPollutantBand
+    const mockPollutantBand = safeRequest?.query?.mockPollutantBand
     const mockPollutantParam =
       mockPollutantBand !== undefined
         ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
         : ''
 
-    const testMode = request.query?.testMode
+    const testMode = safeRequest?.query?.testMode
     const testModeParam =
       testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
 

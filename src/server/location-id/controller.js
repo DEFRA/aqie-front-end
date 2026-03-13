@@ -315,14 +315,26 @@ async function resolveLocationDataFromSessionOrSharedCache(request) {
     Array.isArray(sessionLocationData?.results) &&
     Boolean(sessionLocationData?.getForecasts)
 
-  if (hasFullLocationData) {
+  // '' Detect stale session: if session has a urlRoute for a different location,
+  // '' don't return it — look up the correct data via cache instead.
+  const requestedId = request?.params?.id
+  const sessionRoute = sessionLocationData?.urlRoute
+  const normalizeId = (s) => s?.toLowerCase().replace(/\s+/g, '')
+  const sessionMatchesRequest =
+    !requestedId ||
+    !sessionRoute ||
+    normalizeId(requestedId) === normalizeId(sessionRoute)
+
+  if (hasFullLocationData && sessionMatchesRequest) {
     return sessionLocationData
   }
 
-  const sessionCacheKey = request.yar.get('locationDataCacheKey')
-  const locationDataCacheKey =
-    sessionCacheKey ||
-    buildSharedLocationPayloadCacheKey(request, sessionLocationData)
+  // '' Always derive cache key from current request params so cross-location
+  // '' navigation picks up the correct cached payload, not the previous location's.
+  const locationDataCacheKey = buildSharedLocationPayloadCacheKey(
+    request,
+    sessionLocationData
+  )
 
   const sharedLocationData = await getSharedLocationPayload(
     request,
@@ -332,7 +344,9 @@ async function resolveLocationDataFromSessionOrSharedCache(request) {
     return sharedLocationData
   }
 
-  return sessionLocationData
+  // '' When session is stale (different location) and cache misses, return empty
+  // '' so validateAndProcessSessionData redirects the user back to search.
+  return sessionMatchesRequest ? sessionLocationData : {}
 }
 
 function normalizeLocationIdTerms(locationId = '') {
@@ -963,7 +977,7 @@ async function initializeAndValidateRequest(request, h) {
 
 // Helper to apply test mode and log debug info
 async function applyTestModeAndLogDebug(request, locationData) {
-  const testModeFromQuery = request.query?.testMode
+  const testModeFromQuery = request?.query?.testMode
   const testModeFromSession = request.yar.get('testMode')
   const testMode = testModeFromQuery || testModeFromSession
 
@@ -1009,7 +1023,7 @@ async function processLocationWorkflow({
 }) {
   // '' Check if user is in notification registration flow (SMS or Email) from multiple-results page
   const notificationFlow = request.yar.get('notificationFlow')
-  const fromSmsFlow = request.query?.fromSmsFlow === 'true'
+  const fromSmsFlow = request?.query?.fromSmsFlow === 'true'
 
   if (notificationFlow && fromSmsFlow) {
     const userLocationMetaCacheKey = buildUserLocationMetaCacheKey(

@@ -116,12 +116,12 @@ function buildRedirectUrl(currentUrl, request) {
 
   // '' Preserve mock parameters from query string
   const mocksDisabled = config.get('disableTestMocks')
-  const mockLevel = !mocksDisabled ? request.query?.mockLevel : undefined
-  const mockDay = !mocksDisabled ? request.query?.mockDay : undefined
+  const mockLevel = !mocksDisabled ? request?.query?.mockLevel : undefined
+  const mockDay = !mocksDisabled ? request?.query?.mockDay : undefined
   const mockPollutantBand = !mocksDisabled
-    ? request.query?.mockPollutantBand
+    ? request?.query?.mockPollutantBand
     : undefined
-  const testMode = !mocksDisabled ? request.query?.testMode : undefined
+  const testMode = !mocksDisabled ? request?.query?.testMode : undefined
 
   const mockParams = []
   if (mockLevel !== undefined) {

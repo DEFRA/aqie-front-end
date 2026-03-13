@@ -436,6 +436,37 @@ describe('Welsh Location ID Controller', () => {
       expect(mockRequest.yar.clear).toHaveBeenCalledWith('locationData')
     })
 
+    it('should redirect to search without crashing when mocks are enabled and request is omitted in fallback redirect', async () => {
+      const { config } = await import('../../../config/index.js')
+      config.get.mockImplementation((key) => {
+        if (key === 'disableTestMocks') {
+          return false
+        }
+        return true
+      })
+
+      const mockLocationDataInvalid = {
+        locationType: 'UK',
+        results: [{ id: 'CARD3', name: 'Cardiff' }],
+        getForecasts: null
+      }
+
+      mockRequest.query = {
+        lang: 'cy',
+        mockLevel: '7',
+        testMode: 'todayDate'
+      }
+      mockRequest.yar.get.mockReturnValue(mockLocationDataInvalid)
+      mockRequest.url.href = 'http://localhost:3000/lleoliad/CARD3?lang=cy'
+
+      await getLocationDetailsController.handler(mockRequest, mockH)
+
+      expect(mockH.redirect).toHaveBeenCalledWith(
+        '/lleoliad?lang=cy&searchTerms=Cardiff&secondSearchTerm=&searchTermsLocationType=city'
+      )
+      expect(mockH.response).not.toHaveBeenCalled()
+    })
+
     it('should successfully render Welsh location view with all required data', async () => {
       const mockLocationData = {
         locationType: 'UK',

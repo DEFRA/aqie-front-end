@@ -54,6 +54,30 @@ describe('getIdMatch', () => {
     expect(result.locationDetails.GAZETTEER_ENTRY.ID).toBe('test-ni-id')
   })
 
+  it('should handle case-insensitive matching for UK locations', () => {
+    const locationId = 'n87ge'
+    const locationData = {
+      results: [
+        { GAZETTEER_ENTRY: { ID: 'N87GE', NAME: 'Test UK Location' } },
+        { GAZETTEER_ENTRY: { ID: 'X11AB', NAME: 'Other UK Location' } }
+      ]
+    }
+    const resultNI = []
+    const locationType = 'UK'
+    const locationIndex = 0
+
+    const result = getIdMatch(
+      locationId,
+      locationData,
+      resultNI,
+      locationType,
+      locationIndex
+    )
+
+    expect(result.locationDetails).toBeDefined()
+    expect(result.locationDetails.GAZETTEER_ENTRY.ID).toBe('N87GE')
+  })
+
   it('should handle case-insensitive matching for NI locations', () => {
     const locationId = 'TEST-NI-ID'
     const locationData = {}
