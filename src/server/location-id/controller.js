@@ -768,6 +768,19 @@ async function getNearestLocationData(
     locationType,
     indexNI
   )
+
+  // '' If the requested route ID does not match any resolved location,
+  // '' avoid nearest/measurements lookups that can reuse stale coordinates.
+  if (!locationDetails) {
+    return {
+      locationDetails,
+      forecastNum: null,
+      nearestLocationsRange: [],
+      nearestLocation: [],
+      latlon: {}
+    }
+  }
+
   const { forecastNum, nearestLocationsRange, nearestLocation, latlon } =
     await getNearestLocation(
       locationData?.results,

@@ -825,6 +825,11 @@ describe('Location ID Controller Tests', () => {
           locationType: 'uk'
         })
 
+      vi.mocked(getIdMatch).mockReturnValue({
+        locationIndex: 0,
+        locationDetails: { id: 'test', name: 'Test Location' }
+      })
+
       vi.mocked(getNearestLocation).mockRejectedValue(new Error('API error'))
 
       await getLocationDetailsController.handler(mockRequest, mockH)
