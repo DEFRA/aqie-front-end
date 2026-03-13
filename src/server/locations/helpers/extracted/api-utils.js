@@ -106,9 +106,9 @@ function getEnvironmentName(request) {
   return request?.app?.config?.env || process.env.NODE_ENV || 'development'
 }
 
-function getEphemeralProtectedApiUrl(request) {
+function getEphemeralProtectedApiUrl(request, fallbackConfig = config) {
   const env = getEnvironmentName(request)
-  const configSource = request?.app?.config || config
+  const configSource = request?.app?.config || fallbackConfig
 
   if (!configSource) {
     return null
@@ -266,7 +266,7 @@ function selectMeasurementsUrlAndOptions(latitude, longitude, di = {}) {
     )
   }
 
-  const ephemeralUrl = getEphemeralProtectedApiUrl(request)
+  const ephemeralUrl = getEphemeralProtectedApiUrl(request, apiConfig)
   if (isLocalRequest(request) && ephemeralUrl) {
     if (!config.get('isProduction')) {
       logger.info(

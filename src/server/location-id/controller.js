@@ -4,10 +4,19 @@ import {
 } from '../data/en/monitoring-sites.js'
 import * as airQualityData from '../data/en/air-quality.js'
 import {
+  DAILY_SUMMARY_KEY,
+  DATE_FORMAT,
   LANG_CY,
   LOCATION_NOT_FOUND,
   LOCATION_TYPE_NI,
+  LOCATION_TYPE_UK,
+  REDIS_PRESSURE_CHECK_INTERVAL_MS,
+  REDIS_PRESSURE_COOLDOWN_MS,
+  REDIS_PRESSURE_MIN_GROWTH_BYTES,
+  REDIS_PRESSURE_MIN_GROWTH_RATIO,
+  REDIS_PRESSURE_WINDOW_MS,
   REDIRECT_STATUS_CODE,
+  SESSION_GUARD_LOG_LIMIT_PER_REQUEST,
   STATUS_INTERNAL_SERVER_ERROR
 } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
@@ -48,16 +57,20 @@ import {
 } from '../common/helpers/mock-pollutant-level.js'
 import { getForecastWarning } from '../locations/helpers/forecast-warning.js'
 import { getSessionRedisClient } from '../common/helpers/session-cache/cache-engine.js'
+import {
+  buildSharedLocationPayloadCacheKey,
+  getSharedLocationPayload,
+  setSharedLocationPayload
+} from '../common/helpers/location-shared-cache.js'
+import { fetchData } from '../locations/helpers/fetch-data.js'
+import { createURLRouteBookmarks } from '../locations/helpers/create-bookmark-ids.js'
+import {
+  buildUserLocationMetaCacheKey,
+  getUserDataPayload,
+  setUserDataPayload
+} from '../common/helpers/user-data-cache.js'
 
 const logger = createLogger()
-const DATE_FORMAT = 'DD MMMM YYYY'
-const DAILY_SUMMARY_KEY = 'dailySummary'
-const SESSION_GUARD_LOG_LIMIT_PER_REQUEST = 3
-const REDIS_PRESSURE_CHECK_INTERVAL_MS = 10000
-const REDIS_PRESSURE_WINDOW_MS = 30000
-const REDIS_PRESSURE_MIN_GROWTH_BYTES = 20 * 1024 * 1024
-const REDIS_PRESSURE_MIN_GROWTH_RATIO = 0.2
-const REDIS_PRESSURE_COOLDOWN_MS = 300000
 
 const redisPressureGuardState = {
   lastCheckAtMs: 0,
@@ -69,6 +82,21 @@ const redisPressureGuardState = {
 function hasSessionCookie(request) {
   const sessionCookieName = config.get('session.cache.name')
   return Boolean(request?.state?.[sessionCookieName])
+}
+
+function isGlobalSessionGuardEnabled() {
+  const env = config.get('env') || config.get('nodeEnv')
+  if (env === 'production') {
+    return true
+  }
+
+  if (env === 'test') {
+    return false
+  }
+
+  // '' Master guard switch for local/dev simulation
+  const globalGuardEnabled = config.get('session.cache.globalGuardEnabled')
+  return typeof globalGuardEnabled === 'boolean' ? globalGuardEnabled : true
 }
 
 function logSessionGuardSkip(request, operation, sessionKey, reason) {
@@ -169,20 +197,24 @@ function maybeRefreshRedisPressureGuard() {
 }
 
 function isSessionMutationAllowed(request, operation, sessionKey) {
-  if (!hasSessionCookie(request)) {
+  const isGlobalGuardEnabled = isGlobalSessionGuardEnabled()
+
+  if (isGlobalGuardEnabled && !hasSessionCookie(request)) {
     logSessionGuardSkip(request, operation, sessionKey, 'no session cookie')
     return false
   }
 
-  maybeRefreshRedisPressureGuard()
-  if (isRedisPressureGuardActive()) {
-    logSessionGuardSkip(
-      request,
-      operation,
-      sessionKey,
-      'redis pressure guard active'
-    )
-    return false
+  if (isGlobalGuardEnabled) {
+    maybeRefreshRedisPressureGuard()
+    if (isRedisPressureGuardActive()) {
+      logSessionGuardSkip(
+        request,
+        operation,
+        sessionKey,
+        'redis pressure guard active'
+      )
+      return false
+    }
   }
 
   return true
@@ -196,7 +228,39 @@ function clearSessionKeyIfExists(request, sessionKey) {
   const currentValue = request?.yar?.get?.(sessionKey)
   if (currentValue !== undefined) {
     request.yar.clear(sessionKey)
+    if (sessionKey === 'locationData') {
+      request.yar.clear('locationDataCacheKey')
+    }
   }
+}
+
+function areSessionValuesEqual(currentValue, nextValue) {
+  if (Object.is(currentValue, nextValue)) {
+    if (
+      currentValue &&
+      typeof currentValue === 'object' &&
+      nextValue &&
+      typeof nextValue === 'object'
+    ) {
+      return false
+    }
+    return true
+  }
+
+  if (
+    currentValue &&
+    nextValue &&
+    typeof currentValue === 'object' &&
+    typeof nextValue === 'object'
+  ) {
+    try {
+      return JSON.stringify(currentValue) === JSON.stringify(nextValue)
+    } catch {
+      return false
+    }
+  }
+
+  return false
 }
 
 function setSessionKeyIfSessionExists(request, sessionKey, value) {
@@ -204,7 +268,162 @@ function setSessionKeyIfSessionExists(request, sessionKey, value) {
     return
   }
 
+  const currentValue = request?.yar?.get?.(sessionKey)
+  if (areSessionValuesEqual(currentValue, value)) {
+    return
+  }
+
   request.yar.set(sessionKey, value)
+}
+
+async function persistLocationDataForLocationRoute(request, locationData) {
+  if (!isSessionMutationAllowed(request, 'set', 'locationData')) {
+    return
+  }
+
+  const cacheKey = buildSharedLocationPayloadCacheKey(request, locationData)
+  const isSharedCacheWriteSuccessful = await setSharedLocationPayload(
+    request,
+    cacheKey,
+    locationData
+  )
+
+  if (!isSharedCacheWriteSuccessful) {
+    setSessionKeyIfSessionExists(request, 'locationData', locationData)
+    return
+  }
+
+  const locationDataLite = {
+    cacheKey,
+    locationType: locationData?.locationType,
+    showSummaryDate: locationData?.showSummaryDate,
+    issueTime: locationData?.issueTime,
+    englishDate: locationData?.englishDate,
+    welshDate: locationData?.welshDate,
+    dailySummary: locationData?.dailySummary
+      ? { issue_date: locationData.dailySummary.issue_date }
+      : undefined
+  }
+
+  setSessionKeyIfSessionExists(request, 'locationDataCacheKey', cacheKey)
+  setSessionKeyIfSessionExists(request, 'locationData', locationDataLite)
+}
+
+async function resolveLocationDataFromSessionOrSharedCache(request) {
+  const sessionLocationData = request.yar.get('locationData') || {}
+  const hasFullLocationData =
+    Array.isArray(sessionLocationData?.results) &&
+    Boolean(sessionLocationData?.getForecasts)
+
+  if (hasFullLocationData) {
+    return sessionLocationData
+  }
+
+  const sessionCacheKey = request.yar.get('locationDataCacheKey')
+  const locationDataCacheKey =
+    sessionCacheKey ||
+    buildSharedLocationPayloadCacheKey(request, sessionLocationData)
+
+  const sharedLocationData = await getSharedLocationPayload(
+    request,
+    locationDataCacheKey
+  )
+  if (sharedLocationData) {
+    return sharedLocationData
+  }
+
+  return sessionLocationData
+}
+
+function normalizeLocationIdTerms(locationId = '') {
+  const decodedId = decodeURIComponent(locationId || '').toLowerCase()
+  const [primaryPart = '', ...secondaryParts] = decodedId.split('_')
+
+  return {
+    searchTerms: primaryPart.replace(/-/g, ' ').trim(),
+    secondSearchTerm: secondaryParts.join('_').replace(/-/g, ' ').trim()
+  }
+}
+
+async function hydrateLocationDataForStatelessLocationId(
+  request,
+  locationId,
+  lang
+) {
+  const env = config.get('env') || config.get('nodeEnv')
+  if (env === 'test') {
+    return null
+  }
+
+  // '' Allow direct 2xx location-id rendering for first-hit/no-cookie traffic
+  const hasSession = hasSessionCookie(request)
+  if (hasSession || !locationId) {
+    return null
+  }
+
+  const { searchTerms, secondSearchTerm } = normalizeLocationIdTerms(locationId)
+  const userLocation = [searchTerms, secondSearchTerm].filter(Boolean).join(' ')
+
+  if (!userLocation) {
+    return null
+  }
+
+  try {
+    const { getOSPlaces, getForecasts, getDailySummary } = await fetchData(
+      request,
+      {
+        locationType: LOCATION_TYPE_UK,
+        userLocation,
+        searchTerms,
+        secondSearchTerm
+      }
+    )
+
+    if (
+      !Array.isArray(getOSPlaces?.results) ||
+      getOSPlaces.results.length === 0
+    ) {
+      return null
+    }
+
+    const { selectedMatchesAddedIDs } = createURLRouteBookmarks([
+      ...getOSPlaces.results
+    ])
+
+    const hasMatchingLocation = selectedMatchesAddedIDs.some(
+      (item) => item?.GAZETTEER_ENTRY?.ID === locationId
+    )
+
+    if (!hasMatchingLocation) {
+      return null
+    }
+
+    const hydratedLocationData = {
+      results: selectedMatchesAddedIDs,
+      getForecasts: getForecasts?.forecasts,
+      dailySummary: getDailySummary,
+      locationType: LOCATION_TYPE_UK,
+      lang,
+      urlRoute: locationId
+    }
+
+    const cacheKey = buildSharedLocationPayloadCacheKey(
+      request,
+      hydratedLocationData
+    )
+    await setSharedLocationPayload(request, cacheKey, hydratedLocationData)
+
+    logger.info(
+      `[STATLESS LOCATION-ID] Hydrated locationData for id='${locationId}'`
+    )
+
+    return hydratedLocationData
+  } catch (error) {
+    logger.warn(
+      `[STATLESS LOCATION-ID] Hydration failed for id='${locationId}': ${error.message}`
+    )
+    return null
+  }
 }
 
 // '' Helper to resolve alert coordinates with NI-safe fallback
@@ -285,17 +504,15 @@ function handleSearchTermsRedirect(
   const previousUrl = headers.referer || headers.referrer
   logger.info(`[DEBUG controller] previousUrl: ${previousUrl}`)
   logger.info(`[DEBUG controller] currentUrl: ${currentUrl}`)
-  const isPreviousAndCurrentUrlEqual = compareLastElements(
-    previousUrl,
-    currentUrl
-  )
+  const isPreviousAndCurrentUrlEqual = previousUrl
+    ? compareLastElements(previousUrl, currentUrl)
+    : false
+  // '' Allow first-hit bookmark requests without a session cookie to proceed statelessly
+  const hasSession = hasSessionCookie(request)
   logger.info(
     `[DEBUG controller] isPreviousAndCurrentUrlEqual: ${isPreviousAndCurrentUrlEqual}`
   )
-  if (
-    (previousUrl === undefined && !searchTermsSaved) ||
-    (isPreviousAndCurrentUrlEqual && !searchTermsSaved)
-  ) {
+  if (isPreviousAndCurrentUrlEqual && !searchTermsSaved && hasSession) {
     logger.info(
       `[DEBUG controller] REDIRECTING because searchTermsSaved is missing`
     )
@@ -503,16 +720,12 @@ function buildNotFoundViewData(lang) {
 }
 
 // Helper to update session with nearest location and measurements
-function updateSessionWithNearest(
+async function updateSessionWithNearest(
   request,
   locationData,
   nearestLocation,
   nearestLocationsRange
 ) {
-  if (!isSessionMutationAllowed(request, 'set', 'locationData')) {
-    return
-  }
-
   // '' Ensure we only assign valid arrays to prevent template errors
   const nearestLocationSafe = Array.isArray(nearestLocation)
     ? nearestLocation
@@ -526,7 +739,7 @@ function updateSessionWithNearest(
   // Replace the large getMeasurements with a filtered version
   locationData.getMeasurements = nearestLocationsRangeSafe
   // Save the updated locationData back into session
-  request.yar.set('locationData', locationData)
+  await persistLocationDataForLocationRoute(request, locationData)
 }
 
 // Helper to get nearest location and related data
@@ -630,7 +843,7 @@ function handleRequestData(request) {
 }
 
 // Helper to initialize common variables
-function initializeCommonVariables(request) {
+async function initializeCommonVariables(request, locationId, lang) {
   // '' Clear searchTermsSaved after handleSearchTermsRedirect check (0.685.0 behavior)
   clearSessionKeyIfExists(request, 'searchTermsSaved')
   const formattedDate = moment().format(DATE_FORMAT).split(' ')
@@ -638,7 +851,17 @@ function initializeCommonVariables(request) {
     item.includes(formattedDate[1])
   )
   const metaSiteUrl = getAirQualitySiteUrl(request)
-  const locationData = request.yar.get('locationData') || {}
+  let locationData = await resolveLocationDataFromSessionOrSharedCache(request)
+
+  const hasLocationData =
+    Array.isArray(locationData?.results) && Boolean(locationData?.getForecasts)
+  if (!hasLocationData) {
+    const hydratedLocationData =
+      await hydrateLocationDataForStatelessLocationId(request, locationId, lang)
+    if (hydratedLocationData) {
+      locationData = hydratedLocationData
+    }
+  }
 
   logger.info(
     `[DEBUG initializeCommonVariables] locationData exists: ${!!locationData}`
@@ -672,16 +895,17 @@ function processLocationResult(
   logger.info(
     `Before Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
   )
-  updateSessionWithNearest(
+  return updateSessionWithNearest(
     request,
     locationData,
     nearestLocation,
     nearestLocationsRange
-  )
-  logger.info(
-    `After Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
-  )
-  return h.view('locations/location', viewData)
+  ).then(() => {
+    logger.info(
+      `After Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
+    )
+    return h.view('locations/location', viewData)
+  })
 }
 
 // Helper to handle all initialization and validation steps
@@ -710,7 +934,7 @@ async function initializeAndValidateRequest(request, h) {
 
   // Initialize common variables
   const { getMonth, metaSiteUrl, locationData } =
-    initializeCommonVariables(request)
+    await initializeCommonVariables(request, locationId, lang)
 
   // Validate session data
   const sessionValidationResult = validateAndProcessSessionData(
@@ -738,7 +962,7 @@ async function initializeAndValidateRequest(request, h) {
 }
 
 // Helper to apply test mode and log debug info
-function applyTestModeAndLogDebug(request, locationData) {
+async function applyTestModeAndLogDebug(request, locationData) {
   const testModeFromQuery = request.query?.testMode
   const testModeFromSession = request.yar.get('testMode')
   const testMode = testModeFromQuery || testModeFromSession
@@ -749,7 +973,7 @@ function applyTestModeAndLogDebug(request, locationData) {
 
   if (testMode) {
     applyTestModeChanges(locationData, testMode, logger)
-    setSessionKeyIfSessionExists(request, 'locationData', locationData)
+    await persistLocationDataForLocationRoute(request, locationData)
   }
 }
 
@@ -788,6 +1012,43 @@ async function processLocationWorkflow({
   const fromSmsFlow = request.query?.fromSmsFlow === 'true'
 
   if (notificationFlow && fromSmsFlow) {
+    const userLocationMetaCacheKey = buildUserLocationMetaCacheKey(
+      request,
+      locationId,
+      lang
+    )
+    const cachedUserLocationMeta = await getUserDataPayload(
+      request,
+      userLocationMetaCacheKey
+    )
+
+    if (cachedUserLocationMeta) {
+      setSessionKeyIfSessionExists(
+        request,
+        'location',
+        cachedUserLocationMeta.location
+      )
+      setSessionKeyIfSessionExists(
+        request,
+        'locationId',
+        cachedUserLocationMeta.locationId
+      )
+      setSessionKeyIfSessionExists(
+        request,
+        'latitude',
+        cachedUserLocationMeta.latitude
+      )
+      setSessionKeyIfSessionExists(
+        request,
+        'longitude',
+        cachedUserLocationMeta.longitude
+      )
+
+      logger.info(
+        `[USER DATA CACHE] Cache hit for location notification metadata (key='${userLocationMetaCacheKey}')`
+      )
+    }
+
     // '' Update session with location data for notification
     if (
       locationData &&
@@ -847,6 +1108,13 @@ async function processLocationWorkflow({
       setSessionKeyIfSessionExists(request, 'locationId', locationId)
       setSessionKeyIfSessionExists(request, 'latitude', lat)
       setSessionKeyIfSessionExists(request, 'longitude', lon)
+
+      await setUserDataPayload(request, userLocationMetaCacheKey, {
+        location: locationTitle,
+        locationId,
+        latitude: lat,
+        longitude: lon
+      })
 
       // '' DEBUG: Log session data immediately after setting to verify persistence
       logger.info('Session debug - SET operation complete', {
@@ -908,7 +1176,7 @@ async function processLocationWorkflow({
     clearSessionKeyIfExists(request, 'notificationFlow')
   }
 
-  applyTestModeAndLogDebug(request, locationData)
+  await applyTestModeAndLogDebug(request, locationData)
 
   const {
     locationDetails,
@@ -927,7 +1195,7 @@ async function processLocationWorkflow({
   logAndCalculateSummaryDate(locationData)
 
   if (locationData.issueTime && !request.yar.get('locationData')?.issueTime) {
-    setSessionKeyIfSessionExists(request, 'locationData', locationData)
+    await persistLocationDataForLocationRoute(request, locationData)
   }
 
   if (locationDetails) {

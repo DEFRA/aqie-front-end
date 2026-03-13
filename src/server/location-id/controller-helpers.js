@@ -535,6 +535,7 @@ export function validateAndProcessSessionData(
       getSearchTermsFromUrl(currentUrl)
 
     request.yar.clear('locationData')
+    request.yar.clear('locationDataCacheKey')
 
     const safeSearchTerms = searchTerms || ''
     const safeSecondSearchTerm = secondSearchTerm || ''

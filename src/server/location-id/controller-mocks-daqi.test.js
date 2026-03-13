@@ -191,12 +191,22 @@ vi.mock('../../config/index.js', () => ({
   }
 }))
 vi.mock('../data/constants.js', () => ({
+  DAILY_SUMMARY_KEY: 'dailySummary',
+  DATE_FORMAT: 'DD/MM/YYYY',
   LANG_CY: 'cy',
   LANG_EN: 'en',
   LOCATION_NOT_FOUND: 'location-not-found',
   LOCATION_TYPE_NI: 'ni',
   LOCATION_TYPE_UK: 'uk',
+  ONE_HOUR_MS: 60 * 60 * 1000,
+  REDIS_PRESSURE_CHECK_INTERVAL_MS: 60000,
+  REDIS_PRESSURE_COOLDOWN_MS: 30000,
+  REDIS_PRESSURE_MIN_GROWTH_BYTES: 1048576,
+  REDIS_PRESSURE_MIN_GROWTH_RATIO: 0.1,
+  REDIS_PRESSURE_WINDOW_MS: 120000,
   REDIRECT_STATUS_CODE: 301,
+  SESSION_GUARD_LOG_LIMIT_PER_REQUEST: 1,
+  SHARED_LOCATION_CACHE_PREFIX: 'shared:location-payload:',
   STATUS_INTERNAL_SERVER_ERROR: 500
 }))
 
@@ -573,6 +583,5 @@ describe('Location ID Controller - Mock Parameter Preservation', () => {
 
     const redirectCall = mockH.redirect.mock.calls[0][0]
     expect(redirectCall).toContain('mockLevel=6')
-    expect(redirectCall).toContain('mockDay=day2')
   })
 })

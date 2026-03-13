@@ -24,6 +24,8 @@ export const LOCATION_NOT_FOUND_ROUTE_CY = '/lleoliad-heb-ei-ganfod/cy?lang=cy'
 export const LOCATION_NOT_FOUND_ROUTE_EN = '/location-not-found?lang=en'
 export const SEARCH_LOCATION_ROUTE_EN = '/search-location?lang=en'
 export const SEARCH_LOCATION_ROUTE_CY = '/chwilio-lleoliad/cy?lang=cy'
+export const OZONE_PATH_EN = '/pollutants/ozone'
+export const OZONE_PATH_CY = '/llygryddion/oson/cy'
 export const MULTIPLE_LOCATIONS_ROUTE_EN = '/multiple-results?lang=en'
 export const MULTIPLE_LOCATIONS_ROUTE_CY = '/canlyniadau-lluosog/cy?lang=cy'
 export const ACTIONS_REDUCE_EXPOSURE_ROUTE_EN =
@@ -33,14 +35,11 @@ export const ACTIONS_REDUCE_EXPOSURE_ROUTE_CY =
 export const HEALTH_EFFECTS_ROUTE_EN = '/location/{locationId}/health-effects'
 export const HEALTH_EFFECTS_ROUTE_CY =
   '/lleoliad/{locationId}/effeithiau-iechyd'
-export const OZONE_PATH_CY = '/llygryddion/oson/cy'
-export const AIR_POLLUTION_BREACHES_PATH_EN = '/air-pollution-breaches'
-export const AIR_POLLUTION_BREACHES_PATH_CY = '/torriadau-llygredd-aer/cy'
-export const STATUS_OK = 200
-export const STATUS_FOUND = 302
-export const STATUS_BAD_REQUEST = 400
 export const STATUS_UNAUTHORIZED = 401
+export const STATUS_BAD_REQUEST = 400
+export const STATUS_FOUND = 302
 export const STATUS_NOT_FOUND = 404
+export const STATUS_OK = 200
 export const STATUS_INTERNAL_SERVER_ERROR = 500
 export const REDIRECT_PATH_EN = '/search-location?lang=en'
 export const REDIRECT_PATH_CY = 'chwilio-lleoliad/cy?lang=cy'
@@ -136,25 +135,32 @@ export const REDIRECT_STATUS_CODE = 301
 export const SAMPLE_LOCATION_NAME = 'Sample Location'
 export const HTTP_STATUS_OK = 200
 export const HTTP_STATUS_CREATED = 201
+export const MAX_ERROR_BODY_LENGTH = 500
 export const MINUTES_IN_HALF_HOUR = 30
 export const REFRESH_INTERVAL_MS = MINUTES_IN_HALF_HOUR * 60 * 1000
+export const ONE_HOUR_MS = 60 * 60 * 1000
+export const FIFTEEN_MINUTES_MS = ONE_HOUR_MS / 4
 export const AIR_QUALITY_THRESHOLD_1 = 1
 export const AIR_QUALITY_THRESHOLD_2 = 2
 export const AIR_QUALITY_THRESHOLD_3 = 3
 export const AIR_QUALITY_THRESHOLD_4 = 4
+export const DATE_FORMAT = 'DD MMMM YYYY'
+export const DAILY_SUMMARY_KEY = 'dailySummary'
+export const SESSION_GUARD_LOG_LIMIT_PER_REQUEST = 3
+export const REDIS_PRESSURE_CHECK_INTERVAL_MS = 10000
+export const REDIS_PRESSURE_WINDOW_MS = 30000
+export const REDIS_PRESSURE_MIN_GROWTH_MEBIBYTES = 20
+export const BYTES_PER_MEBIBYTE = 1024 * 1024
+export const REDIS_PRESSURE_MIN_GROWTH_BYTES =
+  REDIS_PRESSURE_MIN_GROWTH_MEBIBYTES * BYTES_PER_MEBIBYTE
+export const REDIS_PRESSURE_MIN_GROWTH_RATIO = 0.2
+export const REDIS_PRESSURE_COOLDOWN_MS = 300000
 export const DEFAULT_LOCATION_TYPE = 'uk-location'
 export const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500
 export const ROUND_OF_SIX = 6
 export const FORECAST_ARRAY_INDEX_THIRD = 3
 export const MAX_FORECAST_DAYS = 6
-
-// '' - API service constants
-export const DEFAULT_TIMEOUT_MS = 5000
-export const MAX_ERROR_BODY_LENGTH = 500
+export const SHARED_LOCATION_CACHE_PREFIX = 'shared:location:'
 
 // '' - Constant for the server directory name
 export const SERVER_DIRNAME = dirname(fileURLToPath(import.meta.url))
-
-// '' - Session and notification constants
-export const NOT_PROVIDED = 'Not provided'
-export const SERVICE_UNAVAILABLE = 'service-unavailable'

@@ -116,3 +116,59 @@ If Redis has no memory limit configured (`maxmemory=0`), the field is reported a
 - Normal local development remains unchanged (memory cache by default).
 - Redis usage is forced only in the dedicated bot-test scripts.
 - If `redis-cli` is unavailable, the monitor script falls back to `ioredis`.
+
+## Production Redis Ops Baseline (Server-Level)
+
+Use this as a default for perf-test and production where cache management is intentionally server-level.
+
+### Application Defaults
+
+- `SESSION_CACHE_ENGINE=redis`
+- `SESSION_CACHE_TTL=900000` (15 minutes)
+- `SESSION_COOKIE_TTL=900000` (15 minutes)
+- `SESSION_GLOBAL_GUARD_ENABLED=true`
+- Keep `storeBlank=false` (already set in Yar config)
+
+### Redis Server Defaults
+
+- Set `maxmemory` to roughly `70%` of node RAM (leave headroom for OS/background work).
+- Preferred eviction policy for session-only caches: `volatile-ttl`.
+- If the same Redis is shared with non-TTL keys, use `allkeys-lru`.
+- Enable background-friendly options:
+  - `lazyfree-lazy-eviction yes`
+  - `lazyfree-lazy-expire yes`
+  - `activedefrag yes`
+
+### Alert Thresholds
+
+- Memory usage:
+  - warning: `used_memory_pct_of_maxmemory > 75%`
+  - critical: `used_memory_pct_of_maxmemory > 85%`
+- Evictions:
+  - warning: `evicted_keys > 0` for 5 continuous minutes
+  - critical: `evicted_keys > 10/s` sustained for 5 minutes
+- Redis latency:
+  - warning: p95 > `5ms`
+  - critical: p95 > `15ms`
+- Session write pressure:
+  - warning when writes/sec > `2x` the 15-minute baseline
+
+### Quick Verification Commands
+
+```bash
+# '' Check memory cap and policy
+redis-cli INFO memory | egrep 'maxmemory:|maxmemory_human:'
+redis-cli CONFIG GET maxmemory-policy
+
+# '' Check evictions and keyspace pressure
+redis-cli INFO stats | egrep 'evicted_keys|keyspace_hits|keyspace_misses'
+
+# '' Sample app-prefixed key count
+redis-cli --scan --pattern 'aqie-front-end:*' | wc -l
+```
+
+### Tuning Guidance
+
+- If evictions occur below expected traffic, increase Redis memory before increasing TTL.
+- If memory remains stable but writes are high, reduce app write frequency (avoid unchanged `yar.set`/`yar.clear`).
+- Keep perf-test aligned with production TTL/policy to make stress results representative.

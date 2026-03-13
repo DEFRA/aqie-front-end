@@ -35,9 +35,8 @@ describe('searchMiddleware - UK location processing', () => {
     setupMocks()
   })
 
-  it('should set notificationFlow from payload when provided', async () => {
+  it('should ignore notification payload flags and process UK search', async () => {
     const { mockRequest, mockH } = mocks
-    // '' Provide SMS flow flag in payload
     mockRequest.payload = { fromSmsFlow: 'true' }
     mockRequest.query = {
       searchTerms: 'cardiff',
@@ -67,7 +66,14 @@ describe('searchMiddleware - UK location processing', () => {
 
     const result = await searchMiddleware(mockRequest, mockH)
 
-    expect(mockRequest.yar.set).toHaveBeenCalledWith('notificationFlow', 'sms')
+    expect(mockRequest.yar.set).not.toHaveBeenCalledWith(
+      'notificationFlow',
+      'sms'
+    )
+    expect(mockRequest.yar.set).toHaveBeenCalledWith(
+      'searchTermsSaved',
+      'CARDIFF'
+    )
     expect(result).toBe('uk-location-result')
   })
 
@@ -142,13 +148,22 @@ describe('searchMiddleware - NI location processing', () => {
       locationNameOrPostcode: 'Belfast'
     })
 
+    vi.mocked(fetchData).mockResolvedValue({
+      getDailySummary: { issue_date: MOCK_DATE_STRING, today: {} },
+      getForecasts: { forecasts: [] },
+      getOSPlaces: null,
+      getNIPlaces: {
+        results: [{ postcode: 'BT1 1AA', town: 'belfast' }]
+      }
+    })
+
     const result = await searchMiddleware(mockRequest, mockH)
 
-    // '' NI searches now redirect to async loading page
-    expect(mockRequest.yar.set).toHaveBeenCalledWith('niProcessing', true)
-    expect(mockRequest.yar.set).toHaveBeenCalledWith('niPostcode', 'Belfast')
-    expect(mockRequest.yar.set).toHaveBeenCalledWith('lang', 'en')
-    expect(mockH.redirect).toHaveBeenCalledWith('/loading?postcode=Belfast')
+    expect(mockRequest.yar.set).toHaveBeenCalledWith(
+      'searchTermsSaved',
+      'BELFAST'
+    )
+    expect(mockH.redirect).toHaveBeenCalledWith('/location/bt11aa?lang=en')
     expect(handleUKLocationType).not.toHaveBeenCalled()
     expect(result).toBe(TAKEOVER_RESULT)
   })
@@ -214,17 +229,24 @@ describe('searchMiddleware - location not found scenarios', () => {
       locationNameOrPostcode: 'Unknown'
     })
 
+    vi.mocked(fetchData).mockResolvedValue({
+      getDailySummary: { issue_date: MOCK_DATE_STRING, today: {} },
+      getForecasts: { forecasts: [] },
+      getOSPlaces: null,
+      getNIPlaces: { results: [] }
+    })
+
     const result = await searchMiddleware(mockRequest, mockH)
 
-    // '' NI searches redirect to loading, error handling happens in background
-    expect(mockRequest.yar.set).toHaveBeenCalledWith('niProcessing', true)
-    expect(mockRequest.yar.set).toHaveBeenCalledWith('niPostcode', 'Unknown')
-    expect(mockH.redirect).toHaveBeenCalledWith('/loading?postcode=Unknown')
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('locationDataNotFound', {
+      locationNameOrPostcode: 'Unknown',
+      lang: LANG_EN
+    })
+    expect(mockRequest.yar.clear).toHaveBeenCalledWith('searchTermsSaved')
     expect(result).toBe(TAKEOVER_RESULT)
   })
 
   it('should show service unavailable when NI API fails', async () => {
-    // '' NI API failures handled in async background processing
     const { mockRequest, mockH } = mocks
     mockRequest.query = {
       searchTerms: 'bt1 1fb'
@@ -236,11 +258,20 @@ describe('searchMiddleware - location not found scenarios', () => {
       locationNameOrPostcode: 'BT1 1FB'
     })
 
+    vi.mocked(fetchData).mockResolvedValue({
+      getDailySummary: { issue_date: MOCK_DATE_STRING, today: {} },
+      getForecasts: { forecasts: [] },
+      getOSPlaces: null,
+      getNIPlaces: null
+    })
+
     const result = await searchMiddleware(mockRequest, mockH)
 
-    // '' Immediately redirects to loading page, error handling happens in background
-    expect(mockRequest.yar.set).toHaveBeenCalledWith('niProcessing', true)
-    expect(mockH.redirect).toHaveBeenCalledWith('/loading?postcode=BT1%201FB')
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('locationDataNotFound', {
+      locationNameOrPostcode: 'BT1 1FB',
+      lang: LANG_EN
+    })
+    expect(mockRequest.yar.clear).toHaveBeenCalledWith('searchTermsSaved')
     expect(result).toBe(TAKEOVER_RESULT)
   })
 })
@@ -477,10 +508,11 @@ describe('searchMiddleware - NI WRONG_POSTCODE handling', () => {
 
     const result = await searchMiddleware(mockRequest, mockH)
 
-    // '' NI searches redirect to loading, validation happens in background
-    expect(mockRequest.yar.set).toHaveBeenCalledWith('niProcessing', true)
-    expect(mockRequest.yar.set).toHaveBeenCalledWith('niPostcode', 'Invalid')
-    expect(mockH.redirect).toHaveBeenCalledWith('/loading?postcode=Invalid')
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('locationDataNotFound', {
+      locationNameOrPostcode: 'Invalid',
+      lang: LANG_EN
+    })
+    expect(mockRequest.yar.clear).toHaveBeenCalledWith('searchTermsSaved')
     expect(result).toBe(TAKEOVER_RESULT)
   })
 })
@@ -512,10 +544,11 @@ describe('searchMiddleware - NI empty results handling', () => {
 
     const result = await searchMiddleware(mockRequest, mockH)
 
-    // '' NI searches redirect to loading, empty results handled in background
-    expect(mockRequest.yar.set).toHaveBeenCalledWith('niProcessing', true)
-    expect(mockRequest.yar.set).toHaveBeenCalledWith('niPostcode', 'Unknown')
-    expect(mockH.redirect).toHaveBeenCalledWith('/loading?postcode=Unknown')
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('locationDataNotFound', {
+      locationNameOrPostcode: 'Unknown',
+      lang: LANG_EN
+    })
+    expect(mockRequest.yar.clear).toHaveBeenCalledWith('searchTermsSaved')
     expect(result).toBe(TAKEOVER_RESULT)
   })
 })
