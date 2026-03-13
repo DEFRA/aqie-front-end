@@ -18,8 +18,6 @@ const scope = config.get('scopeNIreland')
 export async function fetchOAuthToken(options = {}) {
   const fetchLogger = options.logger || logger
 
-  fetchLogger.info('OAuth token requested:')
-
   const url = `${tokenUrl}/${oauthTokenNorthernIrelandTenantId}/oauth2/v2.0/token`
   const requestOptions = {
     method: 'POST',
@@ -45,8 +43,6 @@ export async function fetchOAuthToken(options = {}) {
 
   if (statusCodeToken !== 200) {
     fetchLogger.error('Error OAuth statusCodeToken fetched:', statusCodeToken)
-  } else {
-    fetchLogger.info('OAuth token fetched:::')
   }
 
   return dataToken.access_token

@@ -36,7 +36,6 @@ import {
   compareLastElements,
   formatNorthernIrelandPostcode
 } from '../locations/helpers/convert-string.js'
-import sizeof from 'object-sizeof'
 import { config } from '../../config/index.js'
 import {
   processAirQualityMessages,
@@ -427,10 +426,6 @@ async function hydrateLocationDataForStatelessLocationId(
     )
     await setSharedLocationPayload(request, cacheKey, hydratedLocationData)
 
-    logger.info(
-      `[STATLESS LOCATION-ID] Hydrated locationData for id='${locationId}'`
-    )
-
     return hydratedLocationData
   } catch (error) {
     logger.warn(
@@ -512,25 +507,13 @@ function handleSearchTermsRedirect(
   request,
   h
 ) {
-  logger.info(
-    `[DEBUG controller] handleSearchTermsRedirect - searchTermsSaved from session: ${searchTermsSaved}`
-  )
   const previousUrl = headers.referer || headers.referrer
-  logger.info(`[DEBUG controller] previousUrl: ${previousUrl}`)
-  logger.info(`[DEBUG controller] currentUrl: ${currentUrl}`)
   const isPreviousAndCurrentUrlEqual = previousUrl
     ? compareLastElements(previousUrl, currentUrl)
     : false
   // '' Allow first-hit bookmark requests without a session cookie to proceed statelessly
   const hasSession = hasSessionCookie(request)
-  logger.info(
-    `[DEBUG controller] isPreviousAndCurrentUrlEqual: ${isPreviousAndCurrentUrlEqual}`
-  )
   if (isPreviousAndCurrentUrlEqual && !searchTermsSaved && hasSession) {
-    logger.info(
-      `[DEBUG controller] REDIRECTING because searchTermsSaved is missing`
-    )
-
     // '' Extract searchTerms from URL path (0.685.0 approach)
     let { searchTerms, secondSearchTerm, searchTermsLocationType } =
       getSearchTermsFromUrl(currentUrl)
@@ -539,17 +522,10 @@ function handleSearchTermsRedirect(
     // '' and convert it back to proper format (e.g., BT93 8AD)
     const normalizedNIPostcodeRegex = /^bt\d{1,2}\d[a-z]{2}$/i
     if (normalizedNIPostcodeRegex.test(searchTerms)) {
-      logger.info(
-        `[DEBUG controller] Detected normalized NI postcode: ${searchTerms}`
-      )
       searchTerms = formatNorthernIrelandPostcode(searchTerms.toUpperCase())
-      logger.info(
-        `[DEBUG controller] Converted to formatted NI postcode: ${searchTerms}`
-      )
     }
 
     clearSessionKeyIfExists(request, 'locationData')
-    logger.info('Redirecting to location search')
 
     // '' Disable mock functionality when configured (production by default)
     const mocksDisabled = config.get('disableTestMocks')
@@ -584,7 +560,6 @@ function handleSearchTermsRedirect(
       .code(REDIRECT_STATUS_CODE)
       .takeover()
   }
-  logger.info(`[DEBUG controller] NOT redirecting - searchTermsSaved found`)
   return null
 }
 
@@ -675,16 +650,6 @@ function buildLocationViewData({
       ? Number(rawLatlon.lon.toFixed(4))
       : undefined
   }
-
-  // Log coordinate availability for alert links ''
-  logger.info('🗺️ Building view data with coordinates')
-  logger.info('🗺️ locationData keys:', Object.keys(locationData))
-  logger.info('🗺️ locationData.latlon:', locationData.latlon)
-  logger.info('🗺️ latlon variable:', latlon)
-  logger.info('🗺️ latlon.lat:', latlon?.lat)
-  logger.info('🗺️ latlon.lon:', latlon?.lon)
-  logger.info('🗺️ locationId:', locationId)
-  logger.info('🗺️ title:', title)
 
   return {
     result: locationDetails,
@@ -877,19 +842,6 @@ async function initializeCommonVariables(request, locationId, lang) {
     }
   }
 
-  logger.info(
-    `[DEBUG initializeCommonVariables] locationData exists: ${!!locationData}`
-  )
-  logger.info(
-    `[DEBUG initializeCommonVariables] locationData.results exists: ${!!locationData?.results}`
-  )
-  logger.info(
-    `[DEBUG initializeCommonVariables] locationData.results is array: ${Array.isArray(locationData?.results)}`
-  )
-  logger.info(
-    `[DEBUG initializeCommonVariables] locationData.getForecasts exists: ${!!locationData?.getForecasts}`
-  )
-
   return {
     getMonth,
     metaSiteUrl,
@@ -906,18 +858,12 @@ function processLocationResult(
   h,
   viewData
 ) {
-  logger.info(
-    `Before Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
-  )
   return updateSessionWithNearest(
     request,
     locationData,
     nearestLocation,
     nearestLocationsRange
   ).then(() => {
-    logger.info(
-      `After Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
-    )
     return h.view('locations/location', viewData)
   })
 }
@@ -975,15 +921,11 @@ async function initializeAndValidateRequest(request, h) {
   }
 }
 
-// Helper to apply test mode and log debug info
-async function applyTestModeAndLogDebug(request, locationData) {
+// Helper to apply test mode when present
+async function applyTestModeIfNeeded(request, locationData) {
   const testModeFromQuery = request?.query?.testMode
   const testModeFromSession = request.yar.get('testMode')
   const testMode = testModeFromQuery || testModeFromSession
-
-  logger.info(`🔍 request.query.testMode:`, testModeFromQuery)
-  logger.info(`🔍 session testMode:`, testModeFromSession)
-  logger.info(`🔍 final testMode:`, testMode)
 
   if (testMode) {
     applyTestModeChanges(locationData, testMode, logger)
@@ -993,22 +935,7 @@ async function applyTestModeAndLogDebug(request, locationData) {
 
 // Helper to log and calculate summary date
 function logAndCalculateSummaryDate(locationData) {
-  logger.info(`🔍 ========== SUMMARY DATE DEBUG ==========`)
-  logger.info(
-    `🔍 showSummaryDate (from session): ${locationData.showSummaryDate}`
-  )
-  logger.info(
-    `🔍 dailySummary object exists: ${!!locationData[DAILY_SUMMARY_KEY]}`
-  )
-  logger.info(
-    `🔍 dailySummary.issue_date (raw): ${locationData[DAILY_SUMMARY_KEY]?.issue_date}`
-  )
-
   calculateSummaryDate(locationData, logger)
-
-  logger.info(`🔍 FINAL showSummaryDate: ${locationData.showSummaryDate}`)
-  logger.info(`🔍 FINAL issueTime: ${locationData.issueTime}`)
-  logger.info(`🔍 ========================================`)
 }
 
 // Helper to process location data and return appropriate response
@@ -1056,10 +983,6 @@ async function processLocationWorkflow({
         request,
         'longitude',
         cachedUserLocationMeta.longitude
-      )
-
-      logger.info(
-        `[USER DATA CACHE] Cache hit for location notification metadata (key='${userLocationMetaCacheKey}')`
       )
     }
 
@@ -1129,44 +1052,7 @@ async function processLocationWorkflow({
         latitude: lat,
         longitude: lon
       })
-
-      // '' DEBUG: Log session data immediately after setting to verify persistence
-      logger.info('Session debug - SET operation complete', {
-        sessionId: request.yar.id,
-        operation: 'SET',
-        keysSet: ['location', 'locationId', 'latitude', 'longitude'],
-        values: {
-          location: locationTitle,
-          locationId,
-          latitude: lat,
-          longitude: lon
-        },
-        verifyImmediate: {
-          location: request.yar.get('location'),
-          locationId: request.yar.get('locationId'),
-          latitude: request.yar.get('latitude'),
-          longitude: request.yar.get('longitude')
-        }
-      })
-
-      logger.info(
-        `[DEBUG processLocationWorkflow] Updated session location data:`,
-        {
-          location: locationTitle,
-          locationId,
-          lat,
-          lon,
-          hasLat: !!lat,
-          hasLon: !!lon,
-          geometryX: gazetteerEntry.GEOMETRY_X,
-          geometryY: gazetteerEntry.GEOMETRY_Y
-        }
-      )
     }
-
-    logger.info(
-      `[DEBUG processLocationWorkflow] Redirecting to ${notificationFlow} confirm details (notificationFlow=${notificationFlow})`
-    )
 
     if (notificationFlow === 'sms') {
       const smsConfirmDetailsPath = config.get('notify.smsConfirmDetailsPath')
@@ -1190,7 +1076,7 @@ async function processLocationWorkflow({
     clearSessionKeyIfExists(request, 'notificationFlow')
   }
 
-  await applyTestModeAndLogDebug(request, locationData)
+  await applyTestModeIfNeeded(request, locationData)
 
   const {
     locationDetails,
@@ -1239,15 +1125,10 @@ async function processLocationWorkflow({
 
 const getLocationDetailsController = {
   handler: async (request, h) => {
-    logger.info(
-      `[DEBUG TOP OF HANDLER] Request to /location/${request.params.id} - URL: ${request.url.pathname}`
-    )
-
     try {
       // Handle initialization and validation
       const initResult = await initializeAndValidateRequest(request, h)
       if (initResult.redirect) {
-        logger.info(`[DEBUG TOP OF HANDLER] Returning redirect from initResult`)
         return initResult.redirect
       }
 

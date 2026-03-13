@@ -267,21 +267,10 @@ export function applyMockToDay(airQuality, level, mockDay) {
   const mockDayData = getDetailedInfo(level)
   const validDays = ['today', 'day2', 'day3', 'day4', 'day5']
 
-  logger.info(
-    `🔍 applyMockToDay - incoming: today=${airQuality?.today?.value}, day2=${airQuality?.day2?.value}, day3=${airQuality?.day3?.value}, day4=${airQuality?.day4?.value}, day5=${airQuality?.day5?.value}, mockDay=${mockDay}, mockLevel=${level}`
-  )
-
   const modifiedAirQuality = createBaseAirQuality(airQuality)
 
   const targetDay = mockDay && validDays.includes(mockDay) ? mockDay : 'today'
   modifiedAirQuality[targetDay] = mockDayData
-
-  logger.info(
-    `🎯 Applied mock level ${level} to ${targetDay} only (value: ${mockDayData.value}, band: ${mockDayData.band}, readableBand: ${mockDayData.readableBand})`
-  )
-  logger.info(
-    `🔍 applyMockToDay - output: today=${modifiedAirQuality?.today?.value}, day2=${modifiedAirQuality?.day2?.value}, day3=${modifiedAirQuality?.day3?.value}, day4=${modifiedAirQuality?.day4?.value}, day5=${modifiedAirQuality?.day5?.value}`
-  )
 
   return modifiedAirQuality
 }
@@ -302,23 +291,16 @@ export function applyMockPollutants(
 ) {
   const mocksDisabled = config.get('disableTestMocks')
   if (mocksDisabled) {
-    logger.info(`🚫 Mock pollutant bands disabled (disableTestMocks=true)`)
     return monitoringSites
   }
 
   const mockPollutantBandFromSession = request.yar.get('mockPollutantBand')
-  logger.info(
-    `🔍 applyMockPollutants called - mockPollutantBand from session:`,
-    mockPollutantBandFromSession,
-    `(type: ${typeof mockPollutantBandFromSession})`
-  )
 
   if (
     mockPollutantBandFromSession !== undefined &&
     mockPollutantBandFromSession !== null
   ) {
     const bandStr = mockPollutantBandFromSession.toString().toLowerCase()
-    logger.info(`🔍 Parsed band:`, bandStr)
 
     const validBands = new Set([
       'low',
@@ -328,7 +310,6 @@ export function applyMockPollutants(
       'very high'
     ])
     if (validBands.has(bandStr) || validBands.has(bandStr.replace('-', ' '))) {
-      logger.info(`🎨 Mock Pollutant Band '${bandStr}' applied from session`)
       const mockPollutants = generateMockPollutantBand(bandStr, {
         logDetails: false
       })
@@ -348,7 +329,6 @@ export function applyMockPollutants(
     }
   }
 
-  logger.info(`🔍 Returning original monitoringSites (no mock pollutants)`)
   return monitoringSites
 }
 
@@ -367,10 +347,8 @@ function storeSessionParameter(request, paramName, paramValue, paramLabel) {
   if (paramValue !== undefined) {
     if (paramValue === '' || paramValue === 'clear') {
       request.yar.set(paramName, null)
-      logger.info(`🎨 ${paramLabel} explicitly cleared from session`)
     } else {
       request.yar.set(paramName, paramValue)
-      logger.info(`🎨 ${paramLabel} ${paramValue} stored in session`)
     }
   }
 }
@@ -381,7 +359,7 @@ function storeSessionParameter(request, paramName, paramValue, paramLabel) {
  */
 function logMocksDisabledWarning(paramLabel) {
   logger.warn(
-    `🚫 Attempted to set ${paramLabel.toLowerCase()} when mocks disabled (disableTestMocks=true) - ignoring parameter`
+    `Attempted to set ${paramLabel.toLowerCase()} when mocks disabled (disableTestMocks=true) - ignoring parameter`
   )
 }
 
@@ -411,22 +389,6 @@ export function initializeRequestData(request) {
     )
     storeSessionParameter(safeRequest, 'mockDay', query?.mockDay, 'Mock day')
 
-    // '' Debug logging for mockPollutantBand
-    if (query?.mockPollutantBand !== undefined) {
-      logger.info(
-        `🔍 DEBUG mockPollutantBand - query.mockPollutantBand:`,
-        query?.mockPollutantBand
-      )
-      logger.info(
-        `🔍 DEBUG mockPollutantBand - type:`,
-        typeof query?.mockPollutantBand
-      )
-      logger.info(
-        `🔍 DEBUG mockPollutantBand - full query object:`,
-        JSON.stringify(query)
-      )
-    }
-
     storeSessionParameter(
       safeRequest,
       'mockPollutantBand',
@@ -437,7 +399,6 @@ export function initializeRequestData(request) {
     // '' Store testMode (persists across requests when mocks enabled)
     if (query?.testMode !== undefined && safeRequest?.yar?.set) {
       safeRequest.yar.set('testMode', query.testMode)
-      logger.info(`🧪 Test mode ${query.testMode} stored in session`)
     }
   } else {
     // '' Log warnings if mock parameters provided when mocks are disabled
@@ -520,28 +481,9 @@ export function validateAndProcessSessionData(
   locationId
 ) {
   const safeRequest = request || {}
-  logger.info(
-    `[DEBUG validateAndProcessSessionData] locationData exists: ${!!locationData}`
-  )
-  logger.info(
-    `[DEBUG validateAndProcessSessionData] locationData.results is array: ${Array.isArray(locationData?.results)}`
-  )
-  logger.info(
-    `[DEBUG validateAndProcessSessionData] locationData.getForecasts exists: ${!!locationData?.getForecasts}`
-  )
-  logger.info(
-    `[DEBUG validateAndProcessSessionData] locationData.results length: ${locationData?.results?.length || 0}`
-  )
-  logger.info(
-    `[DEBUG validateAndProcessSessionData] locationId from URL: ${locationId}`
-  )
 
   // '' Check for valid results AND forecasts (like 0.685.0)
   if (!Array.isArray(locationData?.results) || !locationData?.getForecasts) {
-    logger.info(
-      `[DEBUG validateAndProcessSessionData] REDIRECTING - validation failed`
-    )
-
     // '' Extract searchTerms from current URL path (0.685.0 approach)
     const { searchTerms, secondSearchTerm, searchTermsLocationType } =
       getSearchTermsFromUrl(currentUrl)
@@ -575,14 +517,7 @@ export function validateAndProcessSessionData(
       testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
 
     const redirectUrl = `/location?lang=${encodeURIComponent(lang)}${searchParams}${mockLevelParam}${mockPollutantParam}${testModeParam}`
-
-    logger.info(
-      `[DEBUG validateAndProcessSessionData] Redirect URL: ${redirectUrl}`
-    )
     return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE).takeover()
   }
-  logger.info(
-    `[DEBUG validateAndProcessSessionData] NOT redirecting - validation passed`
-  )
   return null
 }

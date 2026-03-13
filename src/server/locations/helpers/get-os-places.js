@@ -47,7 +47,6 @@ async function getOSPlaces(
   const osNamesApiUrlFull = `${osNamesApiUrl}${encodeURIComponent(
     userLocation
   )}&fq=${encodeURIComponent(filters)}&key=${osNamesApiKey}`
-  logger.info(`osPlace data requested osNamesApiUrlFull: ${osNamesApiUrlFull}`)
   let isLocal = false
   if (request && request.headers && request.headers.host) {
     const host = request.headers.host
@@ -78,10 +77,6 @@ async function getOSPlaces(
       }
     }
   }
-  logger.info(
-    `[DEBUG] Calling catchProxyFetchError with URL: ${osNamesApiUrlFull}`
-  )
-  logger.info(`[DEBUG] Options: ${JSON.stringify(updatedOptions)}`)
   const fetchErrorFn = injectedCatchProxyFetchError || catchProxyFetchError
   const [statusCodeOSPlace, osPlacesData] = await fetchErrorFn(
     osNamesApiUrlFull,
@@ -93,7 +88,6 @@ async function getOSPlaces(
     // Always return a defined object, even on error
     return { results: [] }
   } else {
-    logger.info(`osPlacesData fetched:`)
     // Defensive: always return a defined object
     return osPlacesData || { results: [] }
   }

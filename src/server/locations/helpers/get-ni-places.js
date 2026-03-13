@@ -29,10 +29,6 @@ async function getNIPlaces(userLocation, isMockEnabled, optionsOAuth, request) {
       'Content-Type': 'application/json'
     }
   }
-  logger.info(
-    `[DEBUG] Calling catchProxyFetchError with URL: ${postcodeNortherIrelandURL}`
-  )
-  logger.info(`[DEBUG] Options: ${JSON.stringify(updatedOptions)}`)
   let [statusCodeNI, niPlacesData] = await catchProxyFetchError(
     postcodeNortherIrelandURL,
     updatedOptions,
@@ -55,8 +51,6 @@ async function getNIPlaces(userLocation, isMockEnabled, optionsOAuth, request) {
   }
   if (statusCodeNI !== STATUS_CODE_SUCCESS) {
     logger.error(`Error fetching statusCodeNI data: ${statusCodeNI}`)
-  } else {
-    logger.info(`niPlacesData fetched:`)
   }
 
   return niPlacesData

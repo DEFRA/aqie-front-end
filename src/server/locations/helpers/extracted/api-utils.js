@@ -299,17 +299,12 @@ async function callAndHandleUKApiResponse(
   const selectedOptions = isLocal
     ? injectedOptionsEphemeralProtected
     : injectedOptions
-  injectedLogger.info(
-    `[DEBUG] Calling catchProxyFetchError with URL: ${osNamesApiUrlFull}`
-  )
-  injectedLogger.info('[DEBUG] Options:', JSON.stringify(selectedOptions))
   const [statusCodeOSPlace, getOSPlaces] = await injectedCatchProxyFetchError(
     osNamesApiUrlFull,
     selectedOptions,
     shouldCallApi
   )
   if (statusCodeOSPlace === injectedHttpStatusOk) {
-    injectedLogger.info('getOSPlaces data fetched:')
     return injectedFormatUKApiResponse(getOSPlaces)
   } else {
     if (statusCodeOSPlace === STATUS_UNAUTHORIZED) {

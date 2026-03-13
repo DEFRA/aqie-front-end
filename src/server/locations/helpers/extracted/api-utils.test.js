@@ -523,7 +523,6 @@ describe('api-utils', () => {
       )
 
       expect(result).toEqual(mockFormattedData)
-      expect(mockLogger.info).toHaveBeenCalledWith('getOSPlaces data fetched:')
       expect(mockFormatUKApiResponse).toHaveBeenCalledWith({ data: 'raw' })
     })
 

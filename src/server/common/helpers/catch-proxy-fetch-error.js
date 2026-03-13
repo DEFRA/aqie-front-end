@@ -12,14 +12,8 @@ async function catchProxyFetchError(url, options, shouldCallApi) {
       const response = await proxyFetch(url, options)
       const endTime = performance.now()
       const duration = endTime - startTime
-      logger.info(
-        `API response.status: ${response.status} from ${url} fetch took ${date} ${duration} milliseconds`
-      )
       statusCode = response.status
       if (!response.ok) {
-        logger.info(
-          `Failed to fetch data from ${url}: ${JSON.stringify(response)}`
-        )
         throw new Error(`HTTP error! status from ${url}: ${response.status}`)
       }
       const data = await response.json()

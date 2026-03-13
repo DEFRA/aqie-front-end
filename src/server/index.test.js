@@ -277,9 +277,8 @@ describe('Server Index', () => {
       // This test covers the fallback plugin name logic on line 83
       server = await createServer()
 
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        expect.stringContaining('Registering plugin 1:')
-      )
+      expect(server).toBeDefined()
+      expect(mockLogger.error).not.toHaveBeenCalled()
     })
 
     it('should handle errors during server setup', async () => {
@@ -309,7 +308,7 @@ describe('Server Index', () => {
       )
     })
 
-    it('should create logger and log initialization steps', async () => {
+    it('should create logger without startup info noise', async () => {
       // Reset setupProxy mock to avoid interference from previous tests
       const { setupProxy } = await import(
         './common/helpers/proxy/setup-proxy.js'
@@ -331,15 +330,8 @@ describe('Server Index', () => {
       server = await createServer()
 
       expect(createLogger).toHaveBeenCalled()
-      expect(mockLogger.info).toHaveBeenCalledWith('Initializing server setup')
-      expect(mockLogger.info).toHaveBeenCalledWith('Proxy setup completed')
-      expect(mockLogger.info).toHaveBeenCalledWith('Server instance created')
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Plugins registered successfully'
-      )
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Extensions added successfully'
-      )
+      expect(server).toBeDefined()
+      expect(mockLogger.info).not.toHaveBeenCalled()
     })
   })
 

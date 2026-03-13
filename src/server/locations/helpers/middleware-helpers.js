@@ -12,10 +12,7 @@ import { LANG_EN, LANG_CY, REDIRECT_STATUS_CODE } from '../../data/constants.js'
 import { createURLRouteBookmarks } from './create-bookmark-ids.js'
 import reduceMatches from './reduce-matches.js'
 import { filterMatches } from './filter-matches.js'
-import { createLogger } from '../../common/helpers/logging/logger.js'
 import { config } from '../../../config/index.js'
-
-const logger = createLogger()
 
 // Helper function to handle single match
 const handleSingleMatch = (
@@ -59,8 +56,6 @@ const handleSingleMatch = (
     showSummaryDate,
     issueTime
   })
-  logger.info(`Redirecting to location with custom ID: ${customId}`)
-
   // '' Disable mock parameters when configured (production by default)
   const mocksDisabled = config.get('disableTestMocks')
 

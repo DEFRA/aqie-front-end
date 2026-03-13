@@ -131,7 +131,11 @@ const handleSearchTerms = (searchTerms) => {
       locationNameOrPostcode: searchTerms
     }
   }
+
+  // '' Non-postcode and non-word inputs (for example symbols) are invalid.
+  // '' Mark explicitly so caller can return a validation error without API calls.
   return {
+    invalidInput: true,
     locationType: DEFAULT_LOCATION_TYPE,
     userLocation: searchTerms,
     locationNameOrPostcode: searchTerms

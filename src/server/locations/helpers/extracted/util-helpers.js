@@ -35,9 +35,6 @@ const refreshOAuthToken = async (request, di = {}) => {
   const injectedFetchOAuthToken = di.fetchOAuthToken || fetchOAuthToken
   const injectedIsTestMode = di.isTestMode || isTestMode
   if (injectedIsTestMode?.()) {
-    if (injectedLogger && typeof injectedLogger.info === 'function') {
-      injectedLogger.info('Test mode: refreshOAuthToken returning mock token')
-    }
     return { accessToken: 'mock-token' }
   }
   const accessToken = await injectedFetchOAuthToken({ logger: injectedLogger })
@@ -59,12 +56,9 @@ const handleNILocationData = async (
   request,
   di = {}
 ) => {
-  const { injectedLogger, injectedIsTestMode, injectedIsMockEnabled } =
+  const { injectedIsTestMode, injectedIsMockEnabled } =
     setupNILocationDataDI(di)
   if (injectedIsTestMode?.()) {
-    if (injectedLogger && typeof injectedLogger.info === 'function') {
-      injectedLogger.info('Test mode: handleNILocationData returning mock data')
-    }
     return { results: ['niData'] }
   }
   // Use getNIPlaces for NI lookups
@@ -156,15 +150,11 @@ const buildNIOptionsOAuth = async ({
       ? injectedIsMockEnabled()
       : !!injectedIsMockEnabled
 
-  logger.info(`buildNIOptionsOAuth called - isMockEnabled: ${isMock}`)
   let optionsOAuth = {}
   let accessToken
   if (!isMock) {
-    logger.info('Mock is disabled, fetching OAuth token...')
     const savedAccessToken = request.yar.get('savedAccessToken')
-    logger.info(`Saved access token exists: ${!!savedAccessToken}`)
     accessToken = savedAccessToken || (await injectedRefreshOAuthToken(request))
-    logger.info(`Access token obtained: ${!!accessToken}`)
     optionsOAuth = {
       method: 'GET',
       headers: {
@@ -172,8 +162,6 @@ const buildNIOptionsOAuth = async ({
         'Content-Type': 'application/json'
       }
     }
-  } else {
-    logger.info('Mock is enabled, skipping OAuth token fetch')
   }
   // Always return an object for optionsOAuth, even in mock mode
   return { optionsOAuth, accessToken }

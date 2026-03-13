@@ -150,15 +150,6 @@ export function mockLevelColor(level, options = {}) {
 
   const levelInfo = DAQI_LEVELS[level]
 
-  if (logDetails) {
-    logger.info('='.repeat(60))
-    logger.info(`Mock DAQI Level: ${level}`)
-    logger.info(`Band: ${levelInfo.band}`)
-    logger.info(`Color: ${levelInfo.color}`)
-    logger.info(`Description: ${levelInfo.description}`)
-    logger.info('='.repeat(60))
-  }
-
   // Create mock air quality object with full structure
   const mockAirQuality = {
     today: getFullDetailedInfo(level)
@@ -202,8 +193,6 @@ export function mockDaqiLevel(level, options = {}) {
  * @returns {Array} Array of mock data for each level
  */
 export function mockAllLevels() {
-  logger.info('Generating mock data for all DAQI levels (0-10)...')
-
   const allLevels = []
   for (let level = 0; level <= 10; level++) {
     const mockData = mockLevelColor(level, { logDetails: false })
@@ -214,7 +203,6 @@ export function mockAllLevels() {
     })
   }
 
-  logger.info(`Generated mock data for ${allLevels.length} levels`)
   return allLevels
 }
 
@@ -262,7 +250,6 @@ export function injectMockLevel(request, mockLevel) {
     if (request.yar) {
       request.yar.set('mockAirQuality', mockData)
     }
-    logger.info(`Mock DAQI level ${mockLevel} injected into request`)
   }
 
   return request
@@ -289,7 +276,6 @@ export function isMockMode(request) {
 export function clearMockMode(request) {
   if (request.yar) {
     request.yar.clear('mockAirQuality')
-    logger.info('Mock DAQI mode cleared')
   }
 }
 

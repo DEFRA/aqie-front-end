@@ -96,14 +96,12 @@ export function initializeMockParameters(request) {
     // Check if explicitly clearing
     if (query.mockLevel === '' || query.mockLevel === 'clear') {
       request.yar.set('mockLevel', null)
-      logger.info(`🎨 Mock level explicitly cleared from session`)
     } else {
       request.yar.set('mockLevel', query.mockLevel)
-      logger.info(`🎨 Mock level ${query.mockLevel} stored in session`)
     }
   } else if (mocksDisabled && query?.mockLevel !== undefined) {
     logger.warn(
-      `🚫 Attempted to set mock level when mocks disabled (disableTestMocks=true) - ignoring parameter`
+      `Attempted to set mock level when mocks disabled (disableTestMocks=true) - ignoring parameter`
     )
   }
 
@@ -112,14 +110,12 @@ export function initializeMockParameters(request) {
     // Check if explicitly clearing
     if (query.mockDay === '' || query.mockDay === 'clear') {
       request.yar.set('mockDay', null)
-      logger.info(`🎨 Mock day explicitly cleared from session`)
     } else {
       request.yar.set('mockDay', query.mockDay)
-      logger.info(`🎨 Mock day ${query.mockDay} stored in session`)
     }
   } else if (mocksDisabled && query?.mockDay !== undefined) {
     logger.warn(
-      `🚫 Attempted to set mock day when mocks disabled (disableTestMocks=true) - ignoring parameter`
+      `Attempted to set mock day when mocks disabled (disableTestMocks=true) - ignoring parameter`
     )
   }
 }
@@ -189,7 +185,6 @@ export function applyMockLevel(request, airQuality, lang = LANG_EN) {
   // '' Disable mock functionality when configured (production by default)
   const mocksDisabled = config.get('disableTestMocks')
   if (mocksDisabled) {
-    logger.info(`🚫 Mock DAQI levels disabled (disableTestMocks=true)`)
     return airQuality
   }
 
@@ -201,24 +196,11 @@ export function applyMockLevel(request, airQuality, lang = LANG_EN) {
   const mockLevel = request.yar.get('mockLevel')
   const mockDay = request.yar.get('mockDay') // '' Optional: specific day to apply mock level
 
-  logger.info(
-    `🔍 applyMockLevel called - mockLevel from session:`,
-    mockLevel,
-    `(type: ${typeof mockLevel}), mockDay:`,
-    mockDay,
-    `lang:`,
-    lang
-  )
-
   if (mockLevel !== undefined && mockLevel !== null) {
     const level = parseInt(mockLevel, 10)
 
-    logger.info(`🔍 Parsed level:`, level, `isNaN:`, isNaN(level))
-
     // Validate level
     if (!isNaN(level) && level >= 0 && level <= 10) {
-      logger.info(`🎨 Mock DAQI Level ${level} applied from session`)
-
       // If mockDay is specified, apply mock level only to that specific day
       if (
         mockDay &&
@@ -251,10 +233,6 @@ export function applyMockLevel(request, airQuality, lang = LANG_EN) {
 
         // Override the specific day with the mock level
         modifiedAirQuality[mockDay] = mockDayData
-
-        logger.info(
-          `🎯 Applied mock level ${level} to ${mockDay} only (value: ${mockDayData.value}, band: ${mockDayData.band}, readableBand: ${mockDayData.readableBand})`
-        )
         return modifiedAirQuality
       } else {
         // Generate mock data for all days using language-specific function
@@ -265,10 +243,6 @@ export function applyMockLevel(request, airQuality, lang = LANG_EN) {
           day4: getDetailedInfo(level),
           day5: getDetailedInfo(level)
         }
-
-        logger.info(
-          `🎨 Applied mock level ${level} to all days (readableBand: ${mockData.today.readableBand})`
-        )
         return mockData
       }
     } else {
@@ -277,7 +251,6 @@ export function applyMockLevel(request, airQuality, lang = LANG_EN) {
   }
 
   // Return original data if no mock level (default behavior unchanged)
-  logger.info(`🔍 Returning original airQuality (no mock)`)
   return airQuality
 }
 
@@ -395,20 +368,12 @@ export function optimizeLocationDataInSession(
   nearestLocation,
   nearestLocationsRange
 ) {
-  logger.info(
-    `Before Session (yar) size in MB for getForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
-  )
-
   // Replace the large getForecasts with a single-record version
   locationData.getForecasts = nearestLocation
   // Replace the large getMeasurements with a filtered version
   locationData.getMeasurements = nearestLocationsRange
   // Save the updated locationData back into session
   request.yar.set('locationData', locationData)
-
-  logger.info(
-    `After Session (yar) size in MB for getForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
-  )
 }
 
 /**

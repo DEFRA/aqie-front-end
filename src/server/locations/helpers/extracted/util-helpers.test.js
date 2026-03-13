@@ -43,9 +43,6 @@ describe('util-helpers', () => {
       const result = await refreshOAuthToken(mockRequest, di)
 
       expect(result).toEqual({ accessToken: 'mock-token' })
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Test mode: refreshOAuthToken returning mock token'
-      )
     })
 
     it('should fetch OAuth token when not in test mode', async () => {

@@ -548,9 +548,6 @@ describe('handleUKLocationData', () => {
     }
     const result = await handleUKLocationData('postcode', '', '', di)
     expect(result).toEqual({ results: ['ukData'] })
-    expect(di.logger.info).toHaveBeenCalledWith(
-      'Test mode: handleUKLocationData returning mock data'
-    )
   })
 })
 
@@ -590,9 +587,6 @@ describe('refreshOAuthToken', () => {
     const request = { yar: { clear: vi.fn(), set: vi.fn() } }
     const result = await refreshOAuthToken(request, di)
     expect(result).toEqual({ accessToken: 'mock-token' })
-    expect(di.logger.info).toHaveBeenCalledWith(
-      'Test mode: refreshOAuthToken returning mock token'
-    )
   })
 })
 describe('fetchData branch coverage', () => {
@@ -676,6 +670,45 @@ describe('fetchData branch coverage', () => {
     )
     expect(resultNI).toBeDefined()
     expect(resultNI.getNIPlaces).toEqual({ results: [] })
+  })
+
+  it('passes search string and symbols array correctly to shouldCallUKApi wrapper', async () => {
+    const mockRequest = { yar: { get: vi.fn() } }
+    let shouldCallApiResult
+
+    const diUK = {
+      validateParams: () => null,
+      errorResponse: vi.fn(),
+      logger: { error: vi.fn() },
+      isTestMode: () => false,
+      fetchForecasts: vi.fn(async () => ({
+        'forecast-summary': { today: null }
+      })),
+      config: { get: vi.fn() },
+      isMockEnabled: false,
+      shouldCallUKApi: (location, symbols) =>
+        !symbols.some((symbol) => location.includes(symbol)),
+      handleUKLocationData: vi.fn(
+        async (_userLocation, _searchTerms, _secondSearchTerm, di) => {
+          shouldCallApiResult = di.shouldCallUKApi('!@%#', ['!', '@', '#', '%'])
+          return { results: [] }
+        }
+      ),
+      handleNILocationData: vi.fn()
+    }
+
+    await fetchData(
+      mockRequest,
+      {
+        locationType: LOCATION_TYPE_UK,
+        userLocation: 'loc',
+        searchTerms: 'st',
+        secondSearchTerm: 'sst'
+      },
+      diUK
+    )
+
+    expect(shouldCallApiResult).toBe(false)
   })
 })
 

@@ -9,7 +9,8 @@ import { getAirQuality } from '../../data/en/air-quality.js'
 import { getLocationNameOrPostcode } from './location-type-util.js'
 import {
   convertStringToHyphenatedLowercaseWords,
-  isValidFullPostcodeUK
+  isValidFullPostcodeUK,
+  isOnlyWords
 } from './convert-string.js'
 import { LOCATION_TYPE_UK, LOCATION_TYPE_NI } from '../../data/constants.js'
 import { vi } from 'vitest'
@@ -188,14 +189,17 @@ describe('handle-error-helpers', () => {
 
   describe('handleSearchTerms', () => {
     it('should return default UK location details for invalid search terms', () => {
+      isOnlyWords.mockReturnValueOnce(false)
+
       // Act
-      const result = handleSearchTerms('InvalidSearchTerm')
+      const result = handleSearchTerms('!@%#')
 
       // Assert
       expect(result).toEqual({
+        invalidInput: true,
         locationType: 'uk-location',
-        userLocation: 'InvalidSearchTerm',
-        locationNameOrPostcode: 'InvalidSearchTerm'
+        userLocation: '!@%#',
+        locationNameOrPostcode: '!@%#'
       })
     })
   })

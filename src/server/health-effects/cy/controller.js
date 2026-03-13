@@ -29,7 +29,6 @@ const healthEffectsHandlerCy = (request, h, content = welsh) => {
       const redirectUrl = readableNameRedirect
         ? `/health-effects?lang=en&locationName=${encodeURIComponent(readableNameRedirect)}`
         : `/health-effects?lang=en`
-      logger.debug({ redirectUrl }, "'' Redirecting to English health effects")
       return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE)
     }
 
@@ -47,15 +46,6 @@ const healthEffectsHandlerCy = (request, h, content = welsh) => {
       text: viewModel.backLinkText,
       href: viewModel.backLinkUrl
     }
-
-    logger.debug(
-      {
-        routePath: request.path,
-        readableName,
-        backLinkUrl: viewModel.backLinkUrl
-      },
-      "'' Rendering health-effects CY"
-    )
 
     return h.view('health-effects/cy/index', viewModel)
   } catch (err) {

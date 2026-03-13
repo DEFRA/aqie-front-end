@@ -20,11 +20,9 @@ import { locationNotFoundCy } from './location-not-found/cy/index.js'
 
 async function createServer() {
   const logger = createLogger()
-  logger.info('Initializing server setup')
 
   try {
     setupProxy()
-    logger.info('Proxy setup completed')
     const cacheEngine = getCacheEngine(config.get('session.cache.engine'))
     const sessionCacheName = config.get('session.cache.name')
     const cacheProviders = [
@@ -73,9 +71,7 @@ async function createServer() {
       }
     })
 
-    logger.info('Server instance created')
     registerServerCachePolicies(server)
-    logger.info('Server cache policies initialized')
 
     const plugins = [
       requestLogger,
@@ -90,21 +86,11 @@ async function createServer() {
     ]
 
     for (const plugin of plugins) {
-      const pluginName =
-        plugin.name ||
-        plugin.plugin?.name ||
-        plugin.plugin?.plugin?.pkg?.name ||
-        'CustomPluginName'
-      logger.info(`Registering plugin 1: ${pluginName}`)
       await server.register(plugin)
     }
 
-    logger.info('Plugins registered successfully')
-
     // Register global middleware (jsDetectionMiddleware is now handled by the plugin)
     server.ext('onPreResponse', catchAll)
-
-    logger.info('Extensions added successfully')
 
     return server
   } catch (error) {

@@ -1,5 +1,6 @@
 import { english } from '../../data/en/en.js'
 import { createLogger } from '../../common/helpers/logging/logger.js'
+import { handleUKError } from './error-input-and-redirect-helpers.js'
 import {
   handleNoSearchTerms,
   handleSearchTerms
@@ -22,7 +23,16 @@ const handleErrorInputAndRedirect = (
     if (!searchTerms) {
       return handleNoSearchTerms(request, h, lang, payload)
     }
-    return handleSearchTerms(searchTerms)
+    const result = handleSearchTerms(searchTerms)
+    if (result?.invalidInput) {
+      return handleUKError(
+        request,
+        h,
+        lang,
+        result.locationNameOrPostcode || searchTerms
+      )
+    }
+    return result
   } catch (error) {
     logger.error(`Error in handleErrorInputAndRedirect: ${error?.message}`)
     return h.view('error/index', {

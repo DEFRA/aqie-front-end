@@ -26,11 +26,7 @@ async function catchFetchError(url, options) {
     const response = await fetch(url, safeOptions)
     const endTime = performance.now()
     const duration = endTime - startTime
-    logger.info(`API from ${url} fetch took ${date} ${duration} milliseconds`)
     const status = response.status
-    // Log the content-encoding header for debugging
-    const encoding = response.headers.get('content-encoding')
-    logger.info(`Content-Encoding for ${url}: ${encoding}`)
     if (!response.ok) {
       let errorText = ''
       try {
@@ -43,12 +39,6 @@ async function catchFetchError(url, options) {
       )
       return [status, undefined]
     }
-    // Log all response headers and status for debugging
-    logger.info(`Response status for ${url}: ${status}`)
-    logger.info(
-      `Response headers for ${url}:`,
-      Object.fromEntries(response.headers.entries())
-    )
     const contentType = response.headers.get('content-type') || ''
     if (contentType.includes('application/json')) {
       try {
@@ -69,9 +59,7 @@ async function catchFetchError(url, options) {
       return [status, undefined]
     }
   } catch (error) {
-    // Log full error object for better debugging (e.g., Z_DATA_ERROR)
     logger.error(`Failed to fetch data from ${url}:`, error)
-    // Return 0 as status code for network or unexpected errors
     return [0, undefined]
   }
 }

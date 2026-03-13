@@ -60,20 +60,12 @@ function buildUKTestModeResult(getOSPlaces) {
 }
 function handleUKLocationDataTestMode(injectedIsTestMode, injectedLogger) {
   if (injectedIsTestMode?.()) {
-    if (injectedLogger && typeof injectedLogger.info === 'function') {
-      injectedLogger.info('Test mode: handleUKLocationData returning mock data')
-    }
     return { results: ['ukData'] }
   }
   return null
 }
 function fetchMeasurementsTestMode(injectedIsTestMode, injectedLogger) {
   if (injectedIsTestMode?.()) {
-    if (injectedLogger && typeof injectedLogger.info === 'function') {
-      injectedLogger.info(
-        'Test mode: fetchMeasurements returning mock measurements'
-      )
-    }
     return [{ measurement: 'mock-measurement' }]
   }
   return null
@@ -82,23 +74,13 @@ function fetchMeasurementsTestMode(injectedIsTestMode, injectedLogger) {
 
 function fetchForecastsTestMode(injectedIsTestMode, injectedLogger) {
   if (injectedIsTestMode?.()) {
-    if (injectedLogger && typeof injectedLogger.info === 'function') {
-      injectedLogger.info('Test mode: fetchForecasts returning mock forecasts')
-    }
     return { forecasts: 'mock-forecasts' }
   }
   return null
 }
 
 function isMockEnabled() {
-  const mockValue = config.get('enabledMock')
-  console.log(
-    '[DEBUG test-mode-helpers] isMockEnabled called, value:',
-    mockValue,
-    'type:',
-    typeof mockValue
-  )
-  return mockValue
+  return config.get('enabledMock')
 }
 
 export {

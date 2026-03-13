@@ -304,10 +304,11 @@ async function fetchData(
       isValidFullPostcodeUK: injectedIsValidFullPostcodeUK,
       isValidPartialPostcodeUK: injectedIsValidPartialPostcodeUK,
       buildUKApiUrl: injectedBuildUKApiUrl,
-      // Defensive wrapper: always pass safe arrays to shouldCallUKApi
-      shouldCallUKApi: (...args) =>
+      // '' Keep the search term as string and only coerce symbols to an array.
+      shouldCallUKApi: (location = '', symbols = []) =>
         injectedShouldCallUKApi(
-          ...args.map((arg) => (Array.isArray(arg) ? arg : []))
+          typeof location === 'string' ? location : String(location ?? ''),
+          Array.isArray(symbols) ? symbols : []
         ),
       config: injectedConfig
     }
