@@ -1,0 +1,11 @@
+name: Template
+
+on:
+	workflow_dispatch:
+
+jobs:
+	template:
+		runs-on: ubuntu-latest
+		steps:
+			- name: Placeholder
+				run: echo "template workflow placeholder"

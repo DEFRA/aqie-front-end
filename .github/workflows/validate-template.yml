@@ -1,0 +1,11 @@
+name: Validate Template
+
+on:
+	workflow_dispatch:
+
+jobs:
+	validate-template:
+		runs-on: ubuntu-latest
+		steps:
+			- name: Placeholder
+				run: echo "validate-template workflow placeholder"
