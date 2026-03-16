@@ -1,0 +1,675 @@
+
+> aqie-front-end@0.15.0 pretest
+> npm run build:frontend
+
+
+> aqie-front-end@0.15.0 build:frontend
+> cross-env NODE_ENV=production webpack
+
+25 assets
+42 modules
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 3, column 8 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/application.scss:3:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+3 | @import "~govuk-frontend/dist/govuk/index";
+
+
+../../../../src/client/assets/stylesheets/application.scss 4:9  root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 4, column 28 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/sass/components/_inset-text-colour.scss:4:28:
+Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use list.nth instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+4 |     border-left: 10px solid nth($daqi-colour, $i + 1);
+
+
+../../../../src/client/assets/stylesheets/sass/components/_inset-text-colour.scss 5:29  @import
+../../../../src/client/assets/stylesheets/sass/all.scss 21:9                            @import
+../../../../src/client/assets/stylesheets/application.scss 13:9                         root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 5, column 8 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/application.scss:5:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+5 | @import "variables/all";
+
+
+../../../../src/client/assets/stylesheets/application.scss 6:9  root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 6, column 8 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/application.scss:6:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+6 | @import "helpers/all";
+
+
+../../../../src/client/assets/stylesheets/application.scss 7:9  root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 7, column 8 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/application.scss:7:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+7 | @import "core/all";
+
+
+../../../../src/client/assets/stylesheets/application.scss 8:9  root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 8, column 8 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/application.scss:8:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+8 | @import "components/all";
+
+
+../../../../src/client/assets/stylesheets/application.scss 9:9  root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 35, column 2 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/partials/_navigation.scss:35:2:
+Sass's behavior for declarations that appear after nested
+rules will be changing to match the behavior specified by CSS in an upcoming
+version. To keep the existing behavior, move the declaration above the nested
+rule. To opt into the new behavior, wrap the declaration in `& {}`.
+
+More info: https://sass-lang.com/d/mixed-decls
+
+35 |   display: inline-block;
+
+
+../../../../src/client/assets/stylesheets/partials/_navigation.scss 36:3  @import
+../../../../src/client/assets/stylesheets/partials/_all.scss 1:9          @import
+../../../../src/client/assets/stylesheets/application.scss 10:9           root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 35, column 2 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/partials/_navigation.scss:35:2:
+Sass's behavior for declarations that appear after nested
+rules will be changing to match the behavior specified by CSS in an upcoming
+version. To keep the existing behavior, move the declaration above the nested
+rule. To opt into the new behavior, wrap the declaration in `& {}`.
+
+More info: https://sass-lang.com/d/mixed-decls
+
+35 |   display: inline-block;
+
+
+../../../../src/client/assets/stylesheets/partials/_navigation.scss 36:3  @import
+../../../../src/client/assets/stylesheets/partials/_all.scss 1:9          @import
+../../../../src/client/assets/stylesheets/application.scss 10:9           root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 35, column 2 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/partials/_navigation.scss:35:2:
+Sass's behavior for declarations that appear after nested
+rules will be changing to match the behavior specified by CSS in an upcoming
+version. To keep the existing behavior, move the declaration above the nested
+rule. To opt into the new behavior, wrap the declaration in `& {}`.
+
+More info: https://sass-lang.com/d/mixed-decls
+
+35 |   display: inline-block;
+
+
+../../../../src/client/assets/stylesheets/partials/_navigation.scss 36:3  @import
+../../../../src/client/assets/stylesheets/partials/_all.scss 1:9          @import
+../../../../src/client/assets/stylesheets/application.scss 10:9           root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 36, column 2 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/partials/_navigation.scss:36:2:
+Sass's behavior for declarations that appear after nested
+rules will be changing to match the behavior specified by CSS in an upcoming
+version. To keep the existing behavior, move the declaration above the nested
+rule. To opt into the new behavior, wrap the declaration in `& {}`.
+
+More info: https://sass-lang.com/d/mixed-decls
+
+36 |   text-decoration: none;
+
+
+../../../../src/client/assets/stylesheets/partials/_navigation.scss 37:3  @import
+../../../../src/client/assets/stylesheets/partials/_all.scss 1:9          @import
+../../../../src/client/assets/stylesheets/application.scss 10:9           root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 36, column 2 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/partials/_navigation.scss:36:2:
+Sass's behavior for declarations that appear after nested
+rules will be changing to match the behavior specified by CSS in an upcoming
+version. To keep the existing behavior, move the declaration above the nested
+rule. To opt into the new behavior, wrap the declaration in `& {}`.
+
+More info: https://sass-lang.com/d/mixed-decls
+
+36 |   text-decoration: none;
+
+
+../../../../src/client/assets/stylesheets/partials/_navigation.scss 37:3  @import
+../../../../src/client/assets/stylesheets/partials/_all.scss 1:9          @import
+../../../../src/client/assets/stylesheets/application.scss 10:9           root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+14 on the type scale is deprecated and will be removed as a possible option in the next major version. To silence this warning, update $govuk-suppressed-warnings with key: "govuk-typography-scale-14"
+
+../../../govuk-frontend/dist/govuk/settings/_warnings.scss 51:5                  -warning()
+../../../govuk-frontend/dist/govuk/helpers/_typography.scss 210:7                govuk-font-size()
+../../../govuk-frontend/dist/govuk/helpers/_typography.scss 284:5                govuk-font()
+../../../../src/client/assets/stylesheets/sass/components/_daqitable.scss 199:5  @import
+../../../../src/client/assets/stylesheets/sass/all.scss 13:9                     @import
+../../../../src/client/assets/stylesheets/application.scss 13:9                  root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+252 repetitive deprecation warnings omitted.
+Run in verbose mode to see all warnings.
+
+webpack 5.99.9 compiled with 13 warnings in 3130 ms
+
+> aqie-front-end@0.15.0 test
+> cross-env TZ=UTC NODE_OPTIONS=--max-old-space-size=4096 npx vitest run --coverage
+
+
+ RUN  v3.2.4 /Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end
+      Coverage enabled with v8
+
+ ✓ src/config/nunjucks/index.test.js (4 tests) 45ms
+ ✓ src/config/nunjucks/context/context.test.js (7 tests) 288ms
+ ✓ src/server/router.test.js (6 tests) 50ms
+ ✓ src/server/cookies/partials/form.test.js (1 test) 75ms
+ ✓ src/helpers/proxy-fetch-extended.test.js (2 tests) 395ms
+   ✓ proxy-fetch coverage > should export proxyFetch function  394ms
+ ✓ src/server/index.test.js (15 tests) 61ms
+ ✓ src/index.test.js (6 tests) 39ms
+ ✓ src/server/home/partials/start-button.test.js (2 tests) 27ms
+ ✓ src/server/multiple-results/controller.test.js (8 tests) 26ms
+ ✓ src/server/check-local-air-quality/partials/inset-text.test.js (2 tests) 43ms
+ ✓ test/forecast-partial.test.js (1 test) 30ms
+ ✓ src/server/check-local-air-quality/partials/start-button.test.js (2 tests) 37ms
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - Moderate Range (4, 5, 6) > should handle DAQI value 4 (Moderate - Low)
+✓ DAQI 4 (Moderate-Low): {
+  value: [33m4[39m,
+  band: [32m'moderate'[39m,
+  advice: [32m'For most people, short term exposure to moderate levels of air pollution is not an issue.'[39m
+}
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - Moderate Range (4, 5, 6) > should handle DAQI value 5 (Moderate - Mid)
+✓ DAQI 5 (Moderate-Mid): {
+  value: [33m5[39m,
+  band: [32m'moderate'[39m,
+  atRiskAdvice: {
+    adults: [32m'Adults who have heart problems and feel unwell should consider doing less strenuous exercise, especially outside.'[39m,
+    asthma: [32m'People with asthma should be prepared to use their reliever inhaler.'[39m
+  }
+}
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - Moderate Range (4, 5, 6) > should handle DAQI value 6 (Moderate - High)
+✓ DAQI 6 (Moderate-High): {
+  value: [33m6[39m,
+  band: [32m'moderate'[39m,
+  oldPeopleAdvice: [32m'Older people should consider doing less strenuous activity, especially outside.'[39m
+}
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - Moderate Range (4, 5, 6) > should simulate moderate range responsive behavior
+✓ Moderate range responsive behavior tested for values 4, 5, 6
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - High Range (7, 8, 9) > should handle DAQI value 7 (High - Low)
+✓ DAQI 7 (High-Low): {
+  value: [33m7[39m,
+  band: [32m'high'[39m,
+  advice: [32m'Anyone experiencing discomfort such as sore eyes, cough or sore throat should consider reducing activity, particularly outdoors.'[39m
+}
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - High Range (7, 8, 9) > should handle DAQI value 8 (High - Mid)
+✓ DAQI 8 (High-Mid): {
+  value: [33m8[39m,
+  band: [32m'high'[39m,
+  atRiskAdvice: {
+    adults: [32m'Adults with heart problems should reduce strenuous physical exertion, particularly outdoors, especially if they experience symptoms.'[39m,
+    asthma: [32m'People with asthma may find they need to use their reliever inhaler more often.'[39m
+  }
+}
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - High Range (7, 8, 9) > should handle DAQI value 9 (High - High)
+✓ DAQI 9 (High-High): {
+  value: [33m9[39m,
+  band: [32m'high'[39m,
+  oldPeopleAdvice: [32m'Older people should reduce physical exertion.'[39m,
+  outlook: [32m'Warm temperatures are expected to increase pollution levels to high across many areas today.'[39m
+}
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - High Range (7, 8, 9) > should simulate high range visual positioning
+✓ High range visual positioning tested for values 7, 8, 9
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - Very High Range (10) > should handle DAQI value 10 (Very High)
+✓ DAQI 10 (Very High): {
+  value: [33m10[39m,
+  band: [32m'veryHigh'[39m,
+  readableBand: [32m'very high'[39m,
+  advice: [32m'Reduce physical exertion, particularly outdoors, especially if you experience symptoms such as cough or sore throat.'[39m,
+  atRiskAdvice: {
+    adults: [32m'Adults with heart problems should avoid strenuous physical activity.'[39m,
+    asthma: [32m'People with asthma may need to use their reliever inhaler more often.'[39m,
+    oldPeople: [32m'Older people should avoid strenuous physical activity.'[39m
+  }
+}
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - Very High Range (10) > should handle very high value visual representation
+✓ DAQI 10 visual representation - Last segment with 100px width
+Air quality data: {
+  value: [33m10[39m,
+  band: [32m'veryHigh'[39m,
+  readableBand: [32m'very high'[39m,
+  advice: [32m'Reduce physical exertion, particularly outdoors, especially if you experience symptoms such as cough or sore throat.'[39m,
+  atrisk: {
+    adults: [32m'Adults with heart problems should avoid strenuous physical activity.'[39m,
+    asthma: [32m'People with asthma may need to use their reliever inhaler more often.'[39m,
+    oldPeople: [32m'Older people should avoid strenuous physical activity.'[39m
+  },
+  outlook: [32m'The current heatwave shows no signs of relenting, causing air pollution levels to remain very high across many areas today.'[39m
+}
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - Very High Range (10) > should simulate outlook messaging for very high
+✓ DAQI 10 outlook: The current heatwave shows no signs of relenting, causing air pollution levels to remain very high across many areas today.
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Range Comparison Tests > should show escalating severity across ranges
+✓ Escalating severity comparison:
+  Moderate (5): Adults who have heart problems and feel unwell should consider doing less strenuous exercise, especially outside.
+  High (8): Adults with heart problems should reduce strenuous physical exertion, particularly outdoors, especially if they experience symptoms.
+  Very High (10): Adults with heart problems should avoid strenuous physical activity.
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Range Comparison Tests > should test responsive divider positioning across all ranges
+✓ Responsive divider positioning tested for all target values: 4-10
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Range Comparison Tests > should simulate mobile vs desktop responsive behavior
+✓ Mobile vs Desktop responsive behavior simulation complete
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Integration with JavaScript Columns > should test divider calculations with moderate values
+✓ Moderate values (4,5,6) segment integration verified
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Integration with JavaScript Columns > should test CSS custom property setting for divider positions
+✓ CSS divider positions calculated:
+  Divider 1 (after Low): 156px
+  Divider 2 (after Moderate): 315px
+  Divider 3 (after High): 474px
+
+ ✓ test/daqi-accessibility.test.js (6 tests) 114ms
+ ✓ test/daqi-simulation.test.js (16 tests) 105ms
+ ✓ test/daqi-columns.test.js (4 tests) 57ms
+ ✓ src/helpers/proxy-agent.test.js (4 tests) 28ms
+ ✓ src/server/home/partials/inset-text.test.js (2 tests) 27ms
+ ✓ src/server/cookies/partials/notification-banner.test.js (1 test) 21ms
+ ✓ src/config/nunjucks/filters/format-currency.test.js (2 tests) 14ms
+ ✓ src/helpers/proxy-fetch.test.js (4 tests) 11ms
+ ✓ test/daqi-columns-resize.test.js (1 test) 40ms
+stdout | daqi-contrast-accessibility-tester.test.js
+🎯 Focused element 1: A - "Today"
+   Visible: false, Size: 0x0
+
+stdout | daqi-contrast-accessibility-tester.test.js
+🎯 Focused element 1: A - "Today"
+   Visible: false, Size: 0x0
+
+ ✓ daqi-contrast-accessibility-tester.test.js (36 tests) 690ms
+ ✓ src/server/location-id/controller.test.js (18 tests) 10ms
+stdout | src/server/location-id/cy/controller.test.js > Welsh Location ID Controller > getLocationDetailsController > should redirect to Welsh location search when no previous URL and no saved search terms
+redirectioning to location search 2
+
+ ✓ src/server/location-id/cy/controller.test.js (15 tests) 12ms
+ ✓ test/daqi-columns-grouped.test.js (1 test) 39ms
+ ✓ src/server/locations/helpers/middleware-helpers.test.js (25 tests) 9ms
+ ✓ src/config/nunjucks/globals/globals.test.js (3 tests) 10ms
+ ✓ src/server/locations/helpers/fetch-data.test.js (23 tests | 1 skipped) 11ms
+ ✓ src/server/locations/helpers/extra-middleware-helpers.test.js (12 tests) 8ms
+ ✓ src/server/accessibility/partials/paragraphs-and-headings.test.js (1 test) 6ms
+ ✓ src/server/search-location/index.test.js (1 test) 10ms
+ ✓ src/server/locations/helpers/convert-string.test.js (77 tests | 6 skipped) 6ms
+ ✓ src/server/nitrogen-dioxide/index.test.js (1 test) 7ms
+ ✓ src/server/health/controller.test.js (2 tests) 18ms
+ ✓ src/server/ozone/index.test.js (1 test) 7ms
+ ✓ src/server/multiple-results/index.test.js (1 test) 7ms
+ ✓ src/server/particulate-matter-10/index.test.js (1 test) 10ms
+ ✓ src/server/privacy/index.test.js (1 test) 7ms
+ ✓ src/server/locations/controller.test.js (19 tests) 6ms
+ ✓ src/server/particulate-matter-25/index.test.js (1 test) 10ms
+ ✓ src/server/health/index.test.js (1 test) 7ms
+ ✓ src/server/locations/middleware.test.js (11 tests) 7ms
+ ✓ src/server/locations/helpers/error-input-and-redirect-helpers.test.js (9 tests) 6ms
+ ✓ src/server/sulphur-dioxide/index.test.js (1 test) 7ms
+ ✓ src/server/error/partials/error-404-cy.test.js (1 test) 5ms
+ ✓ src/server/location-id/cy/index.test.js (1 test) 7ms
+ ✓ src/server/locations/helpers/transform-summary-keys.test.js (6 tests) 5ms
+ ✓ src/server/cookies/partials/paragraphs.test.js (1 test) 5ms
+ ✓ src/server/error/partials/error-500.test.js (1 test) 5ms
+ ✓ src/server/home/cy/controller.test.js (11 tests) 6ms
+ ✓ src/server/error/partials/error-404-en.test.js (1 test) 5ms
+ ✓ src/server/cookies/cy/controller.test.js (12 tests) 5ms
+ ✓ src/server/data/monitoring-sites.test.js (21 tests) 7ms
+ ✓ src/server/location-id/helpers/renderLocationNotFoundView.test.js (4 tests) 5ms
+ ✓ src/server/accessibility/partials/page-title.test.js (1 test) 5ms
+ ✓ src/config/index.test.js (21 tests) 5ms
+ ✓ src/server/search-location/controller.test.js (6 tests) 6ms
+ ✓ src/server/locations/helpers/location-type-util.test.js (13 tests | 3 skipped) 5ms
+ ✓ src/server/location-id/helpers/renderLocationDetailsView.test.js (2 tests) 4ms
+ ✓ src/server/location-id/helpers/redirectToWelshLocation.test.js (6 tests) 4ms
+ ✓ src/server/locations/helpers/get-id-match.test.js (4 tests) 2ms
+ ✓ src/server/nitrogen-dioxide/controller.test.js (2 tests) 4ms
+ ✓ src/server/nitrogen-dioxide/cy/index.test.js (1 test) 7ms
+ ✓ src/server/privacy/cy/index.test.js (1 test) 7ms
+ ✓ src/server/particulate-matter-25/cy/index.test.js (1 test) 7ms
+ ✓ src/server/particulate-matter-10/cy/index.test.js (1 test) 7ms
+ ✓ src/server/search-location/cy/controller.test.js (4 tests) 5ms
+ ✓ src/server/search-location/cy/index.test.js (1 test) 7ms
+ ✓ src/server/ozone/cy/index.test.js (1 test) 7ms
+ ✓ src/server/locations/helpers/get-ni-places.test.js (2 tests) 3ms
+ ✓ src/server/location-id/helpers/determineNearestLocation.test.js (2 tests) 3ms
+ ✓ src/server/sulphur-dioxide/cy/index.test.js (1 test) 7ms
+ ✓ src/server/multiple-results/cy/index.test.js (1 test) 2ms
+ ✓ src/server/locations/helpers/handle-error-helpers.test.js (5 tests) 4ms
+ ✓ src/server/location-id/helpers/handleSearchTermsRedirection.test.js (5 tests) 4ms
+ ✓ src/server/sulphur-dioxide/cy/controller.test.js (2 tests) 3ms
+ ✓ src/server/locations/helpers/generate-title-data.test.js (2 tests) 5ms
+ ✓ src/server/locations/helpers/error-input-and-redirect.test.js (2 tests) 3ms
+ ✓ src/server/accessibility/cy/controller.test.js (3 tests) 4ms
+ ✓ src/server/data/constants.test.js (9 tests) 5ms
+ ✓ src/server/cookies/controller.test.js (3 tests) 3ms
+ ✓ src/server/location-id/helpers/determineLocationType.test.js (4 tests) 2ms
+ ✓ src/config/nunjucks/filters/format-date.test.js (2 tests) 5ms
+ ✓ src/server/location-not-found/cy/controller.test.js (2 tests) 3ms
+ ✓ src/server/locations/helpers/location-util.test.js (6 tests) 2ms
+ ✓ src/server/ozone/controller.test.js (2 tests) 4ms
+ ✓ src/server/location-not-found/controller.test.js (3 tests | 1 skipped) 3ms
+ ✓ src/server/data/en/monitoring-sites.test.js (12 tests) 3ms
+ ✓ src/server/ozone/cy/controller.test.js (3 tests) 4ms
+ ✓ src/server/privacy/cy/controller.test.js (3 tests) 4ms
+ ✓ src/server/home/controller.test.js (2 tests) 3ms
+ ✓ src/server/check-local-air-quality/cy/controller.test.js (3 tests) 3ms
+ ✓ src/server/locations/helpers/gazetteer-util.test.js (11 tests) 3ms
+ ✓ src/server/nitrogen-dioxide/cy/controller.test.js (3 tests) 3ms
+ ✓ src/server/locations/helpers/get-os-places.test.js (2 tests) 3ms
+ ✓ src/server/location-id/index.test.js (2 tests) 3ms
+ ✓ src/server/particulate-matter-10/cy/controller.test.js (3 tests) 3ms
+ ✓ src/server/locations/index.test.js (4 tests) 3ms
+ ✓ src/server/locations/helpers/show-location-page.test.js (3 tests) 3ms
+ ✓ src/server/accessibility/controller.test.js (3 tests) 3ms
+ ✓ src/server/privacy/controller.test.js (2 tests) 3ms
+ ✓ src/server/particulate-matter-25/controller.test.js (2 tests) 3ms
+ ✓ src/server/accessibility/index.test.js (1 test) 2ms
+ ✓ src/server/sulphur-dioxide/controller.test.js (2 tests) 3ms
+ ✓ src/server/particulate-matter-25/cy/controller.test.js (3 tests) 3ms
+ ✓ src/server/data/cy/monitoring-sites.test.js (12 tests) 3ms
+ ✓ src/server/location-id/helpers/helpers.test.js (2 tests) 1ms
+ ✓ src/server/locations/helpers/get-postcode-type.test.js (23 tests) 3ms
+ ✓ src/server/check-local-air-quality/controller.test.js (2 tests) 3ms
+stderr | src/helpers/testRedisConnection.test.js > testRedisConnection > should return false when Redis connection fails
+Redis connection test failed: Connection failed
+
+stderr | src/helpers/testRedisConnection.test.js > testRedisConnection > should handle Redis ping timeout gracefully
+Redis connection test failed: Timeout
+
+stderr | src/helpers/testRedisConnection.test.js > testRedisConnection > should disconnect Redis client even if ping fails
+Redis connection test failed: Network error
+
+ ✓ src/helpers/testRedisConnection.test.js (4 tests) 3ms
+ ✓ src/server/particulate-matter-10/controller.test.js (2 tests) 3ms
+ ✓ src/server/location-not-found/index.test.js (1 test) 3ms
+ ✓ src/server/multiple-results/cy/controller.test.js (2 tests) 4ms
+ ✓ src/server/locations/helpers/reduce-matches.test.js (8 tests | 1 skipped) 3ms
+ ✓ src/server/data/cy/air-quality.test.js (13 tests) 2ms
+ ✓ src/config/nunjucks/globals.test.js (8 tests) 2ms
+ ✓ src/server/data/en/air-quality.test.js (13 tests) 3ms
+ ✓ src/server/location-id/helpers/matchLocationId.test.js (2 tests) 2ms
+ ✓ src/server/locations/helpers/get-search-terms-from-url.test.js (7 tests) 2ms
+ ✓ src/server/location-not-found/cy/index.test.js (1 test) 3ms
+ ✓ src/server/home/cy/routes.test.js (1 test) 3ms
+ ✓ src/server/data/air-quality.test.js (11 tests) 3ms
+ ✓ src/server/locations/helpers/cy/pollutant-level-calculation.test.js (6 tests) 2ms
+ ✓ src/server/home/index.test.js (1 test) 1ms
+ ✓ src/server/help/controller.test.js (2 tests) 1ms
+ ✓ src/server/locations/helpers/get-ni-single-data.test.js (7 tests | 1 skipped) 2ms
+ ✓ src/server/locations/helpers/pollutant-level-calculation.test.js (6 tests) 3ms
+ ✓ src/server/locations/helpers/routes-titles-util.test.js (4 tests) 2ms
+ ✓ src/server/locations/helpers/filter-by-postcode.test.js (3 tests) 2ms
+ ✓ src/server/error/controller.test.js (2 tests) 1ms
+ ✓ src/server/locations/helpers/search-terms-unitary.test.js (20 tests | 4 skipped) 2ms
+ ✓ src/server/locations/helpers/search-terms-borough.test.js (16 tests | 5 skipped) 2ms
+ ✓ src/server/locations/helpers/convert-first-letter-into-upper-case.test.js (8 tests) 3ms
+ ✓ src/server/accessibility/cy/constants.test.js (2 tests) 1ms
+ ✓ src/server/locations/helpers/get-nearest-location.test.js (2 tests) 2ms
+ ✓ src/server/locations/helpers/filter-matches.test.js (2 tests) 2ms
+ ✓ src/server/home/routes.test.js (1 test) 2ms
+ ✓ src/config/nunjucks/context/build-navigation.test.js (2 tests) 3ms
+ ✓ src/server/locations/helpers/handle-single-match-helper.test.js (3 tests) 2ms
+ ✓ src/server/locations/helpers/filter-by-search-terms.test.js (3 tests) 2ms
+ ✓ src/server/check-local-air-quality/cy/routes.test.js (1 test) 1ms
+ ✓ src/config/nunjucks/globals/index.test.js (5 tests) 2ms
+ ✓ src/server/accessibility/cy/routes.test.js (1 test) 2ms
+ ✓ src/server/accessibility/routes.test.js (1 test) 4ms
+ ✓ src/server/check-local-air-quality/routes.test.js (1 test) 2ms
+ ✓ src/server/locations/helpers/air-quality-values.test.js (5 tests) 2ms
+ ✓ src/server/cookies/cy/index.test.js (1 test) 2ms
+ ✓ src/server/cookies/index.test.js (1 test) 1ms
+ ✓ src/server/home/cy/index.test.js (1 test) 1ms
+ ✓ src/server/check-local-air-quality/cy/index.test.js (1 test) 2ms
+ ✓ src/server/accessibility/cy/index.test.js (1 test) 1ms
+ ✓ src/server/check-local-air-quality/index.test.js (1 test) 1ms
+ ✓ src/server/cookies/cy/routes.test.js (1 test) 1ms
+ ✓ src/server/cookies/routes.test.js (1 test) 1ms
+ ↓ src/server/locations/helpers/create-bookmark-ids.test.js (7 tests | 7 skipped)
+ ↓ src/server/locations/helpers/get-nearest.location.test.js (4 tests | 4 skipped)
+
+ Test Files  154 passed | 2 skipped (156)
+      Tests  803 passed | 33 skipped (836)
+   Start at  12:59:05
+   Duration  11.80s (transform 1.55s, setup 0ms, collect 27.96s, tests 2.80s, environment 19ms, prepare 24.32s)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   89.59 |    88.08 |   85.31 |   89.59 |                   
+ src               |     100 |      100 |     100 |     100 |                   
+  index.js         |     100 |      100 |     100 |     100 |                   
+ src/config        |   92.43 |        0 |     100 |   92.43 |                   
+  index.js         |   92.43 |        0 |     100 |   92.43 | ...40-355,372-381 
+ ...onfig/nunjucks |   84.69 |       75 |      50 |   84.69 |                   
+  context.js       |       0 |        0 |       0 |       0 |                   
+  globals.js       |     100 |      100 |     100 |     100 |                   
+  index.js         |   84.53 |    66.66 |       0 |   84.53 | ...,94-99,108-109 
+ ...njucks/context |     100 |      100 |     100 |     100 |                   
+  ...navigation.js |     100 |      100 |     100 |     100 |                   
+  context.js       |     100 |      100 |     100 |     100 |                   
+ ...njucks/filters |   72.22 |    44.44 |      60 |   72.22 |                   
+  format-date.js   |     100 |       50 |     100 |     100 | 4                 
+  ...t-sentence.js |     100 |      100 |     100 |     100 |                   
+  index.js         |     100 |      100 |     100 |     100 |                   
+  ...te-filters.js |   64.28 |    42.85 |      50 |   64.28 | ...34,38-42,63-65 
+ ...njucks/globals |     100 |      100 |     100 |     100 |                   
+  globals.js       |     100 |      100 |     100 |     100 |                   
+  index.js         |     100 |      100 |     100 |     100 |                   
+ src/helpers       |     100 |      100 |     100 |     100 |                   
+  proxy-agent.js   |     100 |      100 |     100 |     100 |                   
+  proxy-fetch.js   |     100 |      100 |     100 |     100 |                   
+  ...Connection.js |     100 |      100 |     100 |     100 |                   
+ src/server        |    99.5 |       75 |     100 |    99.5 |                   
+  index.js         |   98.88 |    66.66 |     100 |   98.88 | 83                
+  router.js        |     100 |    83.33 |     100 |     100 | 77                
+ .../accessibility |    97.5 |       90 |     100 |    97.5 |                   
+  controller.js    |   96.82 |    88.88 |     100 |   96.82 | 27-28             
+  index.js         |     100 |      100 |     100 |     100 |                   
+  routes.js        |     100 |      100 |     100 |     100 |                   
+ ...cessibility/cy |     100 |      100 |     100 |     100 |                   
+  constants.js     |     100 |      100 |     100 |     100 |                   
+  controller.js    |     100 |      100 |     100 |     100 |                   
+  index.js         |     100 |      100 |     100 |     100 |                   
+  routes.js        |     100 |      100 |     100 |     100 |                   
+ ...al-air-quality |     100 |      100 |     100 |     100 |                   
+  controller.js    |     100 |      100 |     100 |     100 |                   
+  index.js         |     100 |      100 |     100 |     100 |                   
+  routes.js        |     100 |      100 |     100 |     100 |                   
+ ...air-quality/cy |     100 |      100 |     100 |     100 |                   
+  controller.js    |     100 |      100 |     100 |     100 |                   
+  index.js         |     100 |      100 |     100 |     100 |                   
+  routes.js        |     100 |      100 |     100 |     100 |                   
+ ...server/cookies |     100 |      100 |     100 |     100 |                   
+  controller.js    |     100 |      100 |     100 |     100 |                   
+  index.js         |     100 |      100 |     100 |     100 |                   
+  routes.js        |     100 |      100 |     100 |     100 |                   
+ ...ver/cookies/cy |     100 |      100 |     100 |     100 |                   
+  controller.js    |     100 |      100 |     100 |     100 |                   
+  index.js         |     100 |      100 |     100 |     100 |                   
+  routes.js        |     100 |      100 |     100 |     100 |                   
+ src/server/data   |     100 |      100 |     100 |     100 |                   
+  air-quality.js   |     100 |      100 |     100 |     100 |                   
+  constants.js     |     100 |      100 |     100 |     100 |                   
+  ...ring-sites.js |     100 |      100 |     100 |     100 |                   
+ ...server/data/cy |     100 |      100 |     100 |     100 |                   
+  air-quality.js   |     100 |      100 |     100 |     100 |                   
+  cy.js            |     100 |      100 |     100 |     100 |                   
+  ...ring-sites.js |     100 |      100 |     100 |     100 |                   
+ ...server/data/en |     100 |      100 |     100 |     100 |                   
+  air-quality.js   |     100 |      100 |     100 |     100 |                   
+  en.js            |     100 |      100 |     100 |     100 |                   
+  ...ring-sites.js |     100 |      100 |     100 |     100 |                   
+ src/server/health |     100 |      100 |     100 |     100 |                   
+  controller.js    |     100 |      100 |     100 |     100 |                   
+  index.js         |     100 |      100 |     100 |     100 |                   
+ src/server/home   |    98.3 |    66.66 |     100 |    98.3 |                   
+  controller.js    |   97.43 |       50 |     100 |   97.43 | 15                
+  index.js         |     100 |      100 |     100 |     100 |                   
+  routes.js        |     100 |      100 |     100 |     100 |                   
+ ...server/home/cy |   98.41 |    66.66 |     100 |   98.41 |                   
+  controller.js    |   97.67 |       50 |     100 |   97.67 | 16                
+  index.js         |     100 |      100 |     100 |     100 |                   
+  routes.js        |     100 |      100 |     100 |     100 |                   
+ ...er/location-id |     100 |    86.53 |     100 |     100 |                   
+  controller.js    |     100 |       86 |     100 |     100 | 207-213,280,299   
+  index.js         |     100 |      100 |     100 |     100 |                   
+ ...location-id/cy |     100 |       92 |     100 |     100 |                   
+  controller.js    |     100 |    91.66 |     100 |     100 | 94,172            
+  index.js         |     100 |      100 |     100 |     100 |                   
+ ...ion-id/helpers |     100 |      100 |     100 |     100 |                   
+  ...cationType.js |     100 |      100 |     100 |     100 |                   
+  ...stLocation.js |     100 |      100 |     100 |     100 |                   
+  ...edirection.js |     100 |      100 |     100 |     100 |                   
+  ...LocationId.js |     100 |      100 |     100 |     100 |                   
+  ...shLocation.js |     100 |      100 |     100 |     100 |                   
+  ...etailsView.js |     100 |      100 |     100 |     100 |                   
+  ...tFoundView.js |     100 |      100 |     100 |     100 |                   
+ ...tion-not-found |     100 |       50 |     100 |     100 |                   
+  controller.js    |     100 |    45.45 |     100 |     100 | 18-35             
+  index.js         |     100 |      100 |     100 |     100 |                   
+ ...n-not-found/cy |     100 |    66.66 |     100 |     100 |                   
+  controller.js    |     100 |       60 |     100 |     100 | 18-39             
+  index.js         |     100 |      100 |     100 |     100 |                   
+ ...rver/locations |   98.12 |    97.87 |     100 |   98.12 |                   
+  controller.js    |     100 |      100 |     100 |     100 |                   
+  index.js         |     100 |      100 |     100 |     100 |                   
+  middleware.js    |   97.43 |    96.42 |     100 |   97.43 | 117-123           
+ ...ations/helpers |   71.61 |    87.64 |   73.22 |   71.61 |                   
+  ...ity-values.js |   37.14 |      100 |      50 |   37.14 | 5-26              
+  ...upper-case.js |     100 |       96 |     100 |     100 | 24                
+  ...ert-string.js |   66.48 |    93.75 |      60 |   66.48 | ...40-142,144-149 
+  ...okmark-ids.js |    7.14 |      100 |       0 |    7.14 | 9-47              
+  ...ct-helpers.js |     100 |    73.33 |     100 |     100 | 50-72,80-102      
+  ...d-redirect.js |   59.45 |    66.66 |     100 |   59.45 | 31-45             
+  ...re-helpers.js |     100 |      100 |     100 |     100 |                   
+  fetch-data.js    |   98.43 |    95.45 |     100 |   98.43 | 161-164           
+  ...y-postcode.js |     100 |      100 |     100 |     100 |                   
+  ...arch-terms.js |   84.61 |    72.72 |     100 |   84.61 | 24-27             
+  ...er-matches.js |    24.1 |      100 |       0 |    24.1 | ...2,68-80,86-122 
+  ...tteer-util.js |   93.87 |    93.75 |     100 |   93.87 | 32-34,54          
+  ...title-data.js |     100 |      100 |     100 |     100 |                   
+  get-id-match.js  |   97.14 |     87.5 |     100 |   97.14 | 32                
+  ...t-location.js |    5.15 |      100 |       0 |    5.15 | ...91-117,120-253 
+  get-ni-places.js |   97.29 |    66.66 |     100 |   97.29 | 33                
+  ...ingle-data.js |     100 |     87.5 |     100 |     100 | 10                
+  get-os-places.js |   97.91 |    83.33 |     100 |   97.91 | 49                
+  ...tcode-type.js |     100 |      100 |     100 |     100 |                   
+  ...s-from-url.js |     100 |      100 |     100 |     100 |                   
+  ...om-urltest.js |       0 |        0 |       0 |       0 | 1-119             
+  ...or-helpers.js |   82.85 |    78.26 |     100 |   82.85 | ...20-125,134-139 
+  ...tch-helper.js |    9.09 |      100 |       0 |    9.09 | 8-48              
+  ...tch-helper.js |   20.45 |      100 |      50 |   20.45 | 4-39              
+  ...-type-util.js |   76.15 |    76.19 |      80 |   76.15 | ...52,55-56,64-86 
+  location-util.js |   73.07 |    58.33 |     100 |   73.07 | ...,70-85,103-107 
+  ...re-helpers.js |     100 |    94.59 |     100 |     100 | 209,232           
+  ...alculation.js |     100 |      100 |     100 |     100 |                   
+  ...ce-matches.js |     100 |      100 |     100 |     100 |                   
+  ...itles-util.js |     100 |      100 |     100 |     100 |                   
+  ...ms-borough.js |   93.54 |    68.75 |     100 |   93.54 | 17,29             
+  ...ms-unitary.js |   72.34 |    59.09 |     100 |   72.34 | ...35,37-38,42,45 
+  ...ation-page.js |     100 |      100 |     100 |     100 |                   
+  ...mmary-keys.js |     100 |    82.35 |     100 |     100 | 35,44,52          
+ ...ons/helpers/cy |     100 |      100 |     100 |     100 |                   
+  ...alculation.js |     100 |      100 |     100 |     100 |                   
+ ...ltiple-results |     100 |       80 |     100 |     100 |                   
+  controller.js    |     100 |    77.77 |     100 |     100 | 14,63             
+  index.js         |     100 |      100 |     100 |     100 |                   
+ ...ple-results/cy |   77.66 |    42.85 |     100 |   77.66 |                   
+  controller.js    |   73.86 |    33.33 |     100 |   73.86 | 73-95             
+  index.js         |     100 |      100 |     100 |     100 |                   
+ ...trogen-dioxide |     100 |       75 |     100 |     100 |                   
+  controller.js    |     100 |    66.66 |     100 |     100 | 29                
+  index.js         |     100 |      100 |     100 |     100 |                   
+ ...gen-dioxide/cy |     100 |      100 |     100 |     100 |                   
+  controller.js    |     100 |      100 |     100 |     100 |                   
+  index.js         |     100 |      100 |     100 |     100 |                   
+ src/server/ozone  |     100 |       75 |     100 |     100 |                   
+  controller.js    |     100 |    66.66 |     100 |     100 | 29                
+  index.js         |     100 |      100 |     100 |     100 |                   
+ ...erver/ozone/cy |     100 |      100 |     100 |     100 |                   
+  controller.js    |     100 |      100 |     100 |     100 |                   
+  index.js         |     100 |      100 |     100 |     100 |                   
+ ...late-matter-10 |     100 |       75 |     100 |     100 |                   
+  controller.js    |     100 |    66.66 |     100 |     100 | 29                
+  index.js         |     100 |      100 |     100 |     100 |                   
+ ...e-matter-10/cy |     100 |      100 |     100 |     100 |                   
+  controller.js    |     100 |      100 |     100 |     100 |                   
+  index.js         |     100 |      100 |     100 |     100 |                   
+ ...late-matter-25 |     100 |       75 |     100 |     100 |                   
+  controller.js    |     100 |    66.66 |     100 |     100 | 29                
+  index.js         |     100 |      100 |     100 |     100 |                   
+ ...e-matter-25/cy |     100 |      100 |     100 |     100 |                   
+  controller.js    |     100 |      100 |     100 |     100 |                   
+  index.js         |     100 |      100 |     100 |     100 |                   
+ ...server/privacy |     100 |      100 |     100 |     100 |                   
+  controller.js    |     100 |      100 |     100 |     100 |                   
+  index.js         |     100 |      100 |     100 |     100 |                   
+ ...ver/privacy/cy |     100 |      100 |     100 |     100 |                   
+  controller.js    |     100 |      100 |     100 |     100 |                   
+  index.js         |     100 |      100 |     100 |     100 |                   
+ ...earch-location |     100 |    95.65 |     100 |     100 |                   
+  controller.js    |     100 |    95.23 |     100 |     100 | 24                
+  index.js         |     100 |      100 |     100 |     100 |                   
+ ...ch-location/cy |     100 |      100 |     100 |     100 |                   
+  controller.js    |     100 |      100 |     100 |     100 |                   
+  index.js         |     100 |      100 |     100 |     100 |                   
+ ...ulphur-dioxide |     100 |       75 |     100 |     100 |                   
+  controller.js    |     100 |    66.66 |     100 |     100 | 29                
+  index.js         |     100 |      100 |     100 |     100 |                   
+ ...hur-dioxide/cy |     100 |      100 |     100 |     100 |                   
+  controller.js    |     100 |      100 |     100 |     100 |                   
+  index.js         |     100 |      100 |     100 |     100 |                   
+-------------------|---------|----------|---------|---------|-------------------

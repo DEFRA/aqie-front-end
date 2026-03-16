@@ -164,7 +164,6 @@ export function mockPollutantBand(band = 'moderate', options = {}) {
       lang === 'cy'
         ? POLLUTANT_BANDS[normalizedBand].labelCy
         : POLLUTANT_BANDS[normalizedBand].label
-    logger.info(`🧪 Mocking all pollutants with band: ${bandLabel}`)
   }
 
   const pollutantTypes = ['NO2', 'PM25', 'PM10', 'O3', 'SO2']
@@ -196,7 +195,6 @@ export function mockPollutantLevel(pollutantBands = {}, options = {}) {
   const pollutantTypes = ['NO2', 'PM25', 'PM10', 'O3', 'SO2']
 
   if (logDetails) {
-    logger.info(`🧪 Mocking specific pollutants:`, pollutantBands)
   }
 
   pollutantTypes.forEach((type) => {
@@ -243,9 +241,6 @@ export function applyMockPollutantsToSites(
   }
 
   if (logDetails) {
-    logger.info(
-      `🧪 Applying mock pollutants to ${monitoringSites.length} site(s)`
-    )
   }
 
   return monitoringSites.map((site, index) => {

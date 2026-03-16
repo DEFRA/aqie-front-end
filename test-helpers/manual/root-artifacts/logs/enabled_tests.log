@@ -1,0 +1,871 @@
+
+> aqie-front-end@0.15.0 pretest
+> npm run build:frontend
+
+
+> aqie-front-end@0.15.0 build:frontend
+> cross-env NODE_ENV=production webpack
+
+25 assets
+42 modules
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 3, column 8 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/application.scss:3:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+3 | @import "~govuk-frontend/dist/govuk/index";
+
+
+../../../../src/client/assets/stylesheets/application.scss 4:9  root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 4, column 28 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/sass/components/_inset-text-colour.scss:4:28:
+Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use list.nth instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+4 |     border-left: 10px solid nth($daqi-colour, $i + 1);
+
+
+../../../../src/client/assets/stylesheets/sass/components/_inset-text-colour.scss 5:29  @import
+../../../../src/client/assets/stylesheets/sass/all.scss 21:9                            @import
+../../../../src/client/assets/stylesheets/application.scss 13:9                         root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 5, column 8 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/application.scss:5:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+5 | @import "variables/all";
+
+
+../../../../src/client/assets/stylesheets/application.scss 6:9  root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 6, column 8 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/application.scss:6:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+6 | @import "helpers/all";
+
+
+../../../../src/client/assets/stylesheets/application.scss 7:9  root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 7, column 8 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/application.scss:7:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+7 | @import "core/all";
+
+
+../../../../src/client/assets/stylesheets/application.scss 8:9  root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 8, column 8 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/application.scss:8:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+8 | @import "components/all";
+
+
+../../../../src/client/assets/stylesheets/application.scss 9:9  root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 35, column 2 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/partials/_navigation.scss:35:2:
+Sass's behavior for declarations that appear after nested
+rules will be changing to match the behavior specified by CSS in an upcoming
+version. To keep the existing behavior, move the declaration above the nested
+rule. To opt into the new behavior, wrap the declaration in `& {}`.
+
+More info: https://sass-lang.com/d/mixed-decls
+
+35 |   display: inline-block;
+
+
+../../../../src/client/assets/stylesheets/partials/_navigation.scss 36:3  @import
+../../../../src/client/assets/stylesheets/partials/_all.scss 1:9          @import
+../../../../src/client/assets/stylesheets/application.scss 10:9           root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 35, column 2 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/partials/_navigation.scss:35:2:
+Sass's behavior for declarations that appear after nested
+rules will be changing to match the behavior specified by CSS in an upcoming
+version. To keep the existing behavior, move the declaration above the nested
+rule. To opt into the new behavior, wrap the declaration in `& {}`.
+
+More info: https://sass-lang.com/d/mixed-decls
+
+35 |   display: inline-block;
+
+
+../../../../src/client/assets/stylesheets/partials/_navigation.scss 36:3  @import
+../../../../src/client/assets/stylesheets/partials/_all.scss 1:9          @import
+../../../../src/client/assets/stylesheets/application.scss 10:9           root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 35, column 2 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/partials/_navigation.scss:35:2:
+Sass's behavior for declarations that appear after nested
+rules will be changing to match the behavior specified by CSS in an upcoming
+version. To keep the existing behavior, move the declaration above the nested
+rule. To opt into the new behavior, wrap the declaration in `& {}`.
+
+More info: https://sass-lang.com/d/mixed-decls
+
+35 |   display: inline-block;
+
+
+../../../../src/client/assets/stylesheets/partials/_navigation.scss 36:3  @import
+../../../../src/client/assets/stylesheets/partials/_all.scss 1:9          @import
+../../../../src/client/assets/stylesheets/application.scss 10:9           root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 36, column 2 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/partials/_navigation.scss:36:2:
+Sass's behavior for declarations that appear after nested
+rules will be changing to match the behavior specified by CSS in an upcoming
+version. To keep the existing behavior, move the declaration above the nested
+rule. To opt into the new behavior, wrap the declaration in `& {}`.
+
+More info: https://sass-lang.com/d/mixed-decls
+
+36 |   text-decoration: none;
+
+
+../../../../src/client/assets/stylesheets/partials/_navigation.scss 37:3  @import
+../../../../src/client/assets/stylesheets/partials/_all.scss 1:9          @import
+../../../../src/client/assets/stylesheets/application.scss 10:9           root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+Deprecation Warning on line 36, column 2 of file:///Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end/src/client/assets/stylesheets/partials/_navigation.scss:36:2:
+Sass's behavior for declarations that appear after nested
+rules will be changing to match the behavior specified by CSS in an upcoming
+version. To keep the existing behavior, move the declaration above the nested
+rule. To opt into the new behavior, wrap the declaration in `& {}`.
+
+More info: https://sass-lang.com/d/mixed-decls
+
+36 |   text-decoration: none;
+
+
+../../../../src/client/assets/stylesheets/partials/_navigation.scss 37:3  @import
+../../../../src/client/assets/stylesheets/partials/_all.scss 1:9          @import
+../../../../src/client/assets/stylesheets/application.scss 10:9           root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+14 on the type scale is deprecated and will be removed as a possible option in the next major version. To silence this warning, update $govuk-suppressed-warnings with key: "govuk-typography-scale-14"
+
+../../../govuk-frontend/dist/govuk/settings/_warnings.scss 51:5                  -warning()
+../../../govuk-frontend/dist/govuk/helpers/_typography.scss 210:7                govuk-font-size()
+../../../govuk-frontend/dist/govuk/helpers/_typography.scss 284:5                govuk-font()
+../../../../src/client/assets/stylesheets/sass/components/_daqitable.scss 199:5  @import
+../../../../src/client/assets/stylesheets/sass/all.scss 13:9                     @import
+../../../../src/client/assets/stylesheets/application.scss 13:9                  root stylesheet
+
+WARNING in ./stylesheets/application.scss
+Module Warning (from ../../../node_modules/sass-loader/dist/cjs.js):
+252 repetitive deprecation warnings omitted.
+Run in verbose mode to see all warnings.
+
+webpack 5.99.9 compiled with 13 warnings in 3061 ms
+
+> aqie-front-end@0.15.0 test
+> cross-env TZ=UTC NODE_OPTIONS=--max-old-space-size=4096 npx vitest run --coverage
+
+
+ RUN  v3.2.4 /Users/2057586/Library/CloudStorage/OneDrive-Cognizant/Documents/cognizant-projects/defra/aqie-front-end
+      Coverage enabled with v8
+
+ ✓ src/server/cookies/partials/form.test.js (1 test) 71ms
+ ✓ src/config/nunjucks/context/context.test.js (7 tests) 216ms
+ ✓ src/index.test.js (6 tests) 42ms
+ ✓ src/server/router.test.js (6 tests) 50ms
+ ✓ src/helpers/proxy-fetch-extended.test.js (2 tests) 356ms
+   ✓ proxy-fetch coverage > should export proxyFetch function  355ms
+ ✓ src/server/index.test.js (15 tests) 57ms
+ ✓ src/config/nunjucks/index.test.js (4 tests) 31ms
+ ✓ src/server/check-local-air-quality/partials/inset-text.test.js (2 tests) 24ms
+ ✓ src/server/check-local-air-quality/partials/start-button.test.js (2 tests) 30ms
+ ✓ src/helpers/proxy-agent.test.js (4 tests) 23ms
+ ✓ src/server/home/partials/inset-text.test.js (2 tests) 24ms
+ ✓ src/server/multiple-results/controller.test.js (8 tests) 34ms
+ ✓ test/daqi-columns-resize.test.js (1 test) 39ms
+ ✓ test/daqi-accessibility.test.js (6 tests) 98ms
+ ✓ test/daqi-columns.test.js (4 tests) 61ms
+ ✓ src/server/home/partials/start-button.test.js (2 tests) 40ms
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - Moderate Range (4, 5, 6) > should handle DAQI value 4 (Moderate - Low)
+✓ DAQI 4 (Moderate-Low): {
+  value: [33m4[39m,
+  band: [32m'moderate'[39m,
+  advice: [32m'For most people, short term exposure to moderate levels of air pollution is not an issue.'[39m
+}
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - Moderate Range (4, 5, 6) > should handle DAQI value 5 (Moderate - Mid)
+✓ DAQI 5 (Moderate-Mid): {
+  value: [33m5[39m,
+  band: [32m'moderate'[39m,
+  atRiskAdvice: {
+    adults: [32m'Adults who have heart problems and feel unwell should consider doing less strenuous exercise, especially outside.'[39m,
+    asthma: [32m'People with asthma should be prepared to use their reliever inhaler.'[39m
+  }
+}
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - Moderate Range (4, 5, 6) > should handle DAQI value 6 (Moderate - High)
+✓ DAQI 6 (Moderate-High): {
+  value: [33m6[39m,
+  band: [32m'moderate'[39m,
+  oldPeopleAdvice: [32m'Older people should consider doing less strenuous activity, especially outside.'[39m
+}
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - Moderate Range (4, 5, 6) > should simulate moderate range responsive behavior
+✓ Moderate range responsive behavior tested for values 4, 5, 6
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - High Range (7, 8, 9) > should handle DAQI value 7 (High - Low)
+✓ DAQI 7 (High-Low): {
+  value: [33m7[39m,
+  band: [32m'high'[39m,
+  advice: [32m'Anyone experiencing discomfort such as sore eyes, cough or sore throat should consider reducing activity, particularly outdoors.'[39m
+}
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - High Range (7, 8, 9) > should handle DAQI value 8 (High - Mid)
+✓ DAQI 8 (High-Mid): {
+  value: [33m8[39m,
+  band: [32m'high'[39m,
+  atRiskAdvice: {
+    adults: [32m'Adults with heart problems should reduce strenuous physical exertion, particularly outdoors, especially if they experience symptoms.'[39m,
+    asthma: [32m'People with asthma may find they need to use their reliever inhaler more often.'[39m
+  }
+}
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - High Range (7, 8, 9) > should handle DAQI value 9 (High - High)
+✓ DAQI 9 (High-High): {
+  value: [33m9[39m,
+  band: [32m'high'[39m,
+  oldPeopleAdvice: [32m'Older people should reduce physical exertion.'[39m,
+  outlook: [32m'Warm temperatures are expected to increase pollution levels to high across many areas today.'[39m
+}
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - High Range (7, 8, 9) > should simulate high range visual positioning
+✓ High range visual positioning tested for values 7, 8, 9
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - Very High Range (10) > should handle DAQI value 10 (Very High)
+✓ DAQI 10 (Very High): {
+  value: [33m10[39m,
+  band: [32m'veryHigh'[39m,
+  readableBand: [32m'very high'[39m,
+  advice: [32m'Reduce physical exertion, particularly outdoors, especially if you experience symptoms such as cough or sore throat.'[39m,
+  atRiskAdvice: {
+    adults: [32m'Adults with heart problems should avoid strenuous physical activity.'[39m,
+    asthma: [32m'People with asthma may need to use their reliever inhaler more often.'[39m,
+    oldPeople: [32m'Older people should avoid strenuous physical activity.'[39m
+  }
+}
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - Very High Range (10) > should handle very high value visual representation
+✓ DAQI 10 visual representation - Last segment with 100px width
+Air quality data: {
+  value: [33m10[39m,
+  band: [32m'veryHigh'[39m,
+  readableBand: [32m'very high'[39m,
+  advice: [32m'Reduce physical exertion, particularly outdoors, especially if you experience symptoms such as cough or sore throat.'[39m,
+  atrisk: {
+    adults: [32m'Adults with heart problems should avoid strenuous physical activity.'[39m,
+    asthma: [32m'People with asthma may need to use their reliever inhaler more often.'[39m,
+    oldPeople: [32m'Older people should avoid strenuous physical activity.'[39m
+  },
+  outlook: [32m'The current heatwave shows no signs of relenting, causing air pollution levels to remain very high across many areas today.'[39m
+}
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Value Testing - Very High Range (10) > should simulate outlook messaging for very high
+✓ DAQI 10 outlook: The current heatwave shows no signs of relenting, causing air pollution levels to remain very high across many areas today.
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Range Comparison Tests > should show escalating severity across ranges
+✓ Escalating severity comparison:
+  Moderate (5): Adults who have heart problems and feel unwell should consider doing less strenuous exercise, especially outside.
+  High (8): Adults with heart problems should reduce strenuous physical exertion, particularly outdoors, especially if they experience symptoms.
+  Very High (10): Adults with heart problems should avoid strenuous physical activity.
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Range Comparison Tests > should test responsive divider positioning across all ranges
+✓ Responsive divider positioning tested for all target values: 4-10
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Range Comparison Tests > should simulate mobile vs desktop responsive behavior
+✓ Mobile vs Desktop responsive behavior simulation complete
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Integration with JavaScript Columns > should test divider calculations with moderate values
+✓ Moderate values (4,5,6) segment integration verified
+
+stdout | test/daqi-simulation.test.js > DAQI Simulation Tests > DAQI Integration with JavaScript Columns > should test CSS custom property setting for divider positions
+✓ CSS divider positions calculated:
+  Divider 1 (after Low): 156px
+  Divider 2 (after Moderate): 315px
+  Divider 3 (after High): 474px
+
+ ✓ test/daqi-simulation.test.js (16 tests) 86ms
+ ✓ src/server/health/controller.test.js (2 tests) 8ms
+ ✓ src/server/cookies/partials/notification-banner.test.js (1 test) 16ms
+ ✓ test/daqi-columns-grouped.test.js (1 test) 42ms
+ ✓ src/config/nunjucks/filters/format-currency.test.js (2 tests) 13ms
+stdout | daqi-contrast-accessibility-tester.test.js
+🎯 Focused element 1: A - "Today"
+   Visible: false, Size: 0x0
+
+stdout | daqi-contrast-accessibility-tester.test.js
+🎯 Focused element 1: A - "Today"
+   Visible: false, Size: 0x0
+
+ ✓ test/forecast-partial.test.js (1 test) 39ms
+ ✓ daqi-contrast-accessibility-tester.test.js (36 tests) 676ms
+ ✓ src/server/locations/helpers/fetch-data.test.js (23 tests | 1 skipped) 12ms
+ ✓ src/config/nunjucks/globals/globals.test.js (3 tests) 13ms
+ ✓ src/server/locations/helpers/extra-middleware-helpers.test.js (12 tests) 8ms
+ ✓ src/server/sulphur-dioxide/cy/index.test.js (1 test) 10ms
+ ✓ src/server/location-id/controller.test.js (18 tests) 10ms
+stdout | src/server/location-id/cy/controller.test.js > Welsh Location ID Controller > getLocationDetailsController > should redirect to Welsh location search when no previous URL and no saved search terms
+redirectioning to location search 2
+
+ ✓ src/server/location-id/cy/controller.test.js (15 tests) 11ms
+ ✓ src/helpers/proxy-fetch.test.js (4 tests) 6ms
+ ✓ src/server/ozone/index.test.js (1 test) 7ms
+ ✓ src/server/location-id/cy/index.test.js (1 test) 9ms
+ ✓ src/server/locations/middleware.test.js (11 tests) 6ms
+ ✓ src/server/privacy/index.test.js (1 test) 8ms
+ ✓ src/server/locations/helpers/middleware-helpers.test.js (25 tests) 8ms
+ ✓ src/server/nitrogen-dioxide/cy/index.test.js (1 test) 7ms
+ ✓ src/server/particulate-matter-10/cy/index.test.js (1 test) 7ms
+ ✓ src/server/locations/helpers/error-input-and-redirect-helpers.test.js (9 tests) 5ms
+ ✓ src/server/search-location/cy/index.test.js (1 test) 8ms
+ ✓ src/server/search-location/index.test.js (1 test) 9ms
+ ✓ src/server/sulphur-dioxide/index.test.js (1 test) 7ms
+ ✓ src/server/multiple-results/index.test.js (1 test) 9ms
+ ✓ src/server/ozone/cy/index.test.js (1 test) 7ms
+ ✓ src/server/particulate-matter-25/cy/index.test.js (1 test) 7ms
+ ✓ src/server/particulate-matter-10/index.test.js (1 test) 7ms
+ ✓ src/server/privacy/cy/index.test.js (1 test) 7ms
+ ✓ src/server/nitrogen-dioxide/index.test.js (1 test) 12ms
+ ✓ src/server/cookies/cy/controller.test.js (12 tests) 5ms
+ ✓ src/server/particulate-matter-25/index.test.js (1 test) 7ms
+ ✓ src/config/index.test.js (21 tests) 5ms
+ ✓ src/server/health/index.test.js (1 test) 7ms
+ ✓ src/server/accessibility/partials/paragraphs-and-headings.test.js (1 test) 6ms
+ ✓ src/server/home/cy/controller.test.js (11 tests) 7ms
+ ✓ src/server/error/partials/error-404-cy.test.js (1 test) 5ms
+ ✓ src/server/locations/controller.test.js (19 tests) 8ms
+ ✓ src/server/error/partials/error-500.test.js (1 test) 6ms
+ ✓ src/server/accessibility/partials/page-title.test.js (1 test) 4ms
+ ❯ src/server/locations/helpers/convert-string.test.js (77 tests | 2 failed | 3 skipped) 13ms
+   ✓ convertStringToHyphenatedLowercaseWords > should convert a string to lowercase words joined by hyphens and remove commas 1ms
+   ✓ convertStringToHyphenatedLowercaseWords > should handle strings without commas or hyphens 0ms
+   ✓ convertStringToHyphenatedLowercaseWords > should handle strings with multiple spaces 0ms
+   ✓ convertStringToHyphenatedLowercaseWords > should handle empty strings 0ms
+   ✓ removeLastWordAndAddHyphens > removes the last word and adds hyphens 0ms
+   ✓ removeLastWordAndAddHyphens > handles single word input 0ms
+   ✓ removeLastWordAndAddHyphens > handles empty string input 0ms
+   ↓ removeLastWordAndHyphens > removes the last word and hyphens
+   ✓ removeLastWordAndHyphens > handles input without hyphens 0ms
+   ✓ removeLastWordAndHyphens > handles empty string input 0ms
+   ✓ splitAndKeepFirstWord > splits by underscore and keeps the first word 0ms
+   ✓ splitAndKeepFirstWord > handles input without underscores 0ms
+   ✓ splitAndKeepFirstWord > handles empty string input 0ms
+   ✓ removeHyphensAndUnderscores > removes hyphens and underscores 0ms
+   ✓ removeHyphensAndUnderscores > handles input without hyphens or underscores 0ms
+   ✓ removeHyphensAndUnderscores > handles empty string input 0ms
+   ✓ extractAndFormatUKPostcode > extracts and formats UK postcode 0ms
+   ✓ extractAndFormatUKPostcode > handles input with partial postcode 0ms
+   ✓ extractAndFormatUKPostcode > handles input without postcode 0ms
+   ✓ removeAllWordsAfterUnderscore > removes all words after underscore 0ms
+   ✓ removeAllWordsAfterUnderscore > handles input without underscores 0ms
+   ✓ removeAllWordsAfterUnderscore > handles empty string input 0ms
+   ✓ isValidPartialPostcodeUK > validates partial UK postcode 0ms
+   ✓ isValidPartialPostcodeUK > handles lowercase input 0ms
+   ✓ isValidPartialPostcodeUK > handles empty string input 0ms
+   ✓ isValidFullPostcodeUK > validates full UK postcode 0ms
+   ✓ isValidFullPostcodeUK > handles lowercase input 0ms
+   ✓ isValidFullPostcodeUK > handles empty string input 0ms
+   ✓ isValidPartialPostcodeNI > validates partial NI postcode 0ms
+   ✓ isValidPartialPostcodeNI > handles lowercase input 0ms
+   ✓ isValidPartialPostcodeNI > handles empty string input 0ms
+   ✓ isValidFullPostcodeNI > validates full NI postcode 0ms
+   ✓ isValidFullPostcodeNI > handles lowercase input 0ms
+   ✓ isValidFullPostcodeNI > handles input without space 0ms
+   ✓ isValidFullPostcodeNI > handles empty string input 0ms
+   × splitAndCheckSpecificWords > checks if source string contains exact first two words or last word 7ms
+     → expected true to be false // Object.is equality
+   × splitAndCheckSpecificWords > handles input with three words 0ms
+     → expected false to be true // Object.is equality
+   ✓ splitAndCheckSpecificWords > handles input with one word 0ms
+   ↓ splitAndCheckSpecificWords > handles empty string input
+   ✓ splitAndCheckExactWords > checks if target string contains exactly any of the three words 0ms
+   ✓ splitAndCheckExactWords > handles input with more than three words 0ms
+   ✓ splitAndCheckExactWords > handles input with less than three words 0ms
+   ✓ splitAndCheckExactWords > handles empty string input 0ms
+   ✓ countWords > counts the number of words in a string 0ms
+   ✓ countWords > handles input with multiple spaces 0ms
+   ✓ countWords > handles empty string input 0ms
+   ✓ countWords > handles input with leading and trailing spaces 0ms
+   ✓ isOnlyLettersAndMoreThanFour > checks if string is only letters and contains more than 4 letters 0ms
+   ✓ isOnlyLettersAndMoreThanFour > handles input with spaces 0ms
+   ✓ isOnlyLettersAndMoreThanFour > handles empty string input 0ms
+   ✓ isOnlyLettersAndMoreThanFour > handles input with special characters 0ms
+   ✓ formatNorthernIrelandPostcode > formats Northern Ireland postcode 0ms
+   ✓ formatNorthernIrelandPostcode > handles invalid postcode 0ms
+   ↓ formatNorthernIrelandPostcode > handles lowercase input
+   ✓ formatNorthernIrelandPostcode > handles empty string input 0ms
+   ✓ hasExactMatch > checks if a word separated by spaces in one string has an exact match in another string 0ms
+   ✓ hasExactMatch > handles input with name2 0ms
+   ✓ hasExactMatch > handles input with single word 0ms
+   ✓ hasExactMatch > handles empty string input 0ms
+   ✓ hasCommonWord > checks if two strings contain the exact same word 0ms
+   ✓ hasCommonWord > handles input with multiple common words 0ms
+   ✓ hasCommonWord > handles input with no common words 0ms
+   ✓ hasCommonWord > handles empty string input 0ms
+   ✓ formatUKPostcode > formats UK postcode 0ms
+   ✓ formatUKPostcode > handles invalid postcode 0ms
+   ✓ formatUKPostcode > handles lowercase input 0ms
+   ✓ formatUKPostcode > handles empty string input 0ms
+   ✓ isOnlyWords > checks if string contains only words (letters) 0ms
+   ✓ isOnlyWords > handles input with spaces 0ms
+   ✓ isOnlyWords > handles empty string input 0ms
+   ✓ isOnlyWords > handles input with special characters 0ms
+   ✓ compareLastElements > compares the last elements of two URLs 0ms
+   ✓ compareLastElements > handles input with query parameters 0ms
+   ✓ compareLastElements > handles input with different domains 0ms
+   ✓ compareLastElements > handles empty string input 0ms
+   ✓ convertString > should convert string to uppercase 0ms
+   ✓ convertString > should handle empty string gracefully 0ms
+ ✓ src/server/cookies/partials/paragraphs.test.js (1 test) 6ms
+ ✓ src/server/error/partials/error-404-en.test.js (1 test) 5ms
+ ✓ src/server/data/monitoring-sites.test.js (21 tests) 5ms
+ ✓ src/server/search-location/controller.test.js (6 tests) 5ms
+ ✓ src/server/check-local-air-quality/cy/controller.test.js (3 tests) 3ms
+ ✓ src/server/locations/helpers/transform-summary-keys.test.js (6 tests) 5ms
+ ✓ src/server/privacy/controller.test.js (2 tests) 7ms
+ ✓ src/server/search-location/cy/controller.test.js (4 tests) 4ms
+ ✓ src/server/location-id/helpers/renderLocationNotFoundView.test.js (4 tests) 5ms
+ ❯ src/server/locations/helpers/location-type-util.test.js (13 tests | 1 failed | 2 skipped) 12ms
+   ✓ getLocationNameOrPostcode > returns engScoWal for LOCATION_TYPE_UK 1ms
+   ✓ getLocationNameOrPostcode > returns ni for LOCATION_TYPE_NI 0ms
+   ✓ getLocationNameOrPostcode > returns null for other location types 0ms
+   ✓ handleRedirect > should redirect to the given route with a 301 status code 1ms
+   × getMonth > returns the formatted date index 7ms
+     → [vitest] No "default" export is defined on the "moment-timezone" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   ✓ configureLocationTypeAndRedirects > sets locationNameOrPostcode for LOCATION_TYPE_UK 0ms
+   ✓ configureLocationTypeAndRedirects > sets locationNameOrPostcode for LOCATION_TYPE_NI 0ms
+   ↓ configureLocationTypeAndRedirects > redirects to SEARCH_LOCATION_ROUTE_CY for Welsh language
+   ↓ configureLocationTypeAndRedirects > redirects to SEARCH_LOCATION_ROUTE_EN for English path
+   ✓ filteredAndSelectedLocationType > inserts space for full postcodes without space 0ms
+   ✓ filteredAndSelectedLocationType > redirects for missing userLocation and LOCATION_TYPE_UK 1ms
+   ✓ filteredAndSelectedLocationType > redirects for missing userLocation and LOCATION_TYPE_NI 0ms
+   ✓ filteredAndSelectedLocationType > returns null for valid userLocation 0ms
+ ✓ src/server/location-id/helpers/renderLocationDetailsView.test.js (2 tests) 4ms
+ ✓ src/server/particulate-matter-10/cy/controller.test.js (3 tests) 3ms
+ ✓ src/server/location-id/helpers/redirectToWelshLocation.test.js (6 tests) 3ms
+ ✓ src/server/locations/helpers/handle-error-helpers.test.js (5 tests) 4ms
+ ✓ src/server/location-not-found/cy/controller.test.js (2 tests) 3ms
+ ✓ src/server/accessibility/cy/controller.test.js (3 tests) 3ms
+ ✓ src/server/home/controller.test.js (2 tests) 4ms
+ ✓ src/server/data/constants.test.js (9 tests) 3ms
+ ✓ src/server/cookies/controller.test.js (3 tests) 3ms
+ ✓ src/server/location-id/helpers/handleSearchTermsRedirection.test.js (5 tests) 3ms
+ ✓ src/server/sulphur-dioxide/cy/controller.test.js (2 tests) 3ms
+ ✓ src/server/data/cy/monitoring-sites.test.js (12 tests) 2ms
+ ✓ src/config/nunjucks/filters/format-date.test.js (2 tests) 4ms
+ ✓ src/server/location-not-found/controller.test.js (3 tests | 1 skipped) 4ms
+ ✓ src/server/multiple-results/cy/controller.test.js (2 tests) 2ms
+ ✓ src/server/nitrogen-dioxide/controller.test.js (2 tests) 3ms
+ ✓ src/server/home/cy/routes.test.js (1 test) 2ms
+ ✓ src/server/locations/helpers/generate-title-data.test.js (2 tests) 3ms
+ ✓ src/server/locations/helpers/show-location-page.test.js (3 tests) 3ms
+ ✓ src/server/ozone/controller.test.js (2 tests) 4ms
+ ✓ src/server/nitrogen-dioxide/cy/controller.test.js (3 tests) 3ms
+ ✓ src/server/locations/index.test.js (4 tests) 4ms
+ ✓ src/server/locations/helpers/gazetteer-util.test.js (11 tests) 3ms
+ ✓ src/server/accessibility/controller.test.js (3 tests) 4ms
+ ✓ src/server/privacy/cy/controller.test.js (3 tests) 3ms
+stderr | src/helpers/testRedisConnection.test.js > testRedisConnection > should return false when Redis connection fails
+Redis connection test failed: Connection failed
+
+stderr | src/helpers/testRedisConnection.test.js > testRedisConnection > should handle Redis ping timeout gracefully
+Redis connection test failed: Timeout
+
+stderr | src/helpers/testRedisConnection.test.js > testRedisConnection > should disconnect Redis client even if ping fails
+Redis connection test failed: Network error
+
+ ✓ src/helpers/testRedisConnection.test.js (4 tests) 3ms
+ ✓ src/server/particulate-matter-25/cy/controller.test.js (3 tests) 3ms
+ ✓ src/server/ozone/cy/controller.test.js (3 tests) 3ms
+ ✓ src/server/sulphur-dioxide/controller.test.js (2 tests) 3ms
+ ✓ src/server/accessibility/routes.test.js (1 test) 2ms
+ ✓ src/server/locations/helpers/get-postcode-type.test.js (23 tests) 3ms
+ ✓ src/server/particulate-matter-25/controller.test.js (2 tests) 4ms
+ ✓ src/server/accessibility/cy/routes.test.js (1 test) 2ms
+ ✓ src/server/location-not-found/cy/index.test.js (1 test) 2ms
+ ✓ src/server/location-id/index.test.js (2 tests) 3ms
+ ✓ src/server/locations/helpers/get-ni-places.test.js (2 tests) 3ms
+ ✓ src/server/particulate-matter-10/controller.test.js (2 tests) 3ms
+ ✓ src/server/locations/helpers/get-ni-single-data.test.js (7 tests | 1 skipped) 2ms
+ ✓ src/server/check-local-air-quality/controller.test.js (2 tests) 3ms
+ ✓ src/server/locations/helpers/error-input-and-redirect.test.js (2 tests) 3ms
+ ✓ src/server/locations/helpers/get-os-places.test.js (2 tests) 3ms
+ ✓ src/server/location-not-found/index.test.js (1 test) 3ms
+ ✓ src/config/nunjucks/globals.test.js (8 tests) 3ms
+ ✓ src/server/location-id/helpers/determineNearestLocation.test.js (2 tests) 3ms
+ ✓ src/server/data/cy/air-quality.test.js (13 tests) 3ms
+ ✓ src/server/locations/helpers/location-util.test.js (6 tests) 5ms
+ ✓ src/server/location-id/helpers/matchLocationId.test.js (2 tests) 3ms
+ ✓ src/server/data/en/air-quality.test.js (13 tests) 3ms
+ ✓ src/server/locations/helpers/reduce-matches.test.js (8 tests | 1 skipped) 3ms
+ ✓ src/server/locations/helpers/filter-by-postcode.test.js (3 tests) 2ms
+ ✓ src/server/data/en/monitoring-sites.test.js (12 tests) 2ms
+ ✓ src/server/locations/helpers/get-search-terms-from-url.test.js (7 tests) 3ms
+ ✓ src/server/locations/helpers/pollutant-level-calculation.test.js (6 tests) 2ms
+ ✓ src/server/multiple-results/cy/index.test.js (1 test) 2ms
+ ✓ src/server/data/air-quality.test.js (11 tests) 2ms
+ ✓ src/server/locations/helpers/cy/pollutant-level-calculation.test.js (6 tests) 2ms
+ ✓ src/server/locations/helpers/routes-titles-util.test.js (4 tests) 2ms
+ ✓ src/server/locations/helpers/search-terms-unitary.test.js (20 tests | 4 skipped) 2ms
+ ✓ src/server/locations/helpers/convert-first-letter-into-upper-case.test.js (8 tests) 4ms
+ ✓ src/server/locations/helpers/air-quality-values.test.js (5 tests) 2ms
+ ✓ src/server/locations/helpers/search-terms-borough.test.js (16 tests | 5 skipped) 2ms
+ ✓ src/server/accessibility/cy/index.test.js (1 test) 2ms
+ ✓ src/config/nunjucks/context/build-navigation.test.js (2 tests) 2ms
+ ✓ src/server/locations/helpers/filter-matches.test.js (2 tests) 2ms
+ ✓ src/server/check-local-air-quality/index.test.js (1 test) 2ms
+ ✓ src/server/check-local-air-quality/cy/routes.test.js (1 test) 2ms
+ ✓ src/server/locations/helpers/handle-single-match-helper.test.js (2 tests) 2ms
+ ✓ src/server/location-id/helpers/helpers.test.js (2 tests) 1ms
+ ✓ src/server/locations/helpers/filter-by-search-terms.test.js (2 tests) 2ms
+ ✓ src/server/locations/helpers/get-nearest-location.test.js (2 tests) 2ms
+ ✓ src/server/location-id/helpers/determineLocationType.test.js (4 tests) 2ms
+ ✓ src/server/check-local-air-quality/routes.test.js (1 test) 2ms
+ ✓ src/server/home/routes.test.js (1 test) 2ms
+ ✓ src/config/nunjucks/globals/index.test.js (5 tests) 3ms
+ ✓ src/server/accessibility/cy/constants.test.js (2 tests) 2ms
+ ✓ src/server/home/cy/index.test.js (1 test) 1ms
+ ✓ src/server/accessibility/index.test.js (1 test) 2ms
+ ✓ src/server/help/controller.test.js (2 tests) 2ms
+ ✓ src/server/cookies/cy/index.test.js (1 test) 1ms
+ ✓ src/server/cookies/index.test.js (1 test) 1ms
+ ✓ src/server/home/index.test.js (1 test) 2ms
+ ✓ src/server/check-local-air-quality/cy/index.test.js (1 test) 1ms
+ ✓ src/server/error/controller.test.js (2 tests) 1ms
+ ✓ src/server/cookies/cy/routes.test.js (1 test) 1ms
+ ✓ src/server/cookies/routes.test.js (1 test) 1ms
+ ❯ src/server/locations/helpers/create-bookmark-ids.test.js (7 tests | 5 failed) 10ms
+   ✓ createURLRouteBookmarks > creates URL route bookmarks with valid postcode 1ms
+   × createURLRouteBookmarks > creates URL route bookmarks with district borough and name2 7ms
+     → expected 'name2_district' to be 'name2-district' // Object.is equality
+   × createURLRouteBookmarks > creates URL route bookmarks with district borough and name1 0ms
+     → expected 'name1_district' to be 'name1-district' // Object.is equality
+   × createURLRouteBookmarks > creates URL route bookmarks with county unitary and name2 0ms
+     → expected 'name2_county' to be 'name2-county' // Object.is equality
+   × createURLRouteBookmarks > creates URL route bookmarks with county unitary and name1 0ms
+     → expected 'name1_county' to be 'name1-county' // Object.is equality
+   ✓ createURLRouteBookmarks > handles empty selectedMatchesAddedIDs array 0ms
+   × createURLRouteBookmarks > handles missing GAZETTEER_ENTRY properties 0ms
+     → expected 'name1_undefined' to be 'name1' // Object.is equality
+ ❯ src/server/locations/helpers/get-nearest.location.test.js (4 tests | 4 failed) 8ms
+   × getNearestLocation > should return nearest location data for English language 4ms
+     → expected Promise{…} to have property "forecastNum"
+   × getNearestLocation > should return nearest location data for Welsh language 0ms
+     → expected Promise{…} to have property "forecastNum"
+   × getNearestLocation > should handle empty matches array 2ms
+     → expected Promise{…} to deeply equal { forecastNum: +0, …(3) }
+   × getNearestLocation > should filter and sort nearest locations correctly 1ms
+     → Target cannot be null or undefined.
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/server/locations/helpers/convert-string.test.js > splitAndCheckSpecificWords > checks if source string contains exact first two words or last word
+AssertionError: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ src/server/locations/helpers/convert-string.test.js:215:7
+    213|     expect(
+    214|       splitAndCheckSpecificWords('HELLO WORLD EXAMPLE', 'world example…
+    215|     ).toBe(false)
+       |       ^
+    216|   })
+    217| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
+
+ FAIL  src/server/locations/helpers/convert-string.test.js > splitAndCheckSpecificWords > handles input with three words
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ src/server/locations/helpers/convert-string.test.js:221:7
+    219|     expect(
+    220|       splitAndCheckSpecificWords('HELLO WORLD EXAMPLE', 'hello world e…
+    221|     ).toBe(true)
+       |       ^
+    222|     expect(
+    223|       splitAndCheckSpecificWords('HELLO WORLD EXAMPLE', 'hello world')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯
+
+ FAIL  src/server/locations/helpers/create-bookmark-ids.test.js > createURLRouteBookmarks > creates URL route bookmarks with district borough and name2
+AssertionError: expected 'name2_district' to be 'name2-district' // Object.is equality
+
+Expected: [32m"name2[7m-[27mdistrict"[39m
+Received: [31m"name2[7m_[27mdistrict"[39m
+
+ ❯ src/server/locations/helpers/create-bookmark-ids.test.js:50:66
+     48|     ]
+     49|     const result = createURLRouteBookmarks(selectedMatchesAddedIDs)
+     50|     expect(result.selectedMatchesAddedIDs[0].GAZETTEER_ENTRY.ID).toBe(
+       |                                                                  ^
+     51|       'name2-district'
+     52|     )
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/12]⎯
+
+ FAIL  src/server/locations/helpers/create-bookmark-ids.test.js > createURLRouteBookmarks > creates URL route bookmarks with district borough and name1
+AssertionError: expected 'name1_district' to be 'name1-district' // Object.is equality
+
+Expected: [32m"name1[7m-[27mdistrict"[39m
+Received: [31m"name1[7m_[27mdistrict"[39m
+
+ ❯ src/server/locations/helpers/create-bookmark-ids.test.js:68:66
+     66|     ]
+     67|     const result = createURLRouteBookmarks(selectedMatchesAddedIDs)
+     68|     expect(result.selectedMatchesAddedIDs[0].GAZETTEER_ENTRY.ID).toBe(
+       |                                                                  ^
+     69|       'name1-district'
+     70|     )
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/12]⎯
+
+ FAIL  src/server/locations/helpers/create-bookmark-ids.test.js > createURLRouteBookmarks > creates URL route bookmarks with county unitary and name2
+AssertionError: expected 'name2_county' to be 'name2-county' // Object.is equality
+
+Expected: [32m"name2[7m-[27mcounty"[39m
+Received: [31m"name2[7m_[27mcounty"[39m
+
+ ❯ src/server/locations/helpers/create-bookmark-ids.test.js:86:66
+     84|     ]
+     85|     const result = createURLRouteBookmarks(selectedMatchesAddedIDs)
+     86|     expect(result.selectedMatchesAddedIDs[0].GAZETTEER_ENTRY.ID).toBe(
+       |                                                                  ^
+     87|       'name2-county'
+     88|     )
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/12]⎯
+
+ FAIL  src/server/locations/helpers/create-bookmark-ids.test.js > createURLRouteBookmarks > creates URL route bookmarks with county unitary and name1
+AssertionError: expected 'name1_county' to be 'name1-county' // Object.is equality
+
+Expected: [32m"name1[7m-[27mcounty"[39m
+Received: [31m"name1[7m_[27mcounty"[39m
+
+ ❯ src/server/locations/helpers/create-bookmark-ids.test.js:104:66
+    102|     ]
+    103|     const result = createURLRouteBookmarks(selectedMatchesAddedIDs)
+    104|     expect(result.selectedMatchesAddedIDs[0].GAZETTEER_ENTRY.ID).toBe(
+       |                                                                  ^
+    105|       'name1-county'
+    106|     )
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/12]⎯
+
+ FAIL  src/server/locations/helpers/create-bookmark-ids.test.js > createURLRouteBookmarks > handles missing GAZETTEER_ENTRY properties
+AssertionError: expected 'name1_undefined' to be 'name1' // Object.is equality
+
+Expected: [32m"name1"[39m
+Received: [31m"name1[7m_undefined[27m"[39m
+
+ ❯ src/server/locations/helpers/create-bookmark-ids.test.js:120:66
+    118|     ]
+    119|     const result = createURLRouteBookmarks(selectedMatchesAddedIDs)
+    120|     expect(result.selectedMatchesAddedIDs[0].GAZETTEER_ENTRY.ID).toBe(…
+       |                                                                  ^
+    121|   })
+    122| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/12]⎯
+
+ FAIL  src/server/locations/helpers/get-nearest.location.test.js > getNearestLocation > should return nearest location data for English language
+AssertionError: expected Promise{…} to have property "forecastNum"
+ ❯ src/server/locations/helpers/get-nearest.location.test.js:69:20
+     67|       lang
+     68|     )
+     69|     expect(result).toHaveProperty('forecastNum')
+       |                    ^
+     70|     expect(result).toHaveProperty('nearestLocationsRange')
+     71|     expect(result).toHaveProperty('airQuality')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/12]⎯
+
+ FAIL  src/server/locations/helpers/get-nearest.location.test.js > getNearestLocation > should return nearest location data for Welsh language
+AssertionError: expected Promise{…} to have property "forecastNum"
+ ❯ src/server/locations/helpers/get-nearest.location.test.js:85:20
+     83|       lang
+     84|     )
+     85|     expect(result).toHaveProperty('forecastNum')
+       |                    ^
+     86|     expect(result).toHaveProperty('nearestLocationsRange')
+     87|     expect(result).toHaveProperty('airQuality')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/12]⎯
+
+ FAIL  src/server/locations/helpers/get-nearest.location.test.js > getNearestLocation > should handle empty matches array
+AssertionError: expected Promise{…} to deeply equal { forecastNum: +0, …(3) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- {[39m
+[32m-   "airQuality": undefined,[39m
+[32m-   "forecastNum": 0,[39m
+[32m-   "latlon": {},[39m
+[32m-   "nearestLocationsRange": [],[39m
+[32m- }[39m
+[31m+ Promise {}[39m
+
+ ❯ src/server/locations/helpers/get-nearest.location.test.js:101:20
+     99|       lang
+    100|     )
+    101|     expect(result).toEqual({
+       |                    ^
+    102|       forecastNum: 0,
+    103|       nearestLocationsRange: [],
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/12]⎯
+
+ FAIL  src/server/locations/helpers/get-nearest.location.test.js > getNearestLocation > should filter and sort nearest locations correctly
+AssertionError: Target cannot be null or undefined.
+ ❯ src/server/locations/helpers/get-nearest.location.test.js:130:42
+    128|       lang
+    129|     )
+    130|     expect(result.nearestLocationsRange).toHaveLength(1)
+       |                                          ^
+    131|     expect(result.nearestLocationsRange[0]).toHaveProperty(
+    132|       'pollutants.NO2.value',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/12]⎯
+
+ FAIL  src/server/locations/helpers/location-type-util.test.js > getMonth > returns the formatted date index
+Error: [vitest] No "default" export is defined on the "moment-timezone" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+vi[33m.[39m[34mmock[39m([35mimport[39m([32m"moment-timezone"[39m)[33m,[39m [35masync[39m (importOriginal) [33m=>[39m {
+  [35mconst[39m actual [33m=[39m [35mawait[39m [34mimportOriginal[39m()
+  [35mreturn[39m {
+    [33m...[39mactual[33m,[39m
+    [90m// your mocked methods[39m
+  }
+})
+
+ ❯ Module.getMonth src/server/locations/helpers/location-type-util.js:28:25
+     26| 
+     27| const getMonth = () => {
+     28|   const formattedDate = moment().format('DD MMMM YYYY').split(' ')
+       |                         ^
+     29|   const getFormattedDate = calendarEnglish.findIndex(
+     30|     (item) => item.indexOf(formattedDate[1]) !== -1
+ ❯ src/server/locations/helpers/location-type-util.test.js:66:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/12]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 3 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+TypeError: Cannot read properties of undefined (reading 'error')
+ ❯ fetchMeasurements src/server/locations/helpers/fetch-data.js:241:12
+    239|     return await fetchDataFromApi(measurementsAPIurl)
+    240|   } catch (err) {
+    241|     logger.error(`Unexpected error in fetchMeasurements: ${err.message…
+       |            ^
+    242|     return []
+    243|   }
+ ❯ Module.getNearestLocation src/server/locations/helpers/get-nearest-location.js:195:48
+ ❯ src/server/locations/helpers/get-nearest.location.test.js:61:20
+ ❯ node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+ ❯ node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+ ❯ node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+ ❯ runWithTimeout node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10
+ ❯ runTest node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12
+ ❯ processTicksAndRejections node:internal/process/task_queues:105:5
+
+This error originated in "src/server/locations/helpers/get-nearest.location.test.js" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+TypeError: Cannot read properties of undefined (reading 'error')
+ ❯ fetchMeasurements src/server/locations/helpers/fetch-data.js:241:12
+    239|     return await fetchDataFromApi(measurementsAPIurl)
+    240|   } catch (err) {
+    241|     logger.error(`Unexpected error in fetchMeasurements: ${err.message…
+       |            ^
+    242|     return []
+    243|   }
+ ❯ Module.getNearestLocation src/server/locations/helpers/get-nearest-location.js:195:48
+ ❯ src/server/locations/helpers/get-nearest.location.test.js:77:20
+ ❯ node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+ ❯ node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+ ❯ node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+ ❯ runWithTimeout node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10
+ ❯ runTest node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12
+ ❯ processTicksAndRejections node:internal/process/task_queues:105:5
+
+This error originated in "src/server/locations/helpers/get-nearest.location.test.js" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+TypeError: Cannot read properties of undefined (reading 'error')
+ ❯ fetchMeasurements src/server/locations/helpers/fetch-data.js:241:12
+    239|     return await fetchDataFromApi(measurementsAPIurl)
+    240|   } catch (err) {
+    241|     logger.error(`Unexpected error in fetchMeasurements: ${err.message…
+       |            ^
+    242|     return []
+    243|   }
+ ❯ Module.getNearestLocation src/server/locations/helpers/get-nearest-location.js:195:48
+ ❯ src/server/locations/helpers/get-nearest.location.test.js:122:20
+ ❯ node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+ ❯ node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+ ❯ node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+ ❯ runWithTimeout node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10
+ ❯ runTest node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12
+ ❯ processTicksAndRejections node:internal/process/task_queues:105:5
+
+This error originated in "src/server/locations/helpers/get-nearest.location.test.js" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  4 failed | 151 passed (155)
+      Tests  12 failed | 800 passed | 18 skipped (830)
+     Errors  3 errors
+   Start at  12:48:34
+   Duration  11.53s (transform 1.48s, setup 0ms, collect 27.55s, tests 2.64s, environment 18ms, prepare 24.53s)
+

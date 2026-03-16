@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✅ FIXED: 640px Mobile Equal Margins</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        /* Simulate the page layout structure exactly */
+        .page-container {
+            width: 100vw;
+            min-height: 100vh;
+            background: linear-gradient(45deg, #f0f8ff 0%, #e8f4f8 100%);
+            padding: 16px 0;
+            box-sizing: border-box;
+        }
+        
+        /* Main container simulating govuk-width-container */
+        .main-container {
+            max-width: 960px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        /* Grid row simulation */
+        .grid-row {
+            display: block;
+            margin-bottom: 20px;
+        }
+        
+        /* Two-thirds column simulation */
+        .two-thirds-column {
+            max-width: 66.66%;
+            background-color: #e8f4f8;
+            padding: 20px;
+            border: 2px dashed #0066cc;
+            position: relative;
+            box-sizing: border-box;
+        }
+        
+        /* CORRECTED: Tabs container with proper 640px mobile threshold */
+        .tabs-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 2px solid #0066cc;
+            background-color: white;
+            position: relative;
+            
+            /* Smart responsive width with proper centering */
+            width: min(650px, 100vw - 32px);
+            max-width: 650px;
+            min-width: 320px;
+            
+            /* Default: auto margins for centering */
+            margin-left: auto;
+            margin-right: auto;
+            
+            /* Transition for visual feedback */
+            transition: all 0.3s ease;
+        }
+        
+        /* Desktop: Fixed width with auto centering */
+        @media (min-width: 682px) {
+            .tabs-container {
+                width: 650px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+        
+        /* Tablet range: Dynamic width with auto centering */
+        @media (max-width: 681px) and (min-width: 641px) {
+            .tabs-container {
+                width: calc(100vw - 32px);
+                max-width: 650px;
+                margin-left: auto;
+                margin-right: auto;
+                border-color: #ff8800; /* Visual indicator for tablet */
+            }
+        }
+        
+        /* FIXED: Mobile (640px and below): explicit equal margins */
+        @media (max-width: 640px) {
+            .tabs-container {
+                width: calc(100vw - 32px);
+                max-width: 650px;
+                margin-left: 16px;  /* Explicit equal margins for mobile */
+                margin-right: 16px; /* Explicit equal margins for mobile */
+                border-color: #ff0066; /* Visual indicator for mobile */
+            }
+        }
+        
+        /* Content inside tabs */
+        .tabs-content {
+            background: linear-gradient(to right, #00ff00 0%, #ffff00 30%, #ff8000 60%, #ff0000 100%);
+            height: 100px;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+            position: relative;
+        }
+        
+        /* Margin indicators */
+        .margin-indicator {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255,0,0,0.7);
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+            z-index: 10;
+            border: 1px solid #ff0000;
+        }
+        
+        .margin-left {
+            left: -40px;
+        }
+        
+        .margin-right {
+            right: -40px;
+        }
+        
+        /* Viewport info display */
+        .viewport-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0,0,0,0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 1000;
+            min-width: 240px;
+        }
+        
+        .info-panel {
+            background-color: #f0f8ff;
+            border: 1px solid #0066cc;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .threshold-indicators {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .threshold {
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .desktop { background-color: #e6f3ff; border: 2px solid #0066cc; }
+        .tablet { background-color: #fff3e6; border: 2px solid #ff8800; }
+        .mobile { background-color: #ffe6f3; border: 2px solid #ff0066; }
+        
+        .measurement {
+            font-family: monospace;
+            font-weight: bold;
+            color: #0066cc;
+        }
+        
+        .fixed { color: #00aa00; font-weight: bold; }
+        .problem { color: #ff0000; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="viewport-info" id="viewportInfo">
+        <strong>🎯 640PX MOBILE THRESHOLD</strong><br>
+        Viewport: <span id="viewportWidth"></span>px<br>
+        Mode: <span id="currentMode"></span><br>
+        <hr style="margin: 8px 0; border: 1px solid #666;">
+        <strong>📐 MARGINS</strong><br>
+        Left: <span id="leftMargin"></span><br>
+        Right: <span id="rightMargin"></span><br>
+        <hr style="margin: 8px 0; border: 1px solid #666;">
+        <strong>🔧 STATUS</strong><br>
+        Equality: <span id="equalityStatus"></span><br>
+        Threshold: <span id="thresholdStatus"></span>
+    </div>
+    
+    <div class="page-container">
+        <div class="main-container">
+            <h1>✅ FIXED: 640px Mobile Equal Margins</h1>
+            
+            <div class="info-panel">
+                <h3>🎯 Problem & Corrected Solution</h3>
+                <p><strong>Issue:</strong> I accidentally applied explicit mobile margins to 681px instead of the 640px mobile threshold.</p>
+                <p><strong>Fixed:</strong> Moved explicit equal margins to the correct ≤640px mobile breakpoint!</p>
+            </div>
+            
+            <div class="threshold-indicators">
+                <div class="threshold desktop">
+                    <strong>🖥️ DESKTOP</strong><br>
+                    ≥682px<br>
+                    <small>Fixed 650px + auto margins</small>
+                </div>
+                <div class="threshold tablet">
+                    <strong>📱 TABLET</strong><br>
+                    641px-681px<br>
+                    <small>Dynamic + auto margins</small>
+                </div>
+                <div class="threshold mobile">
+                    <strong>📱 MOBILE</strong><br>
+                    ≤640px<br>
+                    <small>Dynamic + 16px margins</small>
+                </div>
+            </div>
+            
+            <div class="grid-row">
+                <div class="two-thirds-column">
+                    <h2>Two-Thirds Column Container</h2>
+                    <p>Border color changes: <span style="color: #0066cc;">🔵 Blue = Desktop</span>, <span style="color: #ff8800;">🟠 Orange = Tablet</span>, <span style="color: #ff0066;">🔴 Pink = Mobile</span></p>
+                    
+                    <div class="tabs-container" id="tabsContainer">
+                        <div class="margin-indicator margin-left" id="leftIndicator">L: <span id="leftValue">0px</span></div>
+                        <div class="margin-indicator margin-right" id="rightIndicator">R: <span id="rightValue">0px</span></div>
+                        
+                        <h3>📊 DAQI Tabs Component</h3>
+                        <p>Mobile equal margins now work correctly at ≤640px!</p>
+                        
+                        <div class="tabs-content">
+                            <div>
+                                <strong>Responsive Component</strong><br>
+                                <span class="measurement" id="componentWidth">Width: 650px</span><br>
+                                <span class="measurement" id="modeDisplay">Mode: Desktop</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-panel">
+                        <h3>🧪 Test the 640px Threshold:</h3>
+                        <ol>
+                            <li><strong>Desktop (≥682px):</strong> Blue border, fixed 650px, auto margins</li>
+                            <li><strong>Tablet (641px-681px):</strong> Orange border, dynamic width, auto margins</li>
+                            <li><strong>Mobile (≤640px):</strong> Pink border, dynamic width, <strong>16px equal margins</strong></li>
+                            <li><strong>Check equality:</strong> Margin indicators should be green when equal</li>
+                        </ol>
+                        <div class="measurement" id="currentMeasurement">
+                            Watch the viewport info panel for real-time updates! ↗️
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-panel">
+                <h3>🔧 Corrected CSS Implementation:</h3>
+                <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto;"><code>// CORRECTED: Fixed the 640px mobile threshold
+.defra-aq-tabs.daqi-tabs {
+    width: min(650px, 100vw - 32px);
+    margin-left: auto;   // Default centering
+    margin-right: auto;  // Default centering
+    
+    @media (min-width: 682px) {
+        width: 650px; // Desktop fixed width
+    }
+    
+    @media (max-width: 681px) and (min-width: 641px) {
+        width: calc(100vw - 32px); // Tablet dynamic
+        // Uses auto margins for centering
+    }
+    
+    // ✅ FIXED: Mobile equal margins at correct threshold
+    @media (max-width: 640px) {
+        width: calc(100vw - 32px);
+        margin-left: 16px;   // Explicit equal margins
+        margin-right: 16px;  // Explicit equal margins
+    }
+}</code></pre>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function updateViewportInfo() {
+            const width = window.innerWidth;
+            const tabsContainer = document.getElementById('tabsContainer');
+            const widthElement = document.getElementById('viewportWidth');
+            const currentModeElement = document.getElementById('currentMode');
+            const leftMarginElement = document.getElementById('leftMargin');
+            const rightMarginElement = document.getElementById('rightMargin');
+            const equalityStatusElement = document.getElementById('equalityStatus');
+            const thresholdStatusElement = document.getElementById('thresholdStatus');
+            const componentWidthElement = document.getElementById('componentWidth');
+            const modeDisplayElement = document.getElementById('modeDisplay');
+            const leftValueElement = document.getElementById('leftValue');
+            const rightValueElement = document.getElementById('rightValue');
+            
+            widthElement.textContent = width;
+            
+            // Get computed style and position
+            const containerRect = tabsContainer.getBoundingClientRect();
+            const parentRect = tabsContainer.parentElement.getBoundingClientRect();
+            
+            // Calculate margins
+            const leftMargin = Math.round(containerRect.left - parentRect.left);
+            const rightMargin = Math.round(parentRect.right - containerRect.right);
+            
+            leftMarginElement.textContent = leftMargin + 'px';
+            rightMarginElement.textContent = rightMargin + 'px';
+            leftValueElement.textContent = leftMargin + 'px';
+            rightValueElement.textContent = rightMargin + 'px';
+            
+            // Determine current mode based on viewport
+            let mode, borderColor;
+            if (width >= 682) {
+                mode = '🖥️ Desktop';
+                borderColor = '#0066cc';
+                thresholdStatusElement.textContent = '≥682px (Desktop)';
+                thresholdStatusElement.style.color = '#0066cc';
+            } else if (width >= 641) {
+                mode = '📱 Tablet';
+                borderColor = '#ff8800';
+                thresholdStatusElement.textContent = '641px-681px (Tablet)';
+                thresholdStatusElement.style.color = '#ff8800';
+            } else {
+                mode = '📱 Mobile';
+                borderColor = '#ff0066';
+                thresholdStatusElement.textContent = '≤640px (Mobile - FIXED!)';
+                thresholdStatusElement.style.color = '#ff0066';
+            }
+            
+            currentModeElement.textContent = mode;
+            modeDisplayElement.textContent = 'Mode: ' + mode;
+            
+            // Check equality - mobile should have explicit 16px margins
+            const marginDifference = Math.abs(leftMargin - rightMargin);
+            if (width <= 640) {
+                // Mobile: should have 16px margins
+                if (Math.abs(leftMargin - 16) <= 1 && Math.abs(rightMargin - 16) <= 1 && marginDifference <= 1) {
+                    equalityStatusElement.textContent = '✅ Equal (16px each)';
+                    equalityStatusElement.style.color = '#00aa00';
+                } else {
+                    equalityStatusElement.textContent = '❌ Mobile margins broken';
+                    equalityStatusElement.style.color = '#ff0000';
+                }
+            } else {
+                // Desktop/Tablet: auto margins should be equal
+                if (marginDifference <= 1) {
+                    equalityStatusElement.textContent = '✅ Equal (auto)';
+                    equalityStatusElement.style.color = '#00aa00';
+                } else {
+                    equalityStatusElement.textContent = '❌ Unequal (' + marginDifference + 'px diff)';
+                    equalityStatusElement.style.color = '#ff0000';
+                }
+            }
+            
+            // Update component width display
+            componentWidthElement.textContent = 'Width: ' + Math.round(containerRect.width) + 'px';
+        }
+        
+        // Update on load and resize
+        updateViewportInfo();
+        window.addEventListener('resize', updateViewportInfo);
+        
+        // Update every 100ms for smooth feedback during dragging
+        setInterval(updateViewportInfo, 100);
+        
+        // Visual feedback for margin equality
+        function highlightMarginEquality() {
+            const width = window.innerWidth;
+            const leftMargin = parseInt(document.getElementById('leftValue').textContent);
+            const rightMargin = parseInt(document.getElementById('rightValue').textContent);
+            const difference = Math.abs(leftMargin - rightMargin);
+            
+            const leftIndicator = document.getElementById('leftIndicator');
+            const rightIndicator = document.getElementById('rightIndicator');
+            
+            let isCorrect = false;
+            
+            if (width <= 640) {
+                // Mobile: should have 16px margins
+                isCorrect = (Math.abs(leftMargin - 16) <= 1 && Math.abs(rightMargin - 16) <= 1 && difference <= 1);
+            } else {
+                // Desktop/Tablet: auto margins should be equal
+                isCorrect = (difference <= 1);
+            }
+            
+            if (isCorrect) {
+                leftIndicator.style.backgroundColor = 'rgba(0,170,0,0.8)';
+                rightIndicator.style.backgroundColor = 'rgba(0,170,0,0.8)';
+                leftIndicator.style.borderColor = '#00aa00';
+                rightIndicator.style.borderColor = '#00aa00';
+            } else {
+                leftIndicator.style.backgroundColor = 'rgba(255,0,0,0.8)';
+                rightIndicator.style.backgroundColor = 'rgba(255,0,0,0.8)';
+                leftIndicator.style.borderColor = '#ff0000';
+                rightIndicator.style.borderColor = '#ff0000';
+            }
+        }
+        
+        // Update visual indicators
+        setInterval(highlightMarginEquality, 200);
+    </script>
+</body>
+</html>

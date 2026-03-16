@@ -15,7 +15,6 @@ export function getCacheEngine(engine) {
   const logger = createLogger()
 
   if (engine === 'redis') {
-    logger.info('Using Redis session cache')
     const redisClient = buildRedisClient(config.get('redis'))
     sessionRedisClient = redisClient
     return new CatboxRedis({ client: redisClient })
@@ -30,6 +29,5 @@ export function getCacheEngine(engine) {
   }
 
   const maxByteSize = config.get('session.cache.memory.maxByteSize')
-  logger.info('Using Catbox Memory session cache')
   return new CatboxMemory({ maxByteSize })
 }

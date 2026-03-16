@@ -2,6 +2,11 @@ name: Publish Hot Fix
 
 on:
   workflow_dispatch:
+    inputs:
+      custom_tag:
+        description: "Optional explicit tag (for example: 0.685.4). Leave blank to auto-bump."
+        required: false
+        default: ""
 
 permissions:
   id-token: write
@@ -33,6 +38,19 @@ jobs:
           npm run format:check
           npm run lint
           npm test
+
+      - name: Normalise local tag ref for tag-based runs
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          # ''
+          git tag -d "${GITHUB_REF_NAME}" || true
+          git fetch --tags --force
+
+      - name: Set explicit hotfix tag
+        if: ${{ github.event.inputs.custom_tag != '' }}
+        run: |
+          # ''
+          echo "CUSTOM_TAG=${{ github.event.inputs.custom_tag }}" >> "$GITHUB_ENV"
 
       - name: Publish Hot Fix
         uses: DEFRA/cdp-build-action/build-hotfix@main

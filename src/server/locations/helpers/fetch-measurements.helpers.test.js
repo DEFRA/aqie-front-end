@@ -18,9 +18,6 @@ describe('fetchMeasurementsTestMode', () => {
     const logger = { info: vi.fn() }
     const result = fetchMeasurementsTestMode(() => true, logger)
     expect(result).toEqual([{ measurement: 'mock-measurement' }])
-    expect(logger.info).toHaveBeenCalledWith(
-      'Test mode: fetchMeasurements returning mock measurements'
-    )
   })
   it('returns null if not in test mode', () => {
     const logger = { info: vi.fn() }

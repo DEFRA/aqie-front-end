@@ -2,8 +2,6 @@ import { URL } from 'node:url'
 import { ProxyAgent } from 'undici'
 import { HttpsProxyAgent } from 'https-proxy-agent'
 import { config } from '../../../config/index.js'
-import { createLogger } from './logging/logger.js'
-const logger = createLogger()
 /**
  * @typedef Proxy
  * @property {URL} url
@@ -26,7 +24,6 @@ function provideProxy() {
   const httpsPort = 443
   // The url.protocol value always has a colon at the end
   const port = url.protocol.toLowerCase() === 'http:' ? httpPort : httpsPort
-  logger.debug(`Proxy set up using ${url.origin}:${port}`)
   return {
     url,
     port,
@@ -50,9 +47,6 @@ function proxyFetch(url, options) {
   if (!proxy) {
     return fetch(url, options)
   }
-  logger.debug(
-    `Fetching: ${url.toString()} via the proxy: ${proxy?.url.origin}:${proxy.port}`
-  )
   return fetch(url, {
     ...options,
     // @ts-expect-error dispatcher has not been added to types

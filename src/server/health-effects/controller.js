@@ -43,14 +43,6 @@ const healthEffectsHandler = (request, h, customContent = undefined) => {
         text: viewModel.backLinkText,
         href: viewModel.backLinkUrl
       }
-      logger.debug(
-        {
-          routePath: request.path,
-          readableName,
-          backLinkUrl: viewModel.backlink.href
-        },
-        "'' Rendering health-effects CY" // ''
-      )
       return h.view('health-effects/cy/index', viewModel) // ''
     }
 
@@ -72,14 +64,6 @@ const healthEffectsHandler = (request, h, customContent = undefined) => {
         backLinkText: viewModel.backLinkText,
         backLinkUrl: viewModel.backLinkUrl
       })
-      logger.debug(
-        {
-          routePath: request.path,
-          readableName,
-          backLinkUrl: viewModel.backlink.href
-        },
-        "'' Rendering health-effects EN" // ''
-      )
       return h.view('health-effects/index', viewModel) // ''
     }
 

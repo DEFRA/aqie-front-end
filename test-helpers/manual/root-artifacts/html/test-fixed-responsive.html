@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fixed Smart Responsive Layout - No Component Changes at 1020px</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .main-container {
+            max-width: 960px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .grid-row {
+            display: block;
+            margin-bottom: 20px;
+        }
+        
+        .two-thirds-column {
+            max-width: 66.66%;
+            background-color: #e8f4f8;
+            padding: 20px;
+            border: 2px dashed #0066cc;
+            position: relative;
+        }
+        
+        /* FIXED: Smart responsive tabs container - no changes at 1020px */
+        .smart-tabs-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 2px solid #0066cc;
+            background-color: white;
+            position: relative;
+            
+            /* Smart responsive width strategy */
+            width: min(650px, 100vw - 32px);
+            max-width: 650px;
+            min-width: 320px;
+            
+            /* Transition for visual feedback */
+            transition: width 0.2s ease;
+        }
+        
+        /* Fine-tune for different viewport ranges */
+        @media (min-width: 682px) {
+            .smart-tabs-container {
+                width: 650px; /* Fixed width when space allows */
+            }
+        }
+        
+        @media (max-width: 681px) {
+            .smart-tabs-container {
+                width: calc(100vw - 64px); /* Dynamic width when space is limited */
+                max-width: 650px;
+            }
+        }
+        
+        /* DAQI component inside */
+        .daqi-component {
+            width: min(590px, 100%);
+            max-width: 590px;
+            min-width: 300px;
+            height: 80px;
+            background: linear-gradient(to right, #00ff00 0%, #ffff00 30%, #ff8000 60%, #ff0000 100%);
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+            transition: width 0.2s ease;
+        }
+        
+        /* Status indicators */
+        .status-indicator {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            padding: 5px 10px;
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-fixed { background-color: #00aa00; }
+        .status-shrinking { background-color: #ff8800; }
+        .status-both-shrinking { background-color: #ff0000; }
+        
+        .info-panel {
+            background-color: #f0f8ff;
+            border: 1px solid #0066cc;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .viewport-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0,0,0,0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 1000;
+            min-width: 200px;
+        }
+        
+        .content-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .comparison-table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        
+        .fixed { color: #00aa00; font-weight: bold; }
+        .changing { color: #ff8800; font-weight: bold; }
+        .shrinking { color: #ff0000; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="viewport-info" id="viewportInfo">
+        <strong>🎯 VIEWPORT STATUS</strong><br>
+        Viewport: <span id="viewportWidth"></span>px<br>
+        Strategy: <span id="strategy"></span><br>
+        <hr style="margin: 10px 0; border: 1px solid #666;">
+        <strong>🔧 JAVASCRIPT BEHAVIOR</strong><br>
+        Adjustments: <span id="adjustments"></span><br>
+        Layout Mode: <span id="layoutMode"></span>
+    </div>
+    
+    <div class="main-container">
+        <h1>✅ FIXED: Smart Responsive Layout</h1>
+        
+        <div class="info-panel">
+            <h3>🎯 Problem SOLVED!</h3>
+            <p><strong>Before:</strong> JavaScript forced layout changes at 1020px, conflicting with CSS responsive strategy.</p>
+            <p><strong>After:</strong> JavaScript is now layout-agnostic - only handles divider positioning, lets CSS handle responsive layout.</p>
+            
+            <h4>Key Changes Made:</h4>
+            <ul>
+                <li>✅ Removed viewport-based layout switching from JavaScript</li>
+                <li>✅ JavaScript now only applies pixel adjustments (+2px, +3px, +5px) for 768px-1019px range</li>
+                <li>✅ CSS smart responsive strategy works uninterrupted</li>
+                <li>✅ Component maintains natural width until space actually runs out</li>
+            </ul>
+        </div>
+        
+        <div class="grid-row">
+            <div class="two-thirds-column">
+                <h2>Two-Thirds Column Container</h2>
+                
+                <div class="smart-tabs-container" id="tabsContainer">
+                    <div class="status-indicator" id="tabsStatus">Fixed</div>
+                    <h3>📊 Smart Tabs Container (650px max)</h3>
+                    <p><strong>Key Fix:</strong> No more forced changes at 1020px!</p>
+                    <ul>
+                        <li><span class="fixed">Above 650px space:</span> Fixed 650px width</li>
+                        <li><span class="changing">Below 650px space:</span> Shrinks with available space</li>
+                        <li><span class="shrinking">Below 590px space:</span> Both components shrink</li>
+                    </ul>
+                    
+                    <div class="daqi-component" id="daqiComponent">
+                        <div class="status-indicator" id="daqiStatus">Fixed</div>
+                        DAQI Component (590px max)
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <h3>📊 Behavior Comparison</h3>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Viewport Range</th>
+                                <th>Before (Problem)</th>
+                                <th>After (Fixed)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1200px → 1020px</td>
+                                <td class="changing">Component forced to change layout</td>
+                                <td class="fixed">Component stays natural size</td>
+                            </tr>
+                            <tr>
+                                <td>1020px → 650px</td>
+                                <td class="changing">Different JS layout mode</td>
+                                <td class="fixed">Smooth CSS-only shrinking</td>
+                            </tr>
+                            <tr>
+                                <td>768px → 1019px</td>
+                                <td class="fixed">Pixel adjustments: +2px, +3px, +5px</td>
+                                <td class="fixed">Same pixel adjustments maintained</td>
+                            </tr>
+                            <tr>
+                                <td>650px → 590px</td>
+                                <td class="shrinking">Component shrinks</td>
+                                <td class="shrinking">Same behavior (correct)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="content-section">
+                    <h3>Health Advice Section</h3>
+                    <p>Additional content that would appear below the tabs...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <h3>🧪 Test Instructions:</h3>
+            <ol>
+                <li><strong>Drag window from wide (1200px) to 1020px:</strong> Watch - NO sudden layout changes!</li>
+                <li><strong>Continue to 650px:</strong> Smooth shrinking of empty space, component stays optimal</li>
+                <li><strong>Resize 768px-1019px range:</strong> Pixel adjustments still work (+2px, +3px, +5px)</li>
+                <li><strong>Below 590px:</strong> Natural proportional shrinking begins</li>
+            </ol>
+            <p><strong>🎯 Key Success:</strong> No more jarring layout changes at arbitrary viewport thresholds!</p>
+        </div>
+    </div>
+    
+    <script>
+        function updateViewportInfo() {
+            const width = window.innerWidth;
+            const widthElement = document.getElementById('viewportWidth');
+            const strategyElement = document.getElementById('strategy');
+            const adjustmentsElement = document.getElementById('adjustments');
+            const layoutModeElement = document.getElementById('layoutMode');
+            const tabsContainer = document.getElementById('tabsContainer');
+            const daqiComponent = document.getElementById('daqiComponent');
+            const tabsStatus = document.getElementById('tabsStatus');
+            const daqiStatus = document.getElementById('daqiStatus');
+            
+            widthElement.textContent = width;
+            
+            // Update strategy based on smart responsive behavior
+            if (width >= 682) {
+                strategyElement.textContent = 'Fixed 650px (empty space adjusts)';
+                strategyElement.style.color = '#00ff00';
+                tabsStatus.textContent = 'Fixed';
+                tabsStatus.className = 'status-indicator status-fixed';
+                daqiStatus.textContent = 'Fixed';
+                daqiStatus.className = 'status-indicator status-fixed';
+            } else if (width >= 650) {
+                strategyElement.textContent = 'Tabs shrinking, empty space gone';
+                strategyElement.style.color = '#ffaa00';
+                tabsStatus.textContent = 'Shrinking';
+                tabsStatus.className = 'status-indicator status-shrinking';
+                daqiStatus.textContent = 'Fixed';
+                daqiStatus.className = 'status-indicator status-fixed';
+            } else if (width >= 590) {
+                strategyElement.textContent = 'Tabs shrinking, DAQI fixed';
+                strategyElement.style.color = '#ff8800';
+                tabsStatus.textContent = 'Shrinking';
+                tabsStatus.className = 'status-indicator status-shrinking';
+                daqiStatus.textContent = 'Fixed';
+                daqiStatus.className = 'status-indicator status-fixed';
+            } else {
+                strategyElement.textContent = 'Both components shrinking';
+                strategyElement.style.color = '#ff0000';
+                tabsStatus.textContent = 'Shrinking';
+                tabsStatus.className = 'status-indicator status-both-shrinking';
+                daqiStatus.textContent = 'Shrinking';
+                daqiStatus.className = 'status-indicator status-both-shrinking';
+            }
+            
+            // JavaScript behavior info
+            const needsAdjustments = width >= 768 && width < 1020;
+            adjustmentsElement.textContent = needsAdjustments ? 'Active (+2px, +3px, +5px)' : 'None';
+            adjustmentsElement.style.color = needsAdjustments ? '#ff8800' : '#00aa00';
+            
+            layoutModeElement.textContent = 'Layout-Agnostic (CSS handles all)';
+            layoutModeElement.style.color = '#00aa00';
+        }
+        
+        // Update on load and resize
+        updateViewportInfo();
+        window.addEventListener('resize', updateViewportInfo);
+        
+        // Update every 100ms for smooth feedback during dragging
+        setInterval(updateViewportInfo, 100);
+        
+        // Add visual feedback for the 1020px threshold that used to cause problems
+        function highlightProblemZone() {
+            const width = window.innerWidth;
+            const body = document.body;
+            
+            if (width >= 1015 && width <= 1025) {
+                body.style.background = 'linear-gradient(45deg, #ffcccc, #ccffcc)';
+                setTimeout(() => {
+                    body.style.background = '#f8f9fa';
+                }, 1000);
+            }
+        }
+        
+        window.addEventListener('resize', highlightProblemZone);
+    </script>
+</body>
+</html>
