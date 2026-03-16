@@ -185,7 +185,13 @@ function selectMeasurementsUrlAndOptions(
       'daqi-pollutant': 'true'
     })
     const baseUrl = injectedConfig.get('ricardoMeasurementsApiUrl')
-    const newRicardoMeasurementsApiUrl = `${baseUrl}?${queryParams.toString()}`
+    const queryString = queryParams.toString()
+    const remoteSeparator = baseUrl.includes('?')
+      ? baseUrl.endsWith('?') || baseUrl.endsWith('&')
+        ? ''
+        : '&'
+      : '?'
+    const newRicardoMeasurementsApiUrl = `${baseUrl}${remoteSeparator}${queryString}`
     const isLocal = isLocalRequest(request)
     if (isLocal) {
       const ephemeralProtectedApiUrl =
@@ -202,7 +208,12 @@ function selectMeasurementsUrlAndOptions(
           'MEASUREMENTS_API_PATH constant must be set for local requests'
         )
       }
-      const effectiveMeasurementsApiUrl = `${ephemeralProtectedApiUrl}${measurementsApiPath}${queryParams.toString()}`
+      const localSeparator = measurementsApiPath.includes('?')
+        ? measurementsApiPath.endsWith('?') || measurementsApiPath.endsWith('&')
+          ? ''
+          : '&'
+        : '?'
+      const effectiveMeasurementsApiUrl = `${ephemeralProtectedApiUrl}${measurementsApiPath}${localSeparator}${queryString}`
       injectedLogger.info(
         `New Ricardo measurements API URL: ${effectiveMeasurementsApiUrl}`
       )
