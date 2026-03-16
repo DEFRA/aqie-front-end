@@ -31,11 +31,30 @@ import { locationNotFound } from './location-not-found/index.js'
 import { testRoutes } from './test-routes/index.js'
 import { actionsReduceExposure } from './actions-reduce-exposure/index.js'
 import { actionsReduceExposureCy } from './actions-reduce-exposure/cy/index.js'
+import { notify } from './notify/register/sms-mobile-number/index.js'
+import { sendActivation } from './notify/register/sms-send-activation/index.js'
+import { checkMessage } from './notify/register/sms-verify-code/index.js'
+import { sendNewCode } from './notify/register/sms-send-new-code/index.js'
+import { confirmAlertDetails } from './notify/register/sms-confirm-details/index.js'
+import { alertsSuccess } from './notify/register/sms-success/index.js'
+import { checkMaxAlerts } from './notify/register/check-max-alerts/index.js'
+import { smsDuplicate } from './notify/register/sms-duplicate/index.js'
+import { smsMaxEmails } from './notify/register/sms-max-emails/index.js'
+import { emailDuplicate } from './notify/register/email-duplicate/index.js'
+import { alertsSuccess as emailAlertsSuccess } from './notify/register/alerts-success/index.js'
+import { confirmAlertDetails as genericConfirmAlertDetails } from './notify/register/confirm-alert-details/index.js'
+import { emailDetails } from './notify/register/email-details/index.js'
+import { emailSendActivation } from './notify/register/email-send-activation/index.js'
+import { emailVerifyEmail } from './notify/register/email-verify-email/index.js'
+import { emailConfirmLink } from './notify/register/email-confirm-link/index.js'
+import notifyDebugClearMockStorage from './notify/debug/clear-mock-storage.js'
 import path from 'node:path'
 import { createLogger } from './common/helpers/logging/logger.js'
 import { SERVER_DIRNAME } from './data/constants.js'
 import { healthEffects } from './health-effects/index.js'
 import { healthEffectsCy } from './health-effects/cy/index.js'
+import { airPollutionBreaches } from './air-pollution-breaches/index.js'
+import { airPollutionBreachesCy } from './air-pollution-breaches/cy/index.js'
 
 const logger = createLogger() // ''
 
@@ -80,7 +99,26 @@ const router = {
         actionsReduceExposure, // ''
         actionsReduceExposureCy, // ''
         healthEffects, // ''
-        healthEffectsCy // ''
+        healthEffectsCy, // ''
+        airPollutionBreaches,
+        airPollutionBreachesCy,
+        notify,
+        sendActivation,
+        checkMessage,
+        sendNewCode,
+        confirmAlertDetails,
+        alertsSuccess,
+        checkMaxAlerts,
+        smsDuplicate,
+        smsMaxEmails,
+        emailDuplicate,
+        genericConfirmAlertDetails,
+        emailAlertsSuccess,
+        emailDetails,
+        emailSendActivation,
+        emailVerifyEmail,
+        emailConfirmLink,
+        notifyDebugClearMockStorage
       ]
 
       for (const plugin of plugins) {
