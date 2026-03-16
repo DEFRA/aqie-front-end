@@ -271,6 +271,27 @@ export const config = convict({
     sensitive: true,
     env: 'CDP_X_API_KEY'
   },
+  cdpXApiKeyDev: {
+    doc: 'CDP X API Key for development ephemeral gateway',
+    format: '*',
+    default: '',
+    sensitive: true,
+    env: 'CDP_X_API_KEY_DEV'
+  },
+  cdpXApiKeyTest: {
+    doc: 'CDP X API Key for test ephemeral gateway',
+    format: '*',
+    default: '',
+    sensitive: true,
+    env: 'CDP_X_API_KEY_TEST'
+  },
+  cdpXApiKeyPerfTest: {
+    doc: 'CDP X API Key for perf-test ephemeral gateway',
+    format: '*',
+    default: '',
+    sensitive: true,
+    env: 'CDP_X_API_KEY_PERF_TEST'
+  },
   ephemeralProtectedTestApiUrl: {
     doc: 'Ephemeral Protected Test API url',
     format: String,
@@ -282,6 +303,12 @@ export const config = convict({
     format: String,
     default: `https://ephemeral-protected.api.test.cdp-int.defra.cloud`,
     env: 'EPHEMERAL_PROTECTED_DEV_API_URL'
+  },
+  ephemeralProtectedPerfTestApiUrl: {
+    doc: 'Ephemeral Protected Perf-Test API url',
+    format: String,
+    default: '',
+    env: 'EPHEMERAL_PROTECTED_PERF_TEST_API_URL'
   },
   measurementsApiUrl: {
     doc: 'Ricardo API url',

@@ -190,22 +190,20 @@ describe('api-utils', () => {
       expect(result.url).toBe('http://prod.api.com')
     })
 
-    it('should throw error when ephemeralProtectedDevApiUrl missing for local', () => {
+    it('should fall back to production URL when ephemeralProtectedDevApiUrl missing for local', () => {
       const mockRequest = {
         headers: { host: 'localhost:3000' },
         app: { config: {} }
       }
 
-      expect(() =>
-        selectForecastsUrlAndOptions({
-          request: mockRequest,
-          forecastsApiUrl: 'http://prod.api.com',
-          optionsEphemeralProtected: {},
-          options: {}
-        })
-      ).toThrow(
-        'ephemeralProtectedTestApiUrl must be provided in config for local requests'
-      )
+      const result = selectForecastsUrlAndOptions({
+        request: mockRequest,
+        forecastsApiUrl: 'http://prod.api.com',
+        optionsEphemeralProtected: {},
+        options: {}
+      })
+
+      expect(result.url).toBe('http://prod.api.com')
     })
 
     it('should detect wrapped request shape for localhost requests', () => {
@@ -329,23 +327,21 @@ describe('api-utils', () => {
       global.URLSearchParams = originalURLSearchParams
     })
 
-    it('should throw error when ephemeralProtectedDevApiUrl missing for local new Ricardo', () => {
+    it('should fall back to direct URL when ephemeralProtectedDevApiUrl missing for local new Ricardo', () => {
       mockConfig.get
         .mockReturnValueOnce('http://ricardo.api.com')
         .mockReturnValueOnce(null)
       const mockRequest = { headers: { host: 'localhost:3000' } }
 
-      expect(() =>
-        selectMeasurementsUrlAndOptions(51.5074, -0.1278, true, {
-          injectedConfig: mockConfig,
-          injectedLogger: mockLogger,
-          injectedOptionsEphemeralProtected: {},
-          injectedOptions: {},
-          request: mockRequest
-        })
-      ).toThrow(
-        'ephemeralProtectedTestApiUrl must be provided in config for local requests'
-      )
+      const result = selectMeasurementsUrlAndOptions(51.5074, -0.1278, true, {
+        injectedConfig: mockConfig,
+        injectedLogger: mockLogger,
+        injectedOptionsEphemeralProtected: {},
+        injectedOptions: {},
+        request: mockRequest
+      })
+
+      expect(result.url).toContain('http://ricardo.api.com')
     })
 
     it('should use ephemeral protected URL for wrapped localhost request with new Ricardo', () => {

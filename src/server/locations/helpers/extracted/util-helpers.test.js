@@ -55,7 +55,7 @@ describe('util-helpers', () => {
 
       const result = await refreshOAuthToken(mockRequest, di)
 
-      expect(result).toBe(mockAccessToken)
+      expect(result).toEqual({ accessToken: mockAccessToken })
       expect(mockRequest.yar.clear).toHaveBeenCalledWith('savedAccessToken')
       expect(mockRequest.yar.set).toHaveBeenCalledWith(
         'savedAccessToken',

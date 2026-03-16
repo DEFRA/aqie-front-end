@@ -67,6 +67,10 @@
   padding-top: 0;
 }
 
+.govuk-main-wrapper:has(.notify-email-details-page) {
+  padding-top: 0;
+}
+
 .govuk-back-link::before {
   // stylelint-disable-next-line declaration-no-important
   margin-top: 5px !important;
