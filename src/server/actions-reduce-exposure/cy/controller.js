@@ -2,6 +2,9 @@ import { welsh } from '../../data/cy/cy.js'
 import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 import { formatUKPostcode } from '../../locations/helpers/convert-string.js'
+import { createLogger } from '../../common/helpers/logging/logger.js'
+
+const logger = createLogger()
 
 const actionsReduceExposureCyController = {
   handler: (request, h) => {
@@ -64,6 +67,10 @@ const actionsReduceExposureCyController = {
         locationId
       )
     }
+
+    logger.info(
+      `AuditLog11-WELSH Actions to Reduce Exposure Page Viewed - ${locationName || locationId} (CY)`
+    )
 
     return h.view('actions-reduce-exposure/index', {
       pageTitle: actionsReduceExposure.pageTitle,

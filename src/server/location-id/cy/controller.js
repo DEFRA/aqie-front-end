@@ -358,6 +358,10 @@ const getLocationDetailsController = {
           locationId
         })
 
+        logger.info(
+          `AuditLog8-WELSH Location Details Page Viewed - ${viewData.locationName} (CY)`
+        )
+
         return renderLocationView(h, viewData)
       } else {
         return renderNotFoundView(h, LANG_CY)

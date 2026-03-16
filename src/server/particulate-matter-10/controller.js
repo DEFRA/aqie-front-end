@@ -1,6 +1,9 @@
 import { english } from '../data/en/en.js'
 import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
+import { createLogger } from '../common/helpers/logging/logger.js'
+
+const logger = createLogger()
 
 const particulateMatter10Controller = {
   handler: (request, h) => {
@@ -15,6 +18,9 @@ const particulateMatter10Controller = {
         .redirect(`/llygryddion/mater-gronynnol-10/cy?lang=cy`)
         .code(REDIRECT_STATUS_CODE)
     }
+
+    logger.info('AuditLog14-Pollutant Info Viewed - PM10')
+
     return h.view('particulate-matter-10/index', {
       pageTitle: particulateMatter10.pageTitle,
       description: particulateMatter10.description,

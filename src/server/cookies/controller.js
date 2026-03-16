@@ -1,6 +1,9 @@
 import { english } from '../data/en/en.js'
 import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
+import { createLogger } from '../common/helpers/logging/logger.js'
+
+const logger = createLogger()
 
 // Define the handler function
 const cookiesHandler = (request, h, content = english) => {
@@ -66,9 +69,23 @@ const cookiesHandler = (request, h, content = english) => {
   })
 }
 
+const cookieConsentAuditHandler = (request, h) => {
+  const action = `${request?.payload?.action || ''}`.toLowerCase()
+
+  if (action === 'accepted') {
+    logger.info('AuditLog0-CookiesAccepted')
+  }
+
+  if (action === 'rejected') {
+    logger.info('AuditLog00-CookiesRejected')
+  }
+
+  return h.response({ ok: true }).code(200)
+}
+
 // Define the controller using the handler function
 const cookiesController = {
   handler: cookiesHandler
 }
 
-export { cookiesController, cookiesHandler }
+export { cookiesController, cookiesHandler, cookieConsentAuditHandler }

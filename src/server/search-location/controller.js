@@ -7,6 +7,9 @@ import {
   LANG_SLICE_LENGTH
 } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
+import { createLogger } from '../common/helpers/logging/logger.js'
+
+const logger = createLogger()
 
 const setSessionIfChanged = (request, key, value) => {
   const currentValue = request?.yar?.get?.(key)
@@ -152,6 +155,8 @@ const searchLocationController = {
       locationType,
       isError: !!errors
     })
+
+    logger.info('AuditLog3-Location Search Page Viewed')
 
     return h.view('search-location/index', viewModel)
   }

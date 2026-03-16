@@ -1,6 +1,9 @@
 import { english } from '../data/en/en.js'
 import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
+import { createLogger } from '../common/helpers/logging/logger.js'
+
+const logger = createLogger()
 
 const particulateMatter25Controller = {
   handler: (request, h) => {
@@ -15,6 +18,9 @@ const particulateMatter25Controller = {
         .redirect(`/llygryddion/mater-gronynnol-25/cy?lang=cy`)
         .code(REDIRECT_STATUS_CODE)
     }
+
+    logger.info('AuditLog12-Pollutant Info Viewed - PM2.5')
+
     return h.view('particulate-matter-25/index', {
       pageTitle: particulateMatter25.pageTitle,
       description: particulateMatter25.description,

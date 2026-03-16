@@ -41,6 +41,8 @@ const getLocationDataController = {
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     try {
+      logger.info('AuditLog5-Multiple Results Page Viewed')
+
       return h.view('multiple-results/multiple-locations', {
         results,
         title: multipleLocations.title,

@@ -36,6 +36,16 @@ class CookieBanner {
     }
   }
 
+  sendCookieAudit(action) {
+    fetch('/cookies/consent-audit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ action })
+    }).catch(() => {})
+  }
+
   /**
    * Validate the module element
    *
@@ -130,6 +140,7 @@ class CookieBanner {
   acceptCookies() {
     // Do actual cookie consent bit
     CookieFunctions.setConsentCookie({ analytics: true })
+    this.sendCookieAudit('accepted')
 
     // Hide banner and show confirmation message
     this.$cookieMessage.setAttribute('hidden', 'true')
@@ -142,6 +153,7 @@ class CookieBanner {
   rejectCookies() {
     // Do actual cookie consent bit
     CookieFunctions.setConsentCookie({ analytics: false })
+    this.sendCookieAudit('rejected')
 
     // Hide banner and show confirmation message
     this.$cookieMessage.setAttribute('hidden', 'true')

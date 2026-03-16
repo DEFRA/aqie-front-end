@@ -877,6 +877,9 @@ function processLocationResult(
     nearestLocation,
     nearestLocationsRange
   ).then(() => {
+    logger.info(
+      `AuditLog7-Location Details Page Viewed - ${viewData.locationName}`
+    )
     return h.view('locations/location', viewData)
   })
 }
