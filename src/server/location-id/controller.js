@@ -358,6 +358,11 @@ function normalizeLocationIdTerms(locationId = '') {
   }
 }
 
+function isLikelyPostcodeLookupId(locationId = '') {
+  const normalized = `${locationId}`.replace(/\s|-/g, '')
+  return /^[a-z]{1,2}\d[a-z0-9]{1,3}$/i.test(normalized)
+}
+
 async function hydrateLocationDataForStatelessLocationId(
   request,
   locationId,
@@ -368,9 +373,9 @@ async function hydrateLocationDataForStatelessLocationId(
     return null
   }
 
-  // '' Allow direct 2xx location-id rendering for first-hit/no-cookie traffic
-  const hasSession = hasSessionCookie(request)
-  if (hasSession || !locationId) {
+  // '' Attempt direct-id hydration even with a session cookie, because
+  // '' stale/empty session payloads can happen on bookmarked URLs.
+  if (!locationId) {
     return null
   }
 
@@ -912,6 +917,17 @@ async function initializeAndValidateRequest(request, h) {
   const { getMonth, metaSiteUrl, locationData } =
     await initializeCommonVariables(request, locationId, lang)
 
+  const hasLocationData =
+    Array.isArray(locationData?.results) && Boolean(locationData?.getForecasts)
+  if (!hasLocationData && locationId && isLikelyPostcodeLookupId(locationId)) {
+    return {
+      data: {
+        forceNotFound: true,
+        lang
+      }
+    }
+  }
+
   // Validate session data
   const sessionValidationResult = validateAndProcessSessionData(
     locationData,
@@ -1146,6 +1162,12 @@ const getLocationDetailsController = {
       const initResult = await initializeAndValidateRequest(request, h)
       if (initResult.redirect) {
         return initResult.redirect
+      }
+      if (initResult?.data?.forceNotFound) {
+        return h.view(
+          LOCATION_NOT_FOUND,
+          buildNotFoundViewData(initResult.data.lang)
+        )
       }
 
       // Process location workflow
