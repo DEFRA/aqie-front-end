@@ -6,6 +6,9 @@ import {
   REDIRECT_STATUS_CODE
 } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
+import { createLogger } from '../../common/helpers/logging/logger.js'
+
+const logger = createLogger()
 
 const SEARCH_LOCATION_PATH_CY = '/chwilio-lleoliad/cy'
 
@@ -140,17 +143,74 @@ const searchLocationController = {
     }
     const { errors, errorMessage, locationType } = clearRequestErrors(request)
 
-    const viewData = buildSearchLocationViewData({
-      metaSiteUrl,
-      lang,
-      errors,
-      errorMessage,
-      locationType,
-      fromSmsFlow,
-      fromEmailFlow
-    })
+    if (errors) {
+      const locationType = request.yar.get('locationType')
+      request.yar.set('errors', null)
+      request.yar.set('errorMessage', null)
+      return h.view('search-location/index', {
+        pageTitle: `Gwall: ${welsh.searchLocation.pageTitle}`,
+        description: welsh.searchLocation.description,
+        metaSiteUrl,
+        heading: welsh.searchLocation.heading,
+        page: welsh.searchLocation.page,
+        serviceName: welsh.searchLocation.serviceName,
+        searchParams: {
+          label: {
+            text: welsh.searchLocation.searchParams.label.text,
+            classes: 'govuk-label--l govuk-!-margin-bottom-6',
+            isPageHeading: true
+          },
+          hint: {
+            text: welsh.searchLocation.searchParams.hint.text1
+          },
+          id: 'location',
+          name: 'location'
+        },
+        locations: welsh.searchLocation.searchParams.locations,
+        button: welsh.searchLocation.button,
+        locationType,
+        errors: errors.errors,
+        errorMessage: errorMessage?.errorMessage,
+        errorMessageRadio: errorMessage?.errorMessage,
+        footerTxt: welsh.footerTxt,
+        phaseBanner: welsh.phaseBanner,
+        backlink: welsh.backlink,
+        cookieBanner: welsh.cookieBanner,
+        currentPath: '/chwilio-lleoliad/cy',
+        lang
+      })
+    } else {
+      logger.info('AuditLog4-WELSH Location Search Page Viewed (CY)')
 
-    return h.view('search-location/index', viewData)
+      return h.view('search-location/index', {
+        pageTitle: welsh.searchLocation.pageTitle,
+        description: welsh.searchLocation.description,
+        metaSiteUrl,
+        heading: welsh.searchLocation.heading,
+        page: welsh.searchLocation.page,
+        serviceName: welsh.searchLocation.serviceName,
+        searchParams: {
+          label: {
+            text: welsh.searchLocation.searchParams.label.text,
+            classes: 'govuk-label--l govuk-!-margin-bottom-6',
+            isPageHeading: true
+          },
+          hint: {
+            text: welsh.searchLocation.searchParams.hint.text2
+          },
+          id: 'location',
+          name: 'location'
+        },
+        locations: welsh.searchLocation.searchParams.locations,
+        button: welsh.searchLocation.button,
+        footerTxt: welsh.footerTxt,
+        phaseBanner: welsh.phaseBanner,
+        backlink: welsh.backlink,
+        cookieBanner: welsh.cookieBanner,
+        currentPath: '/chwilio-lleoliad/cy',
+        lang
+      })
+    }
   }
 }
 

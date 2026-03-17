@@ -345,6 +345,11 @@ function normalizeLocationIdTerms(locationId = '') {
   }
 }
 
+function isLikelyPostcodeLookupId(locationId = '') {
+  const normalized = `${locationId}`.replace(/\s|-/g, '')
+  return /^[a-z]{1,2}\d[a-z0-9]{1,3}$/i.test(normalized)
+}
+
 async function hydrateLocationDataForStatelessLocationId(
   request,
   locationId,
@@ -355,9 +360,9 @@ async function hydrateLocationDataForStatelessLocationId(
     return null
   }
 
-  // '' Allow direct 2xx location-id rendering for first-hit/no-cookie traffic
-  const hasSession = hasSessionCookie(request)
-  if (hasSession || !locationId) {
+  // '' Attempt direct-id hydration even with a session cookie, because
+  // '' stale/empty session payloads can happen on bookmarked URLs.
+  if (!locationId) {
     return null
   }
 
@@ -902,7 +907,7 @@ function processLocationResult(
     nearestLocationsRange
   ).then(() => {
     logger.info(
-      `After Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
+      `AuditLog7-Location Details Page Viewed - ${viewData.locationName}`
     )
     return h.view('locations/location', viewData)
   })
@@ -935,6 +940,17 @@ async function initializeAndValidateRequest(request, h) {
   // Initialize common variables
   const { getMonth, metaSiteUrl, locationData } =
     await initializeCommonVariables(request, locationId, lang)
+
+  const hasLocationData =
+    Array.isArray(locationData?.results) && Boolean(locationData?.getForecasts)
+  if (!hasLocationData && locationId && isLikelyPostcodeLookupId(locationId)) {
+    return {
+      data: {
+        forceNotFound: true,
+        lang
+      }
+    }
+  }
 
   // Validate session data
   const sessionValidationResult = validateAndProcessSessionData(
@@ -1235,6 +1251,12 @@ const getLocationDetailsController = {
       if (initResult.redirect) {
         logger.info(`[DEBUG TOP OF HANDLER] Returning redirect from initResult`)
         return initResult.redirect
+      }
+      if (initResult?.data?.forceNotFound) {
+        return h.view(
+          LOCATION_NOT_FOUND,
+          buildNotFoundViewData(initResult.data.lang)
+        )
       }
 
       // Process location workflow

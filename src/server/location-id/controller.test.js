@@ -642,6 +642,42 @@ describe('Location ID Controller Tests', () => {
         expect.stringContaining('/location?lang=en&searchTerms=')
       )
     })
+
+    it('should render location not found for direct postcode-like location IDs without session data', async () => {
+      mockRequest.params.id = 'nw1w'
+      mockRequest.path = '/location/nw1w'
+      mockRequest.state = {}
+      mockRequest.yar.get
+        .mockReturnValueOnce(true) // searchTermsSaved
+        .mockReturnValueOnce({}) // empty locationData
+
+      await getLocationDetailsController.handler(mockRequest, mockH)
+
+      expect(mockH.view).toHaveBeenCalledWith(
+        'location-not-found',
+        expect.objectContaining({
+          lang: 'en'
+        })
+      )
+    })
+
+    it('should render location not found for direct postcode-like location IDs with session cookie but no session data', async () => {
+      mockRequest.params.id = 'nw1w'
+      mockRequest.path = '/location/nw1w'
+      mockRequest.state = { session: 'existing-session-cookie' }
+      mockRequest.yar.get
+        .mockReturnValueOnce(true) // searchTermsSaved
+        .mockReturnValueOnce({}) // empty locationData
+
+      await getLocationDetailsController.handler(mockRequest, mockH)
+
+      expect(mockH.view).toHaveBeenCalledWith(
+        'location-not-found',
+        expect.objectContaining({
+          lang: 'en'
+        })
+      )
+    })
   })
 
   describe('Location processing for UK locations', () => {

@@ -89,8 +89,28 @@ const buildErrorViewModel = (languageData, request, lang, statusCode) => {
 
 const getLocationDataController = {
   handler: async (request, h) => {
-    const locationData = request.yar.get('locationData') || []
-    const notificationFlow = request.yar.get('notificationFlow')
+    const locationData = request.yar.get('locationData') || {}
+    const {
+      results,
+      monitoringSites,
+      transformedDailySummary,
+      calendarWelsh = {},
+      englishDate,
+      welshDate,
+      getMonth,
+      lang,
+      userLocation
+    } = locationData
+    const {
+      backlink,
+      cookieBanner,
+      phaseBanner,
+      footerTxt,
+      multipleLocations,
+      dailySummary,
+      siteTypeDescriptions,
+      pollutantTypes
+    } = english
     const { query } = request
 
     if (query?.lang === LANG_CY) {
@@ -100,15 +120,31 @@ const getLocationDataController = {
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     try {
-      const viewModel = buildMultipleLocationsViewModel(
-        {
-          ...locationData,
-          notificationFlow
-        },
-        english,
-        metaSiteUrl
-      )
-      return h.view('multiple-results/multiple-locations', viewModel)
+      logger.info('AuditLog5-Multiple Results Page Viewed')
+
+      return h.view('multiple-results/multiple-locations', {
+        results,
+        title: multipleLocations.title,
+        paragraphs: multipleLocations.paragraphs,
+        userLocation,
+        monitoringSites,
+        siteTypeDescriptions,
+        pollutantTypes,
+        pageTitle: `${multipleLocations.title} ${userLocation} -  ${multipleLocations.pageTitle}`,
+        metaSiteUrl,
+        description: multipleLocations.description,
+        serviceName: multipleLocations.serviceName,
+        transformedDailySummary,
+        dailySummary,
+        footerTxt,
+        phaseBanner,
+        backlink,
+        cookieBanner,
+        welshMonth: getMonth ? calendarWelsh[getMonth] : undefined,
+        summaryDate: lang === LANG_CY ? welshDate : englishDate,
+        currentPath: '/multiple-results',
+        lang: 'en'
+      })
     } catch (error) {
       logger.error(
         `error from location refresh outside fetch APIs: ${error.message}`

@@ -47,12 +47,12 @@ const handleError = (
 
 const getLocationDataController = {
   handler: async (request, h) => {
-    const locationData = request.yar.get('locationData') || []
+    const locationData = request.yar.get('locationData') || {}
     const {
       results,
       monitoringSites,
       transformedDailySummary,
-      calendarWelsh,
+      calendarWelsh = {},
       englishDate,
       welshDate,
       getMonth,
@@ -76,6 +76,8 @@ const getLocationDataController = {
     }
     const metaSiteUrl = getAirQualitySiteUrl(request)
     try {
+      logger.info('AuditLog6-WELSH Multiple Results Page Viewed (CY)')
+
       return h.view('multiple-results/multiple-locations', {
         results,
         title: multipleLocations.title,
@@ -94,7 +96,7 @@ const getLocationDataController = {
         phaseBanner,
         backlink,
         cookieBanner,
-        welshMonth: calendarWelsh[getMonth],
+        welshMonth: getMonth ? calendarWelsh[getMonth] : undefined,
         summaryDate:
           lang === LANG_CY
             ? (welshDate ?? summaryDate)

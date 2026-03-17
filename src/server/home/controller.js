@@ -24,6 +24,8 @@ const handleHomeRequest = (request, h, content = english) => {
     return h.redirect(LANG_CY).code(REDIRECT_STATUS_CODE)
   }
 
+  logger.info('AuditLog1-Home Page Viewed')
+
   return h.view('home/index', {
     pageTitle: home.pageTitle,
     description: home.description,

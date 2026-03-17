@@ -11,7 +11,14 @@ import {
   LANG_SLICE_LENGTH
 } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../get-site-url.js'
-import { createLocationBackLink } from '../back-link-helper.js'
+import { createLogger } from '../logging/logger.js'
+
+const logger = createLogger()
+
+// Common view properties that all pollutant controllers use
+const COMMON_VIEW_PROPERTIES = {
+  displayBacklink: false
+}
 
 // Language redirect patterns for Welsh pollutant pages
 const WELSH_PATH_PATTERNS = {
@@ -107,7 +114,8 @@ export function createWelshPollutantController(config) {
     englishPath,
     viewTemplate,
     welshPathKey,
-    pageIdentifier
+    pageIdentifier,
+    auditLogMessage = ''
   } = config
 
   return {
@@ -156,6 +164,10 @@ export function createWelshPollutantController(config) {
         backLinkConfig,
         lang
       })
+
+      if (auditLogMessage) {
+        logger.info(auditLogMessage)
+      }
 
       return h.view(viewTemplate, viewContext)
     }

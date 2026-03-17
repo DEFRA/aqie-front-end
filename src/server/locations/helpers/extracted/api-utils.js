@@ -293,6 +293,84 @@ function selectMeasurementsUrlAndOptions(
     resolvedLogger.info(
       `[URL BUILD DEBUG] Using measurements with latitude: ${latitude}, longitude: ${longitude}`
     )
+    if (!URLSearchParams) {
+      throw new Error('URLSearchParams is not available in this environment')
+    }
+    const queryParams = new URLSearchParams({
+      page: '1',
+      'latest-measurement': 'true',
+      'with-closed': 'false',
+      'with-pollutants': 'true',
+      latitude: formatCoordinate(latitude),
+      longitude: formatCoordinate(longitude),
+      'networks[]': '4',
+      totalItems: '3',
+      distance: '60',
+      'daqi-pollutant': 'true'
+    })
+    const baseUrl = injectedConfig.get('ricardoMeasurementsApiUrl')
+    const queryString = queryParams.toString()
+    const remoteSeparator = baseUrl.includes('?')
+      ? baseUrl.endsWith('?') || baseUrl.endsWith('&')
+        ? ''
+        : '&'
+      : '?'
+    const newRicardoMeasurementsApiUrl = `${baseUrl}${remoteSeparator}${queryString}`
+    const isLocal = isLocalRequest(request)
+    if (isLocal) {
+      const ephemeralProtectedApiUrl =
+        injectedConfig.get('ephemeralProtectedTestApiUrl') ||
+        injectedConfig.get('ephemeralProtectedDevApiUrl')
+      const measurementsApiPath = MEASUREMENTS_API_PATH || ''
+      if (!ephemeralProtectedApiUrl) {
+        throw new Error(
+          'ephemeralProtectedTestApiUrl must be provided in config for local requests'
+        )
+      }
+      if (!measurementsApiPath) {
+        throw new Error(
+          'MEASUREMENTS_API_PATH constant must be set for local requests'
+        )
+      }
+      const localSeparator = measurementsApiPath.includes('?')
+        ? measurementsApiPath.endsWith('?') || measurementsApiPath.endsWith('&')
+          ? ''
+          : '&'
+        : '?'
+      const effectiveMeasurementsApiUrl = `${ephemeralProtectedApiUrl}${measurementsApiPath}${localSeparator}${queryString}`
+      injectedLogger.info(
+        `New Ricardo measurements API URL: ${effectiveMeasurementsApiUrl}`
+      )
+      return {
+        url: effectiveMeasurementsApiUrl,
+        opts: injectedOptionsEphemeralProtected
+      }
+    } else {
+      injectedLogger.info(
+        `New Ricardo measurements API URL: ${newRicardoMeasurementsApiUrl}`
+      )
+      // For remote, always set Content-Type: application/json
+      const remoteHeaders = {
+        ...(injectedOptions.headers || {}),
+        'Content-Type': 'application/json'
+      }
+      return {
+        url: newRicardoMeasurementsApiUrl,
+        opts: { ...injectedOptions, headers: remoteHeaders }
+      }
+    }
+  } else {
+    const measurementsAPIurl = injectedConfig.get('measurementsApiUrl')
+    injectedLogger.info(`Old measurements API URL: ${measurementsAPIurl}`)
+    // For remote, always set Content-Type: application/json
+    const remoteHeaders = {
+      ...(injectedOptions.headers || {}),
+      'Content-Type': 'application/json'
+    }
+    return {
+      url: measurementsAPIurl,
+      opts: { ...injectedOptions, headers: remoteHeaders }
+    }
   }
 
   const queryParams = buildMeasurementsQueryParams(latitude, longitude)
