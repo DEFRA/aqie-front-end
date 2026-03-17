@@ -41,9 +41,6 @@ const healthEffectsHandler = (request, h, customContent = undefined) => {
         text: viewModel.backLinkText,
         href: viewModel.backLinkUrl
       }
-      logger.info(
-        `AuditLog10-WELSH Health Effects Page Viewed - ${readableName || 'this location'} (CY)`
-      )
       return h.view('health-effects/cy/index', viewModel) // ''
     }
 
@@ -65,9 +62,6 @@ const healthEffectsHandler = (request, h, customContent = undefined) => {
         backLinkText: viewModel.backLinkText,
         backLinkUrl: viewModel.backLinkUrl
       })
-      logger.info(
-        `AuditLog9-Health Effects Page Viewed - ${readableName || 'this location'}`
-      )
       return h.view('health-effects/index', viewModel) // ''
     }
 

@@ -5,8 +5,7 @@ const ozoneController = createWelshPollutantController({
   englishPath: '/pollutants/ozone',
   viewTemplate: 'ozone/index',
   welshPathKey: 'oson',
-  pageIdentifier: 'ozone-cy',
-  auditLogMessage: 'AuditLog19-WELSH Pollutant Info Viewed - Ozone (O3) (CY)'
+  pageIdentifier: 'ozone-cy'
 })
 
 export { ozoneController }

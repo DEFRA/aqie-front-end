@@ -11,9 +11,6 @@ import {
   LANG_SLICE_LENGTH
 } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../get-site-url.js'
-import { createLogger } from '../logging/logger.js'
-
-const logger = createLogger()
 
 // Common view properties that all pollutant controllers use
 const COMMON_VIEW_PROPERTIES = {
@@ -45,8 +42,7 @@ export function createWelshPollutantController(config) {
     englishPath,
     viewTemplate,
     welshPathKey,
-    pageIdentifier,
-    auditLogMessage = ''
+    pageIdentifier
   } = config
 
   return {
@@ -82,10 +78,6 @@ export function createWelshPollutantController(config) {
         currentPath: expectedWelshPath,
         lang,
         ...COMMON_VIEW_PROPERTIES
-      }
-
-      if (auditLogMessage) {
-        logger.info(auditLogMessage)
       }
 
       return h.view(viewTemplate, viewContext)
