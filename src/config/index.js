@@ -17,6 +17,43 @@ const DEFAULT_PORT = 3000
 const DAYS_IN_A_WEEK = 7
 const ONE_WEEK_IN_MILLISECONDS = DAYS_IN_A_WEEK * 24 * 60 * 60 * 1000
 
+export const ONE_HOUR_MS =
+  Number(process.env.ONE_HOUR_MS) > 0
+    ? Number(process.env.ONE_HOUR_MS)
+    : 60 * 60 * 1000
+export const FIFTEEN_MINUTES_MS =
+  Number(process.env.FIFTEEN_MINUTES_MS) > 0
+    ? Number(process.env.FIFTEEN_MINUTES_MS)
+    : 15 * 60 * 1000
+export const REDIS_SHARED_CACHE_TTL_MS =
+  Number(process.env.REDIS_SHARED_CACHE_TTL_MS) > 0
+    ? Number(process.env.REDIS_SHARED_CACHE_TTL_MS)
+    : 20 * 60 * 1000
+export const REFRESH_INTERVAL_MS =
+  Number(process.env.REFRESH_INTERVAL_MS) > 0
+    ? Number(process.env.REFRESH_INTERVAL_MS)
+    : 30 * 60 * 1000
+export const REDIS_PRESSURE_CHECK_INTERVAL_MS =
+  Number(process.env.REDIS_PRESSURE_CHECK_INTERVAL_MS) > 0
+    ? Number(process.env.REDIS_PRESSURE_CHECK_INTERVAL_MS)
+    : 10000
+export const REDIS_PRESSURE_WINDOW_MS =
+  Number(process.env.REDIS_PRESSURE_WINDOW_MS) > 0
+    ? Number(process.env.REDIS_PRESSURE_WINDOW_MS)
+    : 30000
+export const REDIS_PRESSURE_COOLDOWN_MS =
+  Number(process.env.REDIS_PRESSURE_COOLDOWN_MS) > 0
+    ? Number(process.env.REDIS_PRESSURE_COOLDOWN_MS)
+    : 300000
+export const REDIS_PRESSURE_MIN_GROWTH_MEBIBYTES =
+  Number(process.env.REDIS_PRESSURE_MIN_GROWTH_MEBIBYTES) > 0
+    ? Number(process.env.REDIS_PRESSURE_MIN_GROWTH_MEBIBYTES)
+    : 20
+export const BYTES_PER_MEBIBYTE =
+  Number(process.env.BYTES_PER_MEBIBYTE) > 0
+    ? Number(process.env.BYTES_PER_MEBIBYTE)
+    : 1024 * 1024
+
 const isProduction = process.env.NODE_ENV === 'production'
 const isTest = process.env.NODE_ENV === 'test'
 const isDevelopment = process.env.NODE_ENV === 'development'
@@ -55,6 +92,32 @@ export const config = convict({
     format: Number,
     default: ONE_WEEK_IN_MILLISECONDS,
     env: 'STATIC_CACHE_TIMEOUT'
+  },
+  cacheDurations: {
+    refreshIntervalMs: {
+      doc: 'Refresh interval in milliseconds for periodic cache refresh behaviour.',
+      format: Number,
+      default: REFRESH_INTERVAL_MS,
+      env: 'REFRESH_INTERVAL_MS'
+    },
+    serverSharedCacheTtlMs: {
+      doc: 'TTL in milliseconds for the server shared cache policy.',
+      format: Number,
+      default: ONE_HOUR_MS,
+      env: 'SERVER_SHARED_CACHE_TTL_MS'
+    },
+    userDataCacheTtlMs: {
+      doc: 'TTL in milliseconds for user metadata cache entries.',
+      format: Number,
+      default: FIFTEEN_MINUTES_MS,
+      env: 'USER_DATA_CACHE_TTL_MS'
+    },
+    sharedLocationCacheTtlMs: {
+      doc: 'TTL cap in milliseconds for shared location payload cache entries.',
+      format: Number,
+      default: REDIS_SHARED_CACHE_TTL_MS,
+      env: 'SHARED_LOCATION_CACHE_TTL_MS'
+    }
   },
   serviceName: {
     doc: 'Applications Service Name',
@@ -221,6 +284,38 @@ export const config = convict({
         format: Boolean,
         default: true,
         env: 'SESSION_GLOBAL_GUARD_ENABLED'
+      },
+      redisPressure: {
+        checkIntervalMs: {
+          doc: 'Interval between Redis memory samples for pressure guard.',
+          format: Number,
+          default: REDIS_PRESSURE_CHECK_INTERVAL_MS,
+          env: 'REDIS_PRESSURE_CHECK_INTERVAL_MS'
+        },
+        windowMs: {
+          doc: 'Maximum elapsed time window for pressure growth calculation.',
+          format: Number,
+          default: REDIS_PRESSURE_WINDOW_MS,
+          env: 'REDIS_PRESSURE_WINDOW_MS'
+        },
+        cooldownMs: {
+          doc: 'Cooldown period while Redis pressure guard remains active.',
+          format: Number,
+          default: REDIS_PRESSURE_COOLDOWN_MS,
+          env: 'REDIS_PRESSURE_COOLDOWN_MS'
+        },
+        minGrowthMebibytes: {
+          doc: 'Minimum Redis memory growth in MiB to activate pressure guard.',
+          format: Number,
+          default: REDIS_PRESSURE_MIN_GROWTH_MEBIBYTES,
+          env: 'REDIS_PRESSURE_MIN_GROWTH_MEBIBYTES'
+        },
+        bytesPerMebibyte: {
+          doc: 'Byte size used for one MiB in Redis pressure calculations.',
+          format: Number,
+          default: BYTES_PER_MEBIBYTE,
+          env: 'BYTES_PER_MEBIBYTE'
+        }
       }
     },
     cookie: {

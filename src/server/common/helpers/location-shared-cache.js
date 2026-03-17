@@ -1,10 +1,7 @@
 import { config } from '../../../config/index.js'
 import { createLogger } from './logging/logger.js'
 import { getSessionRedisClient } from './session-cache/cache-engine.js'
-import {
-  ONE_HOUR_MS,
-  SHARED_LOCATION_CACHE_PREFIX
-} from '../../data/constants.js'
+import { SHARED_LOCATION_CACHE_PREFIX } from '../../data/constants.js'
 
 const logger = createLogger()
 
@@ -38,11 +35,19 @@ export function buildSharedLocationPayloadCacheKey(request, locationData = {}) {
 }
 
 function getSharedLocationTtlMs() {
+  const sharedLocationCacheTtlMs = Number(
+    config.get('cacheDurations.sharedLocationCacheTtlMs')
+  )
+  const ttlCapMs =
+    Number.isFinite(sharedLocationCacheTtlMs) && sharedLocationCacheTtlMs > 0
+      ? sharedLocationCacheTtlMs
+      : 20 * 60 * 1000
+
   const sessionTtlMs = Number(config.get('session.cache.ttl'))
   if (!Number.isFinite(sessionTtlMs) || sessionTtlMs <= 0) {
-    return ONE_HOUR_MS
+    return ttlCapMs
   }
-  return Math.min(sessionTtlMs, ONE_HOUR_MS)
+  return Math.min(sessionTtlMs, ttlCapMs)
 }
 
 function getServerPolicy(request) {

@@ -2,10 +2,19 @@
 import { config } from '../../../config/index.js'
 import { createLogger } from './logging/logger.js'
 import { getSessionRedisClient } from './session-cache/cache-engine.js'
-import { FIFTEEN_MINUTES_MS } from '../../data/constants.js'
 
 const logger = createLogger()
 const USER_DATA_CACHE_PREFIX = 'userdata:'
+
+function getUserDataTtlMs() {
+  const configuredValue = Number(
+    config.get('cacheDurations.userDataCacheTtlMs')
+  )
+  if (Number.isFinite(configuredValue) && configuredValue > 0) {
+    return configuredValue
+  }
+  return 15 * 60 * 1000
+}
 
 function normalizeSegment(value, fallback = 'na') {
   const normalized = String(value ?? fallback)
@@ -72,10 +81,11 @@ export async function getUserDataPayload(request, cacheKey) {
 }
 
 export async function setUserDataPayload(request, cacheKey, payload) {
+  const userDataTtlMs = getUserDataTtlMs()
   const userDataPolicy = getUserDataPolicy(request)
   if (userDataPolicy && cacheKey && payload) {
     try {
-      await userDataPolicy.set(cacheKey, payload, FIFTEEN_MINUTES_MS)
+      await userDataPolicy.set(cacheKey, payload, userDataTtlMs)
       return true
     } catch (error) {
       logger.warn(
@@ -90,11 +100,7 @@ export async function setUserDataPayload(request, cacheKey, payload) {
   }
 
   try {
-    await redisClient.psetex(
-      cacheKey,
-      FIFTEEN_MINUTES_MS,
-      JSON.stringify(payload)
-    )
+    await redisClient.psetex(cacheKey, userDataTtlMs, JSON.stringify(payload))
     return true
   } catch (error) {
     logger.warn(
