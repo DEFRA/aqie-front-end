@@ -10,11 +10,7 @@ import {
   LOCATION_NOT_FOUND,
   LOCATION_TYPE_NI,
   LOCATION_TYPE_UK,
-  REDIS_PRESSURE_CHECK_INTERVAL_MS,
-  REDIS_PRESSURE_COOLDOWN_MS,
-  REDIS_PRESSURE_MIN_GROWTH_BYTES,
   REDIS_PRESSURE_MIN_GROWTH_RATIO,
-  REDIS_PRESSURE_WINDOW_MS,
   REDIRECT_STATUS_CODE,
   SESSION_GUARD_LOG_LIMIT_PER_REQUEST,
   STATUS_INTERNAL_SERVER_ERROR
@@ -119,21 +115,57 @@ function parseRedisInfoValue(infoText, key) {
   return match && match[1] ? match[1].trim() : ''
 }
 
+function getRedisPressureConfigValue(path, fallbackValue) {
+  const configuredValue = Number(config.get(path))
+  return Number.isFinite(configuredValue) && configuredValue > 0
+    ? configuredValue
+    : fallbackValue
+}
+
+function getRedisPressureThresholds() {
+  const checkIntervalMs = getRedisPressureConfigValue(
+    'session.cache.redisPressure.checkIntervalMs',
+    10000
+  )
+  const windowMs = getRedisPressureConfigValue(
+    'session.cache.redisPressure.windowMs',
+    30000
+  )
+  const cooldownMs = getRedisPressureConfigValue(
+    'session.cache.redisPressure.cooldownMs',
+    300000
+  )
+  const minGrowthMebibytes = getRedisPressureConfigValue(
+    'session.cache.redisPressure.minGrowthMebibytes',
+    20
+  )
+  const bytesPerMebibyte = getRedisPressureConfigValue(
+    'session.cache.redisPressure.bytesPerMebibyte',
+    1024 * 1024
+  )
+
+  return {
+    checkIntervalMs,
+    windowMs,
+    cooldownMs,
+    minGrowthBytes: minGrowthMebibytes * bytesPerMebibyte
+  }
+}
+
 function isRedisPressureGuardActive() {
   return redisPressureGuardState.activeUntilMs > Date.now()
 }
 
 function maybeRefreshRedisPressureGuard() {
   const nowMs = Date.now()
+  const { checkIntervalMs, windowMs, cooldownMs, minGrowthBytes } =
+    getRedisPressureThresholds()
 
   if (redisPressureGuardState.inFlight) {
     return
   }
 
-  if (
-    nowMs - redisPressureGuardState.lastCheckAtMs <
-    REDIS_PRESSURE_CHECK_INTERVAL_MS
-  ) {
+  if (nowMs - redisPressureGuardState.lastCheckAtMs < checkIntervalMs) {
     return
   }
 
@@ -161,10 +193,7 @@ function maybeRefreshRedisPressureGuard() {
         redisPressureGuardState.lastUsedMemoryBytes
       const elapsedMs = nowMs - previousCheckAtMs
 
-      if (
-        Number.isFinite(previousUsedMemoryBytes) &&
-        elapsedMs <= REDIS_PRESSURE_WINDOW_MS
-      ) {
+      if (Number.isFinite(previousUsedMemoryBytes) && elapsedMs <= windowMs) {
         const growthBytes = usedMemoryBytes - previousUsedMemoryBytes
         const growthRatio =
           previousUsedMemoryBytes > 0
@@ -172,14 +201,13 @@ function maybeRefreshRedisPressureGuard() {
             : 0
 
         if (
-          growthBytes >= REDIS_PRESSURE_MIN_GROWTH_BYTES &&
+          growthBytes >= minGrowthBytes &&
           growthRatio >= REDIS_PRESSURE_MIN_GROWTH_RATIO
         ) {
-          redisPressureGuardState.activeUntilMs =
-            Date.now() + REDIS_PRESSURE_COOLDOWN_MS
+          redisPressureGuardState.activeUntilMs = Date.now() + cooldownMs
 
           logger.warn(
-            `[SESSION GUARD] Redis pressure guard activated growthBytes=${growthBytes} growthRatio=${growthRatio.toFixed(3)} cooldownMs=${REDIS_PRESSURE_COOLDOWN_MS}`
+            `[SESSION GUARD] Redis pressure guard activated growthBytes=${growthBytes} growthRatio=${growthRatio.toFixed(3)} cooldownMs=${cooldownMs}`
           )
         }
       }
