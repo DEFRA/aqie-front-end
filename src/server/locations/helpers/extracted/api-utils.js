@@ -289,144 +289,52 @@ function selectMeasurementsUrlAndOptions(
     optionsEphemeralProtected || injectedOptionsEphemeralProtected || {}
   const resolvedOptions = options || injectedOptions || {}
 
-  if (!config.get('isProduction')) {
-    resolvedLogger.info(
-      `[URL BUILD DEBUG] Using measurements with latitude: ${latitude}, longitude: ${longitude}`
-    )
-    if (!URLSearchParams) {
-      throw new Error('URLSearchParams is not available in this environment')
-    }
-    const queryParams = new URLSearchParams({
-      page: '1',
-      'latest-measurement': 'true',
-      'with-closed': 'false',
-      'with-pollutants': 'true',
-      latitude: formatCoordinate(latitude),
-      longitude: formatCoordinate(longitude),
-      'networks[]': '4',
-      totalItems: '3',
-      distance: '60',
-      'daqi-pollutant': 'true'
-    })
-    const baseUrl = injectedConfig.get('ricardoMeasurementsApiUrl')
+  const isProduction = Boolean(config.get('isProduction'))
+
+  if (useNewRicardoMeasurementsEnabled) {
+    const queryParams = buildMeasurementsQueryParams(latitude, longitude)
     const queryString = queryParams.toString()
+    const baseUrl = resolvedConfig.get('ricardoMeasurementsApiUrl')
+
+    if (!isProduction) {
+      resolvedLogger.info(
+        `[URL BUILD DEBUG] Using measurements with latitude: ${latitude}, longitude: ${longitude}`
+      )
+    }
+
+    const ephemeralUrl = getEphemeralProtectedApiUrl(request, resolvedConfig)
+    if (!isProduction && isLocalRequest(request) && ephemeralUrl) {
+      const localResult = buildLocalMeasurementsUrlAndOpts(
+        queryParams,
+        ephemeralUrl,
+        resolvedOptionsEphemeralProtected
+      )
+      resolvedLogger.info(
+        `New Ricardo measurements API URL: ${localResult.url}`
+      )
+      return localResult
+    }
+
     const remoteSeparator = baseUrl.includes('?')
       ? baseUrl.endsWith('?') || baseUrl.endsWith('&')
         ? ''
         : '&'
       : '?'
     const newRicardoMeasurementsApiUrl = `${baseUrl}${remoteSeparator}${queryString}`
-    const isLocal = isLocalRequest(request)
-    if (isLocal) {
-      const ephemeralProtectedApiUrl =
-        injectedConfig.get('ephemeralProtectedTestApiUrl') ||
-        injectedConfig.get('ephemeralProtectedDevApiUrl')
-      const measurementsApiPath = MEASUREMENTS_API_PATH || ''
-      if (!ephemeralProtectedApiUrl) {
-        throw new Error(
-          'ephemeralProtectedTestApiUrl must be provided in config for local requests'
-        )
-      }
-      if (!measurementsApiPath) {
-        throw new Error(
-          'MEASUREMENTS_API_PATH constant must be set for local requests'
-        )
-      }
-      const localSeparator = measurementsApiPath.includes('?')
-        ? measurementsApiPath.endsWith('?') || measurementsApiPath.endsWith('&')
-          ? ''
-          : '&'
-        : '?'
-      const effectiveMeasurementsApiUrl = `${ephemeralProtectedApiUrl}${measurementsApiPath}${localSeparator}${queryString}`
-      injectedLogger.info(
-        `New Ricardo measurements API URL: ${effectiveMeasurementsApiUrl}`
-      )
-      return {
-        url: effectiveMeasurementsApiUrl,
-        opts: injectedOptionsEphemeralProtected
-      }
-    } else {
-      injectedLogger.info(
-        `New Ricardo measurements API URL: ${newRicardoMeasurementsApiUrl}`
-      )
-      // For remote, always set Content-Type: application/json
-      const remoteHeaders = {
-        ...(injectedOptions.headers || {}),
-        'Content-Type': 'application/json'
-      }
-      return {
-        url: newRicardoMeasurementsApiUrl,
-        opts: { ...injectedOptions, headers: remoteHeaders }
-      }
-    }
-  } else {
-    const measurementsAPIurl = injectedConfig.get('measurementsApiUrl')
-    injectedLogger.info(`Old measurements API URL: ${measurementsAPIurl}`)
-    // For remote, always set Content-Type: application/json
-    const remoteHeaders = {
-      ...(injectedOptions.headers || {}),
-      'Content-Type': 'application/json'
-    }
-    return {
-      url: measurementsAPIurl,
-      opts: { ...injectedOptions, headers: remoteHeaders }
-    }
-  }
 
-  const queryParams = buildMeasurementsQueryParams(latitude, longitude)
-  const baseUrl = useNewRicardoMeasurementsEnabled
-    ? resolvedConfig.get('ricardoMeasurementsApiUrl')
-    : resolvedConfig.get('measurementsApiUrl')
-
-  if (!config.get('isProduction')) {
-    resolvedLogger.info(`[URL BUILD DEBUG] Base URL from config: ${baseUrl}`)
     resolvedLogger.info(
-      `[URL BUILD DEBUG] Query params: ${queryParams.toString()}`
+      `New Ricardo measurements API URL: ${newRicardoMeasurementsApiUrl}`
+    )
+
+    return buildRemoteMeasurementsUrlAndOpts(
+      newRicardoMeasurementsApiUrl,
+      resolvedOptions
     )
   }
 
-  const ricardoMeasurementsApiUrl = useNewRicardoMeasurementsEnabled
-    ? `${baseUrl}${queryParams.toString()}`
-    : baseUrl
-
-  if (!config.get('isProduction')) {
-    resolvedLogger.info(
-      `[URL BUILD DEBUG] Full Ricardo measurements API URL: ${ricardoMeasurementsApiUrl}`
-    )
-  }
-
-  if (useNewRicardoMeasurementsEnabled) {
-    resolvedLogger.info(
-      `New Ricardo measurements API URL: ${ricardoMeasurementsApiUrl}`
-    )
-  } else {
-    resolvedLogger.info(
-      `Old measurements API URL: ${ricardoMeasurementsApiUrl}`
-    )
-  }
-
-  const ephemeralUrl = getEphemeralProtectedApiUrl(request, resolvedConfig)
-  if (isLocalRequest(request) && ephemeralUrl) {
-    if (!config.get('isProduction')) {
-      resolvedLogger.info(
-        '[URL BUILD DEBUG] Using LOCAL ephemeral measurements API URL'
-      )
-    }
-    return buildLocalMeasurementsUrlAndOpts(
-      queryParams,
-      ephemeralUrl,
-      resolvedOptionsEphemeralProtected
-    )
-  }
-
-  const result = buildRemoteMeasurementsUrlAndOpts(
-    ricardoMeasurementsApiUrl,
-    resolvedOptions
-  )
-  if (!config.get('isProduction')) {
-    resolvedLogger.info(`[URL BUILD DEBUG] Using REMOTE URL: ${result.url}`)
-  }
-  return result
+  const measurementsAPIurl = resolvedConfig.get('measurementsApiUrl')
+  resolvedLogger.info(`Old measurements API URL: ${measurementsAPIurl}`)
+  return buildRemoteMeasurementsUrlAndOpts(measurementsAPIurl, resolvedOptions)
 }
 
 // Helper to call the measurements API and handle the response

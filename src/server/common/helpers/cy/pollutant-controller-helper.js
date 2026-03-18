@@ -11,6 +11,7 @@ import {
   LANG_SLICE_LENGTH
 } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../get-site-url.js'
+import { createLocationBackLink } from '../back-link-helper.js'
 
 // Common view properties that all pollutant controllers use
 const COMMON_VIEW_PROPERTIES = {
