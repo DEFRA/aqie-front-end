@@ -6,9 +6,6 @@ import {
   REDIRECT_STATUS_CODE
 } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
-import { createLogger } from '../../common/helpers/logging/logger.js'
-
-const logger = createLogger()
 
 const SEARCH_LOCATION_PATH_CY = '/chwilio-lleoliad/cy'
 
@@ -180,8 +177,6 @@ const searchLocationController = {
         lang
       })
     } else {
-      logger.info('AuditLog4-WELSH Location Search Page Viewed (CY)')
-
       return h.view('search-location/index', {
         pageTitle: welsh.searchLocation.pageTitle,
         description: welsh.searchLocation.description,

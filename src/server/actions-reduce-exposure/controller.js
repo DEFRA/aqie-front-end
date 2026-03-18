@@ -2,9 +2,6 @@ import { english } from '../data/en/en.js'
 import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 import { formatUKPostcode } from '../locations/helpers/convert-string.js'
-import { createLogger } from '../common/helpers/logging/logger.js'
-
-const logger = createLogger()
 
 function buildWelshRedirectUrl(
   locationId,
@@ -103,10 +100,6 @@ const actionsReduceExposureController = {
         locationId
       )
     }
-
-    logger.info(
-      `AuditLog11-Actions to Reduce Exposure Page Viewed - ${locationName || locationId}`
-    )
 
     return h.view('actions-reduce-exposure/index', {
       pageTitle: actionsReduceExposure.pageTitle,

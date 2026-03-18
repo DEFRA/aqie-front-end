@@ -23,8 +23,6 @@ const handleHomeRequest = (request, h, content = welsh) => {
     return h.redirect(`/?lang=en`).code(REDIRECT_STATUS_CODE)
   }
 
-  logger.info('AuditLog2-WELSH Home Page Viewed (CY)')
-
   // Render the home page with the necessary data
   return h.view('home/index', {
     pageTitle: home.pageTitle,

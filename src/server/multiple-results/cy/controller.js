@@ -76,8 +76,6 @@ const getLocationDataController = {
     }
     const metaSiteUrl = getAirQualitySiteUrl(request)
     try {
-      logger.info('AuditLog6-WELSH Multiple Results Page Viewed (CY)')
-
       return h.view('multiple-results/multiple-locations', {
         results,
         title: multipleLocations.title,

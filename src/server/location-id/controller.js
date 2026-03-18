@@ -933,12 +933,7 @@ function processLocationResult(
     locationData,
     nearestLocation,
     nearestLocationsRange
-  ).then(() => {
-    logger.info(
-      `AuditLog7-Location Details Page Viewed - ${viewData.locationName}`
-    )
-    return h.view('locations/location', viewData)
-  })
+  ).then(() => h.view('locations/location', viewData))
 }
 
 // Helper to handle all initialization and validation steps

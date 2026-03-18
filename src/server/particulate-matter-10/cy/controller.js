@@ -5,8 +5,7 @@ const particulateMatter10Controller = createWelshPollutantController({
   englishPath: '/pollutants/particulate-matter-10',
   viewTemplate: 'particulate-matter-10/index',
   welshPathKey: 'mater-gronynnol-10',
-  pageIdentifier: 'particulate matter 10',
-  auditLogMessage: 'AuditLog15-WELSH Pollutant Info Viewed - PM10 (CY)'
+  pageIdentifier: 'particulate matter 10'
 })
 
 export { particulateMatter10Controller }

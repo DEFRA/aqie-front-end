@@ -1,9 +1,6 @@
 import { english } from '../data/en/en.js'
 import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
-import { createLogger } from '../common/helpers/logging/logger.js'
-
-const logger = createLogger()
 
 const ozoneController = {
   handler: (request, h) => {
@@ -18,8 +15,6 @@ const ozoneController = {
         .redirect(`/llygryddion/oson/cy?lang=cy`)
         .code(REDIRECT_STATUS_CODE)
     }
-
-    logger.info('AuditLog18-Pollutant Info Viewed - Ozone (O3)')
 
     return h.view('ozone/index', {
       pageTitle: ozone.pageTitle,
