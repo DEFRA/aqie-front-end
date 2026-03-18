@@ -1,5 +1,10 @@
 import { createLogger } from '../common/helpers/logging/logger.js'
-import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../data/constants.js'
+import {
+  LANG_CY,
+  LANG_EN,
+  LOCATION_TYPE_UK,
+  REDIRECT_STATUS_CODE
+} from '../data/constants.js'
 import { config } from '../../config/index.js'
 import { getDetailedInfo } from '../data/en/air-quality.js'
 import { getSearchTermsFromUrl } from '../locations/helpers/get-search-terms-from-url.js'
@@ -491,9 +496,12 @@ export function validateAndProcessSessionData(
     safeRequest?.yar?.clear?.('locationData')
     safeRequest?.yar?.clear?.('locationDataCacheKey')
 
-    const safeSearchTerms = searchTerms || ''
+    // '' Fallback to locationId for URLs like /location/{id}/?lang=en where path parsing can return empty
+    const fallbackSearchTerms = locationId || ''
+    const safeSearchTerms = searchTerms || fallbackSearchTerms
     const safeSecondSearchTerm = secondSearchTerm || ''
-    const safeSearchTermsLocationType = searchTermsLocationType || ''
+    const safeSearchTermsLocationType =
+      searchTermsLocationType || (safeSearchTerms ? LOCATION_TYPE_UK : '')
     const searchParams =
       safeSearchTerms || safeSecondSearchTerm || safeSearchTermsLocationType
         ? `&searchTerms=${encodeURIComponent(safeSearchTerms)}&secondSearchTerm=${encodeURIComponent(safeSecondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(safeSearchTermsLocationType)}`
