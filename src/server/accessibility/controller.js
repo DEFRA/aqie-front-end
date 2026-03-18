@@ -10,9 +10,21 @@ import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
 const ACCESSIBILITY_PATH = '/accessibility'
 
+function resolveAccessibilityLang(query, path) {
+  const lang = query?.lang?.slice(0, LANG_SLICE_LENGTH)
+  if (path === ACCESSIBILITY_PATH && lang !== LANG_CY && lang !== LANG_EN) {
+    return LANG_EN
+  }
+
+  return lang
+}
+
+function getAccessibilityContent(lang) {
+  return lang === LANG_EN ? english : welsh
+}
+
 // Define the handler function
 const accessibilityHandler = (request, h, content = english) => {
-  // Extract the language query parameter from the request
   const { query, path } = request
   const metaSiteUrl = getAirQualitySiteUrl(request)
 
@@ -23,20 +35,8 @@ const accessibilityHandler = (request, h, content = english) => {
       .code(REDIRECT_STATUS_CODE)
   }
 
-  // Determine the language
-  let lang = query?.lang?.slice(0, LANG_SLICE_LENGTH)
-  if (lang !== LANG_CY && lang !== LANG_EN && path === ACCESSIBILITY_PATH) {
-    lang = LANG_EN
-  }
-  // Ensure lang defaults to EN for /accessibility path
-  if (!lang && path === ACCESSIBILITY_PATH) {
-    lang = LANG_EN
-  }
-  if (lang === LANG_EN) {
-    content = english
-  } else {
-    content = welsh
-  }
+  const lang = resolveAccessibilityLang(query, path)
+  content = getAccessibilityContent(lang)
   // Destructure necessary data from the imported 'content' object
   const {
     footer: {

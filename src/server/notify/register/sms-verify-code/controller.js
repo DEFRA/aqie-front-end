@@ -141,7 +141,7 @@ function validateOtpFormat(submitted, smsVerifyCode) {
 /**
  * Handle OTP verification failure ''
  */
-function handleVerificationFailure(
+function handleVerificationFailure({
   request,
   mobileNumber,
   result,
@@ -152,7 +152,7 @@ function handleVerificationFailure(
   lang,
   content,
   h
-) {
+}) {
   const errorMessage =
     result.error?.message || result.body?.message || 'Validation failed'
 
@@ -335,7 +335,7 @@ const handleCheckMessagePost = async (request, h, content = english) => {
 
   const isFailure = !result.ok
   if (isFailure) {
-    return handleVerificationFailure(
+    return handleVerificationFailure({
       request,
       mobileNumber,
       result,
@@ -344,9 +344,9 @@ const handleCheckMessagePost = async (request, h, content = english) => {
       smsVerifyCode,
       common,
       lang,
-      languageContent,
+      content: languageContent,
       h
-    )
+    })
   }
 
   return handleVerificationSuccess(request, mobileNumber, h)

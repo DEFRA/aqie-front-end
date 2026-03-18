@@ -39,6 +39,42 @@ function buildBackLinkUrl(locationId, locationName) {
   return backLinkUrl
 }
 
+function getLocationName(query) {
+  if (Array.isArray(query?.locationName)) {
+    return query.locationName[0] || ''
+  }
+
+  return query?.locationName || ''
+}
+
+function getLocationContext(query = {}) {
+  return {
+    searchTerms: query?.searchTerms || '',
+    locationName: getLocationName(query)
+  }
+}
+
+function buildBackLinkData({ locationId, searchTerms, locationName, backlink }) {
+  if (!locationId) {
+    return {
+      backLinkText: backlink.text,
+      backLinkUrl: '/chwilio-lleoliad/cy?lang=cy'
+    }
+  }
+
+  const formattedPostcode =
+    searchTerms.trim() === '' ? '' : formatUKPostcode(searchTerms)
+
+  return {
+    backLinkText: buildBackLinkText(
+      formattedPostcode,
+      locationName,
+      backlink.text
+    ),
+    backLinkUrl: buildBackLinkUrl(locationId, locationName)
+  }
+}
+
 const actionsReduceExposureCyController = {
   handler: (request, h) => {
     const { actionsReduceExposure } = welsh
@@ -55,11 +91,7 @@ const actionsReduceExposureCyController = {
 
     // Get location ID from path parameters and location name from session/query
     const locationId = params.locationId
-    const searchTerms = query?.searchTerms || ''
-    // Handle locationName as array (when duplicated in query string) or string
-    const locationName = Array.isArray(query?.locationName)
-      ? query.locationName[0]
-      : query?.locationName || ''
+    const { searchTerms, locationName } = getLocationContext(query)
 
     if (query?.lang && query?.lang === LANG_EN) {
       const redirectUrl = buildEnglishRedirectUrl(
@@ -70,20 +102,12 @@ const actionsReduceExposureCyController = {
       return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE)
     }
 
-    // Restore original context-specific back link text logic
-    let backLinkText = backlink.text
-    let backLinkUrl = '/chwilio-lleoliad/cy?lang=cy'
-
-    if (locationId) {
-      const formattedPostcode =
-        searchTerms.trim() === '' ? '' : formatUKPostcode(searchTerms)
-      backLinkText = buildBackLinkText(
-        formattedPostcode,
-        locationName,
-        backlink.text
-      )
-      backLinkUrl = buildBackLinkUrl(locationId, locationName)
-    }
+    const { backLinkText, backLinkUrl } = buildBackLinkData({
+      locationId,
+      searchTerms,
+      locationName,
+      backlink
+    })
 
     // Replace {locationId} placeholder in healthConditionsLink
     const processedActionsReduceExposure = {
