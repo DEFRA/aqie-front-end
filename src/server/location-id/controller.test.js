@@ -251,6 +251,9 @@ const { getIdMatch } = await import('../locations/helpers/get-id-match.js')
 const { compareLastElements } = await import(
   '../locations/helpers/convert-string.js'
 )
+const { getSearchTermsFromUrl } = await import(
+  '../locations/helpers/get-search-terms-from-url.js'
+)
 const { getUserDataPayload, setUserDataPayload } = await import(
   '../common/helpers/user-data-cache.js'
 )
@@ -374,6 +377,32 @@ describe('Location ID Controller Tests', () => {
       expect(mockH.redirect).toHaveBeenCalledWith(
         expect.stringContaining('/location?lang=en&searchTerms=')
       )
+    })
+
+    it('should keep locationId searchTerms on same-URL refresh when URL has trailing slash', async () => {
+      vi.mocked(compareLastElements).mockReturnValue(true)
+      vi.mocked(getSearchTermsFromUrl).mockReturnValueOnce({
+        searchTerms: '',
+        secondSearchTerm: '',
+        searchTermsLocationType: 'Invalid Postcode'
+      })
+
+      mockRequest.params.id = 'nw1w'
+      mockRequest.url.href = '/location/nw1w/?lang=en'
+      mockRequest.state = { session: 'existing-session-cookie' }
+      mockRequest.yar.get.mockReturnValueOnce(false) // searchTermsSaved
+
+      await getLocationDetailsController.handler(mockRequest, mockH)
+
+      const redirectTargets = mockH.redirect.mock.calls.map((call) => call[0])
+      const hasExpectedRedirect = redirectTargets.some(
+        (target) =>
+          target.includes(
+            '/location?lang=en&searchTerms=nw1w&secondSearchTerm='
+          ) && /searchTermsLocationType=(uk|uk-location)/.test(target)
+      )
+
+      expect(hasExpectedRedirect).toBe(true)
     })
 
     it('should not redirect bookmark first-hit when no referrer and no session cookie', async () => {
@@ -643,7 +672,7 @@ describe('Location ID Controller Tests', () => {
       )
     })
 
-    it('should render location not found for direct postcode-like location IDs without session data', async () => {
+    it('should redirect to location middleware for direct postcode-like location IDs without session data', async () => {
       mockRequest.params.id = 'nw1w'
       mockRequest.path = '/location/nw1w'
       mockRequest.state = {}
@@ -653,15 +682,12 @@ describe('Location ID Controller Tests', () => {
 
       await getLocationDetailsController.handler(mockRequest, mockH)
 
-      expect(mockH.view).toHaveBeenCalledWith(
-        'location-not-found',
-        expect.objectContaining({
-          lang: 'en'
-        })
+      expect(mockH.redirect).toHaveBeenCalledWith(
+        expect.stringContaining('/location?lang=en&searchTerms=')
       )
     })
 
-    it('should render location not found for direct postcode-like location IDs with session cookie but no session data', async () => {
+    it('should redirect to location middleware for direct postcode-like location IDs with session cookie but no session data', async () => {
       mockRequest.params.id = 'nw1w'
       mockRequest.path = '/location/nw1w'
       mockRequest.state = { session: 'existing-session-cookie' }
@@ -671,12 +697,32 @@ describe('Location ID Controller Tests', () => {
 
       await getLocationDetailsController.handler(mockRequest, mockH)
 
-      expect(mockH.view).toHaveBeenCalledWith(
-        'location-not-found',
-        expect.objectContaining({
-          lang: 'en'
-        })
+      expect(mockH.redirect).toHaveBeenCalledWith(
+        expect.stringContaining('/location?lang=en&searchTerms=')
       )
+    })
+
+    it('should include search terms for trailing-slash location ID URLs when session data is missing', async () => {
+      mockRequest.params.id = 'nw1w'
+      mockRequest.path = '/location/nw1w/'
+      mockRequest.url.href = '/location/nw1w/?lang=en'
+      mockRequest.state = { session: 'existing-session-cookie' }
+      vi.mocked(getSearchTermsFromUrl).mockReturnValueOnce({
+        searchTerms: '',
+        secondSearchTerm: '',
+        searchTermsLocationType: ''
+      })
+      mockRequest.yar.get
+        .mockReturnValueOnce(true) // searchTermsSaved
+        .mockReturnValueOnce({}) // empty locationData
+
+      await getLocationDetailsController.handler(mockRequest, mockH)
+
+      const redirectTarget = mockH.redirect.mock.calls[0]?.[0]
+      expect(redirectTarget).toContain(
+        '/location?lang=en&searchTerms=nw1w&secondSearchTerm='
+      )
+      expect(redirectTarget).toMatch(/searchTermsLocationType=(uk|uk-location)/)
     })
   })
 

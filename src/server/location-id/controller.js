@@ -373,11 +373,6 @@ function normalizeLocationIdTerms(locationId = '') {
   }
 }
 
-function isLikelyPostcodeLookupId(locationId = '') {
-  const normalized = `${locationId}`.replace(/\s|-/g, '')
-  return /^[a-z]{1,2}\d[a-z0-9]{1,3}$/i.test(normalized)
-}
-
 async function hydrateLocationDataForStatelessLocationId(
   request,
   locationId,
@@ -553,6 +548,23 @@ function handleSearchTermsRedirect(
     // '' Extract searchTerms from URL path (0.685.0 approach)
     let { searchTerms, secondSearchTerm, searchTermsLocationType } =
       getSearchTermsFromUrl(currentUrl)
+
+    // '' Fallback to route id when trailing-slash URLs produce empty search terms
+    const fallbackSearchTerms = request?.params?.id || ''
+    if (!searchTerms && fallbackSearchTerms) {
+      searchTerms = fallbackSearchTerms
+    }
+
+    if (!secondSearchTerm) {
+      secondSearchTerm = ''
+    }
+
+    if (
+      !searchTermsLocationType ||
+      searchTermsLocationType === 'Invalid Postcode'
+    ) {
+      searchTermsLocationType = LOCATION_TYPE_UK
+    }
 
     // '' Check if searchTerms is a normalized Northern Ireland postcode (e.g., bt938ad)
     // '' and convert it back to proper format (e.g., BT93 8AD)
@@ -964,17 +976,6 @@ async function initializeAndValidateRequest(request, h) {
   const { getMonth, metaSiteUrl, locationData } =
     await initializeCommonVariables(request, locationId, lang)
 
-  const hasLocationData =
-    Array.isArray(locationData?.results) && Boolean(locationData?.getForecasts)
-  if (!hasLocationData && locationId && isLikelyPostcodeLookupId(locationId)) {
-    return {
-      data: {
-        forceNotFound: true,
-        lang
-      }
-    }
-  }
-
   // Validate session data
   const sessionValidationResult = validateAndProcessSessionData(
     locationData,
@@ -1274,12 +1275,6 @@ const getLocationDetailsController = {
       if (initResult.redirect) {
         logger.info(`[DEBUG TOP OF HANDLER] Returning redirect from initResult`)
         return initResult.redirect
-      }
-      if (initResult?.data?.forceNotFound) {
-        return h.view(
-          LOCATION_NOT_FOUND,
-          buildNotFoundViewData(initResult.data.lang)
-        )
       }
 
       // Process location workflow

@@ -149,6 +149,8 @@ describe('removeAllWordsAfterUnderscore', () => {
 describe('isValidPartialPostcodeUK', () => {
   test('validates partial UK postcode', () => {
     expect(isValidPartialPostcodeUK('SW1')).toBe(true)
+    expect(isValidPartialPostcodeUK('SW1A')).toBe(true)
+    expect(isValidPartialPostcodeUK('NW1W')).toBe(true)
     expect(isValidPartialPostcodeUK('invalid')).toBe(false)
   })
 
