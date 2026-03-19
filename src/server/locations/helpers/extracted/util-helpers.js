@@ -30,33 +30,66 @@ async function catchProxyFetchError(url, options, ...args) {
   return catchFetchError(url, options, ...args)
 }
 
+function isRefreshTokenTestMode(testIsTestMode) {
+  return Boolean(testIsTestMode?.())
+}
+
+function buildMockRefreshTokenResponse(testLogger) {
+  if (testLogger && typeof testLogger.info === 'function') {
+    testLogger.info('Test mode: refreshOAuthToken returning mock token')
+  }
+  return { accessToken: 'mock-token' }
+}
+
+function persistSavedAccessToken(request, accessToken) {
+  if (!request?.yar) {
+    return
+  }
+
+  request.yar.clear('savedAccessToken')
+  request.yar.set('savedAccessToken', accessToken)
+}
+
+function getSavedAccessToken(request) {
+  return request?.yar?.get?.('savedAccessToken')
+}
+
+function resolveOAuthErrorFallback(accessToken, savedAccessToken, testLogger) {
+  if (!accessToken?.error) {
+    return null
+  }
+
+  if (!savedAccessToken) {
+    return accessToken
+  }
+
+  testLogger.warn('OAuth token fetch failed; using saved access token fallback')
+  return { accessToken: savedAccessToken, isFallback: true }
+}
+
 const refreshOAuthToken = async (request, di = {}) => {
   const testLogger = di.logger || logger
   const testFetchOAuthToken = di.fetchOAuthToken || fetchOAuthToken
   const testIsTestMode = di.isTestMode || isTestMode
   // '' Read saved access token for fallback on fetch failure
-  const savedAccessToken = request?.yar?.get?.('savedAccessToken')
-  if (testIsTestMode?.()) {
-    if (testLogger && typeof testLogger.info === 'function') {
-      testLogger.info('Test mode: refreshOAuthToken returning mock token')
-    }
-    return { accessToken: 'mock-token' }
+  const savedAccessToken = getSavedAccessToken(request)
+
+  if (isRefreshTokenTestMode(testIsTestMode)) {
+    return buildMockRefreshTokenResponse(testLogger)
   }
+
   const accessToken = await testFetchOAuthToken({ logger: testLogger })
-  if (accessToken?.error) {
-    if (savedAccessToken) {
-      testLogger.warn(
-        'OAuth token fetch failed; using saved access token fallback'
-      )
-      return { accessToken: savedAccessToken, isFallback: true }
-    }
-    return accessToken
+  const fallbackResponse = resolveOAuthErrorFallback(
+    accessToken,
+    savedAccessToken,
+    testLogger
+  )
+  if (fallbackResponse) {
+    return fallbackResponse
   }
+
   // '' Guard against missing request or yar (session) object
-  if (request?.yar) {
-    request.yar.clear('savedAccessToken')
-    request.yar.set('savedAccessToken', accessToken)
-  }
+  persistSavedAccessToken(request, accessToken)
   return { accessToken }
 }
 
@@ -107,65 +140,80 @@ const resolveUKArgs = (...args) => {
   }
 }
 
+const resolveUKDependencies = (di = {}) => ({
+  testLogger: di.logger || logger,
+  testGetOSPlacesHelper: di.getOSPlacesHelper || getOSPlacesHelper,
+  testBuildUKLocationFilters: di.buildUKLocationFilters,
+  testCombineUKSearchTerms: di.combineUKSearchTerms,
+  testIsValidFullPostcodeUK: di.isValidFullPostcodeUK,
+  testIsValidPartialPostcodeUK: di.isValidPartialPostcodeUK,
+  testBuildUKApiUrl: di.buildUKApiUrl,
+  testShouldCallUKApi: di.shouldCallUKApi,
+  testIsTestMode: di.isTestMode || isTestMode,
+  testSymbolsArray:
+    di.symbolsArray ?? di.SYMBOLS_ARRAY ?? di.injectedSymbolsArray ?? [],
+  testOptions: di.options,
+  testConfig: di.config,
+  request: di.request
+})
+
+const buildUkApiDeps = (resolved) => ({
+  buildUKLocationFilters: resolved.testBuildUKLocationFilters,
+  combineUKSearchTerms: resolved.testCombineUKSearchTerms,
+  isValidFullPostcodeUK: resolved.testIsValidFullPostcodeUK,
+  isValidPartialPostcodeUK: resolved.testIsValidPartialPostcodeUK,
+  buildUKApiUrl: resolved.testBuildUKApiUrl,
+  config: resolved.testConfig
+})
+
 const handleUKLocationData = async (...args) => {
   const { userLocation, searchTerms, secondSearchTerm, di } = resolveUKArgs(
     ...args
   )
   // ''  Simple DI with fallbacks
-  const testLogger = di.logger || logger
-  const testGetOSPlacesHelper = di.getOSPlacesHelper || getOSPlacesHelper
-  const testBuildUKLocationFilters = di.buildUKLocationFilters
-  const testCombineUKSearchTerms = di.combineUKSearchTerms
-  const testIsValidFullPostcodeUK = di.isValidFullPostcodeUK
-  const testIsValidPartialPostcodeUK = di.isValidPartialPostcodeUK
-  const testBuildUKApiUrl = di.buildUKApiUrl
-  const testShouldCallUKApi = di.shouldCallUKApi
-  const testIsTestMode = di.isTestMode || isTestMode
-  const testSymbolsArray =
-    di.symbolsArray ?? di.SYMBOLS_ARRAY ?? di.injectedSymbolsArray ?? []
-  const testOptions = di.options
-  const testConfig = di.config
-  const request = di.request
+  const resolved = resolveUKDependencies(di)
 
   const testModeResult = handleUKLocationDataTestMode(
-    testIsTestMode,
-    testLogger
+    resolved.testIsTestMode,
+    resolved.testLogger
   )
   if (testModeResult) {
-    if (testLogger && typeof testLogger.info === 'function') {
-      testLogger.info('Test mode: handleUKLocationData returning mock data')
+    if (resolved.testLogger && typeof resolved.testLogger.info === 'function') {
+      resolved.testLogger.info(
+        'Test mode: handleUKLocationData returning mock data'
+      )
     }
     return testModeResult
   }
-  const deps = {
-    buildUKLocationFilters: testBuildUKLocationFilters,
-    combineUKSearchTerms: testCombineUKSearchTerms,
-    isValidFullPostcodeUK: testIsValidFullPostcodeUK,
-    isValidPartialPostcodeUK: testIsValidPartialPostcodeUK,
-    buildUKApiUrl: testBuildUKApiUrl,
-    config: testConfig
-  }
+
+  const deps = buildUkApiDeps(resolved)
   const { hasOsKey, combinedLocation } = buildAndCheckUKApiUrl(
     userLocation,
     searchTerms,
     secondSearchTerm,
     deps
   )
+
   if (!hasOsKey) {
-    testLogger.warn(
+    resolved.testLogger.warn(
       'OS_NAMES_API_KEY not set; skipping OS Names API call and returning empty results.'
     )
     return { results: [] }
   }
+
   const finalUserLocation = combinedLocation
-  const shouldCallApi = testShouldCallUKApi(finalUserLocation, testSymbolsArray)
-  return testGetOSPlacesHelper(
+  const shouldCallApi = resolved.testShouldCallUKApi(
+    finalUserLocation,
+    resolved.testSymbolsArray
+  )
+
+  return resolved.testGetOSPlacesHelper(
     finalUserLocation,
     searchTerms,
     secondSearchTerm,
     shouldCallApi,
-    testOptions,
-    request,
+    resolved.testOptions,
+    resolved.request,
     undefined // catchProxyFetchErrorFn - will use default
   )
 }

@@ -26,24 +26,29 @@ import {
 import { sentenceCase } from '../common/helpers/sentence-case.js'
 import { convertFirstLetterIntoUppercase } from './helpers/convert-first-letter-into-upper-case.js'
 
+const isObjectPair = (left, right) =>
+  Boolean(
+    left && right && typeof left === 'object' && typeof right === 'object'
+  )
+
+const areSerializedObjectsEqual = (left, right) => {
+  try {
+    return JSON.stringify(left) === JSON.stringify(right)
+  } catch {
+    // '' Ignore serialization issues and continue to set session value
+    return false
+  }
+}
+
 const setSessionIfChanged = (request, key, value) => {
   const currentValue = request?.yar?.get?.(key)
   if (Object.is(currentValue, value)) {
     return
   }
 
-  if (
-    currentValue &&
-    value &&
-    typeof currentValue === 'object' &&
-    typeof value === 'object'
-  ) {
-    try {
-      if (JSON.stringify(currentValue) === JSON.stringify(value)) {
-        return
-      }
-    } catch {
-      // '' Ignore serialization issues and continue to set session value
+  if (isObjectPair(currentValue, value)) {
+    if (areSerializedObjectsEqual(currentValue, value)) {
+      return
     }
   }
 
@@ -133,11 +138,8 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
     home,
     getForecasts
   } = options
-  if (
-    !getNIPlaces?.results ||
-    getNIPlaces?.results.length === 0 ||
-    getNIPlaces === WRONG_POSTCODE
-  ) {
+
+  if (isInvalidNIPlaces(getNIPlaces)) {
     request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
     request.yar.clear('searchTermsSaved')
     return h
@@ -146,17 +148,56 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
       .takeover()
   }
 
-  const postcode = getNIPlaces?.results[0].postcode
-  const town = sentenceCase(getNIPlaces?.results[0].town)
+  const locationData = buildNILocationData({
+    getNIPlaces,
+    locationType: redirectError.locationType,
+    transformedDailySummary,
+    englishDate,
+    getDailySummary,
+    welshDate,
+    month,
+    multipleLocations,
+    home,
+    getForecasts,
+    lang
+  })
+
+  setSessionIfChanged(request, 'locationData', locationData)
+  return h
+    .redirect(`/location/${locationData.urlRoute}?lang=en`)
+    .code(REDIRECT_STATUS_CODE)
+    .takeover()
+}
+
+function isInvalidNIPlaces(getNIPlaces) {
+  return (
+    !getNIPlaces?.results ||
+    getNIPlaces?.results.length === 0 ||
+    getNIPlaces === WRONG_POSTCODE
+  )
+}
+
+function buildNILocationData({
+  getNIPlaces,
+  locationType,
+  transformedDailySummary,
+  englishDate,
+  getDailySummary,
+  welshDate,
+  month,
+  multipleLocations,
+  home,
+  getForecasts,
+  lang
+}) {
+  const postcode = getNIPlaces.results[0].postcode
+  const town = sentenceCase(getNIPlaces.results[0].town)
   const locationTitle = `${postcode}, ${town}`
 
-  const locationData = {
-    results: getNIPlaces?.results,
-    urlRoute: `${getNIPlaces?.results[0].postcode.toLowerCase()}`.replace(
-      /\s+/g,
-      ''
-    ),
-    locationType: redirectError.locationType,
+  return {
+    results: getNIPlaces.results,
+    urlRoute: `${postcode.toLowerCase()}`.replace(/\s+/g, ''),
+    locationType,
     transformedDailySummary,
     englishDate,
     dailySummary: getDailySummary,
@@ -167,12 +208,6 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
     getForecasts: getForecasts?.forecasts,
     lang
   }
-
-  setSessionIfChanged(request, 'locationData', locationData)
-  return h
-    .redirect(`/location/${locationData.urlRoute}?lang=en`)
-    .code(REDIRECT_STATUS_CODE)
-    .takeover()
 }
 
 const isLocationDataNotFound = (
@@ -181,22 +216,34 @@ const isLocationDataNotFound = (
   getOSPlaces,
   getNIPlaces
 ) => {
-  const isPartialPostcode =
+  if (
     isValidPartialPostcodeUK(userLocation) ||
     isValidPartialPostcodeNI(userLocation)
+  ) {
+    return true
+  }
 
-  const isUKTypeNoResults =
-    !getOSPlaces?.results && redirectError.locationType === LOCATION_TYPE_UK
+  if (getOSPlaces === WRONG_POSTCODE) {
+    return true
+  }
 
-  const isNITypeNoResults =
+  if (isUkLocationWithoutResults(redirectError, getOSPlaces)) {
+    return true
+  }
+
+  return isNiLocationWithoutResults(redirectError, getNIPlaces)
+}
+
+function isUkLocationWithoutResults(redirectError, getOSPlaces) {
+  return (
+    redirectError.locationType === LOCATION_TYPE_UK && !getOSPlaces?.results
+  )
+}
+
+function isNiLocationWithoutResults(redirectError, getNIPlaces) {
+  return (
     redirectError.locationType === LOCATION_TYPE_NI &&
     (!getNIPlaces?.results || getNIPlaces?.results.length === 0)
-
-  return (
-    isPartialPostcode ||
-    getOSPlaces === WRONG_POSTCODE ||
-    isUKTypeNoResults ||
-    isNITypeNoResults
   )
 }
 
@@ -247,6 +294,19 @@ function isInvalidDailySummary(getDailySummary) {
     typeof getDailySummary !== 'object' ||
     !getDailySummary.today
   )
+}
+
+function routeByLocationType(request, h, redirectError, context) {
+  if (redirectError.locationType === LOCATION_TYPE_UK) {
+    return processUKLocationType(request, h, redirectError, context)
+  }
+
+  if (redirectError.locationType === LOCATION_TYPE_NI) {
+    return processNILocationType(request, h, redirectError, context)
+  }
+
+  request.yar.clear('searchTermsSaved')
+  return h.redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`).takeover()
 }
 
 const searchMiddleware = async (request, h) => {
@@ -311,42 +371,26 @@ const searchMiddleware = async (request, h) => {
   )
   setSessionIfChanged(request, 'searchTermsSaved', searchTerms)
 
-  if (redirectError.locationType === LOCATION_TYPE_UK) {
-    return processUKLocationType(request, h, redirectError, {
-      userLocation,
-      locationNameOrPostcode,
-      lang,
-      searchTerms,
-      secondSearchTerm,
-      getOSPlaces,
-      airQualityData,
-      getDailySummary,
-      getForecasts,
-      transformedDailySummary,
-      calendarWelsh,
-      englishDate,
-      welshDate,
-      month,
-      english
-    })
-  } else if (redirectError.locationType === LOCATION_TYPE_NI) {
-    return processNILocationType(request, h, redirectError, {
-      locationNameOrPostcode,
-      lang,
-      getNIPlaces,
-      transformedDailySummary,
-      englishDate,
-      welshDate,
-      getDailySummary,
-      month,
-      multipleLocations,
-      home,
-      getForecasts
-    })
-  } else {
-    request.yar.clear('searchTermsSaved')
-    return h.redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`).takeover()
-  }
+  return routeByLocationType(request, h, redirectError, {
+    userLocation,
+    locationNameOrPostcode,
+    lang,
+    searchTerms,
+    secondSearchTerm,
+    getOSPlaces,
+    airQualityData,
+    getDailySummary,
+    getForecasts,
+    transformedDailySummary,
+    calendarWelsh,
+    englishDate,
+    welshDate,
+    month,
+    english,
+    getNIPlaces,
+    multipleLocations,
+    home
+  })
 }
 
 export { searchMiddleware, shouldReturnNotFound, isInvalidDailySummary }

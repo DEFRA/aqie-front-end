@@ -14,6 +14,38 @@ import reduceMatches from './reduce-matches.js'
 import { filterMatches } from './filter-matches.js'
 import { config } from '../../../config/index.js'
 
+const buildMockQueryParams = (request) => {
+  // '' Disable mock parameters when configured (production by default)
+  const mocksDisabled = config.get('disableTestMocks')
+  if (mocksDisabled) {
+    return ''
+  }
+
+  const query = request.query || {}
+  const params = []
+
+  if (query.mockLevel !== undefined) {
+    params.push(`mockLevel=${encodeURIComponent(query.mockLevel)}`)
+  }
+  if (query.mockDay !== undefined) {
+    params.push(`mockDay=${encodeURIComponent(query.mockDay)}`)
+  }
+  if (query.mockPollutantBand !== undefined) {
+    params.push(
+      `mockPollutantBand=${encodeURIComponent(query.mockPollutantBand)}`
+    )
+  }
+  if (query.testMode !== undefined) {
+    params.push(`testMode=${encodeURIComponent(query.testMode)}`)
+  }
+
+  if (params.length === 0) {
+    return ''
+  }
+
+  return `?${params.join('&')}`
+}
+
 // Helper function to handle single match
 const handleSingleMatch = (
   h,
@@ -56,31 +88,7 @@ const handleSingleMatch = (
     showSummaryDate,
     issueTime
   })
-  // '' Disable mock parameters when configured (production by default)
-  const mocksDisabled = config.get('disableTestMocks')
-
-  // Preserve mock parameters in redirect if present (only when mocks enabled)
-  const mockLevel = !mocksDisabled ? request.query?.mockLevel : undefined
-  const mockLevelParam =
-    mockLevel !== undefined ? `?mockLevel=${encodeURIComponent(mockLevel)}` : ''
-
-  const mockDay = !mocksDisabled ? request.query?.mockDay : undefined
-  const mockDayParam =
-    mockDay !== undefined ? `&mockDay=${encodeURIComponent(mockDay)}` : ''
-
-  const mockPollutantBand = !mocksDisabled
-    ? request.query?.mockPollutantBand
-    : undefined
-  const mockPollutantParam =
-    mockPollutantBand !== undefined
-      ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
-      : ''
-
-  const testMode = !mocksDisabled ? request.query?.testMode : undefined
-  const testModeParam =
-    testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
-
-  const queryParams = `${mockLevelParam}${mockDayParam}${mockPollutantParam}${testModeParam}`
+  const queryParams = buildMockQueryParams(request)
 
   return lang === LANG_EN
     ? h

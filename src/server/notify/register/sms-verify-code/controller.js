@@ -263,6 +263,128 @@ const handleCheckMessageRequest = (request, h, content = english) => {
   return h.view(VIEW_PATH, viewModel)
 }
 
+function buildVerifyCodeErrorView({
+  request,
+  mobileNumber,
+  error,
+  smsVerifyCode,
+  common,
+  lang,
+  languageContent,
+  h
+}) {
+  const vm = buildErrorViewModel(
+    request,
+    mobileNumber,
+    error,
+    smsVerifyCode,
+    common,
+    lang,
+    languageContent
+  )
+
+  return h.view(VIEW_PATH, vm)
+}
+
+function handleAlreadyVerifiedCode({
+  submitted,
+  mockOtpCode,
+  request,
+  mobileNumber,
+  smsVerifyCode,
+  common,
+  lang,
+  languageContent,
+  h
+}) {
+  const codeVerified = request.yar.get('codeVerified')
+  if (!codeVerified) {
+    return null
+  }
+
+  if (submitted && submitted !== mockOtpCode) {
+    return buildVerifyCodeErrorView({
+      request,
+      mobileNumber,
+      error: smsVerifyCode.errors.enterCodeShown,
+      smsVerifyCode,
+      common,
+      lang,
+      languageContent,
+      h
+    })
+  }
+
+  logger.info('Code already verified, redirecting to confirm details')
+  return h.redirect(SMS_CONFIRM_DETAILS_PATH)
+}
+
+function validateSubmittedCode({
+  submitted,
+  request,
+  mobileNumber,
+  smsVerifyCode,
+  common,
+  lang,
+  languageContent,
+  h
+}) {
+  const validation = validateOtpFormat(submitted, smsVerifyCode)
+  if (validation.isValid) {
+    return null
+  }
+
+  return buildVerifyCodeErrorView({
+    request,
+    mobileNumber,
+    error: validation.error,
+    smsVerifyCode,
+    common,
+    lang,
+    languageContent,
+    h
+  })
+}
+
+function handleOtpVerificationResult({
+  result,
+  request,
+  mobileNumber,
+  failedAttempts,
+  lastFailedTime,
+  smsVerifyCode,
+  common,
+  lang,
+  languageContent,
+  h
+}) {
+  logger.info('OTP verification result received', {
+    ok: result.ok,
+    status: result.status,
+    hasError: !!result.error,
+    hasBody: !!result.body,
+    bodyMessage: result.body?.message,
+    errorMessage: result.error?.message
+  })
+
+  if (result.ok) {
+    return null
+  }
+
+  return handleVerificationFailure({
+    request,
+    mobileNumber,
+    result,
+    failedAttempts,
+    lastFailedTime,
+    smsVerifyCode,
+    common,
+    lang,
+    content: languageContent,
+    h
+  })
+}
+
 /**
  * Handle POST request for SMS verify code page ''
  * @param {Object} request - Hapi request object
@@ -287,36 +409,33 @@ const handleCheckMessagePost = async (request, h, content = english) => {
   const mockOtpCode = config.get('notify.mockOtpCode') || '12345'
 
   // If code already verified, allow forward unless a different code is entered ''
-  const codeVerified = request.yar.get('codeVerified')
-  if (codeVerified) {
-    if (submitted && submitted !== mockOtpCode) {
-      const vm = buildErrorViewModel(
-        request,
-        mobileNumber,
-        smsVerifyCode.errors.enterCodeShown,
-        smsVerifyCode,
-        common,
-        lang,
-        languageContent
-      )
-      return h.view(VIEW_PATH, vm)
-    }
-    logger.info('Code already verified, redirecting to confirm details')
-    return h.redirect(SMS_CONFIRM_DETAILS_PATH)
+  const alreadyVerifiedResponse = handleAlreadyVerifiedCode({
+    submitted,
+    mockOtpCode,
+    request,
+    mobileNumber,
+    smsVerifyCode,
+    common,
+    lang,
+    languageContent,
+    h
+  })
+  if (alreadyVerifiedResponse) {
+    return alreadyVerifiedResponse
   }
 
-  const validation = validateOtpFormat(submitted, smsVerifyCode)
-  if (!validation.isValid) {
-    const vm = buildErrorViewModel(
-      request,
-      mobileNumber,
-      validation.error,
-      smsVerifyCode,
-      common,
-      lang,
-      languageContent
-    )
-    return h.view(VIEW_PATH, vm)
+  const invalidCodeResponse = validateSubmittedCode({
+    submitted,
+    request,
+    mobileNumber,
+    smsVerifyCode,
+    common,
+    lang,
+    languageContent,
+    h
+  })
+  if (invalidCodeResponse) {
+    return invalidCodeResponse
   }
 
   const failedAttempts = request.yar.get('otpFailedAttempts') || 0
@@ -324,29 +443,20 @@ const handleCheckMessagePost = async (request, h, content = english) => {
 
   const result = await verifyOtp(mobileNumber, submitted, request)
 
-  logger.info('OTP verification result received', {
-    ok: result.ok,
-    status: result.status,
-    hasError: !!result.error,
-    hasBody: !!result.body,
-    bodyMessage: result.body?.message,
-    errorMessage: result.error?.message
+  const failedVerificationResponse = handleOtpVerificationResult({
+    result,
+    request,
+    mobileNumber,
+    failedAttempts,
+    lastFailedTime,
+    smsVerifyCode,
+    common,
+    lang,
+    languageContent,
+    h
   })
-
-  const isFailure = !result.ok
-  if (isFailure) {
-    return handleVerificationFailure({
-      request,
-      mobileNumber,
-      result,
-      failedAttempts,
-      lastFailedTime,
-      smsVerifyCode,
-      common,
-      lang,
-      content: languageContent,
-      h
-    })
+  if (failedVerificationResponse) {
+    return failedVerificationResponse
   }
 
   return handleVerificationSuccess(request, mobileNumber, h)
