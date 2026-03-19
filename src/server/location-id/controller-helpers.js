@@ -339,39 +339,68 @@ export function applyMockPollutants(
 }
 
 /**
- * Build redirect URL with search terms and mock parameters
- * @param {string} lang - Language code
- * @param {string} searchParams - Search parameters string
- * @param {object} request - Request object
- * @param {string} locationId - Location ID from URL (for bookmark support)
- * @returns {string} Redirect URL
+ * Build search params from URL path and location fallback
+ * @param {string} currentUrl - Current URL
+ * @param {string} locationId - Location ID from URL
+ * @returns {string} Search params string
  */
-// eslint-disable-next-line no-unused-vars
-function buildRedirectUrl(lang, searchParams, request, locationId = null) {
-  const mockLevel = request.query?.mockLevel
-  const mockLevelParam =
-    mockLevel !== null && mockLevel !== undefined
-      ? `&mockLevel=${encodeURIComponent(mockLevel)}`
-      : ''
+function buildSearchParams(currentUrl, locationId) {
+  // '' Extract searchTerms from current URL path (0.685.0 approach)
+  const { searchTerms, secondSearchTerm, searchTermsLocationType } =
+    getSearchTermsFromUrl(currentUrl)
 
-  const mockPollutantBand = request.query?.mockPollutantBand
-  const mockPollutantParam =
-    mockPollutantBand !== null && mockPollutantBand !== undefined
-      ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
-      : ''
+  // '' Fallback to locationId for URLs like /location/{id}/?lang=en where path parsing can return empty
+  const fallbackSearchTerms = locationId || ''
+  const safeSearchTerms = searchTerms || fallbackSearchTerms
+  const safeSecondSearchTerm = secondSearchTerm || ''
+  const safeSearchTermsLocationType =
+    searchTermsLocationType || (safeSearchTerms ? LOCATION_TYPE_UK : '')
 
-  const testMode = request.query?.testMode
-  const testModeParam =
-    testMode !== null && testMode !== undefined
-      ? `&testMode=${encodeURIComponent(testMode)}`
-      : ''
+  if (
+    !safeSearchTerms &&
+    !safeSecondSearchTerm &&
+    !safeSearchTermsLocationType
+  ) {
+    return ''
+  }
 
-  // '' If locationId is provided (bookmark scenario), pass it as searchTerms to middleware
-  const searchTermsParam = locationId
-    ? `&searchTerms=${encodeURIComponent(locationId.toUpperCase())}`
-    : ''
+  return `&searchTerms=${encodeURIComponent(safeSearchTerms)}&secondSearchTerm=${encodeURIComponent(safeSecondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(safeSearchTermsLocationType)}`
+}
 
-  return `/location?lang=${encodeURIComponent(lang)}${searchParams}${searchTermsParam}${mockLevelParam}${mockPollutantParam}${testModeParam}`
+/**
+ * Build mock query params from request query
+ * @param {object} query - Request query object
+ * @returns {string} Mock params string
+ */
+function buildMockQueryParamsFromQuery(query = {}) {
+  const params = []
+  addParamIfExists(params, 'mockLevel', query.mockLevel)
+  addParamIfExists(params, 'mockPollutantBand', query.mockPollutantBand)
+  addParamIfExists(params, 'testMode', query.testMode)
+  return params.length > 0 ? `&${params.join('&')}` : ''
+}
+
+/**
+ * Check whether session location data is complete
+ * @param {object} locationData - Session location data
+ * @returns {boolean} True when results and forecasts are present
+ */
+function hasValidSessionLocationData(locationData) {
+  return Boolean(Array.isArray(locationData?.results) && locationData?.getForecasts)
+}
+
+/**
+ * Clear cached location values from session storage
+ * @param {object} request - Request object
+ */
+function clearLocationSessionData(request) {
+  const yar = request?.yar
+  if (!yar || typeof yar.clear !== 'function') {
+    return
+  }
+
+  yar.clear('locationData')
+  yar.clear('locationDataCacheKey')
 }
 
 /**
@@ -395,44 +424,15 @@ export function validateAndProcessSessionData(
   const safeRequest = request || {}
 
   // '' Check for valid results AND forecasts (like 0.685.0)
-  if (!Array.isArray(locationData?.results) || !locationData?.getForecasts) {
-    // '' Extract searchTerms from current URL path (0.685.0 approach)
-    const { searchTerms, secondSearchTerm, searchTermsLocationType } =
-      getSearchTermsFromUrl(currentUrl)
-
-    safeRequest?.yar?.clear?.('locationData')
-    safeRequest?.yar?.clear?.('locationDataCacheKey')
-
-    // '' Fallback to locationId for URLs like /location/{id}/?lang=en where path parsing can return empty
-    const fallbackSearchTerms = locationId || ''
-    const safeSearchTerms = searchTerms || fallbackSearchTerms
-    const safeSecondSearchTerm = secondSearchTerm || ''
-    const safeSearchTermsLocationType =
-      searchTermsLocationType || (safeSearchTerms ? LOCATION_TYPE_UK : '')
-    const searchParams =
-      safeSearchTerms || safeSecondSearchTerm || safeSearchTermsLocationType
-        ? `&searchTerms=${encodeURIComponent(safeSearchTerms)}&secondSearchTerm=${encodeURIComponent(safeSecondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(safeSearchTermsLocationType)}`
-        : ''
-
-    // '' Preserve mock parameters in redirect
-    const mockLevel = safeRequest?.query?.mockLevel
-    const mockLevelParam =
-      mockLevel !== undefined
-        ? `&mockLevel=${encodeURIComponent(mockLevel)}`
-        : ''
-
-    const mockPollutantBand = safeRequest?.query?.mockPollutantBand
-    const mockPollutantParam =
-      mockPollutantBand !== undefined
-        ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
-        : ''
-
-    const testMode = safeRequest?.query?.testMode
-    const testModeParam =
-      testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
-
-    const redirectUrl = `/location?lang=${encodeURIComponent(lang)}${searchParams}${mockLevelParam}${mockPollutantParam}${testModeParam}`
-    return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE).takeover()
+  if (hasValidSessionLocationData(locationData)) {
+    return null
   }
-  return null
+
+  clearLocationSessionData(safeRequest)
+
+  const searchParams = buildSearchParams(currentUrl, locationId)
+  const mockParams = buildMockQueryParamsFromQuery(safeRequest?.query)
+  const redirectUrl = `/location?lang=${encodeURIComponent(lang)}${searchParams}${mockParams}`
+
+  return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE).takeover()
 }

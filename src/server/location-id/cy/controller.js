@@ -94,39 +94,225 @@ function getPreviousUrl(request) {
   return request.headers.referer || request.headers.referrer
 }
 
+function buildMockQueryParams(query, mocksDisabled) {
+  if (mocksDisabled) {
+    return ''
+  }
+
+  const params = []
+  const keys = ['mockLevel', 'mockDay', 'mockPollutantBand', 'testMode']
+
+  keys.forEach((key) => {
+    if (query?.[key] !== undefined) {
+      params.push(`${key}=${encodeURIComponent(query[key])}`)
+    }
+  })
+
+  return params.length > 0 ? `&${params.join('&')}` : ''
+}
+
 function buildRedirectUrl(currentUrl, request) {
   const { searchTerms, secondSearchTerm, searchTermsLocationType } =
     getSearchTermsFromUrl(currentUrl)
-
-  // '' Preserve mock parameters from query string
   const mocksDisabled = config.get('disableTestMocks')
-  const mockLevel = !mocksDisabled ? request?.query?.mockLevel : undefined
-  const mockDay = !mocksDisabled ? request?.query?.mockDay : undefined
-  const mockPollutantBand = !mocksDisabled
-    ? request?.query?.mockPollutantBand
-    : undefined
-  const testMode = !mocksDisabled ? request?.query?.testMode : undefined
-
-  const mockParams = []
-  if (mockLevel !== undefined) {
-    mockParams.push(`mockLevel=${encodeURIComponent(mockLevel)}`)
-  }
-  if (mockDay !== undefined) {
-    mockParams.push(`mockDay=${encodeURIComponent(mockDay)}`)
-  }
-  if (mockPollutantBand !== undefined) {
-    mockParams.push(
-      `mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
-    )
-  }
-  if (testMode !== undefined) {
-    mockParams.push(`testMode=${encodeURIComponent(testMode)}`)
-  }
-
-  const mockParamsString =
-    mockParams.length > 0 ? `&${mockParams.join('&')}` : ''
+  const mockParamsString = buildMockQueryParams(request?.query, mocksDisabled)
 
   return `/lleoliad?lang=cy&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}${mockParamsString}`
+}
+
+function storeSessionParameter(request, paramName, paramValue) {
+  if (!request?.yar?.set || paramValue === undefined) {
+    return
+  }
+
+  if (paramValue === '' || paramValue === 'clear') {
+    request.yar.set(paramName, null)
+    return
+  }
+
+  request.yar.set(paramName, paramValue)
+}
+
+function warnMocksDisabled(paramLabel) {
+  logger.warn(
+    `Attempted to set ${paramLabel.toLowerCase()} when mocks disabled (disableTestMocks=true) - ignoring parameter`
+  )
+}
+
+function persistMockAndTestModeParams(request, query, mocksDisabled) {
+  const mockParamConfig = [
+    { key: 'mockLevel', label: 'Mock level' },
+    { key: 'mockDay', label: 'Mock day' },
+    { key: 'mockPollutantBand', label: 'Mock pollutant band' },
+    { key: 'testMode', label: 'Test mode' }
+  ]
+
+  mockParamConfig.forEach(({ key, label }) => {
+    if (query?.[key] === undefined) {
+      return
+    }
+
+    if (mocksDisabled) {
+      warnMocksDisabled(label)
+      return
+    }
+
+    if (key === 'testMode') {
+      request.yar.set('testMode', query.testMode)
+      return
+    }
+
+    storeSessionParameter(request, key, query[key])
+  })
+}
+
+function getWelshFormattedDate(dateValue) {
+  const welshMonth = calendarWelsh[dateValue.month()]
+  return `${dateValue.format('DD')} ${welshMonth} ${dateValue.format('YYYY')}`
+}
+
+function setLocationDates(locationData, dateValue) {
+  locationData.englishDate = dateValue.format('DD MMMM YYYY')
+  locationData.welshDate = getWelshFormattedDate(dateValue)
+}
+
+function applyWelshTestMode(locationData, testMode) {
+  switch (testMode) {
+    case 'noDailySummary':
+      // '' Remove daily summary text only (keep date if today)
+      locationData.dailySummary = undefined
+      break
+
+    case 'oldDate':
+      // '' Set date to yesterday (date should NOT show)
+      if (locationData.dailySummary) {
+        const yesterday = moment().subtract(1, 'days')
+        locationData.dailySummary.issue_date = yesterday.format(
+          'YYYY-MM-DD HH:mm:ss'
+        )
+        setLocationDates(locationData, yesterday)
+      }
+      break
+
+    case 'todayDate': {
+      // '' Set date to today (date SHOULD show)
+      const today = moment()
+      if (!locationData.dailySummary) {
+        locationData.dailySummary = {}
+      }
+      locationData.dailySummary.issue_date = today.format('YYYY-MM-DD HH:mm:ss')
+      setLocationDates(locationData, today)
+      break
+    }
+
+    case 'noDataOldDate': {
+      // '' Remove daily summary AND set old date (nothing should show)
+      const yesterday = moment().subtract(1, 'days')
+      locationData.dailySummary = {
+        issue_date: yesterday.format('YYYY-MM-DD HH:mm:ss')
+      }
+      setLocationDates(locationData, yesterday)
+      break
+    }
+
+    default:
+      logger.warn(`[CY] Unknown testMode: ${testMode}`)
+  }
+}
+
+function isSummaryDateToday(issueDate) {
+  if (!issueDate) {
+    return false
+  }
+  const today = moment().format('YYYY-MM-DD')
+  const issueDateFormatted = moment(issueDate).format('YYYY-MM-DD')
+  return today === issueDateFormatted
+}
+
+function recalculateSummaryDateFields(locationData) {
+  if (locationData.dailySummary?.issue_date) {
+    locationData.showSummaryDate = isSummaryDateToday(
+      locationData.dailySummary.issue_date
+    )
+    locationData.issueTime = getIssueTime(locationData.dailySummary.issue_date)
+    return
+  }
+
+  locationData.showSummaryDate = false
+  locationData.issueTime = undefined
+}
+
+function applyTestModeFromQueryOrSession(request, locationData) {
+  const testModeFromQuery = request.query?.testMode
+  const testModeFromSession = request.yar.get('testMode')
+  const testMode = testModeFromQuery || testModeFromSession
+
+  if (!testMode) {
+    return
+  }
+
+  applyWelshTestMode(locationData, testMode)
+  recalculateSummaryDateFields(locationData)
+}
+
+function ensureSummaryDateForDirectAccess(locationData) {
+  if (
+    locationData.showSummaryDate !== undefined ||
+    !locationData.dailySummary?.issue_date
+  ) {
+    return
+  }
+
+  const today = moment().format('YYYY-MM-DD')
+  const issueDate = moment(locationData.dailySummary.issue_date).format(
+    'YYYY-MM-DD'
+  )
+  locationData.showSummaryDate = today === issueDate
+  locationData.issueTime = getIssueTime(locationData.dailySummary.issue_date)
+}
+
+function renderProcessedLocationOrNotFound({
+  h,
+  request,
+  locationData,
+  processedData,
+  initData,
+  locationId
+}) {
+  if (!processedData.locationDetails) {
+    return renderNotFoundView(h, LANG_CY)
+  }
+
+  optimizeLocationDataInSession(
+    request,
+    locationData,
+    processedData.nearestLocation,
+    processedData.nearestLocationsRange
+  )
+
+  ensureSummaryDateForDirectAccess(locationData)
+
+  const modifiedMonitoringSites = applyMockPollutants(
+    request,
+    processedData.nearestLocationsRange
+  )
+
+  const viewData = buildLocationViewData({
+    locationDetails: processedData.locationDetails,
+    nearestLocationsRange: modifiedMonitoringSites,
+    locationData,
+    forecastNum: processedData.forecastNum,
+    lang: LANG_CY,
+    getMonth: initData.getMonth,
+    metaSiteUrl: initData.metaSiteUrl,
+    airQualityData,
+    siteTypeDescriptions,
+    pollutantTypes,
+    request,
+    locationId
+  })
+
+  return renderLocationView(h, viewData)
 }
 
 // Cleaned up - UI components and helper functions now handled by shared helper
@@ -143,57 +329,7 @@ const getLocationDetailsController = {
 
       // '' Store mock parameters in session (mockLevel, mockDay, mockPollutantBand, testMode)
       const mocksDisabled = config.get('disableTestMocks')
-
-      // Store mockLevel in session if provided
-      if (query?.mockLevel !== undefined && !mocksDisabled) {
-        if (query.mockLevel === '' || query.mockLevel === 'clear') {
-          request.yar.set('mockLevel', null)
-        } else {
-          request.yar.set('mockLevel', query.mockLevel)
-        }
-      } else if (mocksDisabled && query?.mockLevel !== undefined) {
-        logger.warn(
-          `Attempted to set mock level when mocks disabled (disableTestMocks=true) - ignoring parameter`
-        )
-      }
-
-      // Store mockDay in session if provided
-      if (query?.mockDay !== undefined && !mocksDisabled) {
-        if (query.mockDay === '' || query.mockDay === 'clear') {
-          request.yar.set('mockDay', null)
-        } else {
-          request.yar.set('mockDay', query.mockDay)
-        }
-      } else if (mocksDisabled && query?.mockDay !== undefined) {
-        logger.warn(
-          `Attempted to set mock day when mocks disabled (disableTestMocks=true) - ignoring parameter`
-        )
-      }
-
-      // Store mockPollutantBand in session if provided
-      if (query?.mockPollutantBand !== undefined && !mocksDisabled) {
-        if (
-          query.mockPollutantBand === '' ||
-          query.mockPollutantBand === 'clear'
-        ) {
-          request.yar.set('mockPollutantBand', null)
-        } else {
-          request.yar.set('mockPollutantBand', query.mockPollutantBand)
-        }
-      } else if (mocksDisabled && query?.mockPollutantBand !== undefined) {
-        logger.warn(
-          `Attempted to set mock pollutant band when mocks disabled (disableTestMocks=true) - ignoring parameter`
-        )
-      }
-
-      // Store testMode in session if provided
-      if (query?.testMode !== undefined && !mocksDisabled) {
-        request.yar.set('testMode', query.testMode)
-      } else if (mocksDisabled && query?.testMode !== undefined) {
-        logger.warn(
-          `Attempted to set test mode when mocks disabled (disableTestMocks=true) - ignoring parameter`
-        )
-      }
+      persistMockAndTestModeParams(request, query, mocksDisabled)
 
       if (shouldRedirectToEnglish(query)) {
         return h.redirect(`/location/${locationId}/?lang=en`)
@@ -225,83 +361,7 @@ const getLocationDetailsController = {
           .code(REDIRECT_STATUS_CODE)
           .takeover()
       }
-
-      const testModeFromQuery = request.query?.testMode
-      const testModeFromSession = request.yar.get('testMode')
-      const testMode = testModeFromQuery || testModeFromSession
-
-      if (testMode) {
-        switch (testMode) {
-          case 'noDailySummary':
-            // '' Remove daily summary text only (keep date if today)
-            locationData.dailySummary = undefined
-            break
-
-          case 'oldDate':
-            // '' Set date to yesterday (date should NOT show)
-            if (locationData.dailySummary) {
-              const yesterday = moment().subtract(1, 'days')
-              locationData.dailySummary.issue_date = yesterday.format(
-                'YYYY-MM-DD HH:mm:ss'
-              )
-              locationData.englishDate = yesterday.format('DD MMMM YYYY')
-              const welshMonth = calendarWelsh[yesterday.month()]
-              locationData.welshDate = `${yesterday.format('DD')} ${welshMonth} ${yesterday.format('YYYY')}`
-            }
-            break
-
-          case 'todayDate': {
-            // '' Set date to today (date SHOULD show)
-            const today = moment()
-            // Create dailySummary if it doesn't exist (only for test mode - real app should have API data)
-            if (!locationData.dailySummary) {
-              locationData.dailySummary = {}
-            }
-            locationData.dailySummary.issue_date = today.format(
-              'YYYY-MM-DD HH:mm:ss'
-            )
-            locationData.englishDate = today.format('DD MMMM YYYY')
-            const welshMonth = calendarWelsh[today.month()]
-            locationData.welshDate = `${today.format('DD')} ${welshMonth} ${today.format('YYYY')}`
-            break
-          }
-
-          case 'noDataOldDate': {
-            // '' Remove daily summary AND set old date (nothing should show)
-            const yesterday = moment().subtract(1, 'days')
-            locationData.dailySummary = {
-              issue_date: yesterday.format('YYYY-MM-DD HH:mm:ss')
-            }
-            locationData.englishDate = yesterday.format('DD MMMM YYYY')
-            const welshMonth = calendarWelsh[yesterday.month()]
-            locationData.welshDate = `${yesterday.format('DD')} ${welshMonth} ${yesterday.format('YYYY')}`
-            break
-          }
-
-          default:
-            logger.warn(`[CY] Unknown testMode: ${testMode}`)
-        }
-
-        // Re-calculate showSummaryDate after any changes
-        const isSummaryDateToday = (issueDate) => {
-          if (!issueDate) return false
-          const today = moment().format('YYYY-MM-DD')
-          const issueDateFormatted = moment(issueDate).format('YYYY-MM-DD')
-          return today === issueDateFormatted
-        }
-
-        if (locationData.dailySummary?.issue_date) {
-          locationData.showSummaryDate = isSummaryDateToday(
-            locationData.dailySummary.issue_date
-          )
-          locationData.issueTime = getIssueTime(
-            locationData.dailySummary.issue_date
-          )
-        } else {
-          locationData.showSummaryDate = false
-          locationData.issueTime = undefined
-        }
-      }
+      applyTestModeFromQueryOrSession(request, locationData)
 
       // Process Welsh location data using helper
       const processedData = await processLocationData(
@@ -312,56 +372,14 @@ const getLocationDetailsController = {
         useNewRicardoMeasurementsEnabled
       )
 
-      if (processedData.locationDetails) {
-        // Optimize session data to reduce memory usage
-        optimizeLocationDataInSession(
-          request,
-          locationData,
-          processedData.nearestLocation,
-          processedData.nearestLocationsRange
-        )
-
-        // '' Calculate showSummaryDate if not already set (for direct access to location pages)
-        if (
-          locationData.showSummaryDate === undefined &&
-          locationData.dailySummary?.issue_date
-        ) {
-          const today = moment().format('YYYY-MM-DD')
-          const issueDate = moment(locationData.dailySummary.issue_date).format(
-            'YYYY-MM-DD'
-          )
-          locationData.showSummaryDate = today === issueDate
-          locationData.issueTime = getIssueTime(
-            locationData.dailySummary.issue_date
-          )
-        }
-
-        // '' Apply mock pollutant bands if requested
-        const modifiedMonitoringSites = applyMockPollutants(
-          request,
-          processedData.nearestLocationsRange
-        )
-
-        // Build view data using helper
-        const viewData = buildLocationViewData({
-          locationDetails: processedData.locationDetails,
-          nearestLocationsRange: modifiedMonitoringSites,
-          locationData,
-          forecastNum: processedData.forecastNum,
-          lang: LANG_CY,
-          getMonth: initData.getMonth,
-          metaSiteUrl: initData.metaSiteUrl,
-          airQualityData,
-          siteTypeDescriptions,
-          pollutantTypes,
-          request,
-          locationId
-        })
-
-        return renderLocationView(h, viewData)
-      } else {
-        return renderNotFoundView(h, LANG_CY)
-      }
+      return renderProcessedLocationOrNotFound({
+        h,
+        request,
+        locationData,
+        processedData,
+        initData,
+        locationId
+      })
     } catch (error) {
       logger.error(`error on single location ${error.message}`)
       return h

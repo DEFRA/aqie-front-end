@@ -24,42 +24,88 @@ function logMocksDisabledWarning(paramLabel) {
   )
 }
 
-function initializeRequestData(request) {
+function getLocationIdFromRequest(request) {
+  return request && request.params ? request.params.id : undefined
+}
+
+function getSearchTermsSavedFromRequest(request) {
+  if (!request || !request.yar || typeof request.yar.get !== 'function') {
+    return undefined
+  }
+
+  return request.yar.get('searchTermsSaved')
+}
+
+function getCurrentUrlFromRequest(request) {
+  return request && request.url && request.url.href ? request.url.href : ''
+}
+
+function getRequestContext(request) {
   const safeRequest = request || {}
   const query = safeRequest.query || {}
   const headers = safeRequest.headers || {}
-  const locationId = safeRequest?.params?.id
-  const searchTermsSaved = safeRequest?.yar?.get?.('searchTermsSaved')
-  const currentUrl = safeRequest?.url?.href || ''
-  const lang = query?.lang ?? LANG_EN
+  const locationId = getLocationIdFromRequest(safeRequest)
+  const searchTermsSaved = getSearchTermsSavedFromRequest(safeRequest)
+  const currentUrl = getCurrentUrlFromRequest(safeRequest)
+  const lang = query.lang ?? LANG_EN
+
+  return {
+    safeRequest,
+    query,
+    headers,
+    locationId,
+    searchTermsSaved,
+    currentUrl,
+    lang
+  }
+}
+
+function hasYarSet(request) {
+  return Boolean(request && request.yar && typeof request.yar.set === 'function')
+}
+
+function applyMockSessionValues(request, query) {
+  storeSessionParameter(request, 'mockLevel', query.mockLevel)
+  storeSessionParameter(request, 'mockDay', query.mockDay)
+  storeSessionParameter(request, 'mockPollutantBand', query.mockPollutantBand)
+
+  if (query.testMode !== undefined && hasYarSet(request)) {
+    request.yar.set('testMode', query.testMode)
+  }
+}
+
+function warnForIgnoredMockParams(query) {
+  const mockParamChecks = [
+    { key: 'mockLevel', label: 'Mock level' },
+    { key: 'mockDay', label: 'Mock day' },
+    { key: 'mockPollutantBand', label: 'Mock pollutant band' },
+    { key: 'testMode', label: 'Test mode' }
+  ]
+
+  mockParamChecks.forEach(({ key, label }) => {
+    if (query[key] !== undefined) {
+      logMocksDisabledWarning(label)
+    }
+  })
+}
+
+function initializeRequestData(request) {
+  const {
+    safeRequest,
+    query,
+    headers,
+    locationId,
+    searchTermsSaved,
+    currentUrl,
+    lang
+  } = getRequestContext(request)
   const mocksDisabled = config.get('disableTestMocks')
   const mocksEnabled = !mocksDisabled
 
   if (mocksEnabled) {
-    storeSessionParameter(safeRequest, 'mockLevel', query?.mockLevel)
-    storeSessionParameter(safeRequest, 'mockDay', query?.mockDay)
-    storeSessionParameter(
-      safeRequest,
-      'mockPollutantBand',
-      query?.mockPollutantBand
-    )
-
-    if (query?.testMode !== undefined && safeRequest?.yar?.set) {
-      safeRequest.yar.set('testMode', query.testMode)
-    }
+    applyMockSessionValues(safeRequest, query)
   } else {
-    if (query?.mockLevel !== undefined) {
-      logMocksDisabledWarning('Mock level')
-    }
-    if (query?.mockDay !== undefined) {
-      logMocksDisabledWarning('Mock day')
-    }
-    if (query?.mockPollutantBand !== undefined) {
-      logMocksDisabledWarning('Mock pollutant band')
-    }
-    if (query?.testMode !== undefined) {
-      logMocksDisabledWarning('Test mode')
-    }
+    warnForIgnoredMockParams(query)
   }
 
   return {

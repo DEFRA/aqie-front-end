@@ -8,6 +8,59 @@ const ISSUE_DATE_FORMAT = 'YYYY-MM-DD'
 const DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss'
 const DATE_FORMAT = 'DD MMMM YYYY'
 
+function setFormattedDates(locationData, dateValue) {
+  locationData.englishDate = dateValue.format(DATE_FORMAT)
+  locationData.welshDate = dateValue.format(DATE_FORMAT)
+}
+
+function applyNoDailySummary(locationData) {
+  locationData[DAILY_SUMMARY_KEY] = null
+}
+
+function applyOldDate(locationData) {
+  if (!locationData[DAILY_SUMMARY_KEY]) {
+    return
+  }
+
+  const yesterday = moment().subtract(1, 'days')
+  locationData[DAILY_SUMMARY_KEY].issue_date = yesterday.format(DATETIME_FORMAT)
+  setFormattedDates(locationData, yesterday)
+}
+
+function applyTodayDate(locationData) {
+  const today = moment()
+  if (!locationData[DAILY_SUMMARY_KEY]) {
+    locationData[DAILY_SUMMARY_KEY] = {}
+  }
+
+  locationData[DAILY_SUMMARY_KEY].issue_date = today.format(DATETIME_FORMAT)
+  setFormattedDates(locationData, today)
+}
+
+function applyNoDataOldDate(locationData) {
+  const yesterday = moment().subtract(1, 'days')
+  locationData[DAILY_SUMMARY_KEY] = {
+    issue_date: yesterday.format(DATETIME_FORMAT)
+  }
+  setFormattedDates(locationData, yesterday)
+}
+
+const testModeHandlers = {
+  noDailySummary: applyNoDailySummary,
+  oldDate: applyOldDate,
+  todayDate: applyTodayDate,
+  noDataOldDate: applyNoDataOldDate
+}
+
+function updateSummaryMetadata(locationData) {
+  locationData.showSummaryDate = isSummaryDateToday(
+    locationData[DAILY_SUMMARY_KEY]?.issue_date
+  )
+  locationData.issueTime = getIssueTime(
+    locationData[DAILY_SUMMARY_KEY]?.issue_date
+  )
+}
+
 /**
  * Apply test mode changes to location data
  */
@@ -17,53 +70,15 @@ export function applyTestModeChanges(locationData, testMode, customLogger) {
     return
   }
 
-  switch (testMode) {
-    case 'noDailySummary':
-      locationData[DAILY_SUMMARY_KEY] = null
-      break
-
-    case 'oldDate':
-      if (locationData[DAILY_SUMMARY_KEY]) {
-        const yesterday = moment().subtract(1, 'days')
-        locationData[DAILY_SUMMARY_KEY].issue_date =
-          yesterday.format(DATETIME_FORMAT)
-        locationData.englishDate = yesterday.format(DATE_FORMAT)
-        locationData.welshDate = yesterday.format(DATE_FORMAT)
-      }
-      break
-
-    case 'todayDate': {
-      const today = moment()
-      if (!locationData[DAILY_SUMMARY_KEY]) {
-        locationData[DAILY_SUMMARY_KEY] = {}
-      }
-      locationData[DAILY_SUMMARY_KEY].issue_date = today.format(DATETIME_FORMAT)
-      locationData.englishDate = today.format(DATE_FORMAT)
-      locationData.welshDate = today.format(DATE_FORMAT)
-      break
-    }
-
-    case 'noDataOldDate': {
-      const yesterday = moment().subtract(1, 'days')
-      locationData[DAILY_SUMMARY_KEY] = {
-        issue_date: yesterday.format(DATETIME_FORMAT)
-      }
-      locationData.englishDate = yesterday.format(DATE_FORMAT)
-      locationData.welshDate = yesterday.format(DATE_FORMAT)
-      break
-    }
-
-    default:
-      log.warn(`Unknown testMode: ${testMode}`)
+  const testModeHandler = testModeHandlers[testMode]
+  if (!testModeHandler) {
+    log.warn(`Unknown testMode: ${testMode}`)
+    return
   }
 
+  testModeHandler(locationData)
   // Re-calculate showSummaryDate after any changes
-  locationData.showSummaryDate = isSummaryDateToday(
-    locationData[DAILY_SUMMARY_KEY]?.issue_date
-  )
-  locationData.issueTime = getIssueTime(
-    locationData[DAILY_SUMMARY_KEY]?.issue_date
-  )
+  updateSummaryMetadata(locationData)
 }
 
 /**

@@ -263,30 +263,32 @@ function clearSessionKeyIfExists(request, sessionKey) {
   }
 }
 
+function isObjectLikeValue(value) {
+  return Boolean(value && typeof value === 'object')
+}
+
+function hasObjectReferencePair(currentValue, nextValue) {
+  return isObjectLikeValue(currentValue) && isObjectLikeValue(nextValue)
+}
+
+function areObjectValuesEqual(currentValue, nextValue) {
+  try {
+    return JSON.stringify(currentValue) === JSON.stringify(nextValue)
+  } catch {
+    return false
+  }
+}
+
 function areSessionValuesEqual(currentValue, nextValue) {
   if (Object.is(currentValue, nextValue)) {
-    if (
-      currentValue &&
-      typeof currentValue === 'object' &&
-      nextValue &&
-      typeof nextValue === 'object'
-    ) {
+    if (hasObjectReferencePair(currentValue, nextValue)) {
       return false
     }
     return true
   }
 
-  if (
-    currentValue &&
-    nextValue &&
-    typeof currentValue === 'object' &&
-    typeof nextValue === 'object'
-  ) {
-    try {
-      return JSON.stringify(currentValue) === JSON.stringify(nextValue)
-    } catch {
-      return false
-    }
+  if (hasObjectReferencePair(currentValue, nextValue)) {
+    return areObjectValuesEqual(currentValue, nextValue)
   }
 
   return false
@@ -374,19 +376,31 @@ function normalizeLocationIdTerms(locationId = '') {
   }
 }
 
+function shouldSkipStatelessHydration(env, locationId) {
+  return env === 'test' || !locationId
+}
+
+function hasPlacesResults(getOSPlaces) {
+  return Boolean(
+    Array.isArray(getOSPlaces?.results) && getOSPlaces.results.length > 0
+  )
+}
+
+function hasLocationIdMatch(selectedMatchesAddedIDs, locationId) {
+  return selectedMatchesAddedIDs.some(
+    (item) => item?.GAZETTEER_ENTRY?.ID === locationId
+  )
+}
+
 async function hydrateLocationDataForStatelessLocationId(
   request,
   locationId,
   lang
 ) {
   const env = config.get('env') || config.get('nodeEnv')
-  if (env === 'test') {
-    return null
-  }
-
   // '' Attempt direct-id hydration even with a session cookie, because
   // '' stale/empty session payloads can happen on bookmarked URLs.
-  if (!locationId) {
+  if (shouldSkipStatelessHydration(env, locationId)) {
     return null
   }
 
@@ -408,10 +422,7 @@ async function hydrateLocationDataForStatelessLocationId(
       }
     )
 
-    if (
-      !Array.isArray(getOSPlaces?.results) ||
-      getOSPlaces.results.length === 0
-    ) {
+    if (!hasPlacesResults(getOSPlaces)) {
       return null
     }
 
@@ -419,11 +430,7 @@ async function hydrateLocationDataForStatelessLocationId(
       ...getOSPlaces.results
     ])
 
-    const hasMatchingLocation = selectedMatchesAddedIDs.some(
-      (item) => item?.GAZETTEER_ENTRY?.ID === locationId
-    )
-
-    if (!hasMatchingLocation) {
+    if (!hasLocationIdMatch(selectedMatchesAddedIDs, locationId)) {
       return null
     }
 
@@ -455,27 +462,45 @@ async function hydrateLocationDataForStatelessLocationId(
   }
 }
 
-// '' Helper to resolve alert coordinates with NI-safe fallback
-function resolveAlertLatLon(locationData = {}, fallbackLatlon = {}) {
-  const isNILocation = locationData?.locationType === LOCATION_TYPE_NI
+function getNILatLon(locationData = {}) {
+  if (locationData?.locationType !== LOCATION_TYPE_NI) {
+    return null
+  }
+
   const firstResult = Array.isArray(locationData?.results)
     ? locationData.results[0]
     : null
-  const resultLat = Number(firstResult?.latitude)
-  const resultLon = Number(firstResult?.longitude)
+  const lat = Number(firstResult?.latitude)
+  const lon = Number(firstResult?.longitude)
 
-  if (
-    isNILocation &&
-    Number.isFinite(resultLat) &&
-    Number.isFinite(resultLon)
-  ) {
-    return { lat: resultLat, lon: resultLon }
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+    return null
   }
 
-  const fallbackLat = Number(fallbackLatlon?.lat)
-  const fallbackLon = Number(fallbackLatlon?.lon)
-  if (Number.isFinite(fallbackLat) && Number.isFinite(fallbackLon)) {
-    return { lat: fallbackLat, lon: fallbackLon }
+  return { lat, lon }
+}
+
+function getFiniteFallbackLatLon(fallbackLatlon = {}) {
+  const lat = Number(fallbackLatlon?.lat)
+  const lon = Number(fallbackLatlon?.lon)
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+    return null
+  }
+
+  return { lat, lon }
+}
+
+// '' Helper to resolve alert coordinates with NI-safe fallback
+function resolveAlertLatLon(locationData = {}, fallbackLatlon = {}) {
+  const niLatLon = getNILatLon(locationData)
+  if (niLatLon) {
+    return niLatLon
+  }
+
+  const fallbackCoordinates = getFiniteFallbackLatLon(fallbackLatlon)
+  if (fallbackCoordinates) {
+    return fallbackCoordinates
   }
 
   return { lat: undefined, lon: undefined }
@@ -520,6 +545,76 @@ function handleWelshRedirect(query, locationId, h) {
   return null
 }
 
+function normalizeSearchTermsForRedirect(searchTerms, request) {
+  const fallbackSearchTerms = request?.params?.id || ''
+  let safeSearchTerms = searchTerms || fallbackSearchTerms
+
+  // '' Check if searchTerms is a normalized Northern Ireland postcode (e.g., bt938ad)
+  // '' and convert it back to proper format (e.g., BT93 8AD)
+  const normalizedNIPostcodeRegex = /^bt\d{1,2}\d[a-z]{2}$/i
+  if (normalizedNIPostcodeRegex.test(safeSearchTerms)) {
+    logger.info(
+      `[DEBUG controller] Detected normalized NI postcode: ${safeSearchTerms}`
+    )
+    safeSearchTerms = formatNorthernIrelandPostcode(
+      safeSearchTerms.toUpperCase()
+    )
+    logger.info(
+      `[DEBUG controller] Converted to formatted NI postcode: ${safeSearchTerms}`
+    )
+  }
+
+  return safeSearchTerms
+}
+
+function getSearchRedirectParams(currentUrl, request) {
+  const { searchTerms, secondSearchTerm, searchTermsLocationType } =
+    getSearchTermsFromUrl(currentUrl)
+
+  const safeSearchTerms = normalizeSearchTermsForRedirect(searchTerms, request)
+  const safeSecondSearchTerm = secondSearchTerm || ''
+  const safeSearchTermsLocationType =
+    !searchTermsLocationType || searchTermsLocationType === 'Invalid Postcode'
+      ? LOCATION_TYPE_UK
+      : searchTermsLocationType
+
+  return {
+    safeSearchTerms,
+    safeSecondSearchTerm,
+    safeSearchTermsLocationType
+  }
+}
+
+function buildDefinedQueryParams(query = {}) {
+  const params = []
+
+  if (query.mockLevel !== undefined) {
+    params.push(`mockLevel=${encodeURIComponent(query.mockLevel)}`)
+  }
+
+  if (query.mockDay !== undefined) {
+    params.push(`mockDay=${encodeURIComponent(query.mockDay)}`)
+  }
+
+  if (query.mockPollutantBand !== undefined) {
+    params.push(
+      `mockPollutantBand=${encodeURIComponent(query.mockPollutantBand)}`
+    )
+  }
+
+  if (query.testMode !== undefined) {
+    params.push(`testMode=${encodeURIComponent(query.testMode)}`)
+  }
+
+  return params.length > 0 ? `&${params.join('&')}` : ''
+}
+
+function buildMockParamsForSearchRedirect(request) {
+  // '' Disable mock functionality when configured (production by default)
+  const mocksDisabled = config.get('disableTestMocks')
+  return mocksDisabled ? '' : buildDefinedQueryParams(request?.query)
+}
+
 function handleSearchTermsRedirect(
   headers,
   searchTermsSaved,
@@ -536,88 +631,36 @@ function handleSearchTermsRedirect(
   const isPreviousAndCurrentUrlEqual = previousUrl
     ? compareLastElements(previousUrl, currentUrl)
     : false
+
   // '' Allow first-hit bookmark requests without a session cookie to proceed statelessly
   const hasSession = hasSessionCookie(request)
   logger.info(
     `[DEBUG controller] isPreviousAndCurrentUrlEqual: ${isPreviousAndCurrentUrlEqual}`
   )
-  if (isPreviousAndCurrentUrlEqual && !searchTermsSaved && hasSession) {
-    logger.info(
-      `[DEBUG controller] REDIRECTING because searchTermsSaved is missing`
-    )
-
-    // '' Extract searchTerms from URL path (0.685.0 approach)
-    let { searchTerms, secondSearchTerm, searchTermsLocationType } =
-      getSearchTermsFromUrl(currentUrl)
-
-    // '' Fallback to route id when trailing-slash URLs produce empty search terms
-    const fallbackSearchTerms = request?.params?.id || ''
-    if (!searchTerms && fallbackSearchTerms) {
-      searchTerms = fallbackSearchTerms
-    }
-
-    if (!secondSearchTerm) {
-      secondSearchTerm = ''
-    }
-
-    if (
-      !searchTermsLocationType ||
-      searchTermsLocationType === 'Invalid Postcode'
-    ) {
-      searchTermsLocationType = LOCATION_TYPE_UK
-    }
-
-    // '' Check if searchTerms is a normalized Northern Ireland postcode (e.g., bt938ad)
-    // '' and convert it back to proper format (e.g., BT93 8AD)
-    const normalizedNIPostcodeRegex = /^bt\d{1,2}\d[a-z]{2}$/i
-    if (normalizedNIPostcodeRegex.test(searchTerms)) {
-      logger.info(
-        `[DEBUG controller] Detected normalized NI postcode: ${searchTerms}`
-      )
-      searchTerms = formatNorthernIrelandPostcode(searchTerms.toUpperCase())
-      logger.info(
-        `[DEBUG controller] Converted to formatted NI postcode: ${searchTerms}`
-      )
-    }
-
-    clearSessionKeyIfExists(request, 'locationData')
-    logger.info('Redirecting to location search')
-
-    // '' Disable mock functionality when configured (production by default)
-    const mocksDisabled = config.get('disableTestMocks')
-
-    // Preserve mock parameters in redirect if present (only when mocks enabled)
-    const mockLevel = !mocksDisabled ? request.query?.mockLevel : undefined
-    const mockLevelParam =
-      mockLevel !== undefined
-        ? `&mockLevel=${encodeURIComponent(mockLevel)}`
-        : ''
-
-    const mockDay = !mocksDisabled ? request.query?.mockDay : undefined
-    const mockDayParam =
-      mockDay !== undefined ? `&mockDay=${encodeURIComponent(mockDay)}` : ''
-
-    const mockPollutantBand = !mocksDisabled
-      ? request.query?.mockPollutantBand
-      : undefined
-    const mockPollutantParam =
-      mockPollutantBand !== undefined
-        ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
-        : ''
-
-    const testMode = !mocksDisabled ? request.query?.testMode : undefined
-    const testModeParam =
-      testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
-
-    return h
-      .redirect(
-        `/location?lang=en&searchTerms=${encodeURIComponent(searchTerms)}&secondSearchTerm=${encodeURIComponent(secondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(searchTermsLocationType)}${mockLevelParam}${mockDayParam}${mockPollutantParam}${testModeParam}`
-      )
-      .code(REDIRECT_STATUS_CODE)
-      .takeover()
+  if (!isPreviousAndCurrentUrlEqual || searchTermsSaved || !hasSession) {
+    logger.info(`[DEBUG controller] NOT redirecting - searchTermsSaved found`)
+    return null
   }
-  logger.info(`[DEBUG controller] NOT redirecting - searchTermsSaved found`)
-  return null
+
+  logger.info(`[DEBUG controller] REDIRECTING because searchTermsSaved is missing`)
+
+  const {
+    safeSearchTerms,
+    safeSecondSearchTerm,
+    safeSearchTermsLocationType
+  } = getSearchRedirectParams(currentUrl, request)
+
+  clearSessionKeyIfExists(request, 'locationData')
+  logger.info('Redirecting to location search')
+
+  const mockParams = buildMockParamsForSearchRedirect(request)
+
+  return h
+    .redirect(
+      `/location?lang=en&searchTerms=${encodeURIComponent(safeSearchTerms)}&secondSearchTerm=${encodeURIComponent(safeSecondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(safeSearchTermsLocationType)}${mockParams}`
+    )
+    .code(REDIRECT_STATUS_CODE)
+    .takeover()
 }
 
 function prepareLocationTitles(locationDetails) {
@@ -788,6 +831,64 @@ async function updateSessionWithNearest(
   await persistLocationDataForLocationRoute(request, locationData)
 }
 
+async function getDistanceForNILocation(
+  locationData,
+  getForecasts,
+  locationType,
+  lang,
+  request
+) {
+  if (locationData.locationType !== LOCATION_TYPE_NI) {
+    return undefined
+  }
+
+  return getNearestLocation(
+    locationData?.results,
+    getForecasts,
+    locationType,
+    0,
+    lang,
+    true,
+    { request, skipMeasurements: true }
+  )
+}
+
+function ensureNIDistanceLatLon(distance, locationData) {
+  if (hasUsableDistanceLatLon(distance)) {
+    return distance
+  }
+
+  return createNIDistanceFallback(distance, locationData)
+}
+
+function hasUsableDistanceLatLon(distance) {
+  return Boolean(
+    distance?.latlon &&
+      distance.latlon.lat !== undefined &&
+      distance.latlon.lon !== undefined
+  )
+}
+
+function createNIDistanceFallback(distance, locationData) {
+  const firstResult = Array.isArray(locationData?.results)
+    ? locationData.results[0]
+    : null
+
+  return {
+    ...(distance || {}),
+    latlon: {
+      lat: firstResult?.latitude || 0,
+      lon: firstResult?.longitude || 0
+    }
+  }
+}
+
+function sanitizeNearestLocation(nearestLocation) {
+  return Array.isArray(nearestLocation) && nearestLocation.length > 0
+    ? nearestLocation
+    : []
+}
+
 // Helper to get nearest location and related data
 async function getNearestLocationData(
   locationData,
@@ -797,35 +898,17 @@ async function getNearestLocationData(
   lang,
   request
 ) {
-  let distance
-  if (locationData.locationType === LOCATION_TYPE_NI) {
-    distance = await getNearestLocation(
-      locationData?.results,
+  const distance = ensureNIDistanceLatLon(
+    await getDistanceForNILocation(
+      locationData,
       getForecasts,
       locationType,
-      0,
       lang,
-      true,
-      { request, skipMeasurements: true }
-    )
-    // '' Ensure distance has valid latlon structure even when forecasts fail
-    if (
-      !distance ||
-      !distance.latlon ||
-      distance.latlon.lat === undefined ||
-      distance.latlon.lon === undefined
-    ) {
-      // Fall back to using the first result's coordinates if available
-      const firstResult = Array.isArray(locationData?.results)
-        ? locationData.results[0]
-        : null
-      distance = distance || {}
-      distance.latlon = {
-        lat: firstResult?.latitude || 0,
-        lon: firstResult?.longitude || 0
-      }
-    }
-  }
+      request
+    ),
+    locationData
+  )
+
   const indexNI = 0
   const { resultNI } = getNIData(locationData, distance, locationType)
   const { locationIndex, locationDetails } = getIdMatch(
@@ -850,16 +933,11 @@ async function getNearestLocationData(
   locationData.latlon = latlon
 
   // '' Ensure nearestLocation is an array; fallback to empty array if forecasts are missing
-  const nearestLocationSafe =
-    Array.isArray(nearestLocation) && nearestLocation.length > 0
-      ? nearestLocation
-      : []
-
   return {
     locationDetails,
     forecastNum,
     nearestLocationsRange,
-    nearestLocation: nearestLocationSafe,
+    nearestLocation: sanitizeNearestLocation(nearestLocation),
     latlon
   }
 }

@@ -53,6 +53,45 @@ async function callAndHandleForecastsResponse(
   return getForecasts
 }
 
+function getFirstTruthyValue(...values) {
+  for (const value of values) {
+    if (value) {
+      return value
+    }
+  }
+
+  return undefined
+}
+
+function resolveForecastApiDependencies(params) {
+  return {
+    resolvedConfig: getFirstTruthyValue(params.config, params.injectedConfig),
+    resolvedOptionsEphemeralProtected:
+      getFirstTruthyValue(
+        params.optionsEphemeralProtected,
+        params.injectedOptionsEphemeralProtected
+      ) || {},
+    resolvedOptions:
+      getFirstTruthyValue(params.options, params.injectedOptions) || {},
+    resolvedCatchFetchError:
+      getFirstTruthyValue(
+        params.catchFetchError,
+        params.injectedCatchFetchError
+      ),
+    resolvedHttpStatusOk:
+      getFirstTruthyValue(
+        params.httpStatusOk,
+        params.injectedHttpStatusOk,
+        STATUS_OK
+      ),
+    resolvedLogger: getFirstTruthyValue(params.logger, params.injectedLogger),
+    resolvedErrorResponse: getFirstTruthyValue(
+      params.errorResponse,
+      params.injectedErrorResponse
+    )
+  }
+}
+
 async function callForecastsApi({
   config: apiConfig,
   injectedConfig,
@@ -70,14 +109,30 @@ async function callForecastsApi({
   injectedErrorResponse,
   request
 }) {
-  const resolvedConfig = apiConfig || injectedConfig
-  const resolvedOptionsEphemeralProtected =
-    optionsEphemeralProtected || injectedOptionsEphemeralProtected || {}
-  const resolvedOptions = options || injectedOptions || {}
-  const resolvedCatchFetchError = catchFetchError || injectedCatchFetchError
-  const resolvedHttpStatusOk = httpStatusOk || injectedHttpStatusOk || STATUS_OK
-  const resolvedLogger = logger || injectedLogger
-  const resolvedErrorResponse = errorResponse || injectedErrorResponse
+  const {
+    resolvedConfig,
+    resolvedOptionsEphemeralProtected,
+    resolvedOptions,
+    resolvedCatchFetchError,
+    resolvedHttpStatusOk,
+    resolvedLogger,
+    resolvedErrorResponse
+  } = resolveForecastApiDependencies({
+    config: apiConfig,
+    injectedConfig,
+    optionsEphemeralProtected,
+    injectedOptionsEphemeralProtected,
+    options,
+    injectedOptions,
+    catchFetchError,
+    injectedCatchFetchError,
+    httpStatusOk,
+    injectedHttpStatusOk,
+    logger,
+    injectedLogger,
+    errorResponse,
+    injectedErrorResponse
+  })
 
   const forecastsApiUrl = resolvedConfig.get('forecastsApiUrl')
   const { url, opts } = selectForecastsUrlAndOptions({
@@ -126,6 +181,36 @@ function getEnvironmentName(request) {
   )
 }
 
+function getConfigGetter(configSource) {
+  return (key) =>
+    typeof configSource.get === 'function'
+      ? configSource.get(key)
+      : configSource?.[key]
+}
+
+function getEphemeralUrlKeysByEnv(env) {
+  if (env === 'perf-test') {
+    return ['ephemeralProtectedPerfTestApiUrl']
+  }
+
+  if (env === 'test') {
+    return ['ephemeralProtectedTestApiUrl', 'ephemeralProtectedDevApiUrl']
+  }
+
+  return ['ephemeralProtectedTestApiUrl', 'ephemeralProtectedDevApiUrl']
+}
+
+function getFirstConfiguredValue(getValue, keys = []) {
+  for (const key of keys) {
+    const value = getValue(key)
+    if (value) {
+      return value
+    }
+  }
+
+  return null
+}
+
 function getEphemeralProtectedApiUrl(request, fallbackConfig = config) {
   const resolvedRequest = request?.request || request
   const env = getEnvironmentName(request)
@@ -135,27 +220,9 @@ function getEphemeralProtectedApiUrl(request, fallbackConfig = config) {
     return null
   }
 
-  const getValue = (key) =>
-    typeof configSource.get === 'function'
-      ? configSource.get(key)
-      : configSource?.[key]
-
-  if (env === 'perf-test') {
-    return getValue('ephemeralProtectedPerfTestApiUrl') || null
-  }
-  if (env === 'test') {
-    return (
-      getValue('ephemeralProtectedTestApiUrl') ||
-      getValue('ephemeralProtectedDevApiUrl') ||
-      null
-    )
-  }
-
-  return (
-    getValue('ephemeralProtectedTestApiUrl') ||
-    getValue('ephemeralProtectedDevApiUrl') ||
-    null
-  )
+  const getValue = getConfigGetter(configSource)
+  const keys = getEphemeralUrlKeysByEnv(env)
+  return getFirstConfiguredValue(getValue, keys)
 }
 
 function buildLocalForecastsUrlAndOpts(
@@ -254,6 +321,97 @@ function buildLocalMeasurementsUrlAndOpts(
   }
 }
 
+function resolveMeasurementsSelectionInput(
+  useNewRicardoMeasurementsEnabledOrDi,
+  diOverride
+) {
+  if (typeof useNewRicardoMeasurementsEnabledOrDi === 'boolean') {
+    return {
+      useNewRicardoMeasurementsEnabled: useNewRicardoMeasurementsEnabledOrDi,
+      di: diOverride || {}
+    }
+  }
+
+  return {
+    useNewRicardoMeasurementsEnabled: true,
+    di: useNewRicardoMeasurementsEnabledOrDi || {}
+  }
+}
+
+function resolveMeasurementsDependencies(di) {
+  return {
+    resolvedConfig: di.config || di.injectedConfig || config,
+    resolvedLogger:
+      di.injectedLogger || di.logger || { info: () => {}, error: () => {} },
+    resolvedOptionsEphemeralProtected:
+      di.optionsEphemeralProtected || di.injectedOptionsEphemeralProtected || {},
+    resolvedOptions: di.options || di.injectedOptions || {},
+    request: di.request
+  }
+}
+
+function buildRemoteRicardoMeasurementsUrl(baseUrl, queryString) {
+  const remoteSeparator = baseUrl.includes('?')
+    ? baseUrl.endsWith('?') || baseUrl.endsWith('&')
+      ? ''
+      : '&'
+    : '?'
+
+  return `${baseUrl}${remoteSeparator}${queryString}`
+}
+
+function buildNewRicardoMeasurementsSelection({
+  latitude,
+  longitude,
+  resolvedConfig,
+  resolvedLogger,
+  resolvedOptionsEphemeralProtected,
+  resolvedOptions,
+  request,
+  isProduction
+}) {
+  const queryParams = buildMeasurementsQueryParams(latitude, longitude)
+  const queryString = queryParams.toString()
+  const baseUrl = resolvedConfig.get('ricardoMeasurementsApiUrl')
+
+  if (!isProduction) {
+    resolvedLogger.info(
+      `[URL BUILD DEBUG] Using measurements with latitude: ${latitude}, longitude: ${longitude}`
+    )
+  }
+
+  const ephemeralUrl = getEphemeralProtectedApiUrl(request, resolvedConfig)
+  if (!isProduction && isLocalRequest(request) && ephemeralUrl) {
+    const localResult = buildLocalMeasurementsUrlAndOpts(
+      queryParams,
+      ephemeralUrl,
+      resolvedOptionsEphemeralProtected
+    )
+    resolvedLogger.info(`New Ricardo measurements API URL: ${localResult.url}`)
+    return localResult
+  }
+
+  const newRicardoMeasurementsApiUrl = buildRemoteRicardoMeasurementsUrl(
+    baseUrl,
+    queryString
+  )
+
+  resolvedLogger.info(
+    `New Ricardo measurements API URL: ${newRicardoMeasurementsApiUrl}`
+  )
+
+  return buildRemoteMeasurementsUrlAndOpts(
+    newRicardoMeasurementsApiUrl,
+    resolvedOptions
+  )
+}
+
+function buildOldMeasurementsSelection(resolvedConfig, resolvedLogger, resolvedOptions) {
+  const measurementsAPIurl = resolvedConfig.get('measurementsApiUrl')
+  resolvedLogger.info(`Old measurements API URL: ${measurementsAPIurl}`)
+  return buildRemoteMeasurementsUrlAndOpts(measurementsAPIurl, resolvedOptions)
+}
+
 // Helper to select API URL and options for Ricardo measurements
 function selectMeasurementsUrlAndOptions(
   latitude,
@@ -261,80 +419,40 @@ function selectMeasurementsUrlAndOptions(
   useNewRicardoMeasurementsEnabledOrDi,
   diOverride
 ) {
-  const useNewRicardoMeasurementsEnabled =
-    typeof useNewRicardoMeasurementsEnabledOrDi === 'boolean'
-      ? useNewRicardoMeasurementsEnabledOrDi
-      : true
-  const di =
-    typeof useNewRicardoMeasurementsEnabledOrDi === 'boolean'
-      ? diOverride || {}
-      : useNewRicardoMeasurementsEnabledOrDi || {}
+  const { useNewRicardoMeasurementsEnabled, di } =
+    resolveMeasurementsSelectionInput(
+      useNewRicardoMeasurementsEnabledOrDi,
+      diOverride
+    )
 
   const {
-    config: apiConfig,
-    injectedConfig,
-    logger,
-    injectedLogger,
-    optionsEphemeralProtected,
-    injectedOptionsEphemeralProtected,
-    options,
-    injectedOptions,
+    resolvedConfig,
+    resolvedLogger,
+    resolvedOptionsEphemeralProtected,
+    resolvedOptions,
     request
-  } = di
-
-  const resolvedConfig = apiConfig || injectedConfig || config
-  const resolvedLogger = injectedLogger ||
-    logger || { info: () => {}, error: () => {} }
-  const resolvedOptionsEphemeralProtected =
-    optionsEphemeralProtected || injectedOptionsEphemeralProtected || {}
-  const resolvedOptions = options || injectedOptions || {}
+  } = resolveMeasurementsDependencies(di)
 
   const isProduction = Boolean(config.get('isProduction'))
 
-  if (useNewRicardoMeasurementsEnabled) {
-    const queryParams = buildMeasurementsQueryParams(latitude, longitude)
-    const queryString = queryParams.toString()
-    const baseUrl = resolvedConfig.get('ricardoMeasurementsApiUrl')
-
-    if (!isProduction) {
-      resolvedLogger.info(
-        `[URL BUILD DEBUG] Using measurements with latitude: ${latitude}, longitude: ${longitude}`
-      )
-    }
-
-    const ephemeralUrl = getEphemeralProtectedApiUrl(request, resolvedConfig)
-    if (!isProduction && isLocalRequest(request) && ephemeralUrl) {
-      const localResult = buildLocalMeasurementsUrlAndOpts(
-        queryParams,
-        ephemeralUrl,
-        resolvedOptionsEphemeralProtected
-      )
-      resolvedLogger.info(
-        `New Ricardo measurements API URL: ${localResult.url}`
-      )
-      return localResult
-    }
-
-    const remoteSeparator = baseUrl.includes('?')
-      ? baseUrl.endsWith('?') || baseUrl.endsWith('&')
-        ? ''
-        : '&'
-      : '?'
-    const newRicardoMeasurementsApiUrl = `${baseUrl}${remoteSeparator}${queryString}`
-
-    resolvedLogger.info(
-      `New Ricardo measurements API URL: ${newRicardoMeasurementsApiUrl}`
-    )
-
-    return buildRemoteMeasurementsUrlAndOpts(
-      newRicardoMeasurementsApiUrl,
+  if (!useNewRicardoMeasurementsEnabled) {
+    return buildOldMeasurementsSelection(
+      resolvedConfig,
+      resolvedLogger,
       resolvedOptions
     )
   }
 
-  const measurementsAPIurl = resolvedConfig.get('measurementsApiUrl')
-  resolvedLogger.info(`Old measurements API URL: ${measurementsAPIurl}`)
-  return buildRemoteMeasurementsUrlAndOpts(measurementsAPIurl, resolvedOptions)
+  return buildNewRicardoMeasurementsSelection({
+    latitude,
+    longitude,
+    resolvedConfig,
+    resolvedLogger,
+    resolvedOptionsEphemeralProtected,
+    resolvedOptions,
+    request,
+    isProduction
+  })
 }
 
 // Helper to call the measurements API and handle the response
@@ -396,6 +514,65 @@ function buildAndCheckUKApiUrl(
   return { osNamesApiUrlFull, hasOsKey, combinedLocation }
 }
 
+function resolveUkApiDependencies(input) {
+  return {
+    resolvedLogger:
+      getFirstTruthyValue(input.logger, input.injectedLogger) ||
+      { info: () => {}, warn: () => {}, error: () => {} },
+    resolvedOptions:
+      getFirstTruthyValue(input.options, input.injectedOptions) || {},
+    resolvedOptionsEphemeralProtected:
+      getFirstTruthyValue(
+        input.optionsEphemeralProtected,
+        input.injectedOptionsEphemeralProtected
+      ) || {},
+    resolvedCatchProxyFetchError: getFirstTruthyValue(
+      input.catchProxyFetchError,
+      input.injectedCatchProxyFetchError
+    ),
+    resolvedHttpStatusOk: getFirstTruthyValue(
+      input.httpStatusOk,
+      input.injectedHttpStatusOk,
+      STATUS_OK
+    )
+  }
+}
+
+function isLocalUrl(url) {
+  const normalized = String(url)
+  return normalized.includes('localhost') || normalized.includes('127.0.0.1')
+}
+
+function selectUkApiOptions(url, resolvedOptions, resolvedOptionsEphemeral) {
+  return isLocalUrl(url) ? resolvedOptionsEphemeral : resolvedOptions
+}
+
+function handleUkApiStatusResponse(
+  statusCodeOSPlace,
+  resolvedHttpStatusOk,
+  resolvedLogger,
+  getOSPlaces,
+  formatUKApiResponse
+) {
+  if (statusCodeOSPlace === resolvedHttpStatusOk) {
+    resolvedLogger.info('getOSPlaces data fetched:')
+    return formatUKApiResponse(getOSPlaces)
+  }
+
+  if (statusCodeOSPlace === STATUS_UNAUTHORIZED) {
+    resolvedLogger.warn(
+      `OS Names API returned 401 (unauthorized). Check OS_NAMES_API_KEY. URL was suppressed in logs.`
+    )
+    return null
+  }
+
+  resolvedLogger.error(
+    'Error fetching statusCodeOSPlace data:',
+    statusCodeOSPlace
+  )
+  return null
+}
+
 // Helper to call the UK API and handle the response
 async function callAndHandleUKApiResponse({
   osNamesApiUrlFull,
@@ -412,45 +589,49 @@ async function callAndHandleUKApiResponse({
   injectedLogger,
   formatUKApiResponse
 }) {
-  const resolvedLogger = logger ||
-    injectedLogger || { info: () => {}, warn: () => {}, error: () => {} }
-  const resolvedOptions = options || injectedOptions || {}
-  const resolvedOptionsEphemeralProtected =
-    optionsEphemeralProtected || injectedOptionsEphemeralProtected || {}
-  const resolvedCatchProxyFetchError =
-    catchProxyFetchError || injectedCatchProxyFetchError
-  const resolvedHttpStatusOk = httpStatusOk || injectedHttpStatusOk || STATUS_OK
+  const {
+    resolvedLogger,
+    resolvedOptions,
+    resolvedOptionsEphemeralProtected,
+    resolvedCatchProxyFetchError,
+    resolvedHttpStatusOk
+  } = resolveUkApiDependencies({
+    options,
+    injectedOptions,
+    optionsEphemeralProtected,
+    injectedOptionsEphemeralProtected,
+    catchProxyFetchError,
+    injectedCatchProxyFetchError,
+    httpStatusOk,
+    injectedHttpStatusOk,
+    logger,
+    injectedLogger
+  })
 
-  const isLocal =
-    String(osNamesApiUrlFull).includes('localhost') ||
-    String(osNamesApiUrlFull).includes('127.0.0.1')
-  const selectedOptions = isLocal
-    ? resolvedOptionsEphemeralProtected
-    : resolvedOptions
+  const selectedOptions = selectUkApiOptions(
+    osNamesApiUrlFull,
+    resolvedOptions,
+    resolvedOptionsEphemeralProtected
+  )
+
   resolvedLogger.info(
     `[DEBUG] Calling catchProxyFetchError with URL: ${osNamesApiUrlFull}`
   )
   resolvedLogger.info('[DEBUG] Options:', JSON.stringify(selectedOptions))
+
   const [statusCodeOSPlace, getOSPlaces] = await resolvedCatchProxyFetchError(
     osNamesApiUrlFull,
     selectedOptions,
     shouldCallApi
   )
-  if (statusCodeOSPlace === resolvedHttpStatusOk) {
-    resolvedLogger.info('getOSPlaces data fetched:')
-    return formatUKApiResponse(getOSPlaces)
-  }
-  if (statusCodeOSPlace === STATUS_UNAUTHORIZED) {
-    resolvedLogger.warn(
-      `OS Names API returned 401 (unauthorized). Check OS_NAMES_API_KEY. URL was suppressed in logs.`
-    )
-    return null
-  }
-  resolvedLogger.error(
-    'Error fetching statusCodeOSPlace data:',
-    statusCodeOSPlace
+
+  return handleUkApiStatusResponse(
+    statusCodeOSPlace,
+    resolvedHttpStatusOk,
+    resolvedLogger,
+    getOSPlaces,
+    formatUKApiResponse
   )
-  return null
 }
 
 function callAndHandleUKApiResponseCompat(...args) {
