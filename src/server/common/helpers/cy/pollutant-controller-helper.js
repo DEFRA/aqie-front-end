@@ -98,13 +98,13 @@ function createViewContext(options) {
 
 /**
  * Creates a standardized Welsh pollutant controller handler
- * @param {Object} config - Configuration object
+ * @param config - Configuration object
  * @param {string} config.pollutantKey - Key in welsh.pollutants (e.g., 'sulphurDioxide')
  * @param {string} config.englishPath - English redirect path (e.g., '/pollutants/sulphur-dioxide')
  * @param {string} config.viewTemplate - View template name (e.g., 'sulphur-dioxide/index')
  * @param {string} config.welshPathKey - Key for Welsh path pattern matching
  * @param {string} config.pageIdentifier - Page identifier for view context
- * @returns {Object} Hapi controller object
+ * @returns Hapi controller object
  */
 export function createWelshPollutantController(config) {
   const {

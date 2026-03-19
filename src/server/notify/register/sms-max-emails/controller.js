@@ -16,10 +16,10 @@ const logger = createLogger()
 /**
  * Handle GET request for SMS max alerts page ''
  * Shown when the user has reached the 5-alert limit for their mobile number.
- * @param {Object} request - Hapi request object
- * @param {Object} h - Hapi response toolkit
- * @param {Object} content - Content object (optional, defaults to english)
- * @returns {Object} - View response with data
+ * @param request - Hapi request object
+ * @param h - Hapi response toolkit
+ * @param content - Content object (optional, defaults to english)
+ * @returns - View response with data
  */
 const handleSmsMaxAlertsRequest = (request, h, content = english) => {
   logger.info('Displaying SMS max alerts page')

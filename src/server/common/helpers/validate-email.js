@@ -8,7 +8,7 @@ const MAX_EMAIL_LENGTH = 256
 /**
  * Validates email addresses
  * @param {string} email - The email address to validate
- * @returns {Object} - { isValid: boolean, formatted: string, error: string }
+ * @returns - { isValid: boolean, formatted: string, error: string }
  */
 export function validateEmail(email) {
   if (!email || typeof email !== 'string') {

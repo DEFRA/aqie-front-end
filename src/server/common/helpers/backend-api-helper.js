@@ -49,11 +49,11 @@ export function getEphemeralDevApiUrl() {
 
 /**
  * Build API request options for local or remote environment
- * @param {Object} request - Hapi request object (optional, for detecting localhost)
+ * @param request - Hapi request object (optional, for detecting localhost)
  * @param {string} productionBaseUrl - Production API base URL (e.g., 'https://aqie-notify-service.dev.cdp-int.defra.cloud')
  * @param {string} apiPath - API path (e.g., '/subscribe/generate-otp')
- * @param {Object} additionalHeaders - Additional headers to include
- * @returns {Object} { url, headers } - Complete URL and headers for the API request
+ * @param additionalHeaders - Additional headers to include
+ * @returns { url, headers } - Complete URL and headers for the API request
  */
 export function buildBackendApiRequest(
   request,
@@ -92,14 +92,14 @@ export function buildBackendApiRequest(
 
 /**
  * Build fetch options for backend API request
- * @param {Object} request - Hapi request object (optional)
+ * @param request - Hapi request object (optional)
  * @param {string} productionBaseUrl - Production API base URL
  * @param {string} apiPath - API path
- * @param {Object} options - Additional options
+ * @param options - Additional options
  * @param {string} options.method - HTTP method (default: 'POST')
- * @param {Object} options.body - Request body (will be JSON.stringified)
- * @param {Object} options.additionalHeaders - Additional headers
- * @returns {Object} { url, fetchOptions } - URL and fetch options
+ * @param options.body - Request body (will be JSON.stringified)
+ * @param options.additionalHeaders - Additional headers
+ * @returns { url, fetchOptions } - URL and fetch options
  */
 export function buildBackendApiFetchOptions(
   request,

@@ -31,10 +31,10 @@ const getEmailVerifyContent = (request, content = english) => {
 
 /**
  * Handle GET request for email verify email page ''
- * @param {Object} request - Hapi request object
- * @param {Object} h - Hapi response toolkit
- * @param {Object} content - Content object (optional, defaults to english)
- * @returns {Object} - View response with data
+ * @param request - Hapi request object
+ * @param h - Hapi response toolkit
+ * @param content - Content object (optional, defaults to english)
+ * @returns - View response with data
  */
 const handleEmailVerifyRequest = (request, h, content = english) => {
   logger.info('Displaying email verify email page')

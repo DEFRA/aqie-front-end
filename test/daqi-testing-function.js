@@ -108,7 +108,7 @@ function getDAQIBand(value) {
 /**
  * Get complete DAQI color and styling information for a specific value
  * @param {number} value - DAQI value between 1 and 10
- * @returns {object} - Color, level, and styling information
+ * @returns - Color, level, and styling information
  */
 function getDAQIColorInfo(value) {
   if (value < 1 || value > 10) {
@@ -146,7 +146,7 @@ function getDAQIColorInfo(value) {
 /**
  * Test a specific DAQI level and display all its properties
  * @param {number} value - DAQI value between 1 and 10
- * @returns {object} - Complete DAQI information for testing
+ * @returns - Complete DAQI information for testing
  */
 function testDAQILevel(value) {
   const info = getDAQIColorInfo(value)
@@ -211,7 +211,7 @@ function testAllDAQILevels() {
 /**
  * Simulate a visual DAQI display cell with proper styling
  * @param {number} value - DAQI value between 1 and 10
- * @returns {object} - HTML and CSS for visual simulation
+ * @returns - HTML and CSS for visual simulation
  */
 function simulateDAQIDisplay(value) {
   const info = getDAQIColorInfo(value)
@@ -284,7 +284,7 @@ function createDAQIBar() {
 /**
  * Test DAQI responsiveness across different ranges
  * @param {array} values - Array of DAQI values to test
- * @returns {object} - Comparison results
+ * @returns - Comparison results
  */
 function testDAQIRange(values = [1, 4, 7, 10]) {
   console.log('\n🔍 DAQI RANGE COMPARISON TEST')

@@ -52,9 +52,9 @@ const formatBodyText = (template = '', mobileNumber = '') => {
 
 /**
  * Handle GET request for SMS send activation page ''
- * @param {Object} request - Hapi request object
- * @param {Object} h - Hapi response toolkit
- * @returns {Object} - View response with data
+ * @param request - Hapi request object
+ * @param h - Hapi response toolkit
+ * @returns - View response with data
  */
 export const handleSendActivationRequest = (request, h, content = english) => {
   logger.info('Displaying SMS send activation page')
@@ -123,9 +123,9 @@ export const handleSendActivationRequest = (request, h, content = english) => {
 
 /**
  * Handle POST request for SMS send activation page ''
- * @param {Object} request - Hapi request object
- * @param {Object} h - Hapi response toolkit
- * @returns {Object} - Redirect or view response
+ * @param request - Hapi request object
+ * @param h - Hapi response toolkit
+ * @returns - Redirect or view response
  */
 export const handleSendActivationPost = async (request, h) => {
   logger.info('Processing SMS send activation request')

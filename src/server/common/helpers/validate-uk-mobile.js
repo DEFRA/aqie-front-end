@@ -8,7 +8,7 @@ const ERROR_FORMAT = 'Enter a UK mobile phone number, like 07700 900000'
  * Validates UK mobile phone numbers
  * Accepts formats: 07XXX XXXXXX, 07XXXXXXXXX, +447XXXXXXXXX, +44 7XXX XXXXXX
  * @param {string} phoneNumber - The phone number to validate
- * @returns {Object} - { isValid: boolean, formatted: string, error: string }
+ * @returns - { isValid: boolean, formatted: string, error: string }
  */
 export function validateUKMobile(
   phoneNumber,

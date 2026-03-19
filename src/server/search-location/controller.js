@@ -34,7 +34,7 @@ const setSessionIfChanged = (request, key, value) => {
 
 /**
  * Determines the language based on the request.
- * @param {Object} request - The Hapi request object.
+ * @param request - The Hapi request object.
  * @returns {string} The determined language.
  */
 const determineLanguage = (request) => {
@@ -51,8 +51,8 @@ const determineLanguage = (request) => {
 
 /**
  * Retrieves session data and clears errors if present.
- * @param {Object} request - The Hapi request object.
- * @returns {Object} Session data including errors, errorMessage, and locationType.
+ * @param request - The Hapi request object.
+ * @returns Session data including errors, errorMessage, and locationType.
  */
 const getSessionData = (request) => {
   const errors = request.yar.get('errors')
@@ -71,14 +71,14 @@ const getSessionData = (request) => {
 
 /**
  * Prepares the view model for rendering the search location page.
- * @param {Object} options - Options for preparing the view model.
- * @param {Object} options.metaSiteUrl - The meta site URL.
+ * @param options - Options for preparing the view model.
+ * @param options.metaSiteUrl - The meta site URL.
  * @param {string} options.lang - The determined language.
- * @param {Object} options.errors - Errors from the session.
- * @param {Object} options.errorMessage - Error messages from the session.
+ * @param options.errors - Errors from the session.
+ * @param options.errorMessage - Error messages from the session.
  * @param {string} options.locationType - The location type from the session.
  * @param {boolean} options.isError - Whether there are errors.
- * @returns {Object} The view model for rendering the page.
+ * @returns The view model for rendering the page.
  */
 const prepareViewModel = ({
   metaSiteUrl,

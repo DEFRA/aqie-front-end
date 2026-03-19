@@ -23,10 +23,10 @@ const formatTemplate = (template = '', replacements = {}) => {
 
 /**
  * Handle GET request for SMS send new code page ''
- * @param {Object} request - Hapi request object
- * @param {Object} h - Hapi response toolkit
- * @param {Object} content - Content object (optional, defaults to english)
- * @returns {Object} - View response with data
+ * @param request - Hapi request object
+ * @param h - Hapi response toolkit
+ * @param content - Content object (optional, defaults to english)
+ * @returns - View response with data
  */
 const handleSendNewCodeRequest = (request, h, content = english) => {
   logger.info('Displaying SMS send new code page')
@@ -75,10 +75,10 @@ const handleSendNewCodeRequest = (request, h, content = english) => {
 
 /**
  * Handle POST request for SMS send new code page ''
- * @param {Object} request - Hapi request object
- * @param {Object} h - Hapi response toolkit
- * @param {Object} content - Content object (optional, defaults to english)
- * @returns {Object} - Redirect or view response
+ * @param request - Hapi request object
+ * @param h - Hapi response toolkit
+ * @param content - Content object (optional, defaults to english)
+ * @returns - Redirect or view response
  */
 const handleSendNewCodePost = async (request, h, content = english) => {
   logger.info('Processing SMS send new code request')

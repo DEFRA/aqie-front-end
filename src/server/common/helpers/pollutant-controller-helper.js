@@ -46,7 +46,7 @@ const pollutantConfigs = {
 
 /**
  * Build query parameters for Welsh redirect
- * @param {Object} query - Query object
+ * @param query - Query object
  * @returns {URLSearchParams} Query parameters
  */
 function buildWelshRedirectParams(query) {
@@ -68,9 +68,9 @@ function buildWelshRedirectParams(query) {
  * Eliminates code duplication across all English pollutant controllers
  *
  * @param {string} pollutantType - The pollutant type key (e.g., 'nitrogenDioxide', 'ozone')
- * @param {Object} request - Hapi request object
- * @param {Object} h - Hapi response toolkit
- * @returns {Object} Hapi response
+ * @param request - Hapi request object
+ * @param h - Hapi response toolkit
+ * @returns Hapi response
  */
 export function createPollutantHandler(pollutantType, request, h) {
   const config = pollutantConfigs[pollutantType]

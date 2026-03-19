@@ -141,10 +141,10 @@ function getMockPollutantData(pollutantType, band, lang = 'en') {
  * '' - Useful for testing a specific pollution scenario
  *
  * @param {string} band - The band level: 'low', 'moderate', 'high', 'very-high'
- * @param {object} options - Configuration options
+ * @param options - Configuration options
  *   @param {boolean} options.logDetails - Whether to log details
  *   @param {string} options.lang - Language code ('en' or 'cy')
- * @returns {object} Mock monitoring sites with pollutant data
+ * @returns Mock monitoring sites with pollutant data
  */
 export function mockPollutantBand(band = 'moderate', options = {}) {
   const { logDetails = false, lang = 'en' } = options
@@ -183,10 +183,10 @@ export function mockPollutantBand(band = 'moderate', options = {}) {
  * Mock specific pollutants with individual band levels
  * '' - Allows granular control over each pollutant
  *
- * @param {object} pollutantBands - Object mapping pollutant types to band levels
+ * @param pollutantBands - Object mapping pollutant types to band levels
  *   Example: { NO2: 'high', PM25: 'moderate', O3: 'low' }
- * @param {object} options - Configuration options
- * @returns {object} Mock monitoring sites with pollutant data
+ * @param options - Configuration options
+ * @returns Mock monitoring sites with pollutant data
  */
 export function mockPollutantLevel(pollutantBands = {}, options = {}) {
   const { logDetails = false, fillMissing = true } = options
@@ -224,8 +224,8 @@ export function mockPollutantLevel(pollutantBands = {}, options = {}) {
  * '' - Replaces pollutant data in existing monitoring sites structure
  *
  * @param {array} monitoringSites - Original monitoring sites array
- * @param {object} mockPollutants - Mock pollutant data to apply
- * @param {object} options - Configuration options
+ * @param mockPollutants - Mock pollutant data to apply
+ * @param options - Configuration options
  * @returns {array} Modified monitoring sites with mock data
  */
 export function applyMockPollutantsToSites(

@@ -26,7 +26,7 @@ function delay(ms) {
 /**
  * Fetches with retry logic and timeout support
  * @param {Function} fetchFn - The fetch function to execute (should return a Promise)
- * @param {Object} options - Retry options
+ * @param options - Retry options
  * @param {number} [options.maxRetries=2] - Maximum number of retry attempts
  * @param {number} [options.retryDelayMs=500] - Delay between retries in milliseconds
  * @param {number} [options.timeoutMs=10000] - Request timeout in milliseconds

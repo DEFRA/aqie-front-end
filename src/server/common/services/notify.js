@@ -131,11 +131,11 @@ function countAlertsForPhone(phoneNumber) {
 
 /**
  * Make POST request to backend notify API with automatic local/remote handling ''
- * @param {Object} request - Hapi request object (for detecting localhost)
+ * @param request - Hapi request object (for detecting localhost)
  * @param {string} apiPath - API path
- * @param {Object} body - Request body
+ * @param body - Request body
  * @param {string} customBaseUrl - Optional custom base URL to override default notify.baseUrl
- * @returns {Object} Response object
+ * @returns Response object
  */
 async function postToBackend(request, apiPath, body, customBaseUrl = null) {
   const enabled = config.get('notify.enabled')
@@ -206,10 +206,10 @@ async function postToBackend(request, apiPath, body, customBaseUrl = null) {
 
 /**
  * Make GET request to backend notify API with automatic local/remote handling ''
- * @param {Object} request - Hapi request object (optional)
+ * @param request - Hapi request object (optional)
  * @param {string} apiPath - API path
  * @param {string} customBaseUrl - Optional custom base URL to override default notify.baseUrl
- * @returns {Object} Response object
+ * @returns Response object
  */
 async function getFromBackend(request, apiPath, customBaseUrl = null) {
   const enabled = config.get('notify.enabled')
@@ -262,7 +262,7 @@ async function getFromBackend(request, apiPath, customBaseUrl = null) {
  * Send email verification code via backend API ''
  * @param {string} emailAddress - Email address
  * @param {string} code - Verification code
- * @param {Object} request - Hapi request object (optional)
+ * @param request - Hapi request object (optional)
  */
 export async function sendEmailCode(emailAddress, code, request = null) {
   const emailPath = config.get('notify.emailPath')
@@ -275,7 +275,7 @@ export async function sendEmailCode(emailAddress, code, request = null) {
  * @param {string} location - Location name
  * @param {string|number} lat - Latitude coordinate
  * @param {string|number} long - Longitude coordinate
- * @param {Object} request - Hapi request object (optional)
+ * @param request - Hapi request object (optional)
  */
 export async function generateEmailLink(
   emailAddress,
@@ -299,7 +299,7 @@ export async function generateEmailLink(
 /**
  * Validate email verification link via backend API ''
  * @param {string} token - Link token
- * @param {Object} request - Hapi request object (optional)
+ * @param request - Hapi request object (optional)
  */
 export async function validateEmailLink(token, request = null) {
   const emailValidateLinkPath = config.get('notify.emailValidateLinkPath')
@@ -315,7 +315,7 @@ export async function validateEmailLink(token, request = null) {
  * @param {string} locationId - Location ID
  * @param {string|number} lat - Latitude coordinate
  * @param {string|number} long - Longitude coordinate
- * @param {Object} request - Hapi request object (optional)
+ * @param request - Hapi request object (optional)
  * @returns {Promise<Object>} { ok: boolean, data: subscription details }
  */
 export async function setupEmailAlert(
@@ -368,7 +368,7 @@ export async function setupEmailAlert(
 /**
  * Send SMS verification code via backend API ''
  * @param {string} phoneNumber - Phone number (changed from mobileNumber to match backend contract)
- * @param {Object} request - Hapi request object (optional)
+ * @param request - Hapi request object (optional)
  */
 export async function sendSmsCode(phoneNumber, request = null) {
   const smsPath = config.get('notify.smsPath')
@@ -416,7 +416,7 @@ export async function sendSmsCode(phoneNumber, request = null) {
  * Verify OTP code via backend API ''
  * @param {string} phoneNumber - Phone number
  * @param {string} otp - OTP code to verify
- * @param {Object} request - Hapi request object (optional)
+ * @param request - Hapi request object (optional)
  * @returns {Promise<Object>} { ok: boolean, data: { notificationId, status } }
  */
 export async function verifyOtp(phoneNumber, otp, request = null) {
@@ -460,7 +460,7 @@ export async function verifyOtp(phoneNumber, otp, request = null) {
  * @param {string} location - Location for alerts
  * @param {string|number} lat - Latitude coordinate
  * @param {string|number} long - Longitude coordinate
- * @param {Object} request - Hapi request object (optional)
+ * @param request - Hapi request object (optional)
  * @returns {Promise<Object>} { ok: boolean, data: subscription details }
  */
 export async function setupAlert(
@@ -782,7 +782,7 @@ export async function setupAlert(
 /**
  * Check if user has reached maximum alerts ''
  * @param {string} phoneNumber - Phone number or email address to check
- * @param {Object} request - Hapi request object (optional)
+ * @param request - Hapi request object (optional)
  * @returns {Promise<Object>} { ok: boolean, maxReached: boolean }
  */
 export async function getSubscriptionCount(phoneNumber, request = null) {

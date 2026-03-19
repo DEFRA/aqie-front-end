@@ -29,7 +29,7 @@ Object.entries(filters).forEach(([name, filter]) => {
 
 /**
  * @param {string} componentName
- * @param {object} params
+ * @param params
  * @param {string} [callBlock]
  */
 export function renderComponent(componentName, params, callBlock) {

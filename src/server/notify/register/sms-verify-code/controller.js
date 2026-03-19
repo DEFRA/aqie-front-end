@@ -205,10 +205,10 @@ function handleVerificationSuccess(request, mobileNumber, h) {
 
 /**
  * Handle GET request for SMS verify code page ''
- * @param {Object} request - Hapi request object
- * @param {Object} h - Hapi response toolkit
- * @param {Object} content - Content object (optional, defaults to english)
- * @returns {Object} - View response with data
+ * @param request - Hapi request object
+ * @param h - Hapi response toolkit
+ * @param content - Content object (optional, defaults to english)
+ * @returns - View response with data
  */
 const handleCheckMessageRequest = (request, h, content = english) => {
   logger.info('Displaying SMS verify code page')
@@ -387,10 +387,10 @@ function handleOtpVerificationResult({
 
 /**
  * Handle POST request for SMS verify code page ''
- * @param {Object} request - Hapi request object
- * @param {Object} h - Hapi response toolkit
- * @param {Object} content - Content object (optional, defaults to english)
- * @returns {Object} - Redirect or view response
+ * @param request - Hapi request object
+ * @param h - Hapi response toolkit
+ * @param content - Content object (optional, defaults to english)
+ * @returns - Redirect or view response
  */
 const handleCheckMessagePost = async (request, h, content = english) => {
   logger.info('Processing SMS verify code request')
