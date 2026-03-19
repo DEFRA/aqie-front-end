@@ -72,7 +72,7 @@ const getApiKeyCandidatesByEnv = (env) => {
 }
 
 const getOverrideOrDefault = (overrides, key, fallback) => {
-  if (overrides && overrides[key]) {
+  if (overrides?.[key]) {
     return overrides[key]
   }
   return fallback
@@ -437,8 +437,8 @@ async function handleUKLocation(
  */
 async function handleNILocation(
   userLocation,
-  searchTerms,
-  secondSearchTerm,
+  _searchTerms,
+  _secondSearchTerm,
   optionsOAuth,
   di,
   diRequest

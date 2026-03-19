@@ -78,7 +78,7 @@ const getConfirmDetailsContext = (request, content = english) => {
 }
 
 const logConfirmDetailsRenderError = (request, error) => {
-  const hasSession = Boolean(request && request.yar)
+  const hasSession = Boolean(request?.yar)
   const hasLocation = hasSession ? Boolean(request.yar.get('location')) : false
   const hasLocationId = hasSession
     ? Boolean(request.yar.get('locationId'))
@@ -142,7 +142,7 @@ const logConfirmDetailsSessionData = (request, sessionData) => {
     hasSearchTermsSaved: !!searchTermsSaved,
     sessionId: request.yar.id,
     values: {
-      mobileNumber: mobileNumber !== NOT_PROVIDED ? '[REDACTED]' : NOT_PROVIDED,
+      mobileNumber: mobileNumber === NOT_PROVIDED ? NOT_PROVIDED : '[REDACTED]',
       location: location || MISSING_VALUE,
       locationId: locationId || MISSING_VALUE,
       latitude: lat || MISSING_VALUE,
@@ -157,7 +157,11 @@ const logConfirmDetailsSessionData = (request, sessionData) => {
 }
 
 const redirectForMissingLocation = ({ request, h, location, locationId }) => {
-  if (!location && locationId) {
+  if (location) {
+    return null
+  }
+
+  if (locationId) {
     logger.warn(
       'Missing location in session, redirecting to search for SMS flow',
       {
@@ -169,7 +173,7 @@ const redirectForMissingLocation = ({ request, h, location, locationId }) => {
     return h.redirect('/search-location?fromSmsFlow=true')
   }
 
-  if (!location && !locationId) {
+  if (!locationId) {
     logger.error('Missing location and locationId in session', {
       hasLocation: false,
       hasLocationId: false

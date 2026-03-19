@@ -115,22 +115,28 @@ const getFormattedDateSummary = (issueDate, calendarEnglish) => {
     .format('DD MMMM YYYY')
     .split(' ')
   const getMonthSummary = calendarEnglish.findIndex(function (item) {
-    return item.indexOf(formattedDateSummary[1]) !== -1
+    return item.includes(formattedDateSummary[1])
   })
   return { getMonthSummary, formattedDateSummary }
 }
 
 const isSummaryDateToday = (issueDate) => {
-  if (!issueDate) return false
+  if (!issueDate) {
+    return false
+  }
   const today = moment().format('YYYY-MM-DD')
   const issueDateFormatted = moment(issueDate).format('YYYY-MM-DD')
   return today === issueDateFormatted
 }
 
 const getIssueTime = (issueDate) => {
-  if (!issueDate) return '5:00am'
+  if (!issueDate) {
+    return '5:00am'
+  }
   const issueMoment = moment(issueDate)
-  if (!issueMoment.isValid()) return '5:00am'
+  if (!issueMoment.isValid()) {
+    return '5:00am'
+  }
   return issueMoment.format('h:mma')
 }
 

@@ -1,5 +1,10 @@
 import { english } from '../../data/en/en.js'
-import { REDIRECT_STATUS_CODE, LANG_EN } from '../../data/constants.js'
+import {
+  REDIRECT_STATUS_CODE,
+  LANG_EN,
+  CODE_EXPIRY_MINUTES,
+  STATUS_INTERNAL_SERVER_ERROR
+} from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 import { notifyService } from '../../../helpers/notify-service.js'
 import { createLogger } from '../../common/helpers/logging/logger.js'
@@ -9,7 +14,7 @@ const DEFAULT_MOBILE_NUMBER = '07123456789'
 const ACTIVATION_CODE_VIEW_PATH = 'notify-register/activation-code'
 const ACTIVATION_CODE_PATH = '/notify/activation-code'
 const CONFIRM_ALERT_PATH = '/notify/confirm-alert'
-const CODE_EXPIRY_MS = 15 * 60 * 1000
+const CODE_EXPIRY_MS = CODE_EXPIRY_MINUTES * 60 * 1000
 
 function resolveMobileNumber(request) {
   return (
@@ -54,13 +59,14 @@ function applyDevelopmentFallback(request) {
 }
 
 function buildNotifyErrorView() {
+  const { common } = english
   return {
     pageTitle: 'Error sending message',
     heading: 'Sorry, we could not send your activation code',
     description:
       'Please try again later or contact support if the problem persists.',
-    page: 'Text alerts',
-    serviceName: 'Check air quality',
+    page: common.textAlertsPage,
+    serviceName: common.serviceName,
     footerTxt: english.footerTxt,
     phaseBanner: english.phaseBanner,
     backlink: english.backlink,
@@ -84,14 +90,15 @@ function getDevelopmentHint(request) {
 }
 
 function buildActivationCodeViewModel(request, errorText = null) {
+  const { common, activationCode } = english
   const mobileNumber = request.yar?.get('mobileNumber') || DEFAULT_MOBILE_NUMBER
   const viewModel = {
-    pageTitle: 'Enter your activation code',
+    pageTitle: activationCode.pageTitle,
     metaSiteUrl: getAirQualitySiteUrl(request),
-    heading: 'Enter your activation code',
+    heading: activationCode.heading,
     description: `We sent a 5-digit code to ${mobileNumber}`,
-    page: 'Text alerts',
-    serviceName: 'Check air quality',
+    page: common.textAlertsPage,
+    serviceName: common.serviceName,
     lang: LANG_EN,
     footerTxt: english.footerTxt,
     phaseBanner: english.phaseBanner,
@@ -108,8 +115,9 @@ function buildActivationCodeViewModel(request, errorText = null) {
 }
 
 function getActivationCodeError({ enteredCode, storedCode, timestamp }) {
+  const { activationCode } = english
   if (!enteredCode) {
-    return 'Enter your activation code'
+    return activationCode.heading
   }
 
   const codeAge = Date.now() - (timestamp || 0)
@@ -153,23 +161,23 @@ const getMobilePhoneController = {
 }
 
 const postMobilePhoneController = {
-  handler: async (request, h) => {
+  handler: async (_request, h) => {
     return h.redirect('/notify/confirm-mobile').code(REDIRECT_STATUS_CODE)
   }
 }
 
 const getConfirmMobileController = {
   handler: async (request, h) => {
-    const { footerTxt, phaseBanner, backlink, cookieBanner } = english
+    const { footerTxt, phaseBanner, backlink, cookieBanner, common } = english
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     return h.view('notify-register/confirm-mobile', {
       pageTitle: 'Confirm your mobile phone number',
       metaSiteUrl,
       heading: 'Confirm your mobile phone number',
-      mobilePhone: '07123456789',
-      page: 'Text alerts',
-      serviceName: 'Check air quality',
+      mobilePhone: DEFAULT_MOBILE_NUMBER,
+      page: common.textAlertsPage,
+      serviceName: common.serviceName,
       lang: LANG_EN,
       footerTxt,
       phaseBanner,
@@ -203,7 +211,9 @@ const postConfirmMobileController = {
       }
 
       // In production, show error page or redirect with error
-      return h.view('notify-register/error', buildNotifyErrorView()).code(500)
+      return h
+        .view('notify-register/error', buildNotifyErrorView())
+        .code(STATUS_INTERNAL_SERVER_ERROR)
     }
   }
 }

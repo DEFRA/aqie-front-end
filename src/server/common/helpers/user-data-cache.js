@@ -2,6 +2,7 @@
 import { config } from '../../../config/index.js'
 import { createLogger } from './logging/logger.js'
 import { getSessionRedisClient } from './session-cache/cache-engine.js'
+import { DEFAULT_USER_DATA_CACHE_TTL_MS } from '../../data/constants.js'
 
 const logger = createLogger()
 const USER_DATA_CACHE_PREFIX = 'userdata:'
@@ -13,7 +14,7 @@ function getUserDataTtlMs() {
   if (Number.isFinite(configuredValue) && configuredValue > 0) {
     return configuredValue
   }
-  return 15 * 60 * 1000
+  return DEFAULT_USER_DATA_CACHE_TTL_MS
 }
 
 function normalizeSegment(value, fallback = 'na') {

@@ -24,7 +24,7 @@ function getAccessibilityContent(lang) {
 }
 
 // Define the handler function
-const accessibilityHandler = (request, h, content = english) => {
+const accessibilityHandler = (request, h) => {
   const { query, path } = request
   const metaSiteUrl = getAirQualitySiteUrl(request)
 
@@ -36,7 +36,7 @@ const accessibilityHandler = (request, h, content = english) => {
   }
 
   const lang = resolveAccessibilityLang(query, path)
-  content = getAccessibilityContent(lang)
+  const resolvedContent = getAccessibilityContent(lang)
   // Destructure necessary data from the imported 'content' object
   const {
     footer: {
@@ -53,7 +53,7 @@ const accessibilityHandler = (request, h, content = english) => {
     phaseBanner,
     footerTxt,
     multipleLocations: { serviceName }
-  } = content
+  } = resolvedContent
 
   // Render the accessibility page with the necessary data
   return h.view('accessibility/index', {

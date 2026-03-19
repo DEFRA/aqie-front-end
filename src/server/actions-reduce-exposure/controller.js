@@ -64,24 +64,26 @@ function buildBackLinkData({
   locationName,
   backlink
 }) {
-  if (!locationId) {
+  if (locationId) {
+    const trimmedSearchTerms = searchTerms.trim()
+    const formattedPostcode = trimmedSearchTerms
+      ? formatUKPostcode(searchTerms)
+      : ''
+
     return {
-      backLinkText: backlink.text,
-      backLinkUrl: '/search-location?lang=en'
+      backLinkText: buildBackLinkText(
+        formattedPostcode,
+        locationName,
+        locationName.trim() !== '',
+        backlink.text
+      ),
+      backLinkUrl: `/location/${locationId}?lang=en`
     }
   }
 
-  const formattedPostcode =
-    searchTerms.trim() !== '' ? formatUKPostcode(searchTerms) : ''
-
   return {
-    backLinkText: buildBackLinkText(
-      formattedPostcode,
-      locationName,
-      locationName.trim() !== '',
-      backlink.text
-    ),
-    backLinkUrl: `/location/${locationId}?lang=en`
+    backLinkText: backlink.text,
+    backLinkUrl: '/search-location?lang=en'
   }
 }
 

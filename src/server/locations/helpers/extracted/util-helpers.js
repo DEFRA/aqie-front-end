@@ -94,9 +94,12 @@ const refreshOAuthToken = async (request, di = {}) => {
 }
 
 const resolveNIDi = (...args) => {
-  const maybeDi = args[args.length - 1]
+  const maybeDi = args.at(-1)
   return maybeDi && typeof maybeDi === 'object' ? maybeDi : {}
 }
+
+const LEGACY_UK_ARGS_COUNT = 4
+const LEGACY_UK_DI_INDEX = 3
 
 const handleNILocationData = async (...args) => {
   const userLocation = args[0]
@@ -123,12 +126,12 @@ const handleNILocationData = async (...args) => {
 }
 
 const resolveUKArgs = (...args) => {
-  if (args.length >= 4) {
+  if (args.length >= LEGACY_UK_ARGS_COUNT) {
     return {
       userLocation: args[0],
       searchTerms: args[1],
       secondSearchTerm: args[2],
-      di: args[3] || {}
+      di: args[LEGACY_UK_DI_INDEX] || {}
     }
   }
 
@@ -277,11 +280,10 @@ function handleUnsupportedLocationType() {
 }
 
 // Builds a Northern Ireland postcode URL (stub implementation)
-function buildNIPostcodeUrl(postcode) {
+function buildNIPostcodeUrl(postcode, configArg) {
   if (!postcode) {
     return ''
   }
-  const configArg = arguments[1]
   const baseUrl =
     configArg?.niApiBaseUrl || 'https://api.ni.example.com/postcode'
   return `${baseUrl}/${encodeURIComponent(postcode)}`
@@ -323,11 +325,10 @@ function buildUKLocationFilters(location) {
 }
 
 // Builds a UK API URL (stub implementation)
-function buildUKApiUrl(location) {
+function buildUKApiUrl(location, configArg) {
   if (!location) {
     return ''
   }
-  const configArg = arguments[1]
   const baseUrl =
     configArg?.ukApiBaseUrl || 'https://api.uk.example.com/location'
   return `${baseUrl}/${encodeURIComponent(location)}`

@@ -75,6 +75,10 @@ const redisPressureGuardState = {
   activeUntilMs: 0,
   inFlight: false
 }
+const REDIS_PRESSURE_DEFAULT_WINDOW_MS = 30000
+const REDIS_PRESSURE_DEFAULT_COOLDOWN_MS = 300000
+const REDIS_PRESSURE_DEFAULT_MIN_GROWTH_MEBIBYTES = 20
+const REDIS_PRESSURE_GROWTH_RATIO_PRECISION = 3
 
 function hasSessionCookie(request) {
   const sessionCookieName = config.get('session.cache.name')
@@ -113,7 +117,7 @@ function logSessionGuardSkip(request, operation, sessionKey, reason) {
 
 function parseRedisInfoValue(infoText, key) {
   const match = infoText?.match(new RegExp(`^${key}:(.*)$`, 'm'))
-  return match && match[1] ? match[1].trim() : ''
+  return match?.[1]?.trim() || ''
 }
 
 function getRedisPressureConfigValue(path, fallbackValue) {
@@ -130,15 +134,15 @@ function getRedisPressureThresholds() {
   )
   const windowMs = getRedisPressureConfigValue(
     'session.cache.redisPressure.windowMs',
-    30000
+    REDIS_PRESSURE_DEFAULT_WINDOW_MS
   )
   const cooldownMs = getRedisPressureConfigValue(
     'session.cache.redisPressure.cooldownMs',
-    300000
+    REDIS_PRESSURE_DEFAULT_COOLDOWN_MS
   )
   const minGrowthMebibytes = getRedisPressureConfigValue(
     'session.cache.redisPressure.minGrowthMebibytes',
-    20
+    REDIS_PRESSURE_DEFAULT_MIN_GROWTH_MEBIBYTES
   )
   const bytesPerMebibyte = getRedisPressureConfigValue(
     'session.cache.redisPressure.bytesPerMebibyte',
@@ -208,7 +212,7 @@ function maybeRefreshRedisPressureGuard() {
           redisPressureGuardState.activeUntilMs = Date.now() + cooldownMs
 
           logger.warn(
-            `[SESSION GUARD] Redis pressure guard activated growthBytes=${growthBytes} growthRatio=${growthRatio.toFixed(3)} cooldownMs=${cooldownMs}`
+            `[SESSION GUARD] Redis pressure guard activated growthBytes=${growthBytes} growthRatio=${growthRatio.toFixed(REDIS_PRESSURE_GROWTH_RATIO_PRECISION)} cooldownMs=${cooldownMs}`
           )
         }
       }
@@ -281,10 +285,7 @@ function areObjectValuesEqual(currentValue, nextValue) {
 
 function areSessionValuesEqual(currentValue, nextValue) {
   if (Object.is(currentValue, nextValue)) {
-    if (hasObjectReferencePair(currentValue, nextValue)) {
-      return false
-    }
-    return true
+    return !hasObjectReferencePair(currentValue, nextValue)
   }
 
   if (hasObjectReferencePair(currentValue, nextValue)) {
@@ -371,8 +372,8 @@ function normalizeLocationIdTerms(locationId = '') {
   const [primaryPart = '', ...secondaryParts] = decodedId.split('_')
 
   return {
-    searchTerms: primaryPart.replace(/-/g, ' ').trim(),
-    secondSearchTerm: secondaryParts.join('_').replace(/-/g, ' ').trim()
+    searchTerms: primaryPart.replaceAll('-', ' ').trim(),
+    secondSearchTerm: secondaryParts.join('_').replaceAll('-', ' ').trim()
   }
 }
 
@@ -503,7 +504,7 @@ function resolveAlertLatLon(locationData = {}, fallbackLatlon = {}) {
     return fallbackCoordinates
   }
 
-  return { lat: undefined, lon: undefined }
+  return { lat: null, lon: null }
 }
 
 function applyMockLevel(request, airQuality) {
@@ -862,9 +863,7 @@ function ensureNIDistanceLatLon(distance, locationData) {
 
 function hasUsableDistanceLatLon(distance) {
   return Boolean(
-    distance?.latlon &&
-      distance.latlon.lat !== undefined &&
-      distance.latlon.lon !== undefined
+    distance?.latlon?.lat !== undefined && distance.latlon.lon !== undefined
   )
 }
 
@@ -874,7 +873,7 @@ function createNIDistanceFallback(distance, locationData) {
     : null
 
   return {
-    ...(distance || {}),
+    ...(distance ?? undefined),
     latlon: {
       lat: firstResult?.latitude || 0,
       lon: firstResult?.longitude || 0
@@ -1061,8 +1060,7 @@ async function initializeAndValidateRequest(request, h) {
     lang,
     h,
     request,
-    locationId,
-    getSearchTermsFromUrl
+    locationId
   )
   if (sessionValidationResult) {
     return { redirect: sessionValidationResult }

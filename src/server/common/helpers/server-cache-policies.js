@@ -1,6 +1,7 @@
 // ''
 import { config } from '../../../config/index.js'
 import { createLogger } from './logging/logger.js'
+import { HOUR_IN_MS, FIFTEEN_MINUTES_IN_MS } from '../../data/constants.js'
 
 const logger = createLogger()
 
@@ -12,11 +13,11 @@ function getDurationMs(key, fallbackMs) {
 export function registerServerCachePolicies(server) {
   const serverSharedCacheTtlMs = getDurationMs(
     'cacheDurations.serverSharedCacheTtlMs',
-    60 * 60 * 1000
+    HOUR_IN_MS
   )
   const userDataCacheTtlMs = getDurationMs(
     'cacheDurations.userDataCacheTtlMs',
-    15 * 60 * 1000
+    FIFTEEN_MINUTES_IN_MS
   )
   const existingCachePolicies = server.app.cachePolicies
   try {

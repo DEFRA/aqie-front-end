@@ -119,14 +119,14 @@ function validateParams(params, requiredKeys = []) {
 async function fetchApi(url, arg2 = {}, arg3 = undefined) {
   // Backward compatible arg order:
   // fetchApi(url, logger, options) and fetchApi(url, options, logger)
-  const loggerLike =
-    arg2 && typeof arg2.error === 'function'
-      ? arg2
-      : arg3 && typeof arg3.error === 'function'
-        ? arg3
-        : { error: () => {} }
-  const options =
-    arg2 && typeof arg2.error === 'function' ? arg3 || {} : arg2 || {}
+  const defaultLogger = { error: () => {} }
+  const isArg2Logger = arg2 && typeof arg2.error === 'function'
+  const loggerLike = isArg2Logger
+    ? arg2
+    : arg3 && typeof arg3.error === 'function'
+      ? arg3
+      : defaultLogger
+  const options = isArg2Logger ? arg3 || {} : arg2 || {}
 
   try {
     const response = await fetch(url, options)

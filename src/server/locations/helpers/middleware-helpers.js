@@ -5,9 +5,6 @@ import reduceMatches from './reduce-matches.js'
 import { filterMatches } from './filter-matches.js'
 import { config } from '../../../config/index.js'
 import {
-  getTitleAndHeaderTitle,
-  getLanguageDates,
-  getFormattedDateSummary,
   isSummaryDateToday,
   getIssueTime
 } from './middleware-title-date-helpers.js'
@@ -213,13 +210,16 @@ const deduplicateResults = (results) => {
 }
 
 export {
-  handleSingleMatch,
-  handleMultipleMatches,
-  processMatches,
   getTitleAndHeaderTitle,
   getLanguageDates,
   getFormattedDateSummary,
   isSummaryDateToday,
-  getIssueTime,
+  getIssueTime
+} from './middleware-title-date-helpers.js'
+
+export {
+  handleSingleMatch,
+  handleMultipleMatches,
+  processMatches,
   deduplicateResults
 }

@@ -1,7 +1,10 @@
 import { config } from '../../../config/index.js'
 import { createLogger } from './logging/logger.js'
 import { getSessionRedisClient } from './session-cache/cache-engine.js'
-import { SHARED_LOCATION_CACHE_PREFIX } from '../../data/constants.js'
+import {
+  SHARED_LOCATION_CACHE_PREFIX,
+  DEFAULT_SHARED_LOCATION_CACHE_TTL_MS
+} from '../../data/constants.js'
 
 const logger = createLogger()
 
@@ -9,7 +12,7 @@ function normalizeSegment(value, fallback = 'na') {
   const normalized = String(value ?? fallback)
     .trim()
     .toLowerCase()
-    .replace(/[^a-z0-9_-]/gi, '')
+    .replaceAll(/[^a-z0-9_-]/gi, '')
 
   return normalized || fallback
 }
@@ -41,7 +44,7 @@ function getSharedLocationTtlMs() {
   const ttlCapMs =
     Number.isFinite(sharedLocationCacheTtlMs) && sharedLocationCacheTtlMs > 0
       ? sharedLocationCacheTtlMs
-      : 20 * 60 * 1000
+      : DEFAULT_SHARED_LOCATION_CACHE_TTL_MS
 
   const sessionTtlMs = Number(config.get('session.cache.ttl'))
   if (!Number.isFinite(sessionTtlMs) || sessionTtlMs <= 0) {

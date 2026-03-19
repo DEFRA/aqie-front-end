@@ -46,10 +46,11 @@ const setSessionIfChanged = (request, key, value) => {
     return
   }
 
-  if (isObjectPair(currentValue, value)) {
-    if (areSerializedObjectsEqual(currentValue, value)) {
-      return
-    }
+  if (
+    isObjectPair(currentValue, value) &&
+    areSerializedObjectsEqual(currentValue, value)
+  ) {
+    return
   }
 
   request.yar.set(key, value)
@@ -196,7 +197,7 @@ function buildNILocationData({
 
   return {
     results: getNIPlaces.results,
-    urlRoute: `${postcode.toLowerCase()}`.replace(/\s+/g, ''),
+    urlRoute: `${postcode.toLowerCase()}`.replaceAll(/\s+/g, ''),
     locationType,
     transformedDailySummary,
     englishDate,

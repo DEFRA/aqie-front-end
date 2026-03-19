@@ -45,7 +45,7 @@ const getApiKeyCandidatesByEnv = (env) => {
 }
 
 const getOverrideOrDefault = (overrides, key, fallback) => {
-  if (overrides && overrides[key]) {
+  if (overrides?.[key]) {
     return overrides[key]
   }
   return fallback

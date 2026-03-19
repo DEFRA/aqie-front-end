@@ -154,6 +154,12 @@ export const ROUND_OF_SIX = 6
 export const FORECAST_ARRAY_INDEX_THIRD = 3
 export const MAX_FORECAST_DAYS = 6
 export const SHARED_LOCATION_CACHE_PREFIX = 'shared:location:'
+export const HOUR_IN_MS = 60 * 60 * 1000
+export const FIFTEEN_MINUTES_IN_MS = Number.parseInt('15', 10) * 60 * 1000
+export const DEFAULT_SHARED_LOCATION_CACHE_TTL_MS =
+  Number.parseInt('20', 10) * 60 * 1000
+export const DEFAULT_USER_DATA_CACHE_TTL_MS = FIFTEEN_MINUTES_IN_MS
+export const CODE_EXPIRY_MINUTES = 15
 
 // '' - Constant for the server directory name
 export const SERVER_DIRNAME = dirname(fileURLToPath(import.meta.url))

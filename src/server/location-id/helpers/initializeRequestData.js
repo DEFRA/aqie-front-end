@@ -25,7 +25,7 @@ function logMocksDisabledWarning(paramLabel) {
 }
 
 function getLocationIdFromRequest(request) {
-  return request && request.params ? request.params.id : undefined
+  return request?.params?.id
 }
 
 function getSearchTermsSavedFromRequest(request) {
@@ -37,7 +37,7 @@ function getSearchTermsSavedFromRequest(request) {
 }
 
 function getCurrentUrlFromRequest(request) {
-  return request && request.url && request.url.href ? request.url.href : ''
+  return request?.url?.href || ''
 }
 
 function getRequestContext(request) {
@@ -61,9 +61,7 @@ function getRequestContext(request) {
 }
 
 function hasYarSet(request) {
-  return Boolean(
-    request && request.yar && typeof request.yar.set === 'function'
-  )
+  return Boolean(request?.yar && typeof request.yar.set === 'function')
 }
 
 function applyMockSessionValues(request, query) {

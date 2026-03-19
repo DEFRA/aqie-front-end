@@ -3,9 +3,17 @@ import { createLogger } from '../../common/helpers/logging/logger.js'
 import { config } from '../../../config/index.js'
 import { refreshOAuthToken } from './extracted/util-helpers.js'
 import { fetchWithRetry } from '../../common/helpers/fetch-with-retry.js'
+import {
+  STATUS_OK,
+  STATUS_UNAUTHORIZED,
+  STATUS_INTERNAL_SERVER_ERROR
+} from '../../data/constants.js'
 
 const logger = createLogger()
-const STATUS_CODE_SUCCESS = 200
+const STATUS_CODE_SUCCESS = STATUS_OK
+const CIRCUIT_BREAKER_DEFAULT_FAILURE_THRESHOLD = 3
+const STATUS_TOO_MANY_REQUESTS = 429
+const STATUS_NO_CONTENT = 204
 const SERVICE_UNAVAILABLE_ERROR = 'service-unavailable'
 
 // '' Simple in-memory cache and circuit breaker state
@@ -30,7 +38,9 @@ function getCacheConfig() {
 function getCircuitBreakerConfig() {
   return {
     enabled: config.get('niApiCircuitBreakerEnabled') ?? true,
-    failureThreshold: config.get('niApiCircuitBreakerFailureThreshold') ?? 3,
+    failureThreshold:
+      config.get('niApiCircuitBreakerFailureThreshold') ??
+      CIRCUIT_BREAKER_DEFAULT_FAILURE_THRESHOLD,
     openDurationMs: config.get('niApiCircuitBreakerOpenMs') ?? 60 * 1000
   }
 }
@@ -171,7 +181,7 @@ function buildNiRequestContext(userLocation, isMockEnabled) {
   )
   const normalizedUserLocation = (userLocation || '')
     .toUpperCase()
-    .replace(/\s+/g, '')
+    .replaceAll(/\s+/g, '')
   const cacheKey = getCacheKey(normalizedUserLocation)
   const postcodeNortherIrelandURL = isMockEnabled
     ? `${mockOsPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(normalizedUserLocation)}&_limit=1`
@@ -302,7 +312,9 @@ function createNiRequestRunner(
 
         const [statusCode] = result
         const isRetriableStatus =
-          !statusCode || statusCode >= 500 || statusCode === 429
+          !statusCode ||
+          statusCode >= STATUS_INTERNAL_SERVER_ERROR ||
+          statusCode === STATUS_TOO_MANY_REQUESTS
 
         if (isRetriableStatus) {
           const error = new Error(
@@ -369,11 +381,13 @@ async function retryNiRequestAfterUnauthorized(
   runNiRequest,
   request
 ) {
-  if (isMockEnabled || statusCodeNI !== 401) {
+  if (isMockEnabled || statusCodeNI !== STATUS_UNAUTHORIZED) {
     return null
   }
 
-  logger.warn('[getNIPlaces] NI API returned 401; refreshing OAuth token')
+  logger.warn(
+    `[getNIPlaces] NI API returned ${STATUS_UNAUTHORIZED}; refreshing OAuth token`
+  )
   const tokenResult = await refreshOAuthToken(request, { logger })
   if (tokenResult?.error) {
     logger.error(
@@ -497,9 +511,9 @@ function finalizeNiPlacesResponse({
     `[getNIPlaces] Response summary: ${JSON.stringify(getNiResponseSummary(normalizedData))}`
   )
 
-  if (statusCodeNI === 204) {
+  if (statusCodeNI === STATUS_NO_CONTENT) {
     logger.info(
-      `[getNIPlaces] NI API returned 204 No Content - postcode not found`
+      `[getNIPlaces] NI API returned ${STATUS_NO_CONTENT} No Content - postcode not found`
     )
     return { results: [] }
   }
