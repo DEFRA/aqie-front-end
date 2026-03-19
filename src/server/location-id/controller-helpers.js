@@ -386,7 +386,9 @@ function buildMockQueryParamsFromQuery(query = {}) {
  * @returns {boolean} True when results and forecasts are present
  */
 function hasValidSessionLocationData(locationData) {
-  return Boolean(Array.isArray(locationData?.results) && locationData?.getForecasts)
+  return Boolean(
+    Array.isArray(locationData?.results) && locationData?.getForecasts
+  )
 }
 
 /**

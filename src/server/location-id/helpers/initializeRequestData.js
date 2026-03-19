@@ -61,7 +61,9 @@ function getRequestContext(request) {
 }
 
 function hasYarSet(request) {
-  return Boolean(request && request.yar && typeof request.yar.set === 'function')
+  return Boolean(
+    request && request.yar && typeof request.yar.set === 'function'
+  )
 }
 
 function applyMockSessionValues(request, query) {

@@ -642,13 +642,12 @@ function handleSearchTermsRedirect(
     return null
   }
 
-  logger.info(`[DEBUG controller] REDIRECTING because searchTermsSaved is missing`)
+  logger.info(
+    `[DEBUG controller] REDIRECTING because searchTermsSaved is missing`
+  )
 
-  const {
-    safeSearchTerms,
-    safeSecondSearchTerm,
-    safeSearchTermsLocationType
-  } = getSearchRedirectParams(currentUrl, request)
+  const { safeSearchTerms, safeSecondSearchTerm, safeSearchTermsLocationType } =
+    getSearchRedirectParams(currentUrl, request)
 
   clearSessionKeyIfExists(request, 'locationData')
   logger.info('Redirecting to location search')

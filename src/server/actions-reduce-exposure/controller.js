@@ -58,7 +58,12 @@ function getLocationContext(query = {}) {
   }
 }
 
-function buildBackLinkData({ locationId, searchTerms, locationName, backlink }) {
+function buildBackLinkData({
+  locationId,
+  searchTerms,
+  locationName,
+  backlink
+}) {
   if (!locationId) {
     return {
       backLinkText: backlink.text,
@@ -66,7 +71,8 @@ function buildBackLinkData({ locationId, searchTerms, locationName, backlink }) 
     }
   }
 
-  const formattedPostcode = searchTerms.trim() !== '' ? formatUKPostcode(searchTerms) : ''
+  const formattedPostcode =
+    searchTerms.trim() !== '' ? formatUKPostcode(searchTerms) : ''
 
   return {
     backLinkText: buildBackLinkText(

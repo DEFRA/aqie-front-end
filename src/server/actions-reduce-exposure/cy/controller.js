@@ -54,7 +54,12 @@ function getLocationContext(query = {}) {
   }
 }
 
-function buildBackLinkData({ locationId, searchTerms, locationName, backlink }) {
+function buildBackLinkData({
+  locationId,
+  searchTerms,
+  locationName,
+  backlink
+}) {
   if (!locationId) {
     return {
       backLinkText: backlink.text,

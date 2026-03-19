@@ -77,7 +77,13 @@ const buildLoadingStatusContext = (request, sessionStore) => {
   return { niProcessing, niError, redirectTo, lang, postcode }
 }
 
-const buildCompletedStatusResponse = ({ h, niError, redirectTo, postcode, lang }) => {
+const buildCompletedStatusResponse = ({
+  h,
+  niError,
+  redirectTo,
+  postcode,
+  lang
+}) => {
   const retryRedirect = `/retry?postcode=${encodeURIComponent(postcode)}&lang=${lang}`
   const defaultRedirect = '/search-location'
 

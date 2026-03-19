@@ -73,17 +73,15 @@ function resolveForecastApiDependencies(params) {
       ) || {},
     resolvedOptions:
       getFirstTruthyValue(params.options, params.injectedOptions) || {},
-    resolvedCatchFetchError:
-      getFirstTruthyValue(
-        params.catchFetchError,
-        params.injectedCatchFetchError
-      ),
-    resolvedHttpStatusOk:
-      getFirstTruthyValue(
-        params.httpStatusOk,
-        params.injectedHttpStatusOk,
-        STATUS_OK
-      ),
+    resolvedCatchFetchError: getFirstTruthyValue(
+      params.catchFetchError,
+      params.injectedCatchFetchError
+    ),
+    resolvedHttpStatusOk: getFirstTruthyValue(
+      params.httpStatusOk,
+      params.injectedHttpStatusOk,
+      STATUS_OK
+    ),
     resolvedLogger: getFirstTruthyValue(params.logger, params.injectedLogger),
     resolvedErrorResponse: getFirstTruthyValue(
       params.errorResponse,
@@ -341,10 +339,12 @@ function resolveMeasurementsSelectionInput(
 function resolveMeasurementsDependencies(di) {
   return {
     resolvedConfig: di.config || di.injectedConfig || config,
-    resolvedLogger:
-      di.injectedLogger || di.logger || { info: () => {}, error: () => {} },
+    resolvedLogger: di.injectedLogger ||
+      di.logger || { info: () => {}, error: () => {} },
     resolvedOptionsEphemeralProtected:
-      di.optionsEphemeralProtected || di.injectedOptionsEphemeralProtected || {},
+      di.optionsEphemeralProtected ||
+      di.injectedOptionsEphemeralProtected ||
+      {},
     resolvedOptions: di.options || di.injectedOptions || {},
     request: di.request
   }
@@ -406,7 +406,11 @@ function buildNewRicardoMeasurementsSelection({
   )
 }
 
-function buildOldMeasurementsSelection(resolvedConfig, resolvedLogger, resolvedOptions) {
+function buildOldMeasurementsSelection(
+  resolvedConfig,
+  resolvedLogger,
+  resolvedOptions
+) {
   const measurementsAPIurl = resolvedConfig.get('measurementsApiUrl')
   resolvedLogger.info(`Old measurements API URL: ${measurementsAPIurl}`)
   return buildRemoteMeasurementsUrlAndOpts(measurementsAPIurl, resolvedOptions)
@@ -516,9 +520,11 @@ function buildAndCheckUKApiUrl(
 
 function resolveUkApiDependencies(input) {
   return {
-    resolvedLogger:
-      getFirstTruthyValue(input.logger, input.injectedLogger) ||
-      { info: () => {}, warn: () => {}, error: () => {} },
+    resolvedLogger: getFirstTruthyValue(input.logger, input.injectedLogger) || {
+      info: () => {},
+      warn: () => {},
+      error: () => {}
+    },
     resolvedOptions:
       getFirstTruthyValue(input.options, input.injectedOptions) || {},
     resolvedOptionsEphemeralProtected:

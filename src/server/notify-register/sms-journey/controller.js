@@ -210,7 +210,10 @@ const postConfirmMobileController = {
 
 const getActivationCodeController = {
   handler: async (request, h) => {
-    return h.view(ACTIVATION_CODE_VIEW_PATH, buildActivationCodeViewModel(request))
+    return h.view(
+      ACTIVATION_CODE_VIEW_PATH,
+      buildActivationCodeViewModel(request)
+    )
   }
 }
 

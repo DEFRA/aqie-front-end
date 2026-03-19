@@ -47,7 +47,10 @@ async function resolveNotificationCoordinates(gazetteerEntry, result) {
   if (gazetteerEntry.GEOMETRY_X && gazetteerEntry.GEOMETRY_Y) {
     // '' Import OsGridRef for coordinate conversion
     const OsGridRef = (await import('mt-osgridref')).default
-    const point = new OsGridRef(gazetteerEntry.GEOMETRY_X, gazetteerEntry.GEOMETRY_Y)
+    const point = new OsGridRef(
+      gazetteerEntry.GEOMETRY_X,
+      gazetteerEntry.GEOMETRY_Y
+    )
     const latlon = OsGridRef.osGridToLatLong(point)
     return { lat: latlon._lat, lon: latlon._lon }
   }
@@ -115,7 +118,10 @@ async function updateNotificationMetaFromResults({
   const result = findLocationResult(locationData, locationId, logger)
   const gazetteerEntry = result.GAZETTEER_ENTRY || result
   const locationTitle = buildLocationTitle(locationData, gazetteerEntry)
-  const { lat, lon } = await resolveNotificationCoordinates(gazetteerEntry, result)
+  const { lat, lon } = await resolveNotificationCoordinates(
+    gazetteerEntry,
+    result
+  )
 
   setNotificationLocationSessionValues(
     request,

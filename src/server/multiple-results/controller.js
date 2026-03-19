@@ -99,18 +99,9 @@ const getLocationDataController = {
       welshDate,
       getMonth,
       lang,
-      userLocation
+      userLocation,
+      notificationFlow
     } = locationData
-    const {
-      backlink,
-      cookieBanner,
-      phaseBanner,
-      footerTxt,
-      multipleLocations,
-      dailySummary,
-      siteTypeDescriptions,
-      pollutantTypes
-    } = english
     const { query } = request
 
     if (query?.lang === LANG_CY) {
@@ -120,27 +111,26 @@ const getLocationDataController = {
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     try {
+      const viewModel = buildMultipleLocationsViewModel(
+        {
+          results,
+          monitoringSites,
+          transformedDailySummary,
+          calendarWelsh,
+          englishDate,
+          welshDate,
+          getMonth,
+          lang,
+          userLocation,
+          notificationFlow
+        },
+        english,
+        metaSiteUrl
+      )
+
       return h.view('multiple-results/multiple-locations', {
-        results,
-        title: multipleLocations.title,
-        paragraphs: multipleLocations.paragraphs,
-        userLocation,
-        monitoringSites,
-        siteTypeDescriptions,
-        pollutantTypes,
-        pageTitle: `${multipleLocations.title} ${userLocation} -  ${multipleLocations.pageTitle}`,
-        metaSiteUrl,
-        description: multipleLocations.description,
-        serviceName: multipleLocations.serviceName,
-        transformedDailySummary,
-        dailySummary,
-        footerTxt,
-        phaseBanner,
-        backlink,
-        cookieBanner,
+        ...viewModel,
         welshMonth: getMonth ? calendarWelsh[getMonth] : undefined,
-        summaryDate: lang === LANG_CY ? welshDate : englishDate,
-        currentPath: '/multiple-results',
         lang: 'en'
       })
     } catch (error) {

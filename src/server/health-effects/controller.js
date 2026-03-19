@@ -84,10 +84,7 @@ function renderByRoute(request, h, query, params, metaSiteUrl, customContent) {
   }
 
   // '' If route does not match, return 404
-  logger.warn(
-    { routePath: request.path },
-    "'' Health effects route not found"
-  ) // ''
+  logger.warn({ routePath: request.path }, "'' Health effects route not found") // ''
   return h.response('Page Not Found').code(HTTP_NOT_FOUND) // ''
 }
 
