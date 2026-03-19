@@ -42,7 +42,12 @@ export const STATUS_BAD_REQUEST = 400
 export const STATUS_FOUND = 302
 export const STATUS_NOT_FOUND = 404
 export const STATUS_OK = 200
+export const STATUS_CODE_SUCCESS = STATUS_OK
+export const STATUS_TOO_MANY_REQUESTS = 429
+export const STATUS_NO_CONTENT = 204
 export const STATUS_INTERNAL_SERVER_ERROR = 500
+export const CIRCUIT_BREAKER_DEFAULT_FAILURE_THRESHOLD = 3
+export const SERVICE_UNAVAILABLE_ERROR = 'service-unavailable'
 export const REDIRECT_PATH_EN = '/search-location?lang=en'
 export const REDIRECT_PATH_CY = 'chwilio-lleoliad/cy?lang=cy'
 export const POSTCODE_SPACE_INDEX = 3

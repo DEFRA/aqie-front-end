@@ -202,7 +202,13 @@ vi.mock('../data/constants.js', () => ({
   REDIRECT_STATUS_CODE: 301,
   SESSION_GUARD_LOG_LIMIT_PER_REQUEST: 1,
   SHARED_LOCATION_CACHE_PREFIX: 'shared:location-payload:',
-  STATUS_INTERNAL_SERVER_ERROR: 500
+  STATUS_INTERNAL_SERVER_ERROR: 500,
+  STATUS_CODE_SUCCESS: 200,
+  STATUS_TOO_MANY_REQUESTS: 429,
+  STATUS_NO_CONTENT: 204,
+  STATUS_UNAUTHORIZED: 401,
+  CIRCUIT_BREAKER_DEFAULT_FAILURE_THRESHOLD: 3,
+  SERVICE_UNAVAILABLE_ERROR: 'service-unavailable'
 }))
 
 // eslint-disable-next-line import-x/first -- vi.mock() must be before imports for Vitest hoisting

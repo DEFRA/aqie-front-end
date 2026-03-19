@@ -4,17 +4,16 @@ import { config } from '../../../config/index.js'
 import { refreshOAuthToken } from './extracted/util-helpers.js'
 import { fetchWithRetry } from '../../common/helpers/fetch-with-retry.js'
 import {
-  STATUS_OK,
+  STATUS_CODE_SUCCESS,
+  CIRCUIT_BREAKER_DEFAULT_FAILURE_THRESHOLD,
+  STATUS_TOO_MANY_REQUESTS,
+  STATUS_NO_CONTENT,
   STATUS_UNAUTHORIZED,
-  STATUS_INTERNAL_SERVER_ERROR
+  STATUS_INTERNAL_SERVER_ERROR,
+  SERVICE_UNAVAILABLE_ERROR
 } from '../../data/constants.js'
 
 const logger = createLogger()
-const STATUS_CODE_SUCCESS = STATUS_OK
-const CIRCUIT_BREAKER_DEFAULT_FAILURE_THRESHOLD = 3
-const STATUS_TOO_MANY_REQUESTS = 429
-const STATUS_NO_CONTENT = 204
-const SERVICE_UNAVAILABLE_ERROR = 'service-unavailable'
 
 // '' Simple in-memory cache and circuit breaker state
 const niPlacesCache = new Map()
