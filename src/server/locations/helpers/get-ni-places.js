@@ -162,18 +162,13 @@ function getNiResponseSummary(niPlacesData = null) {
   }
 }
 
-// ''  Simplified - removed test-only DI parameters
-async function getNIPlaces(userLocation, request) {
-  // Read configuration directly instead of via parameters
-  const isMockEnabled = config.get('enabledMock')
+function buildNiRequestContext(userLocation, isMockEnabled) {
   const osPlacesApiPostcodeNorthernIrelandUrl = config.get(
     'osPlacesApiPostcodeNorthernIrelandUrl'
   )
   const mockOsPlacesApiPostcodeNorthernIrelandUrl = config.get(
     'mockOsPlacesApiPostcodeNorthernIrelandUrl'
   )
-
-  // '' Normalize NI postcode for API call (remove spaces, uppercase)
   const normalizedUserLocation = (userLocation || '')
     .toUpperCase()
     .replace(/\s+/g, '')
@@ -182,61 +177,95 @@ async function getNIPlaces(userLocation, request) {
     ? `${mockOsPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(normalizedUserLocation)}&_limit=1`
     : `${osPlacesApiPostcodeNorthernIrelandUrl}${encodeURIComponent(normalizedUserLocation)}&maxresults=1`
 
-  // '' Check circuit breaker before calling upstream
-  const { shouldShortCircuit, isHalfOpenProbe } = getCircuitBreakerDecision()
-  if (shouldShortCircuit) {
-    logger.warn(
-      `[getNIPlaces] Circuit breaker open - skipping NI API call for ${normalizedUserLocation}`
+  return {
+    normalizedUserLocation,
+    cacheKey,
+    postcodeNortherIrelandURL
+  }
+}
+
+function getFallbackFromCacheOrServiceUnavailable(
+  cacheKey,
+  normalizedUserLocation,
+  meta = {}
+) {
+  const { data: cachedResult, meta: cacheMeta } =
+    getCachedResultWithMeta(cacheKey)
+  if (cachedResult) {
+    logger.info(
+      `[getNIPlaces] Returning cached NI result for ${normalizedUserLocation}`,
+      {
+        cacheAgeMs: cacheMeta?.ageMs,
+        cacheTtlMs: cacheMeta?.ttlMs,
+        cacheExpiresInMs: cacheMeta?.expiresInMs,
+        ...meta
+      }
     )
-
-    const { data: cachedResult, meta: cacheMeta } =
-      getCachedResultWithMeta(cacheKey)
-    if (cachedResult) {
-      logger.info(
-        `[getNIPlaces] Returning cached NI result for ${normalizedUserLocation}`,
-        {
-          cacheAgeMs: cacheMeta?.ageMs,
-          cacheTtlMs: cacheMeta?.ttlMs,
-          cacheExpiresInMs: cacheMeta?.expiresInMs,
-          breakerOpen: true
-        }
-      )
-      return cachedResult
-    }
-
-    return { results: [], error: SERVICE_UNAVAILABLE_ERROR, breakerOpen: true }
+    return cachedResult
   }
 
-  // Build OAuth options if not in mock mode
-  let optionsOAuth = {}
-  if (!isMockEnabled) {
-    const tokenResult = await refreshOAuthToken(request, { logger })
+  return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
+}
 
-    // '' Check if token fetch failed
-    if (tokenResult?.error) {
-      logger.error(
-        `[getNIPlaces] OAuth token fetch failed: ${tokenResult.error}, statusCode: ${tokenResult.statusCode}`
-      )
-      return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
-    }
+function getCircuitBreakerShortCircuitResponse(
+  cacheKey,
+  normalizedUserLocation
+) {
+  const { shouldShortCircuit, isHalfOpenProbe } = getCircuitBreakerDecision()
+  if (!shouldShortCircuit) {
+    return { isHalfOpenProbe, shortCircuitResponse: null }
+  }
 
-    // '' Extract accessToken from the returned object
-    const accessToken = tokenResult?.accessToken
-    if (!accessToken) {
-      logger.error('[getNIPlaces] OAuth token missing from successful response')
-      return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
-    }
+  logger.warn(
+    `[getNIPlaces] Circuit breaker open - skipping NI API call for ${normalizedUserLocation}`
+  )
+  const fallbackResponse = getFallbackFromCacheOrServiceUnavailable(
+    cacheKey,
+    normalizedUserLocation,
+    { breakerOpen: true }
+  )
+  const shortCircuitResponse = fallbackResponse.error
+    ? { ...fallbackResponse, breakerOpen: true }
+    : fallbackResponse
+  return { isHalfOpenProbe, shortCircuitResponse }
+}
 
-    if (accessToken) {
-      optionsOAuth = {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        }
+async function buildNiOAuthOptions(isMockEnabled, request) {
+  if (isMockEnabled) {
+    return { optionsOAuth: {} }
+  }
+
+  const tokenResult = await refreshOAuthToken(request, { logger })
+  if (tokenResult?.error) {
+    logger.error(
+      `[getNIPlaces] OAuth token fetch failed: ${tokenResult.error}, statusCode: ${tokenResult.statusCode}`
+    )
+    return { error: SERVICE_UNAVAILABLE_ERROR }
+  }
+
+  const accessToken = tokenResult?.accessToken
+  if (!accessToken) {
+    logger.error('[getNIPlaces] OAuth token missing from successful response')
+    return { error: SERVICE_UNAVAILABLE_ERROR }
+  }
+
+  return {
+    optionsOAuth: {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
       }
     }
   }
+}
 
+function logNiRequestStart(
+  isMockEnabled,
+  postcodeNortherIrelandURL,
+  optionsOAuth,
+  isHalfOpenProbe,
+  normalizedUserLocation
+) {
   logger.info(`[getNIPlaces] isMockEnabled: ${isMockEnabled}`)
   logger.info(
     `[getNIPlaces] Calling NI API with URL: ${postcodeNortherIrelandURL}`
@@ -250,12 +279,17 @@ async function getNIPlaces(userLocation, request) {
       `[getNIPlaces] Circuit breaker half-open probe for ${normalizedUserLocation}`
     )
   }
+}
 
-  // '' Wrap NI API call with retry logic for better reliability
-  const runNiRequest = async (requestOptions) =>
+function createNiRequestRunner(
+  postcodeNortherIrelandURL,
+  normalizedUserLocation,
+  isMockEnabled,
+  isHalfOpenProbe
+) {
+  return async (requestOptions) =>
     fetchWithRetry(
       async (controller) => {
-        // Pass abort controller signal to catchProxyFetchError
         const optionsWithSignal = controller
           ? { ...requestOptions, signal: controller.signal }
           : requestOptions
@@ -270,7 +304,6 @@ async function getNIPlaces(userLocation, request) {
         const isRetriableStatus =
           !statusCode || statusCode >= 500 || statusCode === 429
 
-        // '' Treat upstream timeouts/5xx as retriable failures
         if (isRetriableStatus) {
           const error = new Error(
             `[getNIPlaces] Retriable NI API failure - statusCode: ${statusCode ?? 'unknown'}`
@@ -289,10 +322,18 @@ async function getNIPlaces(userLocation, request) {
         timeoutMs: config.get('niApiTimeoutMs')
       }
     )
+}
 
-  let statusCodeNI, niPlacesData
+async function executeNiRequestWithFailureHandling(
+  runNiRequest,
+  optionsOAuth,
+  cacheKey,
+  normalizedUserLocation,
+  isHalfOpenProbe
+) {
   try {
-    ;[statusCodeNI, niPlacesData] = await runNiRequest(optionsOAuth)
+    const [statusCodeNI, niPlacesData] = await runNiRequest(optionsOAuth)
+    return { statusCodeNI, niPlacesData }
   } catch (error) {
     const errorType =
       error.name === 'AbortError' || error.message?.includes('Timeout')
@@ -311,57 +352,144 @@ async function getNIPlaces(userLocation, request) {
       }
     )
     recordCircuitBreakerFailure()
-    const { data: cachedResult, meta: cacheMeta } =
-      getCachedResultWithMeta(cacheKey)
-    if (cachedResult) {
+
+    return {
+      fallback: getFallbackFromCacheOrServiceUnavailable(
+        cacheKey,
+        normalizedUserLocation,
+        { errorType }
+      )
+    }
+  }
+}
+
+async function retryNiRequestAfterUnauthorized(
+  isMockEnabled,
+  statusCodeNI,
+  runNiRequest,
+  request
+) {
+  if (isMockEnabled || statusCodeNI !== 401) {
+    return null
+  }
+
+  logger.warn('[getNIPlaces] NI API returned 401; refreshing OAuth token')
+  const tokenResult = await refreshOAuthToken(request, { logger })
+  if (tokenResult?.error) {
+    logger.error(
+      `[getNIPlaces] OAuth token refresh failed after 401: ${tokenResult.error}`
+    )
+    return { error: SERVICE_UNAVAILABLE_ERROR }
+  }
+
+  const accessToken = tokenResult?.accessToken
+  if (!accessToken) {
+    logger.error('[getNIPlaces] OAuth token missing after refresh')
+    return { error: SERVICE_UNAVAILABLE_ERROR }
+  }
+
+  const optionsOAuth = {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    }
+  }
+
+  try {
+    const [nextStatusCodeNI, nextNiPlacesData] =
+      await runNiRequest(optionsOAuth)
+    return { statusCodeNI: nextStatusCodeNI, niPlacesData: nextNiPlacesData }
+  } catch (error) {
+    logger.error(
+      `[getNIPlaces] NI API retry failed after token refresh: ${error.message}`
+    )
+    return { error: SERVICE_UNAVAILABLE_ERROR }
+  }
+}
+
+function isNiServiceUnavailable(statusCodeNI, niPlacesData) {
+  return !statusCodeNI || niPlacesData?.error === SERVICE_UNAVAILABLE_ERROR
+}
+
+function normalizeNiPlacesData(niPlacesData, isMockEnabled) {
+  if (isMockEnabled) {
+    return {
+      results: Array.isArray(niPlacesData) ? niPlacesData : [niPlacesData]
+    }
+  }
+
+  if (niPlacesData?.results) {
+    return {
+      results: Array.isArray(niPlacesData.results)
+        ? niPlacesData.results
+        : [niPlacesData.results]
+    }
+  }
+
+  return { results: [] }
+}
+
+function logNiSuccessResult(niPlacesData) {
+  logger.info(`[getNIPlaces] NI data fetched successfully`)
+  logger.info(
+    `[getNIPlaces] Number of results: ${niPlacesData?.results?.length}`
+  )
+
+  if (niPlacesData?.results?.length > 0) {
+    niPlacesData.results.forEach((result, index) => {
       logger.info(
-        `[getNIPlaces] Returning cached NI result for ${normalizedUserLocation}`,
-        {
-          cacheAgeMs: cacheMeta?.ageMs,
-          cacheTtlMs: cacheMeta?.ttlMs,
-          cacheExpiresInMs: cacheMeta?.expiresInMs,
-          errorType
-        }
+        `[getNIPlaces] Result ${index}: easting=${result.easting}, northing=${result.northing}, xCoordinate=${result.xCoordinate}, yCoordinate=${result.yCoordinate}, latitude=${result.latitude}, longitude=${result.longitude}`
       )
-      return cachedResult
-    }
-    return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
+    })
+  }
+}
+
+async function fetchNiPlacesDataWithRetry({
+  runNiRequest,
+  optionsOAuth,
+  cacheKey,
+  normalizedUserLocation,
+  isHalfOpenProbe,
+  isMockEnabled,
+  request
+}) {
+  const niRequestResult = await executeNiRequestWithFailureHandling(
+    runNiRequest,
+    optionsOAuth,
+    cacheKey,
+    normalizedUserLocation,
+    isHalfOpenProbe
+  )
+  if (niRequestResult.fallback) {
+    return { earlyResponse: niRequestResult.fallback }
   }
 
-  // '' If token expired, refresh OAuth token and retry once
-  if (!isMockEnabled && statusCodeNI === 401) {
-    logger.warn('[getNIPlaces] NI API returned 401; refreshing OAuth token')
-    const tokenResult = await refreshOAuthToken(request, { logger })
-    if (tokenResult?.error) {
-      logger.error(
-        `[getNIPlaces] OAuth token refresh failed after 401: ${tokenResult.error}`
-      )
-      return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
-    }
+  let { statusCodeNI, niPlacesData } = niRequestResult
 
-    const accessToken = tokenResult?.accessToken
-    if (!accessToken) {
-      logger.error('[getNIPlaces] OAuth token missing after refresh')
-      return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
-    }
-
-    optionsOAuth = {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      }
-    }
-
-    try {
-      ;[statusCodeNI, niPlacesData] = await runNiRequest(optionsOAuth)
-    } catch (error) {
-      logger.error(
-        `[getNIPlaces] NI API retry failed after token refresh: ${error.message}`
-      )
-      return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
-    }
+  const retryResult = await retryNiRequestAfterUnauthorized(
+    isMockEnabled,
+    statusCodeNI,
+    runNiRequest,
+    request
+  )
+  if (retryResult?.error) {
+    return { earlyResponse: { results: [], error: SERVICE_UNAVAILABLE_ERROR } }
+  }
+  if (retryResult?.statusCodeNI !== undefined) {
+    statusCodeNI = retryResult.statusCodeNI
+    niPlacesData = retryResult.niPlacesData
   }
 
+  return { statusCodeNI, niPlacesData }
+}
+
+function finalizeNiPlacesResponse({
+  statusCodeNI,
+  niPlacesData,
+  isMockEnabled,
+  cacheKey,
+  normalizedUserLocation
+}) {
   const normalizedStatus = statusCodeNI ?? 'unknown'
   const normalizedData = niPlacesData ?? null
   logger.info(`[getNIPlaces] Response status: ${normalizedStatus}`)
@@ -369,7 +497,6 @@ async function getNIPlaces(userLocation, request) {
     `[getNIPlaces] Response summary: ${JSON.stringify(getNiResponseSummary(normalizedData))}`
   )
 
-  // '' Handle 204 No Content as "postcode not found" (not a service error)
   if (statusCodeNI === 204) {
     logger.info(
       `[getNIPlaces] NI API returned 204 No Content - postcode not found`
@@ -377,10 +504,7 @@ async function getNIPlaces(userLocation, request) {
     return { results: [] }
   }
 
-  // '' Handle upstream failures (network errors, 500, etc.) separately from postcode errors
-  const isServiceUnavailable =
-    !statusCodeNI || niPlacesData?.error === SERVICE_UNAVAILABLE_ERROR
-  if (isServiceUnavailable) {
+  if (isNiServiceUnavailable(statusCodeNI, niPlacesData)) {
     logger.error(
       `[getNIPlaces] NI API unavailable - statusCodeNI: ${statusCodeNI}`,
       {
@@ -390,59 +514,83 @@ async function getNIPlaces(userLocation, request) {
       }
     )
     recordCircuitBreakerFailure()
-    const { data: cachedResult, meta: cacheMeta } =
-      getCachedResultWithMeta(cacheKey)
-    if (cachedResult) {
-      logger.info(
-        `[getNIPlaces] Returning cached NI result for ${normalizedUserLocation}`,
-        {
-          cacheAgeMs: cacheMeta?.ageMs,
-          cacheTtlMs: cacheMeta?.ttlMs,
-          cacheExpiresInMs: cacheMeta?.expiresInMs
-        }
-      )
-      return cachedResult
-    }
-    return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
+    return getFallbackFromCacheOrServiceUnavailable(
+      cacheKey,
+      normalizedUserLocation
+    )
   }
 
-  // Always return an object with results array
-  if (isMockEnabled) {
-    niPlacesData = {
-      results: Array.isArray(niPlacesData) ? niPlacesData : [niPlacesData]
-    }
-  } else if (niPlacesData?.results) {
-    niPlacesData = {
-      results: Array.isArray(niPlacesData.results)
-        ? niPlacesData.results
-        : [niPlacesData.results]
-    }
-  } else {
-    niPlacesData = { results: [] }
-  }
-
+  const normalizedNiPlacesData = normalizeNiPlacesData(
+    niPlacesData,
+    isMockEnabled
+  )
   if (statusCodeNI === STATUS_CODE_SUCCESS) {
     resetCircuitBreaker()
-    setCachedResult(cacheKey, niPlacesData)
-    logger.info(`[getNIPlaces] NI data fetched successfully`)
-    logger.info(
-      `[getNIPlaces] Number of results: ${niPlacesData?.results?.length}`
-    )
-    // '' Log coordinate fields from each result
-    if (niPlacesData?.results?.length > 0) {
-      niPlacesData.results.forEach((result, index) => {
-        logger.info(
-          `[getNIPlaces] Result ${index}: easting=${result.easting}, northing=${result.northing}, xCoordinate=${result.xCoordinate}, yCoordinate=${result.yCoordinate}, latitude=${result.latitude}, longitude=${result.longitude}`
-        )
-      })
-    }
+    setCachedResult(cacheKey, normalizedNiPlacesData)
+    logNiSuccessResult(normalizedNiPlacesData)
   } else {
     logger.error(
       `[getNIPlaces] Error fetching NI data - statusCode: ${statusCodeNI}`
     )
   }
 
-  return niPlacesData
+  return normalizedNiPlacesData
+}
+
+// ''  Simplified - removed test-only DI parameters
+async function getNIPlaces(userLocation, request) {
+  const isMockEnabled = config.get('enabledMock')
+  const { normalizedUserLocation, cacheKey, postcodeNortherIrelandURL } =
+    buildNiRequestContext(userLocation, isMockEnabled)
+
+  const { isHalfOpenProbe, shortCircuitResponse } =
+    getCircuitBreakerShortCircuitResponse(cacheKey, normalizedUserLocation)
+  if (shortCircuitResponse) {
+    return shortCircuitResponse
+  }
+
+  const oauthResult = await buildNiOAuthOptions(isMockEnabled, request)
+  if (oauthResult.error) {
+    return { results: [], error: SERVICE_UNAVAILABLE_ERROR }
+  }
+
+  const optionsOAuth = oauthResult.optionsOAuth
+
+  logNiRequestStart(
+    isMockEnabled,
+    postcodeNortherIrelandURL,
+    optionsOAuth,
+    isHalfOpenProbe,
+    normalizedUserLocation
+  )
+
+  const runNiRequest = createNiRequestRunner(
+    postcodeNortherIrelandURL,
+    normalizedUserLocation,
+    isMockEnabled,
+    isHalfOpenProbe
+  )
+
+  const requestResult = await fetchNiPlacesDataWithRetry({
+    runNiRequest,
+    optionsOAuth,
+    cacheKey,
+    normalizedUserLocation,
+    isHalfOpenProbe,
+    isMockEnabled,
+    request
+  })
+  if (requestResult.earlyResponse) {
+    return requestResult.earlyResponse
+  }
+
+  return finalizeNiPlacesResponse({
+    statusCodeNI: requestResult.statusCodeNI,
+    niPlacesData: requestResult.niPlacesData,
+    isMockEnabled,
+    cacheKey,
+    normalizedUserLocation
+  })
 }
 
 export { getNIPlaces, resetNiPlacesState }

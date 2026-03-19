@@ -51,23 +51,39 @@ export {
 } from './extracted/util-helpers.js'
 const logger = createLogger()
 
+const getFirstConfigValue = (configInstance, keys = []) => {
+  for (const key of keys) {
+    const value = configInstance.get(key)
+    if (value) {
+      return value
+    }
+  }
+  return null
+}
+
+const getApiKeyCandidatesByEnv = (env) => {
+  if (env === 'perf-test') {
+    return ['cdpXApiKeyPerfTest', 'cdpXApiKey']
+  }
+  if (env === 'test') {
+    return ['cdpXApiKeyTest', 'cdpXApiKey']
+  }
+  return ['cdpXApiKeyTest', 'cdpXApiKeyDev', 'cdpXApiKey']
+}
+
+const getOverrideOrDefault = (overrides, key, fallback) => {
+  if (overrides && overrides[key]) {
+    return overrides[key]
+  }
+  return fallback
+}
+
 /**
  * ''  Build options with API key headers
  */
 function buildApiOptions(request) {
   const env = request?.app?.config?.env || process.env.NODE_ENV
-  let cdpXApiKey
-
-  if (env === 'perf-test') {
-    cdpXApiKey = config.get('cdpXApiKeyPerfTest') || config.get('cdpXApiKey')
-  } else if (env === 'test') {
-    cdpXApiKey = config.get('cdpXApiKeyTest') || config.get('cdpXApiKey')
-  } else {
-    cdpXApiKey =
-      config.get('cdpXApiKeyTest') ||
-      config.get('cdpXApiKeyDev') ||
-      config.get('cdpXApiKey')
-  }
+  const cdpXApiKey = getFirstConfigValue(config, getApiKeyCandidatesByEnv(env))
 
   if (cdpXApiKey) {
     return { headers: { 'x-api-key': cdpXApiKey } }
@@ -91,33 +107,49 @@ function ensureForecastSummary(forecastData) {
 
 const fetchForecasts = async (di = {}) => {
   // ''  Simple DI with fallbacks
-  const testModeChecker = di.isTestMode || isTestMode
-  const testLogger = di.logger || logger
+  const testModeChecker = getOverrideOrDefault(di, 'isTestMode', isTestMode)
+  const testLogger = getOverrideOrDefault(di, 'logger', logger)
 
   const testModeResult = fetchForecastsTestMode(testModeChecker, testLogger)
   if (testModeResult) {
     return ensureForecastSummary(testModeResult)
   }
 
+  const forecastsConfig = getOverrideOrDefault(di, 'config', config)
+  const forecastsOptions = getOverrideOrDefault(di, 'options', {})
+  const optionsEphemeralProtected = getOverrideOrDefault(
+    di,
+    'optionsEphemeralProtected',
+    buildApiOptions(di.request)
+  )
+  const forecastsCatchFetchError = getOverrideOrDefault(
+    di,
+    'catchFetchError',
+    catchFetchError
+  )
+  const forecastsErrorResponse = getOverrideOrDefault(
+    di,
+    'errorResponse',
+    errorResponse
+  )
+  const httpStatusOk = getOverrideOrDefault(di, 'HTTP_STATUS_OK', STATUS_OK)
+
   // ''  Call forecasts API
   const forecastsResult = await callForecastsApi({
-    config: di.config || config,
-    optionsEphemeralProtected:
-      di.optionsEphemeralProtected || buildApiOptions(di.request),
-    options: di.options || {},
-    catchFetchError: di.catchFetchError || catchFetchError,
-    httpStatusOk: di.HTTP_STATUS_OK || STATUS_OK,
+    config: forecastsConfig,
+    optionsEphemeralProtected,
+    options: forecastsOptions,
+    catchFetchError: forecastsCatchFetchError,
+    httpStatusOk,
     logger: testLogger,
-    errorResponse: di.errorResponse || errorResponse,
+    errorResponse: forecastsErrorResponse,
     request: di.request
   })
 
   return ensureForecastSummary(forecastsResult)
 }
 
-export const fetchMeasurements = async (
-  latitude,
-  longitude,
+const resolveMeasurementsInputs = (
   useNewRicardoMeasurementsEnabledOrDi,
   diOverride
 ) => {
@@ -131,38 +163,46 @@ export const fetchMeasurements = async (
     ? useNewRicardoMeasurementsEnabledOrDi
     : true
 
-  // ''  Simple DI with fallbacks
-  const diLogger = di.logger || logger
-  const diConfig = di.config || config
-  const diCatchFetchError = di.catchFetchError || catchFetchError
-  const diOptions = di.optionsEphemeralProtected || buildApiOptions(di.request)
-  const diExtraOptions = di.options || {}
-  const diIsTestMode =
-    typeof di.isTestMode === 'function' ? di.isTestMode : isTestMode
-
-  // 1. Test mode logic
-  const testModeResult = fetchMeasurementsTestMode(diIsTestMode, diLogger)
-  if (testModeResult) {
-    return testModeResult
+  return {
+    isLegacySignature,
+    di,
+    useNewRicardoMeasurementsEnabled
   }
+}
 
-  // 2. Select API URL and options
-  let url, opts
+const resolveMeasurementsDependencies = (di) => ({
+  logger: di.logger || logger,
+  config: di.config || config,
+  catchFetchError: di.catchFetchError || catchFetchError,
+  optionsEphemeralProtected:
+    di.optionsEphemeralProtected || buildApiOptions(di.request),
+  options: di.options || {},
+  isTestMode: typeof di.isTestMode === 'function' ? di.isTestMode : isTestMode
+})
+
+const selectMeasurementsRequestData = ({
+  latitude,
+  longitude,
+  useNewRicardoMeasurementsEnabled,
+  deps,
+  di,
+  isLegacySignature
+}) => {
   try {
     const selection = selectMeasurementsUrlAndOptions(
       latitude,
       longitude,
       useNewRicardoMeasurementsEnabled,
       {
-        config: diConfig,
-        logger: diLogger,
-        optionsEphemeralProtected: diOptions,
-        options: diExtraOptions,
+        config: deps.config,
+        logger: deps.logger,
+        optionsEphemeralProtected: deps.optionsEphemeralProtected,
+        options: deps.options,
         request: di.request
       }
     )
-    url = selection.url
-    opts = selection.opts
+
+    return { url: selection.url, opts: selection.opts }
   } catch (err) {
     if (
       isLegacySignature &&
@@ -170,16 +210,46 @@ export const fetchMeasurements = async (
     ) {
       throw err
     }
-    diLogger.error(`Unexpected error in fetchMeasurements: ${err.message}`)
+    deps.logger.error(`Unexpected error in fetchMeasurements: ${err.message}`)
+    return null
+  }
+}
+
+export const fetchMeasurements = async (
+  latitude,
+  longitude,
+  useNewRicardoMeasurementsEnabledOrDi,
+  diOverride
+) => {
+  const { isLegacySignature, di, useNewRicardoMeasurementsEnabled } =
+    resolveMeasurementsInputs(useNewRicardoMeasurementsEnabledOrDi, diOverride)
+  const deps = resolveMeasurementsDependencies(di)
+
+  // 1. Test mode logic
+  const testModeResult = fetchMeasurementsTestMode(deps.isTestMode, deps.logger)
+  if (testModeResult) {
+    return testModeResult
+  }
+
+  // 2. Select API URL and options
+  const selection = selectMeasurementsRequestData({
+    latitude,
+    longitude,
+    useNewRicardoMeasurementsEnabled,
+    deps,
+    di,
+    isLegacySignature
+  })
+  if (!selection) {
     return []
   }
 
   // 3. Call API and handle response
   return callAndHandleMeasurementsResponse(
-    url,
-    opts,
-    diCatchFetchError,
-    diLogger
+    selection.url,
+    selection.opts,
+    deps.catchFetchError,
+    deps.logger
   )
 }
 
@@ -187,44 +257,143 @@ export const fetchMeasurements = async (
  * ''  Extract and set up dependency injection defaults
  */
 function setupDependencies(diOverrides) {
-  const {
-    fetchForecasts: diFetchForecasts = fetchForecasts,
-    handleUKLocationData: diHandleUKLocationData = localHandleUKLocationData,
-    handleNILocationData: diHandleNILocationData = localHandleNILocationData,
-    isTestMode: diIsTestMode = isTestMode,
-    validateParams: diValidateParams = validateParams,
-    logger: diLogger = logger,
-    errorResponse: diErrorResponse = errorResponse,
-    isMockEnabled: diIsMockEnabled = isMockEnabled,
-    refreshOAuthToken: diRefreshOAuthToken = localRefreshOAuthToken,
-    buildUKLocationFilters: diBuildUKLocationFilters = buildUKLocationFilters,
-    combineUKSearchTerms: diCombineUKSearchTerms = combineUKSearchTerms,
-    isValidFullPostcodeUK: diIsValidFullPostcodeUK = isValidFullPostcodeUK,
-    isValidPartialPostcodeUK:
-      diIsValidPartialPostcodeUK = isValidPartialPostcodeUK,
-    buildUKApiUrl: diBuildUKApiUrl = buildUKApiUrl,
-    shouldCallUKApi: diShouldCallUKApi = shouldCallUKApi,
-    config: diConfig = config
-  } = diOverrides
+  const overrides = diOverrides || {}
 
   return {
-    fetchForecasts: diFetchForecasts,
-    handleUKLocationData: diHandleUKLocationData,
-    handleNILocationData: diHandleNILocationData,
-    isTestMode: diIsTestMode,
-    validateParams: diValidateParams,
-    logger: diLogger,
-    errorResponse: diErrorResponse,
-    isMockEnabled: diIsMockEnabled,
-    refreshOAuthToken: diRefreshOAuthToken,
-    buildUKLocationFilters: diBuildUKLocationFilters,
-    combineUKSearchTerms: diCombineUKSearchTerms,
-    isValidFullPostcodeUK: diIsValidFullPostcodeUK,
-    isValidPartialPostcodeUK: diIsValidPartialPostcodeUK,
-    buildUKApiUrl: diBuildUKApiUrl,
-    shouldCallUKApi: diShouldCallUKApi,
-    config: diConfig
+    fetchForecasts: getOverrideOrDefault(
+      overrides,
+      'fetchForecasts',
+      fetchForecasts
+    ),
+    handleUKLocationData: getOverrideOrDefault(
+      overrides,
+      'handleUKLocationData',
+      localHandleUKLocationData
+    ),
+    handleNILocationData: getOverrideOrDefault(
+      overrides,
+      'handleNILocationData',
+      localHandleNILocationData
+    ),
+    isTestMode: getOverrideOrDefault(overrides, 'isTestMode', isTestMode),
+    validateParams: getOverrideOrDefault(
+      overrides,
+      'validateParams',
+      validateParams
+    ),
+    logger: getOverrideOrDefault(overrides, 'logger', logger),
+    errorResponse: getOverrideOrDefault(
+      overrides,
+      'errorResponse',
+      errorResponse
+    ),
+    isMockEnabled: getOverrideOrDefault(
+      overrides,
+      'isMockEnabled',
+      isMockEnabled
+    ),
+    refreshOAuthToken: getOverrideOrDefault(
+      overrides,
+      'refreshOAuthToken',
+      localRefreshOAuthToken
+    ),
+    buildUKLocationFilters: getOverrideOrDefault(
+      overrides,
+      'buildUKLocationFilters',
+      buildUKLocationFilters
+    ),
+    combineUKSearchTerms: getOverrideOrDefault(
+      overrides,
+      'combineUKSearchTerms',
+      combineUKSearchTerms
+    ),
+    isValidFullPostcodeUK: getOverrideOrDefault(
+      overrides,
+      'isValidFullPostcodeUK',
+      isValidFullPostcodeUK
+    ),
+    isValidPartialPostcodeUK: getOverrideOrDefault(
+      overrides,
+      'isValidPartialPostcodeUK',
+      isValidPartialPostcodeUK
+    ),
+    buildUKApiUrl: getOverrideOrDefault(
+      overrides,
+      'buildUKApiUrl',
+      buildUKApiUrl
+    ),
+    shouldCallUKApi: getOverrideOrDefault(
+      overrides,
+      'shouldCallUKApi',
+      shouldCallUKApi
+    ),
+    config: getOverrideOrDefault(overrides, 'config', config)
   }
+}
+
+const routeFetchDataByLocationType = async ({
+  locationType,
+  userLocation,
+  searchTerms,
+  secondSearchTerm,
+  optionsOAuth,
+  deps,
+  diRequest,
+  getDailySummary,
+  getForecasts,
+  diOverrides
+}) => {
+  if (deps.isTestMode()) {
+    return handleTestModeFetchData({
+      locationType,
+      userLocation,
+      searchTerms,
+      secondSearchTerm,
+      optionsOAuth,
+      getDailySummary,
+      getForecasts,
+      injectedHandleUKLocationData: deps.handleUKLocationData,
+      injectedHandleNILocationData: deps.handleNILocationData,
+      injectedLogger: deps.logger,
+      injectedErrorResponse: deps.errorResponse,
+      args: diOverrides
+    })
+  }
+
+  if (locationType === LOCATION_TYPE_UK) {
+    const osPlacesResult = await handleUKLocation(
+      userLocation,
+      searchTerms,
+      secondSearchTerm,
+      deps,
+      diRequest
+    )
+    return { getDailySummary, getForecasts, getOSPlaces: osPlacesResult }
+  }
+
+  if (locationType === LOCATION_TYPE_NI) {
+    logger.info(
+      `[FETCH DATA] Step 4: Calling NI Places API for ${userLocation}...`
+    )
+    const getNIPlaces = await handleNILocation(
+      userLocation,
+      searchTerms,
+      secondSearchTerm,
+      optionsOAuth,
+      deps,
+      diRequest
+    )
+    logger.info(
+      `[FETCH DATA] Step 5: NI Places API complete. Results: ${getNIPlaces?.results?.length ?? 0}`
+    )
+    return { getDailySummary, getForecasts, getNIPlaces }
+  }
+
+  deps.logger.error('Unsupported location type provided:', locationType)
+  return deps.errorResponse(
+    'Unsupported location type provided',
+    STATUS_BAD_REQUEST
+  )
 }
 
 /**
@@ -374,59 +543,18 @@ async function fetchData(
   )
   logger.info(`[FETCH DATA] Step 3: Forecast fetch complete`)
 
-  if (deps.isTestMode()) {
-    return handleTestModeFetchData({
-      locationType,
-      userLocation,
-      searchTerms,
-      secondSearchTerm,
-      optionsOAuth,
-      getDailySummary,
-      getForecasts,
-      injectedHandleUKLocationData: deps.handleUKLocationData,
-      injectedHandleNILocationData: deps.handleNILocationData,
-      injectedLogger: deps.logger,
-      injectedErrorResponse: deps.errorResponse,
-      args: diOverrides
-    })
-  }
-
-  if (locationType === LOCATION_TYPE_UK) {
-    const osPlacesResult = await handleUKLocation(
-      userLocation,
-      searchTerms,
-      secondSearchTerm,
-      deps,
-      diRequest
-    )
-    return { getDailySummary, getForecasts, getOSPlaces: osPlacesResult }
-  }
-
-  // ''  Handle NI locations
-  if (locationType === LOCATION_TYPE_NI) {
-    logger.info(
-      `[FETCH DATA] Step 4: Calling NI Places API for ${userLocation}...`
-    )
-    const getNIPlaces = await handleNILocation(
-      userLocation,
-      searchTerms,
-      secondSearchTerm,
-      optionsOAuth,
-      deps,
-      diRequest
-    )
-    logger.info(
-      `[FETCH DATA] Step 5: NI Places API complete. Results: ${getNIPlaces?.results?.length ?? 0}`
-    )
-    return { getDailySummary, getForecasts, getNIPlaces }
-  }
-
-  // ''  Unsupported location type
-  deps.logger.error('Unsupported location type provided:', locationType)
-  return deps.errorResponse(
-    'Unsupported location type provided',
-    STATUS_BAD_REQUEST
-  )
+  return routeFetchDataByLocationType({
+    locationType,
+    userLocation,
+    searchTerms,
+    secondSearchTerm,
+    optionsOAuth,
+    deps,
+    diRequest,
+    getDailySummary,
+    getForecasts,
+    diOverrides
+  })
 }
 
 export { fetchData, fetchForecasts }
