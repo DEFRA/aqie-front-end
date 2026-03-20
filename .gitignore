@@ -11,3 +11,4 @@ coverage
 .envrc
 .env
 src/config/local.json
+.claude/

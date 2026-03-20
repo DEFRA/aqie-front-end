@@ -70,7 +70,7 @@ function isValidPartialPostcodeUK(postcode) {
   // Exclude BT (Northern Ireland) using negative lookahead
   // If new NI prefixes are introduced, add them to the negative lookahead below
   const partialPostcodeRegex =
-    /^(?!BT)(?:[A-Z]{1,2}\d{1,2}|[A-Z]\d[A-Z]|\d[A-Z]{2})$/i
+    /^(?!BT)(?:[A-Z]{1,2}\d{1,2}|[A-Z]{1,2}\d[A-Z]|[A-Z]\d[A-Z]|\d[A-Z]{2})$/i
   return partialPostcodeRegex.test(postcode)
 }
 

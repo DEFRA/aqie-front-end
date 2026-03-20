@@ -42,18 +42,78 @@ const getSessionStore = async (request) => {
   }
 }
 
+const getYarValue = (request, key) => request.yar?.get(key)
+
+const getSessionStoreValue = (sessionStore, key) =>
+  sessionStore ? sessionStore[key] : undefined
+
+const getStatusValue = (sessionStore, request, sessionKey, yarKey) => {
+  const sessionValue = getSessionStoreValue(sessionStore, sessionKey)
+  if (sessionValue !== undefined && sessionValue !== null) {
+    return sessionValue
+  }
+
+  return getYarValue(request, yarKey)
+}
+
+const buildLoadingStatusContext = (request, sessionStore) => {
+  const niProcessing = getStatusValue(
+    sessionStore,
+    request,
+    'niProcessing',
+    'niProcessing'
+  )
+  const niError = getStatusValue(sessionStore, request, 'niError', 'niError')
+  const redirectTo = getStatusValue(
+    sessionStore,
+    request,
+    'niRedirectTo',
+    'niRedirectTo'
+  )
+  const lang = getStatusValue(sessionStore, request, 'lang', 'lang') || 'en'
+  const postcode =
+    getStatusValue(sessionStore, request, 'niPostcode', 'niPostcode') || ''
+
+  return { niProcessing, niError, redirectTo, lang, postcode }
+}
+
+const buildCompletedStatusResponse = ({
+  h,
+  niError,
+  redirectTo,
+  postcode,
+  lang
+}) => {
+  const retryRedirect = `/retry?postcode=${encodeURIComponent(postcode)}&lang=${lang}`
+  const defaultRedirect = '/search-location'
+
+  if (niError) {
+    logger.info(`[LOADING STATUS] Returning FAILED status with retry redirect`)
+  } else if (redirectTo) {
+    logger.info(
+      `[LOADING STATUS] Returning COMPLETE status with redirectTo=${redirectTo}`
+    )
+  } else {
+    logger.warn(
+      `[LOADING STATUS] No processing and no redirectTo - returning FAILED with search redirect`
+    )
+  }
+
+  return buildPreloaderStatusResponse({
+    h,
+    isProcessing: false,
+    hasError: Boolean(niError),
+    redirectTo,
+    retryRedirect,
+    defaultRedirect
+  })
+}
+
 const loadingStatusController = {
   handler: async (request, h) => {
     const sessionStore = await getSessionStore(request)
-
-    const niProcessing =
-      sessionStore?.niProcessing ?? request.yar?.get('niProcessing')
-    const niError = sessionStore?.niError ?? request.yar?.get('niError')
-    const redirectTo =
-      sessionStore?.niRedirectTo ?? request.yar?.get('niRedirectTo')
-    const lang = (sessionStore?.lang ?? request.yar?.get('lang')) || 'en'
-    const postcode =
-      (sessionStore?.niPostcode ?? request.yar?.get('niPostcode')) || ''
+    const { niProcessing, niError, redirectTo, lang, postcode } =
+      buildLoadingStatusContext(request, sessionStore)
 
     logger.info(
       `[LOADING STATUS] Poll check: niProcessing=${niProcessing}, niError=${niError}, redirectTo=${redirectTo}, lang=${lang}, postcode=${postcode}`
@@ -61,33 +121,12 @@ const loadingStatusController = {
 
     // '' Check if processing is complete
     if (!niProcessing) {
-      const retryRedirect = `/retry?postcode=${encodeURIComponent(postcode)}&lang=${lang}`
-      const defaultRedirect = '/search-location'
-
-      if (niError) {
-        // '' Failed - redirect to retry page
-        logger.info(
-          `[LOADING STATUS] Returning FAILED status with retry redirect`
-        )
-      } else if (redirectTo) {
-        // '' Success - redirect to results
-        logger.info(
-          `[LOADING STATUS] Returning COMPLETE status with redirectTo=${redirectTo}`
-        )
-      } else {
-        // '' No active processing, redirect to search
-        logger.warn(
-          `[LOADING STATUS] No processing and no redirectTo - returning FAILED with search redirect`
-        )
-      }
-
-      return buildPreloaderStatusResponse({
+      return buildCompletedStatusResponse({
         h,
-        isProcessing: false,
-        hasError: Boolean(niError),
+        niError,
         redirectTo,
-        retryRedirect,
-        defaultRedirect
+        postcode,
+        lang
       })
     }
 

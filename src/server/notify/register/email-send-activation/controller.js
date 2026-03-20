@@ -8,9 +8,9 @@ const logger = createLogger()
 
 /**
  * Handle GET request for Email send activation page ''
- * @param {Object} request - Hapi request object
- * @param {Object} h - Hapi response toolkit
- * @returns {Object} - View response with data
+ * @param request - Hapi request object
+ * @param h - Hapi response toolkit
+ * @returns - View response with data
  */
 export const handleEmailSendActivationRequest = async (request, h) => {
   logger.info('Processing Email send activation request (GET)')
@@ -41,9 +41,9 @@ export const handleEmailSendActivationRequest = async (request, h) => {
 
 /**
  * Handle POST request for Email send activation page ''
- * @param {Object} request - Hapi request object
- * @param {Object} h - Hapi response toolkit
- * @returns {Object} - Redirect or view response
+ * @param request - Hapi request object
+ * @param h - Hapi response toolkit
+ * @returns - Redirect or view response
  */
 export const handleEmailSendActivationPost = async (request, h) => {
   logger.info('Processing Email send activation request (POST)')

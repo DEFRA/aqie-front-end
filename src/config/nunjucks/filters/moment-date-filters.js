@@ -13,7 +13,7 @@ const INVALID_ENV_ERROR = 'Invalid Nunjucks environment.'
 
 /**
  * Formats a moment date with lowercase 'am/pm'.
- * @param {Object} momentDate - The moment date object.
+ * @param momentDate - The moment date object.
  * @returns {string} The formatted calendar string.
  */
 function formatCalendarWithLowercase(momentDate) {

@@ -62,7 +62,7 @@ function catchAll(request, h) {
     phaseBanner
   } = english
 
-  logger.info(
+  logger.warn(
     `Error: ${errorMessage} statusCode- ${statusCode} -path ${request.path}`
   )
   if (lang === LANG_CY) {

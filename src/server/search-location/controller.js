@@ -8,9 +8,33 @@ import {
 } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
+const setSessionIfChanged = (request, key, value) => {
+  const currentValue = request?.yar?.get?.(key)
+  if (Object.is(currentValue, value)) {
+    return
+  }
+
+  if (
+    currentValue &&
+    value &&
+    typeof currentValue === 'object' &&
+    typeof value === 'object'
+  ) {
+    try {
+      if (JSON.stringify(currentValue) === JSON.stringify(value)) {
+        return
+      }
+    } catch {
+      // '' Ignore serialization errors and continue to set
+    }
+  }
+
+  request.yar.set(key, value)
+}
+
 /**
  * Determines the language based on the request.
- * @param {Object} request - The Hapi request object.
+ * @param request - The Hapi request object.
  * @returns {string} The determined language.
  */
 const determineLanguage = (request) => {
@@ -27,8 +51,8 @@ const determineLanguage = (request) => {
 
 /**
  * Retrieves session data and clears errors if present.
- * @param {Object} request - The Hapi request object.
- * @returns {Object} Session data including errors, errorMessage, and locationType.
+ * @param request - The Hapi request object.
+ * @returns Session data including errors, errorMessage, and locationType.
  */
 const getSessionData = (request) => {
   const errors = request.yar.get('errors')
@@ -36,10 +60,10 @@ const getSessionData = (request) => {
   const locationType = request.yar.get('locationType')
 
   if (errors) {
-    request.yar.set('errors', null)
-    request.yar.set('errorMessage', null)
+    setSessionIfChanged(request, 'errors', null)
+    setSessionIfChanged(request, 'errorMessage', null)
   } else {
-    request.yar.set('locationType', '')
+    setSessionIfChanged(request, 'locationType', '')
   }
 
   return { errors, errorMessage, locationType }
@@ -47,14 +71,14 @@ const getSessionData = (request) => {
 
 /**
  * Prepares the view model for rendering the search location page.
- * @param {Object} options - Options for preparing the view model.
- * @param {Object} options.metaSiteUrl - The meta site URL.
+ * @param options - Options for preparing the view model.
+ * @param options.metaSiteUrl - The meta site URL.
  * @param {string} options.lang - The determined language.
- * @param {Object} options.errors - Errors from the session.
- * @param {Object} options.errorMessage - Error messages from the session.
+ * @param options.errors - Errors from the session.
+ * @param options.errorMessage - Error messages from the session.
  * @param {string} options.locationType - The location type from the session.
  * @param {boolean} options.isError - Whether there are errors.
- * @returns {Object} The view model for rendering the page.
+ * @returns The view model for rendering the page.
  */
 const prepareViewModel = ({
   metaSiteUrl,
@@ -62,9 +86,7 @@ const prepareViewModel = ({
   errors,
   errorMessage,
   locationType,
-  isError,
-  fromSmsFlow,
-  fromEmailFlow
+  isError
 }) => {
   const { searchLocation, footerTxt, phaseBanner, backlink, cookieBanner } =
     english
@@ -95,17 +117,15 @@ const prepareViewModel = ({
     locations: searchLocation.searchParams.locations,
     button: searchLocation.button,
     locationType: isError ? locationType : '',
-    errors: errors?.errors ?? null,
-    errorMessage: errorMessage?.errorMessage ?? null,
-    errorMessageRadio: errorMessage?.errorMessage ?? null,
+    errors: errors?.errors,
+    errorMessage: errorMessage?.errorMessage,
+    errorMessageRadio: errorMessage?.errorMessage,
     footerTxt,
     phaseBanner,
     backlink,
     cookieBanner,
     currentPath: '/search-location',
-    lang,
-    fromSmsFlow,
-    fromEmailFlow
+    lang
   }
 }
 
@@ -114,18 +134,7 @@ const prepareViewModel = ({
  */
 const searchLocationController = {
   handler: (request, h) => {
-    request.yar.set('locationNameOrPostcode', '')
-
-    // '' Check if user is coming from notification registration flow (SMS or Email)
-    const fromSmsFlow = request.query?.fromSmsFlow === 'true'
-    const fromEmailFlow = request.query?.fromEmailFlow === 'true'
-
-    if (fromSmsFlow) {
-      request.yar.set('notificationFlow', 'sms')
-    } else if (fromEmailFlow) {
-      request.yar.set('notificationFlow', 'email')
-    }
-
+    setSessionIfChanged(request, 'locationNameOrPostcode', '')
     const metaSiteUrl = getAirQualitySiteUrl(request)
     const lang = determineLanguage(request)
 
@@ -141,9 +150,7 @@ const searchLocationController = {
       errors,
       errorMessage,
       locationType,
-      isError: !!errors,
-      fromSmsFlow,
-      fromEmailFlow
+      isError: !!errors
     })
 
     return h.view('search-location/index', viewModel)

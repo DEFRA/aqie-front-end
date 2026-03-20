@@ -185,19 +185,36 @@ vi.mock('../../config/index.js', () => ({
           useNewRicardoMeasurementsEnabled: true,
           metaSiteUrl: 'https://uk-air.defra.gov.uk',
           nodeEnv: 'test',
-          disableTestMocks: false
+          disableTestMocks: false,
+          'session.cache.name': 'session'
         })[key]
     )
   }
 }))
 vi.mock('../data/constants.js', () => ({
+  DAILY_SUMMARY_KEY: 'dailySummary',
+  DATE_FORMAT: 'DD/MM/YYYY',
   LANG_CY: 'cy',
   LANG_EN: 'en',
   LOCATION_NOT_FOUND: 'location-not-found',
   LOCATION_TYPE_NI: 'ni',
   LOCATION_TYPE_UK: 'uk',
+  ONE_HOUR_MS: 60 * 60 * 1000,
+  REDIS_PRESSURE_CHECK_INTERVAL_MS: 60000,
+  REDIS_PRESSURE_COOLDOWN_MS: 30000,
+  REDIS_PRESSURE_MIN_GROWTH_BYTES: 1048576,
+  REDIS_PRESSURE_MIN_GROWTH_RATIO: 0.1,
+  REDIS_PRESSURE_WINDOW_MS: 120000,
   REDIRECT_STATUS_CODE: 301,
-  STATUS_INTERNAL_SERVER_ERROR: 500
+  SESSION_GUARD_LOG_LIMIT_PER_REQUEST: 1,
+  SHARED_LOCATION_CACHE_PREFIX: 'shared:location-payload:',
+  STATUS_INTERNAL_SERVER_ERROR: 500,
+  STATUS_CODE_SUCCESS: 200,
+  STATUS_TOO_MANY_REQUESTS: 429,
+  STATUS_NO_CONTENT: 204,
+  STATUS_UNAUTHORIZED: 401,
+  CIRCUIT_BREAKER_DEFAULT_FAILURE_THRESHOLD: 3,
+  SERVICE_UNAVAILABLE_ERROR: 'service-unavailable'
 }))
 
 // eslint-disable-next-line import-x/first -- vi.mock() must be before imports for Vitest hoisting

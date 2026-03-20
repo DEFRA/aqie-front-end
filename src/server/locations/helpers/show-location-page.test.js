@@ -24,22 +24,22 @@ describe('showLocationPage', () => {
       summaryDate: '2025-01-28'
     }
 
-    await showLocationPage(
-      data.results,
-      data.airQuality,
-      data.airQualityData,
-      data.monitoringSites,
-      data.siteTypeDescriptions,
-      data.pollutantTypes,
-      data.pageTitle,
-      data.displayBacklink,
-      null,
-      data.transformedDailySummary,
-      data.summaryDate,
-      null,
+    await showLocationPage({
+      results: data.results,
+      airQuality: data.airQuality,
+      airQualityData: data.airQualityData,
+      monitoringSites: data.monitoringSites,
+      siteTypeDescriptions: data.siteTypeDescriptions,
+      pollutantTypes: data.pollutantTypes,
+      pageTitle: data.pageTitle,
+      displayBacklink: data.displayBacklink,
+      serviceName: null,
+      transformedDailySummary: data.transformedDailySummary,
+      summaryDate: data.summaryDate,
+      userLocation: null,
       locationString,
       h
-    )
+    })
 
     expect(h.view).toHaveBeenCalledWith(locationString, {
       result: data.results,
@@ -69,22 +69,22 @@ describe('showLocationPage', () => {
       userLocation: 'User Location'
     }
 
-    await showLocationPage(
-      data.results,
-      data.airQuality,
-      data.airQualityData,
-      data.monitoringSites,
-      data.siteTypeDescriptions,
-      data.pollutantTypes,
-      data.pageTitle,
-      null,
-      data.serviceName,
-      null,
-      null,
-      data.userLocation,
+    await showLocationPage({
+      results: data.results,
+      airQuality: data.airQuality,
+      airQualityData: data.airQualityData,
+      monitoringSites: data.monitoringSites,
+      siteTypeDescriptions: data.siteTypeDescriptions,
+      pollutantTypes: data.pollutantTypes,
+      pageTitle: data.pageTitle,
+      displayBacklink: null,
+      serviceName: data.serviceName,
+      transformedDailySummary: null,
+      summaryDate: null,
+      userLocation: data.userLocation,
       locationString,
       h
-    )
+    })
 
     expect(h.view).toHaveBeenCalledWith(locationString, {
       results: data.results,
@@ -113,22 +113,22 @@ describe('showLocationPage', () => {
       userLocation: 'User Location'
     }
 
-    await showLocationPage(
-      data.results,
-      data.airQuality,
-      data.airQualityData,
-      data.monitoringSites,
-      data.siteTypeDescriptions,
-      data.pollutantTypes,
-      data.pageTitle,
-      null,
-      data.serviceName,
-      null,
-      null,
-      data.userLocation,
+    await showLocationPage({
+      results: data.results,
+      airQuality: data.airQuality,
+      airQualityData: data.airQualityData,
+      monitoringSites: data.monitoringSites,
+      siteTypeDescriptions: data.siteTypeDescriptions,
+      pollutantTypes: data.pollutantTypes,
+      pageTitle: data.pageTitle,
+      displayBacklink: null,
+      serviceName: data.serviceName,
+      transformedDailySummary: null,
+      summaryDate: null,
+      userLocation: data.userLocation,
       locationString,
       h
-    )
+    })
 
     expect(h.view).not.toHaveBeenCalled()
   })

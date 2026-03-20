@@ -51,7 +51,7 @@ function buildWarningText(level, weekday, lang) {
 /**
  * Check if air quality forecast contains High or Very High levels
  * and return warning text with level and weekday
- * @param {Object} airQuality - Air quality object with today, day2, day3, day4, day5
+ * @param airQuality - Air quality object with today, day2, day3, day4, day5
  * @param {string} lang - Language code ('en' or 'cy')
  * @returns {Object|null} - { text: string, level: string, weekday: string } or null if no warning needed
  */

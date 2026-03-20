@@ -1,10 +1,136 @@
 import { english } from '../../data/en/en.js'
-import { REDIRECT_STATUS_CODE, LANG_EN } from '../../data/constants.js'
+import {
+  REDIRECT_STATUS_CODE,
+  LANG_EN,
+  CODE_EXPIRY_MINUTES,
+  STATUS_INTERNAL_SERVER_ERROR
+} from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 import { notifyService } from '../../../helpers/notify-service.js'
 import { createLogger } from '../../common/helpers/logging/logger.js'
 
 const logger = createLogger('sms-journey-controller')
+const DEFAULT_MOBILE_NUMBER = '07123456789'
+const ACTIVATION_CODE_VIEW_PATH = 'notify-register/activation-code'
+const ACTIVATION_CODE_PATH = '/notify/activation-code'
+const CONFIRM_ALERT_PATH = '/notify/confirm-alert'
+const CODE_EXPIRY_MS = CODE_EXPIRY_MINUTES * 60 * 1000
+
+function resolveMobileNumber(request) {
+  return (
+    request.yar?.get('mobileNumber') ||
+    request.payload?.mobilePhone ||
+    DEFAULT_MOBILE_NUMBER
+  )
+}
+
+async function saveAndSendActivationCode(request, mobileNumber) {
+  const activationCode = notifyService.generateActivationCode()
+
+  request.yar?.set('activationCode', activationCode)
+  request.yar?.set('mobileNumber', mobileNumber)
+  request.yar?.set('activationCodeTimestamp', Date.now())
+
+  const smsResult = await notifyService.sendActivationCode(
+    mobileNumber,
+    activationCode
+  )
+
+  if (!smsResult.success) {
+    throw new Error('Failed to send activation code')
+  }
+
+  request.yar?.set('notificationId', smsResult.notificationId)
+  return smsResult
+}
+
+function applyDevelopmentFallback(request) {
+  const mockActivationCode = notifyService.generateActivationCode()
+  request.yar?.set('activationCode', mockActivationCode)
+  request.yar?.set(
+    'mobileNumber',
+    request.yar?.get('mobileNumber') || DEFAULT_MOBILE_NUMBER
+  )
+  request.yar?.set('isDevelopmentFallback', true)
+
+  logger.info('Development fallback activation code generated', {
+    activationCode: mockActivationCode
+  })
+}
+
+function buildNotifyErrorView() {
+  const { common } = english
+  return {
+    pageTitle: 'Error sending message',
+    heading: 'Sorry, we could not send your activation code',
+    description:
+      'Please try again later or contact support if the problem persists.',
+    page: common.textAlertsPage,
+    serviceName: common.serviceName,
+    footerTxt: english.footerTxt,
+    phaseBanner: english.phaseBanner,
+    backlink: english.backlink,
+    cookieBanner: english.cookieBanner
+  }
+}
+
+function getDevelopmentHint(request) {
+  const isDevelopmentFallback = request.yar?.get('isDevelopmentFallback')
+  const mockCode = request.yar?.get('activationCode')
+
+  if (isDevelopmentFallback && mockCode) {
+    return `API Error - Development fallback: Use code ${mockCode}`
+  }
+
+  if (process.env.NODE_ENV === 'development' && mockCode) {
+    return `Development mode: Use code ${mockCode}`
+  }
+
+  return ''
+}
+
+function buildActivationCodeViewModel(request, errorText = null) {
+  const { common, activationCode } = english
+  const mobileNumber = request.yar?.get('mobileNumber') || DEFAULT_MOBILE_NUMBER
+  const viewModel = {
+    pageTitle: activationCode.pageTitle,
+    metaSiteUrl: getAirQualitySiteUrl(request),
+    heading: activationCode.heading,
+    description: `We sent a 5-digit code to ${mobileNumber}`,
+    page: common.textAlertsPage,
+    serviceName: common.serviceName,
+    lang: LANG_EN,
+    footerTxt: english.footerTxt,
+    phaseBanner: english.phaseBanner,
+    backlink: english.backlink,
+    cookieBanner: english.cookieBanner,
+    content: english.activationCode
+  }
+
+  if (errorText) {
+    return { ...viewModel, error: { text: errorText } }
+  }
+
+  return { ...viewModel, developmentHint: getDevelopmentHint(request) }
+}
+
+function getActivationCodeError({ enteredCode, storedCode, timestamp }) {
+  const { activationCode } = english
+  if (!enteredCode) {
+    return activationCode.heading
+  }
+
+  const codeAge = Date.now() - (timestamp || 0)
+  if (codeAge > CODE_EXPIRY_MS) {
+    return 'Your activation code has expired. Please request a new one.'
+  }
+
+  if (enteredCode !== storedCode) {
+    return 'Enter the correct activation code'
+  }
+
+  return null
+}
 
 const getMobilePhoneController = {
   handler: async (request, h) => {
@@ -35,23 +161,23 @@ const getMobilePhoneController = {
 }
 
 const postMobilePhoneController = {
-  handler: async (request, h) => {
+  handler: async (_request, h) => {
     return h.redirect('/notify/confirm-mobile').code(REDIRECT_STATUS_CODE)
   }
 }
 
 const getConfirmMobileController = {
   handler: async (request, h) => {
-    const { footerTxt, phaseBanner, backlink, cookieBanner } = english
+    const { footerTxt, phaseBanner, backlink, cookieBanner, common } = english
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
     return h.view('notify-register/confirm-mobile', {
       pageTitle: 'Confirm your mobile phone number',
       metaSiteUrl,
       heading: 'Confirm your mobile phone number',
-      mobilePhone: '07123456789',
-      page: 'Text alerts',
-      serviceName: 'Check air quality',
+      mobilePhone: DEFAULT_MOBILE_NUMBER,
+      page: common.textAlertsPage,
+      serviceName: common.serviceName,
       lang: LANG_EN,
       footerTxt,
       phaseBanner,
@@ -63,113 +189,41 @@ const getConfirmMobileController = {
 
 const postConfirmMobileController = {
   handler: async (request, h) => {
+    const mobileNumber = resolveMobileNumber(request)
+
     try {
-      // Get mobile phone number from session or form data
-      const mobileNumber =
-        request.yar?.get('mobileNumber') ||
-        request.payload?.mobilePhone ||
-        '07123456789'
+      const smsResult = await saveAndSendActivationCode(request, mobileNumber)
 
-      // Generate activation code
-      const activationCode = notifyService.generateActivationCode()
+      logger.info('Activation code sent successfully', {
+        phoneNumber: mobileNumber,
+        notificationId: smsResult.notificationId
+      })
 
-      // Store in session for verification
-      request.yar?.set('activationCode', activationCode)
-      request.yar?.set('mobileNumber', mobileNumber)
-      request.yar?.set('activationCodeTimestamp', Date.now()) // For expiry tracking
-
-      // Call the backend notify service API to send SMS
-      const smsResult = await notifyService.sendActivationCode(
-        mobileNumber,
-        activationCode
-      )
-
-      if (smsResult.success) {
-        logger.info('Activation code sent successfully', {
-          phoneNumber: mobileNumber,
-          notificationId: smsResult.notificationId
-        })
-
-        // Store notification ID for tracking
-        request.yar?.set('notificationId', smsResult.notificationId)
-
-        return h.redirect('/notify/activation-code').code(REDIRECT_STATUS_CODE)
-      } else {
-        throw new Error('Failed to send activation code')
-      }
+      return h.redirect(ACTIVATION_CODE_PATH).code(REDIRECT_STATUS_CODE)
     } catch (error) {
       logger.error('Error in postConfirmMobileController', error)
 
       // In case of API failure, fall back to development mode for testing
       if (process.env.NODE_ENV === 'development') {
         logger.warn('Falling back to development mode due to API error')
-
-        const mockActivationCode = notifyService.generateActivationCode()
-        request.yar?.set('activationCode', mockActivationCode)
-        request.yar?.set(
-          'mobileNumber',
-          request.yar?.get('mobileNumber') || '07123456789'
-        )
-        request.yar?.set('isDevelopmentFallback', true)
-
-        console.log(
-          `📱 FALLBACK MODE - Your activation code is: ${mockActivationCode}`
-        )
-
-        return h.redirect('/notify/activation-code').code(REDIRECT_STATUS_CODE)
+        applyDevelopmentFallback(request)
+        return h.redirect(ACTIVATION_CODE_PATH).code(REDIRECT_STATUS_CODE)
       }
 
       // In production, show error page or redirect with error
       return h
-        .view('notify-register/error', {
-          pageTitle: 'Error sending message',
-          heading: 'Sorry, we could not send your activation code',
-          description:
-            'Please try again later or contact support if the problem persists.',
-          page: 'Text alerts',
-          serviceName: 'Check air quality',
-          footerTxt: english.footerTxt,
-          phaseBanner: english.phaseBanner,
-          backlink: english.backlink,
-          cookieBanner: english.cookieBanner
-        })
-        .code(500)
+        .view('notify-register/error', buildNotifyErrorView())
+        .code(STATUS_INTERNAL_SERVER_ERROR)
     }
   }
 }
 
 const getActivationCodeController = {
   handler: async (request, h) => {
-    const { footerTxt, phaseBanner, backlink, cookieBanner } = english
-    const metaSiteUrl = getAirQualitySiteUrl(request)
-
-    const mobileNumber = request.yar?.get('mobileNumber') || '07123456789'
-    const isDevelopmentFallback = request.yar?.get('isDevelopmentFallback')
-    const mockCode = request.yar?.get('activationCode')
-
-    // Prepare development hint if in fallback mode
-    let developmentHint = ''
-    if (isDevelopmentFallback && mockCode) {
-      developmentHint = `API Error - Development fallback: Use code ${mockCode}`
-    } else if (process.env.NODE_ENV === 'development' && mockCode) {
-      developmentHint = `Development mode: Use code ${mockCode}`
-    }
-
-    return h.view('notify-register/activation-code', {
-      pageTitle: 'Enter your activation code',
-      metaSiteUrl,
-      heading: 'Enter your activation code',
-      description: `We sent a 5-digit code to ${mobileNumber}`,
-      developmentHint,
-      page: 'Text alerts',
-      serviceName: 'Check air quality',
-      lang: LANG_EN,
-      footerTxt,
-      phaseBanner,
-      backlink,
-      cookieBanner,
-      content: english.activationCode
-    })
+    return h.view(
+      ACTIVATION_CODE_VIEW_PATH,
+      buildActivationCodeViewModel(request)
+    )
   }
 }
 
@@ -180,63 +234,17 @@ const postActivationCodeController = {
       const storedCode = request.yar?.get('activationCode')
       const timestamp = request.yar?.get('activationCodeTimestamp')
 
-      // Validation
-      if (!enteredCode) {
-        return h.view('notify-register/activation-code', {
-          pageTitle: 'Enter your activation code',
-          metaSiteUrl: getAirQualitySiteUrl(request),
-          heading: 'Enter your activation code',
-          description: `We sent a 5-digit code to ${request.yar?.get('mobileNumber') || '07123456789'}`,
-          error: { text: 'Enter your activation code' },
-          page: 'Text alerts',
-          serviceName: 'Check air quality',
-          footerTxt: english.footerTxt,
-          phaseBanner: english.phaseBanner,
-          backlink: english.backlink,
-          cookieBanner: english.cookieBanner,
-          content: english.activationCode
-        })
-      }
+      const errorText = getActivationCodeError({
+        enteredCode,
+        storedCode,
+        timestamp
+      })
 
-      // Check if code has expired (15 minutes)
-      const codeAge = Date.now() - (timestamp || 0)
-      const maxAge = 15 * 60 * 1000 // 15 minutes
-
-      if (codeAge > maxAge) {
-        return h.view('notify-register/activation-code', {
-          pageTitle: 'Enter your activation code',
-          metaSiteUrl: getAirQualitySiteUrl(request),
-          heading: 'Enter your activation code',
-          description: `We sent a 5-digit code to ${request.yar?.get('mobileNumber') || '07123456789'}`,
-          error: {
-            text: 'Your activation code has expired. Please request a new one.'
-          },
-          page: 'Text alerts',
-          serviceName: 'Check air quality',
-          footerTxt: english.footerTxt,
-          phaseBanner: english.phaseBanner,
-          backlink: english.backlink,
-          cookieBanner: english.cookieBanner,
-          content: english.activationCode
-        })
-      }
-
-      // Verify activation code
-      if (enteredCode !== storedCode) {
-        return h.view('notify-register/activation-code', {
-          pageTitle: 'Enter your activation code',
-          metaSiteUrl: getAirQualitySiteUrl(request),
-          heading: 'Enter your activation code',
-          description: `We sent a 5-digit code to ${request.yar?.get('mobileNumber') || '07123456789'}`,
-          error: { text: 'Enter the correct activation code' },
-          page: 'Text alerts',
-          serviceName: 'Check air quality',
-          footerTxt: english.footerTxt,
-          phaseBanner: english.phaseBanner,
-          backlink: english.backlink,
-          cookieBanner: english.cookieBanner,
-          content: english.activationCode
-        })
+      if (errorText) {
+        return h.view(
+          ACTIVATION_CODE_VIEW_PATH,
+          buildActivationCodeViewModel(request, errorText)
+        )
       }
 
       // Code is valid - mark as verified
@@ -245,10 +253,10 @@ const postActivationCodeController = {
         phoneNumber: request.yar?.get('mobileNumber')
       })
 
-      return h.redirect('/notify/confirm-alert').code(REDIRECT_STATUS_CODE)
+      return h.redirect(CONFIRM_ALERT_PATH).code(REDIRECT_STATUS_CODE)
     } catch (error) {
       logger.error('Error in postActivationCodeController', error)
-      return h.redirect('/notify/activation-code').code(REDIRECT_STATUS_CODE)
+      return h.redirect(ACTIVATION_CODE_PATH).code(REDIRECT_STATUS_CODE)
     }
   }
 }

@@ -140,16 +140,25 @@ const searchLocationController = {
     }
     const { errors, errorMessage, locationType } = clearRequestErrors(request)
 
+    if (errors) {
+      const errorViewData = buildSearchLocationViewData({
+        metaSiteUrl,
+        lang,
+        errors,
+        errorMessage,
+        locationType,
+        fromSmsFlow,
+        fromEmailFlow
+      })
+      return h.view('search-location/index', errorViewData)
+    }
+
     const viewData = buildSearchLocationViewData({
       metaSiteUrl,
       lang,
-      errors,
-      errorMessage,
-      locationType,
       fromSmsFlow,
       fromEmailFlow
     })
-
     return h.view('search-location/index', viewData)
   }
 }

@@ -3,6 +3,12 @@
  * Covers mobile number input, code verification, and confirmation pages
  */
 // ''
+const TODO_CONTINUE = 'TODO Welsh: Continue'
+const TODO_ALERT_ALREADY_SET_UP =
+  'TODO Welsh: This alert has already been set up'
+const TODO_ALERT_SIGNUP_SUCCESS =
+  'TODO Welsh: You have successfully signed up for air quality alerts'
+
 export const notificationTranslationsWelsh = {
   // Common notification settings
   common: {
@@ -19,7 +25,7 @@ export const notificationTranslationsWelsh = {
     description:
       'TODO Welsh: We will send you a text message with a 5-digit activation code.',
     inputLabel: 'TODO Welsh: Enter your mobile phone number',
-    continueButton: 'TODO Welsh: Continue',
+    continueButton: TODO_CONTINUE,
     alertLimitHint:
       'TODO Welsh: You can add up to 5 alerts for each mobile phone number.',
     errors: {
@@ -99,7 +105,7 @@ export const notificationTranslationsWelsh = {
     detailsRequestNewCodePrefix:
       "TODO Welsh: If you still don't have the text message, you can",
     detailsRequestNewCodeLinkText: 'TODO Welsh: request a new activation code',
-    continueButton: 'TODO Welsh: Continue',
+    continueButton: TODO_CONTINUE,
     developerHint: 'TODO Welsh: Developer hint: code is {code}',
     errors: {
       waitFiveMinutes:
@@ -164,8 +170,8 @@ export const notificationTranslationsWelsh = {
   },
   // SMS duplicate page
   smsDuplicate: {
-    pageTitle: 'TODO Welsh: This alert has already been set up',
-    heading: 'TODO Welsh: This alert has already been set up',
+    pageTitle: TODO_ALERT_ALREADY_SET_UP,
+    heading: TODO_ALERT_ALREADY_SET_UP,
     description:
       'TODO Welsh: You are already getting alerts for {location} to {mobileNumber}.',
     searchLinkText: 'TODO Welsh: Search for town or postcode',
@@ -184,8 +190,8 @@ export const notificationTranslationsWelsh = {
   },
   // Email duplicate page
   emailDuplicate: {
-    pageTitle: 'TODO Welsh: This alert has already been set up',
-    heading: 'TODO Welsh: This alert has already been set up',
+    pageTitle: TODO_ALERT_ALREADY_SET_UP,
+    heading: TODO_ALERT_ALREADY_SET_UP,
     description:
       'TODO Welsh: You are already getting alerts for {location} to {emailAddress}.',
     searchLinkText: 'TODO Welsh: Search for town or postcode',
@@ -193,10 +199,8 @@ export const notificationTranslationsWelsh = {
   },
   // SMS success page
   smsSuccess: {
-    pageTitle:
-      'TODO Welsh: You have successfully signed up for air quality alerts',
-    heading:
-      'TODO Welsh: You have successfully signed up for air quality alerts',
+    pageTitle: TODO_ALERT_SIGNUP_SUCCESS,
+    heading: TODO_ALERT_SIGNUP_SUCCESS,
     successTitle: 'TODO Welsh: Success',
     bannerHeading: 'this is a dummy text unti tranalation ready',
     confirmationText:
@@ -220,7 +224,7 @@ export const notificationTranslationsWelsh = {
     researchRadioHint: 'TODO Welsh: Select one option',
     researchOptionYes: 'TODO Welsh: Yes',
     researchOptionNo: 'TODO Welsh: No',
-    researchContinueButton: 'TODO Welsh: Continue'
+    researchContinueButton: TODO_CONTINUE
   },
   // Email details page errors
   emailDetails: {
@@ -236,10 +240,8 @@ export const notificationTranslationsWelsh = {
   },
   // Email alerts success page
   emailSuccess: {
-    pageTitle:
-      'TODO Welsh: You have successfully signed up for air quality alerts',
-    heading:
-      'TODO Welsh: You have successfully signed up for air quality alerts',
+    pageTitle: TODO_ALERT_SIGNUP_SUCCESS,
+    heading: TODO_ALERT_SIGNUP_SUCCESS,
     successTitle: 'TODO Welsh: Success',
     bannerHeading:
       'TODO Welsh: You have set up air quality email alerts for {location}',
@@ -261,6 +263,8 @@ export const notificationTranslationsWelsh = {
   },
   // Activation code page (legacy SMS journey)
   activationCode: {
+    pageTitle: 'TODO Welsh: Enter your activation code',
+    heading: 'TODO Welsh: Enter your activation code',
     codeExpiry: 'TODO Welsh: The code expires in 24 hours.',
     notReceivedSummary: 'TODO Welsh: Not received a text message?',
     notReceivedDelay:
@@ -269,7 +273,7 @@ export const notificationTranslationsWelsh = {
       'TODO Welsh: If you do not receive a text message after 10 minutes, check that you have:',
     notReceivedBullet1: 'TODO Welsh: entered your number correctly',
     notReceivedBullet2: 'TODO Welsh: mobile phone signal',
-    continueButton: 'TODO Welsh: Continue',
+    continueButton: TODO_CONTINUE,
     sendNewCode: 'TODO Welsh: Send a new activation code'
   },
   // Confirm alert page (legacy SMS journey)
@@ -278,6 +282,6 @@ export const notificationTranslationsWelsh = {
       'TODO Welsh: when the air quality forecast in {location} is high or very high',
     bullet2:
       'TODO Welsh: if a nearby monitoring site detects high or very high pollution levels anywhere in the Greater London region',
-    continueButton: 'TODO Welsh: Continue'
+    continueButton: TODO_CONTINUE
   }
 }

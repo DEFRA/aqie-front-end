@@ -1,5 +1,4 @@
 import { config } from '../../../config/index.js'
-
 function getAirQualitySiteUrl(request) {
   let airQualityUrl = config.get('airQualityDomainUrl') + request.path
 
@@ -7,7 +6,6 @@ function getAirQualitySiteUrl(request) {
     const queryParams = new URLSearchParams(request.query).toString()
     airQualityUrl += queryParams ? `?${queryParams}` : ''
   }
-
   return airQualityUrl
 }
 

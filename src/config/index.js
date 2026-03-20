@@ -17,6 +17,43 @@ const DEFAULT_PORT = 3000
 const DAYS_IN_A_WEEK = 7
 const ONE_WEEK_IN_MILLISECONDS = DAYS_IN_A_WEEK * 24 * 60 * 60 * 1000
 
+export const ONE_HOUR_MS =
+  Number(process.env.ONE_HOUR_MS) > 0
+    ? Number(process.env.ONE_HOUR_MS)
+    : 60 * 60 * 1000
+export const FIFTEEN_MINUTES_MS =
+  Number(process.env.FIFTEEN_MINUTES_MS) > 0
+    ? Number(process.env.FIFTEEN_MINUTES_MS)
+    : 15 * 60 * 1000
+export const REDIS_SHARED_CACHE_TTL_MS =
+  Number(process.env.REDIS_SHARED_CACHE_TTL_MS) > 0
+    ? Number(process.env.REDIS_SHARED_CACHE_TTL_MS)
+    : 20 * 60 * 1000
+export const REFRESH_INTERVAL_MS =
+  Number(process.env.REFRESH_INTERVAL_MS) > 0
+    ? Number(process.env.REFRESH_INTERVAL_MS)
+    : 30 * 60 * 1000
+export const REDIS_PRESSURE_CHECK_INTERVAL_MS =
+  Number(process.env.REDIS_PRESSURE_CHECK_INTERVAL_MS) > 0
+    ? Number(process.env.REDIS_PRESSURE_CHECK_INTERVAL_MS)
+    : 10000
+export const REDIS_PRESSURE_WINDOW_MS =
+  Number(process.env.REDIS_PRESSURE_WINDOW_MS) > 0
+    ? Number(process.env.REDIS_PRESSURE_WINDOW_MS)
+    : 30000
+export const REDIS_PRESSURE_COOLDOWN_MS =
+  Number(process.env.REDIS_PRESSURE_COOLDOWN_MS) > 0
+    ? Number(process.env.REDIS_PRESSURE_COOLDOWN_MS)
+    : 300000
+export const REDIS_PRESSURE_MIN_GROWTH_MEBIBYTES =
+  Number(process.env.REDIS_PRESSURE_MIN_GROWTH_MEBIBYTES) > 0
+    ? Number(process.env.REDIS_PRESSURE_MIN_GROWTH_MEBIBYTES)
+    : 20
+export const BYTES_PER_MEBIBYTE =
+  Number(process.env.BYTES_PER_MEBIBYTE) > 0
+    ? Number(process.env.BYTES_PER_MEBIBYTE)
+    : 1024 * 1024
+
 const isProduction = process.env.NODE_ENV === 'production'
 const isTest = process.env.NODE_ENV === 'test'
 const isDevelopment = process.env.NODE_ENV === 'development'
@@ -55,6 +92,32 @@ export const config = convict({
     format: Number,
     default: ONE_WEEK_IN_MILLISECONDS,
     env: 'STATIC_CACHE_TIMEOUT'
+  },
+  cacheDurations: {
+    refreshIntervalMs: {
+      doc: 'Refresh interval in milliseconds for periodic cache refresh behaviour.',
+      format: Number,
+      default: REFRESH_INTERVAL_MS,
+      env: 'REFRESH_INTERVAL_MS'
+    },
+    serverSharedCacheTtlMs: {
+      doc: 'TTL in milliseconds for the server shared cache policy.',
+      format: Number,
+      default: ONE_HOUR_MS,
+      env: 'SERVER_SHARED_CACHE_TTL_MS'
+    },
+    userDataCacheTtlMs: {
+      doc: 'TTL in milliseconds for user metadata cache entries.',
+      format: Number,
+      default: FIFTEEN_MINUTES_MS,
+      env: 'USER_DATA_CACHE_TTL_MS'
+    },
+    sharedLocationCacheTtlMs: {
+      doc: 'TTL cap in milliseconds for shared location payload cache entries.',
+      format: Number,
+      default: REDIS_SHARED_CACHE_TTL_MS,
+      env: 'SHARED_LOCATION_CACHE_TTL_MS'
+    }
   },
   serviceName: {
     doc: 'Applications Service Name',
@@ -97,6 +160,12 @@ export const config = convict({
     format: Boolean,
     default: false,
     env: 'ENABLED_MOCK'
+  },
+  useNewRicardoMeasurementsEnabled: {
+    doc: 'Falg To Use New Ricardo Measurements API',
+    format: Boolean,
+    default: true,
+    env: 'USE_NEW_RICARDO_MEASUREMENTS_ENABLED'
   },
   log: {
     enabled: {
@@ -162,6 +231,12 @@ export const config = convict({
     format: '*',
     default: 'https://check-air-quality.service.gov.uk'
   },
+  userResearchPanelUrl: {
+    doc: 'User research panel URL displayed on notify success pages',
+    format: String,
+    default: 'https://defragroup.eu.qualtrics.com/jfe/form/SV_1Yf4v6n0W2uS2LQ',
+    env: 'USER_RESEARCH_PANEL_URL'
+  },
   osNamesApiKey: {
     doc: 'OS Name Places key',
     format: '*',
@@ -190,6 +265,14 @@ export const config = convict({
         default: isProduction ? 'redis' : 'memory',
         env: 'SESSION_CACHE_ENGINE'
       },
+      memory: {
+        maxByteSize: {
+          doc: 'Maximum in-memory cache size in bytes when SESSION_CACHE_ENGINE=memory',
+          format: Number,
+          default: 536870912, // 512MB
+          env: 'SESSION_CACHE_MEMORY_MAX_BYTE_SIZE'
+        }
+      },
       name: {
         doc: 'server side session cache name',
         format: String,
@@ -201,6 +284,44 @@ export const config = convict({
         format: Number,
         default: fourHoursMs,
         env: 'SESSION_CACHE_TTL'
+      },
+      globalGuardEnabled: {
+        doc: 'Master switch for session mutation guards. When false in non-production, both pressure and no-cookie guards are disabled for local simulation.',
+        format: Boolean,
+        default: true,
+        env: 'SESSION_GLOBAL_GUARD_ENABLED'
+      },
+      redisPressure: {
+        checkIntervalMs: {
+          doc: 'Interval between Redis memory samples for pressure guard.',
+          format: Number,
+          default: REDIS_PRESSURE_CHECK_INTERVAL_MS,
+          env: 'REDIS_PRESSURE_CHECK_INTERVAL_MS'
+        },
+        windowMs: {
+          doc: 'Maximum elapsed time window for pressure growth calculation.',
+          format: Number,
+          default: REDIS_PRESSURE_WINDOW_MS,
+          env: 'REDIS_PRESSURE_WINDOW_MS'
+        },
+        cooldownMs: {
+          doc: 'Cooldown period while Redis pressure guard remains active.',
+          format: Number,
+          default: REDIS_PRESSURE_COOLDOWN_MS,
+          env: 'REDIS_PRESSURE_COOLDOWN_MS'
+        },
+        minGrowthMebibytes: {
+          doc: 'Minimum Redis memory growth in MiB to activate pressure guard.',
+          format: Number,
+          default: REDIS_PRESSURE_MIN_GROWTH_MEBIBYTES,
+          env: 'REDIS_PRESSURE_MIN_GROWTH_MEBIBYTES'
+        },
+        bytesPerMebibyte: {
+          doc: 'Byte size used for one MiB in Redis pressure calculations.',
+          format: Number,
+          default: BYTES_PER_MEBIBYTE,
+          env: 'BYTES_PER_MEBIBYTE'
+        }
       }
     },
     cookie: {
@@ -266,238 +387,199 @@ export const config = convict({
     sensitive: true,
     env: 'CDP_X_API_KEY_PERF_TEST'
   },
+  ephemeralProtectedTestApiUrl: {
+    doc: 'Ephemeral Protected Test API url',
+    format: String,
+    default: `https://ephemeral-protected.api.test.cdp-int.defra.cloud`,
+    env: 'EPHEMERAL_PROTECTED_TEST_API_URL'
+  },
+  ephemeralProtectedDevApiUrl: {
+    doc: 'Ephemeral Protected Dev API url',
+    format: String,
+    default: `https://ephemeral-protected.api.test.cdp-int.defra.cloud`,
+    env: 'EPHEMERAL_PROTECTED_DEV_API_URL'
+  },
+  ephemeralProtectedPerfTestApiUrl: {
+    doc: 'Ephemeral Protected Perf-Test API url',
+    format: String,
+    default: '',
+    env: 'EPHEMERAL_PROTECTED_PERF_TEST_API_URL'
+  },
+  measurementsApiUrl: {
+    doc: 'Ricardo API url',
+    format: String,
+    default: `https://aqie-back-end.dev.cdp-int.defra.cloud/measurements`,
+    env: 'MEASUREMENTS_API_URL'
+  },
+  ricardoMeasurementsApiUrl: {
+    doc: 'New Ricardo API url',
+    format: String,
+    default: `https://aqie-back-end.dev.cdp-int.defra.cloud/monitoringStationInfo?`,
+    env: 'NEW_RICARDO_MEASUREMENTS_API_URL'
+  },
+  forecastSummaryUrl: {
+    doc: 'Summary forecast url',
+    format: String,
+    default: 'https://uk-air.defra.gov.uk/ajax/forecast_text_summary.php',
+    env: 'FORECAST_SUMMARY_URL'
+  },
   notify: {
     enabled: {
-      doc: 'Enable notify service (sends via backend wrapper API)',
+      doc: 'Enable Notify API integration',
       format: Boolean,
       default: false,
       env: 'NOTIFY_ENABLED'
     },
-    mockOtpEnabled: {
-      doc: 'Enable mock OTP mode (bypasses backend service entirely for local and test environments)',
-      format: Boolean,
-      default: false,
-      env: 'NOTIFY_MOCK_OTP_ENABLED'
-    },
-    mockOtpCode: {
-      doc: 'Mock OTP code to use when mock mode is active',
-      format: String,
-      default: '12345',
-      env: 'NOTIFY_MOCK_OTP_CODE'
-    },
-    mockSetupAlertEnabled: {
-      doc: 'Enable mock setup alert fallback when backend service fails (for local and test environments ONLY - never use in production)',
-      format: Boolean,
-      default: false,
-      env: 'NOTIFY_MOCK_SETUP_ALERT_ENABLED'
-    },
-    mockSubscriptionCheckMaxReached: {
-      doc: 'Force getSubscriptionCount to return maxReached:true — used locally to test the max-5 validation UI without a live backend (never use in production)',
-      format: Boolean,
-      default: false,
-      env: 'NOTIFY_MOCK_SUBSCRIPTION_CHECK_MAX_REACHED'
-    },
     baseUrl: {
-      doc: 'Backend notify wrapper API base URL',
+      doc: 'Notify service base URL',
       format: String,
       default: 'https://aqie-notify-service.test.cdp-int.defra.cloud',
       env: 'NOTIFY_BASE_URL'
     },
     alertBackendBaseUrl: {
-      doc: 'Alert backend service base URL for setup-alert endpoint',
+      doc: 'Alert backend service base URL',
       format: String,
       default: 'https://aqie-alert-back-end-service.test.cdp-int.defra.cloud',
       env: 'ALERT_BACKEND_BASE_URL'
     },
-    emailPath: {
-      doc: 'Backend API path for sending email codes',
-      format: String,
-      default: '/send-email-code',
-      env: 'NOTIFY_EMAIL_PATH'
-    },
-    emailGenerateLinkPath: {
-      doc: 'Backend API path for generating email verification links',
-      format: String,
-      default: '/subscribe/generate-link',
-      env: 'NOTIFY_EMAIL_GENERATE_LINK_PATH'
-    },
-    emailValidateLinkPath: {
-      doc: 'Backend API path for validating email verification links',
-      format: String,
-      default: '/subscribe/validate-link',
-      env: 'NOTIFY_EMAIL_VALIDATE_LINK_PATH'
-    },
-    emailDetailsPath: {
-      doc: 'Frontend route for entering email address',
-      format: String,
-      default: '/notify/register/email-details',
-      env: 'NOTIFY_EMAIL_DETAILS_PATH'
-    },
-    emailVerifyEmailPath: {
-      doc: 'Frontend route for check your email page',
-      format: String,
-      default: '/notify/register/email-verify-email',
-      env: 'NOTIFY_EMAIL_VERIFY_EMAIL_PATH'
-    },
-    emailConfirmLinkPath: {
-      doc: 'Frontend route for email link callback',
-      format: String,
-      default: '/notify/register/email-confirm-link',
-      env: 'NOTIFY_EMAIL_CONFIRM_LINK_PATH'
-    },
-    emailSendActivationPath: {
-      doc: 'Frontend route for resending email activation link',
-      format: String,
-      default: '/notify/register/email-send-activation',
-      env: 'NOTIFY_EMAIL_SEND_ACTIVATION_PATH'
-    },
-    alertsSuccessPath: {
-      doc: 'Frontend route for alerts success page',
-      format: String,
-      default: '/notify/register/alerts-success',
-      env: 'NOTIFY_ALERTS_SUCCESS_PATH'
-    },
-    smsMobileNumberPath: {
-      doc: 'Frontend route for SMS mobile number entry',
-      format: String,
-      default: '/notify/register/sms-mobile-number',
-      env: 'NOTIFY_SMS_MOBILE_NUMBER_PATH'
-    },
-    smsSendActivationPath: {
-      doc: 'Frontend route for sending SMS activation code',
-      format: String,
-      default: '/notify/register/sms-send-activation',
-      env: 'NOTIFY_SMS_SEND_ACTIVATION_PATH'
-    },
-    smsVerifyCodePath: {
-      doc: 'Frontend route for SMS verify code page',
-      format: String,
-      default: '/notify/register/sms-verify-code',
-      env: 'NOTIFY_SMS_VERIFY_CODE_PATH'
-    },
-    smsConfirmDetailsPath: {
-      doc: 'Frontend route for confirming SMS alert details',
-      format: String,
-      default: '/notify/register/sms-confirm-details',
-      env: 'NOTIFY_SMS_CONFIRM_DETAILS_PATH'
-    },
-    smsSuccessPath: {
-      doc: 'Frontend route for SMS alerts success page',
-      format: String,
-      default: '/notify/register/sms-success',
-      env: 'NOTIFY_SMS_SUCCESS_PATH'
-    },
-    duplicateSubscriptionPath: {
-      doc: 'Frontend route for duplicate subscription page',
-      format: String,
-      default: '/notify/register/sms-duplicate',
-      env: 'NOTIFY_DUPLICATE_SUBSCRIPTION_PATH'
-    },
-    smsMaxAlertsPath: {
-      doc: 'Frontend route for SMS maximum alerts reached page',
-      format: String,
-      default: '/notify/register/sms-max-emails',
-      env: 'NOTIFY_SMS_MAX_ALERTS_PATH'
-    },
-    emailDuplicatePath: {
-      doc: 'Frontend route for duplicate email subscription page',
-      format: String,
-      default: '/notify/register/email-duplicate',
-      env: 'NOTIFY_EMAIL_DUPLICATE_PATH'
-    },
     smsPath: {
-      doc: 'Backend API path for generating OTP (SMS)',
+      doc: 'Notify API path for generating OTP',
       format: String,
       default: '/subscribe/generate-otp',
       env: 'NOTIFY_SMS_PATH'
     },
     verifyOtpPath: {
-      doc: 'Backend API path for verifying OTP',
+      doc: 'Notify API path for validating OTP',
       format: String,
       default: '/subscribe/validate-otp',
       env: 'NOTIFY_VERIFY_OTP_PATH'
     },
-    setupAlertPath: {
-      doc: 'Backend API path for setting up alert subscription',
+    emailPath: {
+      doc: 'Notify API path for sending verification email',
       format: String,
-      default: '/setup-alert',
+      default: '/subscribe/email',
+      env: 'NOTIFY_EMAIL_PATH'
+    },
+    emailGenerateLinkPath: {
+      doc: 'Notify API path for generating email confirmation links',
+      format: String,
+      default: '/subscribe/email/generate-link',
+      env: 'NOTIFY_EMAIL_GENERATE_LINK_PATH'
+    },
+    emailValidateLinkPath: {
+      doc: 'Notify API path for validating email confirmation links',
+      format: String,
+      default: '/subscribe/email/validate-link',
+      env: 'NOTIFY_EMAIL_VALIDATE_LINK_PATH'
+    },
+    setupAlertPath: {
+      doc: 'Alert backend path to create subscriptions',
+      format: String,
+      default: '/api/subscriptions',
       env: 'NOTIFY_SETUP_ALERT_PATH'
     },
     getSubscriptionsPath: {
-      doc: 'Backend API path for getting user subscriptions',
+      doc: 'Alert backend path to fetch subscriptions',
       format: String,
       default: '/api/subscriptions',
       env: 'NOTIFY_GET_SUBSCRIPTIONS_PATH'
     },
-    timeoutMs: {
-      doc: 'Request timeout in milliseconds',
-      format: 'int',
-      default: 5000,
-      env: 'NOTIFY_TIMEOUT_MS'
-    }
-  },
-  subscriptionApi: {
-    enabled: {
-      doc: 'Enable subscription capture API (for recording SMS/email captures)',
+    mockOtpEnabled: {
+      doc: 'Enable OTP mock fallback',
       format: Boolean,
       default: false,
-      env: 'SUBSCRIPTION_API_ENABLED'
+      env: 'NOTIFY_MOCK_OTP_ENABLED'
     },
-    baseUrl: {
-      doc: 'Subscription API base URL',
+    mockOtpCode: {
+      doc: 'OTP code used when mock OTP mode is enabled',
       format: String,
-      default: '',
-      env: 'SUBSCRIPTION_API_BASE_URL'
+      default: '12345',
+      env: 'NOTIFY_MOCK_OTP_CODE'
     },
-    apiKey: {
-      doc: 'Subscription API authentication key',
+    mockSetupAlertEnabled: {
+      doc: 'Enable setup-alert mock responses',
+      format: Boolean,
+      default: false,
+      env: 'NOTIFY_MOCK_SETUP_ALERT_ENABLED'
+    },
+    mockSubscriptionCheckMaxReached: {
+      doc: 'Force subscription-check max-reached mock response',
+      format: Boolean,
+      default: false,
+      env: 'NOTIFY_MOCK_SUBSCRIPTION_CHECK_MAX_REACHED'
+    },
+    smsMobileNumberPath: {
+      doc: 'Frontend route: SMS mobile number page',
       format: String,
-      default: '',
-      env: 'SUBSCRIPTION_API_KEY',
-      sensitive: true
+      default: '/notify/register/sms-mobile-number',
+      env: 'NOTIFY_SMS_MOBILE_NUMBER_PATH'
     },
-    emailPath: {
-      doc: 'API path for recording email captures',
+    smsVerifyCodePath: {
+      doc: 'Frontend route: SMS verify code page',
       format: String,
-      default: '/capture/email',
-      env: 'SUBSCRIPTION_API_EMAIL_PATH'
+      default: '/notify/register/sms-verify-code',
+      env: 'NOTIFY_SMS_VERIFY_CODE_PATH'
     },
-    smsPath: {
-      doc: 'API path for recording SMS captures',
+    smsSendActivationPath: {
+      doc: 'Frontend route: SMS send activation page',
       format: String,
-      default: '/capture/sms',
-      env: 'SUBSCRIPTION_API_SMS_PATH'
+      default: '/notify/register/sms-send-activation',
+      env: 'NOTIFY_SMS_SEND_ACTIVATION_PATH'
     },
-    timeoutMs: {
-      doc: 'Request timeout in milliseconds',
-      format: 'int',
-      default: 5000,
-      env: 'SUBSCRIPTION_API_TIMEOUT_MS'
+    smsConfirmDetailsPath: {
+      doc: 'Frontend route: SMS confirm details page',
+      format: String,
+      default: '/notify/register/sms-confirm-details',
+      env: 'NOTIFY_SMS_CONFIRM_DETAILS_PATH'
+    },
+    smsSuccessPath: {
+      doc: 'Frontend route: SMS success page',
+      format: String,
+      default: '/notify/register/sms-success',
+      env: 'NOTIFY_SMS_SUCCESS_PATH'
+    },
+    smsMaxAlertsPath: {
+      doc: 'Frontend route: SMS max alerts page',
+      format: String,
+      default: '/notify/register/sms-max-alerts',
+      env: 'NOTIFY_SMS_MAX_ALERTS_PATH'
+    },
+    duplicateSubscriptionPath: {
+      doc: 'Frontend route: duplicate subscription page',
+      format: String,
+      default: '/notify/register/duplicate-subscription',
+      env: 'NOTIFY_DUPLICATE_SUBSCRIPTION_PATH'
+    },
+    emailDetailsPath: {
+      doc: 'Frontend route: email details page',
+      format: String,
+      default: '/notify/register/email-details',
+      env: 'NOTIFY_EMAIL_DETAILS_PATH'
+    },
+    emailVerifyEmailPath: {
+      doc: 'Frontend route: email verify page',
+      format: String,
+      default: '/notify/register/email-verify-email',
+      env: 'NOTIFY_EMAIL_VERIFY_EMAIL_PATH'
+    },
+    emailSendActivationPath: {
+      doc: 'Frontend route: email send activation page',
+      format: String,
+      default: '/notify/register/email-send-activation',
+      env: 'NOTIFY_EMAIL_SEND_ACTIVATION_PATH'
+    },
+    alertsSuccessPath: {
+      doc: 'Frontend route: alerts success page',
+      format: String,
+      default: '/notify/register/alerts-success',
+      env: 'NOTIFY_ALERTS_SUCCESS_PATH'
+    },
+    emailDuplicatePath: {
+      doc: 'Frontend route: email duplicate subscription page',
+      format: String,
+      default: '/notify/register/email-duplicate',
+      env: 'NOTIFY_EMAIL_DUPLICATE_PATH'
     }
-  },
-  ephemeralProtectedTestApiUrl: {
-    doc: 'Ephemeral Protected Test API url – set via EPHEMERAL_PROTECTED_TEST_API_URL; absent in production',
-    format: String,
-    default: '',
-    env: 'EPHEMERAL_PROTECTED_TEST_API_URL'
-  },
-  ephemeralProtectedDevApiUrl: {
-    doc: 'Ephemeral Protected Dev API url – set via EPHEMERAL_PROTECTED_DEV_API_URL; absent in production',
-    format: String,
-    default: '',
-    env: 'EPHEMERAL_PROTECTED_DEV_API_URL'
-  },
-  ephemeralProtectedPerfTestApiUrl: {
-    doc: 'Ephemeral Protected Perf-Test API url – set via EPHEMERAL_PROTECTED_PERF_TEST_API_URL; absent in production',
-    format: String,
-    default: '',
-    env: 'EPHEMERAL_PROTECTED_PERF_TEST_API_URL'
-  },
-  ricardoMeasurementsApiUrl: {
-    doc: 'Ricardo Measurements API url',
-    format: String,
-    default: `https://aqie-back-end.test.cdp-int.defra.cloud/monitoringStationInfo?`,
-    env: 'RICARDO_MEASUREMENTS_API_URL'
   },
   postcodeNortherIrelandUrl: {
     doc: 'Search postcode Northern Ireland url',
@@ -521,8 +603,7 @@ export const config = convict({
   osPlacesApiPostcodeNorthernIrelandUrl: {
     doc: 'Search postcode Northern Ireland with osPlaces url',
     format: String,
-    default:
-      'https://tst-api-gateway.azure.defra.cloud/api/address-lookup/v2.1/addresses?postcode=',
+    default: '',
     env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_URL'
   },
   mockOsPlacesApiPostcodeNorthernIrelandUrl: {
@@ -550,60 +631,18 @@ export const config = convict({
     default: '',
     env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_CLIENT_SECRET'
   },
+  niApiTimeoutMs: {
+    doc: 'Timeout in milliseconds for Northern Ireland API calls',
+    format: Number,
+    default: 15000,
+    env: 'NI_API_TIMEOUT_MS'
+  },
   scopeNIreland: {
     doc: 'OS Name Places Postcode Northern Ireland client scope',
     format: '*',
     sensitive: true,
     default: '',
     env: 'OS_PLACES_POSTCODE_NORTHERN_IRELAND_CLIENT_SCOPE'
-  },
-  niApiTimeoutMs: {
-    doc: 'Northern Ireland API request timeout in milliseconds',
-    format: Number,
-    default: 8000,
-    env: 'NI_API_TIMEOUT_MS'
-  },
-  niApiMaxRetries: {
-    doc: 'Maximum number of retry attempts for Northern Ireland API calls',
-    format: Number,
-    default: 2,
-    env: 'NI_API_MAX_RETRIES'
-  },
-  niApiRetryDelayMs: {
-    doc: 'Delay in milliseconds between retry attempts for Northern Ireland API',
-    format: Number,
-    default: 1500,
-    env: 'NI_API_RETRY_DELAY_MS'
-  },
-  niApiCircuitBreakerEnabled: {
-    doc: 'Enable NI API circuit breaker to prevent repeated failures',
-    format: Boolean,
-    default: true,
-    env: 'NI_API_CIRCUIT_BREAKER_ENABLED'
-  },
-  niApiCircuitBreakerFailureThreshold: {
-    doc: 'Failures required to open NI API circuit breaker',
-    format: Number,
-    default: 3,
-    env: 'NI_API_CIRCUIT_BREAKER_FAILURE_THRESHOLD'
-  },
-  niApiCircuitBreakerOpenMs: {
-    doc: 'Time in milliseconds the NI API circuit breaker remains open',
-    format: Number,
-    default: 60000,
-    env: 'NI_API_CIRCUIT_BREAKER_OPEN_MS'
-  },
-  niApiCacheEnabled: {
-    doc: 'Enable NI API response cache fallback',
-    format: Boolean,
-    default: true,
-    env: 'NI_API_CACHE_ENABLED'
-  },
-  niApiCacheTtlMs: {
-    doc: 'NI API response cache TTL in milliseconds',
-    format: Number,
-    default: 600000,
-    env: 'NI_API_CACHE_TTL_MS'
   },
   redis: {
     host: {
@@ -663,12 +702,6 @@ export const config = convict({
       default: 'x-cdp-request-id',
       env: 'TRACING_HEADER'
     }
-  },
-  userResearchPanelUrl: {
-    doc: 'URL for user research panel sign up',
-    format: String,
-    default: 'https://defragroup.eu.qualtrics.com/jfe/form/SV_3JEDGo4ZaGtBpHw',
-    env: 'USER_RESEARCH_PANEL_URL'
   }
 })
 

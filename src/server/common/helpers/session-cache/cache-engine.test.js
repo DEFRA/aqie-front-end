@@ -44,7 +44,7 @@ describe('#getCacheEngine', () => {
     })
 
     test('Should setup In memory cache', () => {
-      expect(CatboxMemory).toHaveBeenCalledTimes(1)
+      expect(CatboxMemory).toHaveBeenCalledWith(expect.any(Object))
     })
 
     test('Should log expected CatBox memory message', () => {
@@ -67,7 +67,7 @@ describe('#getCacheEngine', () => {
     })
 
     test('Should setup In memory cache', () => {
-      expect(CatboxMemory).toHaveBeenCalledTimes(1)
+      expect(CatboxMemory).toHaveBeenCalledWith(expect.any(Object))
     })
 
     test('Should log expected message', () => {

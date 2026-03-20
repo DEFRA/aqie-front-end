@@ -176,19 +176,36 @@ vi.mock('../../config/index.js', () => ({
           useNewRicardoMeasurementsEnabled: true,
           metaSiteUrl: 'https://uk-air.defra.gov.uk',
           nodeEnv: 'test',
-          disableTestMocks: false
+          disableTestMocks: false,
+          'session.cache.name': 'session'
         })[key]
     )
   }
 }))
 vi.mock('../data/constants.js', () => ({
+  DAILY_SUMMARY_KEY: 'dailySummary',
+  DATE_FORMAT: 'DD/MM/YYYY',
   LANG_CY: 'cy',
   LANG_EN: 'en',
   LOCATION_NOT_FOUND: 'location-not-found',
   LOCATION_TYPE_NI: 'ni',
   LOCATION_TYPE_UK: 'uk',
+  ONE_HOUR_MS: 60 * 60 * 1000,
+  REDIS_PRESSURE_CHECK_INTERVAL_MS: 60000,
+  REDIS_PRESSURE_COOLDOWN_MS: 30000,
+  REDIS_PRESSURE_MIN_GROWTH_BYTES: 1048576,
+  REDIS_PRESSURE_MIN_GROWTH_RATIO: 0.1,
+  REDIS_PRESSURE_WINDOW_MS: 120000,
   REDIRECT_STATUS_CODE: 301,
-  STATUS_INTERNAL_SERVER_ERROR: 500
+  SESSION_GUARD_LOG_LIMIT_PER_REQUEST: 1,
+  SHARED_LOCATION_CACHE_PREFIX: 'shared:location-payload:',
+  STATUS_INTERNAL_SERVER_ERROR: 500,
+  STATUS_CODE_SUCCESS: 200,
+  STATUS_TOO_MANY_REQUESTS: 429,
+  STATUS_NO_CONTENT: 204,
+  STATUS_UNAUTHORIZED: 401,
+  CIRCUIT_BREAKER_DEFAULT_FAILURE_THRESHOLD: 3,
+  SERVICE_UNAVAILABLE_ERROR: 'service-unavailable'
 }))
 
 // eslint-disable-next-line import-x/first -- vi.mock() must be before imports for Vitest hoisting
@@ -275,10 +292,12 @@ describe('Location ID Controller - Test Mode OldDate', () => {
       }
     }
 
-    mockRequest.yar.get
-      .mockReturnValueOnce(true) // searchTermsSaved
-      .mockReturnValueOnce(mockLocationData)
-      .mockReturnValueOnce('oldDate') // testMode from session
+    mockRequest.yar.get.mockImplementation((key) => {
+      if (key === 'searchTermsSaved') return true
+      if (key === 'locationData') return mockLocationData
+      if (key === 'testMode') return 'oldDate'
+      return null
+    })
 
     vi.mocked(getIdMatch).mockReturnValue({
       locationIndex: 0,
@@ -394,10 +413,12 @@ describe('Location ID Controller - Test Mode NoDataOldDate', () => {
       }
     }
 
-    mockRequest.yar.get
-      .mockReturnValueOnce(true) // searchTermsSaved
-      .mockReturnValueOnce(mockLocationData)
-      .mockReturnValueOnce('noDataOldDate') // testMode from session
+    mockRequest.yar.get.mockImplementation((key) => {
+      if (key === 'searchTermsSaved') return true
+      if (key === 'locationData') return mockLocationData
+      if (key === 'testMode') return 'noDataOldDate'
+      return null
+    })
 
     vi.mocked(getIdMatch).mockReturnValue({
       locationIndex: 0,
@@ -507,9 +528,11 @@ describe('Location ID Controller - IssueTime Missing', () => {
       // issueTime is missing
     }
 
-    mockRequest.yar.get
-      .mockReturnValueOnce(true) // searchTermsSaved
-      .mockReturnValueOnce(mockLocationData)
+    mockRequest.yar.get.mockImplementation((key) => {
+      if (key === 'searchTermsSaved') return true
+      if (key === 'locationData') return mockLocationData
+      return null
+    })
 
     vi.mocked(getIdMatch).mockReturnValue({
       locationIndex: 0,
@@ -526,11 +549,9 @@ describe('Location ID Controller - IssueTime Missing', () => {
 
     await getLocationDetailsController.handler(mockRequest, mockH)
 
-    expect(mockRequest.yar.set).toHaveBeenCalledWith(
-      'locationData',
-      expect.objectContaining({
-        issueTime: '10:00'
-      })
+    expect(mockH.view).toHaveBeenCalledWith(
+      'locations/location',
+      expect.objectContaining({ issueTime: '10:00' })
     )
   })
 })
@@ -562,15 +583,15 @@ describe('Location ID Controller - IssueTime Existing', () => {
       issueTime: '10:00' // already set
     }
 
-    mockRequest.yar.get = vi
-      .fn()
-      .mockReturnValueOnce(true) // searchTermsSaved
-      .mockReturnValueOnce(mockLocationData) // locationData
-      .mockReturnValueOnce(null) // testMode
-      .mockReturnValueOnce(null) // mockLevel
-      .mockReturnValueOnce(null) // mockDay
-      .mockReturnValueOnce(null) // mockPollutantBand
-      .mockReturnValue(null) // Any additional calls
+    mockRequest.yar.get.mockImplementation((key) => {
+      if (key === 'searchTermsSaved') return true
+      if (key === 'locationData') return mockLocationData
+      if (key === 'testMode') return null
+      if (key === 'mockLevel') return null
+      if (key === 'mockDay') return null
+      if (key === 'mockPollutantBand') return null
+      return null
+    })
 
     vi.mocked(getIdMatch).mockReturnValue({
       locationIndex: 0,

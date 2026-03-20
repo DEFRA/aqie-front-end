@@ -38,6 +38,55 @@ function buildBackLinkText(
   return defaultText
 }
 
+function getLocationName(query) {
+  if (Array.isArray(query?.locationName)) {
+    return query.locationName[0] || ''
+  }
+
+  return query?.locationName || ''
+}
+
+function getLocationContext(query = {}) {
+  const searchTerms = query?.searchTerms || ''
+  const locationName = getLocationName(query)
+
+  return {
+    searchTerms,
+    locationName,
+    hasSearchTerms: searchTerms.trim() !== '',
+    hasLocationName: locationName.trim() !== ''
+  }
+}
+
+function buildBackLinkData({
+  locationId,
+  searchTerms,
+  locationName,
+  backlink
+}) {
+  if (locationId) {
+    const trimmedSearchTerms = searchTerms.trim()
+    const formattedPostcode = trimmedSearchTerms
+      ? formatUKPostcode(searchTerms)
+      : ''
+
+    return {
+      backLinkText: buildBackLinkText(
+        formattedPostcode,
+        locationName,
+        locationName.trim() !== '',
+        backlink.text
+      ),
+      backLinkUrl: `/location/${locationId}?lang=en`
+    }
+  }
+
+  return {
+    backLinkText: backlink.text,
+    backLinkUrl: '/search-location?lang=en'
+  }
+}
+
 const actionsReduceExposureController = {
   handler: (request, h) => {
     const { actionsReduceExposure } = english
@@ -54,13 +103,8 @@ const actionsReduceExposureController = {
 
     // Get location ID from path parameters and location name from session/query
     const locationId = params.locationId
-    const searchTerms = query?.searchTerms || ''
-    // Handle locationName as array (when duplicated in query string) or string
-    const locationName = Array.isArray(query?.locationName)
-      ? query.locationName[0]
-      : query?.locationName || ''
-    const hasSearchTerms = searchTerms.trim() !== ''
-    const hasLocationName = locationName.trim() !== ''
+    const { searchTerms, locationName, hasSearchTerms, hasLocationName } =
+      getLocationContext(query)
 
     if (query?.lang && query?.lang === LANG_CY) {
       const redirectUrl = buildWelshRedirectUrl(
@@ -73,24 +117,12 @@ const actionsReduceExposureController = {
       return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE)
     }
 
-    // Restore original context-specific back link text logic
-    let backLinkText = backlink.text
-    let backLinkUrl = '/search-location?lang=en'
-
-    if (locationId) {
-      // Format postcode if provided
-      const formattedPostcode = hasSearchTerms
-        ? formatUKPostcode(searchTerms)
-        : ''
-
-      backLinkText = buildBackLinkText(
-        formattedPostcode,
-        locationName,
-        hasLocationName,
-        backlink.text
-      )
-      backLinkUrl = `/location/${locationId}?lang=en`
-    }
+    const { backLinkText, backLinkUrl } = buildBackLinkData({
+      locationId,
+      searchTerms,
+      locationName,
+      backlink
+    })
 
     // Replace {locationId} placeholder in healthConditionsLink
     const processedActionsReduceExposure = {

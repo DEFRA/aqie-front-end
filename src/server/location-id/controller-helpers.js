@@ -1,8 +1,14 @@
 import { createLogger } from '../common/helpers/logging/logger.js'
-import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../data/constants.js'
+import {
+  LANG_CY,
+  LANG_EN,
+  LOCATION_TYPE_UK,
+  REDIRECT_STATUS_CODE
+} from '../data/constants.js'
 import { config } from '../../config/index.js'
 import { getDetailedInfo } from '../data/en/air-quality.js'
 import { getSearchTermsFromUrl } from '../locations/helpers/get-search-terms-from-url.js'
+export { initializeRequestData } from './helpers/initializeRequestData.js'
 
 const logger = createLogger()
 
@@ -27,11 +33,11 @@ function buildQueryString(searchTerms, locationNameForTemplate) {
 
 /**
  * Process common messages for air quality data
- * @param {object} commonMessages - Common messages object
+ * @param commonMessages - Common messages object
  * @param {string} locationId - Location identifier
  * @param {string} lang - Language code
  * @param {string} queryString - Query string parameters
- * @returns {object} Processed messages
+ * @returns Processed messages
  */
 function processCommonMessages(commonMessages, locationId, lang, queryString) {
   const processed = {}
@@ -56,12 +62,12 @@ function processCommonMessages(commonMessages, locationId, lang, queryString) {
 
 /**
  * Process air quality messages to replace placeholders and add query params
- * @param {object} airQualityData - Air quality data object
+ * @param airQualityData - Air quality data object
  * @param {string} locationId - Location identifier
  * @param {string} lang - Language code
  * @param {string} searchTerms - Search terms
  * @param {string} locationNameForTemplate - Location name for template
- * @returns {object} Processed air quality data
+ * @returns Processed air quality data
  */
 export function processAirQualityMessages(
   airQualityData,
@@ -151,7 +157,7 @@ function addParamIfExists(params, name, value) {
 
 /**
  * Build query parameters for mock features
- * @param {object} request - Request object
+ * @param request - Request object
  * @param {boolean} mocksDisabled - Whether mocks are disabled
  * @returns {string} Query parameters string
  */
@@ -161,7 +167,7 @@ export function buildMockQueryParams(request, mocksDisabled) {
   }
 
   const params = []
-  const query = request.query || {}
+  const query = request?.query || {}
 
   addParamIfExists(params, 'mockLevel', query.mockLevel)
   addParamIfExists(params, 'mockDay', query.mockDay)
@@ -173,7 +179,7 @@ export function buildMockQueryParams(request, mocksDisabled) {
 
 /**
  * Check if Welsh redirect is needed
- * @param {object} query - Query parameters
+ * @param query - Query parameters
  * @param {string} locationId - Location identifier
  * @returns {boolean} True if redirect needed
  */
@@ -184,7 +190,7 @@ export function shouldRedirectToWelsh(query, locationId) {
 
 /**
  * Check if English redirect is needed (from Welsh path)
- * @param {object} query - Query parameters
+ * @param query - Query parameters
  * @returns {boolean} True if redirect needed
  */
 export function shouldRedirectToEnglish(query) {
@@ -195,7 +201,7 @@ export function shouldRedirectToEnglish(query) {
 /**
  * Validate mock parameters
  * @param {*} mockLevel - Mock level to validate
- * @returns {object} Validation result with valid flag and level
+ * @returns Validation result with valid flag and level
  */
 export function validateMockLevel(mockLevel) {
   if (mockLevel === undefined || mockLevel === null) {
@@ -211,7 +217,7 @@ export function validateMockLevel(mockLevel) {
 /**
  * Validate mock pollutant band value
  * @param {*} mockPollutantBand - Pollutant band to validate
- * @returns {object} Validation result with valid flag and band
+ * @returns Validation result with valid flag and band
  */
 export function validateMockPollutantBand(mockPollutantBand) {
   if (mockPollutantBand === undefined || mockPollutantBand === null) {
@@ -234,8 +240,8 @@ export function validateMockPollutantBand(mockPollutantBand) {
 
 /**
  * Clone air quality day data safely
- * @param {object} dayData - Day data to clone
- * @returns {object} Cloned or original data
+ * @param dayData - Day data to clone
+ * @returns Cloned or original data
  */
 function cloneDayData(dayData) {
   return dayData ? { ...dayData } : dayData
@@ -243,8 +249,8 @@ function cloneDayData(dayData) {
 
 /**
  * Create base air quality structure from existing data
- * @param {object} airQuality - Air quality data
- * @returns {object} Cloned structure
+ * @param airQuality - Air quality data
+ * @returns Cloned structure
  */
 function createBaseAirQuality(airQuality) {
   return {
@@ -258,37 +264,26 @@ function createBaseAirQuality(airQuality) {
 
 /**
  * Apply mock level to specific day or all days
- * @param {object} airQuality - Air quality data
+ * @param airQuality - Air quality data
  * @param {number} level - Mock level value
  * @param {string} mockDay - Day to apply mock to
- * @returns {object} Modified air quality data
+ * @returns Modified air quality data
  */
 export function applyMockToDay(airQuality, level, mockDay) {
   const mockDayData = getDetailedInfo(level)
   const validDays = ['today', 'day2', 'day3', 'day4', 'day5']
-
-  logger.info(
-    `🔍 applyMockToDay - incoming: today=${airQuality?.today?.value}, day2=${airQuality?.day2?.value}, day3=${airQuality?.day3?.value}, day4=${airQuality?.day4?.value}, day5=${airQuality?.day5?.value}, mockDay=${mockDay}, mockLevel=${level}`
-  )
 
   const modifiedAirQuality = createBaseAirQuality(airQuality)
 
   const targetDay = mockDay && validDays.includes(mockDay) ? mockDay : 'today'
   modifiedAirQuality[targetDay] = mockDayData
 
-  logger.info(
-    `🎯 Applied mock level ${level} to ${targetDay} only (value: ${mockDayData.value}, band: ${mockDayData.band}, readableBand: ${mockDayData.readableBand})`
-  )
-  logger.info(
-    `🔍 applyMockToDay - output: today=${modifiedAirQuality?.today?.value}, day2=${modifiedAirQuality?.day2?.value}, day3=${modifiedAirQuality?.day3?.value}, day4=${modifiedAirQuality?.day4?.value}, day5=${modifiedAirQuality?.day5?.value}`
-  )
-
   return modifiedAirQuality
 }
 
 /**
  * Apply mock pollutant band to monitoring sites
- * @param {object} request - Request object
+ * @param request - Request object
  * @param {Array} monitoringSites - Monitoring sites data
  * @param {Function} generateMockPollutantBand - Function to generate mock pollutant band
  * @param {Function} applyMockPollutantsToSites - Function to apply pollutants to sites
@@ -302,23 +297,16 @@ export function applyMockPollutants(
 ) {
   const mocksDisabled = config.get('disableTestMocks')
   if (mocksDisabled) {
-    logger.info(`🚫 Mock pollutant bands disabled (disableTestMocks=true)`)
     return monitoringSites
   }
 
   const mockPollutantBandFromSession = request.yar.get('mockPollutantBand')
-  logger.info(
-    `🔍 applyMockPollutants called - mockPollutantBand from session:`,
-    mockPollutantBandFromSession,
-    `(type: ${typeof mockPollutantBandFromSession})`
-  )
 
   if (
     mockPollutantBandFromSession !== undefined &&
     mockPollutantBandFromSession !== null
   ) {
     const bandStr = mockPollutantBandFromSession.toString().toLowerCase()
-    logger.info(`🔍 Parsed band:`, bandStr)
 
     const validBands = new Set([
       'low',
@@ -328,7 +316,6 @@ export function applyMockPollutants(
       'very high'
     ])
     if (validBands.has(bandStr) || validBands.has(bandStr.replace('-', ' '))) {
-      logger.info(`🎨 Mock Pollutant Band '${bandStr}' applied from session`)
       const mockPollutants = generateMockPollutantBand(bandStr, {
         logDetails: false
       })
@@ -348,155 +335,83 @@ export function applyMockPollutants(
     }
   }
 
-  logger.info(`🔍 Returning original monitoringSites (no mock pollutants)`)
   return monitoringSites
 }
 
 /**
- * Store session parameter (assumes mocks are enabled - caller must check)
- * @param {object} request - Request object
- * @param {string} paramName - Parameter name
- * @param {*} paramValue - Parameter value
- * @param {string} paramLabel - Parameter label for logging
+ * Build search params from URL path and location fallback
+ * @param {string} currentUrl - Current URL
+ * @param {string} locationId - Location ID from URL
+ * @returns {string} Search params string
  */
-function storeSessionParameter(request, paramName, paramValue, paramLabel) {
-  if (paramValue !== undefined) {
-    if (paramValue === '' || paramValue === 'clear') {
-      request.yar.set(paramName, null)
-      logger.info(`🎨 ${paramLabel} explicitly cleared from session`)
-    } else {
-      request.yar.set(paramName, paramValue)
-      logger.info(`🎨 ${paramLabel} ${paramValue} stored in session`)
-    }
+function buildSearchParams(currentUrl, locationId) {
+  // '' Extract searchTerms from current URL path (0.685.0 approach)
+  const { searchTerms, secondSearchTerm, searchTermsLocationType } =
+    getSearchTermsFromUrl(currentUrl)
+
+  // '' Fallback to locationId for URLs like /location/{id}/?lang=en where path parsing can return empty
+  const fallbackSearchTerms = locationId || ''
+  const safeSearchTerms = searchTerms || fallbackSearchTerms
+  const safeSecondSearchTerm = secondSearchTerm || ''
+  const safeSearchTermsLocationType =
+    searchTermsLocationType || (safeSearchTerms ? LOCATION_TYPE_UK : '')
+
+  if (
+    !safeSearchTerms &&
+    !safeSecondSearchTerm &&
+    !safeSearchTermsLocationType
+  ) {
+    return ''
   }
+
+  return `&searchTerms=${encodeURIComponent(safeSearchTerms)}&secondSearchTerm=${encodeURIComponent(safeSecondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(safeSearchTermsLocationType)}`
 }
 
 /**
- * Log warning when attempting to set mock parameter while mocks are disabled
- * @param {string} paramLabel - Parameter label for logging
+ * Build mock query params from request query
+ * @param query - Request query object
+ * @returns {string} Mock params string
  */
-function logMocksDisabledWarning(paramLabel) {
-  logger.warn(
-    `🚫 Attempted to set ${paramLabel.toLowerCase()} when mocks disabled (disableTestMocks=true) - ignoring parameter`
+function buildMockQueryParamsFromQuery(query = {}) {
+  const params = []
+  addParamIfExists(params, 'mockLevel', query.mockLevel)
+  addParamIfExists(params, 'mockPollutantBand', query.mockPollutantBand)
+  addParamIfExists(params, 'testMode', query.testMode)
+  return params.length > 0 ? `&${params.join('&')}` : ''
+}
+
+/**
+ * Check whether session location data is complete
+ * @param locationData - Session location data
+ * @returns {boolean} True when results and forecasts are present
+ */
+function hasValidSessionLocationData(locationData) {
+  return Boolean(
+    Array.isArray(locationData?.results) && locationData?.getForecasts
   )
 }
 
 /**
- * Initialize request data and handle session storage
- * @param {object} request - Request object
- * @returns {object} Initialized request data
+ * Clear cached location values from session storage
+ * @param request - Request object
  */
-export function initializeRequestData(request) {
-  const { query, headers = {} } = request
-  const locationId = request.params.id
-  const searchTermsSaved = request.yar.get('searchTermsSaved')
-  const currentUrl = request.url.href
-  const lang = query?.lang ?? LANG_EN
-  const mocksDisabled = config.get('disableTestMocks')
-  const mocksEnabled = !mocksDisabled
-
-  // '' Store mock parameters in session (only if mocks enabled)
-  if (mocksEnabled) {
-    storeSessionParameter(request, 'mockLevel', query?.mockLevel, 'Mock level')
-    storeSessionParameter(request, 'mockDay', query?.mockDay, 'Mock day')
-
-    // '' Debug logging for mockPollutantBand
-    if (query?.mockPollutantBand !== undefined) {
-      logger.info(
-        `🔍 DEBUG mockPollutantBand - query.mockPollutantBand:`,
-        query?.mockPollutantBand
-      )
-      logger.info(
-        `🔍 DEBUG mockPollutantBand - type:`,
-        typeof query?.mockPollutantBand
-      )
-      logger.info(
-        `🔍 DEBUG mockPollutantBand - full query object:`,
-        JSON.stringify(query)
-      )
-    }
-
-    storeSessionParameter(
-      request,
-      'mockPollutantBand',
-      query?.mockPollutantBand,
-      'Mock pollutant band'
-    )
-
-    // '' Store testMode (persists across requests when mocks enabled)
-    if (query?.testMode !== undefined) {
-      request.yar.set('testMode', query.testMode)
-      logger.info(`🧪 Test mode ${query.testMode} stored in session`)
-    }
-  } else {
-    // '' Log warnings if mock parameters provided when mocks are disabled
-    if (query?.mockLevel !== undefined) {
-      logMocksDisabledWarning('Mock level')
-    }
-    if (query?.mockDay !== undefined) {
-      logMocksDisabledWarning('Mock day')
-    }
-    if (query?.mockPollutantBand !== undefined) {
-      logMocksDisabledWarning('Mock pollutant band')
-    }
-    if (query?.testMode !== undefined) {
-      logMocksDisabledWarning('Test mode')
-    }
+function clearLocationSessionData(request) {
+  const yar = request?.yar
+  if (!yar || typeof yar.clear !== 'function') {
+    return
   }
 
-  return {
-    query,
-    headers,
-    locationId,
-    searchTermsSaved,
-    currentUrl,
-    lang
-  }
-}
-
-/**
- * Build redirect URL with search terms and mock parameters
- * @param {string} lang - Language code
- * @param {string} searchParams - Search parameters string
- * @param {object} request - Request object
- * @param {string} locationId - Location ID from URL (for bookmark support)
- * @returns {string} Redirect URL
- */
-// eslint-disable-next-line no-unused-vars
-function buildRedirectUrl(lang, searchParams, request, locationId = null) {
-  const mockLevel = request.query?.mockLevel
-  const mockLevelParam =
-    mockLevel !== null && mockLevel !== undefined
-      ? `&mockLevel=${encodeURIComponent(mockLevel)}`
-      : ''
-
-  const mockPollutantBand = request.query?.mockPollutantBand
-  const mockPollutantParam =
-    mockPollutantBand !== null && mockPollutantBand !== undefined
-      ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
-      : ''
-
-  const testMode = request.query?.testMode
-  const testModeParam =
-    testMode !== null && testMode !== undefined
-      ? `&testMode=${encodeURIComponent(testMode)}`
-      : ''
-
-  // '' If locationId is provided (bookmark scenario), pass it as searchTerms to middleware
-  const searchTermsParam = locationId
-    ? `&searchTerms=${encodeURIComponent(locationId.toUpperCase())}`
-    : ''
-
-  return `/location?lang=${encodeURIComponent(lang)}${searchParams}${searchTermsParam}${mockLevelParam}${mockPollutantParam}${testModeParam}`
+  yar.clear('locationData')
+  yar.clear('locationDataCacheKey')
 }
 
 /**
  * Validate and process session data, redirect if invalid
- * @param {object} locationData - Location data from session
+ * @param locationData - Location data from session
  * @param {string} currentUrl - Current URL
  * @param {string} lang - Language code
- * @param {object} h - Hapi response toolkit
- * @param {object} request - Request object
+ * @param h - Hapi response toolkit
+ * @param request - Request object
  * @param {string} locationId - Location ID from URL (for bookmark support)
  * @returns {object|null} Redirect response or null if valid
  */
@@ -508,68 +423,18 @@ export function validateAndProcessSessionData(
   request,
   locationId
 ) {
-  logger.info(
-    `[DEBUG validateAndProcessSessionData] locationData exists: ${!!locationData}`
-  )
-  logger.info(
-    `[DEBUG validateAndProcessSessionData] locationData.results is array: ${Array.isArray(locationData?.results)}`
-  )
-  logger.info(
-    `[DEBUG validateAndProcessSessionData] locationData.getForecasts exists: ${!!locationData?.getForecasts}`
-  )
-  logger.info(
-    `[DEBUG validateAndProcessSessionData] locationData.results length: ${locationData?.results?.length || 0}`
-  )
-  logger.info(
-    `[DEBUG validateAndProcessSessionData] locationId from URL: ${locationId}`
-  )
+  const safeRequest = request || {}
 
   // '' Check for valid results AND forecasts (like 0.685.0)
-  if (!Array.isArray(locationData?.results) || !locationData?.getForecasts) {
-    logger.info(
-      `[DEBUG validateAndProcessSessionData] REDIRECTING - validation failed`
-    )
-
-    // '' Extract searchTerms from current URL path (0.685.0 approach)
-    const { searchTerms, secondSearchTerm, searchTermsLocationType } =
-      getSearchTermsFromUrl(currentUrl)
-
-    request.yar.clear('locationData')
-
-    const safeSearchTerms = searchTerms || ''
-    const safeSecondSearchTerm = secondSearchTerm || ''
-    const safeSearchTermsLocationType = searchTermsLocationType || ''
-    const searchParams =
-      safeSearchTerms || safeSecondSearchTerm || safeSearchTermsLocationType
-        ? `&searchTerms=${encodeURIComponent(safeSearchTerms)}&secondSearchTerm=${encodeURIComponent(safeSecondSearchTerm)}&searchTermsLocationType=${encodeURIComponent(safeSearchTermsLocationType)}`
-        : ''
-
-    // '' Preserve mock parameters in redirect
-    const mockLevel = request.query?.mockLevel
-    const mockLevelParam =
-      mockLevel !== undefined
-        ? `&mockLevel=${encodeURIComponent(mockLevel)}`
-        : ''
-
-    const mockPollutantBand = request.query?.mockPollutantBand
-    const mockPollutantParam =
-      mockPollutantBand !== undefined
-        ? `&mockPollutantBand=${encodeURIComponent(mockPollutantBand)}`
-        : ''
-
-    const testMode = request.query?.testMode
-    const testModeParam =
-      testMode !== undefined ? `&testMode=${encodeURIComponent(testMode)}` : ''
-
-    const redirectUrl = `/location?lang=${encodeURIComponent(lang)}${searchParams}${mockLevelParam}${mockPollutantParam}${testModeParam}`
-
-    logger.info(
-      `[DEBUG validateAndProcessSessionData] Redirect URL: ${redirectUrl}`
-    )
-    return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE).takeover()
+  if (hasValidSessionLocationData(locationData)) {
+    return null
   }
-  logger.info(
-    `[DEBUG validateAndProcessSessionData] NOT redirecting - validation passed`
-  )
-  return null
+
+  clearLocationSessionData(safeRequest)
+
+  const searchParams = buildSearchParams(currentUrl, locationId)
+  const mockParams = buildMockQueryParamsFromQuery(safeRequest?.query)
+  const redirectUrl = `/location?lang=${encodeURIComponent(lang)}${searchParams}${mockParams}`
+
+  return h.redirect(redirectUrl).code(REDIRECT_STATUS_CODE).takeover()
 }

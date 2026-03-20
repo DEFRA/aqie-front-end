@@ -89,8 +89,19 @@ const buildErrorViewModel = (languageData, request, lang, statusCode) => {
 
 const getLocationDataController = {
   handler: async (request, h) => {
-    const locationData = request.yar.get('locationData') || []
-    const notificationFlow = request.yar.get('notificationFlow')
+    const locationData = request.yar.get('locationData') || {}
+    const {
+      results,
+      monitoringSites,
+      transformedDailySummary,
+      calendarWelsh = {},
+      englishDate,
+      welshDate,
+      getMonth,
+      lang,
+      userLocation,
+      notificationFlow
+    } = locationData
     const { query } = request
 
     if (query?.lang === LANG_CY) {
@@ -102,13 +113,26 @@ const getLocationDataController = {
     try {
       const viewModel = buildMultipleLocationsViewModel(
         {
-          ...locationData,
+          results,
+          monitoringSites,
+          transformedDailySummary,
+          calendarWelsh,
+          englishDate,
+          welshDate,
+          getMonth,
+          lang,
+          userLocation,
           notificationFlow
         },
         english,
         metaSiteUrl
       )
-      return h.view('multiple-results/multiple-locations', viewModel)
+
+      return h.view('multiple-results/multiple-locations', {
+        ...viewModel,
+        welshMonth: getMonth ? calendarWelsh[getMonth] : undefined,
+        lang: 'en'
+      })
     } catch (error) {
       logger.error(
         `error from location refresh outside fetch APIs: ${error.message}`

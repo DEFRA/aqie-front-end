@@ -2,6 +2,17 @@ import { english } from '../data/en/en.js'
 import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
+const COOKIES_PATH = '/cookies'
+
+function resolveCookiesLang(query, path) {
+  const lang = query?.lang?.slice(0, 2)
+  if (lang === LANG_CY || lang === LANG_EN) {
+    return lang
+  }
+
+  return path === COOKIES_PATH ? LANG_EN : LANG_CY
+}
+
 // Define the handler function
 const cookiesHandler = (request, h, content = english) => {
   // Destructure necessary data from the imported 'content' object
@@ -35,15 +46,7 @@ const cookiesHandler = (request, h, content = english) => {
       .code(REDIRECT_STATUS_CODE)
   }
 
-  // Determine the language
-  let lang = query?.lang?.slice(0, 2)
-  if (lang !== LANG_CY && lang !== LANG_EN && path === '/cookies') {
-    lang = LANG_EN
-  }
-  // Ensure lang defaults to EN for /cookies path
-  if (!lang && path === '/cookies') {
-    lang = LANG_EN
-  }
+  const lang = resolveCookiesLang(query, path)
 
   // Render the cookies page with the necessary data
   return h.view('cookies/index', {
@@ -61,7 +64,7 @@ const cookiesHandler = (request, h, content = english) => {
     footerTxt,
     serviceName,
     cookieBanner,
-    currentPath: '/cookies',
+    currentPath: COOKIES_PATH,
     lang
   })
 }

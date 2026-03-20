@@ -54,23 +54,14 @@ const getLocationDataController = {
       const { query, path, headers } = request // Destructure request properties
       const referer = headers?.referer // Extract referer from headers
 
-      const requestLog = { query, path, referer }
-      logger.info(
-        `Handler invoked with request: ${JSON.stringify(requestLog)}`,
-        requestLog
-      ) // Log request details
-
       // Determine the language
       const lang = determineLanguage(query?.lang, path, referer)
-      logger.info('Determined language:', lang) // Log determined language
 
       // Prepare the view data
       const viewData = prepareViewData(lang)
-      logger.info(`Prepared view data: ${JSON.stringify(viewData)}`, viewData) // Log view data
 
       // Render the view
       const response = h.view('location-not-found/index', viewData)
-      logger.info('View rendered successfully') // Log successful rendering
 
       return response
     } catch (error) {

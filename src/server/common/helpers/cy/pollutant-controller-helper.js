@@ -13,6 +13,11 @@ import {
 import { getAirQualitySiteUrl } from '../get-site-url.js'
 import { createLocationBackLink } from '../back-link-helper.js'
 
+// Common view properties that all pollutant controllers use
+const COMMON_VIEW_PROPERTIES = {
+  displayBacklink: false
+}
+
 // Language redirect patterns for Welsh pollutant pages
 const WELSH_PATH_PATTERNS = {
   'sylffwr-deuocsid': '/llygryddion/sylffwr-deuocsid/cy',
@@ -93,13 +98,13 @@ function createViewContext(options) {
 
 /**
  * Creates a standardized Welsh pollutant controller handler
- * @param {Object} config - Configuration object
+ * @param config - Configuration object
  * @param {string} config.pollutantKey - Key in welsh.pollutants (e.g., 'sulphurDioxide')
  * @param {string} config.englishPath - English redirect path (e.g., '/pollutants/sulphur-dioxide')
  * @param {string} config.viewTemplate - View template name (e.g., 'sulphur-dioxide/index')
  * @param {string} config.welshPathKey - Key for Welsh path pattern matching
  * @param {string} config.pageIdentifier - Page identifier for view context
- * @returns {Object} Hapi controller object
+ * @returns Hapi controller object
  */
 export function createWelshPollutantController(config) {
   const {

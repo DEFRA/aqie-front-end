@@ -13,6 +13,27 @@
 
 // ''
 
+const SUMMARY_SEPARATOR = '═'
+const SUMMARY_SEPARATOR_LENGTH_SHORT = 50
+const SUMMARY_SEPARATOR_LENGTH_MEDIUM = 60
+const SUMMARY_SEPARATOR_LENGTH_LONG = 80
+const OUTDOOR_ACTIVITIES_ADVICE = 'Enjoy your usual outdoor activities.'
+const DAQI_LOW_MAX = 3
+const DAQI_MODERATE_MIN = 4
+const DAQI_MODERATE_MID = 5
+const DAQI_MODERATE_MAX = 6
+const DAQI_HIGH_MIN = 7
+const DAQI_HIGH_MAX = 9
+const DAQI_VERY_HIGH = 10
+const PAD_VALUE_WIDTH = 5
+const PAD_BAND_WIDTH = 9
+const DEFAULT_RANGE_VALUES = [
+  1,
+  DAQI_MODERATE_MIN,
+  DAQI_HIGH_MIN,
+  DAQI_VERY_HIGH
+]
+
 // DAQI Color Mapping based on the actual CSS classes used in the application
 const DAQI_COLORS = {
   // Low levels (1-3) - Green
@@ -37,18 +58,18 @@ const DAQI_COLORS = {
 // DAQI Band Information with advice and at-risk guidance
 const DAQI_BANDS = {
   low: {
-    values: [1, 2, 3],
-    advice: 'Enjoy your usual outdoor activities.',
+    values: [1, 2, DAQI_LOW_MAX],
+    advice: OUTDOOR_ACTIVITIES_ADVICE,
     atrisk: {
-      adults: 'Enjoy your usual outdoor activities.',
-      asthma: 'Enjoy your usual outdoor activities.',
-      oldPeople: 'Enjoy your usual outdoor activities.'
+      adults: OUTDOOR_ACTIVITIES_ADVICE,
+      asthma: OUTDOOR_ACTIVITIES_ADVICE,
+      oldPeople: OUTDOOR_ACTIVITIES_ADVICE
     },
     outlook:
       'The current spell of unsettled weather will continue, helping to keep air pollution levels low across the UK during today.'
   },
   moderate: {
-    values: [4, 5, 6],
+    values: [DAQI_MODERATE_MIN, DAQI_MODERATE_MID, DAQI_MODERATE_MAX],
     advice:
       'For most people, short term exposure to moderate levels of air pollution is not an issue.',
     atrisk: {
@@ -63,7 +84,7 @@ const DAQI_BANDS = {
       'The influx of warm air from the continent is resulting in moderate air pollution levels throughout many areas today.'
   },
   high: {
-    values: [7, 8, 9],
+    values: [DAQI_HIGH_MIN, 8, DAQI_HIGH_MAX],
     advice:
       'Anyone experiencing discomfort such as sore eyes, cough or sore throat should consider reducing activity, particularly outdoors.',
     atrisk: {
@@ -77,7 +98,7 @@ const DAQI_BANDS = {
       'Warm temperatures are expected to increase pollution levels to high across many areas today.'
   },
   veryHigh: {
-    values: [10],
+    values: [DAQI_VERY_HIGH],
     advice:
       'Reduce physical exertion, particularly outdoors, especially if you experience symptoms such as cough or sore throat.',
     atrisk: {
@@ -98,17 +119,29 @@ const DAQI_BANDS = {
  * @returns {string} - Band name (low, moderate, high, veryHigh)
  */
 function getDAQIBand(value) {
-  if (value >= 1 && value <= 3) return 'low'
-  if (value >= 4 && value <= 6) return 'moderate'
-  if (value >= 7 && value <= 9) return 'high'
-  if (value === 10) return 'veryHigh'
+  if (value >= 1 && value <= DAQI_LOW_MAX) {
+    return 'low'
+  }
+
+  if (value >= DAQI_MODERATE_MIN && value <= DAQI_MODERATE_MAX) {
+    return 'moderate'
+  }
+
+  if (value >= DAQI_HIGH_MIN && value <= DAQI_HIGH_MAX) {
+    return 'high'
+  }
+
+  if (value === DAQI_VERY_HIGH) {
+    return 'veryHigh'
+  }
+
   return 'unknown'
 }
 
 /**
  * Get complete DAQI color and styling information for a specific value
  * @param {number} value - DAQI value between 1 and 10
- * @returns {object} - Color, level, and styling information
+ * @returns - Color, level, and styling information
  */
 function getDAQIColorInfo(value) {
   if (value < 1 || value > 10) {
@@ -146,7 +179,7 @@ function getDAQIColorInfo(value) {
 /**
  * Test a specific DAQI level and display all its properties
  * @param {number} value - DAQI value between 1 and 10
- * @returns {object} - Complete DAQI information for testing
+ * @returns - Complete DAQI information for testing
  */
 function testDAQILevel(value) {
   const info = getDAQIColorInfo(value)
@@ -159,7 +192,7 @@ function testDAQILevel(value) {
   console.log(
     `\n${info.colors.emoji} DAQI Level ${value} - ${info.level} (${info.band.toUpperCase()})`
   )
-  console.log('═'.repeat(50))
+  console.log(SUMMARY_SEPARATOR.repeat(SUMMARY_SEPARATOR_LENGTH_SHORT))
   console.log(`🎨 Background Color: ${info.colors.background}`)
   console.log(`📝 Text Color: ${info.colors.text}`)
   console.log(`💡 General Advice: ${info.advice}`)
@@ -178,7 +211,7 @@ function testDAQILevel(value) {
  */
 function testAllDAQILevels() {
   console.log('🧪 TESTING ALL DAQI LEVELS (1-10)')
-  console.log('═'.repeat(60))
+  console.log(SUMMARY_SEPARATOR.repeat(SUMMARY_SEPARATOR_LENGTH_MEDIUM))
 
   const results = []
 
@@ -189,17 +222,17 @@ function testAllDAQILevels() {
 
   // Summary table
   console.log('\n📊 DAQI LEVELS SUMMARY TABLE')
-  console.log('═'.repeat(80))
+  console.log(SUMMARY_SEPARATOR.repeat(SUMMARY_SEPARATOR_LENGTH_LONG))
   console.log('| Value | Level     | Band      | Background | Text  | Emoji |')
   console.log('|-------|-----------|-----------|------------|-------|-------|')
 
   for (let i = 1; i <= 10; i++) {
     const info = getDAQIColorInfo(i)
-    const value = i.toString().padEnd(5)
-    const level = info.level.padEnd(9)
-    const band = info.band.padEnd(9)
+    const value = i.toString().padEnd(PAD_VALUE_WIDTH)
+    const level = info.level.padEnd(PAD_BAND_WIDTH)
+    const band = info.band.padEnd(PAD_BAND_WIDTH)
     const bg = info.colors.background.padEnd(10)
-    const text = info.colors.text.padEnd(5)
+    const text = info.colors.text.padEnd(PAD_VALUE_WIDTH)
     console.log(
       `| ${value} | ${level} | ${band} | ${bg} | ${text} | ${info.colors.emoji}     |`
     )
@@ -211,7 +244,7 @@ function testAllDAQILevels() {
 /**
  * Simulate a visual DAQI display cell with proper styling
  * @param {number} value - DAQI value between 1 and 10
- * @returns {object} - HTML and CSS for visual simulation
+ * @returns - HTML and CSS for visual simulation
  */
 function simulateDAQIDisplay(value) {
   const info = getDAQIColorInfo(value)
@@ -284,11 +317,11 @@ function createDAQIBar() {
 /**
  * Test DAQI responsiveness across different ranges
  * @param {array} values - Array of DAQI values to test
- * @returns {object} - Comparison results
+ * @returns - Comparison results
  */
-function testDAQIRange(values = [1, 4, 7, 10]) {
+function testDAQIRange(values = DEFAULT_RANGE_VALUES) {
   console.log('\n🔍 DAQI RANGE COMPARISON TEST')
-  console.log('═'.repeat(50))
+  console.log(SUMMARY_SEPARATOR.repeat(SUMMARY_SEPARATOR_LENGTH_SHORT))
 
   const results = values.map((value) => {
     const info = getDAQIColorInfo(value)
@@ -304,9 +337,9 @@ function testDAQIRange(values = [1, 4, 7, 10]) {
 /**
  * Export functions for use in testing or browser console
  */
-if (typeof window !== 'undefined') {
+if (globalThis.window !== undefined) {
   // Browser environment
-  window.DAQITesting = {
+  globalThis.DAQITesting = {
     testDAQILevel,
     testAllDAQILevels,
     getDAQIColorInfo,

@@ -30,40 +30,86 @@ async function catchProxyFetchError(url, options, ...args) {
   return catchFetchError(url, options, ...args)
 }
 
+function isRefreshTokenTestMode(testIsTestMode) {
+  return Boolean(testIsTestMode?.())
+}
+
+function buildMockRefreshTokenResponse(testLogger) {
+  if (testLogger && typeof testLogger.info === 'function') {
+    testLogger.info('Test mode: refreshOAuthToken returning mock token')
+  }
+  return { accessToken: 'mock-token' }
+}
+
+function persistSavedAccessToken(request, accessToken) {
+  if (!request?.yar) {
+    return
+  }
+
+  request.yar.clear('savedAccessToken')
+  request.yar.set('savedAccessToken', accessToken)
+}
+
+function getSavedAccessToken(request) {
+  return request?.yar?.get?.('savedAccessToken')
+}
+
+function resolveOAuthErrorFallback(accessToken, savedAccessToken, testLogger) {
+  if (!accessToken?.error) {
+    return null
+  }
+
+  if (!savedAccessToken) {
+    return accessToken
+  }
+
+  testLogger.warn('OAuth token fetch failed; using saved access token fallback')
+  return { accessToken: savedAccessToken, isFallback: true }
+}
+
 const refreshOAuthToken = async (request, di = {}) => {
   const testLogger = di.logger || logger
   const testFetchOAuthToken = di.fetchOAuthToken || fetchOAuthToken
   const testIsTestMode = di.isTestMode || isTestMode
   // '' Read saved access token for fallback on fetch failure
-  const savedAccessToken = request?.yar?.get?.('savedAccessToken')
-  if (testIsTestMode?.()) {
-    if (testLogger && typeof testLogger.info === 'function') {
-      testLogger.info('Test mode: refreshOAuthToken returning mock token')
-    }
-    return { accessToken: 'mock-token' }
+  const savedAccessToken = getSavedAccessToken(request)
+
+  if (isRefreshTokenTestMode(testIsTestMode)) {
+    return buildMockRefreshTokenResponse(testLogger)
   }
+
   const accessToken = await testFetchOAuthToken({ logger: testLogger })
-  if (accessToken?.error) {
-    if (savedAccessToken) {
-      testLogger.warn(
-        'OAuth token fetch failed; using saved access token fallback'
-      )
-      return { accessToken: savedAccessToken, isFallback: true }
-    }
-    return accessToken
+  const fallbackResponse = resolveOAuthErrorFallback(
+    accessToken,
+    savedAccessToken,
+    testLogger
+  )
+  if (fallbackResponse) {
+    return fallbackResponse
   }
+
   // '' Guard against missing request or yar (session) object
-  if (request?.yar) {
-    request.yar.clear('savedAccessToken')
-    request.yar.set('savedAccessToken', accessToken)
-  }
-  // '' Always return an object with accessToken for consistency
+  persistSavedAccessToken(request, accessToken)
   return { accessToken }
 }
 
-const handleNILocationData = async (userLocation, di = {}) => {
+const resolveNIDi = (...args) => {
+  const maybeDi = args.at(-1)
+  return maybeDi && typeof maybeDi === 'object' ? maybeDi : {}
+}
+
+const LEGACY_UK_ARGS_COUNT = 4
+const LEGACY_UK_DI_INDEX = 3
+
+const handleNILocationData = async (...args) => {
+  const userLocation = args[0]
+  const di = resolveNIDi(...args)
   const testLogger = di.logger || logger
   const testIsTestMode = di.isTestMode || isTestMode
+  const testIsMockEnabled =
+    typeof di.isMockEnabled === 'function'
+      ? di.isMockEnabled()
+      : Boolean(di.isMockEnabled)
   const request = di.request
 
   if (testIsTestMode?.()) {
@@ -72,64 +118,105 @@ const handleNILocationData = async (userLocation, di = {}) => {
     }
     return { results: ['niData'] }
   }
+  if (testIsMockEnabled) {
+    return { results: ['niData'] }
+  }
   // ''  Use getNIPlaces for NI lookups - pass request for OAuth token refresh
   return getNIPlaces(userLocation, request)
 }
 
-const handleUKLocationData = async (userLocation, di = {}) => {
+const resolveUKArgs = (...args) => {
+  if (args.length >= LEGACY_UK_ARGS_COUNT) {
+    return {
+      userLocation: args[0],
+      searchTerms: args[1],
+      secondSearchTerm: args[2],
+      di: args[LEGACY_UK_DI_INDEX] || {}
+    }
+  }
+
+  return {
+    userLocation: args[0],
+    searchTerms: args[1]?.searchTerms,
+    secondSearchTerm: args[1]?.secondSearchTerm,
+    di: args[1] || {}
+  }
+}
+
+const resolveUKDependencies = (di = {}) => ({
+  testLogger: di.logger || logger,
+  testGetOSPlacesHelper: di.getOSPlacesHelper || getOSPlacesHelper,
+  testBuildUKLocationFilters: di.buildUKLocationFilters,
+  testCombineUKSearchTerms: di.combineUKSearchTerms,
+  testIsValidFullPostcodeUK: di.isValidFullPostcodeUK,
+  testIsValidPartialPostcodeUK: di.isValidPartialPostcodeUK,
+  testBuildUKApiUrl: di.buildUKApiUrl,
+  testShouldCallUKApi: di.shouldCallUKApi,
+  testIsTestMode: di.isTestMode || isTestMode,
+  testSymbolsArray:
+    di.symbolsArray ?? di.SYMBOLS_ARRAY ?? di.injectedSymbolsArray ?? [],
+  testOptions: di.options,
+  testConfig: di.config,
+  request: di.request
+})
+
+const buildUkApiDeps = (resolved) => ({
+  buildUKLocationFilters: resolved.testBuildUKLocationFilters,
+  combineUKSearchTerms: resolved.testCombineUKSearchTerms,
+  isValidFullPostcodeUK: resolved.testIsValidFullPostcodeUK,
+  isValidPartialPostcodeUK: resolved.testIsValidPartialPostcodeUK,
+  buildUKApiUrl: resolved.testBuildUKApiUrl,
+  config: resolved.testConfig
+})
+
+const handleUKLocationData = async (...args) => {
+  const { userLocation, searchTerms, secondSearchTerm, di } = resolveUKArgs(
+    ...args
+  )
   // ''  Simple DI with fallbacks
-  const testLogger = di.logger || logger
-  const testGetOSPlacesHelper = di.getOSPlacesHelper || getOSPlacesHelper
-  const testBuildUKLocationFilters = di.buildUKLocationFilters
-  const testCombineUKSearchTerms = di.combineUKSearchTerms
-  const testIsValidFullPostcodeUK = di.isValidFullPostcodeUK
-  const testIsValidPartialPostcodeUK = di.isValidPartialPostcodeUK
-  const testBuildUKApiUrl = di.buildUKApiUrl
-  const testShouldCallUKApi = di.shouldCallUKApi
-  const testIsTestMode = di.isTestMode || isTestMode
-  const testSymbolsArray = di.symbolsArray
-  const testOptions = di.options
-  const testConfig = di.config
-  const request = di.request
-  const searchTerms = di.searchTerms
-  const secondSearchTerm = di.secondSearchTerm
+  const resolved = resolveUKDependencies(di)
 
   const testModeResult = handleUKLocationDataTestMode(
-    testIsTestMode,
-    testLogger
+    resolved.testIsTestMode,
+    resolved.testLogger
   )
   if (testModeResult) {
+    if (resolved.testLogger && typeof resolved.testLogger.info === 'function') {
+      resolved.testLogger.info(
+        'Test mode: handleUKLocationData returning mock data'
+      )
+    }
     return testModeResult
   }
-  const deps = {
-    buildUKLocationFilters: testBuildUKLocationFilters,
-    combineUKSearchTerms: testCombineUKSearchTerms,
-    isValidFullPostcodeUK: testIsValidFullPostcodeUK,
-    isValidPartialPostcodeUK: testIsValidPartialPostcodeUK,
-    buildUKApiUrl: testBuildUKApiUrl,
-    config: testConfig
-  }
+
+  const deps = buildUkApiDeps(resolved)
   const { hasOsKey, combinedLocation } = buildAndCheckUKApiUrl(
     userLocation,
     searchTerms,
     secondSearchTerm,
     deps
   )
+
   if (!hasOsKey) {
-    testLogger.warn(
+    resolved.testLogger.warn(
       'OS_NAMES_API_KEY not set; skipping OS Names API call and returning empty results.'
     )
     return { results: [] }
   }
+
   const finalUserLocation = combinedLocation
-  const shouldCallApi = testShouldCallUKApi(finalUserLocation, testSymbolsArray)
-  return testGetOSPlacesHelper(
+  const shouldCallApi = resolved.testShouldCallUKApi(
+    finalUserLocation,
+    resolved.testSymbolsArray
+  )
+
+  return resolved.testGetOSPlacesHelper(
     finalUserLocation,
     searchTerms,
     secondSearchTerm,
     shouldCallApi,
-    testOptions,
-    request,
+    resolved.testOptions,
+    resolved.request,
     undefined // catchProxyFetchErrorFn - will use default
   )
 }
@@ -137,11 +224,19 @@ const handleUKLocationData = async (userLocation, di = {}) => {
 const buildNIOptionsOAuth = async ({
   request,
   isMockEnabled,
-  refreshOAuthTokenFn
+  injectedIsMockEnabled,
+  refreshOAuthTokenFn,
+  injectedRefreshOAuthToken
 }) => {
+  const resolvedIsMockEnabled = isMockEnabled ?? injectedIsMockEnabled
+  const resolvedRefreshOAuthToken =
+    refreshOAuthTokenFn || injectedRefreshOAuthToken
+
   // Check if isMockEnabled is a function and call it, otherwise use as boolean
   const isMock =
-    typeof isMockEnabled === 'function' ? isMockEnabled() : !!isMockEnabled
+    typeof resolvedIsMockEnabled === 'function'
+      ? resolvedIsMockEnabled()
+      : !!resolvedIsMockEnabled
 
   logger.info(`buildNIOptionsOAuth called - isMockEnabled: ${isMock}`)
   let accessToken
@@ -156,7 +251,8 @@ const buildNIOptionsOAuth = async ({
     const savedAccessToken = request?.yar?.get('savedAccessToken')
     logger.info(`Saved access token exists: ${!!savedAccessToken}`)
     // '' Extract accessToken from the returned object if we need to refresh
-    const tokenResult = savedAccessToken || (await refreshOAuthTokenFn(request))
+    const tokenResult =
+      savedAccessToken || (await resolvedRefreshOAuthToken(request))
     // '' Handle both cases: savedAccessToken is a string, tokenResult is an object
     accessToken =
       typeof tokenResult === 'string' ? tokenResult : tokenResult?.accessToken
@@ -184,11 +280,12 @@ function handleUnsupportedLocationType() {
 }
 
 // Builds a Northern Ireland postcode URL (stub implementation)
-function buildNIPostcodeUrl(postcode) {
+function buildNIPostcodeUrl(postcode, configArg) {
   if (!postcode) {
     return ''
   }
-  const baseUrl = 'https://api.ni.example.com/postcode'
+  const baseUrl =
+    configArg?.niApiBaseUrl || 'https://api.ni.example.com/postcode'
   return `${baseUrl}/${encodeURIComponent(postcode)}`
 }
 
@@ -228,11 +325,12 @@ function buildUKLocationFilters(location) {
 }
 
 // Builds a UK API URL (stub implementation)
-function buildUKApiUrl(location) {
+function buildUKApiUrl(location, configArg) {
   if (!location) {
     return ''
   }
-  const baseUrl = 'https://api.uk.example.com/location'
+  const baseUrl =
+    configArg?.ukApiBaseUrl || 'https://api.uk.example.com/location'
   return `${baseUrl}/${encodeURIComponent(location)}`
 }
 

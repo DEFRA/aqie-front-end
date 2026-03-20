@@ -3,8 +3,6 @@ import { home } from './home/index.js'
 import { homeCy } from './home/cy/index.js'
 import { searchLocation } from './search-location/index.js'
 import { searchLocationCy } from './search-location/cy/index.js'
-import { retry } from './retry/index.js'
-import { loading } from './loading/index.js'
 import { locations } from './locations/index.js'
 import { locationsCy } from './locations/cy/index.js'
 import { locationId } from './location-id/index.js'
@@ -55,85 +53,76 @@ import { createLogger } from './common/helpers/logging/logger.js'
 import { SERVER_DIRNAME } from './data/constants.js'
 import { healthEffects } from './health-effects/index.js'
 import { healthEffectsCy } from './health-effects/cy/index.js'
+import { airPollutionBreaches } from './air-pollution-breaches/index.js'
+import { airPollutionBreachesCy } from './air-pollution-breaches/cy/index.js'
 
 const logger = createLogger() // ''
 
-/**
- * Get all plugins to register
- */
-const getAllPlugins = () => [
-  home,
-  homeCy,
-  searchLocation,
-  searchLocationCy,
-  retry,
-  loading,
-  locations,
-  locationsCy,
-  locationId,
-  locationIdCy,
-  serveStaticFiles,
-  nitrogenDioxide,
-  nitrogenDioxideCy,
-  ozone,
-  ozoneCy,
-  particulateMatter10,
-  particulateMatter10Cy,
-  particulateMatter25,
-  particulateMatter25Cy,
-  sulphurDioxide,
-  sulphurDioxideCy,
-  privacy,
-  privacyCy,
-  cookies,
-  cookiesCy,
-  accessibility,
-  accessibilityCy,
-  multipleResults,
-  multipleResultsCy,
-  locationNotFound,
-  health,
-  testRoutes,
-  actionsReduceExposure, // ''
-  actionsReduceExposureCy, // ''
-  healthEffects, // ''
-  healthEffectsCy, // ''
-  notify,
-  sendActivation,
-  checkMessage,
-  sendNewCode,
-  confirmAlertDetails,
-  alertsSuccess,
-  checkMaxAlerts,
-  smsDuplicate,
-  smsMaxEmails,
-  emailDuplicate,
-  genericConfirmAlertDetails,
-  emailAlertsSuccess,
-  emailDetails,
-  emailSendActivation,
-  emailVerifyEmail,
-  emailConfirmLink,
-  notifyDebugClearMockStorage
-]
+function getServerPlugins() {
+  return [
+    home,
+    homeCy,
+    searchLocation,
+    searchLocationCy,
+    locations,
+    locationsCy,
+    locationId,
+    locationIdCy,
+    serveStaticFiles,
+    nitrogenDioxide,
+    nitrogenDioxideCy,
+    ozone,
+    ozoneCy,
+    particulateMatter10,
+    particulateMatter10Cy,
+    particulateMatter25,
+    particulateMatter25Cy,
+    sulphurDioxide,
+    sulphurDioxideCy,
+    privacy,
+    privacyCy,
+    cookies,
+    cookiesCy,
+    accessibility,
+    accessibilityCy,
+    multipleResults,
+    multipleResultsCy,
+    locationNotFound,
+    health,
+    testRoutes,
+    actionsReduceExposure,
+    actionsReduceExposureCy,
+    healthEffects,
+    healthEffectsCy,
+    airPollutionBreaches,
+    airPollutionBreachesCy,
+    notify,
+    sendActivation,
+    checkMessage,
+    sendNewCode,
+    confirmAlertDetails,
+    alertsSuccess,
+    checkMaxAlerts,
+    smsDuplicate,
+    smsMaxEmails,
+    emailDuplicate,
+    genericConfirmAlertDetails,
+    emailAlertsSuccess,
+    emailDetails,
+    emailSendActivation,
+    emailVerifyEmail,
+    emailConfirmLink,
+    notifyDebugClearMockStorage
+  ]
+}
 
-/**
- * Register all application plugins
- */
-const registerPlugins = async (server) => {
-  const plugins = getAllPlugins()
-
+async function registerServerPlugins(server, plugins) {
   for (const plugin of plugins) {
-    const pluginName = plugin.name || plugin.plugin?.name || 'CustomPluginName' // ''
-    logger.info(`Registering plugin 2: ${pluginName}`) // ''
-    await server.register(plugin) // ''
+    await server.register(plugin)
   }
 }
 
-/**
- * Setup static file routes
- */
-const setupStaticRoutes = (server) => {
+function registerWellKnownRoute(server) {
   server.route({
     method: 'GET',
     path: '/.well-known/{param*}',
@@ -144,26 +133,28 @@ const setupStaticRoutes = (server) => {
         index: true
       }
     }
-  }) // ''
+  })
+}
 
-  const existingRoutes = server.table().map((route) => route.path) // ''
+function registerPublicRouteIfMissing(server) {
+  const existingRoutes = server.table().map((route) => route.path)
 
   if (existingRoutes.includes('/public/{param*}')) {
-    logger.warn('Route /public/{param*} already exists. Skipping registration.') // ''
-  } else {
-    server.route({
-      method: 'GET',
-      path: '/public/{param*}',
-      handler: {
-        directory: {
-          // ''
-          path: path.resolve(SERVER_DIRNAME, '../../.public'),
-          redirectToSlash: true,
-          index: true
-        }
-      }
-    }) // ''
+    logger.warn('Route /public/{param*} already exists. Skipping registration.')
+    return
   }
+
+  server.route({
+    method: 'GET',
+    path: '/public/{param*}',
+    handler: {
+      directory: {
+        path: path.resolve(SERVER_DIRNAME, '../../public'),
+        redirectToSlash: true,
+        index: true
+      }
+    }
+  })
 }
 
 const router = {
@@ -171,8 +162,10 @@ const router = {
     name: 'router',
     register: async (server) => {
       await server.register([inert]) // ''
-      await registerPlugins(server)
-      setupStaticRoutes(server)
+      const plugins = getServerPlugins()
+      await registerServerPlugins(server, plugins)
+      registerWellKnownRoute(server)
+      registerPublicRouteIfMissing(server)
     }
   }
 }

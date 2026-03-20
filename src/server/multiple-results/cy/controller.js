@@ -47,12 +47,12 @@ const handleError = (
 
 const getLocationDataController = {
   handler: async (request, h) => {
-    const locationData = request.yar.get('locationData') || []
+    const locationData = request.yar.get('locationData') || {}
     const {
       results,
       monitoringSites,
       transformedDailySummary,
-      calendarWelsh,
+      calendarWelsh = {},
       englishDate,
       welshDate,
       getMonth,
@@ -94,7 +94,7 @@ const getLocationDataController = {
         phaseBanner,
         backlink,
         cookieBanner,
-        welshMonth: calendarWelsh[getMonth],
+        welshMonth: getMonth ? calendarWelsh[getMonth] : undefined,
         summaryDate:
           lang === LANG_CY
             ? (welshDate ?? summaryDate)

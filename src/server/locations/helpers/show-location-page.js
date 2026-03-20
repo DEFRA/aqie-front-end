@@ -1,4 +1,4 @@
-async function showLocationPage(
+async function showLocationPage({
   results,
   airQuality,
   airQualityData,
@@ -13,7 +13,7 @@ async function showLocationPage(
   userLocation,
   locationString,
   h
-) {
+}) {
   if (locationString === 'locations/location') {
     return h.view(locationString, {
       result: results,

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DAQI Contrast Accessibility Testing Demo</title>
+  
+  <!-- Import GOV.UK Design System styles -->
+  <style>
+    /* Basic GOV.UK tab styling for demo */
+    .defra-aq-tabs {
+      font-family: "GDS Transport", arial, sans-serif;
+      margin: 30px 0;
+    }
+
+    .govuk-tabs__list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      border-bottom: 1px solid #b1b4b6;
+    }
+
+    .govuk-tabs__list-item {
+      margin-right: 5px;
+    }
+
+    .govuk-tabs__tab {
+      background-color: #f3f2f1;
+      color: #0b0c0c;
+      border: 1px solid #b1b4b6;
+      border-bottom: none;
+      padding: 12px 15px;
+      text-decoration: none;
+      display: block;
+      font-size: 16px;
+      font-weight: 400;
+      border-radius: 5px 5px 0 0;
+    }
+
+    .govuk-tabs__tab:hover {
+      background-color: #e8e8e8;
+      color: #0b0c0c;
+    }
+
+    .govuk-tabs__tab:focus {
+      outline: 3px solid #fd0;
+      outline-offset: 0;
+      background-color: #fd0;
+      color: #0b0c0c;
+    }
+
+    .govuk-tabs__list-item--selected .govuk-tabs__tab {
+      background-color: #ffffff;
+      color: #0b0c0c;
+      border-color: #0b0c0c;
+      position: relative;
+    }
+
+    .govuk-tabs__panel {
+      border: 1px solid #b1b4b6;
+      border-top: none;
+      padding: 20px;
+      background-color: #ffffff;
+    }
+
+    .govuk-tabs__panel--hidden {
+      display: none;
+    }
+
+    /* DAQI Bar Styling */
+    .daqi-bar-container {
+      display: flex;
+      margin: 20px 0;
+      border: 1px solid #b1b4b6;
+      height: 80px;
+    }
+
+    .daqi-bar-segment {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 8px;
+      border-right: 1px solid #ffffff;
+      color: #ffffff;
+      font-weight: bold;
+      position: relative;
+    }
+
+    .daqi-bar-segment:last-child {
+      border-right: none;
+    }
+
+    .daqi-number {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .daqi-band {
+      font-size: 12px;
+      text-transform: uppercase;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+
+    /* DAQI Color Scheme - Official GOVUK Colors */
+    /* DAQI 1-3: Low (Green) */
+    .daqi-1 { background-color: #00703c; color: #ffffff; }
+    .daqi-2 { background-color: #00703c; color: #ffffff; }
+    .daqi-3 { background-color: #00703c; color: #ffffff; }
+    /* DAQI 4-6: Moderate (Yellow) */
+    .daqi-4 { background-color: #ffdd00; color: #0b0c0c; }
+    .daqi-5 { background-color: #ffdd00; color: #0b0c0c; }
+    .daqi-6 { background-color: #ffdd00; color: #0b0c0c; }
+    /* DAQI 7-9: High (Red) */
+    .daqi-7 { background-color: #d4351c; color: #ffffff; }
+    .daqi-8 { background-color: #d4351c; color: #ffffff; }
+    .daqi-9 { background-color: #d4351c; color: #ffffff; }
+    /* DAQI 10: Very High (Purple) */
+    .daqi-10 { background-color: #4c2c92; color: #ffffff; }
+
+    /* Page styling */
+    body {
+      font-family: "GDS Transport", arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f8f8f8;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #0b0c0c;
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .instructions {
+      background-color: #f3f2f1;
+      padding: 20px;
+      border-left: 4px solid #1d70b8;
+      margin-bottom: 30px;
+    }
+
+    .instructions h2 {
+      margin-top: 0;
+      color: #1d70b8;
+    }
+
+    .instructions ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+
+    .instructions li {
+      margin: 5px 0;
+    }
+
+    .demo-info {
+      background-color: #00703c;
+      color: #ffffff;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+
+    .demo-info h3 {
+      margin-top: 0;
+      color: #ffffff;
+    }
+
+    .keyboard-instructions {
+      background-color: #fd0;
+      color: #0b0c0c;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+
+    .keyboard-instructions h3 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 DAQI Contrast Accessibility Testing Demo</h1>
+    
+    <div class="demo-info">
+      <h3>🔍 What This Demo Tests</h3>
+      <p>This page demonstrates accessibility testing for people with visual disabilities including:</p>
+      <ul>
+        <li><strong>Low Vision:</strong> Users who need enhanced contrast to see content clearly</li>
+        <li><strong>High Contrast Needs:</strong> Users who rely on high contrast mode for visibility</li>
+        <li><strong>Color Blindness:</strong> Users who cannot distinguish between certain colors</li>
+        <li><strong>Light Sensitivity:</strong> Users who need reduced brightness and contrast</li>
+      </ul>
+    </div>
+
+    <div class="instructions">
+      <h2>📋 How to Use the Contrast Tester</h2>
+      <p>Use the floating control panel (top-right) or browser console commands:</p>
+      <ul>
+        <li><strong>High Contrast Mode:</strong> Tests maximum contrast for low vision users</li>
+        <li><strong>Low Contrast Simulation:</strong> Shows how content appears with reduced contrast</li>
+        <li><strong>Color Blindness Test:</strong> Removes color dependency and adds patterns</li>
+        <li><strong>Focus Indicators:</strong> Tests keyboard navigation visibility</li>
+        <li><strong>Analyze Contrast:</strong> Measures current contrast ratios</li>
+        <li><strong>Restore Original:</strong> Returns to normal styling</li>
+      </ul>
+    </div>
+
+    <!-- DAQI Tabs Component -->
+    <div class="defra-aq-tabs daqi-tabs">
+      <ul class="govuk-tabs__list" role="tablist">
+        <li class="govuk-tabs__list-item govuk-tabs__list-item--selected" role="presentation">
+          <a class="govuk-tabs__tab" href="#tab-today" id="tab_tab-today" role="tab" 
+             aria-controls="tab-today" aria-selected="true" tabindex="0">
+            Today's Air Quality
+          </a>
+        </li>
+        <li class="govuk-tabs__list-item" role="presentation">
+          <a class="govuk-tabs__tab" href="#tab-tomorrow" id="tab_tab-tomorrow" role="tab" 
+             aria-controls="tab-tomorrow" aria-selected="false" tabindex="-1">
+            Tomorrow's Forecast
+          </a>
+        </li>
+        <li class="govuk-tabs__list-item" role="presentation">
+          <a class="govuk-tabs__tab" href="#tab-outlook" id="tab_tab-outlook" role="tab" 
+             aria-controls="tab-outlook" aria-selected="false" tabindex="-1">
+            5-Day Outlook
+          </a>
+        </li>
+      </ul>
+
+      <!-- Today's Air Quality Panel -->
+      <div class="govuk-tabs__panel" id="tab-today" role="tabpanel" aria-labelledby="tab_tab-today">
+        <h3>Current Air Quality Index</h3>
+        <p>The Daily Air Quality Index (DAQI) shows current pollution levels across different areas.</p>
+        
+        <div class="daqi-bar-container">
+          <div class="daqi-bar-segment daqi-3" style="flex: 2;">
+            <span class="daqi-number">3</span>
+            <div class="daqi-band">Low</div>
+          </div>
+          <div class="daqi-bar-segment daqi-5" style="flex: 3;">
+            <span class="daqi-number">5</span>
+            <div class="daqi-band">Moderate</div>
+          </div>
+          <div class="daqi-bar-segment daqi-7" style="flex: 2;">
+            <span class="daqi-number">7</span>
+            <div class="daqi-band">High</div>
+          </div>
+          <div class="daqi-bar-segment daqi-2" style="flex: 1;">
+            <span class="daqi-number">2</span>
+            <div class="daqi-band">Low</div>
+          </div>
+        </div>
+
+        <p>
+          <strong>Health Advice:</strong> Moderate air quality levels detected in some areas. 
+          People with respiratory conditions should consider reducing outdoor activities during peak hours.
+        </p>
+      </div>
+
+      <!-- Tomorrow's Forecast Panel -->
+      <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="tab-tomorrow" role="tabpanel" aria-labelledby="tab_tab-tomorrow">
+        <h3>Tomorrow's Air Quality Forecast</h3>
+        <p>Expected air quality levels for tomorrow based on weather conditions and pollution models.</p>
+        
+        <div class="daqi-bar-container">
+          <div class="daqi-bar-segment daqi-4" style="flex: 3;">
+            <span class="daqi-number">4</span>
+            <div class="daqi-band">Moderate</div>
+          </div>
+          <div class="daqi-bar-segment daqi-6" style="flex: 4;">
+            <span class="daqi-number">6</span>
+            <div class="daqi-band">Moderate</div>
+          </div>
+          <div class="daqi-bar-segment daqi-8" style="flex: 2;">
+            <span class="daqi-number">8</span>
+            <div class="daqi-band">High</div>
+          </div>
+          <div class="daqi-bar-segment daqi-3" style="flex: 1;">
+            <span class="daqi-number">3</span>
+            <div class="daqi-band">Low</div>
+          </div>
+        </div>
+
+        <p>
+          <strong>Health Advice:</strong> Higher pollution levels expected in urban areas. 
+          Consider indoor exercise alternatives if you have respiratory sensitivities.
+        </p>
+      </div>
+
+      <!-- 5-Day Outlook Panel -->
+      <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="tab-outlook" role="tabpanel" aria-labelledby="tab_tab-outlook">
+        <h3>Extended Air Quality Outlook</h3>
+        <p>General air quality trends for the next 5 days based on meteorological forecasts.</p>
+        
+        <div class="daqi-bar-container">
+          <div class="daqi-bar-segment daqi-9" style="flex: 2;">
+            <span class="daqi-number">9</span>
+            <div class="daqi-band">Very High</div>
+          </div>
+          <div class="daqi-bar-segment daqi-6" style="flex: 3;">
+            <span class="daqi-number">6</span>
+            <div class="daqi-band">Moderate</div>
+          </div>
+          <div class="daqi-bar-segment daqi-4" style="flex: 3;">
+            <span class="daqi-number">4</span>
+            <div class="daqi-band">Moderate</div>
+          </div>
+          <div class="daqi-bar-segment daqi-2" style="flex: 2;">
+            <span class="daqi-number">2</span>
+            <div class="daqi-band">Low</div>
+          </div>
+        </div>
+
+        <p>
+          <strong>Health Advice:</strong> Variable conditions expected. Check daily updates for specific health advice. 
+          People with heart or lung conditions should be particularly cautious during high pollution periods.
+        </p>
+      </div>
+    </div>
+
+    <div class="keyboard-instructions">
+      <h3>⌨️ Keyboard Navigation Testing</h3>
+      <p>Test keyboard accessibility:</p>
+      <ul>
+        <li><strong>Tab:</strong> Navigate between tabs</li>
+        <li><strong>Enter/Space:</strong> Activate selected tab</li>
+        <li><strong>Arrow Keys:</strong> Move between tabs (when focused)</li>
+        <li><strong>Focus Indicators Test:</strong> Click the "Focus Indicators" button to see enhanced focus styling</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Import the contrast tester -->
+  <script type="module">
+    import { DaqiContrastTester } from './daqi-contrast-accessibility-tester.js'
+    
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      window.daqiContrastTester = new DaqiContrastTester()
+      
+      // Add basic tab functionality for demo
+      setupTabFunctionality()
+      
+      console.log('🎨 DAQI Contrast Accessibility Demo Ready!')
+      console.log('📝 Instructions:')
+      console.log('   1. Use the floating controls (top-right) to test different contrast modes')
+      console.log('   2. Try keyboard navigation with Tab, Enter, and Arrow keys')
+      console.log('   3. Observe how the tab component adapts for different visual needs')
+      console.log('   4. Check the console for detailed accessibility analysis')
+    })
+
+    function setupTabFunctionality() {
+      const tabs = document.querySelectorAll('.govuk-tabs__tab')
+      const panels = document.querySelectorAll('.govuk-tabs__panel')
+
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', (e) => {
+          e.preventDefault()
+          activateTab(index)
+        })
+
+        tab.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            activateTab(index)
+          } else if (e.key === 'ArrowLeft' && index > 0) {
+            e.preventDefault()
+            tabs[index - 1].focus()
+          } else if (e.key === 'ArrowRight' && index < tabs.length - 1) {
+            e.preventDefault()
+            tabs[index + 1].focus()
+          }
+        })
+      })
+
+      function activateTab(activeIndex) {
+        // Update tab states
+        tabs.forEach((tab, index) => {
+          const listItem = tab.parentElement
+          const panel = panels[index]
+
+          if (index === activeIndex) {
+            listItem.classList.add('govuk-tabs__list-item--selected')
+            tab.setAttribute('aria-selected', 'true')
+            tab.setAttribute('tabindex', '0')
+            panel.classList.remove('govuk-tabs__panel--hidden')
+          } else {
+            listItem.classList.remove('govuk-tabs__list-item--selected')
+            tab.setAttribute('aria-selected', 'false')
+            tab.setAttribute('tabindex', '-1')
+            panel.classList.add('govuk-tabs__panel--hidden')
+          }
+        })
+
+        // Announce tab change for screen readers
+        if (window.daqiContrastTester && window.daqiContrastTester.announceTabChange) {
+          const activeTab = tabs[activeIndex]
+          window.daqiContrastTester.announceTabChange(activeTab.textContent.trim())
+        }
+      }
+    }
+  </script>
+</body>
+</html>

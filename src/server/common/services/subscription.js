@@ -12,10 +12,10 @@ const logger = createLogger('subscription-service')
 
 /**
  * Make POST request to subscription API with automatic local/remote handling ''
- * @param {Object} request - Hapi request object (for detecting localhost)
+ * @param request - Hapi request object (for detecting localhost)
  * @param {string} apiPath - API path
- * @param {Object} body - Request body
- * @returns {Object} Response object
+ * @param body - Request body
+ * @returns Response object
  */
 async function postJson(request, apiPath, body) {
   const enabled = config.get('subscriptionApi.enabled')
@@ -71,7 +71,7 @@ async function postJson(request, apiPath, body) {
 /**
  * Record email capture ''
  * @param {string} email - Email address
- * @param {Object} request - Hapi request object (optional)
+ * @param request - Hapi request object (optional)
  */
 export async function recordEmailCapture(email, request = null) {
   const emailPath = config.get('subscriptionApi.emailPath')
@@ -81,7 +81,7 @@ export async function recordEmailCapture(email, request = null) {
 /**
  * Record SMS capture ''
  * @param {string} mobileNumber - Mobile number
- * @param {Object} request - Hapi request object (optional)
+ * @param request - Hapi request object (optional)
  */
 export async function recordSmsCapture(mobileNumber, request = null) {
   const smsPath = config.get('subscriptionApi.smsPath')

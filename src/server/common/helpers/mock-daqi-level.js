@@ -127,11 +127,11 @@ function getFullDetailedInfo(level) {
  * Mock a specific DAQI level with color display
  *
  * @param {number} level - DAQI level (0-10)
- * @param {Object} options - Optional configuration
+ * @param options - Optional configuration
  * @param {boolean} options.includeForecast - Include 5-day forecast (default: true)
  * @param {boolean} options.allSameLevel - All days same level (default: true)
  * @param {boolean} options.logDetails - Log color and level details (default: true)
- * @returns {Object} Mock air quality data structure
+ * @returns Mock air quality data structure
  */
 export function mockLevelColor(level, options = {}) {
   const {
@@ -149,15 +149,6 @@ export function mockLevelColor(level, options = {}) {
   }
 
   const levelInfo = DAQI_LEVELS[level]
-
-  if (logDetails) {
-    logger.info('='.repeat(60))
-    logger.info(`Mock DAQI Level: ${level}`)
-    logger.info(`Band: ${levelInfo.band}`)
-    logger.info(`Color: ${levelInfo.color}`)
-    logger.info(`Description: ${levelInfo.description}`)
-    logger.info('='.repeat(60))
-  }
 
   // Create mock air quality object with full structure
   const mockAirQuality = {
@@ -202,8 +193,6 @@ export function mockDaqiLevel(level, options = {}) {
  * @returns {Array} Array of mock data for each level
  */
 export function mockAllLevels() {
-  logger.info('Generating mock data for all DAQI levels (0-10)...')
-
   const allLevels = []
   for (let level = 0; level <= 10; level++) {
     const mockData = mockLevelColor(level, { logDetails: false })
@@ -214,7 +203,6 @@ export function mockAllLevels() {
     })
   }
 
-  logger.info(`Generated mock data for ${allLevels.length} levels`)
   return allLevels
 }
 
@@ -222,7 +210,7 @@ export function mockAllLevels() {
  * Get DAQI level information
  *
  * @param {number} level - DAQI level (0-10)
- * @returns {Object} Level information (band, color, description)
+ * @returns Level information (band, color, description)
  */
 export function getDaqiLevelInfo(level) {
   if (level < 0 || level > 10) {
@@ -246,9 +234,9 @@ export function getDaqiColor(level) {
  * Middleware helper to inject mock DAQI level
  * Use this in your route handler or middleware to override actual data
  *
- * @param {Object} request - Hapi request object
+ * @param request - Hapi request object
  * @param {number} mockLevel - DAQI level to mock (0-10)
- * @returns {Object} Modified request with mock data
+ * @returns Modified request with mock data
  */
 export function injectMockLevel(request, mockLevel) {
   const mockData = mockLevelColor(mockLevel, {
@@ -262,7 +250,6 @@ export function injectMockLevel(request, mockLevel) {
     if (request.yar) {
       request.yar.set('mockAirQuality', mockData)
     }
-    logger.info(`Mock DAQI level ${mockLevel} injected into request`)
   }
 
   return request
@@ -271,7 +258,7 @@ export function injectMockLevel(request, mockLevel) {
 /**
  * Check if mock mode is enabled
  *
- * @param {Object} request - Hapi request object
+ * @param request - Hapi request object
  * @returns {boolean} True if mock mode is enabled
  */
 export function isMockMode(request) {
@@ -284,12 +271,11 @@ export function isMockMode(request) {
 /**
  * Clear mock mode
  *
- * @param {Object} request - Hapi request object
+ * @param request - Hapi request object
  */
 export function clearMockMode(request) {
   if (request.yar) {
     request.yar.clear('mockAirQuality')
-    logger.info('Mock DAQI mode cleared')
   }
 }
 

@@ -39,8 +39,9 @@ function buildUKApiUrl(userLocation, filters, osNamesApiUrl, osNamesApiKey) {
   return `${osNamesApiUrl}${encodeURIComponent(userLocation)}&fq=${encodeURIComponent(filters)}&key=${osNamesApiKey}`
 }
 
-function shouldCallUKApi(userLocation, SYMBOLS_ARRAY) {
-  return !SYMBOLS_ARRAY.some((symbol) => userLocation.includes(symbol))
+function shouldCallUKApi(userLocation = '', SYMBOLS_ARRAY = []) {
+  const symbols = Array.isArray(SYMBOLS_ARRAY) ? SYMBOLS_ARRAY : []
+  return !symbols.some((symbol) => userLocation.includes(symbol))
 }
 
 function formatUKApiResponse(getOSPlaces) {
@@ -115,7 +116,22 @@ function validateParams(params, requiredKeys = []) {
   return null
 }
 
-async function fetchApi(url, logger, options = {}) {
+async function fetchApi(url, arg2 = {}, arg3 = undefined) {
+  // Backward compatible arg order:
+  // fetchApi(url, logger, options) and fetchApi(url, options, logger)
+  const defaultLogger = { error: () => {} }
+  const isArg2Logger = arg2 && typeof arg2.error === 'function'
+  const isArg3Logger = arg3 && typeof arg3.error === 'function'
+  let loggerLike = defaultLogger
+  if (isArg2Logger) {
+    loggerLike = arg2
+  } else if (isArg3Logger) {
+    loggerLike = arg3
+  } else {
+    loggerLike = defaultLogger
+  }
+  const options = isArg2Logger ? arg3 || {} : arg2 || {}
+
   try {
     const response = await fetch(url, options)
     if (!response.ok) {
@@ -127,7 +143,7 @@ async function fetchApi(url, logger, options = {}) {
     const data = await response.json()
     return { error: false, data }
   } catch (err) {
-    logger.error('API request error:', err)
+    loggerLike.error('API request error:', err)
     return errorResponse('API request error', HTTP_STATUS_INTERNAL_ERROR)
   }
 }

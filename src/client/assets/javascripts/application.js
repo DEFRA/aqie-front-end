@@ -103,6 +103,7 @@ $preloaders.forEach(($preloader) => initializeComponent(Preloader, $preloader))
 // Initialise all GOV.UK Frontend components
 // Initialise all GOV.UK Frontend components
 import {
+  Accordion,
   createAll,
   Button,
   Checkboxes,
@@ -112,6 +113,7 @@ import {
   SkipLink,
   Tabs
 } from 'govuk-frontend'
+createAll(Accordion)
 createAll(Button)
 createAll(Checkboxes)
 createAll(ErrorSummary)

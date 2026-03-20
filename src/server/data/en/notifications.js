@@ -4,6 +4,9 @@
  */
 // ''
 const SERVICE_NAME = 'Check air quality'
+const ALERT_ALREADY_SET_UP = 'This alert has already been set up'
+const ALERT_SIGNUP_SUCCESS =
+  'You have successfully signed up for air quality alerts'
 
 export const notificationTranslations = {
   // Common notification settings
@@ -167,8 +170,8 @@ export const notificationTranslations = {
   },
   // SMS duplicate page
   smsDuplicate: {
-    pageTitle: 'This alert has already been set up',
-    heading: 'This alert has already been set up',
+    pageTitle: ALERT_ALREADY_SET_UP,
+    heading: ALERT_ALREADY_SET_UP,
     description:
       'You are already getting alerts for {location} to {mobileNumber}.',
     searchLinkText: 'Search for town or postcode',
@@ -185,8 +188,8 @@ export const notificationTranslations = {
   },
   // Email duplicate page
   emailDuplicate: {
-    pageTitle: 'This alert has already been set up',
-    heading: 'This alert has already been set up',
+    pageTitle: ALERT_ALREADY_SET_UP,
+    heading: ALERT_ALREADY_SET_UP,
     description:
       'You are already getting alerts for {location} to {emailAddress}.',
     searchLinkText: 'Search for town or postcode',
@@ -194,8 +197,8 @@ export const notificationTranslations = {
   },
   // SMS success page
   smsSuccess: {
-    pageTitle: 'You have successfully signed up for air quality alerts',
-    heading: 'You have successfully signed up for air quality alerts',
+    pageTitle: ALERT_SIGNUP_SUCCESS,
+    heading: ALERT_SIGNUP_SUCCESS,
     successTitle: 'Success',
     bannerHeading: 'You have set up air pollution alerts for {location}',
     confirmationText: 'We have sent you a confirmation text message.',
@@ -232,8 +235,8 @@ export const notificationTranslations = {
   },
   // Email alerts success page
   emailSuccess: {
-    pageTitle: 'You have successfully signed up for air quality alerts',
-    heading: 'You have successfully signed up for air quality alerts',
+    pageTitle: ALERT_SIGNUP_SUCCESS,
+    heading: ALERT_SIGNUP_SUCCESS,
     successTitle: 'Success',
     bannerHeading: 'You have set up air quality email alerts for {location}',
     confirmationText: 'We have sent you a confirmation email.',
@@ -254,6 +257,8 @@ export const notificationTranslations = {
   },
   // Activation code page (legacy SMS journey)
   activationCode: {
+    pageTitle: 'Enter your activation code',
+    heading: 'Enter your activation code',
     codeExpiry: 'The code expires in 24 hours.',
     notReceivedSummary: 'Not received a text message?',
     notReceivedDelay: 'Text messages sometimes take a few minutes to arrive.',

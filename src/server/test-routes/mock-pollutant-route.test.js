@@ -124,9 +124,16 @@ describe('mock-pollutant-route', () => {
         query: { mockPollutantBand: 'high' },
         yar: { set: vi.fn() }
       }
+
+      const mockCode = vi.fn((status) => ({
+        redirect: '/location/123?mockPollutantBand=high',
+        status
+      }))
+      mockH.redirect = vi.fn(() => ({ code: mockCode }))
+
       const result = await route.handler(request, mockH)
       expect(result.redirect).toContain('/location/123?mockPollutantBand=high') // ''
-      expect(result.code).toBe(HTTP_REDIRECT)
+      expect(mockCode).toHaveBeenCalledWith(HTTP_REDIRECT)
       expect(request.yar.set).toHaveBeenCalledWith('searchTermsSaved', true) // ''
     })
   })

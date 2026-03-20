@@ -1,24 +1,19 @@
 import { config } from '../../../../config/index.js'
-import {
-  LOCATION_TYPE_UK,
-  LOCATION_TYPE_NI,
-  STATUS_BAD_REQUEST
-} from '../../../data/constants.js'
-
+import { LOCATION_TYPE_UK, LOCATION_TYPE_NI } from '../../../data/constants.js'
 function handleTestModeFetchData({
   locationType,
   userLocation,
   searchTerms,
   secondSearchTerm,
   optionsOAuth,
-  handleUKLocationData,
-  handleNILocationData,
-  logger,
-  errorResponse,
+  injectedHandleUKLocationData,
+  injectedHandleNILocationData,
+  injectedLogger,
+  injectedErrorResponse,
   args
 }) {
   if (locationType === LOCATION_TYPE_UK) {
-    const osPlacesResult = handleUKLocationData(
+    const osPlacesResult = injectedHandleUKLocationData(
       userLocation,
       searchTerms,
       secondSearchTerm,
@@ -26,21 +21,24 @@ function handleTestModeFetchData({
     )
     return buildUKTestModeResult(osPlacesResult)
   } else if (locationType === LOCATION_TYPE_NI) {
-    const result = handleNILocationData(userLocation, optionsOAuth, args || {})
+    const result = injectedHandleNILocationData(
+      userLocation,
+      optionsOAuth,
+      args || {}
+    )
     if (result && typeof result.then === 'function') {
       return result.then((getNIPlaces) => buildNITestModeResult(getNIPlaces))
     }
     return buildNITestModeResult(result)
-  } else {
-    // fallback for unsupported types
-    if (logger && typeof logger.error === 'function') {
-      logger.error('Unsupported location type in test mode:', locationType)
-    }
-    return errorResponse(
-      'Unsupported location type in test mode',
-      STATUS_BAD_REQUEST
+  }
+  // fallback for unsupported types
+  if (injectedLogger && typeof injectedLogger.error === 'function') {
+    injectedLogger.error(
+      'Unsupported location type in test mode:',
+      locationType
     )
   }
+  return injectedErrorResponse('Unsupported location type in test mode', 400)
 }
 function buildNITestModeResult(getNIPlaces) {
   return {
@@ -60,39 +58,29 @@ function buildUKTestModeResult(getOSPlaces) {
     }
   }
 }
-function handleUKLocationDataTestMode(isTestMode, logger) {
-  if (isTestMode?.()) {
-    if (logger && typeof logger.info === 'function') {
-      logger.info('Test mode: handleUKLocationData returning mock data')
-    }
+function handleUKLocationDataTestMode(injectedIsTestMode, injectedLogger) {
+  if (injectedIsTestMode?.()) {
     return { results: ['ukData'] }
   }
   return null
 }
-function fetchMeasurementsTestMode(isTestMode, logger) {
-  if (isTestMode?.()) {
-    if (logger && typeof logger.info === 'function') {
-      logger.info('Test mode: fetchMeasurements returning mock measurements')
-    }
+function fetchMeasurementsTestMode(injectedIsTestMode, injectedLogger) {
+  if (injectedIsTestMode?.()) {
     return [{ measurement: 'mock-measurement' }]
   }
   return null
 }
 // Test mode helpers extracted from fetch-data.js
 
-function fetchForecastsTestMode(isTestMode, logger) {
-  if (isTestMode?.()) {
-    if (logger && typeof logger.info === 'function') {
-      logger.info('Test mode: fetchForecasts returning mock forecasts')
-    }
+function fetchForecastsTestMode(injectedIsTestMode, injectedLogger) {
+  if (injectedIsTestMode?.()) {
     return { forecasts: 'mock-forecasts' }
   }
   return null
 }
 
 function isMockEnabled() {
-  const mockValue = config.get('enabledMock')
-  return mockValue
+  return config.get('enabledMock')
 }
 
 export {

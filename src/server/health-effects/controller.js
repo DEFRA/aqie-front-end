@@ -16,79 +16,84 @@ const HTTP_INTERNAL_SERVER_ERROR = 500
 
 const logger = createLogger() // ''
 
+function buildWelshViewModel(query, params, metaSiteUrl, customContent) {
+  const readableName = getReadableLocationName(query, params, logger) // ''
+  const selectedContent = customContent || welsh // ''
+  const viewModel = buildHealthEffectsViewModel({
+    content: selectedContent,
+    metaSiteUrl,
+    readableName,
+    lang: LANG_CY, // ''
+    locationId: params.id // ''
+  }) // ''
+
+  // Restore original context-specific back link text
+  viewModel.backLinkText = `Llygredd aer yn ${readableName || 'y lleoliad hwn'}`
+  viewModel.backlink = {
+    text: viewModel.backLinkText,
+    href: viewModel.backLinkUrl
+  }
+
+  return viewModel
+}
+
+function buildEnglishViewModel(query, params, metaSiteUrl, customContent) {
+  const readableName = getReadableLocationName(query, params, logger) // ''
+  const selectedContent = customContent || english // ''
+  const viewModel = buildHealthEffectsViewModel({
+    content: selectedContent,
+    metaSiteUrl,
+    readableName,
+    lang: LANG_EN, // ''
+    locationId: params.id // ''
+  }) // ''
+
+  // Use helper to build back link for EN
+  viewModel.backLinkText = `Air pollution in ${readableName || 'this location'}`
+  // viewModel.backLinkUrl is already set by buildHealthEffectsViewModel
+  viewModel.backlink = buildBackLinkModel({
+    backLinkText: viewModel.backLinkText,
+    backLinkUrl: viewModel.backLinkUrl
+  })
+
+  return viewModel
+}
+
+function renderByRoute(request, h, query, params, metaSiteUrl, customContent) {
+  // '' Only render the page for the matching route and language
+  const isWelshRoute = request.path.startsWith('/lleoliad/')
+  if (isWelshRoute) {
+    const viewModel = buildWelshViewModel(
+      query,
+      params,
+      metaSiteUrl,
+      customContent
+    )
+    return h.view('health-effects/cy/index', viewModel) // ''
+  }
+
+  const isEnglishRoute = request.path.startsWith('/location/')
+  if (isEnglishRoute) {
+    const viewModel = buildEnglishViewModel(
+      query,
+      params,
+      metaSiteUrl,
+      customContent
+    )
+    return h.view('health-effects/index', viewModel) // ''
+  }
+
+  // '' If route does not match, return 404
+  logger.warn({ routePath: request.path }, "'' Health effects route not found") // ''
+  return h.response('Page Not Found').code(HTTP_NOT_FOUND) // ''
+}
+
 // '' Unified handler for both languages
 const healthEffectsHandler = (request, h, customContent = undefined) => {
   try {
     const { query = {}, params = {} } = request // ''
     const metaSiteUrl = getAirQualitySiteUrl(request) // ''
-
-    // '' Only render the page for the matching route and language
-    const isWelshRoute = request.path.startsWith('/lleoliad/')
-    const isEnglishRoute = request.path.startsWith('/location/')
-
-    // '' If Welsh route, always render Welsh page
-    if (isWelshRoute) {
-      const readableName = getReadableLocationName(query, params, logger) // ''
-      const selectedContent = customContent || welsh // ''
-      const viewModel = buildHealthEffectsViewModel({
-        content: selectedContent,
-        metaSiteUrl,
-        readableName,
-        lang: LANG_CY, // ''
-        locationId: params.id // ''
-      }) // ''
-      // Restore original context-specific back link text
-      viewModel.backLinkText = `Llygredd aer yn ${readableName || 'y lleoliad hwn'}`
-      viewModel.backlink = {
-        text: viewModel.backLinkText,
-        href: viewModel.backLinkUrl
-      }
-      logger.debug(
-        {
-          routePath: request.path,
-          readableName,
-          backLinkUrl: viewModel.backlink.href
-        },
-        "'' Rendering health-effects CY" // ''
-      )
-      return h.view('health-effects/cy/index', viewModel) // ''
-    }
-
-    // '' If English route, always render English page
-    if (isEnglishRoute) {
-      const readableName = getReadableLocationName(query, params, logger) // ''
-      const selectedContent = customContent || english // ''
-      const viewModel = buildHealthEffectsViewModel({
-        content: selectedContent,
-        metaSiteUrl,
-        readableName,
-        lang: LANG_EN, // ''
-        locationId: params.id // ''
-      }) // ''
-      // Use helper to build back link for EN
-      viewModel.backLinkText = `Air pollution in ${readableName || 'this location'}`
-      // viewModel.backLinkUrl is already set by buildHealthEffectsViewModel
-      viewModel.backlink = buildBackLinkModel({
-        backLinkText: viewModel.backLinkText,
-        backLinkUrl: viewModel.backLinkUrl
-      })
-      logger.debug(
-        {
-          routePath: request.path,
-          readableName,
-          backLinkUrl: viewModel.backlink.href
-        },
-        "'' Rendering health-effects EN" // ''
-      )
-      return h.view('health-effects/index', viewModel) // ''
-    }
-
-    // '' If route does not match, return 404
-    logger.warn(
-      { routePath: request.path },
-      "'' Health effects route not found"
-    ) // ''
-    return h.response('Page Not Found').code(HTTP_NOT_FOUND) // ''
+    return renderByRoute(request, h, query, params, metaSiteUrl, customContent)
   } catch (err) {
     logger.error(err, "'' Failed to render health-effects") // ''
     return h.response('Internal Server Error').code(HTTP_INTERNAL_SERVER_ERROR) // ''

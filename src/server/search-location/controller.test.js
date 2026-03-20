@@ -85,9 +85,7 @@ const createErrorViewData = (
   backlink: mockContent.backlink,
   cookieBanner: mockContent.cookieBanner,
   lang,
-  currentPath: SEARCH_LOCATION_PATH,
-  fromSmsFlow: false,
-  fromEmailFlow: false
+  currentPath: SEARCH_LOCATION_PATH
 })
 
 const verifyRedirect = (result, mockH, expectedPath) => {
@@ -131,17 +129,15 @@ const createViewData = (mockContent, actualUrl, lang, currentPath) => ({
   locations: mockContent.searchLocation.searchParams.locations,
   button: mockContent.searchLocation.button,
   locationType: '',
-  errors: null,
-  errorMessage: null,
-  errorMessageRadio: null,
+  errors: undefined,
+  errorMessage: undefined,
+  errorMessageRadio: undefined,
   footerTxt: mockContent.footerTxt,
   phaseBanner: mockContent.phaseBanner,
   backlink: mockContent.backlink,
   cookieBanner: mockContent.cookieBanner,
   lang,
-  currentPath,
-  fromSmsFlow: false,
-  fromEmailFlow: false
+  currentPath
 })
 
 describe('searchLocationController - language handling', function () {
@@ -205,40 +201,37 @@ describe('searchLocationController - language handling', function () {
     verifyRedirect(result, mockH, `${WELSH_SEARCH_PATH}?lang=${LANG_CY}`)
   })
 
-  it('should set notificationFlow for SMS and expose flow flag in view model', () => {
+  it('should render normally when fromSmsFlow query is provided', () => {
     mockRequest = createRequestWithYar(LANG_EN, SEARCH_LOCATION_PATH)
     mockRequest.query.fromSmsFlow = 'true'
 
     const result = searchLocationController.handler(mockRequest, mockH)
 
     expect(result).toBe(VIEW_RENDERED)
-    expect(mockRequest.yar.set).toHaveBeenCalledWith('notificationFlow', 'sms')
+    expect(mockRequest.yar.set).not.toHaveBeenCalledWith(
+      'notificationFlow',
+      'sms'
+    )
     expect(mockH.view).toHaveBeenCalledWith(
       SEARCH_LOCATION_INDEX,
-      expect.objectContaining({
-        fromSmsFlow: true,
-        fromEmailFlow: false
-      })
+      expect.objectContaining({ currentPath: SEARCH_LOCATION_PATH })
     )
   })
 
-  it('should set notificationFlow for Email and expose flow flag in view model', () => {
+  it('should render normally when fromEmailFlow query is provided', () => {
     mockRequest = createRequestWithYar(LANG_EN, SEARCH_LOCATION_PATH)
     mockRequest.query.fromEmailFlow = 'true'
 
     const result = searchLocationController.handler(mockRequest, mockH)
 
     expect(result).toBe(VIEW_RENDERED)
-    expect(mockRequest.yar.set).toHaveBeenCalledWith(
+    expect(mockRequest.yar.set).not.toHaveBeenCalledWith(
       'notificationFlow',
       'email'
     )
     expect(mockH.view).toHaveBeenCalledWith(
       SEARCH_LOCATION_INDEX,
-      expect.objectContaining({
-        fromSmsFlow: false,
-        fromEmailFlow: true
-      })
+      expect.objectContaining({ currentPath: SEARCH_LOCATION_PATH })
     )
   })
 })
@@ -304,8 +297,8 @@ describe('searchLocationController - error handling', function () {
       SEARCH_LOCATION_INDEX,
       expect.objectContaining({
         pageTitle: mockContent.searchLocation.pageTitle,
-        errors: null,
-        errorMessage: null,
+        errors: undefined,
+        errorMessage: undefined,
         locationType: ''
       })
     )
