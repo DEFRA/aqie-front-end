@@ -180,15 +180,18 @@ async function executeNiRequestWithFailureHandling(
         : 'error'
     const breakerState = getCircuitBreakerSnapshot()
 
-    logger.error(`[getNIPlaces] NI API call failed after retries: ${error.message}`, {
-      errorType,
-      timeoutMs: config.get('niApiTimeoutMs'),
-      maxRetries: config.get('niApiMaxRetries'),
-      retryDelayMs: config.get('niApiRetryDelayMs'),
-      breakerFailureCount: breakerState.failureCount,
-      breakerOpenUntilMs: breakerState.openUntilMs,
-      halfOpenProbe: isHalfOpenProbe
-    })
+    logger.error(
+      `[getNIPlaces] NI API call failed after retries: ${error.message}`,
+      {
+        errorType,
+        timeoutMs: config.get('niApiTimeoutMs'),
+        maxRetries: config.get('niApiMaxRetries'),
+        retryDelayMs: config.get('niApiRetryDelayMs'),
+        breakerFailureCount: breakerState.failureCount,
+        breakerOpenUntilMs: breakerState.openUntilMs,
+        halfOpenProbe: isHalfOpenProbe
+      }
+    )
     recordCircuitBreakerFailure()
 
     return {
@@ -236,7 +239,8 @@ async function retryNiRequestAfterUnauthorized(
   }
 
   try {
-    const [nextStatusCodeNI, nextNiPlacesData] = await runNiRequest(optionsOAuth)
+    const [nextStatusCodeNI, nextNiPlacesData] =
+      await runNiRequest(optionsOAuth)
     return { statusCodeNI: nextStatusCodeNI, niPlacesData: nextNiPlacesData }
   } catch (error) {
     logger.error(
@@ -270,7 +274,9 @@ function normalizeNiPlacesData(niPlacesData, isMockEnabled) {
 
 function logNiSuccessResult(niPlacesData) {
   logger.info('[getNIPlaces] NI data fetched successfully')
-  logger.info(`[getNIPlaces] Number of results: ${niPlacesData?.results?.length}`)
+  logger.info(
+    `[getNIPlaces] Number of results: ${niPlacesData?.results?.length}`
+  )
 
   if (niPlacesData?.results?.length > 0) {
     niPlacesData.results.forEach((result, index) => {
@@ -343,11 +349,14 @@ function finalizeNiPlacesResponse({
 
   if (isNiServiceUnavailable(statusCodeNI, niPlacesData)) {
     const breakerState = getCircuitBreakerSnapshot()
-    logger.error(`[getNIPlaces] NI API unavailable - statusCodeNI: ${statusCodeNI}`, {
-      statusCodeNI,
-      breakerFailureCount: breakerState.failureCount,
-      breakerOpenUntilMs: breakerState.openUntilMs
-    })
+    logger.error(
+      `[getNIPlaces] NI API unavailable - statusCodeNI: ${statusCodeNI}`,
+      {
+        statusCodeNI,
+        breakerFailureCount: breakerState.failureCount,
+        breakerOpenUntilMs: breakerState.openUntilMs
+      }
+    )
     recordCircuitBreakerFailure()
     return getFallbackFromCacheOrServiceUnavailable(
       cacheKey,
@@ -355,13 +364,18 @@ function finalizeNiPlacesResponse({
     )
   }
 
-  const normalizedNiPlacesData = normalizeNiPlacesData(niPlacesData, isMockEnabled)
+  const normalizedNiPlacesData = normalizeNiPlacesData(
+    niPlacesData,
+    isMockEnabled
+  )
   if (statusCodeNI === STATUS_CODE_SUCCESS) {
     resetCircuitBreaker()
     setCachedResult(cacheKey, normalizedNiPlacesData)
     logNiSuccessResult(normalizedNiPlacesData)
   } else {
-    logger.error(`[getNIPlaces] Error fetching NI data - statusCode: ${statusCodeNI}`)
+    logger.error(
+      `[getNIPlaces] Error fetching NI data - statusCode: ${statusCodeNI}`
+    )
   }
 
   return normalizedNiPlacesData

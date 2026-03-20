@@ -310,11 +310,62 @@ function routeByLocationType(request, h, redirectError, context) {
   return h.redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`).takeover()
 }
 
+function buildRouteContext({
+  request,
+  lang,
+  month,
+  searchTerms,
+  secondSearchTerm,
+  userLocation,
+  locationNameOrPostcode,
+  getDailySummary,
+  getForecasts,
+  getOSPlaces,
+  getNIPlaces
+}) {
+  const { home, multipleLocations } = english
+  const { transformedDailySummary } = transformKeys(getDailySummary, lang)
+  const { formattedDateSummary, getMonthSummary } = getFormattedDateSummary(
+    getDailySummary?.issue_date,
+    calendarEnglish,
+    calendarWelsh,
+    lang
+  )
+  const { englishDate, welshDate } = getLanguageDates(
+    formattedDateSummary,
+    getMonthSummary,
+    calendarEnglish,
+    calendarWelsh
+  )
+
+  setSessionIfChanged(request, 'searchTermsSaved', searchTerms)
+
+  return {
+    userLocation,
+    locationNameOrPostcode,
+    lang,
+    searchTerms,
+    secondSearchTerm,
+    getOSPlaces,
+    airQualityData,
+    getDailySummary,
+    getForecasts,
+    transformedDailySummary,
+    calendarWelsh,
+    englishDate,
+    welshDate,
+    month,
+    english,
+    getNIPlaces,
+    multipleLocations,
+    home
+  }
+}
+
 const searchMiddleware = async (request, h) => {
   const { query, payload } = request
   const lang = LANG_EN
   const month = getMonth(lang)
-  const { home, multipleLocations } = english
   const searchTerms = query?.searchTerms?.toUpperCase()
   const secondSearchTerm = query?.secondSearchTerm?.toUpperCase()
 
@@ -357,41 +408,21 @@ const searchMiddleware = async (request, h) => {
     )
   }
 
-  const { transformedDailySummary } = transformKeys(getDailySummary, lang)
-  const { formattedDateSummary, getMonthSummary } = getFormattedDateSummary(
-    getDailySummary?.issue_date,
-    calendarEnglish,
-    calendarWelsh,
-    lang
-  )
-  const { englishDate, welshDate } = getLanguageDates(
-    formattedDateSummary,
-    getMonthSummary,
-    calendarEnglish,
-    calendarWelsh
-  )
-  setSessionIfChanged(request, 'searchTermsSaved', searchTerms)
-
-  return routeByLocationType(request, h, redirectError, {
-    userLocation,
-    locationNameOrPostcode,
+  const routeContext = buildRouteContext({
+    request,
     lang,
+    month,
     searchTerms,
     secondSearchTerm,
-    getOSPlaces,
-    airQualityData,
+    userLocation,
+    locationNameOrPostcode,
     getDailySummary,
     getForecasts,
-    transformedDailySummary,
-    calendarWelsh,
-    englishDate,
-    welshDate,
-    month,
-    english,
-    getNIPlaces,
-    multipleLocations,
-    home
+    getOSPlaces,
+    getNIPlaces
   })
+
+  return routeByLocationType(request, h, redirectError, routeContext)
 }
 
 export { searchMiddleware, shouldReturnNotFound, isInvalidDailySummary }

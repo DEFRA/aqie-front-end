@@ -25,7 +25,7 @@
     "lint:js:fix": "eslint . --fix",
     "lint:scss": "stylelint \"src/**/*.scss\" --cache --cache-location .cache/stylelint --cache-strategy content --color --ignore-path .gitignore",
     "pretest": "npm run build:frontend",
-    "test": "cross-env TZ=UTC NODE_OPTIONS=--max-old-space-size=4096 npx vitest run --coverage",
+    "test": "mkdir -p coverage/.tmp && cross-env TZ=UTC NODE_OPTIONS=--max-old-space-size=4096 npx vitest run --coverage",
     "test:watch": "TZ=UTC vitest",
     "server:watch": "nodemon --inspect=0.0.0.0 --ext js,json --legacy-watch ./src",
     "server:debug": "nodemon --inspect-brk=0.0.0.0 --ext js,json --legacy-watch ./src",

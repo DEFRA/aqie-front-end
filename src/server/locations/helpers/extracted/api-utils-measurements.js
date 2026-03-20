@@ -1,8 +1,7 @@
 function buildRemoteRicardoMeasurementsUrl(baseUrl, queryString) {
   let remoteSeparator = '?'
   if (baseUrl.includes('?')) {
-    remoteSeparator =
-      baseUrl.endsWith('?') || baseUrl.endsWith('&') ? '' : '&'
+    remoteSeparator = baseUrl.endsWith('?') || baseUrl.endsWith('&') ? '' : '&'
   }
 
   return `${baseUrl}${remoteSeparator}${queryString}`

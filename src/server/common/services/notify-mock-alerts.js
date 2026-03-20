@@ -126,7 +126,13 @@ function buildMaxAlertsErrorData(alertCount, isFallback, phoneNumber) {
   return data
 }
 
-function buildDuplicateAlertErrorData(isFallback, phoneNumber, location, lat, long) {
+function buildDuplicateAlertErrorData(
+  isFallback,
+  phoneNumber,
+  location,
+  lat,
+  long
+) {
   if (!isFallback) {
     return { message: 'Alert already exists for this location', mock: true }
   }
@@ -256,7 +262,9 @@ function logMockStorageState(alertCount) {
   logger.info(
     `Mock: Current storage state - Total entries: ${mockAlertStorage.size}, Alert count for this phone: ${alertCount}`
   )
-  logger.info(`Mock: All stored alerts: ${JSON.stringify(currentStorage, null, 2)}`)
+  logger.info(
+    `Mock: All stored alerts: ${JSON.stringify(currentStorage, null, 2)}`
+  )
 }
 
 function assertMockNotEnabledInProduction() {
@@ -289,7 +297,13 @@ function shouldUseFallbackMock(result, mockSetupAlertEnabled) {
   return isServiceUnavailable && mockSetupAlertEnabled
 }
 
-function logDuplicateCheck(phoneNumber, sanitizedLocation, latitude, longitude, alertKey) {
+function logDuplicateCheck(
+  phoneNumber,
+  sanitizedLocation,
+  latitude,
+  longitude,
+  alertKey
+) {
   const duplicateCheckLog = {
     phoneNumber: getMaskedPhonePrefix(phoneNumber),
     sanitizedLocation,
@@ -354,7 +368,13 @@ export function tryFallbackMockSetup({
     latitude,
     longitude
   )
-  logDuplicateCheck(phoneNumber, sanitizedLocation, latitude, longitude, alertKey)
+  logDuplicateCheck(
+    phoneNumber,
+    sanitizedLocation,
+    latitude,
+    longitude,
+    alertKey
+  )
 
   const fallbackResult = tryStoreMockAlert({
     phoneNumber,
