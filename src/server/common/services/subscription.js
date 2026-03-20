@@ -10,6 +10,18 @@ import { buildBackendApiFetchOptions } from '../helpers/backend-api-helper.js'
 
 const logger = createLogger('subscription-service')
 
+function getConfigValue(path, fallback = undefined) {
+  try {
+    return config.get(path)
+  } catch (err) {
+    logger.warn('Subscription API config key missing; skipping capture path', {
+      path,
+      error: err?.message
+    })
+    return fallback
+  }
+}
+
 /**
  * Make POST request to subscription API with automatic local/remote handling ''
  * @param request - Hapi request object (for detecting localhost)
@@ -18,8 +30,14 @@ const logger = createLogger('subscription-service')
  * @returns Response object
  */
 async function postJson(request, apiPath, body) {
-  const enabled = config.get('subscriptionApi.enabled')
-  const baseUrl = config.get('subscriptionApi.baseUrl')
+  const enabled = getConfigValue('subscriptionApi.enabled', false)
+  const baseUrl = getConfigValue('subscriptionApi.baseUrl', '')
+  if (!apiPath) {
+    logger.debug('Subscription API path missing; skipping', {
+      bodyKeys: Object.keys(body || {})
+    })
+    return { skipped: true }
+  }
   if (!enabled || !baseUrl) {
     logger.debug('Subscription API disabled or baseUrl missing; skipping', {
       apiPath
@@ -27,8 +45,11 @@ async function postJson(request, apiPath, body) {
     return { skipped: true }
   }
 
-  const apiKey = config.get('subscriptionApi.apiKey')
-  const timeout = config.get('subscriptionApi.timeoutMs') || DEFAULT_TIMEOUT_MS
+  const apiKey = getConfigValue('subscriptionApi.apiKey', '')
+  const timeout = getConfigValue(
+    'subscriptionApi.timeoutMs',
+    DEFAULT_TIMEOUT_MS
+  )
 
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), timeout)
@@ -74,7 +95,7 @@ async function postJson(request, apiPath, body) {
  * @param request - Hapi request object (optional)
  */
 export async function recordEmailCapture(email, request = null) {
-  const emailPath = config.get('subscriptionApi.emailPath')
+  const emailPath = getConfigValue('subscriptionApi.emailPath', '')
   return postJson(request, emailPath, { email })
 }
 
@@ -84,6 +105,6 @@ export async function recordEmailCapture(email, request = null) {
  * @param request - Hapi request object (optional)
  */
 export async function recordSmsCapture(mobileNumber, request = null) {
-  const smsPath = config.get('subscriptionApi.smsPath')
+  const smsPath = getConfigValue('subscriptionApi.smsPath', '')
   return postJson(request, smsPath, { mobileNumber })
 }

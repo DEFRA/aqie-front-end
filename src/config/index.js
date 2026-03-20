@@ -457,25 +457,25 @@ export const config = convict({
     emailPath: {
       doc: 'Notify API path for sending verification email',
       format: String,
-      default: '/subscribe/email',
+      default: '/send-email-code',
       env: 'NOTIFY_EMAIL_PATH'
     },
     emailGenerateLinkPath: {
       doc: 'Notify API path for generating email confirmation links',
       format: String,
-      default: '/subscribe/email/generate-link',
+      default: '/subscribe/generate-link',
       env: 'NOTIFY_EMAIL_GENERATE_LINK_PATH'
     },
     emailValidateLinkPath: {
       doc: 'Notify API path for validating email confirmation links',
       format: String,
-      default: '/subscribe/email/validate-link',
+      default: '/subscribe/validate-link',
       env: 'NOTIFY_EMAIL_VALIDATE_LINK_PATH'
     },
     setupAlertPath: {
       doc: 'Alert backend path to create subscriptions',
       format: String,
-      default: '/api/subscriptions',
+      default: '/setup-alert',
       env: 'NOTIFY_SETUP_ALERT_PATH'
     },
     getSubscriptionsPath: {
@@ -579,6 +579,45 @@ export const config = convict({
       format: String,
       default: '/notify/register/email-duplicate',
       env: 'NOTIFY_EMAIL_DUPLICATE_PATH'
+    }
+  },
+  subscriptionApi: {
+    enabled: {
+      doc: 'Enable subscription capture API (for recording SMS/email captures)',
+      format: Boolean,
+      default: false,
+      env: 'SUBSCRIPTION_API_ENABLED'
+    },
+    baseUrl: {
+      doc: 'Subscription API base URL',
+      format: String,
+      default: '',
+      env: 'SUBSCRIPTION_API_BASE_URL'
+    },
+    apiKey: {
+      doc: 'Subscription API authentication key',
+      format: String,
+      default: '',
+      env: 'SUBSCRIPTION_API_KEY',
+      sensitive: true
+    },
+    emailPath: {
+      doc: 'API path for recording email captures',
+      format: String,
+      default: '/capture/email',
+      env: 'SUBSCRIPTION_API_EMAIL_PATH'
+    },
+    smsPath: {
+      doc: 'API path for recording SMS captures',
+      format: String,
+      default: '/capture/sms',
+      env: 'SUBSCRIPTION_API_SMS_PATH'
+    },
+    timeoutMs: {
+      doc: 'Request timeout in milliseconds',
+      format: 'int',
+      default: 5000,
+      env: 'SUBSCRIPTION_API_TIMEOUT_MS'
     }
   },
   postcodeNortherIrelandUrl: {

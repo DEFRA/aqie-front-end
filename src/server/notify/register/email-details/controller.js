@@ -6,19 +6,39 @@ import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { recordEmailCapture } from '../../../common/services/subscription.js'
 import { generateEmailLink } from '../../../common/services/notify.js'
 
-// Constants for repeated strings
-const PAGE_HEADING = 'What is your email address?'
-const SERVICE_NAME = 'Check air quality'
-const VIEW_PATH = 'notify/register/email-details/index'
-const ERROR_PAGE_TITLE =
-  'Error: What is your email address? - Check air quality - GOV.UK'
+const EMAIL_DETAILS_VIEW = 'notify/register/email-details/index'
 
 // Create a logger instance ''
 const logger = createLogger()
 
+const getEmailDetailsContent = (content = english) => {
+  const emailEnterEmail =
+    content.emailEnterEmail || english.emailEnterEmail || {}
+  const common = content.common || english.common || {}
+  const emailDetails = content.emailDetails || english.emailDetails || {}
+
+  const heading = emailEnterEmail.heading || 'What is your email address?'
+  const serviceName = common.serviceName || 'Check air quality'
+  const pageTitle = `${heading} - ${serviceName} - GOV.UK`
+  const errorPageTitle = `Error: ${heading} - ${serviceName} - GOV.UK`
+
+  return {
+    heading,
+    pageTitle,
+    errorPageTitle,
+    serviceName,
+    sendFailureMessage:
+      emailDetails.errors?.sendFailure ||
+      english.emailDetails?.errors?.sendFailure ||
+      'We could not send the email right now. Try again in a moment.'
+  }
+}
+
 // GET handler for email details page ''
 const handleEmailDetailsRequest = (request, h, content = english) => {
   try {
+    const ui = getEmailDetailsContent(content)
+
     logger.info('Starting email notify journey')
     request.yar.set('notifyJourney', 'email-started') // ''
 
@@ -73,12 +93,10 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
         : null
 
     const viewModel = {
-      pageTitle: maxAlertsErrorObj
-        ? `Error: ${PAGE_HEADING} - ${SERVICE_NAME} - GOV.UK`
-        : `${PAGE_HEADING} - ${SERVICE_NAME} - GOV.UK`,
-      heading: PAGE_HEADING,
-      page: PAGE_HEADING,
-      serviceName: SERVICE_NAME,
+      pageTitle: maxAlertsErrorObj ? ui.errorPageTitle : ui.pageTitle,
+      heading: ui.heading,
+      page: ui.heading,
+      serviceName: ui.serviceName,
       lang: LANG_EN,
       metaSiteUrl,
       currentPath: request.path,
@@ -94,16 +112,17 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
         ''
     }
 
-    return h.view(VIEW_PATH, viewModel)
+    return h.view(EMAIL_DETAILS_VIEW, viewModel)
   } catch (error) {
     // Log and present a generic error view (re-using template with message) ''
     logger.error('Error rendering email details page', error)
+    const ui = getEmailDetailsContent(content)
     const metaSiteUrl = getAirQualitySiteUrl(request)
-    return h.view(VIEW_PATH, {
-      pageTitle: ERROR_PAGE_TITLE,
-      heading: PAGE_HEADING,
-      page: PAGE_HEADING,
-      serviceName: SERVICE_NAME,
+    return h.view(EMAIL_DETAILS_VIEW, {
+      pageTitle: ui.errorPageTitle,
+      heading: ui.heading,
+      page: ui.heading,
+      serviceName: ui.serviceName,
       lang: LANG_EN,
       metaSiteUrl,
       currentPath: request.path,
@@ -116,6 +135,7 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
 // POST handler for email details page ''
 const handleEmailDetailsPost = async (request, h, content = english) => {
   try {
+    const ui = getEmailDetailsContent(content)
     const { notifyByEmail } = request.payload || {}
 
     if (!notifyByEmail || notifyByEmail.trim() === '') {
@@ -123,10 +143,10 @@ const handleEmailDetailsPost = async (request, h, content = english) => {
       const metaSiteUrl = getAirQualitySiteUrl(request)
 
       const viewModel = {
-        pageTitle: ERROR_PAGE_TITLE,
-        heading: PAGE_HEADING,
-        page: PAGE_HEADING,
-        serviceName: SERVICE_NAME,
+        pageTitle: ui.errorPageTitle,
+        heading: ui.heading,
+        page: ui.heading,
+        serviceName: ui.serviceName,
         lang: LANG_EN,
         metaSiteUrl,
         currentPath: request.path,
@@ -137,7 +157,7 @@ const handleEmailDetailsPost = async (request, h, content = english) => {
         error: { message: 'Enter your email address', field: 'notifyByEmail' },
         formData: request.payload
       }
-      return h.view(VIEW_PATH, viewModel)
+      return h.view(EMAIL_DETAILS_VIEW, viewModel)
     }
 
     // Store the email in session ''
@@ -166,23 +186,76 @@ const handleEmailDetailsPost = async (request, h, content = english) => {
 
     // Send activation link and redirect to check email page ''
     try {
-      await generateEmailLink(email, location, lat, long, request)
+      const sendResult = await generateEmailLink(
+        email,
+        location,
+        lat,
+        long,
+        request
+      )
+
+      if (!sendResult?.ok) {
+        logger.warn('Notify email send skipped or failed', {
+          status: sendResult?.status,
+          skipped: sendResult?.skipped
+        })
+
+        const { footerTxt, phaseBanner, backlink, cookieBanner } = content
+        const metaSiteUrl = getAirQualitySiteUrl(request)
+
+        return h.view(EMAIL_DETAILS_VIEW, {
+          pageTitle: ui.errorPageTitle,
+          heading: ui.heading,
+          page: ui.heading,
+          serviceName: ui.serviceName,
+          lang: LANG_EN,
+          metaSiteUrl,
+          currentPath: request.path,
+          footerTxt,
+          phaseBanner,
+          backlink,
+          cookieBanner,
+          error: { message: ui.sendFailureMessage, field: 'notifyByEmail' },
+          formData: request.payload
+        })
+      }
+
       request.yar.set('emailActivationSent', Date.now())
       logger.info('Queued Notify email link for delivery')
     } catch (err) {
       logger.error('Notify email send failed', err)
+
+      const { footerTxt, phaseBanner, backlink, cookieBanner } = content
+      const metaSiteUrl = getAirQualitySiteUrl(request)
+
+      return h.view(EMAIL_DETAILS_VIEW, {
+        pageTitle: ui.errorPageTitle,
+        heading: ui.heading,
+        page: ui.heading,
+        serviceName: ui.serviceName,
+        lang: LANG_EN,
+        metaSiteUrl,
+        currentPath: request.path,
+        footerTxt,
+        phaseBanner,
+        backlink,
+        cookieBanner,
+        error: { message: ui.sendFailureMessage, field: 'notifyByEmail' },
+        formData: request.payload
+      })
     }
 
     const emailVerifyEmailPath = config.get('notify.emailVerifyEmailPath')
     return h.redirect(emailVerifyEmailPath)
   } catch (error) {
     logger.error('Error processing email details submission', error)
+    const ui = getEmailDetailsContent(content)
     const metaSiteUrl = getAirQualitySiteUrl(request)
-    return h.view(VIEW_PATH, {
-      pageTitle: ERROR_PAGE_TITLE,
-      heading: PAGE_HEADING,
-      page: PAGE_HEADING,
-      serviceName: SERVICE_NAME,
+    return h.view(EMAIL_DETAILS_VIEW, {
+      pageTitle: ui.errorPageTitle,
+      heading: ui.heading,
+      page: ui.heading,
+      serviceName: ui.serviceName,
       lang: LANG_EN,
       metaSiteUrl,
       currentPath: request.path,

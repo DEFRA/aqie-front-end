@@ -226,6 +226,8 @@ export const notificationTranslations = {
   emailDetails: {
     alertLimitHint: 'You can add up to 5 alerts for each email address.',
     errors: {
+      sendFailure:
+        'We could not send the email right now. Try again in a moment.',
       maxAlertsReached: {
         summary:
           'You have already added the maximum of 5 alerts for {email}. Enter a different email address.',

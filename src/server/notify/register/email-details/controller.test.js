@@ -4,10 +4,11 @@ import {
   handleEmailDetailsPost
 } from './controller.js'
 import { config } from '../../../../config/index.js'
+import { generateEmailLink } from '../../../common/services/notify.js'
 
 // '' Mock notify service so unit tests never make real HTTP calls
 vi.mock('../../../common/services/notify.js', () => ({
-  generateEmailLink: vi.fn().mockResolvedValue(undefined)
+  generateEmailLink: vi.fn().mockResolvedValue({ ok: true })
 }))
 
 // '' Mock subscription service to avoid real HTTP calls
@@ -60,9 +61,23 @@ describe('email-details controller', () => {
     const session = {}
     const req = mockRequest({ notifyByEmail: 'user@example.com' }, session)
     const h = mockH()
+    generateEmailLink.mockResolvedValueOnce({ ok: true })
     const res = await handleEmailDetailsPost(req, h)
     expect(res.redirect).toBe(config.get('notify.emailVerifyEmailPath'))
     expect(session.emailAddress).toBe('user@example.com')
+  })
+
+  it('POST shows error when email send is skipped/failed', async () => {
+    const session = {}
+    const req = mockRequest({ notifyByEmail: 'user@example.com' }, session)
+    const h = mockH()
+    generateEmailLink.mockResolvedValueOnce({ skipped: true })
+
+    const res = await handleEmailDetailsPost(req, h)
+
+    expect(res.tpl).toBe('notify/register/email-details/index')
+    expect(res.vm.error).toBeTruthy()
+    expect(res.vm.error.message).toContain('could not send the email')
   })
 
   it('GET shows max-alerts error when session flag is set', () => {
