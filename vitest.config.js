@@ -9,6 +9,7 @@ export default defineConfig({
     exclude: [
       ...configDefaults.exclude,
       GOVUK_SRC_EXCLUDE, // Ignore files inside src/src/govuk from testing
+      '.claude/**', // Ignore mirrored worktree tests and artifacts
       'src/server/common/**/*.test.js' // Ignore test files inside src/server/common (broken legacy tests)
     ],
     coverage: {
