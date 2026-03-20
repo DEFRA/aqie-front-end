@@ -3,11 +3,7 @@ import { config } from '../../../config/index.js'
 import { postToBackend } from './notify-backend.js'
 import {
   trySetupMockAlert,
-  tryFallbackMockSetup,
-  getMockAlertStorageSnapshot,
-  getMockAlerts,
-  clearMockAlerts,
-  removeMockAlert
+  tryFallbackMockSetup
 } from './notify-mock-alerts.js'
 
 export {
@@ -24,7 +20,7 @@ export {
   getMockAlerts,
   clearMockAlerts,
   removeMockAlert
-}
+} from './notify-mock-alerts.js'
 
 const logger = createLogger('notify-service')
 

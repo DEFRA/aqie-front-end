@@ -7,11 +7,9 @@ import {
   MEASUREMENTS_API_PATH
 } from '../../../data/constants.js'
 import { config } from '../../../../config/index.js'
-import {
-  buildAndCheckUKApiUrl,
-  callAndHandleUKApiResponseCompat
-} from './api-utils-uk.js'
 import { buildRemoteRicardoMeasurementsUrl } from './api-utils-measurements.js'
+export { buildAndCheckUKApiUrl } from './api-utils-uk.js'
+export { callAndHandleUKApiResponseCompat as callAndHandleUKApiResponse } from './api-utils-uk.js'
 async function callAndHandleForecastsResponse(
   url,
   opts,
@@ -490,7 +488,5 @@ export {
   callForecastsApi,
   selectForecastsUrlAndOptions,
   selectMeasurementsUrlAndOptions,
-  callAndHandleMeasurementsResponse,
-  buildAndCheckUKApiUrl,
-  callAndHandleUKApiResponseCompat as callAndHandleUKApiResponse
+  callAndHandleMeasurementsResponse
 }

@@ -16,11 +16,11 @@ import {
   setCachedResult,
   recordCircuitBreakerFailure,
   resetCircuitBreaker,
-  resetNiPlacesState,
   getFallbackFromCacheOrServiceUnavailable,
   getCircuitBreakerShortCircuitResponse,
   getCircuitBreakerSnapshot
 } from './extracted/get-ni-places-state.js'
+export { resetNiPlacesState } from './extracted/get-ni-places-state.js'
 
 const logger = createLogger()
 
@@ -435,4 +435,4 @@ async function getNIPlaces(userLocation, request) {
   })
 }
 
-export { getNIPlaces, resetNiPlacesState }
+export { getNIPlaces }
