@@ -21,6 +21,62 @@ const formatTemplate = (template = '', replacements = {}) => {
   }, template)
 }
 
+function buildInvalidMobileNumberViewModel({
+  request,
+  validation,
+  smsSendNewCode,
+  common,
+  lang,
+  serviceName,
+  footerTxt,
+  phaseBanner,
+  backlink,
+  cookieBanner,
+  sessionMobileNumber,
+  pageTitle
+}) {
+  const metaSiteUrl = getAirQualitySiteUrl(request)
+  const bulletSameNumber = formatTemplate(smsSendNewCode.bulletSameNumber, {
+    mobileNumber: sessionMobileNumber || 'Your mobile number'
+  })
+
+  return {
+    pageTitle: `Error: ${pageTitle} - ${serviceName} - GOV.UK`,
+    heading: smsSendNewCode.heading,
+    page: smsSendNewCode.heading,
+    serviceName,
+    lang,
+    metaSiteUrl,
+    currentPath: request.path,
+    footerTxt,
+    phaseBanner,
+    backlink,
+    cookieBanner,
+    mobileNumber: sessionMobileNumber,
+    common,
+    content: smsSendNewCode,
+    bulletSameNumber,
+    error: {
+      message: validation.error,
+      field: 'mobileNumberNew'
+    },
+    formData: request.payload
+  }
+}
+
+function resetOtpSessionForNewCode(request) {
+  request.yar.clear('otpFailedAttempts')
+  request.yar.clear('otpLastFailedTime')
+  request.yar.set('codeVerified', false)
+
+  request.yar.set('newCodeRequested', true)
+  request.yar.set('newCodeSentAt', Date.now())
+
+  const currentSequence = request.yar.get('otpGenerationSequence') || 0
+  request.yar.set('otpGenerationSequence', currentSequence + 1)
+  request.yar.set('otpGeneratedAt', Date.now())
+}
+
 /**
  * Handle GET request for SMS send new code page ''
  * @param request - Hapi request object
@@ -112,33 +168,20 @@ const handleSendNewCodePost = async (request, h, content = english) => {
   })
 
   if (!validation.isValid) {
-    const metaSiteUrl = getAirQualitySiteUrl(request)
-    const bulletSameNumber = formatTemplate(smsSendNewCode.bulletSameNumber, {
-      mobileNumber: sessionMobileNumber || 'Your mobile number'
-    })
-
-    const viewModel = {
-      pageTitle: `Error: ${pageTitle} - ${serviceName} - GOV.UK`,
-      heading: smsSendNewCode.heading,
-      page: smsSendNewCode.heading,
-      serviceName,
+    const viewModel = buildInvalidMobileNumberViewModel({
+      request,
+      validation,
+      smsSendNewCode,
+      common,
       lang,
-      metaSiteUrl,
-      currentPath: request.path,
+      serviceName,
       footerTxt,
       phaseBanner,
       backlink,
       cookieBanner,
-      mobileNumber: sessionMobileNumber,
-      common,
-      content: smsSendNewCode,
-      bulletSameNumber,
-      error: {
-        message: validation.error,
-        field: 'mobileNumberNew'
-      },
-      formData: request.payload
-    }
+      sessionMobileNumber,
+      pageTitle
+    })
 
     return h.view('notify/register/sms-send-new-code/index', viewModel)
   }
@@ -159,19 +202,8 @@ const handleSendNewCodePost = async (request, h, content = english) => {
     logger.error('Error sending new SMS code', error)
   }
 
-  // Reset failed attempts counter when sending new code ''
-  request.yar.clear('otpFailedAttempts')
-  request.yar.clear('otpLastFailedTime')
-  request.yar.set('codeVerified', false)
-
-  // Store that a new code was requested ''
-  request.yar.set('newCodeRequested', true)
-  request.yar.set('newCodeSentAt', Date.now())
-
-  // Increment OTP generation sequence to invalidate previous codes ''
-  const currentSequence = request.yar.get('otpGenerationSequence') || 0
-  request.yar.set('otpGenerationSequence', currentSequence + 1)
-  request.yar.set('otpGeneratedAt', Date.now())
+  // Reset state and generate fresh OTP sequence for the newly requested code
+  resetOtpSessionForNewCode(request)
 
   logger.info(
     `New SMS activation code sent to: ${mobileNumber.substring(0, 4)}****`

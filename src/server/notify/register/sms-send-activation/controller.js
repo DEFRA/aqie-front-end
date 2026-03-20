@@ -50,6 +50,108 @@ const formatBodyText = (template = '', mobileNumber = '') => {
   return template.replace('{mobileNumber}', mobileNumber)
 }
 
+function getSendActivationPageContent(request, content) {
+  const lang = resolveNotifyLanguage(request)
+  const languageContent = lang === LANG_CY ? welsh : content
+  const { footerTxt, phaseBanner, cookieBanner } = languageContent
+  const common = languageContent.common || english.common
+  const smsSendActivation =
+    languageContent.smsSendActivation || english.smsSendActivation
+  const serviceName = common?.serviceName || DEFAULT_SERVICE_NAME
+
+  return {
+    lang,
+    footerTxt,
+    phaseBanner,
+    cookieBanner,
+    common,
+    smsSendActivation,
+    serviceName
+  }
+}
+
+function buildSendActivationViewModel({
+  request,
+  mobileNumber,
+  backLinkUrl,
+  pageContent
+}) {
+  const {
+    lang,
+    footerTxt,
+    phaseBanner,
+    cookieBanner,
+    common,
+    smsSendActivation,
+    serviceName
+  } = pageContent
+
+  const pageTitle = smsSendActivation.pageTitle
+  const bodyText = formatBodyText(
+    smsSendActivation.bodyText,
+    `<strong>${mobileNumber}</strong>`
+  )
+
+  return {
+    pageTitle: `${pageTitle} - ${serviceName} - GOV.UK`,
+    heading: smsSendActivation.heading,
+    page: smsSendActivation.heading,
+    serviceName,
+    lang,
+    metaSiteUrl: getAirQualitySiteUrl(request),
+    currentPath: request.path,
+    footerTxt,
+    phaseBanner,
+    backlink: {
+      text: common?.backLinkText || 'Back'
+    },
+    cookieBanner,
+    common,
+    content: smsSendActivation,
+    bodyText,
+    displayBacklink: true,
+    customBackLink: true,
+    backLinkText: common?.backLinkText || 'Back',
+    backLinkUrl,
+    changeMobileNumberUrl: backLinkUrl,
+    mobileNumber
+  }
+}
+
+function logSmsSendOutcome(result) {
+  logger.info('SMS code send result', {
+    ok: result?.ok,
+    skipped: result?.skipped,
+    status: result?.status,
+    hasData: !!result?.data,
+    hasError: !!result?.error,
+    isMock: result?.mock
+  })
+
+  if (result?.skipped) {
+    logger.warn('SMS service is disabled or not configured')
+    return
+  }
+
+  if (!result?.ok) {
+    logger.error('SMS send returned error', {
+      status: result?.status,
+      error: result?.error,
+      body: result?.body
+    })
+    return
+  }
+
+  if (result?.mock) {
+    logger.info('Mock OTP enabled, bypassing backend service', {
+      mockOtpCode: result?.data?.mockOtpCode
+    })
+    return
+  }
+
+  logger.info('Queued Notify SMS for delivery')
+}
+
 /**
  * Handle GET request for SMS send activation page ''
  * @param request - Hapi request object
@@ -79,44 +181,13 @@ export const handleSendActivationRequest = (request, h, content = english) => {
     long
   })
 
-  const lang = resolveNotifyLanguage(request)
-  const languageContent = lang === LANG_CY ? welsh : content
-  const { footerTxt, phaseBanner, cookieBanner } = languageContent
-  const common = languageContent.common || english.common
-  const smsSendActivation =
-    languageContent.smsSendActivation || english.smsSendActivation
-  const metaSiteUrl = getAirQualitySiteUrl(request)
-  const serviceName = common?.serviceName || DEFAULT_SERVICE_NAME
-  const pageTitle = smsSendActivation.pageTitle
-  const bodyText = formatBodyText(
-    smsSendActivation.bodyText,
-    `<strong>${mobileNumber}</strong>`
-  )
-
-  const viewModel = {
-    pageTitle: `${pageTitle} - ${serviceName} - GOV.UK`,
-    heading: smsSendActivation.heading,
-    page: smsSendActivation.heading,
-    serviceName,
-    lang,
-    metaSiteUrl,
-    currentPath: request.path,
-    footerTxt,
-    phaseBanner,
-    backlink: {
-      text: common?.backLinkText || 'Back'
-    },
-    cookieBanner,
-    common,
-    content: smsSendActivation,
-    bodyText,
-    displayBacklink: true,
-    customBackLink: true,
-    backLinkText: common?.backLinkText || 'Back',
+  const pageContent = getSendActivationPageContent(request, content)
+  const viewModel = buildSendActivationViewModel({
+    request,
+    mobileNumber,
     backLinkUrl,
-    changeMobileNumberUrl: backLinkUrl,
-    mobileNumber
-  }
+    pageContent
+  })
 
   return h.view('notify/register/sms-send-activation/index', viewModel)
 }
@@ -152,33 +223,7 @@ export const handleSendActivationPost = async (request, h) => {
     })
 
     const result = await sendSmsCode(mobileNumber, request)
-
-    logger.info('SMS code send result', {
-      ok: result?.ok,
-      skipped: result?.skipped,
-      status: result?.status,
-      hasData: !!result?.data,
-      hasError: !!result?.error,
-      isMock: result?.mock
-    })
-
-    if (result?.skipped) {
-      logger.warn('SMS service is disabled or not configured')
-    } else if (!result?.ok) {
-      logger.error('SMS send returned error', {
-        status: result?.status,
-        error: result?.error,
-        body: result?.body
-      })
-    } else {
-      if (result?.mock) {
-        logger.info('Mock OTP enabled, bypassing backend service', {
-          mockOtpCode: result?.data?.mockOtpCode
-        })
-      } else {
-        logger.info('Queued Notify SMS for delivery')
-      }
-    }
+    logSmsSendOutcome(result)
   } catch (err) {
     logger.error('Notify SMS send failed with exception', err)
   }
