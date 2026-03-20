@@ -250,16 +250,7 @@ async function handleNotificationFlowRedirect({
   )
 }
 
-async function processLocationWorkflow({
-  locationData,
-  locationId,
-  lang,
-  getMonth,
-  metaSiteUrl,
-  request,
-  h,
-  helpers
-}) {
+function extractWorkflowDependencies(helpers) {
   const {
     logger,
     config,
@@ -279,13 +270,88 @@ async function processLocationWorkflow({
     buildNotFoundViewData
   } = helpers
 
-  const { REDIRECT_STATUS_CODE, LOCATION_NOT_FOUND } = constants
+  return {
+    logger,
+    config,
+    constants,
+    buildUserLocationMetaCacheKey,
+    getUserDataPayload,
+    setUserDataPayload,
+    setSessionKeyIfSessionExists,
+    determineLocationType,
+    clearSessionKeyIfExists,
+    applyTestModeAndLogDebug,
+    getNearestLocationData,
+    logAndCalculateSummaryDate,
+    persistLocationDataForLocationRoute,
+    buildLocationViewData,
+    processLocationResult,
+    buildNotFoundViewData
+  }
+}
 
-  // '' Check if user is in notification registration flow (SMS or Email) from multiple-results page
+async function renderLocationOrNotFound({
+  locationDetails,
+  nearestLocationsRange,
+  locationData,
+  forecastNum,
+  lang,
+  getMonth,
+  metaSiteUrl,
+  request,
+  locationId,
+  nearestLocation,
+  h,
+  LOCATION_NOT_FOUND,
+  buildLocationViewData,
+  processLocationResult,
+  buildNotFoundViewData
+}) {
+  if (!locationDetails) {
+    return h.view(LOCATION_NOT_FOUND, buildNotFoundViewData(lang))
+  }
+
+  const viewData = buildLocationViewData({
+    locationDetails,
+    nearestLocationsRange,
+    locationData,
+    forecastNum,
+    lang,
+    getMonth,
+    metaSiteUrl,
+    request,
+    locationId
+  })
+
+  return processLocationResult(
+    request,
+    locationData,
+    nearestLocation,
+    nearestLocationsRange,
+    h,
+    viewData
+  )
+}
+
+async function handleNotificationFlowGate({
+  request,
+  locationData,
+  locationId,
+  lang,
+  logger,
+  config,
+  REDIRECT_STATUS_CODE,
+  buildUserLocationMetaCacheKey,
+  getUserDataPayload,
+  setUserDataPayload,
+  setSessionKeyIfSessionExists,
+  clearSessionKeyIfExists,
+  h
+}) {
   const notificationFlow = request.yar.get('notificationFlow')
   const fromSmsFlow = request.query?.fromSmsFlow === 'true'
 
-  const notificationRedirectResponse = await handleNotificationFlowRedirect({
+  const redirectResponse = await handleNotificationFlowRedirect({
     notificationFlow,
     fromSmsFlow,
     request,
@@ -302,27 +368,25 @@ async function processLocationWorkflow({
     h
   })
 
-  if (notificationRedirectResponse) {
-    return notificationRedirectResponse
-  }
-
-  const { getForecasts } = locationData
-  const locationType = determineLocationType(locationData)
-
-  // '' If user is viewing a location page (not in notification flow), clear any stale notification flags
-  // '' This prevents the notification loop from persisting when user navigates away
   if (notificationFlow && !fromSmsFlow) {
     clearSessionKeyIfExists(request, 'notificationFlow')
   }
 
-  await applyTestModeAndLogDebug(request, locationData)
+  return { redirectResponse }
+}
 
-  const {
-    locationDetails,
-    forecastNum,
-    nearestLocationsRange,
-    nearestLocation
-  } = await getNearestLocationData(
+async function resolveNearestLocationContext({
+  locationData,
+  locationId,
+  lang,
+  request,
+  determineLocationType,
+  getNearestLocationData
+}) {
+  const { getForecasts } = locationData
+  const locationType = determineLocationType(locationData)
+
+  return getNearestLocationData(
     locationData,
     getForecasts,
     locationType,
@@ -330,36 +394,130 @@ async function processLocationWorkflow({
     lang,
     request
   )
+}
 
-  logAndCalculateSummaryDate(locationData)
-
+async function finalizeWorkflowResponse({
+  request,
+  locationData,
+  locationDetails,
+  nearestLocationsRange,
+  forecastNum,
+  lang,
+  getMonth,
+  metaSiteUrl,
+  locationId,
+  nearestLocation,
+  h,
+  LOCATION_NOT_FOUND,
+  persistLocationDataForLocationRoute,
+  buildLocationViewData,
+  processLocationResult,
+  buildNotFoundViewData
+}) {
   if (locationData.issueTime && !request.yar.get('locationData')?.issueTime) {
     await persistLocationDataForLocationRoute(request, locationData)
   }
 
-  if (locationDetails) {
-    const viewData = buildLocationViewData({
-      locationDetails,
-      nearestLocationsRange,
-      locationData,
-      forecastNum,
-      lang,
-      getMonth,
-      metaSiteUrl,
-      request,
-      locationId
-    })
-    return processLocationResult(
-      request,
-      locationData,
-      nearestLocation,
-      nearestLocationsRange,
-      h,
-      viewData
-    )
-  } else {
-    return h.view(LOCATION_NOT_FOUND, buildNotFoundViewData(lang))
+  return renderLocationOrNotFound({
+    locationDetails,
+    nearestLocationsRange,
+    locationData,
+    forecastNum,
+    lang,
+    getMonth,
+    metaSiteUrl,
+    request,
+    locationId,
+    nearestLocation,
+    h,
+    LOCATION_NOT_FOUND,
+    buildLocationViewData,
+    processLocationResult,
+    buildNotFoundViewData
+  })
+}
+
+async function prepareWorkflowRenderContext({
+  request,
+  locationData,
+  locationId,
+  lang,
+  applyTestModeAndLogDebug,
+  determineLocationType,
+  getNearestLocationData,
+  logAndCalculateSummaryDate
+}) {
+  await applyTestModeAndLogDebug(request, locationData)
+
+  const nearestContext = await resolveNearestLocationContext({
+    locationData,
+    locationId,
+    lang,
+    request,
+    determineLocationType,
+    getNearestLocationData
+  })
+
+  logAndCalculateSummaryDate(locationData)
+  return nearestContext
+}
+
+async function processLocationWorkflow({
+  locationData,
+  locationId,
+  lang,
+  getMonth,
+  metaSiteUrl,
+  request,
+  h,
+  helpers
+}) {
+  const workflowDependencies = extractWorkflowDependencies(helpers)
+  const { REDIRECT_STATUS_CODE, LOCATION_NOT_FOUND } =
+    workflowDependencies.constants
+
+  const { redirectResponse } = await handleNotificationFlowGate({
+    request,
+    locationData,
+    locationId,
+    lang,
+    h,
+    REDIRECT_STATUS_CODE,
+    ...workflowDependencies
+  })
+
+  if (redirectResponse) {
+    return redirectResponse
   }
+
+  const {
+    locationDetails,
+    forecastNum,
+    nearestLocationsRange,
+    nearestLocation
+  } = await prepareWorkflowRenderContext({
+    request,
+    locationData,
+    locationId,
+    lang,
+    ...workflowDependencies
+  })
+
+  return finalizeWorkflowResponse({
+    request,
+    locationData,
+    locationDetails,
+    nearestLocationsRange,
+    forecastNum,
+    lang,
+    getMonth,
+    metaSiteUrl,
+    locationId,
+    nearestLocation,
+    h,
+    LOCATION_NOT_FOUND,
+    ...workflowDependencies
+  })
 }
 
 export { processLocationWorkflow }

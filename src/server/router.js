@@ -58,104 +58,114 @@ import { airPollutionBreachesCy } from './air-pollution-breaches/cy/index.js'
 
 const logger = createLogger() // ''
 
+function getServerPlugins() {
+  return [
+    home,
+    homeCy,
+    searchLocation,
+    searchLocationCy,
+    locations,
+    locationsCy,
+    locationId,
+    locationIdCy,
+    serveStaticFiles,
+    nitrogenDioxide,
+    nitrogenDioxideCy,
+    ozone,
+    ozoneCy,
+    particulateMatter10,
+    particulateMatter10Cy,
+    particulateMatter25,
+    particulateMatter25Cy,
+    sulphurDioxide,
+    sulphurDioxideCy,
+    privacy,
+    privacyCy,
+    cookies,
+    cookiesCy,
+    accessibility,
+    accessibilityCy,
+    multipleResults,
+    multipleResultsCy,
+    locationNotFound,
+    health,
+    testRoutes,
+    actionsReduceExposure,
+    actionsReduceExposureCy,
+    healthEffects,
+    healthEffectsCy,
+    airPollutionBreaches,
+    airPollutionBreachesCy,
+    notify,
+    sendActivation,
+    checkMessage,
+    sendNewCode,
+    confirmAlertDetails,
+    alertsSuccess,
+    checkMaxAlerts,
+    smsDuplicate,
+    smsMaxEmails,
+    emailDuplicate,
+    genericConfirmAlertDetails,
+    emailAlertsSuccess,
+    emailDetails,
+    emailSendActivation,
+    emailVerifyEmail,
+    emailConfirmLink,
+    notifyDebugClearMockStorage
+  ]
+}
+
+async function registerServerPlugins(server, plugins) {
+  for (const plugin of plugins) {
+    await server.register(plugin)
+  }
+}
+
+function registerWellKnownRoute(server) {
+  server.route({
+    method: 'GET',
+    path: '/.well-known/{param*}',
+    handler: {
+      directory: {
+        path: path.resolve(SERVER_DIRNAME, '../../.public/.well-known'),
+        redirectToSlash: true,
+        index: true
+      }
+    }
+  })
+}
+
+function registerPublicRouteIfMissing(server) {
+  const existingRoutes = server.table().map((route) => route.path)
+
+  if (existingRoutes.includes('/public/{param*}')) {
+    logger.warn('Route /public/{param*} already exists. Skipping registration.')
+    return
+  }
+
+  server.route({
+    method: 'GET',
+    path: '/public/{param*}',
+    handler: {
+      directory: {
+        path: path.resolve(SERVER_DIRNAME, '../../public'),
+        redirectToSlash: true,
+        index: true
+      }
+    }
+  })
+}
+
 const router = {
   plugin: {
     name: 'router',
     register: async (server) => {
       await server.register([inert]) // ''
-
-      // Add all plugins including missing ones ''
-      const plugins = [
-        home,
-        homeCy,
-        searchLocation,
-        searchLocationCy,
-        locations,
-        locationsCy,
-        locationId,
-        locationIdCy,
-        serveStaticFiles,
-        nitrogenDioxide,
-        nitrogenDioxideCy,
-        ozone,
-        ozoneCy,
-        particulateMatter10,
-        particulateMatter10Cy,
-        particulateMatter25,
-        particulateMatter25Cy,
-        sulphurDioxide,
-        sulphurDioxideCy,
-        privacy,
-        privacyCy,
-        cookies,
-        cookiesCy,
-        accessibility,
-        accessibilityCy,
-        multipleResults,
-        multipleResultsCy,
-        locationNotFound,
-        health,
-        testRoutes,
-        actionsReduceExposure, // ''
-        actionsReduceExposureCy, // ''
-        healthEffects, // ''
-        healthEffectsCy, // ''
-        airPollutionBreaches,
-        airPollutionBreachesCy,
-        notify,
-        sendActivation,
-        checkMessage,
-        sendNewCode,
-        confirmAlertDetails,
-        alertsSuccess,
-        checkMaxAlerts,
-        smsDuplicate,
-        smsMaxEmails,
-        emailDuplicate,
-        genericConfirmAlertDetails,
-        emailAlertsSuccess,
-        emailDetails,
-        emailSendActivation,
-        emailVerifyEmail,
-        emailConfirmLink,
-        notifyDebugClearMockStorage
-      ]
-
-      for (const plugin of plugins) {
-        await server.register(plugin) // ''
-      }
-
-      server.route({
-        method: 'GET',
-        path: '/.well-known/{param*}',
-        handler: {
-          directory: {
-            path: path.resolve(SERVER_DIRNAME, '../../.public/.well-known'),
-            redirectToSlash: true,
-            index: true
-          }
-        }
-      }) // ''
-
-      const existingRoutes = server.table().map((route) => route.path) // ''
-
-      if (!existingRoutes.includes('/public/{param*}')) {
-        server.route({
-          method: 'GET',
-          path: '/public/{param*}',
-          handler: {
-            directory: {
-              path: path.resolve(SERVER_DIRNAME, '../../public'),
-              redirectToSlash: true,
-              index: true
-            }
-          }
-        }) // ''
-      } else {
-        logger.warn(
-          'Route /public/{param*} already exists. Skipping registration.'
-        ) // ''
-      }
+      const plugins = getServerPlugins()
+      await registerServerPlugins(server, plugins)
+      registerWellKnownRoute(server)
+      registerPublicRouteIfMissing(server)
     }
   }
 }

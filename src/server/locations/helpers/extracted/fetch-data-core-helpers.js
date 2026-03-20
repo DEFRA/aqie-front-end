@@ -138,10 +138,7 @@ const selectMeasurementsRequestData = ({
   }
 }
 
-function setupDependencies(diOverrides, context) {
-  const overrides = diOverrides || {}
-  const { fetchForecasts, logger } = context
-
+function buildCoreDependencies(overrides, fetchForecasts, logger) {
   return {
     fetchForecasts: getOverrideOrDefault(
       overrides,
@@ -179,7 +176,12 @@ function setupDependencies(diOverrides, context) {
       overrides,
       'refreshOAuthToken',
       localRefreshOAuthToken
-    ),
+    )
+  }
+}
+
+function buildUkSearchDependencies(overrides) {
+  return {
     buildUKLocationFilters: getOverrideOrDefault(
       overrides,
       'buildUKLocationFilters',
@@ -209,7 +211,17 @@ function setupDependencies(diOverrides, context) {
       overrides,
       'shouldCallUKApi',
       shouldCallUKApi
-    ),
+    )
+  }
+}
+
+function setupDependencies(diOverrides, context) {
+  const overrides = diOverrides || {}
+  const { fetchForecasts, logger } = context
+
+  return {
+    ...buildCoreDependencies(overrides, fetchForecasts, logger),
+    ...buildUkSearchDependencies(overrides),
     config: getOverrideOrDefault(overrides, 'config', config),
     // Shared constants used by routing helpers
     locationTypeNi: LOCATION_TYPE_NI,
