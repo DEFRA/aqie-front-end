@@ -121,11 +121,15 @@ async function fetchApi(url, arg2 = {}, arg3 = undefined) {
   // fetchApi(url, logger, options) and fetchApi(url, options, logger)
   const defaultLogger = { error: () => {} }
   const isArg2Logger = arg2 && typeof arg2.error === 'function'
-  const loggerLike = isArg2Logger
-    ? arg2
-    : arg3 && typeof arg3.error === 'function'
-      ? arg3
-      : defaultLogger
+  const isArg3Logger = arg3 && typeof arg3.error === 'function'
+  let loggerLike = defaultLogger
+  if (isArg2Logger) {
+    loggerLike = arg2
+  } else if (isArg3Logger) {
+    loggerLike = arg3
+  } else {
+    loggerLike = defaultLogger
+  }
   const options = isArg2Logger ? arg3 || {} : arg2 || {}
 
   try {

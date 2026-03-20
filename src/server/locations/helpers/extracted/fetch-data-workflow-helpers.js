@@ -50,7 +50,12 @@ async function handleNILocation(
   di,
   diRequest
 ) {
-  const niDi = { ...di.overrides, request: diRequest || {} }
+  const niDi = {
+    ...di.overrides,
+    request: diRequest || {},
+    searchTerms,
+    secondSearchTerm
+  }
   const getNIPlaces = await di.handleNILocationData(
     userLocation,
     optionsOAuth,

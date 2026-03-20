@@ -2,6 +2,10 @@ import { createLogger } from '../../../common/helpers/logging/logger.js'
 import { config } from '../../../../config/index.js'
 
 const SMS_MOBILE_NUMBER_PATH_KEY = 'notify.smsMobileNumberPath'
+const PHONE_LAST_DIGITS = 4
+const LOCATION_LOG_PREVIEW_LENGTH = 20
+const STATUS_BAD_REQUEST = 400
+const STATUS_CONFLICT = 409
 
 const logger = createLogger()
 
@@ -21,10 +25,15 @@ const logAlertSetupSessionData = ({
   long
 }) => {
   logger.info('Session data for alert setup', {
-    phoneNumber: phoneNumber ? '***' + phoneNumber.slice(-4) : undefined,
+    phoneNumber: phoneNumber
+      ? `***${phoneNumber.slice(-PHONE_LAST_DIGITS)}`
+      : undefined,
     location,
     locationStartsWith: location
-      ? location.substring(0, Math.min(20, location.length))
+      ? location.substring(
+          0,
+          Math.min(LOCATION_LOG_PREVIEW_LENGTH, location.length)
+        )
       : undefined,
     locationHasAirQuality: location
       ? location.toLowerCase().includes('air quality')
@@ -66,11 +75,13 @@ const handleSetupAlertFailure = ({
   phoneNumber,
   location
 }) => {
-  if (result.status === 400) {
+  if (result.status === STATUS_BAD_REQUEST) {
     logger.warn('Maximum locations reached for this phone number', {
       status: result.status,
       message: result.body?.message,
-      phoneLast4: phoneNumber ? phoneNumber.slice(-4) : undefined
+      phoneLast4: phoneNumber
+        ? phoneNumber.slice(-PHONE_LAST_DIGITS)
+        : undefined
     })
 
     if (phoneNumber) {
@@ -84,12 +95,14 @@ const handleSetupAlertFailure = ({
     return h.redirect(config.get(SMS_MOBILE_NUMBER_PATH_KEY))
   }
 
-  if (result.status === 409) {
+  if (result.status === STATUS_CONFLICT) {
     logger.warn('Alert already exists for this phone/location', {
       status: result.status,
       message: result.body?.message,
       location,
-      phoneLast4: phoneNumber ? phoneNumber.slice(-4) : undefined
+      phoneLast4: phoneNumber
+        ? phoneNumber.slice(-PHONE_LAST_DIGITS)
+        : undefined
     })
     return h.redirect(config.get('notify.duplicateSubscriptionPath'))
   }

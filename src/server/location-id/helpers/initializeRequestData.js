@@ -29,7 +29,7 @@ function getLocationIdFromRequest(request) {
 }
 
 function getSearchTermsSavedFromRequest(request) {
-  if (!request || !request.yar || typeof request.yar.get !== 'function') {
+  if (typeof request?.yar?.get !== 'function') {
     return undefined
   }
 
