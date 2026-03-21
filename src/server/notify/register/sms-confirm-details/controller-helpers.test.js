@@ -31,10 +31,12 @@ vi.mock('../helpers/resolve-notify-language.js', () => ({
 vi.mock('../../../../config/index.js', () => ({
   config: {
     get: vi.fn((key) => {
-      if (key === 'notify.smsMobileNumberPath')
-        {return '/notify/register/sms-mobile-number'}
-      if (key === 'notify.smsVerifyCodePath')
-        {return '/notify/register/sms-verify-code'}
+      if (key === 'notify.smsMobileNumberPath') {
+        return '/notify/register/sms-mobile-number'
+      }
+      if (key === 'notify.smsVerifyCodePath') {
+        return '/notify/register/sms-verify-code'
+      }
       return undefined
     })
   }

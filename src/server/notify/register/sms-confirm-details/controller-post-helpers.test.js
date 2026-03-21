@@ -19,10 +19,12 @@ vi.mock('../../../common/helpers/logging/logger.js', () => ({
 vi.mock('../../../../config/index.js', () => ({
   config: {
     get: vi.fn((key) => {
-      if (key === 'notify.smsMobileNumberPath')
-        {return '/notify/register/sms-mobile-number'}
-      if (key === 'notify.duplicateSubscriptionPath')
-        {return '/notify/register/sms-duplicate'}
+      if (key === 'notify.smsMobileNumberPath') {
+        return '/notify/register/sms-mobile-number'
+      }
+      if (key === 'notify.duplicateSubscriptionPath') {
+        return '/notify/register/sms-duplicate'
+      }
       return undefined
     })
   }

@@ -21,12 +21,15 @@ vi.mock('../helpers/resolve-notify-language.js', () => ({
 vi.mock('../../../../config/index.js', () => ({
   config: {
     get: vi.fn((key) => {
-      if (key === 'notify.emailDetailsPath')
-        {return '/notify/register/email-details'}
-      if (key === 'notify.emailSendActivationPath')
-        {return '/notify/register/email-send-activation'}
-      if (key === 'notify.smsMobileNumberPath')
-        {return '/notify/register/sms-mobile-number'}
+      if (key === 'notify.emailDetailsPath') {
+        return '/notify/register/email-details'
+      }
+      if (key === 'notify.emailSendActivationPath') {
+        return '/notify/register/email-send-activation'
+      }
+      if (key === 'notify.smsMobileNumberPath') {
+        return '/notify/register/sms-mobile-number'
+      }
       return undefined
     })
   }
