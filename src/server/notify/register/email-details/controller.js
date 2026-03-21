@@ -108,6 +108,46 @@ const getMaxAlertsError = (content, maxAlertsEmailError, maxAlertsEmail) => {
   }
 }
 
+const consumeMaxAlertsState = (request) => {
+  const maxAlertsEmailError = request.yar.get('maxAlertsEmailError')
+  const maxAlertsEmail = request.yar.get('maxAlertsEmail')
+
+  if (maxAlertsEmailError) {
+    request.yar.clear('maxAlertsEmailError')
+    request.yar.clear('maxAlertsEmail')
+  }
+
+  return { maxAlertsEmailError, maxAlertsEmail }
+}
+
+const getAlertLimitHint = (content) => {
+  const emailDetailsContent = content.emailDetails || english.emailDetails || {}
+  return emailDetailsContent.alertLimitHint || english.emailDetails?.alertLimitHint || ''
+}
+
+const getPayload = (request) => request.payload || {}
+
+const renderValidationError = (h, request, content, ui, payload) =>
+  renderEmailDetailsView(h, request, content, ui, {
+    pageTitle: ui.errorPageTitle,
+    error: { message: 'Enter your email address', field: 'notifyByEmail' },
+    formData: payload
+  })
+
+const renderSendFailure = (h, request, content, ui, payload) =>
+  renderEmailDetailsView(h, request, content, ui, {
+    pageTitle: ui.errorPageTitle,
+    error: { message: ui.sendFailureMessage, field: 'notifyByEmail' },
+    formData: payload
+  })
+
+const renderPostFailure = (h, request, content, ui, payload) =>
+  renderEmailDetailsView(h, request, content, ui, {
+    pageTitle: ui.errorPageTitle,
+    error: { message: 'Sorry, there is a problem processing the form' },
+    formData: payload
+  })
+
 const isBlankEmail = (notifyByEmail) =>
   !notifyByEmail || notifyByEmail.trim() === ''
 
@@ -178,17 +218,10 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
     request.yar.set('notifyJourney', 'email-started') // ''
 
     // '' Read max-alerts error flag set by email-confirm-link after a 400 response
-    const maxAlertsEmailError = request.yar.get('maxAlertsEmailError')
-    const maxAlertsEmail = request.yar.get('maxAlertsEmail')
-    if (maxAlertsEmailError) {
-      request.yar.clear('maxAlertsEmailError')
-      request.yar.clear('maxAlertsEmail')
-    }
+    const { maxAlertsEmailError, maxAlertsEmail } = consumeMaxAlertsState(request)
 
     persistLocationQueryInSession(request)
 
-    const emailDetailsContent =
-      content.emailDetails || english.emailDetails || {}
     const maxAlertsErrorObj = getMaxAlertsError(
       content,
       maxAlertsEmailError,
@@ -199,10 +232,7 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
       pageTitle: maxAlertsErrorObj ? ui.errorPageTitle : ui.pageTitle,
       formData: request.yar.get('formData') || {},
       maxAlertsError: maxAlertsErrorObj,
-      alertLimitHint:
-        emailDetailsContent.alertLimitHint ||
-        english.emailDetails?.alertLimitHint ||
-        ''
+      alertLimitHint: getAlertLimitHint(content)
     })
   } catch (error) {
     // Log and present a generic error view (re-using template with message) ''
@@ -220,14 +250,11 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
 const handleEmailDetailsPost = async (request, h, content = english) => {
   try {
     const ui = getEmailDetailsContent(content)
-    const { notifyByEmail } = request.payload || {}
+    const payload = getPayload(request)
+    const { notifyByEmail } = payload
 
     if (isBlankEmail(notifyByEmail)) {
-      return renderEmailDetailsView(h, request, content, ui, {
-        pageTitle: ui.errorPageTitle,
-        error: { message: 'Enter your email address', field: 'notifyByEmail' },
-        formData: request.payload
-      })
+      return renderValidationError(h, request, content, ui, payload)
     }
 
     const { email, location, lat, long } = getSubmissionContext(
@@ -250,11 +277,7 @@ const handleEmailDetailsPost = async (request, h, content = english) => {
       long
     )
     if (!isSendSuccessful) {
-      return renderEmailDetailsView(h, request, content, ui, {
-        pageTitle: ui.errorPageTitle,
-        error: { message: ui.sendFailureMessage, field: 'notifyByEmail' },
-        formData: request.payload
-      })
+      return renderSendFailure(h, request, content, ui, payload)
     }
 
     const emailVerifyEmailPath = config.get('notify.emailVerifyEmailPath')
@@ -262,11 +285,7 @@ const handleEmailDetailsPost = async (request, h, content = english) => {
   } catch (error) {
     logger.error('Error processing email details submission', error)
     const ui = getEmailDetailsContent(content)
-    return renderEmailDetailsView(h, request, content, ui, {
-      pageTitle: ui.errorPageTitle,
-      error: { message: 'Sorry, there is a problem processing the form' },
-      formData: request.payload || {}
-    })
+    return renderPostFailure(h, request, content, ui, getPayload(request))
   }
 }
 
