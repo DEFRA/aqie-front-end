@@ -122,7 +122,11 @@ const consumeMaxAlertsState = (request) => {
 
 const getAlertLimitHint = (content) => {
   const emailDetailsContent = content.emailDetails || english.emailDetails || {}
-  return emailDetailsContent.alertLimitHint || english.emailDetails?.alertLimitHint || ''
+  return (
+    emailDetailsContent.alertLimitHint ||
+    english.emailDetails?.alertLimitHint ||
+    ''
+  )
 }
 
 const getPayload = (request) => request.payload || {}
@@ -218,7 +222,8 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
     request.yar.set('notifyJourney', 'email-started') // ''
 
     // '' Read max-alerts error flag set by email-confirm-link after a 400 response
-    const { maxAlertsEmailError, maxAlertsEmail } = consumeMaxAlertsState(request)
+    const { maxAlertsEmailError, maxAlertsEmail } =
+      consumeMaxAlertsState(request)
 
     persistLocationQueryInSession(request)
 
