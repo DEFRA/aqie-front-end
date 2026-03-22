@@ -16,14 +16,30 @@ const getLayoutContent = (content = english) => {
   return { footerTxt, phaseBanner, backlink, cookieBanner }
 }
 
-const getEmailDetailsContent = (content = english) => {
-  const emailEnterEmail =
-    content.emailEnterEmail || english.emailEnterEmail || {}
-  const common = content.common || english.common || {}
-  const emailDetails = content.emailDetails || english.emailDetails || {}
+const getContentSection = (content, key) => ({
+  ...(english[key] || {}),
+  ...(content[key] || {})
+})
 
-  const heading = emailEnterEmail.heading || 'What is your email address?'
-  const serviceName = common.serviceName || 'Check air quality'
+const getTextOrDefault = (value, fallback) =>
+  typeof value === 'string' && value.trim() ? value : fallback
+
+const getSendFailureMessage = (emailDetails) =>
+  getTextOrDefault(
+    emailDetails.errors?.sendFailure,
+    'We could not send the email right now. Try again in a moment.'
+  )
+
+const getEmailDetailsContent = (content = english) => {
+  const emailEnterEmail = getContentSection(content, 'emailEnterEmail')
+  const common = getContentSection(content, 'common')
+  const emailDetails = getContentSection(content, 'emailDetails')
+
+  const heading = getTextOrDefault(
+    emailEnterEmail.heading,
+    'What is your email address?'
+  )
+  const serviceName = getTextOrDefault(common.serviceName, 'Check air quality')
   const pageTitle = `${heading} - ${serviceName} - GOV.UK`
   const errorPageTitle = `Error: ${heading} - ${serviceName} - GOV.UK`
 
@@ -32,10 +48,7 @@ const getEmailDetailsContent = (content = english) => {
     pageTitle,
     errorPageTitle,
     serviceName,
-    sendFailureMessage:
-      emailDetails.errors?.sendFailure ||
-      english.emailDetails?.errors?.sendFailure ||
-      'We could not send the email right now. Try again in a moment.'
+    sendFailureMessage: getSendFailureMessage(emailDetails)
   }
 }
 
