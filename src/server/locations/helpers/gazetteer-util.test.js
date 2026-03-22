@@ -164,6 +164,20 @@ describe('gazetteerEntryFilter', () => {
     })
   })
 
+  it('Postcode with no POPULATED_PLACE or DISTRICT_BOROUGH falls back to COUNTY_UNITARY', () => {
+    const result = gazetteerEntryFilter({
+      GAZETTEER_ENTRY: {
+        LOCAL_TYPE: 'Postcode',
+        NAME1: 'BS1 4DJ',
+        COUNTY_UNITARY: 'Bristol'
+      }
+    })
+    expect(result).toEqual({
+      title: 'BS1 4DJ, Bristol',
+      headerTitle: 'BS1 4DJ, Bristol'
+    })
+  })
+
   it('Non-Postcode with DISTRICT_BOROUGH and NAME2', () => {
     const result = gazetteerEntryFilter({
       GAZETTEER_ENTRY: {
