@@ -16,9 +16,12 @@ const getLayoutContent = (content = english) => {
   return { footerTxt, phaseBanner, backlink, cookieBanner }
 }
 
+const asObjectOrUndefined = (value) =>
+  value && typeof value === 'object' ? value : undefined
+
 const getContentSection = (content, key) => ({
-  ...(english[key] || {}),
-  ...(content[key] || {})
+  ...asObjectOrUndefined(english[key]),
+  ...asObjectOrUndefined(content[key])
 })
 
 const getTextOrDefault = (value, fallback) =>
