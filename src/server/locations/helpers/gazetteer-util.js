@@ -4,7 +4,9 @@ const normalizePopulatedPlace = (populatedPlace) => {
 
   // If it's an array, sort alphabetically and join with comma
   if (Array.isArray(populatedPlace)) {
-    return populatedPlace.sort().join(', ')
+    return [...populatedPlace]
+      .sort((a, b) => String(a).localeCompare(String(b)))
+      .join(', ')
   }
 
   // If it's already a string, return as-is

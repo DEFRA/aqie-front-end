@@ -165,7 +165,9 @@ export function buildNearestLocationsRange(
   const result = nearestLocationsRangeCal
     .map((curr) => buildNearestLocationEntry(curr, latlon, lang))
     .filter(Boolean)
-  result.sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
+  result.sort(
+    (a, b) => Number.parseFloat(a.distance) - Number.parseFloat(b.distance)
+  )
   return result
 }
 

@@ -4,7 +4,7 @@ import {
 } from './convert-string.js'
 
 function createURLRouteBookmarks(selectedMatchesAddedIDs) {
-  const normalizeString = (str) => str?.toLowerCase().replace(/\s+/g, '')
+  const normalizeString = (str) => str?.toLowerCase().replaceAll(/\s+/g, '')
   selectedMatchesAddedIDs.reduce((acc, item) => {
     let urlRoute = ''
     const validPostcode = isValidFullPostcodeUK(
@@ -28,7 +28,7 @@ function createURLRouteBookmarks(selectedMatchesAddedIDs) {
         : `${item.GAZETTEER_ENTRY.NAME1}_${item.GAZETTEER_ENTRY.COUNTY_UNITARY}`
     }
     urlRoute = convertStringToHyphenatedLowercaseWords(urlRoute) // Use the helper function to generate the custom ID
-    urlRoute = urlRoute.replace(/-/g, ' ')
+    urlRoute = urlRoute.replaceAll('-', ' ')
     urlRoute = convertStringToHyphenatedLowercaseWords(urlRoute)
     item.GAZETTEER_ENTRY.ID = normalizeString(urlRoute) // Update the nested object property
     acc.push(item)
