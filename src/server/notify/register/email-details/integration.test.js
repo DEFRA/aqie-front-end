@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import { createServer } from '../../../index.js'
-import { config } from '../../../../config/index.js'
 
 // Integration tests for email-details route ''
 describe('email-details integration', () => {
@@ -36,13 +35,15 @@ describe('email-details integration', () => {
     expect(res.result).toContain('Enter your email address')
   })
 
-  it('POST /notify/register/email-details success redirects', async () => {
+  it('POST /notify/register/email-details shows send error when notify is disabled', async () => {
     const res = await server.inject({
       method: 'POST',
       url: '/notify/register/email-details',
       payload: { notifyByEmail: 'user@example.com' }
     })
-    expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toBe(config.get('notify.emailVerifyEmailPath'))
+    expect(res.statusCode).toBe(200)
+    expect(res.result).toContain(
+      'We could not send the email right now. Try again in a moment.'
+    )
   })
 })

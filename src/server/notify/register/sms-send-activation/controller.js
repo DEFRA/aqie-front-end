@@ -12,6 +12,7 @@ import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
 const MOBILE_NUMBER_PAGE_PATH = config.get('notify.smsMobileNumberPath')
 const SMS_VERIFY_CODE_PATH = config.get('notify.smsVerifyCodePath')
 const DEFAULT_SERVICE_NAME = 'Check air quality'
+const HTTP_FORBIDDEN = 403
 
 // Create a logger instance ''
 const logger = createLogger()
@@ -74,7 +75,8 @@ function buildSendActivationViewModel({
   request,
   mobileNumber,
   backLinkUrl,
-  pageContent
+  pageContent,
+  error = null
 }) {
   const {
     lang,
@@ -114,8 +116,24 @@ function buildSendActivationViewModel({
     backLinkText: common?.backLinkText || 'Back',
     backLinkUrl,
     changeMobileNumberUrl: backLinkUrl,
-    mobileNumber
+    mobileNumber,
+    error
   }
+}
+
+function getSendFailureMessage(status, smsSendActivation) {
+  const genericMessage =
+    smsSendActivation?.errors?.sendFailed ||
+    'Sorry, we could not send your activation code. Please try again.'
+
+  if (status === HTTP_FORBIDDEN) {
+    return (
+      smsSendActivation?.errors?.accessDenied ||
+      'Sorry, we could not send your activation code because the SMS service is currently unavailable from this network. Please try again later.'
+    )
+  }
+
+  return genericMessage
 }
 
 function logSmsSendOutcome(result) {
@@ -215,6 +233,33 @@ export const handleSendActivationPost = async (request, h) => {
   request.yar.set('otpGeneratedAt', Date.now())
   request.yar.set('codeVerified', false)
 
+  const locationId = request.yar.get('locationId') || ''
+  const location = request.yar.get('location') || ''
+  const lat = request.yar.get('latitude')
+  const long = request.yar.get('longitude')
+  const backLinkUrl = buildSmsMobileNumberUrl({
+    location,
+    locationId,
+    lat,
+    long
+  })
+  const pageContent = getSendActivationPageContent(request, english)
+
+  const renderSendFailure = (status = null) => {
+    const viewModel = buildSendActivationViewModel({
+      request,
+      mobileNumber,
+      backLinkUrl,
+      pageContent,
+      error: {
+        message: getSendFailureMessage(status, pageContent.smsSendActivation)
+      }
+    })
+
+    viewModel.pageTitle = `Error: ${viewModel.pageTitle}`
+    return h.view('notify/register/sms-send-activation/index', viewModel)
+  }
+
   try {
     // Send OTP request to backend (backend generates and sends the code) ''
     logger.info('Attempting to send SMS code', {
@@ -224,8 +269,13 @@ export const handleSendActivationPost = async (request, h) => {
 
     const result = await sendSmsCode(mobileNumber, request)
     logSmsSendOutcome(result)
+
+    if (result?.skipped || !result?.ok) {
+      return renderSendFailure(result?.status)
+    }
   } catch (err) {
     logger.error('Notify SMS send failed with exception', err)
+    return renderSendFailure()
   }
 
   logger.info(

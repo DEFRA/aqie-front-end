@@ -4,6 +4,7 @@ import {
   handleSendNewCodeRequest,
   handleSendNewCodePost
 } from './controller.js'
+import { sendSmsCode } from '../../../common/services/notify.js'
 
 // Test constants ''
 const VIEW_PATH = 'notify/register/sms-send-new-code/index'
@@ -208,6 +209,98 @@ describe('SMS Send New Code Controller - handleSendNewCodePost', () => {
       'newCodeSentAt',
       expect.any(Number)
     )
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      '/notify/register/sms-verify-code'
+    )
+  })
+
+  it('should redirect to mobile number page when no number in payload or session', async () => {
+    mockRequest.payload = {}
+    mockRequest.yar.get.mockReturnValue(null)
+
+    await handleSendNewCodePost(mockRequest, mockH)
+
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      '/notify/register/sms-mobile-number'
+    )
+    expect(mockH.view).not.toHaveBeenCalled()
+  })
+
+  it('should render validation error when mobile number format is invalid', async () => {
+    mockRequest.payload = { mobileNumberNew: 'abc' }
+    mockRequest.yar.get.mockImplementation((key) => {
+      if (key === 'mobileNumber') return '07123456789'
+      return null
+    })
+
+    await handleSendNewCodePost(mockRequest, mockH)
+
+    expect(mockH.view).toHaveBeenCalledWith(
+      VIEW_PATH,
+      expect.objectContaining({
+        error: expect.objectContaining({
+          field: 'mobileNumberNew',
+          message: expect.any(String)
+        })
+      })
+    )
+  })
+
+  it('should use session mobile number if no new number was submitted', async () => {
+    mockRequest.payload = {}
+    mockRequest.yar.get.mockImplementation((key) => {
+      if (key === 'mobileNumber') return '07123456789'
+      if (key === 'otpGenerationSequence') return 2
+      return null
+    })
+    mockRequest.yar.clear = vi.fn()
+
+    await handleSendNewCodePost(mockRequest, mockH)
+
+    expect(mockRequest.yar.set).toHaveBeenCalledWith(
+      'mobileNumber',
+      '07123456789'
+    )
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('otpGenerationSequence', 3)
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      '/notify/register/sms-verify-code'
+    )
+  })
+
+  it('should continue and redirect when sendSmsCode returns not ok', async () => {
+    mockRequest.payload = { mobileNumberNew: '07123456789' }
+    mockRequest.yar.get.mockImplementation((key) => {
+      if (key === 'mobileNumber') return '07123456789'
+      if (key === 'otpGenerationSequence') return 0
+      return null
+    })
+    mockRequest.yar.clear = vi.fn()
+    sendSmsCode.mockResolvedValueOnce({
+      ok: false,
+      error: new Error('send failed')
+    })
+
+    await handleSendNewCodePost(mockRequest, mockH)
+
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('newCodeRequested', true)
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      '/notify/register/sms-verify-code'
+    )
+  })
+
+  it('should continue and redirect when sendSmsCode throws', async () => {
+    mockRequest.payload = { mobileNumberNew: '07123456789' }
+    mockRequest.yar.get.mockImplementation((key) => {
+      if (key === 'mobileNumber') return '07123456789'
+      if (key === 'otpGenerationSequence') return 1
+      return null
+    })
+    mockRequest.yar.clear = vi.fn()
+    sendSmsCode.mockRejectedValueOnce(new Error('boom'))
+
+    await handleSendNewCodePost(mockRequest, mockH)
+
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('otpGenerationSequence', 2)
     expect(mockH.redirect).toHaveBeenCalledWith(
       '/notify/register/sms-verify-code'
     )

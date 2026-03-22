@@ -204,7 +204,7 @@ const handleNotifyPost = async (request, h, content = english) => {
 
   // Fire-and-forget capture to subscription backend ''
   try {
-    const res = await recordSmsCapture(validation.formatted)
+    const res = await recordSmsCapture(validation.formatted, request)
     if (res?.ok) {
       logger.debug('Recorded SMS capture')
     } else if (res?.skipped) {

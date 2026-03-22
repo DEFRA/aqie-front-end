@@ -36,6 +36,27 @@ jobs:
           npm run build:frontend
           npm test
 
+      - name: Publish Coverage Summary
+        env:
+          BUILD_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          IFS='|' read -r lines_pct lines_cov lines_total stmt_pct fn_pct br_pct <<EOF
+          $(node -e "const s=require('./coverage/coverage-summary.json'); const t=s.total; process.stdout.write([t.lines.pct,t.lines.covered,t.lines.total,t.statements.pct,t.functions.pct,t.branches.pct].join('|'));")
+          EOF
+
+          cat <<EOF >> "$GITHUB_STEP_SUMMARY"
+          ### Test Coverage Summary
+
+          - Lines: ${lines_pct}% (${lines_cov}/${lines_total})
+          - Statements: ${stmt_pct}%
+          - Functions: ${fn_pct}%
+          - Branches: ${br_pct}%
+
+          Commit: ${BUILD_SHA}
+          EOF
+
       - name: Fetch main branch for SonarCloud PR analysis
         run: git fetch --no-tags --prune origin +refs/heads/main:refs/remotes/origin/main
 

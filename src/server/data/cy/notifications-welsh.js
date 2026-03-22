@@ -231,6 +231,8 @@ export const notificationTranslationsWelsh = {
     alertLimitHint:
       'TODO Welsh: You can add up to 5 alerts for each email address.',
     errors: {
+      sendFailure:
+        'TODO Welsh: We could not send the email right now. Try again in a moment.',
       maxAlertsReached: {
         summary:
           'TODO Welsh: You have already added the maximum of 5 alerts for {email}. Enter a different email address.',

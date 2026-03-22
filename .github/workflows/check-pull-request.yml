@@ -12,13 +12,17 @@ on:
       - synchronize
       - ready_for_review
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   pr-validator:
     name: Run Pull Request Checks
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1 - Security: pinned to commit SHA
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1 - Security: pinned to commit SHA
         with:
           fetch-depth: 0
 
@@ -33,6 +37,56 @@ jobs:
           npm run format:check
           npm run lint
           npm test
+
+      - name: Publish PR Coverage Summary
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+
+          IFS='|' read -r lines_pct lines_cov lines_total stmt_pct fn_pct br_pct <<EOF
+          $(node -e "const s=require('./coverage/coverage-summary.json'); const t=s.total; process.stdout.write([t.lines.pct,t.lines.covered,t.lines.total,t.statements.pct,t.functions.pct,t.branches.pct].join('|'));")
+          EOF
+
+          report_body=$(cat <<EOF
+          <!-- aqie-coverage-report -->
+          ### Test Coverage Summary
+
+          - Lines: ${lines_pct}% (${lines_cov}/${lines_total})
+          - Statements: ${stmt_pct}%
+          - Functions: ${fn_pct}%
+          - Branches: ${br_pct}%
+
+          Commit: ${PR_SHA}
+          EOF
+          )
+
+          printf '%s\n' "$report_body" >> "$GITHUB_STEP_SUMMARY"
+
+          comments_json=$(curl -sS \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments?per_page=100")
+
+          existing_comment_id=$(printf '%s' "$comments_json" | node -e "let d=''; process.stdin.on('data', c => d += c); process.stdin.on('end', () => { const comments = JSON.parse(d); const existing = comments.find((c) => c?.body?.includes('<!-- aqie-coverage-report -->')); if (existing) process.stdout.write(String(existing.id)); });")
+
+          if [ -n "$existing_comment_id" ]; then
+            curl -sS -X PATCH \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/comments/${existing_comment_id}" \
+              -d "$(printf '%s' "$report_body" | node -e "let d=''; process.stdin.on('data', c => d += c); process.stdin.on('end', () => process.stdout.write(JSON.stringify({ body: d })));")" >/dev/null
+          else
+            curl -sS -X POST \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" \
+              -d "$(printf '%s' "$report_body" | node -e "let d=''; process.stdin.on('data', c => d += c); process.stdin.on('end', () => process.stdout.write(JSON.stringify({ body: d })));")" >/dev/null
+          fi
 
       - name: Test Docker Image Build
         run: |
