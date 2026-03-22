@@ -152,6 +152,42 @@ const renderPostFailure = (h, request, content, ui, payload) =>
     formData: payload
   })
 
+const handleValidEmailSubmission = async (
+  request,
+  h,
+  content,
+  ui,
+  notifyByEmail,
+  payload
+) => {
+  const { email, location, lat, long } = getSubmissionContext(
+    request,
+    notifyByEmail
+  )
+
+  // '' Note: the backend has no GET /api/subscriptions endpoint for email.
+  // '' Max-5 enforcement happens at POST /setup-alert (after the user clicks
+  // '' the activation link). The email-confirm-link controller handles the 400
+  // '' and redirects back here with maxAlertsEmailError + maxAlertsEmail flags.
+  await recordEmailCaptureSafely(email)
+
+  // Send activation link and redirect to check email page ''
+  const isSendSuccessful = await sendActivationLink(
+    request,
+    email,
+    location,
+    lat,
+    long
+  )
+
+  if (!isSendSuccessful) {
+    return renderSendFailure(h, request, content, ui, payload)
+  }
+
+  const emailVerifyEmailPath = config.get('notify.emailVerifyEmailPath')
+  return h.redirect(emailVerifyEmailPath)
+}
+
 const isBlankEmail = (notifyByEmail) =>
   !notifyByEmail || notifyByEmail.trim() === ''
 
@@ -262,31 +298,14 @@ const handleEmailDetailsPost = async (request, h, content = english) => {
       return renderValidationError(h, request, content, ui, payload)
     }
 
-    const { email, location, lat, long } = getSubmissionContext(
+    return handleValidEmailSubmission(
       request,
-      notifyByEmail
+      h,
+      content,
+      ui,
+      notifyByEmail,
+      payload
     )
-
-    // '' Note: the backend has no GET /api/subscriptions endpoint for email.
-    // '' Max-5 enforcement happens at POST /setup-alert (after the user clicks
-    // '' the activation link). The email-confirm-link controller handles the 400
-    // '' and redirects back here with maxAlertsEmailError + maxAlertsEmail flags.
-    await recordEmailCaptureSafely(email)
-
-    // Send activation link and redirect to check email page ''
-    const isSendSuccessful = await sendActivationLink(
-      request,
-      email,
-      location,
-      lat,
-      long
-    )
-    if (!isSendSuccessful) {
-      return renderSendFailure(h, request, content, ui, payload)
-    }
-
-    const emailVerifyEmailPath = config.get('notify.emailVerifyEmailPath')
-    return h.redirect(emailVerifyEmailPath)
   } catch (error) {
     logger.error('Error processing email details submission', error)
     const ui = getEmailDetailsContent(content)
