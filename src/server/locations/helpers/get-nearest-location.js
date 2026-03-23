@@ -179,6 +179,55 @@ export function buildNearestLocationsRange(
   return result
 }
 
+const buildUpdatedPollutantsForMeasurement = (measurement, lang) => {
+  const updatedPollutants = {}
+
+  Object.entries(measurement.pollutants || {}).forEach(([pollutant, data]) => {
+    const polValue = data?.value
+    // Only proceed if the value is a valid non‑negative number
+    if (!isValidNonNegativeNumber(polValue)) {
+      return
+    }
+    const { getDaqi, getBand } =
+      lang === LANG_CY
+        ? getPollutantLevelCy(polValue, pollutant)
+        : getPollutantLevel(polValue, pollutant)
+
+    updatedPollutants[pollutant] = {
+      ...data,
+      daqi: getDaqi,
+      band: getBand
+    }
+  })
+
+  return updatedPollutants
+}
+
+const mapMeasurementWithPollutants = (measurement, lang, latlon) => {
+  const updatedPollutants = buildUpdatedPollutantsForMeasurement(
+    measurement,
+    lang
+  )
+
+  if (Object.keys(updatedPollutants).length === 0) {
+    logger.error(`No valid pollutants found for measurement`, {
+      measurementId: measurement.id,
+      latlon
+    })
+  }
+
+  return {
+    ...measurement,
+    pollutants: updatedPollutants
+  }
+}
+
+const mapNewMeasurementsWithPollutants = (measurements = [], lang, latlon) => {
+  return measurements.map((measurement) =>
+    mapMeasurementWithPollutants(measurement, lang, latlon)
+  )
+}
+
 async function getNearestLocation(
   matches,
   forecasts,
@@ -226,41 +275,10 @@ async function getNearestLocation(
     }
 
     if (newMeasurements?.measurements) {
-      const newMeasurementsMapped = newMeasurements.measurements.map(
-        (measurement) => {
-          const updatedPollutants = {}
-
-          Object.entries(measurement.pollutants || {}).forEach(
-            ([pollutant, data]) => {
-              const polValue = data?.value
-              // Only proceed if the value is a valid non‑negative number
-              if (!isValidNonNegativeNumber(polValue)) {
-                return
-              }
-              const { getDaqi, getBand } =
-                lang === LANG_CY
-                  ? getPollutantLevelCy(polValue, pollutant)
-                  : getPollutantLevel(polValue, pollutant)
-
-              updatedPollutants[pollutant] = {
-                ...data,
-                daqi: getDaqi,
-                band: getBand
-              }
-            }
-          )
-          // validate updatedPollutants {} is still empty and log an error statement
-          if (Object.keys(updatedPollutants).length === 0) {
-            logger.error(`No valid pollutants found for measurement`, {
-              measurementId: measurement.id,
-              latlon
-            })
-          }
-          return {
-            ...measurement,
-            pollutants: updatedPollutants
-          }
-        }
+      const newMeasurementsMapped = mapNewMeasurementsWithPollutants(
+        newMeasurements.measurements,
+        lang,
+        latlon
       )
       nearestLocationsRange = buildNearestLocationsRange(
         matches,
