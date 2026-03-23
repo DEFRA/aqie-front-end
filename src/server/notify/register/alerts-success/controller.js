@@ -10,6 +10,24 @@ import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
 // '' Create a logger instance
 const logger = createLogger()
 
+const ALERTS_SUCCESS_SESSION_KEYS = [
+  'emailAddress',
+  'location',
+  'locationId',
+  'latitude',
+  'longitude',
+  'alertDetailsConfirmed',
+  'notifyJourney',
+  'notificationFlow',
+  'formData',
+  'emailVerificationToken',
+  'emailVerified'
+]
+
+const clearSessionKeys = (request, keys) => {
+  keys.forEach((key) => request.yar.clear(key))
+}
+
 const formatEmailSuccessHeading = (template = '', location = '') => {
   if (!template) {
     return ''
@@ -26,20 +44,9 @@ const formatTemplate = (template = '', replacements = {}) => {
   }, template)
 }
 
-const handleAlertsSuccessRequest = (request, h, content = english) => {
-  logger.info('Showing email alerts success page')
-
-  const lang = resolveNotifyLanguage(request)
-  const languageContent = lang === LANG_CY ? welsh : english
-  const { footerTxt, phaseBanner, backlink, cookieBanner } = languageContent
-  const common = languageContent.common || english.common
-  const emailSuccess = languageContent.emailSuccess || english.emailSuccess
-  const metaSiteUrl = getAirQualitySiteUrl(request)
-
-  // '' Get email address and location from session
+const getAlertsSuccessSessionData = (request, emailSuccess) => {
   const emailAddress = request.yar.get('emailAddress') || 'Not provided'
   const rawLocation = request.yar.get('location') || 'Not selected'
-  // '' Remove 'Air quality in' prefix if present
   const location = rawLocation.replace(/^\s*air\s+quality\s+in\s+/i, '').trim()
   const alertDetailsConfirmed =
     request.yar.get('alertDetailsConfirmed') || false
@@ -54,6 +61,35 @@ const handleAlertsSuccessRequest = (request, h, content = english) => {
     emailSuccess.anotherAlertPrefix,
     { emailAddress }
   )
+
+  return {
+    emailAddress,
+    location,
+    alertDetailsConfirmed,
+    emailSuccessHeading,
+    emailSuccessAnotherAlertPrefix,
+    formData: request.yar.get('formData') || {}
+  }
+}
+
+const handleAlertsSuccessRequest = (request, h, _content = english) => {
+  logger.info('Showing email alerts success page')
+
+  const lang = resolveNotifyLanguage(request)
+  const languageContent = lang === LANG_CY ? welsh : english
+  const { footerTxt, phaseBanner, backlink, cookieBanner } = languageContent
+  const common = languageContent.common || english.common
+  const emailSuccess = languageContent.emailSuccess || english.emailSuccess
+  const metaSiteUrl = getAirQualitySiteUrl(request)
+
+  const {
+    emailAddress,
+    location,
+    alertDetailsConfirmed,
+    emailSuccessHeading,
+    emailSuccessAnotherAlertPrefix,
+    formData
+  } = getAlertsSuccessSessionData(request, emailSuccess)
 
   const serviceName = common?.serviceName || 'Check air quality'
   const viewModel = {
@@ -75,7 +111,7 @@ const handleAlertsSuccessRequest = (request, h, content = english) => {
     emailSuccessHeading,
     emailSuccessAnotherAlertPrefix,
     alertDetailsConfirmed,
-    formData: request.yar.get('formData') || {},
+    formData,
     userResearchPanelUrl: config.get('userResearchPanelUrl')
   }
 
@@ -84,19 +120,7 @@ const handleAlertsSuccessRequest = (request, h, content = english) => {
 
 const handleAlertsSuccessPost = (request, h) => {
   // '' Clear all notification session data when user is done
-  ;[
-    'emailAddress',
-    'location',
-    'locationId',
-    'latitude',
-    'longitude',
-    'alertDetailsConfirmed',
-    'notifyJourney',
-    'notificationFlow',
-    'formData',
-    'emailVerificationToken',
-    'emailVerified'
-  ].forEach((k) => request.yar.clear(k))
+  clearSessionKeys(request, ALERTS_SUCCESS_SESSION_KEYS)
 
   return h.redirect('/')
 }

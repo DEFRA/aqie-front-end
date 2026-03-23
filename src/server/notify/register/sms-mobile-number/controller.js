@@ -9,9 +9,106 @@ import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
 
 // Constants for repeated strings ''
 const DEFAULT_SERVICE_NAME = 'Check air quality'
+const COORDINATE_PRECISION_FACTOR = 1000000
 
 // Create a logger instance ''
 const logger = createLogger()
+
+const roundCoordinate = (value) => {
+  return (
+    Math.round(Number.parseFloat(value) * COORDINATE_PRECISION_FACTOR) /
+    COORDINATE_PRECISION_FACTOR
+  )
+}
+
+const sanitizeLocation = (location = '') => {
+  return location.replace(/^\s*air\s+quality\s+in\s+/i, '').trim()
+}
+
+const applyQueryDataToSession = (request) => {
+  if (request.query.location) {
+    const sanitizedLocation = sanitizeLocation(request.query.location)
+    request.yar.set('location', sanitizedLocation)
+    logger.info('Location captured from query parameter', {
+      rawLocation: request.query.location,
+      sanitizedLocation,
+      wasModified: sanitizedLocation !== request.query.location
+    })
+  }
+
+  if (request.query.lat) {
+    request.yar.set('latitude', roundCoordinate(request.query.lat))
+  }
+
+  if (request.query.long) {
+    request.yar.set('longitude', roundCoordinate(request.query.long))
+  }
+
+  if (request.query.locationId) {
+    request.yar.set('locationId', request.query.locationId)
+  }
+}
+
+const getLocationIdForBackLink = (request) => {
+  return request.query.locationId || request.yar.get('locationId') || ''
+}
+
+const getNotifyPageContent = (request, content = english) => {
+  const lang = resolveNotifyLanguage(request)
+  const languageContent = lang === LANG_CY ? welsh : content
+  const { footerTxt, phaseBanner, cookieBanner } = languageContent
+  const common = languageContent.common || english.common
+  const smsMobilePhone =
+    languageContent.smsMobilePhone || english.smsMobilePhone
+  const smsMobileNumber =
+    languageContent.smsMobileNumber || english.smsMobileNumber
+
+  return {
+    lang,
+    footerTxt,
+    phaseBanner,
+    cookieBanner,
+    common,
+    smsMobilePhone,
+    smsMobileNumber,
+    serviceName: common?.serviceName || DEFAULT_SERVICE_NAME,
+    pageTitle: smsMobilePhone.pageTitle,
+    metaSiteUrl: getAirQualitySiteUrl(request)
+  }
+}
+
+const withBackLink = (viewModel, locationId, backLinkText) => {
+  if (!locationId) {
+    return viewModel
+  }
+
+  return {
+    ...viewModel,
+    displayBacklink: true,
+    customBackLink: true,
+    backLinkText,
+    backLinkUrl: `/location/${locationId}`
+  }
+}
+
+const withMaxAlertsError = (viewModel, smsMobileNumber, maskedPhoneNumber) => {
+  const errorMessages = smsMobileNumber?.errors?.maxAlertsReached
+
+  return {
+    ...viewModel,
+    error: {
+      message: errorMessages?.field || '',
+      field: 'notifyByText'
+    },
+    maxAlertsError: {
+      summary: (errorMessages?.summary || '').replace(
+        '{phoneNumber}',
+        maskedPhoneNumber
+      ),
+      field: errorMessages?.field || ''
+    }
+  }
+}
 
 const handleNotifyRequest = (request, h, content = english) => {
   // '' Check if user has reached maximum alerts
@@ -24,33 +121,7 @@ const handleNotifyRequest = (request, h, content = english) => {
     request.yar.clear('maskedPhoneNumber')
   }
 
-  // Capture location from query parameter if provided
-  if (request.query.location) {
-    // '' Remove 'Air quality in' prefix if present to ensure consistency
-    const sanitizedLocation = request.query.location
-      .replace(/^\s*air\s+quality\s+in\s+/i, '')
-      .trim()
-    request.yar.set('location', sanitizedLocation)
-    // '' Log the location string to debug sanitization
-    logger.info('Location captured from query parameter', {
-      rawLocation: request.query.location,
-      sanitizedLocation,
-      wasModified: sanitizedLocation !== request.query.location
-    })
-  }
-
-  // Capture latitude and longitude from query parameters ''
-  // '' Round to 6 decimal places for consistency with BNG-converted coordinates
-  if (request.query.lat) {
-    const lat =
-      Math.round(Number.parseFloat(request.query.lat) * 1000000) / 1000000
-    request.yar.set('latitude', lat)
-  }
-  if (request.query.long) {
-    const lon =
-      Math.round(Number.parseFloat(request.query.long) * 1000000) / 1000000
-    request.yar.set('longitude', lon)
-  }
+  applyQueryDataToSession(request)
 
   // Log coordinates for debugging ''
   logger.info('Starting notify journey', {
@@ -68,28 +139,22 @@ const handleNotifyRequest = (request, h, content = english) => {
   // Set the journey start in session
   request.yar.set('notifyJourney', 'started')
 
-  // Capture and store locationId in session for back navigation ''
-  if (request.query.locationId) {
-    request.yar.set('locationId', request.query.locationId)
-  }
-
   // Get locationId from session or query parameter to build back link ''
-  const locationId =
-    request.query.locationId || request.yar.get('locationId') || ''
+  const locationId = getLocationIdForBackLink(request)
+  const {
+    lang,
+    footerTxt,
+    phaseBanner,
+    cookieBanner,
+    common,
+    smsMobilePhone,
+    smsMobileNumber,
+    serviceName,
+    pageTitle,
+    metaSiteUrl
+  } = getNotifyPageContent(request, content)
 
-  const lang = resolveNotifyLanguage(request)
-  const languageContent = lang === LANG_CY ? welsh : content
-  const { footerTxt, phaseBanner, cookieBanner } = languageContent
-  const common = languageContent.common || english.common
-  const smsMobilePhone =
-    languageContent.smsMobilePhone || english.smsMobilePhone
-  const smsMobileNumber =
-    languageContent.smsMobileNumber || english.smsMobileNumber
-  const metaSiteUrl = getAirQualitySiteUrl(request)
-  const pageTitle = smsMobilePhone.pageTitle
-  const serviceName = common?.serviceName || DEFAULT_SERVICE_NAME
-
-  const viewModel = {
+  let viewModel = {
     pageTitle: maxAlertsError
       ? `Error: ${pageTitle} - ${serviceName} - GOV.UK`
       : `${pageTitle} - ${serviceName} - GOV.UK`,
@@ -116,27 +181,19 @@ const handleNotifyRequest = (request, h, content = english) => {
 
   // '' Add max alerts error if present
   if (maxAlertsError && maskedPhoneNumber) {
-    const errorMessages = smsMobileNumber?.errors?.maxAlertsReached
-    viewModel.error = {
-      message: errorMessages?.field || '',
-      field: 'notifyByText'
-    }
-    viewModel.maxAlertsError = {
-      summary: (errorMessages?.summary || '').replace(
-        '{phoneNumber}',
-        maskedPhoneNumber
-      ),
-      field: errorMessages?.field || ''
-    }
+    viewModel = withMaxAlertsError(
+      viewModel,
+      smsMobileNumber,
+      maskedPhoneNumber
+    )
   }
 
   // Only show back button if locationId exists ''
-  if (locationId) {
-    viewModel.displayBacklink = true
-    viewModel.customBackLink = true
-    viewModel.backLinkText = common?.backLinkText || 'Back'
-    viewModel.backLinkUrl = `/location/${locationId}`
-  }
+  viewModel = withBackLink(
+    viewModel,
+    locationId,
+    common?.backLinkText || 'Back'
+  )
 
   return h.view('notify/register/sms-mobile-number/index', viewModel)
 }
@@ -145,15 +202,17 @@ const handleNotifyPost = async (request, h, content = english) => {
   const { notifyByText } = request.payload
 
   // Validate UK mobile number ''
-  const lang = resolveNotifyLanguage(request)
-  const languageContent = lang === LANG_CY ? welsh : content
-  const { footerTxt, phaseBanner, cookieBanner } = languageContent
-  const common = languageContent.common || english.common
-  const smsMobilePhone =
-    languageContent.smsMobilePhone || english.smsMobilePhone
-  const serviceName = common?.serviceName || DEFAULT_SERVICE_NAME
-  const pageTitle = smsMobilePhone.pageTitle
-  const metaSiteUrl = getAirQualitySiteUrl(request)
+  const {
+    lang,
+    footerTxt,
+    phaseBanner,
+    cookieBanner,
+    common,
+    smsMobilePhone,
+    serviceName,
+    pageTitle,
+    metaSiteUrl
+  } = getNotifyPageContent(request, content)
 
   const validation = validateUKMobile(notifyByText, {
     empty: smsMobilePhone.errors?.empty,
@@ -162,10 +221,9 @@ const handleNotifyPost = async (request, h, content = english) => {
 
   if (!validation.isValid) {
     // Get locationId from session or query parameter to build back link ''
-    const locationId =
-      request.query.locationId || request.yar.get('locationId') || ''
+    const locationId = getLocationIdForBackLink(request)
 
-    const viewModel = {
+    let viewModel = {
       pageTitle: `Error: ${pageTitle} - ${serviceName} - GOV.UK`,
       heading: smsMobilePhone.heading,
       page: smsMobilePhone.heading,
@@ -189,12 +247,11 @@ const handleNotifyPost = async (request, h, content = english) => {
     }
 
     // Only show back button if locationId exists ''
-    if (locationId) {
-      viewModel.displayBacklink = true
-      viewModel.customBackLink = true
-      viewModel.backLinkText = common?.backLinkText || 'Back'
-      viewModel.backLinkUrl = `/location/${locationId}`
-    }
+    viewModel = withBackLink(
+      viewModel,
+      locationId,
+      common?.backLinkText || 'Back'
+    )
 
     return h.view('notify/register/sms-mobile-number/index', viewModel)
   }

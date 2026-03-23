@@ -5,6 +5,8 @@ import { LANG_EN } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 
 const logger = createLogger()
+const SERVICE_NAME = 'Check air quality'
+const CONFIRM_ALERT_DETAILS_HEADING = 'Confirm your alert details'
 
 // Helper: derive contact method and value ''
 const getContactDetails = (request) => {
@@ -39,9 +41,9 @@ export const handleConfirmAlertDetailsRequest = (
 
   const viewModel = {
     pageTitle: 'Confirm your alert details - Check air quality - GOV.UK',
-    heading: 'Confirm your alert details',
-    page: 'Confirm your alert details',
-    serviceName: 'Check air quality',
+    heading: CONFIRM_ALERT_DETAILS_HEADING,
+    page: CONFIRM_ALERT_DETAILS_HEADING,
+    serviceName: SERVICE_NAME,
     lang: LANG_EN,
     metaSiteUrl,
     currentPath: request.path,
@@ -80,9 +82,9 @@ export const handleConfirmAlertDetailsPost = (
     const viewModel = {
       pageTitle:
         'Error: Confirm your alert details - Check air quality - GOV.UK',
-      heading: 'Confirm your alert details',
-      page: 'Confirm your alert details',
-      serviceName: 'Check air quality',
+      heading: CONFIRM_ALERT_DETAILS_HEADING,
+      page: CONFIRM_ALERT_DETAILS_HEADING,
+      serviceName: SERVICE_NAME,
       lang: LANG_EN,
       metaSiteUrl,
       currentPath: request.path,
