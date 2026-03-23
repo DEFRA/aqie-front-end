@@ -33,6 +33,13 @@ function isTestMode() {
 const logger = createLogger()
 const optionsEphemeralProtected = {}
 const options = {}
+
+const resolveDependency = (injectedValue, fallbackValue) => {
+  if (injectedValue === undefined) {
+    return fallbackValue
+  }
+  return injectedValue
+}
 // Dependency Injection setup helpers
 function setupFetchForecastsDI(di = {}) {
   // ''
@@ -40,34 +47,24 @@ function setupFetchForecastsDI(di = {}) {
   // config, logger, catchFetchError, errorResponse, isTestMode, FORECASTS_API_PATH, HTTP_STATUS_OK, optionsEphemeralProtected, options
   // You may need to import these in the main file and pass them in DI if not present
   return {
-    injectedConfig:
-      di.config || (typeof config !== 'undefined' ? config : undefined),
-    injectedLogger:
-      di.logger || (typeof logger !== 'undefined' ? logger : undefined),
-    injectedCatchFetchError:
-      di.catchFetchError ||
-      (typeof catchFetchError !== 'undefined' ? catchFetchError : undefined),
-    injectedErrorResponse:
-      di.errorResponse ||
-      (typeof errorResponse !== 'undefined' ? errorResponse : undefined),
-    injectedIsTestMode:
-      di.isTestMode ||
-      (typeof isTestMode !== 'undefined' ? isTestMode : undefined),
-    injectedForecastsApiPath:
-      di.FORECASTS_API_PATH ||
-      (typeof FORECASTS_API_PATH !== 'undefined'
-        ? FORECASTS_API_PATH
-        : undefined),
-    injectedHttpStatusOk:
-      di.HTTP_STATUS_OK ||
-      (typeof HTTP_STATUS_OK !== 'undefined' ? HTTP_STATUS_OK : undefined),
-    injectedOptionsEphemeralProtected:
-      di.optionsEphemeralProtected ||
-      (typeof optionsEphemeralProtected !== 'undefined'
-        ? optionsEphemeralProtected
-        : undefined),
-    injectedOptions:
-      di.options || (typeof options !== 'undefined' ? options : undefined)
+    injectedConfig: resolveDependency(di.config, config),
+    injectedLogger: resolveDependency(di.logger, logger),
+    injectedCatchFetchError: resolveDependency(
+      di.catchFetchError,
+      catchFetchError
+    ),
+    injectedErrorResponse: resolveDependency(di.errorResponse, errorResponse),
+    injectedIsTestMode: resolveDependency(di.isTestMode, isTestMode),
+    injectedForecastsApiPath: resolveDependency(
+      di.FORECASTS_API_PATH,
+      FORECASTS_API_PATH
+    ),
+    injectedHttpStatusOk: resolveDependency(di.HTTP_STATUS_OK, HTTP_STATUS_OK),
+    injectedOptionsEphemeralProtected: resolveDependency(
+      di.optionsEphemeralProtected,
+      optionsEphemeralProtected
+    ),
+    injectedOptions: resolveDependency(di.options, options)
   }
 }
 
@@ -77,30 +74,22 @@ function setupNILocationDataDI(di = {}) {
   // logger, buildNIPostcodeUrl, isMockEnabled, config, formatNorthernIrelandPostcode, catchProxyFetchError, isTestMode
   // You may need to import these in the main file and pass them in DI if not present
   return {
-    injectedLogger:
-      di.logger || (typeof logger !== 'undefined' ? logger : undefined),
-    injectedBuildNIPostcodeUrl:
-      di.buildNIPostcodeUrl ||
-      (typeof buildNIPostcodeUrl !== 'undefined'
-        ? buildNIPostcodeUrl
-        : undefined),
-    injectedIsMockEnabled:
-      di.isMockEnabled !== undefined ? di.isMockEnabled : isMockEnabled,
-    injectedConfig:
-      di.config || (typeof config !== 'undefined' ? config : undefined),
-    injectedFormatNorthernIrelandPostcode:
-      di.formatNorthernIrelandPostcode ||
-      (typeof formatNorthernIrelandPostcode !== 'undefined'
-        ? formatNorthernIrelandPostcode
-        : undefined),
-    injectedCatchProxyFetchError:
-      di.catchProxyFetchError ||
-      (typeof catchProxyFetchError !== 'undefined'
-        ? catchProxyFetchError
-        : undefined),
-    injectedIsTestMode:
-      di.isTestMode ||
-      (typeof isTestMode !== 'undefined' ? isTestMode : undefined)
+    injectedLogger: resolveDependency(di.logger, logger),
+    injectedBuildNIPostcodeUrl: resolveDependency(
+      di.buildNIPostcodeUrl,
+      buildNIPostcodeUrl
+    ),
+    injectedIsMockEnabled: resolveDependency(di.isMockEnabled, isMockEnabled),
+    injectedConfig: resolveDependency(di.config, config),
+    injectedFormatNorthernIrelandPostcode: resolveDependency(
+      di.formatNorthernIrelandPostcode,
+      formatNorthernIrelandPostcode
+    ),
+    injectedCatchProxyFetchError: resolveDependency(
+      di.catchProxyFetchError,
+      catchProxyFetchError
+    ),
+    injectedIsTestMode: resolveDependency(di.isTestMode, isTestMode)
   }
 }
 
@@ -110,57 +99,41 @@ function setupUKLocationDataDI(di = {}) {
   // logger, config, buildUKLocationFilters, combineUKSearchTerms, isValidFullPostcodeUK, isValidPartialPostcodeUK, buildUKApiUrl, shouldCallUKApi, catchProxyFetchError, formatUKApiResponse, isTestMode, SYMBOLS_ARRAY, HTTP_STATUS_OK, options
   // You may need to import these in the main file and pass them in DI if not present
   return {
-    injectedLogger:
-      di.logger || (typeof logger !== 'undefined' ? logger : undefined),
-    injectedConfig:
-      di.config || (typeof config !== 'undefined' ? config : undefined),
-    injectedBuildUKLocationFilters:
-      di.buildUKLocationFilters ||
-      (typeof buildUKLocationFilters !== 'undefined'
-        ? buildUKLocationFilters
-        : undefined),
-    injectedCombineUKSearchTerms:
-      di.combineUKSearchTerms ||
-      (typeof combineUKSearchTerms !== 'undefined'
-        ? combineUKSearchTerms
-        : undefined),
-    injectedIsValidFullPostcodeUK:
-      di.isValidFullPostcodeUK ||
-      (typeof isValidFullPostcodeUK !== 'undefined'
-        ? isValidFullPostcodeUK
-        : undefined),
-    injectedIsValidPartialPostcodeUK:
-      di.isValidPartialPostcodeUK ||
-      (typeof isValidPartialPostcodeUK !== 'undefined'
-        ? isValidPartialPostcodeUK
-        : undefined),
-    injectedBuildUKApiUrl:
-      di.buildUKApiUrl ||
-      (typeof buildUKApiUrl !== 'undefined' ? buildUKApiUrl : undefined),
-    injectedShouldCallUKApi:
-      di.shouldCallUKApi ||
-      (typeof shouldCallUKApi !== 'undefined' ? shouldCallUKApi : undefined),
-    injectedCatchProxyFetchError:
-      di.catchProxyFetchError ||
-      (typeof catchProxyFetchError !== 'undefined'
-        ? catchProxyFetchError
-        : undefined),
-    injectedFormatUKApiResponse:
-      di.formatUKApiResponse ||
-      (typeof formatUKApiResponse !== 'undefined'
-        ? formatUKApiResponse
-        : undefined),
-    injectedIsTestMode:
-      di.isTestMode ||
-      (typeof isTestMode !== 'undefined' ? isTestMode : undefined),
-    injectedSymbolsArray:
-      di.SYMBOLS_ARRAY ||
-      (typeof SYMBOLS_ARRAY !== 'undefined' ? SYMBOLS_ARRAY : undefined),
-    injectedHttpStatusOk:
-      di.HTTP_STATUS_OK ||
-      (typeof HTTP_STATUS_OK !== 'undefined' ? HTTP_STATUS_OK : undefined),
-    injectedOptions:
-      di.options || (typeof options !== 'undefined' ? options : undefined)
+    injectedLogger: resolveDependency(di.logger, logger),
+    injectedConfig: resolveDependency(di.config, config),
+    injectedBuildUKLocationFilters: resolveDependency(
+      di.buildUKLocationFilters,
+      buildUKLocationFilters
+    ),
+    injectedCombineUKSearchTerms: resolveDependency(
+      di.combineUKSearchTerms,
+      combineUKSearchTerms
+    ),
+    injectedIsValidFullPostcodeUK: resolveDependency(
+      di.isValidFullPostcodeUK,
+      isValidFullPostcodeUK
+    ),
+    injectedIsValidPartialPostcodeUK: resolveDependency(
+      di.isValidPartialPostcodeUK,
+      isValidPartialPostcodeUK
+    ),
+    injectedBuildUKApiUrl: resolveDependency(di.buildUKApiUrl, buildUKApiUrl),
+    injectedShouldCallUKApi: resolveDependency(
+      di.shouldCallUKApi,
+      shouldCallUKApi
+    ),
+    injectedCatchProxyFetchError: resolveDependency(
+      di.catchProxyFetchError,
+      catchProxyFetchError
+    ),
+    injectedFormatUKApiResponse: resolveDependency(
+      di.formatUKApiResponse,
+      formatUKApiResponse
+    ),
+    injectedIsTestMode: resolveDependency(di.isTestMode, isTestMode),
+    injectedSymbolsArray: resolveDependency(di.SYMBOLS_ARRAY, SYMBOLS_ARRAY),
+    injectedHttpStatusOk: resolveDependency(di.HTTP_STATUS_OK, HTTP_STATUS_OK),
+    injectedOptions: resolveDependency(di.options, options)
   }
 }
 

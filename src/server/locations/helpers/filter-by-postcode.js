@@ -2,7 +2,9 @@ const SINGLE_MATCH = 1 // Limit to a single match
 
 // Helper function to normalize POPULATED_PLACE (handles arrays consistently) ''
 const normalizePopulatedPlace = (populatedPlace) => {
-  if (!populatedPlace) return ''
+  if (!populatedPlace) {
+    return ''
+  }
 
   // If it's an array, sort alphabetically and join with comma
   if (Array.isArray(populatedPlace)) {

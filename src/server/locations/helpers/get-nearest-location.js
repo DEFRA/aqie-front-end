@@ -249,10 +249,20 @@ const getNearestLocationFromForecasts = (
     return {}
   }
 
-  return getNearLocation(latlon?.lat, latlon?.lon, forecastCoordinates, forecasts)
+  return getNearLocation(
+    latlon?.lat,
+    latlon?.lon,
+    forecastCoordinates,
+    forecasts
+  )
 }
 
-const fetchLegacyNearestLocationsRange = async (matches, latlon, lang, request) => {
+const fetchLegacyNearestLocationsRange = async (
+  matches,
+  latlon,
+  lang,
+  request
+) => {
   const measurements = await fetchMeasurements(latlon.lat, latlon.lon, {
     request
   })
@@ -260,7 +270,12 @@ const fetchLegacyNearestLocationsRange = async (matches, latlon, lang, request) 
   return buildNearestLocationsRange(matches, measurements, latlon, lang)
 }
 
-const fetchNewNearestLocationsRange = async (matches, latlon, lang, request) => {
+const fetchNewNearestLocationsRange = async (
+  matches,
+  latlon,
+  lang,
+  request
+) => {
   if (!(latlon?.lat && latlon?.lon)) {
     return []
   }
@@ -279,7 +294,12 @@ const fetchNewNearestLocationsRange = async (matches, latlon, lang, request) => 
     latlon
   )
 
-  return buildNearestLocationsRange(matches, newMeasurementsMapped, latlon, lang)
+  return buildNearestLocationsRange(
+    matches,
+    newMeasurementsMapped,
+    latlon,
+    lang
+  )
 }
 
 const resolveNearestLocationsRange = async ({

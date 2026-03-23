@@ -1,5 +1,8 @@
 import { config } from '../../../../config/index.js'
 import { LOCATION_TYPE_UK, LOCATION_TYPE_NI } from '../../../data/constants.js'
+
+const HTTP_STATUS_BAD_REQUEST = 400
+
 function handleTestModeFetchData({
   locationType,
   userLocation,
@@ -28,17 +31,22 @@ function handleTestModeFetchData({
     )
     if (result && typeof result.then === 'function') {
       return result.then((getNIPlaces) => buildNITestModeResult(getNIPlaces))
+    } else {
+      return buildNITestModeResult(result)
     }
-    return buildNITestModeResult(result)
-  }
-  // fallback for unsupported types
-  if (injectedLogger && typeof injectedLogger.error === 'function') {
-    injectedLogger.error(
-      'Unsupported location type in test mode:',
-      locationType
+  } else {
+    // fallback for unsupported types
+    if (injectedLogger && typeof injectedLogger.error === 'function') {
+      injectedLogger.error(
+        'Unsupported location type in test mode:',
+        locationType
+      )
+    }
+    return injectedErrorResponse(
+      'Unsupported location type in test mode',
+      HTTP_STATUS_BAD_REQUEST
     )
   }
-  return injectedErrorResponse('Unsupported location type in test mode', 400)
 }
 function buildNITestModeResult(getNIPlaces) {
   return {
@@ -58,13 +66,13 @@ function buildUKTestModeResult(getOSPlaces) {
     }
   }
 }
-function handleUKLocationDataTestMode(injectedIsTestMode, injectedLogger) {
+function handleUKLocationDataTestMode(injectedIsTestMode, _injectedLogger) {
   if (injectedIsTestMode?.()) {
     return { results: ['ukData'] }
   }
   return null
 }
-function fetchMeasurementsTestMode(injectedIsTestMode, injectedLogger) {
+function fetchMeasurementsTestMode(injectedIsTestMode, _injectedLogger) {
   if (injectedIsTestMode?.()) {
     return [{ measurement: 'mock-measurement' }]
   }
@@ -72,7 +80,7 @@ function fetchMeasurementsTestMode(injectedIsTestMode, injectedLogger) {
 }
 // Test mode helpers extracted from fetch-data.js
 
-function fetchForecastsTestMode(injectedIsTestMode, injectedLogger) {
+function fetchForecastsTestMode(injectedIsTestMode, _injectedLogger) {
   if (injectedIsTestMode?.()) {
     return { forecasts: 'mock-forecasts' }
   }

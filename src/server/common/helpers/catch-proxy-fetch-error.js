@@ -3,55 +3,72 @@ import { createLogger } from '../../../server/common/helpers/logging/logger.js'
 import { WRONG_POSTCODE } from '../../data/constants.js'
 const logger = createLogger()
 
-async function catchProxyFetchError(url, options, shouldCallApi) {
-  let statusCode = 200
-  if (shouldCallApi) {
-    try {
-      const startTime = performance.now()
-      const date = new Date().toUTCString()
-      const response = await proxyFetch(url, options)
-      const endTime = performance.now()
-      const duration = endTime - startTime
-      logger.info(
-        `API response.status: ${response.status} from ${url} fetch took ${date} ${duration} milliseconds`
-      )
-      statusCode = response.status
-      if (!response.ok) {
-        logger.info(
-          `Failed to fetch data from ${url}: ${JSON.stringify(response)}`
-        )
-        throw new Error(`HTTP error! status from ${url}: ${response.status}`)
-      }
-      // '' Skip JSON parsing for 204/empty bodies to avoid parse errors
-      const contentLength = response.headers.get('content-length')
-      const isEmptyBody = response.status === 204 || contentLength === '0'
-      if (isEmptyBody) {
-        return [statusCode, null]
-      }
+const DEFAULT_STATUS_CODE = 200
+const HTTP_STATUS_NO_CONTENT = 204
+const HTTP_STATUS_NOT_FOUND = 404
 
-      const data = await response.json()
-      return [statusCode, data]
-    } catch (error) {
-      // '' Check if error is due to timeout/abort
-      const isAbortError = error.name === 'AbortError'
-      const errorMsg = isAbortError ? 'Request timeout/aborted' : error.message
+const logProxyFetchTiming = (url, response, startTime) => {
+  const date = new Date().toUTCString()
+  const duration = performance.now() - startTime
+  logger.info(
+    `API response.status: ${response.status} from ${url} fetch took ${date} ${duration} milliseconds`
+  )
+}
 
-      logger.error(
-        `Failed to proxyFetch data from ${url}: ${errorMsg}${isAbortError ? ' (timeout)' : ''}`
-      )
+const isResponseBodyEmpty = (response) => {
+  const contentLength = response.headers.get('content-length')
+  return response.status === HTTP_STATUS_NO_CONTENT || contentLength === '0'
+}
 
-      // '' Differentiate between bad postcode (404) and upstream failure
-      if (statusCode && statusCode !== 200) {
-        const isNotFound = statusCode === 404
-        return [
-          statusCode,
-          isNotFound ? WRONG_POSTCODE : { error: 'service-unavailable' }
-        ]
-      }
-      return [null, { error: 'service-unavailable' }]
-    }
+const getProxyFetchErrorResult = (statusCode) => {
+  if (statusCode && statusCode !== DEFAULT_STATUS_CODE) {
+    return [
+      statusCode,
+      statusCode === HTTP_STATUS_NOT_FOUND
+        ? WRONG_POSTCODE
+        : { error: 'service-unavailable' }
+    ]
   }
-  return [statusCode, WRONG_POSTCODE]
+  return [null, { error: 'service-unavailable' }]
+}
+
+const logProxyFetchError = (url, error) => {
+  const isAbortError = error.name === 'AbortError'
+  const errorMsg = isAbortError ? 'Request timeout/aborted' : error.message
+  logger.error(
+    `Failed to proxyFetch data from ${url}: ${errorMsg}${isAbortError ? ' (timeout)' : ''}`
+  )
+}
+
+async function catchProxyFetchError(url, options, shouldCallApi) {
+  let statusCode = DEFAULT_STATUS_CODE
+  if (!shouldCallApi) {
+    return [statusCode, WRONG_POSTCODE]
+  }
+
+  try {
+    const startTime = performance.now()
+    const response = await proxyFetch(url, options)
+    logProxyFetchTiming(url, response, startTime)
+    statusCode = response.status
+
+    if (!response.ok) {
+      logger.info(
+        `Failed to fetch data from ${url}: ${JSON.stringify(response)}`
+      )
+      throw new Error(`HTTP error! status from ${url}: ${response.status}`)
+    }
+
+    if (isResponseBodyEmpty(response)) {
+      return [statusCode, null]
+    }
+
+    const data = await response.json()
+    return [statusCode, data]
+  } catch (error) {
+    logProxyFetchError(url, error)
+    return getProxyFetchErrorResult(statusCode)
+  }
 }
 
 export { catchProxyFetchError }

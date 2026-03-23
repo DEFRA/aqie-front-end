@@ -5,6 +5,57 @@ import { notifyService } from '../../helpers/notify-service.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
 
 const logger = createLogger('notify-register-controller')
+const SERVICE_NAME = 'Check air quality'
+const PAGE_TEXT_ALERTS = 'Text alerts'
+const HTTP_STATUS_BAD_REQUEST = 400
+const HTTP_STATUS_INTERNAL_ERROR = 500
+
+const buildLocationMissingViewModel = () => ({
+  pageTitle: 'Location not found',
+  heading: 'Location details missing',
+  description:
+    'Please search for and select a location before registering for alerts.',
+  page: PAGE_TEXT_ALERTS,
+  serviceName: SERVICE_NAME,
+  footerTxt: english.footerTxt,
+  phaseBanner: english.phaseBanner,
+  backlink: english.backlink,
+  cookieBanner: english.cookieBanner
+})
+
+const buildRegistrationErrorViewModel = () => ({
+  pageTitle: 'Error registering for alerts',
+  heading: 'Sorry, we could not complete your registration',
+  description:
+    'Please try again later or contact support if the problem persists.',
+  page: PAGE_TEXT_ALERTS,
+  serviceName: SERVICE_NAME,
+  footerTxt: english.footerTxt,
+  phaseBanner: english.phaseBanner,
+  backlink: english.backlink,
+  cookieBanner: english.cookieBanner
+})
+
+const getLocationDetails = (request) => {
+  const locationData = request.yar?.get('locationData') || {}
+  return locationData?.locationDetails
+}
+
+const getAlertRegistrationConfig = (request, locationDetails) => ({
+  alertType: request.yar?.get('alertType') || 'text',
+  phoneNumber: request.yar?.get('mobileNumber'),
+  locationId: locationDetails.id,
+  locationName: locationDetails.name || locationDetails.title || '',
+  areaRegionName: locationDetails.area || locationDetails.region || '',
+  pollutants: ['all'] // Could be configurable in future
+})
+
+const setRegistrationSuccessSession = (request, registrationId) => {
+  request.yar?.set('registrationId', registrationId)
+  request.yar?.set('registrationComplete', true)
+  request.yar?.clear('activationCode')
+  request.yar?.clear('activationCodeTimestamp')
+}
 
 const getConfirmAlertController = {
   handler: async (request, h) => {
@@ -17,8 +68,8 @@ const getConfirmAlertController = {
       heading: 'Confirm your air quality alert',
       mobilePhone: '07123456789',
       location: 'London',
-      page: 'Text alerts',
-      serviceName: 'Check air quality',
+      page: PAGE_TEXT_ALERTS,
+      serviceName: SERVICE_NAME,
       footerTxt,
       phaseBanner,
       backlink,
@@ -38,68 +89,36 @@ const postConfirmAlertController = {
         return h.redirect('/notify/text-alerts').code(REDIRECT_STATUS_CODE)
       }
 
-      // Get registration details from session
-      const alertType = request.yar?.get('alertType') || 'text'
-      const phoneNumber = request.yar?.get('mobileNumber')
-      // Extract location details from session
-      const locationData = request.yar?.get('locationData') || {}
-      const locationDetails = locationData?.locationDetails
-      if (!locationDetails || !locationDetails.id) {
+      const locationDetails = getLocationDetails(request)
+      if (!locationDetails?.id) {
         logger.warn(
           'Attempted registration without location details in session'
         )
         return h
-          .view('notify-register/error', {
-            pageTitle: 'Location not found',
-            heading: 'Location details missing',
-            description:
-              'Please search for and select a location before registering for alerts.',
-            page: 'Text alerts',
-            serviceName: 'Check air quality',
-            footerTxt: english.footerTxt,
-            phaseBanner: english.phaseBanner,
-            backlink: english.backlink,
-            cookieBanner: english.cookieBanner
-          })
-          .code(400)
+          .view('notify-register/error', buildLocationMissingViewModel())
+          .code(HTTP_STATUS_BAD_REQUEST)
       }
-      const locationId = locationDetails.id
-      const locationName = locationDetails.name || locationDetails.title || ''
-      const areaRegionName =
-        locationDetails.area || locationDetails.region || ''
-
-      // Register user for air quality alerts
-      const alertConfig = {
-        alertType,
-        phoneNumber,
-        locationId,
-        locationName,
-        areaRegionName,
-        pollutants: ['all'] // Could be configurable in future
-      }
+      const alertConfig = getAlertRegistrationConfig(request, locationDetails)
 
       const registrationResult =
         await notifyService.registerForAlerts(alertConfig)
 
       if (registrationResult.success) {
         logger.info('User successfully registered for alerts', {
-          phoneNumber,
+          phoneNumber: alertConfig.phoneNumber,
           registrationId: registrationResult.registrationId,
-          alertType
+          alertType: alertConfig.alertType
         })
 
-        // Store registration details in session for success page
-        request.yar?.set('registrationId', registrationResult.registrationId)
-        request.yar?.set('registrationComplete', true)
-
-        // Clear sensitive data from session
-        request.yar?.clear('activationCode')
-        request.yar?.clear('activationCodeTimestamp')
+        setRegistrationSuccessSession(
+          request,
+          registrationResult.registrationId
+        )
 
         return h.redirect('/notify/success').code(REDIRECT_STATUS_CODE)
-      } else {
-        throw new Error('Failed to register for alerts')
       }
+
+      throw new Error('Failed to register for alerts')
     } catch (error) {
       logger.error('Error in postConfirmAlertController', error)
 
@@ -116,19 +135,8 @@ const postConfirmAlertController = {
 
       // In production, show error page
       return h
-        .view('notify-register/error', {
-          pageTitle: 'Error registering for alerts',
-          heading: 'Sorry, we could not complete your registration',
-          description:
-            'Please try again later or contact support if the problem persists.',
-          page: 'Text alerts',
-          serviceName: 'Check air quality',
-          footerTxt: english.footerTxt,
-          phaseBanner: english.phaseBanner,
-          backlink: english.backlink,
-          cookieBanner: english.cookieBanner
-        })
-        .code(500)
+        .view('notify-register/error', buildRegistrationErrorViewModel())
+        .code(HTTP_STATUS_INTERNAL_ERROR)
     }
   }
 }
@@ -148,7 +156,9 @@ const getSuccessController = {
       if (apiError) {
         developmentInfo =
           'Note: Registration completed with API fallback (development mode)'
-      } else if (registrationId) {
+      }
+
+      if (registrationId && !apiError) {
         developmentInfo = `Registration ID: ${registrationId}`
       }
     }
@@ -161,8 +171,8 @@ const getSuccessController = {
       phoneNumber,
       developmentInfo,
       content: successContent,
-      page: 'Text alerts',
-      serviceName: 'Check air quality',
+      page: PAGE_TEXT_ALERTS,
+      serviceName: SERVICE_NAME,
       footerTxt,
       phaseBanner,
       backlink,
@@ -186,8 +196,8 @@ const getTextAlertsController = {
       heading: 'What is your mobile phone number?',
       description:
         'We will send you a text message with a 5-digit activation code.',
-      page: 'Text alerts',
-      serviceName: 'Check air quality',
+      page: PAGE_TEXT_ALERTS,
+      serviceName: SERVICE_NAME,
       lang: LANG_EN,
       footerTxt,
       phaseBanner,
@@ -212,8 +222,8 @@ const getEmailAlertsController = {
       heading: 'Receive alerts by email',
       description:
         'Email alerts for air quality are coming soon. Sign up for text alerts instead.',
-      page: 'Text alerts',
-      serviceName: 'Check air quality',
+      page: PAGE_TEXT_ALERTS,
+      serviceName: SERVICE_NAME,
       footerTxt,
       phaseBanner,
       backlink,
@@ -223,7 +233,7 @@ const getEmailAlertsController = {
 }
 
 const postTextAlertsController = {
-  handler: async (request, h) => {
+  handler: async (_request, h) => {
     return h.redirect('/notify/confirm-mobile').code(REDIRECT_STATUS_CODE)
   }
 }
