@@ -17,6 +17,9 @@ import { fetchMeasurements } from './fetch-data.js'
 import { createLogger } from '../../common/helpers/logging/logger.js'
 
 const logger = createLogger()
+const METERS_TO_MILES = 0.000621371192
+
+const hasMatches = (matches) => matches.length > 0
 
 // Helper to get latlon and forecastCoordinates //
 export function getLatLonAndForecastCoords(
@@ -25,29 +28,33 @@ export function getLatLonAndForecastCoords(
   index,
   forecasts
 ) {
-  const latlon =
-    matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
-  const forecastCoordinates =
-    matches.length !== 0 ? coordinatesTotal(forecasts, location) : []
+  const latlon = hasMatches(matches)
+    ? convertPointToLonLat(matches, location, index)
+    : {}
+  const forecastCoordinates = hasMatches(matches)
+    ? coordinatesTotal(forecasts, location)
+    : []
   return { latlon, forecastCoordinates }
 }
 
 // Helper to build forecastNum
 export function buildForecastNum(matches, nearestLocation, forecastDay) {
-  return matches.length !== 0
-    ? nearestLocation.map((current) => {
-        let todayDate = []
-        const otherdays = []
-        current.forecast.forEach(({ day, value }) => {
-          if (day === forecastDay) {
-            todayDate = [{ today: value }]
-          } else {
-            otherdays.push({ [day]: value })
-          }
-        })
-        return [...todayDate, ...otherdays]
-      })
-    : 0
+  if (!hasMatches(matches)) {
+    return 0
+  }
+
+  return nearestLocation.map((current) => {
+    let todayDate = []
+    const otherdays = []
+    current.forecast.forEach(({ day, value }) => {
+      if (day === forecastDay) {
+        todayDate = [{ today: value }]
+      } else {
+        otherdays.push({ [day]: value })
+      }
+    })
+    return [...todayDate, ...otherdays]
+  })
 }
 
 // Helper to validate pollutant values (allow only numbers >= 0)
@@ -108,7 +115,7 @@ export function buildNearestLocationEntry(curr, latlon, lang) {
         latitude: curr.location.coordinates[0],
         longitude: curr.location.coordinates[1]
       }
-    ) * 0.000621371192
+    ) * METERS_TO_MILES
   const newpollutants = buildPollutantsObject(curr, lang)
   if (Object.keys(newpollutants).length === 0) {
     logger.error(`No valid pollutants found for location`, {
@@ -139,8 +146,9 @@ export function buildNearestLocationsRange(
   latlon,
   lang
 ) {
-  const measurementsCoordinates =
-    matches.length !== 0 ? coordinatesTotal(getMeasurments, latlon) : []
+  const measurementsCoordinates = hasMatches(matches)
+    ? coordinatesTotal(getMeasurments, latlon)
+    : []
   const orderByDistanceMeasurements = geolib.orderByDistance(
     { latitude: latlon?.lat, longitude: latlon?.lon },
     measurementsCoordinates
@@ -260,17 +268,15 @@ async function getNearestLocation(
         latlon,
         lang
       )
+    } else {
+      nearestLocationsRange = []
     }
+  } else {
+    nearestLocationsRange = []
   }
-  nearestLocation =
-    matches.length !== 0
-      ? getNearLocation(
-          latlon?.lat,
-          latlon?.lon,
-          forecastCoordinates,
-          forecasts
-        )
-      : {}
+  nearestLocation = hasMatches(matches)
+    ? getNearLocation(latlon?.lat, latlon?.lon, forecastCoordinates, forecasts)
+    : {}
   forecastNum = buildForecastNum(matches, nearestLocation, forecastDay)
 
   return {
