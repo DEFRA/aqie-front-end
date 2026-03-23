@@ -222,8 +222,10 @@ const mapMeasurementWithPollutants = (measurement, lang, latlon) => {
   }
 }
 
-const mapNewMeasurementsWithPollutants = (measurements = [], lang, latlon) => {
-  return measurements.map((measurement) =>
+const mapNewMeasurementsWithPollutants = (measurements, lang, latlon) => {
+  const sourceMeasurements = Array.isArray(measurements) ? measurements : []
+
+  return sourceMeasurements.map((measurement) =>
     mapMeasurementWithPollutants(measurement, lang, latlon)
   )
 }
