@@ -9,7 +9,10 @@ import {
   LANG_CY,
   LANG_EN,
   REDIRECT_STATUS_CODE,
-  HTTP_STATUS_INTERNAL_SERVER_ERROR
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  CY_LOCATION_DATE_TIME_FORMAT,
+  CY_LOCATION_DATE_ONLY_FORMAT,
+  CY_LOCATION_VALID_MOCK_BANDS
 } from '../../data/constants.js'
 import { getSearchTermsFromUrl } from '../../locations/helpers/get-search-terms-from-url.js'
 import { config } from '../../../config/index.js'
@@ -53,10 +56,10 @@ function applyMockPollutants(request, monitoringSites) {
     const bandStr = mockPollutantBandFromSession.toString().toLowerCase()
 
     // Validate band
-    const validBands = ['low', 'moderate', 'high', 'very-high', 'very high']
+    const normalizedBand = bandStr.replace('-', ' ')
     if (
-      validBands.includes(bandStr) ||
-      validBands.includes(bandStr.replace('-', ' '))
+      CY_LOCATION_VALID_MOCK_BANDS.has(bandStr) ||
+      CY_LOCATION_VALID_MOCK_BANDS.has(normalizedBand)
     ) {
       // Generate mock pollutants using the renamed import with Welsh language
       const mockPollutants = generateMockPollutantBand(bandStr, {
@@ -180,7 +183,7 @@ function applyWelshTestMode(locationData, testMode) {
   switch (testMode) {
     case 'noDailySummary':
       // '' Remove daily summary text only (keep date if today)
-      locationData.dailySummary = undefined
+      locationData.dailySummary = null
       break
 
     case 'oldDate':
@@ -188,7 +191,7 @@ function applyWelshTestMode(locationData, testMode) {
       if (locationData.dailySummary) {
         const yesterday = moment().subtract(1, 'days')
         locationData.dailySummary.issue_date = yesterday.format(
-          'YYYY-MM-DD HH:mm:ss'
+          CY_LOCATION_DATE_TIME_FORMAT
         )
         setLocationDates(locationData, yesterday)
       }
@@ -200,7 +203,9 @@ function applyWelshTestMode(locationData, testMode) {
       if (!locationData.dailySummary) {
         locationData.dailySummary = {}
       }
-      locationData.dailySummary.issue_date = today.format('YYYY-MM-DD HH:mm:ss')
+      locationData.dailySummary.issue_date = today.format(
+        CY_LOCATION_DATE_TIME_FORMAT
+      )
       setLocationDates(locationData, today)
       break
     }
@@ -209,7 +214,7 @@ function applyWelshTestMode(locationData, testMode) {
       // '' Remove daily summary AND set old date (nothing should show)
       const yesterday = moment().subtract(1, 'days')
       locationData.dailySummary = {
-        issue_date: yesterday.format('YYYY-MM-DD HH:mm:ss')
+        issue_date: yesterday.format(CY_LOCATION_DATE_TIME_FORMAT)
       }
       setLocationDates(locationData, yesterday)
       break
@@ -224,8 +229,10 @@ function isSummaryDateToday(issueDate) {
   if (!issueDate) {
     return false
   }
-  const today = moment().format('YYYY-MM-DD')
-  const issueDateFormatted = moment(issueDate).format('YYYY-MM-DD')
+  const today = moment().format(CY_LOCATION_DATE_ONLY_FORMAT)
+  const issueDateFormatted = moment(issueDate).format(
+    CY_LOCATION_DATE_ONLY_FORMAT
+  )
   return today === issueDateFormatted
 }
 
@@ -239,7 +246,7 @@ function recalculateSummaryDateFields(locationData) {
   }
 
   locationData.showSummaryDate = false
-  locationData.issueTime = undefined
+  locationData.issueTime = null
 }
 
 function applyTestModeFromQueryOrSession(request, locationData) {
@@ -263,9 +270,9 @@ function ensureSummaryDateForDirectAccess(locationData) {
     return
   }
 
-  const today = moment().format('YYYY-MM-DD')
+  const today = moment().format(CY_LOCATION_DATE_ONLY_FORMAT)
   const issueDate = moment(locationData.dailySummary.issue_date).format(
-    'YYYY-MM-DD'
+    CY_LOCATION_DATE_ONLY_FORMAT
   )
   locationData.showSummaryDate = today === issueDate
   locationData.issueTime = getIssueTime(locationData.dailySummary.issue_date)

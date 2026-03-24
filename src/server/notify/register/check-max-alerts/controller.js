@@ -1,5 +1,6 @@
 import { createLogger } from '../../../common/helpers/logging/logger.js'
 import { getSubscriptionCount } from '../../../common/services/notify.js'
+import { LAST_FOUR_DIGITS_SLICE_INDEX } from '../../../data/constants.js'
 
 const logger = createLogger()
 
@@ -42,7 +43,7 @@ const checkMaxAlertsController = {
       )
 
       logger.info('Maximum alerts check result', {
-        phoneNumber: '***' + mobileNumber.slice(-4),
+        phoneNumber: '***' + mobileNumber.slice(LAST_FOUR_DIGITS_SLICE_INDEX),
         maxReached,
         canAddMore: !maxReached
       })

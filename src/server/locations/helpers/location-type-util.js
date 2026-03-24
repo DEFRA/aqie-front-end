@@ -5,7 +5,8 @@ import {
   SEARCH_LOCATION_ROUTE_EN,
   SEARCH_LOCATION_ROUTE_CY,
   SEARCH_LOCATION_PATH_EN,
-  REDIRECT_STATUS_CODE
+  REDIRECT_STATUS_CODE,
+  POSTCODE_SPACE_INDEX
 } from '../../data/constants.js'
 import { calendarEnglish } from '../../data/en/en.js'
 import moment from 'moment-timezone'
@@ -49,10 +50,8 @@ const handleRedirect = (h, redirectRoute) => {
 }
 
 const getMonth = () => {
-  const formattedDate = moment().format('DD MMMM YYYY').split(' ')
-  const getFormattedDate = calendarEnglish.findIndex(
-    (item) => item.indexOf(formattedDate[1]) !== -1
-  )
+  const [, monthName] = moment().format('DD MMMM YYYY').split(' ')
+  const getFormattedDate = calendarEnglish.indexOf(monthName)
   return { getFormattedDate }
 }
 const configureLocationTypeAndRedirects = (
@@ -128,7 +127,7 @@ const filteredAndSelectedLocationType = (
 
   // Insert a space for full postcodes without a space
   if (fullPostcodePattern.test(userLocation) && !userLocation.includes(' ')) {
-    const spaceIndex = userLocation.length - 3
+    const spaceIndex = userLocation.length - POSTCODE_SPACE_INDEX
     userLocation = `${userLocation.slice(0, spaceIndex)} ${userLocation.slice(
       spaceIndex
     )}`

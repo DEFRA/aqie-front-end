@@ -87,7 +87,7 @@ function convertPointToLonLat(matches, location, index = 0) {
   return { lat, lon }
 }
 
-function coordinatesTotal(matches, location) {
+function coordinatesTotal(matches, _location) {
   let coordinates = []
   try {
     coordinates = matches.reduce((acc, current) => {

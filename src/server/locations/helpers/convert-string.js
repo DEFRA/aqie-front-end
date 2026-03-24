@@ -184,8 +184,8 @@ function hasExactMatch(wordString, name1, name2 = null) {
 // Function to check if two strings contain the exact same word
 function hasCommonWord(string1, string2) {
   const words1 = string1.split(/\s+/) // Split the first string into an array of words
-  const words2 = string2.split(/\s+/) // Split the second string into an array of words
-  return words1.some((word) => words2.includes(word)) // Check if any word in the first array exists in the second array
+  const words2 = new Set(string2.split(/\s+/)) // Split second string and optimize lookups
+  return words1.some((word) => words2.has(word)) // Check if any word in the first array exists in the second array
 }
 
 // Function to format any UK postcode

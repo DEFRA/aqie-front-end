@@ -165,6 +165,23 @@ export const DEFAULT_SHARED_LOCATION_CACHE_TTL_MS =
   Number.parseInt('20', 10) * 60 * 1000
 export const DEFAULT_USER_DATA_CACHE_TTL_MS = FIFTEEN_MINUTES_IN_MS
 export const CODE_EXPIRY_MINUTES = 15
+export const FIFTEEN_MINUTES = 15
+export const TWENTY_MINUTES = 20
+export const THIRTY_MINUTES = 30
+export const THIRTY_SECONDS_IN_MS = 30000
+export const FIVE_MINUTES_IN_MS = 300000
+export const DEFAULT_REDIS_PRESSURE_MIN_GROWTH_MEBIBYTES = 20
+export const LAST_FOUR_DIGITS_SLICE_INDEX = -4
+
+export const CY_LOCATION_DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss'
+export const CY_LOCATION_DATE_ONLY_FORMAT = 'YYYY-MM-DD'
+export const CY_LOCATION_VALID_MOCK_BANDS = new Set([
+  'low',
+  'moderate',
+  'high',
+  'very-high',
+  'very high'
+])
 
 // '' - Constant for the server directory name
 export const SERVER_DIRNAME = dirname(fileURLToPath(import.meta.url))
