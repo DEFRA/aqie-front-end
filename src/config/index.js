@@ -5,9 +5,9 @@ import { existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import convictFormatWithValidator from 'convict-format-with-validator'
 import {
-  FIFTEEN_MINUTES,
-  THIRTY_MINUTES,
-  TWENTY_MINUTES,
+  FIFTEEN_MINUTES_IN_MS,
+  TWENTY_MINUTES_IN_MS,
+  THIRTY_MINUTES_IN_MS,
   THIRTY_SECONDS_IN_MS,
   FIVE_MINUTES_IN_MS,
   DEFAULT_REDIS_PRESSURE_MIN_GROWTH_MEBIBYTES
@@ -33,15 +33,15 @@ export const ONE_HOUR_MS =
 export const FIFTEEN_MINUTES_MS =
   Number(process.env.FIFTEEN_MINUTES_MS) > 0
     ? Number(process.env.FIFTEEN_MINUTES_MS)
-    : FIFTEEN_MINUTES * 60 * 1000
+    : FIFTEEN_MINUTES_IN_MS
 export const REDIS_SHARED_CACHE_TTL_MS =
   Number(process.env.REDIS_SHARED_CACHE_TTL_MS) > 0
     ? Number(process.env.REDIS_SHARED_CACHE_TTL_MS)
-    : TWENTY_MINUTES * 60 * 1000
+    : TWENTY_MINUTES_IN_MS
 export const REFRESH_INTERVAL_MS =
   Number(process.env.REFRESH_INTERVAL_MS) > 0
     ? Number(process.env.REFRESH_INTERVAL_MS)
-    : THIRTY_MINUTES * 60 * 1000
+    : THIRTY_MINUTES_IN_MS
 export const REDIS_PRESSURE_CHECK_INTERVAL_MS =
   Number(process.env.REDIS_PRESSURE_CHECK_INTERVAL_MS) > 0
     ? Number(process.env.REDIS_PRESSURE_CHECK_INTERVAL_MS)
@@ -436,22 +436,27 @@ export const config = convict({
   redis: {
     ...EXTRA_CONFIG_SCHEMA.redis,
     useSingleInstanceCache: {
-      ...EXTRA_CONFIG_SCHEMA.redis.useSingleInstanceCache,
-      default: !isProduction
+      doc: 'Connect to a single instance of redis instead of a cluster.',
+      format: Boolean,
+      default: !isProduction,
+      env: 'USE_SINGLE_INSTANCE_CACHE'
     },
     useTLS: {
-      ...EXTRA_CONFIG_SCHEMA.redis.useTLS,
-      default: isProduction
+      doc: 'Connect to redis using TLS',
+      format: Boolean,
+      default: isProduction,
+      env: 'REDIS_TLS'
     }
   },
   nunjucks: {
-    ...EXTRA_CONFIG_SCHEMA.nunjucks,
     watch: {
-      ...EXTRA_CONFIG_SCHEMA.nunjucks.watch,
+      doc: 'Reload templates when they are changed.',
+      format: Boolean,
       default: isDevelopment
     },
     noCache: {
-      ...EXTRA_CONFIG_SCHEMA.nunjucks.noCache,
+      doc: 'Use a cache and recompile templates each time',
+      format: Boolean,
       default: isDevelopment
     }
   }

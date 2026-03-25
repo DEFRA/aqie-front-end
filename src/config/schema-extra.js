@@ -284,30 +284,6 @@ const EXTRA_CONFIG_SCHEMA = {
       format: String,
       default: 'aqie-front-end:',
       env: 'REDIS_KEY_PREFIX'
-    },
-    useSingleInstanceCache: {
-      doc: 'Connect to a single instance of redis instead of a cluster.',
-      format: Boolean,
-      default: true,
-      env: 'USE_SINGLE_INSTANCE_CACHE'
-    },
-    useTLS: {
-      doc: 'Connect to redis using TLS',
-      format: Boolean,
-      default: false,
-      env: 'REDIS_TLS'
-    }
-  },
-  nunjucks: {
-    watch: {
-      doc: 'Reload templates when they are changed.',
-      format: Boolean,
-      default: false
-    },
-    noCache: {
-      doc: 'Use a cache and recompile templates each time',
-      format: Boolean,
-      default: false
     }
   },
   tracing: {

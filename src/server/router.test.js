@@ -143,18 +143,22 @@ vi.mock('./air-pollution-breaches/cy/index.js', () => ({
 vi.mock('./common/helpers/serve-static-files.js', () => ({
   serveStaticFiles: mockRouteModule
 }))
-vi.mock('./data/constants.js', () => ({
-  SERVER_DIRNAME: '/mock/server/dirname',
-  WELSH_TITLE: 'Gwirio ansawdd aer',
-  WELSH_PAGE_TITLE_BASE: 'Mock Welsh Page Title Base',
-  DAQI_DESCRIPTION: 'Mock DAQI Description',
-  ACTIONS_REDUCE_EXPOSURE_ROUTE_EN: '/mock/actions-reduce-exposure-en', // ''
-  ACTIONS_REDUCE_EXPOSURE_ROUTE_CY: '/mock/actions-reduce-exposure-cy', // ''
-  HEALTH_EFFECTS_ROUTE_EN: '/mock/health-effects-en', // ''
-  HEALTH_EFFECTS_ROUTE_CY: '/mock/health-effects-cy', // ''
-  AIR_POLLUTION_BREACHES_PATH_EN: '/air-pollution-breaches',
-  AIR_POLLUTION_BREACHES_PATH_CY: '/torriadau-llygredd-aer/cy'
-}))
+vi.mock('./data/constants.js', async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    SERVER_DIRNAME: '/mock/server/dirname',
+    WELSH_TITLE: 'Gwirio ansawdd aer',
+    WELSH_PAGE_TITLE_BASE: 'Mock Welsh Page Title Base',
+    DAQI_DESCRIPTION: 'Mock DAQI Description',
+    ACTIONS_REDUCE_EXPOSURE_ROUTE_EN: '/mock/actions-reduce-exposure-en', // ''
+    ACTIONS_REDUCE_EXPOSURE_ROUTE_CY: '/mock/actions-reduce-exposure-cy', // ''
+    HEALTH_EFFECTS_ROUTE_EN: '/mock/health-effects-en', // ''
+    HEALTH_EFFECTS_ROUTE_CY: '/mock/health-effects-cy', // ''
+    AIR_POLLUTION_BREACHES_PATH_EN: '/air-pollution-breaches',
+    AIR_POLLUTION_BREACHES_PATH_CY: '/torriadau-llygredd-aer/cy'
+  }
+})
 
 // Mock Node.js modules ''
 vi.mock('node:path', () => ({
