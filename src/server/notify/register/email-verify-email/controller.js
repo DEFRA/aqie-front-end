@@ -10,6 +10,7 @@ import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
 // Constants ''
 const DEFAULT_SERVICE_NAME = 'Check air quality'
 const VIEW_PATH = 'notify/register/email-verify-email/index'
+const EMAIL_DETAILS_PATH_KEY = 'notify.emailDetailsPath'
 
 // Create a logger instance ''
 const logger = createLogger()
@@ -44,7 +45,7 @@ const handleEmailVerifyRequest = (request, h, content = english) => {
 
   if (!emailAddress) {
     // '' If no email address in session, redirect back to email entry page
-    return h.redirect(config.get('notify.emailDetailsPath'))
+    return h.redirect(config.get(EMAIL_DETAILS_PATH_KEY))
   }
 
   const { lang, languageContent, emailVerifyEmail, common, serviceName } =
@@ -78,12 +79,12 @@ const handleEmailVerifyRequest = (request, h, content = english) => {
     content: emailVerifyEmail,
     sentLinkText,
     confirmLinkText,
-    emailSendActivationPath: config.get('notify.emailSendActivationPath'),
+    emailDetailsPath: config.get(EMAIL_DETAILS_PATH_KEY),
     smsMobileNumberPath: config.get('notify.smsMobileNumberPath'),
     displayBacklink: true,
     customBackLink: true,
     backLinkText: common?.backLinkText || 'Back',
-    backLinkUrl: config.get('notify.emailDetailsPath'),
+    backLinkUrl: config.get(EMAIL_DETAILS_PATH_KEY),
     emailAddress
   }
 
