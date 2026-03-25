@@ -1,12 +1,13 @@
 // Client debug log route ''
 import { createLogger } from '../common/helpers/logging/logger.js'
 import { config } from '../../config/index.js'
+import { STATUS_NOT_FOUND, STATUS_OK } from '../data/constants.js'
 
 const logger = createLogger()
 
 const clientLogHandler = (request, h) => {
   if (config.get('isProduction')) {
-    return h.response({ ok: false }).code(404)
+    return h.response({ ok: false }).code(STATUS_NOT_FOUND)
   }
 
   const payload = request.payload || {}
@@ -15,7 +16,7 @@ const clientLogHandler = (request, h) => {
     ...payload
   })
 
-  return h.response({ ok: true }).code(200)
+  return h.response({ ok: true }).code(STATUS_OK)
 }
 
 const clientLogRoutes = [

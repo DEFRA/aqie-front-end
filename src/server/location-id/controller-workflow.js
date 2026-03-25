@@ -96,7 +96,7 @@ function isSummaryDateToday(issueDate) {
 /**
  * Calculate and set summary date if not already set
  */
-export function calculateSummaryDate(locationData, customLogger) {
+export function calculateSummaryDate(locationData, _customLogger) {
   if (
     locationData.showSummaryDate === undefined &&
     locationData[DAILY_SUMMARY_KEY]?.issue_date
@@ -109,15 +109,13 @@ export function calculateSummaryDate(locationData, customLogger) {
     locationData.issueTime = getIssueTime(
       locationData[DAILY_SUMMARY_KEY].issue_date
     )
-  } else {
-    if (
-      !locationData.issueTime &&
-      locationData[DAILY_SUMMARY_KEY]?.issue_date
-    ) {
-      locationData.issueTime = getIssueTime(
-        locationData[DAILY_SUMMARY_KEY].issue_date
-      )
-    }
+    return
+  }
+
+  if (!locationData.issueTime && locationData[DAILY_SUMMARY_KEY]?.issue_date) {
+    locationData.issueTime = getIssueTime(
+      locationData[DAILY_SUMMARY_KEY].issue_date
+    )
   }
 }
 

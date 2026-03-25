@@ -198,7 +198,7 @@ describe('email-details controller', () => {
     expect(res.vm.error.message).toContain('problem loading the page')
   })
 
-  it('POST returns generic error page when payload value is invalid type', async () => {
+  it('POST returns validation error when payload value is invalid type', async () => {
     const req = mockRequest({ notifyByEmail: {} })
     const h = mockH()
 
@@ -206,6 +206,6 @@ describe('email-details controller', () => {
 
     expect(res.tpl).toBe('notify/register/email-details/index')
     expect(res.vm.error).toBeTruthy()
-    expect(res.vm.error.message).toContain('problem processing the form')
+    expect(res.vm.error.message).toContain('Enter your email address')
   })
 })

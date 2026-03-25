@@ -5,6 +5,7 @@ import { LANG_EN } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { recordEmailCapture } from '../../../common/services/subscription.js'
 import { generateEmailLink } from '../../../common/services/notify.js'
+import { validateEmail } from '../../../common/helpers/validate-email.js'
 
 const EMAIL_DETAILS_VIEW = 'notify/register/email-details/index'
 
@@ -173,13 +174,10 @@ const handleValidEmailSubmission = async (
   h,
   content,
   ui,
-  notifyByEmail,
+  email,
   payload
 ) => {
-  const { email, location, lat, long } = getSubmissionContext(
-    request,
-    notifyByEmail
-  )
+  const { location, lat, long } = getSubmissionContext(request, email)
 
   // '' Note: the backend has no GET /api/subscriptions endpoint for email.
   // '' Max-5 enforcement happens at POST /setup-alert (after the user clicks
@@ -204,11 +202,7 @@ const handleValidEmailSubmission = async (
   return h.redirect(emailVerifyEmailPath)
 }
 
-const isBlankEmail = (notifyByEmail) =>
-  !notifyByEmail || notifyByEmail.trim() === ''
-
-const getSubmissionContext = (request, notifyByEmail) => {
-  const email = notifyByEmail.trim()
+const getSubmissionContext = (request, email) => {
   request.yar.set('emailAddress', email)
 
   return {
@@ -309,8 +303,9 @@ const handleEmailDetailsPost = async (request, h, content = english) => {
     const ui = getEmailDetailsContent(content)
     const payload = getPayload(request)
     const { notifyByEmail } = payload
+    const { isValid, formatted } = validateEmail(notifyByEmail)
 
-    if (isBlankEmail(notifyByEmail)) {
+    if (!isValid) {
       return renderValidationError(h, request, content, ui, payload)
     }
 
@@ -319,7 +314,7 @@ const handleEmailDetailsPost = async (request, h, content = english) => {
       h,
       content,
       ui,
-      notifyByEmail,
+      formatted,
       payload
     )
   } catch (error) {

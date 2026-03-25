@@ -4,6 +4,7 @@ import {
   getMockAlertStorageSnapshot
 } from '../../common/services/notify.js'
 import { config } from '../../../config/index.js'
+import { HTTP_STATUS_OK } from '../../data/constants.js'
 
 export default {
   plugin: {
@@ -17,7 +18,7 @@ export default {
           {
             method: 'POST',
             path: '/notify/debug/clear-mock-storage',
-            handler: async (request, h) => {
+            handler: async (_request, h) => {
               const count = clearMockAlerts()
               return h
                 .response({
@@ -25,13 +26,13 @@ export default {
                   message: `Cleared ${count} mock alerts from server memory`,
                   clearedCount: count
                 })
-                .code(200)
+                .code(HTTP_STATUS_OK)
             }
           },
           {
             method: 'GET',
             path: '/notify/debug/mock-storage',
-            handler: async (request, h) => {
+            handler: async (_request, h) => {
               const snapshot = getMockAlertStorageSnapshot()
               return h
                 .response({
@@ -39,7 +40,7 @@ export default {
                   totalAlerts: snapshot.length,
                   alerts: snapshot
                 })
-                .code(200)
+                .code(HTTP_STATUS_OK)
             }
           }
         ])

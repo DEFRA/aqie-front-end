@@ -18,7 +18,6 @@ async function callAndHandleForecastsResponse(
   logger,
   errorResponse
 ) {
-  logger.info(`[DEBUG FORECAST API] Calling forecast API: ${url}`)
   const [forecastStatus, getForecasts] = await catchFetchError(url, opts)
   if (forecastStatus !== httpStatusOk) {
     logger.error('Error fetching forecasts data: status code', forecastStatus)
@@ -28,29 +27,6 @@ async function callAndHandleForecastsResponse(
     )
   }
   logger.info('Forecasts data fetched')
-
-  // '' Log raw forecast data to track coordinate origins
-  if (getForecasts?.forecasts && Array.isArray(getForecasts.forecasts)) {
-    logger.info(
-      `[FORECAST API RAW] Received ${getForecasts.forecasts.length} forecast stations`
-    )
-    getForecasts.forecasts.forEach((station, idx) => {
-      if (station.location?.coordinates) {
-        const rawStation = {
-          area: station.area,
-          name: station.name,
-          areaType: station.areaType,
-          coordinates: station.location.coordinates,
-          coordinateType: station.location.type
-        }
-
-        logger.info(
-          `[FORECAST API RAW] Station ${idx}: ${JSON.stringify(rawStation)}`,
-          rawStation
-        )
-      }
-    })
-  }
 
   return getForecasts
 }
