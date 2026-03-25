@@ -1,5 +1,4 @@
 import {
-  DAILY_SUMMARY_KEY,
   LOCATION_NOT_FOUND,
   LOCATION_TYPE_NI,
   REDIRECT_STATUS_CODE,
@@ -12,7 +11,6 @@ import { createLogger } from '../common/helpers/logging/logger.js'
 import { getNearestLocation } from '../locations/helpers/get-nearest-location.js'
 import { getIdMatch } from '../locations/helpers/get-id-match.js'
 import { getNIData } from '../locations/helpers/get-ni-single-data.js'
-import sizeof from 'object-sizeof'
 import { config } from '../../config/index.js'
 import {
   initializeRequestData,
@@ -235,19 +233,6 @@ async function initializeCommonVariables(request, locationId, lang) {
     }
   }
 
-  logger.info(
-    `[DEBUG initializeCommonVariables] locationData exists: ${!!locationData}`
-  )
-  logger.info(
-    `[DEBUG initializeCommonVariables] locationData.results exists: ${!!locationData?.results}`
-  )
-  logger.info(
-    `[DEBUG initializeCommonVariables] locationData.results is array: ${Array.isArray(locationData?.results)}`
-  )
-  logger.info(
-    `[DEBUG initializeCommonVariables] locationData.getForecasts exists: ${!!locationData?.getForecasts}`
-  )
-
   return {
     getMonth,
     metaSiteUrl,
@@ -264,9 +249,6 @@ function processLocationResult(
   h,
   viewData
 ) {
-  logger.info(
-    `Before Session (yar) size in MB for geForecasts: ${(sizeof(request.yar._store) / (1024 * 1024)).toFixed(2)} MB`
-  )
   return updateSessionWithNearest(
     request,
     locationData,
@@ -336,47 +318,23 @@ async function applyTestModeAndLogDebug(request, locationData) {
   const testModeFromSession = request.yar.get('testMode')
   const testMode = testModeFromQuery || testModeFromSession
 
-  logger.info(`🔍 request.query.testMode:`, testModeFromQuery)
-  logger.info(`🔍 session testMode:`, testModeFromSession)
-  logger.info(`🔍 final testMode:`, testMode)
-
   if (testMode) {
     applyTestModeChanges(locationData, testMode, logger)
     await persistLocationDataForLocationRoute(request, locationData)
   }
 }
 
-// Helper to log and calculate summary date
+// Helper to calculate summary date
 function logAndCalculateSummaryDate(locationData) {
-  logger.info(`🔍 ========== SUMMARY DATE DEBUG ==========`)
-  logger.info(
-    `🔍 showSummaryDate (from session): ${locationData.showSummaryDate}`
-  )
-  logger.info(
-    `🔍 dailySummary object exists: ${!!locationData[DAILY_SUMMARY_KEY]}`
-  )
-  logger.info(
-    `🔍 dailySummary.issue_date (raw): ${locationData[DAILY_SUMMARY_KEY]?.issue_date}`
-  )
-
   calculateSummaryDate(locationData, logger)
-
-  logger.info(`🔍 FINAL showSummaryDate: ${locationData.showSummaryDate}`)
-  logger.info(`🔍 FINAL issueTime: ${locationData.issueTime}`)
-  logger.info(`🔍 ========================================`)
 }
 
 const getLocationDetailsController = {
   handler: async (request, h) => {
-    logger.info(
-      `[DEBUG TOP OF HANDLER] Request to /location/${request.params.id} - URL: ${request.url.pathname}`
-    )
-
     try {
       // Handle initialization and validation
       const initResult = await initializeAndValidateRequest(request, h)
       if (initResult.redirect) {
-        logger.info(`[DEBUG TOP OF HANDLER] Returning redirect from initResult`)
         return initResult.redirect
       }
 

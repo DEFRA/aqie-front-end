@@ -138,39 +138,6 @@ async function updateNotificationMetaFromResults({
     latitude: lat,
     longitude: lon
   })
-
-  // '' DEBUG: Log session data immediately after setting to verify persistence
-  logger.info('Session debug - SET operation complete', {
-    sessionId: request.yar.id,
-    operation: 'SET',
-    keysSet: ['location', 'locationId', 'latitude', 'longitude'],
-    values: {
-      location: locationTitle,
-      locationId,
-      latitude: lat,
-      longitude: lon
-    },
-    verifyImmediate: {
-      location: request.yar.get('location'),
-      locationId: request.yar.get('locationId'),
-      latitude: request.yar.get('latitude'),
-      longitude: request.yar.get('longitude')
-    }
-  })
-
-  logger.info(
-    `[DEBUG processLocationWorkflow] Updated session location data:`,
-    {
-      location: locationTitle,
-      locationId,
-      lat,
-      lon,
-      hasLat: !!lat,
-      hasLon: !!lon,
-      geometryX: gazetteerEntry.GEOMETRY_X,
-      geometryY: gazetteerEntry.GEOMETRY_Y
-    }
-  )
 }
 
 function buildNotificationRedirectResponse(
@@ -236,10 +203,6 @@ async function handleNotificationFlowRedirect({
     setSessionKeyIfSessionExists,
     setUserDataPayload
   })
-
-  logger.info(
-    `[DEBUG processLocationWorkflow] Redirecting to ${notificationFlow} confirm details (notificationFlow=${notificationFlow})`
-  )
 
   return buildNotificationRedirectResponse(
     notificationFlow,

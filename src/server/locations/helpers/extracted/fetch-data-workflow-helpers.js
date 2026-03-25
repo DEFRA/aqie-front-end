@@ -4,10 +4,7 @@ import {
   LOCATION_TYPE_UK
 } from '../../../data/constants.js'
 import { buildNIOptionsOAuth } from './util-helpers.js'
-import { createLogger } from '../../../common/helpers/logging/logger.js'
 import { handleTestModeFetchData } from './test-mode-helpers.js'
-
-const logger = createLogger()
 
 async function handleUKLocation(
   userLocation,
@@ -66,10 +63,6 @@ async function handleNILocation(
 
 function extractDailySummary(getForecasts) {
   let getDailySummary = getForecasts?.['forecast-summary']
-  logger.info(`[DEBUG FORECAST] forecast-summary exists: ${!!getDailySummary}`)
-  logger.info(
-    `[DEBUG FORECAST] getForecasts keys: ${Object.keys(getForecasts || {}).join(', ')}`
-  )
   if (!getDailySummary || typeof getDailySummary !== 'object') {
     getDailySummary = { today: null }
   }
@@ -94,18 +87,6 @@ async function fetchAndExtractForecasts(deps, diRequest, diOverrides) {
     request: diRequest
   })
   const getDailySummary = extractDailySummary(getForecasts)
-  const logInfo =
-    typeof deps.logger?.info === 'function'
-      ? deps.logger.info.bind(deps.logger)
-      : logger.info.bind(logger)
-  logInfo(
-    `[DEBUG issue_date] received from forecasts: ${getDailySummary?.issue_date ?? 'N/A'}`,
-    {
-      issueDate: getDailySummary?.issue_date,
-      requestPath: diRequest?.path,
-      requestId: diRequest?.info?.id
-    }
-  )
   return { getForecasts, getDailySummary }
 }
 
@@ -150,9 +131,6 @@ const routeFetchDataByLocationType = async ({
   }
 
   if (locationType === LOCATION_TYPE_NI) {
-    logger.info(
-      `[FETCH DATA] Step 4: Calling NI Places API for ${userLocation}...`
-    )
     const getNIPlaces = await handleNILocation(
       userLocation,
       searchTerms,
@@ -160,9 +138,6 @@ const routeFetchDataByLocationType = async ({
       optionsOAuth,
       deps,
       diRequest
-    )
-    logger.info(
-      `[FETCH DATA] Step 5: NI Places API complete. Results: ${getNIPlaces?.results?.length ?? 0}`
     )
     return { getDailySummary, getForecasts, getNIPlaces }
   }
