@@ -201,6 +201,16 @@ function extractLocationContext(request, headerTitle) {
   }
 }
 
+function resolveLatlon(locationData) {
+  const firstResult = locationData?.results?.[0]
+  return firstResult?.latitude != null && firstResult?.longitude != null
+    ? {
+        lat: Number(firstResult.latitude.toFixed(4)),
+        lon: Number(firstResult.longitude.toFixed(4))
+      }
+    : locationData.latlon
+}
+
 function buildLocationViewData({
   locationDetails,
   nearestLocationsRange,
@@ -239,14 +249,7 @@ function buildLocationViewData({
     locationNameForTemplate
   )
 
-  const firstResult = locationData?.results?.[0]
-  const latlon =
-    firstResult?.latitude != null && firstResult?.longitude != null
-      ? {
-          lat: Number(firstResult.latitude.toFixed(4)),
-          lon: Number(firstResult.longitude.toFixed(4))
-        }
-      : locationData.latlon
+  const latlon = resolveLatlon(locationData)
 
   return {
     result: locationDetails,
