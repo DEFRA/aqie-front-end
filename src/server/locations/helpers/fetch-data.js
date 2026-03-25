@@ -372,9 +372,6 @@ const routeFetchDataByLocationType = async ({
   }
 
   if (locationType === LOCATION_TYPE_NI) {
-    logger.info(
-      `[FETCH DATA] Step 4: Calling NI Places API for ${userLocation}...`
-    )
     const getNIPlaces = await handleNILocation(
       userLocation,
       searchTerms,
@@ -382,9 +379,6 @@ const routeFetchDataByLocationType = async ({
       optionsOAuth,
       deps,
       diRequest
-    )
-    logger.info(
-      `[FETCH DATA] Step 5: NI Places API complete. Results: ${getNIPlaces?.results?.length ?? 0}`
     )
     return { getDailySummary, getForecasts, getNIPlaces }
   }
@@ -458,10 +452,6 @@ async function handleNILocation(
  */
 function extractDailySummary(getForecasts) {
   let getDailySummary = getForecasts?.['forecast-summary']
-  logger.info(`[DEBUG FORECAST] forecast-summary exists: ${!!getDailySummary}`)
-  logger.info(
-    `[DEBUG FORECAST] getForecasts keys: ${Object.keys(getForecasts || {}).join(', ')}`
-  )
   if (!getDailySummary || typeof getDailySummary !== 'object') {
     getDailySummary = { today: null }
   }
@@ -488,19 +478,6 @@ async function fetchAndExtractForecasts(deps, diRequest, diOverrides) {
     request: diRequest
   })
   const getDailySummary = extractDailySummary(getForecasts)
-  // '' Log issue_date when first received from forecasts API
-  const logInfo =
-    typeof deps.logger?.info === 'function'
-      ? deps.logger.info.bind(deps.logger)
-      : logger.info.bind(logger)
-  logInfo(
-    `[DEBUG issue_date] received from forecasts: ${getDailySummary?.issue_date ?? 'N/A'}`,
-    {
-      issueDate: getDailySummary?.issue_date,
-      requestPath: diRequest?.path,
-      requestId: diRequest?.info?.id
-    }
-  )
   return { getForecasts, getDailySummary }
 }
 
@@ -530,18 +507,12 @@ async function fetchData(
 
   const diRequest = diOverrides?.request ?? request
 
-  logger.info(
-    `[FETCH DATA] Starting data fetch for ${locationType}: ${userLocation}`
-  )
-  logger.info(`[FETCH DATA] Step 1: Building OAuth for NI (if needed)...`)
   const optionsOAuth = await buildOAuthForNI(locationType, deps, request)
-  logger.info(`[FETCH DATA] Step 2: Fetching forecasts...`)
   const { getForecasts, getDailySummary } = await fetchAndExtractForecasts(
     deps,
     diRequest,
     diOverrides
   )
-  logger.info(`[FETCH DATA] Step 3: Forecast fetch complete`)
 
   return routeFetchDataByLocationType({
     locationType,
