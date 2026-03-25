@@ -54,7 +54,7 @@ describe('fetch-data-workflow-helpers', () => {
   })
 
   describe('fetchAndExtractForecasts', () => {
-    it('extracts forecast summary and logs through deps logger when available', async () => {
+    it('extracts forecast summary when deps logger is available', async () => {
       const deps = {
         fetchForecasts: vi.fn().mockResolvedValue({
           'forecast-summary': { issue_date: '2026-03-21', today: null }
@@ -75,7 +75,6 @@ describe('fetch-data-workflow-helpers', () => {
         custom: true,
         request: { path: '/x', info: { id: 'abc' } }
       })
-      expect(deps.logger.info).toHaveBeenCalled()
     })
 
     it('falls back to default summary when forecast-summary is missing', async () => {

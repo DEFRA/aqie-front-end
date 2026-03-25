@@ -342,12 +342,6 @@ function buildNewRicardoMeasurementsSelection({
   const queryString = queryParams.toString()
   const baseUrl = resolvedConfig.get('ricardoMeasurementsApiUrl')
 
-  if (!isProduction) {
-    resolvedLogger.info(
-      `[URL BUILD DEBUG] Using measurements with latitude: ${latitude}, longitude: ${longitude}`
-    )
-  }
-
   const ephemeralUrl = getEphemeralProtectedApiUrl(request, resolvedConfig)
   if (!isProduction && isLocalRequest(request) && ephemeralUrl) {
     const localResult = buildLocalMeasurementsUrlAndOpts(
@@ -434,22 +428,7 @@ async function callAndHandleMeasurementsResponse(
   catchFetchError,
   logger
 ) {
-  if (!config.get('isProduction')) {
-    logger.info(`[API DEBUG] Calling measurements API: ${url}`)
-    logger.info(`[API DEBUG] Request options:`, JSON.stringify(opts, null, 2))
-  }
-
   const [status, data] = await catchFetchError(url, opts)
-
-  if (!config.get('isProduction')) {
-    logger.info(`[API DEBUG] Response status: ${status}`)
-    logger.info(`[API DEBUG] Response data type: ${typeof data}`)
-    logger.info(`[API DEBUG] Response data is array: ${Array.isArray(data)}`)
-    logger.info(
-      `[API DEBUG] Full response data:`,
-      JSON.stringify(data, null, 2)
-    )
-  }
 
   if (status !== STATUS_OK) {
     logger.error(`Error fetching data: ${data?.message}`)

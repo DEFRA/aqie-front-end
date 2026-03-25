@@ -305,10 +305,10 @@ async function resolveLocationDataFromSessionOrSharedCache(request) {
     return sessionLocationData
   }
 
-  const sessionCacheKey = request.yar.get('locationDataCacheKey')
-  const locationDataCacheKey =
-    sessionCacheKey ||
-    buildSharedLocationPayloadCacheKey(request, sessionLocationData)
+  const locationDataCacheKey = buildSharedLocationPayloadCacheKey(
+    request,
+    sessionLocationData
+  )
 
   const sharedLocationData = await getSharedLocationPayload(
     request,

@@ -8,7 +8,6 @@ import {
 } from '../../data/en/monitoring-sites.js'
 import {
   LANG_CY,
-  LOCATION_TYPE_NI,
   LOCATION_TYPE_UK,
   REDIRECT_STATUS_CODE
 } from '../../data/constants.js'
@@ -32,49 +31,6 @@ import {
   mockPollutantBand as generateMockPollutantBand,
   applyMockPollutantsToSites
 } from '../../common/helpers/mock-pollutant-level.js'
-
-function getNILatLon(locationData = {}) {
-  if (locationData?.locationType !== LOCATION_TYPE_NI) {
-    return null
-  }
-
-  const firstResult = Array.isArray(locationData?.results)
-    ? locationData.results[0]
-    : null
-  const lat = Number(firstResult?.latitude)
-  const lon = Number(firstResult?.longitude)
-
-  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
-    return null
-  }
-
-  return { lat, lon }
-}
-
-function getFiniteFallbackLatLon(fallbackLatlon = {}) {
-  const lat = Number(fallbackLatlon?.lat)
-  const lon = Number(fallbackLatlon?.lon)
-
-  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
-    return null
-  }
-
-  return { lat, lon }
-}
-
-function resolveAlertLatLon(locationData = {}, fallbackLatlon = {}) {
-  const niLatLon = getNILatLon(locationData)
-  if (niLatLon) {
-    return niLatLon
-  }
-
-  const fallbackCoordinates = getFiniteFallbackLatLon(fallbackLatlon)
-  if (fallbackCoordinates) {
-    return fallbackCoordinates
-  }
-
-  return { lat: null, lon: null }
-}
 
 function applyMockLevel(request, airQuality) {
   const mocksDisabled = config.get('disableTestMocks')
@@ -245,16 +201,14 @@ function extractLocationContext(request, headerTitle) {
   }
 }
 
-function buildRoundedCoordinates(locationData = {}) {
-  const rawLatlon = resolveAlertLatLon(locationData, locationData.latlon)
-  return {
-    lat: Number.isFinite(rawLatlon.lat)
-      ? Number(rawLatlon.lat.toFixed(4))
-      : undefined,
-    lon: Number.isFinite(rawLatlon.lon)
-      ? Number(rawLatlon.lon.toFixed(4))
-      : undefined
-  }
+function resolveLatlon(locationData) {
+  const firstResult = locationData?.results?.[0]
+  return firstResult?.latitude != null && firstResult?.longitude != null
+    ? {
+        lat: Number(firstResult.latitude.toFixed(4)),
+        lon: Number(firstResult.longitude.toFixed(4))
+      }
+    : locationData.latlon
 }
 
 function buildLocationViewData({
@@ -266,10 +220,8 @@ function buildLocationViewData({
   getMonth,
   metaSiteUrl,
   request,
-  locationId,
-  logger
+  locationId
 }) {
-  const safeLogger = logger || { info: () => {} }
   const { title, headerTitle } = prepareLocationTitles(locationDetails)
 
   const { airQuality, transformedDailySummary } = prepareAirQuality({
@@ -297,8 +249,7 @@ function buildLocationViewData({
     locationNameForTemplate
   )
 
-  const latlon = buildRoundedCoordinates(locationData)
-  safeLogger.info('Building location view data', { locationId, latlon })
+  const latlon = resolveLatlon(locationData)
 
   return {
     result: locationDetails,

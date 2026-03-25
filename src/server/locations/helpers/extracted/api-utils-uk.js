@@ -137,11 +137,6 @@ async function callAndHandleUKApiResponse({
     resolvedOptionsEphemeralProtected
   )
 
-  resolvedLogger.info(
-    `[DEBUG] Calling catchProxyFetchError with URL: ${osNamesApiUrlFull}`
-  )
-  resolvedLogger.info('[DEBUG] Options:', JSON.stringify(selectedOptions))
-
   const [statusCodeOSPlace, getOSPlaces] = await resolvedCatchProxyFetchError(
     osNamesApiUrlFull,
     selectedOptions,

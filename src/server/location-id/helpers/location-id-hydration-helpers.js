@@ -89,15 +89,11 @@ async function hydrateLocationDataForStatelessLocationId(
     )
     await setSharedLocationPayload(request, cacheKey, hydratedLocationData)
 
-    logger.info(
-      `[STATLESS LOCATION-ID] Hydrated locationData for id='${locationId}'`
-    )
+    logger.info(`Hydrated locationData for id='${locationId}'`)
 
     return hydratedLocationData
   } catch (error) {
-    logger.warn(
-      `[STATLESS LOCATION-ID] Hydration failed for id='${locationId}': ${error.message}`
-    )
+    logger.warn(`Hydration failed for id='${locationId}': ${error.message}`)
     return null
   }
 }
