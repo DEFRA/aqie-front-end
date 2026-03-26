@@ -208,6 +208,37 @@ describe('email-confirm-link/controller', () => {
     expect(session.notificationFlow).toBe('email')
   })
 
+  it('restores session from expired token body so request-new-link uses correct location', async () => {
+    validateEmailLink.mockResolvedValueOnce({
+      ok: false,
+      status: 410,
+      body: {
+        emailAddress: 'user@example.com',
+        location: 'Gloucester, Gloucester',
+        lat: 51.8668,
+        long: -2.2446
+      }
+    })
+
+    const session = {
+      emailAddress: 'other@example.com',
+      location: 'Bristol',
+      latitude: 51.4545,
+      longitude: -2.5879
+    }
+    const request = mockRequest({
+      query: { token: 'expired-gloucester-token' },
+      session
+    })
+    const response = await handleEmailConfirmLinkRequest(request, mockH())
+
+    expect(response.tpl).toBe('notify/register/email-confirm-link/index')
+    expect(session.emailAddress).toBe('user@example.com')
+    expect(session.location).toBe('Gloucester, Gloucester')
+    expect(session.latitude).toBe(51.8668)
+    expect(session.longitude).toBe(-2.2446)
+  })
+
   it('renders invalid token error when validateEmailLink throws invalid_token error', async () => {
     validateEmailLink.mockImplementationOnce(() => {
       const err = new Error('bad token')
