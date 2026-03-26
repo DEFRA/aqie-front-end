@@ -466,6 +466,27 @@ async function processLocationWorkflow({
     ...workflowDependencies
   })
 
+  // '' Store current page coordinates in session so notification flows
+  // '' (e.g. 'Request a new activation link') always use the correct location
+  if (locationDetails && locationData?.results?.length) {
+    const result = findLocationResult(
+      locationData,
+      locationId,
+      workflowDependencies.logger
+    )
+    const gazetteerEntry = result.GAZETTEER_ENTRY || result
+    const locationTitle = buildLocationTitle(locationData, gazetteerEntry)
+    const { lat, lon } = locationData.latlon || {}
+    setNotificationLocationSessionValues(
+      request,
+      workflowDependencies.setSessionKeyIfSessionExists,
+      locationTitle,
+      locationId,
+      lat,
+      lon
+    )
+  }
+
   return finalizeWorkflowResponse({
     request,
     locationData,
