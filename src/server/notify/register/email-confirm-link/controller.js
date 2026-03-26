@@ -139,7 +139,7 @@ const validateTokenOrThrow = async (token, request) => {
   const hasResultLong = hasOwnValue(result.data, 'long')
 
   logger.info(
-    `[EMAIL CONFIRM] validateEmailLink raw response ok=${result.ok} status=${result.status} skipped=${result.skipped} tokenHasEmail=${!!result.data?.emailAddress} tokenHasLocation=${!!result.data?.location} tokenHasLatLong=${hasResultLat && hasResultLong} dataKeys=${JSON.stringify(result.data ? Object.keys(result.data) : null)} body=${JSON.stringify(result.body)}`
+    `[EMAIL CONFIRM] validateEmailLink raw response ok=${result.ok} status=${result.status} skipped=${result.skipped} tokenHasEmail=${!!result.data?.emailAddress} tokenHasLocation=${!!result.data?.location} tokenHasLatLong=${hasResultLat && hasResultLong} data=${JSON.stringify(result.data ?? null)} body=${JSON.stringify(result.body ?? null)}`
   )
 
   if (!result.ok) {
