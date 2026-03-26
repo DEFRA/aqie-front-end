@@ -115,6 +115,24 @@ const getSetupAlertError = () => {
   return error
 }
 
+const restoreSessionFromExpiredToken = (request, body) => {
+  if (!body || typeof body !== 'object') {
+    return
+  }
+  if (body.emailAddress) {
+    request.yar.set('emailAddress', body.emailAddress)
+  }
+  if (body.location) {
+    request.yar.set('location', body.location)
+  }
+  if (body.lat != null) {
+    request.yar.set('latitude', body.lat)
+  }
+  if (body.long != null) {
+    request.yar.set('longitude', body.long)
+  }
+}
+
 const validateTokenOrThrow = async (token, request) => {
   const result = await validateEmailLink(token, request)
   const hasResultLat = hasOwnValue(result.data, 'lat')
@@ -125,6 +143,7 @@ const validateTokenOrThrow = async (token, request) => {
   )
 
   if (!result.ok) {
+    restoreSessionFromExpiredToken(request, result.body)
     throw getInvalidTokenError()
   }
 
