@@ -116,7 +116,9 @@ const getSetupAlertError = () => {
 }
 
 const restoreSessionFromExpiredToken = (request, body) => {
-  if (!body || typeof body !== 'object') return
+  if (!body || typeof body !== 'object') {
+    return
+  }
   if (body.emailAddress) {
     request.yar.set('emailAddress', body.emailAddress)
   }
