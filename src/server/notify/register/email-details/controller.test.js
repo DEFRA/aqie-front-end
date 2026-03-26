@@ -206,6 +206,8 @@ describe('email-details controller', () => {
 
     expect(res.tpl).toBe('notify/register/email-details/index')
     expect(res.vm.error).toBeTruthy()
-    expect(res.vm.error.message).toContain('Enter your email address')
+    expect(res.vm.error.message).toContain(
+      'Enter an email address in the correct format'
+    )
   })
 })

@@ -34,6 +34,12 @@ const getSendFailureMessage = (emailDetails) =>
     'We could not send the email right now. Try again in a moment.'
   )
 
+const getInvalidEmailMessage = (emailDetails) =>
+  getTextOrDefault(
+    emailDetails.errors?.invalidEmail,
+    'Enter an email address in the correct format, like name@example.com'
+  )
+
 const getEmailDetailsContent = (content = english) => {
   const emailEnterEmail = getContentSection(content, 'emailEnterEmail')
   const common = getContentSection(content, 'common')
@@ -52,7 +58,8 @@ const getEmailDetailsContent = (content = english) => {
     pageTitle,
     errorPageTitle,
     serviceName,
-    sendFailureMessage: getSendFailureMessage(emailDetails)
+    sendFailureMessage: getSendFailureMessage(emailDetails),
+    invalidEmailMessage: getInvalidEmailMessage(emailDetails)
   }
 }
 
@@ -151,7 +158,7 @@ const getPayload = (request) => request.payload || {}
 const renderValidationError = (h, request, content, ui, payload) =>
   renderEmailDetailsView(h, request, content, ui, {
     pageTitle: ui.errorPageTitle,
-    error: { message: 'Enter your email address', field: 'notifyByEmail' },
+    error: { message: ui.invalidEmailMessage, field: 'notifyByEmail' },
     formData: payload
   })
 

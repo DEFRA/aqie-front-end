@@ -65,7 +65,9 @@ const postEnterEmailController = {
         backlink,
         cookieBanner,
         error: {
-          text: validation.error
+          text:
+            emailEnterEmail.errors?.invalidEmail ||
+            'Enter an email address in the correct format, like name@example.com'
         },
         notifyByEmail
       })

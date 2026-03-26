@@ -33,6 +33,18 @@ export const notificationTranslationsWelsh = {
       format: 'TODO Welsh: Enter a UK mobile phone number, like 07700 900 982'
     }
   },
+  // Email Address Entry page
+  emailEnterEmail: {
+    pageTitle: 'TODO Welsh: What is your email address?',
+    heading: 'TODO Welsh: What is your email address?',
+    description:
+      'TODO Welsh: We will send you an email containing an activation link.',
+    inputLabel: 'TODO Welsh: Enter your email address',
+    errors: {
+      invalidEmail:
+        'TODO Welsh: Enter an email address in the correct format, like name@example.com'
+    }
+  },
   // SMS Confirm Details page
   smsConfirmDetails: {
     pageTitle: 'Cadarnhau eich bod am sefydlu rhybudd',
@@ -231,6 +243,8 @@ export const notificationTranslationsWelsh = {
     alertLimitHint:
       'TODO Welsh: You can add up to 5 alerts for each email address.',
     errors: {
+      invalidEmail:
+        'TODO Welsh: Enter an email address in the correct format, like name@example.com',
       sendFailure:
         'TODO Welsh: We could not send the email right now. Try again in a moment.',
       maxAlertsReached: {

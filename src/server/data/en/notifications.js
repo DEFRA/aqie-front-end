@@ -36,7 +36,11 @@ export const notificationTranslations = {
     pageTitle: 'What is your email address?',
     heading: 'What is your email address?',
     description: 'We will send you an email containing an activation link.',
-    inputLabel: 'Enter your email address'
+    inputLabel: 'Enter your email address',
+    errors: {
+      invalidEmail:
+        'Enter an email address in the correct format, like name@example.com'
+    }
   },
   // SMS Confirm Details page
   smsConfirmDetails: {
@@ -226,6 +230,8 @@ export const notificationTranslations = {
   emailDetails: {
     alertLimitHint: 'You can add up to 5 alerts for each email address.',
     errors: {
+      invalidEmail:
+        'Enter an email address in the correct format, like name@example.com',
       sendFailure:
         'We could not send the email right now. Try again in a moment.',
       maxAlertsReached: {

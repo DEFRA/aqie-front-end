@@ -32,7 +32,7 @@ describe('email-details integration', () => {
       payload: { notifyByEmail: '' }
     })
     expect(res.statusCode).toBe(200) // stays on page with error
-    expect(res.result).toContain('Enter your email address')
+    expect(res.result).toContain('Enter an email address in the correct format')
   })
 
   it('POST /notify/register/email-details shows send error when notify is disabled', async () => {
