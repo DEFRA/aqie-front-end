@@ -252,6 +252,48 @@ const EXTRA_CONFIG_SCHEMA = {
     default: 15000,
     env: 'NI_API_TIMEOUT_MS'
   },
+  niApiMaxRetries: {
+    doc: 'Maximum number of retries for Northern Ireland API calls',
+    format: Number,
+    default: 2,
+    env: 'NI_API_MAX_RETRIES'
+  },
+  niApiRetryDelayMs: {
+    doc: 'Delay in milliseconds between retries for Northern Ireland API calls',
+    format: Number,
+    default: 500,
+    env: 'NI_API_RETRY_DELAY_MS'
+  },
+  niApiCacheEnabled: {
+    doc: 'Enable caching for Northern Ireland API responses',
+    format: Boolean,
+    default: true,
+    env: 'NI_API_CACHE_ENABLED'
+  },
+  niApiCacheTtlMs: {
+    doc: 'Cache TTL in milliseconds for Northern Ireland API responses',
+    format: Number,
+    default: 600000,
+    env: 'NI_API_CACHE_TTL_MS'
+  },
+  niApiCircuitBreakerEnabled: {
+    doc: 'Enable circuit breaker for Northern Ireland API calls',
+    format: Boolean,
+    default: true,
+    env: 'NI_API_CIRCUIT_BREAKER_ENABLED'
+  },
+  niApiCircuitBreakerFailureThreshold: {
+    doc: 'Number of failures before circuit breaker opens for Northern Ireland API',
+    format: Number,
+    default: 3,
+    env: 'NI_API_CIRCUIT_BREAKER_FAILURE_THRESHOLD'
+  },
+  niApiCircuitBreakerOpenMs: {
+    doc: 'Duration in milliseconds the circuit breaker stays open for Northern Ireland API',
+    format: Number,
+    default: 60000,
+    env: 'NI_API_CIRCUIT_BREAKER_OPEN_MS'
+  },
   scopeNIreland: {
     doc: 'OS Name Places Postcode Northern Ireland client scope',
     format: '*',
