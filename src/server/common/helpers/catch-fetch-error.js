@@ -28,16 +28,20 @@ async function catchFetchError(url, options) {
     const duration = endTime - startTime
     const status = response.status
     if (!response.ok) {
-      let errorText = ''
+      let errorBody
+      const errorContentType = response.headers.get('content-type') || ''
       try {
-        errorText = await response.text()
+        errorBody = errorContentType.includes('application/json')
+          ? await response.json()
+          : await response.text()
       } catch (e) {
-        errorText = '[unable to read response body]'
+        logger.error(`Failed to parse error response body from ${url}:`, e)
+        errorBody = undefined
       }
       logger.error(
-        `Failed to fetch data from ${url}: status=${status}, body=${errorText}`
+        `Failed to fetch data from ${url}: status=${status}, body=${JSON.stringify(errorBody)}`
       )
-      return [status, undefined]
+      return [status, errorBody]
     }
     const contentType = response.headers.get('content-type') || ''
     if (contentType.includes('application/json')) {
