@@ -55,9 +55,7 @@ const handleEmailVerifyRequest = (request, h, content = english) => {
   // '' Prefer signup-specific location so browsing to other locations after
   // '' sign-up doesn't change the text shown on this page.
   const location =
-    request.yar.get('emailSignupLocation') ||
-    request.yar.get('location') ||
-    ''
+    request.yar.get('emailSignupLocation') || request.yar.get('location') || ''
   const sentLinkText = emailVerifyEmail.sentLinkText.replace(
     '{emailAddress}',
     `<strong>${emailAddress}</strong>`

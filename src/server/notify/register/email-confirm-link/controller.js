@@ -57,9 +57,7 @@ const resolveEmailAlertData = (tokenData, request) => {
   // '' so that visiting other locations before clicking the confirmation link
   // '' doesn't corrupt the subscription data.
   const sessionLocation =
-    request.yar.get('emailSignupLocation') ||
-    request.yar.get('location') ||
-    ''
+    request.yar.get('emailSignupLocation') || request.yar.get('location') || ''
   const sessionLat =
     request.yar.get('emailSignupLat') ?? request.yar.get('latitude')
   const sessionLong =
