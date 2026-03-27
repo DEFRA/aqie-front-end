@@ -6,25 +6,26 @@ import { generateEmailLink } from '../../../common/services/notify.js'
 // Create a logger instance ''
 const logger = createLogger()
 
-/**
- * Handle GET request for Email send activation page ''
- * @param request - Hapi request object
- * @param h - Hapi response toolkit
- * @returns - View response with data
- */
-export const handleEmailSendActivationRequest = async (request, h) => {
-  logger.info('Processing Email send activation request (GET)')
+const getSignupSessionContext = (request) => ({
+  emailAddress: request.yar.get('emailAddress') || '',
+  // '' Prefer the signup-specific context so visiting other locations between
+  // '' sign-up and clicking 'Request a new activation link' doesn't corrupt the location.
+  location:
+    request.yar.get('emailSignupLocation') || request.yar.get('location') || '',
+  lat: request.yar.get('emailSignupLat') ?? request.yar.get('latitude'),
+  long: request.yar.get('emailSignupLong') ?? request.yar.get('longitude')
+})
 
-  // Get the email address from session ''
-  const emailAddress = request.yar.get('emailAddress') || ''
-  const location = request.yar.get('location') || ''
-  const lat = request.yar.get('latitude')
-  const long = request.yar.get('longitude')
-
+const sendActivationAndRedirect = async (
+  request,
+  h,
+  emailAddress,
+  location,
+  lat,
+  long
+) => {
   if (!emailAddress) {
-    // If no email address in session, redirect back to email details page ''
-    const emailDetailsPath = config.get('notify.emailDetailsPath')
-    return h.redirect(emailDetailsPath)
+    return h.redirect(config.get('notify.emailDetailsPath'))
   }
 
   try {
@@ -35,8 +36,26 @@ export const handleEmailSendActivationRequest = async (request, h) => {
     logger.error('Notify email send failed', err)
   }
 
-  const emailVerifyEmailPath = config.get('notify.emailVerifyEmailPath')
-  return h.redirect(emailVerifyEmailPath)
+  return h.redirect(config.get('notify.emailVerifyEmailPath'))
+}
+
+/**
+ * Handle GET request for Email send activation page ''
+ * @param request - Hapi request object
+ * @param h - Hapi response toolkit
+ * @returns - View response with data
+ */
+export const handleEmailSendActivationRequest = async (request, h) => {
+  logger.info('Processing Email send activation request (GET)')
+  const { emailAddress, location, lat, long } = getSignupSessionContext(request)
+  return sendActivationAndRedirect(
+    request,
+    h,
+    emailAddress,
+    location,
+    lat,
+    long
+  )
 }
 
 /**
@@ -47,31 +66,22 @@ export const handleEmailSendActivationRequest = async (request, h) => {
  */
 export const handleEmailSendActivationPost = async (request, h) => {
   logger.info('Processing Email send activation request (POST)')
+  const { emailAddress, location, lat, long } = getSignupSessionContext(request)
 
-  // Get the email address from session ''
-  const emailAddress = request.yar.get('emailAddress')
-  const location = request.yar.get('location') || ''
-  const lat = request.yar.get('latitude')
-  const long = request.yar.get('longitude')
-
-  if (!emailAddress) {
-    // If no email in session, redirect back to email details page ''
-    const emailDetailsPath = config.get('notify.emailDetailsPath')
-    return h.redirect(emailDetailsPath)
-  }
-
-  try {
-    await generateEmailLink(emailAddress, location, lat, long, request)
-    request.yar.set('emailActivationSent', Date.now())
-    logger.info('Queued Notify email link for delivery')
-  } catch (err) {
-    logger.error('Notify email send failed', err)
-  }
-
-  logger.info(
-    `Email activation code request sent for email address: ${emailAddress.split('@')[0]}@****`
+  const response = await sendActivationAndRedirect(
+    request,
+    h,
+    emailAddress,
+    location,
+    lat,
+    long
   )
 
-  const emailVerifyEmailPath = config.get('notify.emailVerifyEmailPath')
-  return h.redirect(emailVerifyEmailPath)
+  if (emailAddress) {
+    logger.info(
+      `Email activation code request sent for email address: ${emailAddress.split('@')[0]}@****`
+    )
+  }
+
+  return response
 }
