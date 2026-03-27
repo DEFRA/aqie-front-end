@@ -132,28 +132,34 @@ const restoreSessionFromExpiredToken = (request, body) => {
     )
     return
   }
-  logger.info(
-    `[EMAIL CONFIRM] restoreSessionFromExpiredToken: body received hasEmailAddress=${!!body.emailAddress} hasLocation=${!!body.location} hasLat=${body.lat != null} hasLong=${body.long != null} location=${body.location ?? 'undefined'}`
-  )
+  const locationFromBody = body.location ?? null
+  const latFromBody = body.lat ?? null
+  const longFromBody = body.long ?? null
   // '' Backend may send the address as 'email' or 'emailAddress'
-  const emailAddress = body.emailAddress || body.email
+  const emailAddress = body.emailAddress || body.email || null
+
+  logger.info(
+    `[EMAIL CONFIRM] restoreSessionFromExpiredToken: body received hasEmailAddress=${!!emailAddress} hasLocation=${!!locationFromBody} hasLat=${latFromBody !== null} hasLong=${longFromBody !== null} location=${locationFromBody ?? 'none'}`
+  )
+
   if (emailAddress) {
     request.yar.set('emailAddress', emailAddress)
   }
-  if (body.location) {
-    request.yar.set('location', body.location)
-    request.yar.set('emailSignupLocation', body.location)
+  if (locationFromBody) {
+    request.yar.set('location', locationFromBody)
+    request.yar.set('emailSignupLocation', locationFromBody)
   }
-  if (body.lat != null) {
-    request.yar.set('latitude', body.lat)
-    request.yar.set('emailSignupLat', body.lat)
+  if (latFromBody !== null) {
+    request.yar.set('latitude', latFromBody)
+    request.yar.set('emailSignupLat', latFromBody)
   }
-  if (body.long != null) {
-    request.yar.set('longitude', body.long)
-    request.yar.set('emailSignupLong', body.long)
+  if (longFromBody !== null) {
+    request.yar.set('longitude', longFromBody)
+    request.yar.set('emailSignupLong', longFromBody)
   }
+
   logger.info(
-    `[EMAIL CONFIRM] restoreSessionFromExpiredToken: session updated location=${request.yar.get('location')} emailSignupLocation=${request.yar.get('emailSignupLocation')}`
+    `[EMAIL CONFIRM] restoreSessionFromExpiredToken: restored from body locationRestored=${!!locationFromBody} latRestored=${latFromBody !== null} sessionLocationNow=${request.yar.get('emailSignupLocation') ?? 'none'}`
   )
 }
 
