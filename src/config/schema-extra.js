@@ -155,6 +155,12 @@ const EXTRA_CONFIG_SCHEMA = {
       format: String,
       default: '/notify/register/email-duplicate',
       env: 'NOTIFY_EMAIL_DUPLICATE_PATH'
+    },
+    unsubscribeEmailLinkPath: {
+      doc: 'Frontend route: unsubscribe email link page',
+      format: String,
+      default: '/notify/unsubscribe-email-link',
+      env: 'NOTIFY_UNSUBSCRIBE_EMAIL_LINK_PATH'
     }
   },
   subscriptionApi: {
