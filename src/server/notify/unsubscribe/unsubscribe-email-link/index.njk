@@ -1,0 +1,23 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <h1 class="govuk-heading-l">{{ content.heading }}</h1>
+
+      <p class="govuk-body">{{ content.bodyText }}</p>
+
+      <form method="post" novalidate>
+        <button class="govuk-button" data-module="govuk-button">
+          {{ content.confirmButton }}
+        </button>
+      </form>
+
+      <p class="govuk-body">
+        <a href="/" class="govuk-link">{{ content.cancelLink }}</a>
+      </p>
+
+    </div>
+  </div>
+{% endblock %}

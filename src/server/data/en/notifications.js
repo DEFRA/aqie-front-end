@@ -277,5 +277,12 @@ export const notificationTranslations = {
     bullet2:
       'if a nearby monitoring site detects high or very high pollution levels anywhere in the Greater London region',
     continueButton: 'Continue'
+  },
+  // Unsubscribe email link page
+  unsubscribeEmailLink: {
+    heading: 'Confirm you want to unsubscribe',
+    bodyText: 'Do you want to stop getting air pollution alerts by email?',
+    confirmButton: 'Yes, unsubscribe',
+    cancelLink: 'No, keep email alerts'
   }
 }

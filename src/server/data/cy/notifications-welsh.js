@@ -285,5 +285,13 @@ export const notificationTranslationsWelsh = {
     bullet2:
       'TODO Welsh: if a nearby monitoring site detects high or very high pollution levels anywhere in the Greater London region',
     continueButton: TODO_CONTINUE
+  },
+  // Unsubscribe email link page
+  unsubscribeEmailLink: {
+    heading: 'TODO Welsh: Confirm you want to unsubscribe',
+    bodyText:
+      'TODO Welsh: Do you want to stop getting air pollution alerts by email?',
+    confirmButton: 'TODO Welsh: Yes, unsubscribe',
+    cancelLink: 'TODO Welsh: No, keep email alerts'
   }
 }
