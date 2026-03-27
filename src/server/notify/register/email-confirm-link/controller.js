@@ -135,8 +135,10 @@ const restoreSessionFromExpiredToken = (request, body) => {
   logger.info(
     `[EMAIL CONFIRM] restoreSessionFromExpiredToken: body received hasEmailAddress=${!!body.emailAddress} hasLocation=${!!body.location} hasLat=${body.lat != null} hasLong=${body.long != null} location=${body.location ?? 'undefined'}`
   )
-  if (body.emailAddress) {
-    request.yar.set('emailAddress', body.emailAddress)
+  // '' Backend may send the address as 'email' or 'emailAddress'
+  const emailAddress = body.emailAddress || body.email
+  if (emailAddress) {
+    request.yar.set('emailAddress', emailAddress)
   }
   if (body.location) {
     request.yar.set('location', body.location)
