@@ -53,12 +53,24 @@ const resolveEmailAlertData = (tokenData, request) => {
   const hasTokenLat = hasOwnValue(tokenData, 'lat')
   const hasTokenLong = hasOwnValue(tokenData, 'long')
 
+  // '' Prefer signup-specific session context over the general browsing location
+  // '' so that visiting other locations before clicking the confirmation link
+  // '' doesn't corrupt the subscription data.
+  const sessionLocation =
+    request.yar.get('emailSignupLocation') ||
+    request.yar.get('location') ||
+    ''
+  const sessionLat =
+    request.yar.get('emailSignupLat') ?? request.yar.get('latitude')
+  const sessionLong =
+    request.yar.get('emailSignupLong') ?? request.yar.get('longitude')
+
   return {
     emailAddress: tokenData.emailAddress || request.yar.get('emailAddress'),
-    location: tokenData.location || request.yar.get('location') || '',
+    location: tokenData.location || sessionLocation,
     locationId: request.yar.get('locationId') || '',
-    lat: hasTokenLat ? tokenData.lat : request.yar.get('latitude'),
-    long: hasTokenLong ? tokenData.long : request.yar.get('longitude'),
+    lat: hasTokenLat ? tokenData.lat : sessionLat,
+    long: hasTokenLong ? tokenData.long : sessionLong,
     hasTokenLat,
     hasTokenLong
   }
@@ -124,12 +136,15 @@ const restoreSessionFromExpiredToken = (request, body) => {
   }
   if (body.location) {
     request.yar.set('location', body.location)
+    request.yar.set('emailSignupLocation', body.location)
   }
   if (body.lat != null) {
     request.yar.set('latitude', body.lat)
+    request.yar.set('emailSignupLat', body.lat)
   }
   if (body.long != null) {
     request.yar.set('longitude', body.long)
+    request.yar.set('emailSignupLong', body.long)
   }
 }
 

@@ -17,9 +17,15 @@ export const handleEmailSendActivationRequest = async (request, h) => {
 
   // Get the email address from session ''
   const emailAddress = request.yar.get('emailAddress') || ''
-  const location = request.yar.get('location') || ''
-  const lat = request.yar.get('latitude')
-  const long = request.yar.get('longitude')
+  // '' Prefer the signup-specific context so visiting other locations between
+  // '' sign-up and clicking 'Request a new activation link' doesn't corrupt the location.
+  const location =
+    request.yar.get('emailSignupLocation') ||
+    request.yar.get('location') ||
+    ''
+  const lat = request.yar.get('emailSignupLat') ?? request.yar.get('latitude')
+  const long =
+    request.yar.get('emailSignupLong') ?? request.yar.get('longitude')
 
   if (!emailAddress) {
     // If no email address in session, redirect back to email details page ''
@@ -50,9 +56,13 @@ export const handleEmailSendActivationPost = async (request, h) => {
 
   // Get the email address from session ''
   const emailAddress = request.yar.get('emailAddress')
-  const location = request.yar.get('location') || ''
-  const lat = request.yar.get('latitude')
-  const long = request.yar.get('longitude')
+  const location =
+    request.yar.get('emailSignupLocation') ||
+    request.yar.get('location') ||
+    ''
+  const lat = request.yar.get('emailSignupLat') ?? request.yar.get('latitude')
+  const long =
+    request.yar.get('emailSignupLong') ?? request.yar.get('longitude')
 
   if (!emailAddress) {
     // If no email in session, redirect back to email details page ''

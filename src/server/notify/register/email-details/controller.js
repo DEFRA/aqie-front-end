@@ -205,12 +205,17 @@ const handleValidEmailSubmission = async (
 const getSubmissionContext = (request, email) => {
   request.yar.set('emailAddress', email)
 
-  return {
-    email,
-    location: request.yar.get('location') || '',
-    lat: request.yar.get('latitude'),
-    long: request.yar.get('longitude')
-  }
+  const location = request.yar.get('location') || ''
+  const lat = request.yar.get('latitude')
+  const long = request.yar.get('longitude')
+
+  // '' Persist dedicated signup context so it survives the user browsing to
+  // '' other locations before clicking 'Request a new activation link'.
+  request.yar.set('emailSignupLocation', location)
+  request.yar.set('emailSignupLat', lat)
+  request.yar.set('emailSignupLong', long)
+
+  return { email, location, lat, long }
 }
 
 const recordEmailCaptureSafely = async (email) => {

@@ -52,8 +52,12 @@ const handleEmailVerifyRequest = (request, h, content = english) => {
     getEmailVerifyContent(request, content)
   const { footerTxt, phaseBanner, cookieBanner } = languageContent
   const metaSiteUrl = getAirQualitySiteUrl(request)
-  // '' Get location from session
-  const location = request.yar.get('location') || ''
+  // '' Prefer signup-specific location so browsing to other locations after
+  // '' sign-up doesn't change the text shown on this page.
+  const location =
+    request.yar.get('emailSignupLocation') ||
+    request.yar.get('location') ||
+    ''
   const sentLinkText = emailVerifyEmail.sentLinkText.replace(
     '{emailAddress}',
     `<strong>${emailAddress}</strong>`
