@@ -127,8 +127,14 @@ const getSetupAlertError = () => {
 
 const restoreSessionFromExpiredToken = (request, body) => {
   if (!body || typeof body !== 'object') {
+    logger.warn(
+      `[EMAIL CONFIRM] restoreSessionFromExpiredToken: body is absent or not an object (type=${typeof body}) — session not restored`
+    )
     return
   }
+  logger.info(
+    `[EMAIL CONFIRM] restoreSessionFromExpiredToken: body received hasEmailAddress=${!!body.emailAddress} hasLocation=${!!body.location} hasLat=${body.lat != null} hasLong=${body.long != null} location=${body.location ?? 'undefined'}`
+  )
   if (body.emailAddress) {
     request.yar.set('emailAddress', body.emailAddress)
   }
@@ -144,6 +150,9 @@ const restoreSessionFromExpiredToken = (request, body) => {
     request.yar.set('longitude', body.long)
     request.yar.set('emailSignupLong', body.long)
   }
+  logger.info(
+    `[EMAIL CONFIRM] restoreSessionFromExpiredToken: session updated location=${request.yar.get('location')} emailSignupLocation=${request.yar.get('emailSignupLocation')}`
+  )
 }
 
 const validateTokenOrThrow = async (token, request) => {
@@ -151,8 +160,9 @@ const validateTokenOrThrow = async (token, request) => {
   const hasResultLat = hasOwnValue(result.data, 'lat')
   const hasResultLong = hasOwnValue(result.data, 'long')
 
+  // '' For valid responses location is in result.data; for error responses (e.g. expired token) it is in result.body
   logger.info(
-    `[EMAIL CONFIRM] validateEmailLink raw response ok=${result.ok} status=${result.status} skipped=${result.skipped} tokenHasEmail=${!!result.data?.emailAddress} tokenHasLocation=${!!result.data?.location} tokenHasLatLong=${hasResultLat && hasResultLong} data=${JSON.stringify(result.data ?? null)} body=${JSON.stringify(result.body ?? null)}`
+    `[EMAIL CONFIRM] validateEmailLink raw response ok=${result.ok} status=${result.status} skipped=${result.skipped} tokenHasEmail=${!!(result.data?.emailAddress || result.body?.emailAddress)} tokenHasLocation=${!!(result.data?.location || result.body?.location)} tokenHasLatLong=${hasResultLat && hasResultLong} data=${JSON.stringify(result.data ?? null)} body=${JSON.stringify(result.body ?? null)}`
   )
 
   if (!result.ok) {
