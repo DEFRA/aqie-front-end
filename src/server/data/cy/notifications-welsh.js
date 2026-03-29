@@ -293,5 +293,21 @@ export const notificationTranslationsWelsh = {
       'TODO Welsh: Do you want to stop getting air pollution alerts by email?',
     confirmButton: 'TODO Welsh: Yes, unsubscribe',
     cancelLink: 'TODO Welsh: No, keep email alerts'
+  },
+  // Unsubscribe success page
+  unsubscribeSuccess: {
+    heading:
+      'TODO Welsh: You have unsubscribed from air pollution alerts by email',
+    bodyPrefix: 'TODO Welsh: If you want to set up an alert, you can ',
+    searchLinkText: 'TODO Welsh: search for another location',
+    bodySuffix: '.'
+  },
+  // Unsubscribe keep alerts page
+  unsubscribeKeepAlerts: {
+    heading:
+      'TODO Welsh: You will continue to get air pollution alerts by email',
+    bodyPrefix: 'TODO Welsh: If you want to set up another alert, you can ',
+    searchLinkText: 'TODO Welsh: search for another location',
+    bodySuffix: '.'
   }
 }

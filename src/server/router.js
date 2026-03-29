@@ -48,6 +48,8 @@ import { emailSendActivation } from './notify/register/email-send-activation/ind
 import { emailVerifyEmail } from './notify/register/email-verify-email/index.js'
 import { emailConfirmLink } from './notify/register/email-confirm-link/index.js'
 import { unsubscribeEmailLink } from './notify/unsubscribe/unsubscribe-email-link/index.js'
+import { unsubscribeSuccess } from './notify/unsubscribe/unsubscribe-success/index.js'
+import { unsubscribeKeepAlerts } from './notify/unsubscribe/unsubscribe-keep-alerts/index.js'
 import notifyDebugClearMockStorage from './notify/debug/clear-mock-storage.js'
 import path from 'node:path'
 import { createLogger } from './common/helpers/logging/logger.js'
@@ -114,6 +116,8 @@ function getServerPlugins() {
     emailVerifyEmail,
     emailConfirmLink,
     unsubscribeEmailLink,
+    unsubscribeSuccess,
+    unsubscribeKeepAlerts,
     notifyDebugClearMockStorage
   ]
 }

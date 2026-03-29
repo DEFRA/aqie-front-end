@@ -284,5 +284,19 @@ export const notificationTranslations = {
     bodyText: 'Do you want to stop getting air pollution alerts by email?',
     confirmButton: 'Yes, unsubscribe',
     cancelLink: 'No, keep email alerts'
+  },
+  // Unsubscribe success page
+  unsubscribeSuccess: {
+    heading: 'You have unsubscribed from air pollution alerts by email',
+    bodyPrefix: 'If you want to set up an alert, you can ',
+    searchLinkText: 'search for another location',
+    bodySuffix: '.'
+  },
+  // Unsubscribe keep alerts page
+  unsubscribeKeepAlerts: {
+    heading: 'You will continue to get air pollution alerts by email',
+    bodyPrefix: 'If you want to set up another alert, you can ',
+    searchLinkText: 'search for another location',
+    bodySuffix: '.'
   }
 }
