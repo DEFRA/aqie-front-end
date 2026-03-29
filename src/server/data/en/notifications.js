@@ -7,6 +7,7 @@ const SERVICE_NAME = 'Check air quality'
 const ALERT_ALREADY_SET_UP = 'This alert has already been set up'
 const ALERT_SIGNUP_SUCCESS =
   'You have successfully signed up for air quality alerts'
+const SEARCH_ANOTHER_LOCATION = 'search for another location'
 
 export const notificationTranslations = {
   // Common notification settings
@@ -204,7 +205,7 @@ export const notificationTranslations = {
     confirmationText: 'We have sent you a confirmation text message.',
     anotherAlertPrefix:
       'If you want to set up another alert for {mobileNumber} you can',
-    anotherAlertLinkText: 'search for another location',
+    anotherAlertLinkText: SEARCH_ANOTHER_LOCATION,
     anotherAlertSuffix: '.',
     researchHeading: 'Help improve this service',
     researchSignupPrefix:
@@ -244,7 +245,7 @@ export const notificationTranslations = {
     confirmationText: 'We have sent you a confirmation email.',
     anotherAlertPrefix:
       'If you want to set up another alert for {emailAddress} you can',
-    anotherAlertLinkText: 'search for another location',
+    anotherAlertLinkText: SEARCH_ANOTHER_LOCATION,
     anotherAlertSuffix: '.',
     researchHeading: 'Help improve this service',
     researchSignupPrefix:
@@ -289,14 +290,14 @@ export const notificationTranslations = {
   unsubscribeSuccess: {
     heading: 'You have unsubscribed from air pollution alerts by email',
     bodyPrefix: 'If you want to set up an alert, you can ',
-    searchLinkText: 'search for another location',
+    searchLinkText: SEARCH_ANOTHER_LOCATION,
     bodySuffix: '.'
   },
   // Unsubscribe keep alerts page
   unsubscribeKeepAlerts: {
     heading: 'You will continue to get air pollution alerts by email',
     bodyPrefix: 'If you want to set up another alert, you can ',
-    searchLinkText: 'search for another location',
+    searchLinkText: SEARCH_ANOTHER_LOCATION,
     bodySuffix: '.'
   }
 }
