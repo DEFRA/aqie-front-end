@@ -8,14 +8,14 @@
 
       <p class="govuk-body">{{ content.bodyText }}</p>
 
-      <form method="post" novalidate>
+      <form method="post" novalidate target="_blank">
         <button class="govuk-button" data-module="govuk-button">
           {{ content.confirmButton }}
         </button>
       </form>
 
       <p class="govuk-body">
-        <a href="/notify/unsubscribe-keep-alerts" class="govuk-link">{{ content.cancelLink }}</a>
+        <a href="/notify/unsubscribe-keep-alerts" class="govuk-link" target="_blank" rel="noreferrer noopener">{{ content.cancelLink }}</a>
       </p>
 
     </div>
