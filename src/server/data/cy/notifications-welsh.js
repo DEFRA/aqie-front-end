@@ -4,6 +4,7 @@
  */
 // ''
 const TODO_CONTINUE = 'TODO Welsh: Continue'
+const TODO_SEARCH_ANOTHER_LOCATION = 'TODO Welsh: search for another location'
 const TODO_ALERT_ALREADY_SET_UP =
   'TODO Welsh: This alert has already been set up'
 const TODO_ALERT_SIGNUP_SUCCESS =
@@ -207,7 +208,7 @@ export const notificationTranslationsWelsh = {
       'TODO Welsh: We have sent you a confirmation text message.',
     anotherAlertPrefix:
       'TODO Welsh: If you want to set up another alert for {mobileNumber} you can',
-    anotherAlertLinkText: 'TODO Welsh: search for another location',
+    anotherAlertLinkText: TODO_SEARCH_ANOTHER_LOCATION,
     anotherAlertSuffix: '.',
     researchHeading: 'TODO Welsh: Help improve this service',
     researchSignupPrefix:
@@ -250,7 +251,7 @@ export const notificationTranslationsWelsh = {
     confirmationText: 'TODO Welsh: We have sent you a confirmation email.',
     anotherAlertPrefix:
       'TODO Welsh: If you want to set up another alert for {emailAddress} you can',
-    anotherAlertLinkText: 'TODO Welsh: search for another location',
+    anotherAlertLinkText: TODO_SEARCH_ANOTHER_LOCATION,
     anotherAlertSuffix: '.',
     researchHeading: 'TODO Welsh: Help improve this service',
     researchSignupPrefix:
@@ -293,5 +294,21 @@ export const notificationTranslationsWelsh = {
       'TODO Welsh: Do you want to stop getting air pollution alerts by email?',
     confirmButton: 'TODO Welsh: Yes, unsubscribe',
     cancelLink: 'TODO Welsh: No, keep email alerts'
+  },
+  // Unsubscribe success page
+  unsubscribeSuccess: {
+    heading:
+      'TODO Welsh: You have unsubscribed from air pollution alerts by email',
+    bodyPrefix: 'TODO Welsh: If you want to set up an alert, you can ',
+    searchLinkText: TODO_SEARCH_ANOTHER_LOCATION,
+    bodySuffix: '.'
+  },
+  // Unsubscribe keep alerts page
+  unsubscribeKeepAlerts: {
+    heading:
+      'TODO Welsh: You will continue to get air pollution alerts by email',
+    bodyPrefix: 'TODO Welsh: If you want to set up another alert, you can ',
+    searchLinkText: TODO_SEARCH_ANOTHER_LOCATION,
+    bodySuffix: '.'
   }
 }

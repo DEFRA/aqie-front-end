@@ -161,6 +161,18 @@ const EXTRA_CONFIG_SCHEMA = {
       format: String,
       default: '/notify/unsubscribe-email-link',
       env: 'NOTIFY_UNSUBSCRIBE_EMAIL_LINK_PATH'
+    },
+    unsubscribeSuccessPath: {
+      doc: 'Frontend route: unsubscribe success page',
+      format: String,
+      default: '/notify/unsubscribe-success',
+      env: 'NOTIFY_UNSUBSCRIBE_SUCCESS_PATH'
+    },
+    unsubscribeKeepAlertsPath: {
+      doc: 'Frontend route: unsubscribe keep alerts page',
+      format: String,
+      default: '/notify/unsubscribe-keep-alerts',
+      env: 'NOTIFY_UNSUBSCRIBE_KEEP_ALERTS_PATH'
     }
   },
   subscriptionApi: {
