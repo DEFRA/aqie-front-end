@@ -24,6 +24,9 @@ vi.mock('../../../../config/index.js', () => ({
       if (key === 'notify.emailDetailsPath') {
         return '/notify/register/email-details'
       }
+      if (key === 'notify.emailSendActivationPath') {
+        return '/notify/register/email-send-activation'
+      }
       if (key === 'notify.smsMobileNumberPath') {
         return '/notify/register/sms-mobile-number'
       }
@@ -70,6 +73,9 @@ describe('email-verify-email/controller', () => {
     expect(response.vm.confirmLinkText).toContain('Leeds')
     expect(response.vm.backLinkUrl).toBe('/notify/register/email-details')
     expect(response.vm.emailDetailsPath).toBe('/notify/register/email-details')
+    expect(response.vm.emailSendActivationPath).toBe(
+      '/notify/register/email-send-activation'
+    )
   })
 
   it('renders verify-email page with empty location fallback', () => {

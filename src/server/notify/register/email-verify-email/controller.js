@@ -82,6 +82,7 @@ const handleEmailVerifyRequest = (request, h, content = english) => {
     sentLinkText,
     confirmLinkText,
     emailDetailsPath: config.get(EMAIL_DETAILS_PATH_KEY),
+    emailSendActivationPath: config.get('notify.emailSendActivationPath'),
     smsMobileNumberPath: config.get('notify.smsMobileNumberPath'),
     displayBacklink: true,
     customBackLink: true,
