@@ -275,15 +275,8 @@ export function applyMockToDay(airQuality, level, mockDay) {
 
   const modifiedAirQuality = createBaseAirQuality(airQuality)
 
-  if (mockDay && validDays.includes(mockDay)) {
-    // Specific day requested — mock only that day
-    modifiedAirQuality[mockDay] = mockDayData
-  } else {
-    // No specific day — mock all five forecast days
-    for (const day of validDays) {
-      modifiedAirQuality[day] = mockDayData
-    }
-  }
+  const targetDay = mockDay && validDays.includes(mockDay) ? mockDay : 'today'
+  modifiedAirQuality[targetDay] = mockDayData
 
   return modifiedAirQuality
 }
