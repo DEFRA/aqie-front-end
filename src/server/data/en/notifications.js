@@ -161,6 +161,25 @@ export const notificationTranslations = {
       'set up text message alerts using a mobile phone number',
     smsLinkSuffix: 'instead.'
   },
+  // Email send new link page
+  emailSendNewLink: {
+    pageTitle: 'Request a new activation link',
+    heading: 'Request a new activation link',
+    intro1: 'Emails can take a few minutes to arrive.',
+    intro2:
+      'If the activation link has not arrived after 10 minutes, you can get a new link sent to:',
+    bulletSameEmail: 'the same email address, <strong>{emailAddress}</strong>',
+    bulletDifferentEmail: 'a different email address',
+    detailsSummary: 'Send the link to a different email address',
+    detailsLabel: 'Enter email address (optional)',
+    detailsHint:
+      'Enter an email address in the correct format, like name@example.com',
+    submitButton: 'Request a new link',
+    errors: {
+      format:
+        'Enter an email address in the correct format, like name@example.com'
+    }
+  },
   // SMS send new code page
   smsSendNewCode: {
     pageTitle: 'Request a new activation code',

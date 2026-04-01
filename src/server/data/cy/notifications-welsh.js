@@ -163,6 +163,26 @@ export const notificationTranslationsWelsh = {
       'TODO Welsh: set up text message alerts using a mobile phone number',
     smsLinkSuffix: 'TODO Welsh: instead.'
   },
+  // Email send new link page
+  emailSendNewLink: {
+    pageTitle: 'TODO Welsh: Request a new activation link',
+    heading: 'TODO Welsh: Request a new activation link',
+    intro1: 'TODO Welsh: Emails can take a few minutes to arrive.',
+    intro2:
+      'TODO Welsh: If the activation link has not arrived after 10 minutes, you can get a new link sent to:',
+    bulletSameEmail:
+      'TODO Welsh: the same email address, <strong>{emailAddress}</strong>',
+    bulletDifferentEmail: 'TODO Welsh: a different email address',
+    detailsSummary: 'TODO Welsh: Send the link to a different email address',
+    detailsLabel: 'TODO Welsh: Enter email address (optional)',
+    detailsHint:
+      'TODO Welsh: Enter an email address in the correct format, like name@example.com',
+    submitButton: 'TODO Welsh: Request a new link',
+    errors: {
+      format:
+        'TODO Welsh: Enter an email address in the correct format, like name@example.com'
+    }
+  },
   // SMS send new code page
   smsSendNewCode: {
     pageTitle: 'TODO Welsh: Request a new activation code',
