@@ -145,13 +145,23 @@ export const notificationTranslationsWelsh = {
     confirmLinkText:
       'TODO Welsh: Use the link in the email to confirm you want to get email notifications about air pollution in {location}.',
     detailsSummary: 'TODO Welsh: Not received an email?',
-    detailsIntro:
-      'TODO Welsh: Emails sometimes take a few minutes to arrive. Check your spam or junk folder if it has not arrived.',
-    detailsBulletEmail: 'TODO Welsh: the email address shown here is correct',
+    detailsIntro: 'TODO Welsh: Emails sometimes take a few minutes to arrive.',
+    detailsIfNotReceived:
+      'TODO Welsh: If you do not receive an email after 10 minutes:',
     detailsBulletSpam:
-      'TODO Welsh: it has not been filtered into your spam or junk folder',
-    requestNewLinkText: 'TODO Welsh: Request a new activation link',
-    setupTextMessageLinkText: 'TODO Welsh: Set up a text message alert instead'
+      'TODO Welsh: check that the email is not in your spam or junk folder',
+    detailsBulletEmail:
+      'TODO Welsh: confirm that the email address shown here is correct',
+    detailsBulletInternet:
+      'TODO Welsh: check you are connected to the internet',
+    requestNewLinkPrefix: 'TODO Welsh: You can',
+    requestNewLinkText: 'TODO Welsh: request a new activation link',
+    requestNewLinkSuffix:
+      'TODO Welsh: to the same email address, or to a different email address.',
+    smsLinkPrefix: 'TODO Welsh: Or you can',
+    setupTextMessageLinkText:
+      'TODO Welsh: set up text message alerts using a mobile phone number',
+    smsLinkSuffix: 'TODO Welsh: instead.'
   },
   // SMS send new code page
   smsSendNewCode: {

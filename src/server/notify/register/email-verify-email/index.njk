@@ -16,15 +16,17 @@
         </summary>
         <div class="govuk-details__text">
           <p>{{ content.detailsIntro }}</p>
+          <p>{{ content.detailsIfNotReceived }}</p>
           <ul>
-            <li>{{ content.detailsBulletEmail }}</li>
             <li>{{ content.detailsBulletSpam }}</li>
+            <li>{{ content.detailsBulletEmail }}</li>
+            <li>{{ content.detailsBulletInternet }}</li>
           </ul>
-          <p><a href="{{ emailDetailsPath }}" class="govuk-link">{{ content.requestNewLinkText }}</a></p>
+          <p>{{ content.requestNewLinkPrefix }} <a href="{{ emailDetailsPath }}" class="govuk-link">{{ content.requestNewLinkText }}</a> {{ content.requestNewLinkSuffix }}</p>
         </div>
       </details>
 
-      <p class="govuk-body"><a href="{{ smsMobileNumberPath }}" class="govuk-link">{{ content.setupTextMessageLinkText }}</a></p>
+      <p class="govuk-body">{{ content.smsLinkPrefix }} <a href="{{ smsMobileNumberPath }}" class="govuk-link">{{ content.setupTextMessageLinkText }}</a> {{ content.smsLinkSuffix }}</p>
 
     </div>
   </div>

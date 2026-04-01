@@ -146,12 +146,20 @@ export const notificationTranslations = {
     confirmLinkText:
       'Use the link in the email to confirm you want to get email notifications about air pollution in {location}.',
     detailsSummary: 'Not received an email?',
-    detailsIntro:
-      'Emails sometimes take a few minutes to arrive. Check your spam or junk folder if it has not arrived.',
-    detailsBulletEmail: 'the email address shown here is correct',
-    detailsBulletSpam: 'it has not been filtered into your spam or junk folder',
-    requestNewLinkText: 'Request a new activation link',
-    setupTextMessageLinkText: 'Set up a text message alert instead'
+    detailsIntro: 'Emails sometimes take a few minutes to arrive.',
+    detailsIfNotReceived: 'If you do not receive an email after 10 minutes:',
+    detailsBulletSpam:
+      'check that the email is not in your spam or junk folder',
+    detailsBulletEmail: 'confirm that the email address shown here is correct',
+    detailsBulletInternet: 'check you are connected to the internet',
+    requestNewLinkPrefix: 'You can',
+    requestNewLinkText: 'request a new activation link',
+    requestNewLinkSuffix:
+      'to the same email address, or to a different email address.',
+    smsLinkPrefix: 'Or you can',
+    setupTextMessageLinkText:
+      'set up text message alerts using a mobile phone number',
+    smsLinkSuffix: 'instead.'
   },
   // SMS send new code page
   smsSendNewCode: {
