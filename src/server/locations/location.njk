@@ -36,13 +36,98 @@
 
   {% include "daqi-numbered.njk" %}
       
+      {# '' Display summary date only if it's today's date #}
+      {% if showSummaryDate and summaryDate %}
+        <p class="govuk-caption-s daqi-health-summary-date">{{ daqi.pageTexts.b }} {{ issueTime | default('5:00') }} {{ daqi.pageTexts.on }} {{ summaryDate }}</p>
+        <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l govuk-!-margin-bottom-6" data-daqi-tabs-separator>
+      {% endif %}
+
       {# '' Convert value to integer for comparison to ensure mockLevel works correctly #}
       {% set todayValue = airQuality.today.value | int %}
-      {# '' Air quality alerts section - captured once, rendered in conditional position below #}
-      {% set alertsHtml %}
+      {# '' AQC-657: Exposure section ordering: show first ONLY for Low (1-3) levels #}
+      {% if todayValue <= 3 %}
+        {# '' Set variable to add top margin when summary date not shown #}
+        {% set needsTopMargin = not (showSummaryDate and summaryDate) %}
+        {% include "exposure-section.njk" %}
+        {# '' AQC-657: Visual separator between exposure advice and health advice (Low level order) #}
+        <hr data-daqi-separator="between-health-exposure" class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-6 govuk-!-margin-bottom-6">
+      {% endif %}
+      <h2 class="govuk-heading-m{% if not (showSummaryDate and summaryDate) %} govuk-!-margin-top-6{% endif %}">{{ daqi.healthAdvice.paragraphs.a }} {{ airQuality.today.readableBand }} {{ daqi.healthAdvice.paragraphs.b }}</h2>
+      
+      {# '' For Low levels (1-3): show advice paragraph + regular text content without inset box #}
+      {% if todayValue <= 3 %}
+        <p>{{ airQuality.today.advice }}</p>
+        {# '' Replace {locationId} placeholder and add query parameters for proper back link context #}
+        {% set processedInsetText = airQuality.today.insetText | replace('{locationId}', locationId) %}
+        {% set queryParams = '' %}
+        {% if searchTerms %}
+          {% set queryParams = queryParams + '&searchTerms=' + (searchTerms | urlencode) %}
+        {% endif %}
+        {% if locationName %}
+          {% set queryParams = queryParams + '&locationName=' + (locationName | urlencode) %}
+        {% endif %}
+        {% if queryParams %}
+          {% if lang == 'en' %}
+            {% set processedInsetText = processedInsetText | replace('actions-reduce-exposure?lang=en', 'actions-reduce-exposure?lang=en' + queryParams) %}
+            {% set processedInsetText = processedInsetText | replace('health-effects?lang=en', 'health-effects?lang=en' + queryParams) %}
+          {% elif lang == 'cy' %}
+            {% set processedInsetText = processedInsetText | replace('camau-lleihau-amlygiad/cy?lang=cy', 'camau-lleihau-amlygiad/cy?lang=cy' + queryParams) %}
+            {% set processedInsetText = processedInsetText | replace('effeithiau-iechyd?lang=cy', 'effeithiau-iechyd?lang=cy' + queryParams) %}
+          {% endif %}
+        {% endif %}
+        <div class="daqi-health-content daqi-health-content--low" data-daqi-band="low">
+          {{ processedInsetText | safe }}
+        </div>
+      {% else %}
+        {# '' For Moderate+ levels (4-10): advice is included in inset text, show colored inset text box only #}
+        {# '' Replace {locationId} placeholder and add query parameters for proper back link context #}
+        {% set processedInsetText = airQuality.today.insetText | replace('{locationId}', locationId) %}
+        {% set queryParams = '' %}
+        {% if searchTerms %}
+          {% set queryParams = queryParams + '&searchTerms=' + (searchTerms | urlencode) %}
+        {% endif %}
+        {% if locationName %}
+          {% set queryParams = queryParams + '&locationName=' + (locationName | urlencode) %}
+        {% endif %}
+        {% if queryParams %}
+          {% if lang == 'en' %}
+            {% set processedInsetText = processedInsetText | replace('actions-reduce-exposure?lang=en', 'actions-reduce-exposure?lang=en' + queryParams) %}
+            {% set processedInsetText = processedInsetText | replace('health-effects?lang=en', 'health-effects?lang=en' + queryParams) %}
+          {% elif lang == 'cy' %}
+            {% set processedInsetText = processedInsetText | replace('camau-lleihau-amlygiad/cy?lang=cy', 'camau-lleihau-amlygiad/cy?lang=cy' + queryParams) %}
+            {% set processedInsetText = processedInsetText | replace('effeithiau-iechyd?lang=cy', 'effeithiau-iechyd?lang=cy' + queryParams) %}
+          {% endif %}
+        {% endif %}
+        {{ govukInsetText({
+          html: processedInsetText,
+          classes: 'daqi-health-inset daqi-health-inset--' + airQuality.today.band,
+          attributes: {
+            'data-daqi-band': airQuality.today.band
+          }
+        }) }}
+      {% endif %}
+      {# '' AQC-657: For Moderate+ (4-10) levels show exposure section after health advice block #}
+      {% if todayValue > 3 %}
+        {# '' AQC-657: Visual separator before exposure section for Moderate+ levels #}
+        <hr data-daqi-separator="between-health-exposure" class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-6 govuk-!-margin-bottom-6">
+        {% include "exposure-section.njk" %}
+      {% endif %}
+      {% if lang == "en" %}
+      {% include "daqi-index.njk" %}
+      {% endif %}
+      {% if lang == "cy" %}
+      {% include "daqi-index-welsh.njk" %}
+      {% endif %}
+
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6">
-      <h2 class="govuk-heading-m">Set up air pollution alerts</h2>
-      <p class="govuk-body">Set up alerts to be notified when air pollution in {{ headerTitle }} is measured or predicted to be high or very high. Or you can <a href="/search-location" class="govuk-link">search for a different location</a>.</p>
+
+      {# Air quality alerts section #}
+      <h2 class="govuk-heading-m">Air quality alerts by text message or email</h2>
+      <p class="govuk-body">Set up alerts for this location to get notified:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>the air pollution is predicted to be high or very high</li>
+        <li>if a nearby monitoring site measures high or very high pollution levels</li>
+      </ul>
       <p class="govuk-!-margin-bottom-6">
         <svg style="width: 14px; height: 20px; vertical-align: text-top; margin-right: 6px;" viewBox="0 0 14 20" fill="currentColor">
             <path d="M9.27 15.747C9.27 16.99 8.26 18 7.016 18s-2.253-1.01-2.253-2.253H9.27zM6.015 1.86v-.859A1 1 0 0 1 7.016 0c.553 0 1.002.449 1.002 1.001v.859c2.284.465 4.006 2.487 4.006 4.907v4.357l1.628 1.661c.488.489.488 1.282 0 1.771a1.25 1.25 0 0 1-.886.366H1.252a1.25 1.25 0 0 1-.886-.366c-.488-.489-.488-1.282 0-1.771l1.643-1.661V6.767c0-2.42 1.721-4.442 4.006-4.907z"></path>
@@ -53,34 +138,12 @@
             <path d="M9.27 15.747C9.27 16.99 8.26 18 7.016 18s-2.253-1.01-2.253-2.253H9.27zM6.015 1.86v-.859A1 1 0 0 1 7.016 0c.553 0 1.002.449 1.002 1.001v.859c2.284.465 4.006 2.487 4.006 4.907v4.357l1.628 1.661c.488.489.488 1.282 0 1.771a1.25 1.25 0 0 1-.886.366H1.252a1.25 1.25 0 0 1-.886-.366c-.488-.489-.488-1.282 0-1.771l1.643-1.661V6.767c0-2.42 1.721-4.442 4.006-4.907z"></path>
         </svg><a href="{{ emailDetailsPath or '/notify/register/email-details' }}?location={{ headerTitle | urlencode }}&locationId={{ locationId | urlencode }}{% if latlon.lat %}&lat={{ latlon.lat }}{% endif %}{% if latlon.lon %}&long={{ latlon.lon }}{% endif %}" class="govuk-link">Get alerts by email</a>
       </p>
-      {% endset %}
 
-      {# '' Display summary date only if it's today's date #}
-      {% if showSummaryDate and summaryDate %}
-        <p class="govuk-caption-s daqi-health-summary-date">{{ daqi.pageTexts.b }} {{ issueTime | default('5:00') }} {{ daqi.pageTexts.on }} {{ summaryDate }}</p>
-        <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l govuk-!-margin-bottom-6" data-daqi-tabs-separator>
-      {% endif %}
-      {# '' Pre-compute processedInsetText with query params — shared between Low and High branches #}
-      {% set processedInsetText = airQuality.today.insetText | replace('{locationId}', locationId) %}
-      {% set queryParams = '' %}
-      {% if searchTerms %}
-        {% set queryParams = queryParams + '&searchTerms=' + (searchTerms | urlencode) %}
-      {% endif %}
-      {% if locationName %}
-        {% set queryParams = queryParams + '&locationName=' + (locationName | urlencode) %}
-      {% endif %}
-      {% if queryParams %}
-        {% if lang == 'en' %}
-          {% set processedInsetText = processedInsetText | replace('actions-reduce-exposure?lang=en', 'actions-reduce-exposure?lang=en' + queryParams) %}
-          {% set processedInsetText = processedInsetText | replace('health-effects?lang=en', 'health-effects?lang=en' + queryParams) %}
-        {% elif lang == 'cy' %}
-          {% set processedInsetText = processedInsetText | replace('camau-lleihau-amlygiad/cy?lang=cy', 'camau-lleihau-amlygiad/cy?lang=cy' + queryParams) %}
-          {% set processedInsetText = processedInsetText | replace('effeithiau-iechyd?lang=cy', 'effeithiau-iechyd?lang=cy' + queryParams) %}
-        {% endif %}
-      {% endif %}
-      {# '' Capture monitoring sites HTML once for conditional ordering #}
-      {% set monitoringSitesHtml %}
+      <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6">
+      <h2 class="govuk-heading-m">{{ daqi.pageTexts.c }}</h2>
+      {% include "pollutants.njk" %}
 {% if monitoringSites|length %}
+<hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6 govuk-!-margin-top-6">
 <h2 class="govuk-heading-m">{{ daqi.pageTexts.d }}</h2>
 <p>{{ daqi.tooltipText.latest1 | safe }}<span class='govuk-!-font-size-16 govuk-!-font-weight-regular'><sup>3</sup></span>{{ daqi.tooltipText.latest2 | safe }}</p>
 {% endif %}
@@ -324,51 +387,6 @@
     <p class='govuk-caption-s govuk-!-margin-bottom-6'>{{ daqi.pollutantTable.f }} {{ pollutantTime }} {{ daqi.pollutantTable.g }} {{ pollutantDay }} {{ pollutantMonth }} {{ pollutantYear }}</p>
   {% endif %}
 {% endif %}
-      {% endset %}
-      {# '' Pollutants section captured once for conditional ordering #}
-      {% set pollutantsHtml %}
-      <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6">
-      <h2 class="govuk-heading-m">{{ daqi.pageTexts.c }}</h2>
-      {% include "pollutants.njk" %}
-      {% endset %}
-
-      {% if todayValue <= 3 and not forecastWarning %}
-        {# '' LOW: monitoring sites → alerts → exposure → health advice → pollutants #}
-        {{ monitoringSitesHtml | safe }}
-        {{ alertsHtml | safe }}
-        {% set needsTopMargin = false %}
-        {% include "exposure-section.njk" %}
-        <hr data-daqi-separator="between-health-exposure" class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-6 govuk-!-margin-bottom-6">
-        <h2 class="govuk-heading-m">{{ daqi.healthAdvice.paragraphs.a }} {{ airQuality.today.readableBand }} {{ daqi.healthAdvice.paragraphs.b }}</h2>
-        <p>{{ airQuality.today.advice }}</p>
-        <div class="daqi-health-content daqi-health-content--low" data-daqi-band="low">
-          {{ processedInsetText | safe }}
-        </div>
-        {{ pollutantsHtml | safe }}
-      {% else %}
-        {# '' MODERATE/HIGH/VH: health advice → exposure → monitoring sites → alerts → pollutants #}
-        {% if not (showSummaryDate and summaryDate) %}
-        <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6">
-        {% endif %}
-        <h2 class="govuk-heading-m">{{ daqi.healthAdvice.paragraphs.a }} {{ airQuality.today.readableBand }} {{ daqi.healthAdvice.paragraphs.b }}</h2>
-        {{ govukInsetText({
-          html: processedInsetText,
-          classes: 'daqi-health-inset daqi-health-inset--' + airQuality.today.band,
-          attributes: {
-            'data-daqi-band': airQuality.today.band
-          }
-        }) }}
-        <hr data-daqi-separator="between-health-exposure" class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-6 govuk-!-margin-bottom-6">
-        {% set needsTopMargin = false %}
-        {% include "exposure-section.njk" %}
-        {% if monitoringSites|length %}
-        <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6 govuk-!-margin-top-6">
-        {% endif %}
-        {{ monitoringSitesHtml | safe }}
-        {{ alertsHtml | safe }}
-        {{ pollutantsHtml | safe }}
-      {% endif %}
-
     </div>
 
     <div class="govuk-grid-column-full-until-desktop govuk-grid-column-one-third-from-desktop">
