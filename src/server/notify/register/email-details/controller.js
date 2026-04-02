@@ -148,10 +148,10 @@ const getAlertLimitHint = (content) => {
 
 const getPayload = (request) => request.payload || {}
 
-const renderValidationError = (h, request, content, ui, payload) =>
+const renderValidationError = (h, request, content, ui, payload, message) =>
   renderEmailDetailsView(h, request, content, ui, {
     pageTitle: ui.errorPageTitle,
-    error: { message: 'Enter your email address', field: 'notifyByEmail' },
+    error: { message, field: 'notifyByEmail' },
     formData: payload
   })
 
@@ -308,10 +308,10 @@ const handleEmailDetailsPost = async (request, h, content = english) => {
     const ui = getEmailDetailsContent(content)
     const payload = getPayload(request)
     const { notifyByEmail } = payload
-    const { isValid, formatted } = validateEmail(notifyByEmail)
+    const { isValid, formatted, error } = validateEmail(notifyByEmail)
 
     if (!isValid) {
-      return renderValidationError(h, request, content, ui, payload)
+      return renderValidationError(h, request, content, ui, payload, error)
     }
 
     return handleValidEmailSubmission(
