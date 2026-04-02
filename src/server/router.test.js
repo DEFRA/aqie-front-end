@@ -141,6 +141,66 @@ vi.mock('./air-pollution-breaches/cy/index.js', () => ({
 vi.mock('./notify/register/email-send-new-link/index.js', () => ({
   emailSendNewLink: mockRouteModule
 }))
+vi.mock('./notify/register/sms-mobile-number/index.js', () => ({
+  notify: mockRouteModule
+}))
+vi.mock('./notify/register/sms-send-activation/index.js', () => ({
+  sendActivation: mockRouteModule
+}))
+vi.mock('./notify/register/sms-verify-code/index.js', () => ({
+  checkMessage: mockRouteModule
+}))
+vi.mock('./notify/register/sms-send-new-code/index.js', () => ({
+  sendNewCode: mockRouteModule
+}))
+vi.mock('./notify/register/sms-confirm-details/index.js', () => ({
+  confirmAlertDetails: mockRouteModule
+}))
+vi.mock('./notify/register/sms-success/index.js', () => ({
+  alertsSuccess: mockRouteModule
+}))
+vi.mock('./notify/register/check-max-alerts/index.js', () => ({
+  checkMaxAlerts: mockRouteModule
+}))
+vi.mock('./notify/register/sms-duplicate/index.js', () => ({
+  smsDuplicate: mockRouteModule
+}))
+vi.mock('./notify/register/sms-max-emails/index.js', () => ({
+  smsMaxEmails: mockRouteModule
+}))
+vi.mock('./notify/register/email-duplicate/index.js', () => ({
+  emailDuplicate: mockRouteModule
+}))
+vi.mock('./notify/register/alerts-success/index.js', () => ({
+  alertsSuccess: mockRouteModule
+}))
+vi.mock('./notify/register/confirm-alert-details/index.js', () => ({
+  confirmAlertDetails: mockRouteModule
+}))
+vi.mock('./notify/register/email-details/index.js', () => ({
+  emailDetails: mockRouteModule
+}))
+vi.mock('./notify/register/email-send-activation/index.js', () => ({
+  emailSendActivation: mockRouteModule
+}))
+vi.mock('./notify/register/email-verify-email/index.js', () => ({
+  emailVerifyEmail: mockRouteModule
+}))
+vi.mock('./notify/register/email-confirm-link/index.js', () => ({
+  emailConfirmLink: mockRouteModule
+}))
+vi.mock('./notify/unsubscribe/unsubscribe-email-link/index.js', () => ({
+  unsubscribeEmailLink: mockRouteModule
+}))
+vi.mock('./notify/unsubscribe/unsubscribe-success/index.js', () => ({
+  unsubscribeSuccess: mockRouteModule
+}))
+vi.mock('./notify/unsubscribe/unsubscribe-keep-alerts/index.js', () => ({
+  unsubscribeKeepAlerts: mockRouteModule
+}))
+vi.mock('./notify/debug/clear-mock-storage.js', () => ({
+  default: mockRouteModule
+}))
 
 // Mock helper modules ''
 vi.mock('./common/helpers/serve-static-files.js', () => ({
@@ -184,7 +244,7 @@ describe('Router plugin structure', () => {
     expect(router.plugin).toBeDefined()
     expect(router.plugin.name).toBe('router')
     expect(typeof router.plugin.register).toBe('function')
-  }, 10000) // Increased timeout to 10 seconds
+  })
 
   test('should have correct plugin structure', async () => {
     // ''
