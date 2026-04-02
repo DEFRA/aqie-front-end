@@ -1,9 +1,9 @@
 import path from 'node:path'
 import hapi from '@hapi/hapi'
-
 import { config } from '../config/index.js'
 import { nunjucksConfig } from '../config/nunjucks/index.js'
 import { router } from './router.js'
+import { kpiTracker } from './common/helpers/kpi-tracker.js'
 import { requestLogger } from './common/helpers/logging/request-logger.js'
 import { catchAll } from './common/helpers/errors.js'
 // JavaScript detection middleware is now handled by the plugin
@@ -82,7 +82,8 @@ async function createServer() {
       hapiCookie,
       nunjucksConfig,
       router,
-      locationNotFoundCy
+      locationNotFoundCy,
+      kpiTracker
     ]
 
     for (const plugin of plugins) {
