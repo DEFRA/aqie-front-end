@@ -55,7 +55,17 @@ describe('email-details controller', () => {
     const h = mockH()
     const res = await handleEmailDetailsPost(req, h)
     expect(res.tpl).toBe('notify/register/email-details/index')
-    expect(res.vm.error).toBeTruthy()
+    expect(res.vm.error.message).toBe('Enter your email address')
+  })
+
+  it('POST shows format error when email is invalid', async () => {
+    const req = mockRequest({ notifyByEmail: 'not-an-email' })
+    const h = mockH()
+    const res = await handleEmailDetailsPost(req, h)
+    expect(res.tpl).toBe('notify/register/email-details/index')
+    expect(res.vm.error.message).toBe(
+      'Enter an email address in the correct format, like name@example.com'
+    )
   })
 
   it('POST success stores email and redirects', async () => {
