@@ -4,6 +4,7 @@
  */
 // ''
 const SERVICE_NAME = 'Check air quality'
+const REQUEST_NEW_ACTIVATION_LINK = 'Request a new activation link'
 const ALERT_ALREADY_SET_UP = 'This alert has already been set up'
 const ALERT_SIGNUP_SUCCESS =
   'You have successfully signed up for air quality alerts'
@@ -135,7 +136,7 @@ export const notificationTranslations = {
       'This activation link is invalid or has expired. Please request a new one.',
     errorSetupAlert:
       'We could not finish setting up your alert. Please request a new activation link.',
-    requestNewLinkText: 'Request a new activation link',
+    requestNewLinkText: REQUEST_NEW_ACTIVATION_LINK,
     changeEmailLinkText: 'Use a different email address'
   },
   // Email verify email page
@@ -163,8 +164,8 @@ export const notificationTranslations = {
   },
   // Email send new link page
   emailSendNewLink: {
-    pageTitle: 'Request a new activation link',
-    heading: 'Request a new activation link',
+    pageTitle: REQUEST_NEW_ACTIVATION_LINK,
+    heading: REQUEST_NEW_ACTIVATION_LINK,
     intro1: 'Emails can take a few minutes to arrive.',
     intro2:
       'If the activation link has not arrived after 10 minutes, you can get a new link sent to:',

@@ -4,6 +4,8 @@
  */
 // ''
 const TODO_CONTINUE = 'TODO Welsh: Continue'
+const TODO_REQUEST_NEW_ACTIVATION_LINK =
+  'TODO Welsh: Request a new activation link'
 const TODO_SEARCH_ANOTHER_LOCATION = 'TODO Welsh: search for another location'
 const TODO_ALERT_ALREADY_SET_UP =
   'TODO Welsh: This alert has already been set up'
@@ -133,7 +135,7 @@ export const notificationTranslationsWelsh = {
       'TODO Welsh: This activation link is invalid or has expired. Please request a new one.',
     errorSetupAlert:
       'TODO Welsh: We could not finish setting up your alert. Please request a new activation link.',
-    requestNewLinkText: 'TODO Welsh: Request a new activation link',
+    requestNewLinkText: TODO_REQUEST_NEW_ACTIVATION_LINK,
     changeEmailLinkText: 'TODO Welsh: Use a different email address'
   },
   // Email verify email page
@@ -165,8 +167,8 @@ export const notificationTranslationsWelsh = {
   },
   // Email send new link page
   emailSendNewLink: {
-    pageTitle: 'TODO Welsh: Request a new activation link',
-    heading: 'TODO Welsh: Request a new activation link',
+    pageTitle: TODO_REQUEST_NEW_ACTIVATION_LINK,
+    heading: TODO_REQUEST_NEW_ACTIVATION_LINK,
     intro1: 'TODO Welsh: Emails can take a few minutes to arrive.',
     intro2:
       'TODO Welsh: If the activation link has not arrived after 10 minutes, you can get a new link sent to:',

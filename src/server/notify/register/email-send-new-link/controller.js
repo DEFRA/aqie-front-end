@@ -60,10 +60,9 @@ function buildViewModel(request, pageContent, emailAddress, extras = {}) {
     serviceName
   } = pageContent
   const metaSiteUrl = getAirQualitySiteUrl(request)
-  const bulletSameEmail = (emailSendNewLink.bulletSameEmail || '').replace(
-    '{emailAddress}',
-    emailAddress
-  )
+  const bulletSameEmail =
+    emailSendNewLink.bulletSameEmail?.replace('{emailAddress}', emailAddress) ??
+    ''
 
   return {
     pageTitle: `${emailSendNewLink.pageTitle} - ${serviceName} - GOV.UK`,
