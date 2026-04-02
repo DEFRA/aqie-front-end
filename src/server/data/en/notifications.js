@@ -191,8 +191,6 @@ export const notificationTranslations = {
     bulletDifferentNumber: 'a different mobile phone number',
     detailsSummary: 'Send the text to a different number',
     detailsLabel: 'Enter mobile phone number (optional)',
-    detailsHint:
-      'Enter a UK mobile phone number, like <strong>07700 900 982</strong>',
     submitButton: 'Request a new code'
   },
   // SMS duplicate page
