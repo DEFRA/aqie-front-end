@@ -135,7 +135,7 @@ export const handleEmailSendNewLinkPost = async (
   let emailToUse = sessionContext.emailAddress
 
   // If a new email address was submitted, validate it ''
-  if (emailNew && emailNew.trim()) {
+  if (emailNew?.trim()) {
     const { isValid, formatted, error } = validateEmail(emailNew.trim())
 
     if (!isValid) {
