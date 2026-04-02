@@ -25,7 +25,7 @@
     "lint:js:fix": "eslint . --fix",
     "lint:scss": "stylelint \"src/**/*.scss\" --cache --cache-location .cache/stylelint --cache-strategy content --color --ignore-path .gitignore",
     "pretest": "npm run build:frontend",
-    "test": "mkdir -p coverage/.tmp && cross-env TZ=UTC NODE_OPTIONS=--max-old-space-size=4096 npx vitest run --coverage",
+    "test": "node -e \"require('fs').mkdirSync('coverage/.tmp', {recursive:true})\" && cross-env TZ=UTC NODE_OPTIONS=--max-old-space-size=4096 npx vitest run --coverage",
     "test:watch": "TZ=UTC vitest",
     "server:watch": "nodemon --inspect=0.0.0.0 --ext js,json --legacy-watch ./src",
     "server:debug": "nodemon --inspect-brk=0.0.0.0 --ext js,json --legacy-watch ./src",
@@ -70,6 +70,7 @@
   "license": "OGL-UK-3.0",
   "dependencies": {
     "@babel/runtime": "7.27.0",
+    "@defra/cdp-auditing": "^0.6.0",
     "@defra/hapi-tracing": "^1.22.0",
     "@elastic/ecs-pino-format": "1.5.0",
     "@hapi/catbox-memory": "^6.0.2",
@@ -111,7 +112,8 @@
     "proj4": "2.9.0",
     "rimraf": "^6.0.1",
     "undici": "^7.10.0",
-    "util": "0.12.5"
+    "util": "0.12.5",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@babel/cli": "7.27.2",
