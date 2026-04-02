@@ -177,8 +177,6 @@ export const notificationTranslationsWelsh = {
     bulletDifferentEmail: 'TODO Welsh: a different email address',
     detailsSummary: 'TODO Welsh: Send the link to a different email address',
     detailsLabel: 'TODO Welsh: Enter email address (optional)',
-    detailsHint:
-      'TODO Welsh: Enter an email address in the correct format, like name@example.com',
     submitButton: 'TODO Welsh: Request a new link',
     errors: {
       format:
