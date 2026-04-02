@@ -45,6 +45,7 @@ import { alertsSuccess as emailAlertsSuccess } from './notify/register/alerts-su
 import { confirmAlertDetails as genericConfirmAlertDetails } from './notify/register/confirm-alert-details/index.js'
 import { emailDetails } from './notify/register/email-details/index.js'
 import { emailSendActivation } from './notify/register/email-send-activation/index.js'
+import { emailSendNewLink } from './notify/register/email-send-new-link/index.js'
 import { emailVerifyEmail } from './notify/register/email-verify-email/index.js'
 import { emailConfirmLink } from './notify/register/email-confirm-link/index.js'
 import { unsubscribeEmailLink } from './notify/unsubscribe/unsubscribe-email-link/index.js'
@@ -113,6 +114,7 @@ function getServerPlugins() {
     emailAlertsSuccess,
     emailDetails,
     emailSendActivation,
+    emailSendNewLink,
     emailVerifyEmail,
     emailConfirmLink,
     unsubscribeEmailLink,

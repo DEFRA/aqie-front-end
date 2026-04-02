@@ -144,6 +144,12 @@ const EXTRA_CONFIG_SCHEMA = {
       default: '/notify/register/email-send-activation',
       env: 'NOTIFY_EMAIL_SEND_ACTIVATION_PATH'
     },
+    emailSendNewLinkPath: {
+      doc: 'Frontend route: email request new activation link page',
+      format: String,
+      default: '/notify/register/email-send-new-link',
+      env: 'NOTIFY_EMAIL_SEND_NEW_LINK_PATH'
+    },
     alertsSuccessPath: {
       doc: 'Frontend route: alerts success page',
       format: String,
