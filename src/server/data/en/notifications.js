@@ -173,8 +173,6 @@ export const notificationTranslations = {
     bulletDifferentEmail: 'a different email address',
     detailsSummary: 'Send the link to a different email address',
     detailsLabel: 'Enter email address (optional)',
-    detailsHint:
-      'Enter an email address in the correct format, like name@example.com',
     submitButton: 'Request a new link',
     errors: {
       format:

@@ -41,16 +41,18 @@
             <label class="govuk-label" for="email-new">
               {{ content.detailsLabel }}
             </label>
-            <div id="email-new-hint" class="{% if error and error.field === 'emailNew' %}govuk-error-message{% else %}govuk-hint{% endif %}">
-              {% if error and error.field === 'emailNew' %}<span class="govuk-visually-hidden">Error:</span> {% endif %}{{ content.detailsHint }}
+            {% if error and error.field === 'emailNew' %}
+            <div id="email-new-hint" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
             </div>
+            {% endif %}
             <input class="govuk-input{% if error and error.field === 'emailNew' %} govuk-input--error{% endif %}"
                    id="email-new"
                    name="emailNew"
                    type="email"
                    autocomplete="email"
                    spellcheck="false"
-                   aria-describedby="email-new-hint"
+                   {% if error and error.field === 'emailNew' %}aria-describedby="email-new-hint"{% endif %}
                    value="{% if formData and formData.emailNew %}{{ formData.emailNew }}{% endif %}">
           </div>
         </div>
