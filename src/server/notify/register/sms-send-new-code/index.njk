@@ -42,16 +42,20 @@
         </summary>
         <div class="govuk-details__text">
           <div class="govuk-form-group{% if error and error.field === 'mobileNumberNew' %} govuk-form-group--error{% endif %}">
-            <div id="mobile-number-new-hint" class="{% if error and error.field === 'mobileNumberNew' %}govuk-error-message{% else %}govuk-hint{% endif %}">
-              {% if error and error.field === 'mobileNumberNew' %}<span class="govuk-visually-hidden">Error:</span> {% endif %}{{ content.detailsHint | safe }}
+            <label class="govuk-label" for="mobile-number-new">
+              {{ content.detailsLabel }}
+            </label>
+            {% if error and error.field === 'mobileNumberNew' %}
+            <div id="mobile-number-new-hint" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
             </div>
-            <input class="govuk-input govuk-input--width-20{% if error and error.field === 'mobileNumberNew' %} govuk-input--error{% endif %}" 
-                   id="mobile-number-new" 
-                   name="mobileNumberNew" 
+            {% endif %}
+            <input class="govuk-input govuk-input--width-20{% if error and error.field === 'mobileNumberNew' %} govuk-input--error{% endif %}"
+                   id="mobile-number-new"
+                   name="mobileNumberNew"
                    type="tel"
                    autocomplete="tel"
-                   aria-label="{{ content.detailsLabel }}"
-                   aria-describedby="mobile-number-new-hint"
+                   {% if error and error.field === 'mobileNumberNew' %}aria-describedby="mobile-number-new-hint"{% endif %}
                    value="{% if formData and formData.mobileNumberNew %}{{ formData.mobileNumberNew }}{% endif %}">
           </div>
         </div>

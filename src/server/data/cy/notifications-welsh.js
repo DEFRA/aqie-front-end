@@ -195,8 +195,6 @@ export const notificationTranslationsWelsh = {
     bulletDifferentNumber: 'TODO Welsh: a different mobile phone number',
     detailsSummary: 'TODO Welsh: Send the text to a different number',
     detailsLabel: 'TODO Welsh: Enter mobile phone number (optional)',
-    detailsHint:
-      'TODO Welsh: Enter a UK mobile phone number, like <strong>07700 900 982</strong>',
     submitButton: 'TODO Welsh: Request a new code'
   },
   // SMS duplicate page
