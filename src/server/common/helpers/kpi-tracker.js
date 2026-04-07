@@ -3,7 +3,7 @@ import { audit } from '@defra/cdp-auditing'
 
 /**
  * KPI Tracker: A Hapi plugin that intercepts requests to log
- * transaction milestones to OpenSearch/S3.
+ * transaction milestones to S3 (via log.level: info).
  */
 export const kpiTracker = {
   name: 'kpiTracker',
@@ -28,7 +28,8 @@ export const kpiTracker = {
       // 3. If a milestone is hit, dispatch the telemetry
       if (isStart || isComplete) {
         audit({
-          'log.level': 'audit',
+          // CHANGED: 'info' routes to S3/CloudWatch, 'audit' routes to OpenSearch
+          'log.level': 'info', 
           event_family: 'kpi_metric',
           event_name: isStart
             ? 'transaction_initiated'
