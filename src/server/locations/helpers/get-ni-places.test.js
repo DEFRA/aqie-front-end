@@ -190,6 +190,25 @@ describe('getNIPlaces', () => {
     expect(result.results).toEqual([{ id: 'retry' }])
   })
 
+  it('should return service-unavailable when NI API returns non-200 after token refresh', async () => {
+    refreshOAuthToken.mockResolvedValue({ accessToken: 'refreshed-token' })
+    catchProxyFetchError
+      .mockResolvedValueOnce([401, { error: 'unauthorized' }])
+      .mockResolvedValueOnce([401, { error: 'unauthorized' }])
+
+    const result = await getNIPlaces('BT1 1AA')
+
+    expect(result).toEqual({ results: [], error: 'service-unavailable' })
+  })
+
+  it('should return service-unavailable when NI API returns 500', async () => {
+    catchProxyFetchError.mockResolvedValue([500, { error: 'server error' }])
+
+    const result = await getNIPlaces('BT1 1AA')
+
+    expect(result).toEqual({ results: [], error: 'service-unavailable' })
+  })
+
   it('should return cached result when NI API fails', async () => {
     const cachedData = { results: [{ id: 'cached' }] }
     catchProxyFetchError.mockReset()
