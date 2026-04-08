@@ -29,6 +29,7 @@ import { multipleResults } from './multiple-results/index.js'
 import { multipleResultsCy } from './multiple-results/cy/index.js'
 import { locationNotFound } from './location-not-found/index.js'
 import { testRoutes } from './test-routes/index.js'
+import { retry } from './retry/index.js'
 import { actionsReduceExposure } from './actions-reduce-exposure/index.js'
 import { actionsReduceExposureCy } from './actions-reduce-exposure/cy/index.js'
 import { notify } from './notify/register/sms-mobile-number/index.js'
@@ -94,6 +95,7 @@ function getServerPlugins() {
     locationNotFound,
     health,
     testRoutes,
+    retry,
     actionsReduceExposure,
     actionsReduceExposureCy,
     healthEffects,

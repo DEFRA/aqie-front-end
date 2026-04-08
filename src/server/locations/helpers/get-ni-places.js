@@ -372,13 +372,17 @@ function finalizeNiPlacesResponse({
     resetCircuitBreaker()
     setCachedResult(cacheKey, normalizedNiPlacesData)
     logNiSuccessResult(normalizedNiPlacesData)
-  } else {
-    logger.error(
-      `[getNIPlaces] Error fetching NI data - statusCode: ${statusCodeNI}`
-    )
+    return normalizedNiPlacesData
   }
 
-  return normalizedNiPlacesData
+  logger.error(
+    `[getNIPlaces] Error fetching NI data - statusCode: ${statusCodeNI}`
+  )
+  recordCircuitBreakerFailure()
+  return getFallbackFromCacheOrServiceUnavailable(
+    cacheKey,
+    normalizedUserLocation
+  )
 }
 
 async function getNIPlaces(userLocation, request) {
