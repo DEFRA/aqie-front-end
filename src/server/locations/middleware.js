@@ -13,7 +13,8 @@ import {
   LOCATION_NOT_FOUND_URL,
   WRONG_POSTCODE,
   STATUS_NOT_FOUND,
-  REDIRECT_STATUS_CODE
+  REDIRECT_STATUS_CODE,
+  SERVICE_UNAVAILABLE_ERROR
 } from '../data/constants.js'
 import { handleUKLocationType } from './helpers/extra-middleware-helpers.js'
 import { handleErrorInputAndRedirect } from './helpers/error-input-and-redirect.js'
@@ -389,6 +390,17 @@ const searchMiddleware = async (request, h) => {
       searchTerms,
       secondSearchTerm
     )
+
+  if (
+    redirectError.locationType === LOCATION_TYPE_NI &&
+    getNIPlaces?.error === SERVICE_UNAVAILABLE_ERROR
+  ) {
+    request.yar.set('retryPayload', {
+      locationType: LOCATION_TYPE_NI,
+      ni: userLocation
+    })
+    return h.redirect('/retry').code(REDIRECT_STATUS_CODE).takeover()
+  }
 
   if (
     shouldReturnNotFound(
