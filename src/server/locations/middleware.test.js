@@ -16,7 +16,8 @@ import {
   LOCATION_TYPE_NI,
   LOCATION_NOT_FOUND_URL,
   WRONG_POSTCODE,
-  STATUS_NOT_FOUND
+  STATUS_NOT_FOUND,
+  SERVICE_UNAVAILABLE_ERROR
 } from '../data/constants.js'
 import {
   PAGE_NOT_FOUND,
@@ -246,11 +247,36 @@ describe('searchMiddleware - location not found scenarios', () => {
     expect(result).toBe(TAKEOVER_RESULT)
   })
 
-  it('should show service unavailable when NI API fails', async () => {
+  it('should redirect to /retry when NI API returns service unavailable', async () => {
     const { mockRequest, mockH } = mocks
-    mockRequest.query = {
-      searchTerms: 'bt1 1fb'
-    }
+    mockRequest.query = { searchTerms: 'bt1 1fb' }
+
+    vi.mocked(handleErrorInputAndRedirect).mockReturnValue({
+      locationType: LOCATION_TYPE_NI,
+      userLocation: 'BT1 1FB',
+      locationNameOrPostcode: 'BT1 1FB'
+    })
+
+    vi.mocked(fetchData).mockResolvedValue({
+      getDailySummary: { issue_date: MOCK_DATE_STRING, today: {} },
+      getForecasts: { forecasts: [] },
+      getOSPlaces: null,
+      getNIPlaces: { results: [], error: SERVICE_UNAVAILABLE_ERROR }
+    })
+
+    const result = await searchMiddleware(mockRequest, mockH)
+
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('retryPayload', {
+      locationType: LOCATION_TYPE_NI,
+      ni: 'BT1 1FB'
+    })
+    expect(mockH.redirect).toHaveBeenCalledWith('/retry')
+    expect(result).toBe(TAKEOVER_RESULT)
+  })
+
+  it('should show not found when NI API returns null (no results, no error)', async () => {
+    const { mockRequest, mockH } = mocks
+    mockRequest.query = { searchTerms: 'bt1 1fb' }
 
     vi.mocked(handleErrorInputAndRedirect).mockReturnValue({
       locationType: LOCATION_TYPE_NI,

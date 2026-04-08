@@ -43,7 +43,11 @@ const retryController = {
     const metaSiteUrl = getAirQualitySiteUrl(request)
     const lang = determineLanguage(request)
 
-    const payload = request.payload || {}
+    const sessionPayload = request.yar?.get('retryPayload')
+    if (sessionPayload) {
+      request.yar.clear('retryPayload')
+    }
+    const payload = request.payload || sessionPayload || {}
 
     const viewModel = buildViewModel({ metaSiteUrl, lang, payload })
 

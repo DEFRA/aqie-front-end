@@ -1,5 +1,13 @@
-import { describe, expect, test } from 'vitest'
-import { buildViewModel, determineLanguage } from './controller.js'
+import { describe, expect, test, vi } from 'vitest'
+import {
+  buildViewModel,
+  determineLanguage,
+  retryController
+} from './controller.js'
+
+vi.mock('../common/helpers/get-site-url.js', () => ({
+  getAirQualitySiteUrl: vi.fn(() => 'https://example')
+}))
 
 // ''
 
@@ -36,5 +44,48 @@ describe('retry controller helpers', () => {
 
     expect(viewModel.lang).toBe('en')
     expect(viewModel.payload).toEqual({ locationType: 'uk-location' })
+  })
+})
+
+describe('retryController handler', () => {
+  test('uses session retryPayload when no request payload', () => {
+    const sessionPayload = { locationType: 'NI', ni: 'BT1 1FB' }
+    const mockH = { view: vi.fn(() => 'view-result') }
+    const mockRequest = {
+      payload: null,
+      query: {},
+      headers: {},
+      yar: {
+        get: vi.fn((key) => (key === 'retryPayload' ? sessionPayload : null)),
+        clear: vi.fn()
+      }
+    }
+
+    retryController.handler(mockRequest, mockH)
+
+    expect(mockRequest.yar.clear).toHaveBeenCalledWith('retryPayload')
+    expect(mockH.view).toHaveBeenCalledWith(
+      'retry/index',
+      expect.objectContaining({ payload: sessionPayload })
+    )
+  })
+
+  test('uses request payload when present, ignores session', () => {
+    const requestPayload = { locationType: 'UK', engScoWal: 'Cardiff' }
+    const mockH = { view: vi.fn(() => 'view-result') }
+    const mockRequest = {
+      payload: requestPayload,
+      query: {},
+      headers: {},
+      yar: { get: vi.fn(), clear: vi.fn() }
+    }
+
+    retryController.handler(mockRequest, mockH)
+
+    expect(mockRequest.yar.clear).not.toHaveBeenCalled()
+    expect(mockH.view).toHaveBeenCalledWith(
+      'retry/index',
+      expect.objectContaining({ payload: requestPayload })
+    )
   })
 })
