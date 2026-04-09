@@ -54,6 +54,12 @@ const EXTRA_CONFIG_SCHEMA = {
       default: '/setup-alert',
       env: 'NOTIFY_SETUP_ALERT_PATH'
     },
+    optOutEmailAlertPath: {
+      doc: 'Alert backend path to opt out of email alerts (DELETE)',
+      format: String,
+      default: '/opt-out-email-alert',
+      env: 'NOTIFY_OPT_OUT_EMAIL_ALERT_PATH'
+    },
     getSubscriptionsPath: {
       doc: 'Alert backend path to fetch subscriptions',
       format: String,
