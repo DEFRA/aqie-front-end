@@ -9,7 +9,8 @@ import {
   validateEmailLink,
   setupEmailAlert,
   sendSmsCode,
-  verifyOtp
+  verifyOtp,
+  unsubscribeEmailAlert
 } from '../../../../src/server/common/services/notify-backend.js'
 
 vi.mock('../../../../src/config/index.js', () => ({
@@ -63,14 +64,15 @@ describe('notify-backend service', () => {
         'notify.verifyOtpPath': '/sms/verify',
         'notify.mockSetupAlertEnabled': false,
         'notify.mockOtpEnabled': false,
-        'notify.mockOtpCode': '12345'
+        'notify.mockOtpCode': '12345',
+        'notify.optOutEmailAlertPath': '/opt-out-email-alert'
       }
       return defaults[key]
     })
 
     buildBackendApiFetchOptions.mockReturnValue({
-      url: 'https://notify.example/test-path',
-      fetchOptions: { method: 'POST' }
+      url: 'https://alerts.example/opt-out-email-alert',
+      fetchOptions: { method: 'DELETE' }
     })
     catchFetchError.mockResolvedValue([200, { ok: true }])
   })
@@ -455,5 +457,92 @@ describe('notify-backend service', () => {
         body: { phoneNumber: '07123456789', otp: '12345' }
       }
     )
+  })
+
+  describe('unsubscribeEmailAlert', () => {
+    it('calls DELETE /opt-out-email-alert with emailAddress', async () => {
+      catchFetchError.mockResolvedValueOnce([200, { message: 'unsubscribed' }])
+
+      await unsubscribeEmailAlert('user@example.com', null)
+
+      expect(buildBackendApiFetchOptions).toHaveBeenCalledWith(
+        null,
+        'https://alerts.example',
+        '/opt-out-email-alert',
+        { method: 'DELETE', body: { emailAddress: 'user@example.com' } }
+      )
+    })
+
+    it('returns ok:true on 200 response', async () => {
+      catchFetchError.mockResolvedValueOnce([200, { message: 'unsubscribed' }])
+
+      const result = await unsubscribeEmailAlert('user@example.com', null)
+
+      expect(result).toEqual({ ok: true, data: { message: 'unsubscribed' } })
+    })
+
+    it('returns ok:false with status on non-200 response', async () => {
+      catchFetchError.mockResolvedValueOnce([404, { message: 'not found' }])
+
+      const result = await unsubscribeEmailAlert('user@example.com', null)
+
+      expect(result).toEqual({
+        ok: false,
+        status: 404,
+        body: { message: 'not found' }
+      })
+    })
+
+    it('returns ok:false with status on 500 response', async () => {
+      catchFetchError.mockResolvedValueOnce([500, { message: 'server error' }])
+
+      const result = await unsubscribeEmailAlert('user@example.com', null)
+
+      expect(result.ok).toBe(false)
+      expect(result.status).toBe(500)
+    })
+
+    it('returns skipped:true when notify is disabled', async () => {
+      config.get.mockImplementation((key) => {
+        if (key === 'notify.enabled') return false
+        if (key === 'notify.alertBackendBaseUrl') {
+          return 'https://alerts.example'
+        }
+        if (key === 'notify.optOutEmailAlertPath') return '/opt-out-email-alert'
+        return null
+      })
+
+      const result = await unsubscribeEmailAlert('user@example.com', null)
+
+      expect(result).toEqual({ skipped: true })
+      expect(catchFetchError).not.toHaveBeenCalled()
+    })
+
+    it('returns skipped:true when alertBackendBaseUrl is not set', async () => {
+      config.get.mockImplementation((key) => {
+        if (key === 'notify.enabled') return true
+        if (key === 'notify.alertBackendBaseUrl') return ''
+        if (key === 'notify.baseUrl') return ''
+        if (key === 'notify.optOutEmailAlertPath') return '/opt-out-email-alert'
+        return null
+      })
+
+      const result = await unsubscribeEmailAlert('user@example.com', null)
+
+      expect(result).toEqual({ skipped: true })
+      expect(catchFetchError).not.toHaveBeenCalled()
+    })
+
+    it('returns ok:false with error when fetch throws', async () => {
+      buildBackendApiFetchOptions.mockImplementationOnce(() => {
+        throw new Error('network failure')
+      })
+
+      const result = await unsubscribeEmailAlert('user@example.com', null)
+
+      expect(result.ok).toBe(false)
+      expect(result.error).toBeInstanceOf(Error)
+      expect(result.error.message).toBe('network failure')
+    })
   })
 })
