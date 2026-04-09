@@ -128,8 +128,11 @@ export const notificationTranslations = {
   // Email confirm link callback page
   emailConfirmLink: {
     errorPageTitle:
-      'There is a problem - Check your email - Check air quality - GOV.UK',
-    errorHeading: 'There is a problem with your activation link',
+      'This activation link has expired - Check air quality - GOV.UK',
+    errorHeading: 'This activation link has expired',
+    errorExpiredBody: 'Activation links stop working after 15 minutes.',
+    errorSearchLinkText: 'Search for a town or postcode',
+    errorSearchLinkSuffix: 'to set up an air pollution alert.',
     errorMissingToken:
       'The activation link is missing or incomplete. Please request a new one.',
     errorInvalidToken:

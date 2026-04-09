@@ -4,14 +4,12 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-      <div class="govuk-error-summary" role="alert" aria-labelledby="error-summary-title" data-module="govuk-error-summary">
-        <h2 class="govuk-error-summary__title" id="error-summary-title">
-          {{ heading }}
-        </h2>
-        <div class="govuk-error-summary__body">
-          <p class="govuk-body">{{ errorMessage }}</p>
-        </div>
-      </div>
+      <h1 class="govuk-heading-l">{{ heading }}</h1>
+      <p class="govuk-body">{{ content.errorExpiredBody }}</p>
+      <p class="govuk-body">
+        <a href="/search-location" class="govuk-link">{{ content.errorSearchLinkText }}</a>
+        {{ content.errorSearchLinkSuffix }}
+      </p>
 
       <p class="govuk-body">
         <a href="/notify/register/email-send-activation" class="govuk-link">{{ content.requestNewLinkText }}</a>
