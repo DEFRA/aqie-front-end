@@ -115,7 +115,6 @@ describe('getLocationDataController - Welsh Content Rendering', () => {
 
 describe('getLocationDataController - 500 Error Handling', () => {
   it('should handle error and return error view with 500 status code', async () => {
-    // ''
     const mockError = new Error('Unexpected error')
     const mockLocationData = {
       results: [],
@@ -162,7 +161,6 @@ describe('getLocationDataController - 500 Error Handling', () => {
 
 describe('getLocationDataController - 401 Error Handling', () => {
   it('should handle access_token error and return error view with 401 status code', async () => {
-    // ''
     const mockError = new Error(
       "Cannot read properties of undefined (reading 'access_token')"
     )

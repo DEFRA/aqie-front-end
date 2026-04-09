@@ -1,7 +1,7 @@
 import { describe, expect, test, vi, beforeEach } from 'vitest'
 import { loadingStatusController } from './status-controller.js'
 
-// '' Mock logger
+// Mock logger
 vi.mock('../common/helpers/logging/logger.js', () => ({
   createLogger: () => ({
     info: vi.fn(),

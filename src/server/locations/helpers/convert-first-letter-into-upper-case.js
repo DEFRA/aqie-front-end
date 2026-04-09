@@ -1,6 +1,6 @@
 // Define and export the convertFirstLetterIntoUppercase function
 export const convertFirstLetterIntoUppercase = (str) => {
-  // '' Defensive check for undefined, null, or empty string
+  // Defensive check for undefined, null, or empty string
   if (!str || typeof str !== 'string' || str.trim() === '') {
     return 'Location'
   }
@@ -11,7 +11,7 @@ export const convertFirstLetterIntoUppercase = (str) => {
     // Split the string at the first comma
     const [beforeComma, afterComma] = str.split(/,(.+)/)
 
-    // '' If there's no comma, treat the whole string as a single unit (e.g., postcode)
+    // If there's no comma, treat the whole string as a single unit (e.g., postcode)
     if (!afterComma) {
       return str
     }

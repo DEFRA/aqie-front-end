@@ -14,7 +14,6 @@ vi.mock('../../data/cy/air-quality.js', () => ({
 describe('air-quality-values', () => {
   describe('airQualityValues', () => {
     it('should return English air quality when lang is EN', () => {
-      // ''
       const mockForecastNum = [
         [
           { today: 5 },
@@ -32,7 +31,6 @@ describe('air-quality-values', () => {
     })
 
     it('should return Welsh air quality when lang is CY', () => {
-      // ''
       const mockForecastNum = [
         [
           { today: 5 },

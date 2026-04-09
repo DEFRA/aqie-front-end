@@ -2,7 +2,7 @@
 import { handleSmsMaxAlertsRequest } from './controller.js'
 import { config } from '../../../../config/index.js'
 
-// '' Welsh placeholder path for sms-max-emails
+// Welsh placeholder path for sms-max-emails
 const SMS_MAX_EMAILS_PATH_CY = '/hysbysiad/cofrestru/sms-uchafswm'
 
 const smsMaxEmails = {

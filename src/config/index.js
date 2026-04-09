@@ -462,7 +462,7 @@ export const config = convict({
   }
 })
 
-// '' Load local overrides from src/config/local.json when in development
+// Load local overrides from src/config/local.json when in development
 if (isDevelopment) {
   const localConfigPath = path.resolve(dirName, './local.json')
   if (existsSync(localConfigPath)) {

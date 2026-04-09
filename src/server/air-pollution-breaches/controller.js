@@ -16,7 +16,6 @@ import {
 
 const EN_PATH = AIR_POLLUTION_BREACHES_PATH_EN
 const CY_PATH = AIR_POLLUTION_BREACHES_PATH_CY
-// ''
 
 function mapActiveBreaches(activeBreaches, activeContent) {
   return activeBreaches.map((breach) => ({

@@ -122,12 +122,10 @@ const searchLocationController = {
     request.yar.set('locationNameOrPostcode', '')
     const metaSiteUrl = getAirQualitySiteUrl(request)
 
-    // '' Check if user is coming from notification registration flow (SMS or Email)
+    // Check if user is coming from notification registration flow (SMS or Email)
     const fromSmsFlow = request.query?.fromSmsFlow === 'true'
     const fromEmailFlow = request.query?.fromEmailFlow === 'true'
-    // ''
     const notificationFlow = getNotificationFlow(fromSmsFlow, fromEmailFlow)
-    // ''
 
     if (notificationFlow) {
       request.yar.set('notificationFlow', notificationFlow)

@@ -14,7 +14,6 @@ describe('Route Configuration', () => {
   })
 
   it('should test configureRoutes function directly', () => {
-    // ''
     const mockController = { handler: () => {} }
     const result = configureRoutes(mockController)
     expect(result).toHaveLength(1)

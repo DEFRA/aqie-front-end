@@ -33,13 +33,13 @@ describe('Check Max Alerts Controller', () => {
 
   describe('when mobile number is missing from session', () => {
     test('redirects to mobile number page', async () => {
-      // '' Arrange
+      // Arrange
       mockRequest.yar.get.mockReturnValue(null)
 
-      // '' Act
+      // Act
       await checkMaxAlertsController.handler(mockRequest, mockH)
 
-      // '' Assert
+      // Assert
       expect(mockH.redirect).toHaveBeenCalledWith(
         '/notify/register/sms-mobile-number'
       )
@@ -48,7 +48,7 @@ describe('Check Max Alerts Controller', () => {
 
   describe('when user has NOT reached maximum alerts (< 5 locations)', () => {
     test('sets notification flow and redirects to search location', async () => {
-      // '' Arrange
+      // Arrange
       const phoneNumber = '07700900982'
       mockRequest.yar.get.mockReturnValue(phoneNumber)
       notifyService.getSubscriptionCount.mockResolvedValue({
@@ -56,10 +56,10 @@ describe('Check Max Alerts Controller', () => {
         maxReached: false
       })
 
-      // '' Act
+      // Act
       await checkMaxAlertsController.handler(mockRequest, mockH)
 
-      // '' Assert
+      // Assert
       expect(notifyService.getSubscriptionCount).toHaveBeenCalledWith(
         phoneNumber,
         mockRequest
@@ -76,7 +76,7 @@ describe('Check Max Alerts Controller', () => {
 
   describe('when user HAS reached maximum alerts (>= 5 locations)', () => {
     test('sets error flags, clears mobile number, and redirects to mobile number page', async () => {
-      // '' Arrange
+      // Arrange
       const phoneNumber = '07700900982'
       mockRequest.yar.get.mockReturnValue(phoneNumber)
       notifyService.getSubscriptionCount.mockResolvedValue({
@@ -84,10 +84,10 @@ describe('Check Max Alerts Controller', () => {
         maxReached: true
       })
 
-      // '' Act
+      // Act
       await checkMaxAlertsController.handler(mockRequest, mockH)
 
-      // '' Assert
+      // Assert
       expect(notifyService.getSubscriptionCount).toHaveBeenCalledWith(
         phoneNumber,
         mockRequest
@@ -104,7 +104,7 @@ describe('Check Max Alerts Controller', () => {
     })
 
     test('correctly masks phone number with different format', async () => {
-      // '' Arrange
+      // Arrange
       const phoneNumber = '07123456789'
       mockRequest.yar.get.mockReturnValue(phoneNumber)
       notifyService.getSubscriptionCount.mockResolvedValue({
@@ -112,10 +112,10 @@ describe('Check Max Alerts Controller', () => {
         maxReached: true
       })
 
-      // '' Act
+      // Act
       await checkMaxAlertsController.handler(mockRequest, mockH)
 
-      // '' Assert
+      // Assert
       expect(mockRequest.yar.set).toHaveBeenCalledWith(
         'maskedPhoneNumber',
         '07123456789'
@@ -125,7 +125,7 @@ describe('Check Max Alerts Controller', () => {
 
   describe('when API check fails', () => {
     test('allows user to proceed (fail open) and redirects to search', async () => {
-      // '' Arrange
+      // Arrange
       const phoneNumber = '07700900982'
       mockRequest.yar.get.mockReturnValue(phoneNumber)
       notifyService.getSubscriptionCount.mockResolvedValue({
@@ -133,10 +133,10 @@ describe('Check Max Alerts Controller', () => {
         maxReached: false
       })
 
-      // '' Act
+      // Act
       await checkMaxAlertsController.handler(mockRequest, mockH)
 
-      // '' Assert
+      // Assert
       expect(mockRequest.yar.set).toHaveBeenCalledWith(
         'notificationFlow',
         'sms'
@@ -147,17 +147,17 @@ describe('Check Max Alerts Controller', () => {
     })
 
     test('handles API errors gracefully and allows user to proceed', async () => {
-      // '' Arrange
+      // Arrange
       const phoneNumber = '07700900982'
       mockRequest.yar.get.mockReturnValue(phoneNumber)
       notifyService.getSubscriptionCount.mockRejectedValue(
         new Error('Network error')
       )
 
-      // '' Act
+      // Act
       await checkMaxAlertsController.handler(mockRequest, mockH)
 
-      // '' Assert
+      // Assert
       expect(mockRequest.yar.set).toHaveBeenCalledWith(
         'notificationFlow',
         'sms'

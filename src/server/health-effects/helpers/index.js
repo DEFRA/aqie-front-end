@@ -1,7 +1,7 @@
-// '' Import postcode formatter
-import { formatUKPostcode } from '../../locations/helpers/convert-string.js' // ''
+// Import postcode formatter
+import { formatUKPostcode } from '../../locations/helpers/convert-string.js'
 
-// '' Build a context-aware back link model using only provided content
+// Build a context-aware back link model using only provided content
 // Params: { backLinkText, backLinkUrl } from controller logic or content
 function buildBackLinkModel({ backLinkText, backLinkUrl }) {
   return {
@@ -9,9 +9,9 @@ function buildBackLinkModel({ backLinkText, backLinkUrl }) {
     href: backLinkUrl
   }
 }
-// '' Pure helpers for health-effects feature
+// Pure helpers for health-effects feature
 
-// '' Helper to build formatted name from postcode and location
+// Helper to build formatted name from postcode and location
 const buildFormattedName = (formattedPostcode, locationName) => {
   if (formattedPostcode && locationName) {
     return `${formattedPostcode}, ${locationName}`
@@ -25,7 +25,7 @@ const buildFormattedName = (formattedPostcode, locationName) => {
   return null
 }
 
-// '' Helper to normalize and format ID as fallback
+// Helper to normalize and format ID as fallback
 const normalizeIdAsFallback = (params) => {
   const rawId = (params.id || '').trim()
   if (!rawId) {
@@ -38,7 +38,7 @@ const normalizeIdAsFallback = (params) => {
   return formatUKPostcode(normalized)
 }
 
-// '' Derive readable location name with postcode and place name
+// Derive readable location name with postcode and place name
 const getReadableLocationName = (query = {}, params = {}, logger = null) => {
   try {
     const searchTerms = (query.searchTerms || '').trim()
@@ -57,7 +57,7 @@ const getReadableLocationName = (query = {}, params = {}, logger = null) => {
   }
 }
 
-// '' Helper to generate back link URL based on locationId and language
+// Helper to generate back link URL based on locationId and language
 const generateBackLinkUrl = (locationId, lang) => {
   if (locationId) {
     return lang === 'cy'
@@ -69,7 +69,7 @@ const generateBackLinkUrl = (locationId, lang) => {
     : '/search-location?lang=en'
 }
 
-// '' Compose view model for template
+// Compose view model for template
 const buildHealthEffectsViewModel = ({
   content = {},
   metaSiteUrl = '',
@@ -85,26 +85,26 @@ const buildHealthEffectsViewModel = ({
     multipleLocations: { serviceName = '' } = {}
   } = content || {}
 
-  // '' Generate back link URL based on locationId and language
+  // Generate back link URL based on locationId and language
   const backLinkUrl = generateBackLinkUrl(locationId, lang)
 
   return {
-    pageTitle: healthEffects?.pageTitle || '', // ''
-    description: healthEffects?.description || '', // ''
-    metaSiteUrl, // ''
-    healthEffects, // ''
-    page: healthEffects?.heading || healthEffects?.pageTitle || '', // ''
-    displayBacklink: true, // ''
-    customBackLink: !!readableName, // '' Add for template compatibility
-    backLinkUrl, // ''
-    backLinkHref: backLinkUrl, // ''
-    locationName: readableName, // ''
-    locationId, // '' Include locationId for template use
-    phaseBanner, // ''
-    footerTxt, // ''
-    cookieBanner, // ''
-    serviceName, // ''
-    lang // ''
+    pageTitle: healthEffects?.pageTitle || '',
+    description: healthEffects?.description || '',
+    metaSiteUrl,
+    healthEffects,
+    page: healthEffects?.heading || healthEffects?.pageTitle || '',
+    displayBacklink: true,
+    customBackLink: !!readableName,
+    backLinkUrl,
+    backLinkHref: backLinkUrl,
+    locationName: readableName,
+    locationId,
+    phaseBanner,
+    footerTxt,
+    cookieBanner,
+    serviceName,
+    lang
   }
 }
 
@@ -112,4 +112,4 @@ export {
   getReadableLocationName,
   buildHealthEffectsViewModel,
   buildBackLinkModel
-} // ''
+}

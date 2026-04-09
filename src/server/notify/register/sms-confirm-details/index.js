@@ -3,7 +3,7 @@ import {
   handleConfirmAlertDetailsPost
 } from './controller.js'
 
-// '' Welsh placeholder path for sms-confirm-details
+// Welsh placeholder path for sms-confirm-details
 const SMS_CONFIRM_DETAILS_PATH_CY =
   '/hysbysiad/cofrestru/sms-cadarnhau-manylion'
 

@@ -1,4 +1,3 @@
-// ''
 import { config } from '../../config/index.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
 import { buildPreloaderStatusResponse } from '../common/helpers/preloader.js'
@@ -119,7 +118,7 @@ const loadingStatusController = {
       `[LOADING STATUS] Poll check: niProcessing=${niProcessing}, niError=${niError}, redirectTo=${redirectTo}, lang=${lang}, postcode=${postcode}`
     )
 
-    // '' Check if processing is complete
+    // Check if processing is complete
     if (!niProcessing) {
       return buildCompletedStatusResponse({
         h,
@@ -130,7 +129,7 @@ const loadingStatusController = {
       })
     }
 
-    // '' Still processing
+    // Still processing
     logger.info(`[LOADING STATUS] Still processing...`)
     return buildPreloaderStatusResponse({
       h,

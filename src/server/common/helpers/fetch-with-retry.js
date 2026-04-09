@@ -123,7 +123,7 @@ async function fetchWithRetry(fetchFn, options = {}) {
         throw error
       }
 
-      // '' Wait before retrying (exponential backoff + jitter to reduce synchronized retries)
+      // Wait before retrying (exponential backoff + jitter to reduce synchronized retries)
       const { jitterMs, backoffDelay } = getBackoffDelay(retryDelayMs, attempt)
       logger.info(
         `[fetchWithRetry] Waiting ${backoffDelay}ms before retry ${attempt + 1}/${maxRetries + 1}`,

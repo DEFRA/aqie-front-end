@@ -1,18 +1,18 @@
-// '' Tests for Welsh Health Effects Hapi plugin
-import { describe, it, expect, vi, beforeEach } from 'vitest' // '' Vitest API
+// Tests for Welsh Health Effects Hapi plugin
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Server } from '@hapi/hapi'
 
-import { healthEffectsCy } from './index.js' // '' Welsh plugin
-import { healthEffectsController } from '../controller.js' // '' Hapi server
+import { healthEffectsCy } from './index.js'
+import { healthEffectsController } from '../controller.js'
 
-// '' HTTP status code constants
+// HTTP status code constants
 const HTTP_OK = 200
 const HTTP_FOUND = 302
 const HTTP_NOT_FOUND = 404
 const HTTP_SERVER_ERROR = 500
 
-// '' Mock unified controller and logger before importing the plugin so module-level imports use the mocks
-// '' Mock unified handler
+// Mock unified controller and logger before importing the plugin so module-level imports use the mocks
+// Mock unified handler
 vi.mock('../controller.js', () => ({
   healthEffectsController: {
     handler: vi.fn((_req, h) => h.response('ok').code(HTTP_OK))
@@ -35,12 +35,12 @@ describe("'' healthEffectsCy plugin - route registration", () => {
   let server
 
   beforeEach(async () => {
-    server = new Server({ port: 0 }) // '' Create Hapi server
+    server = new Server({ port: 0 })
     const loggerInstance =
       require('../../common/helpers/logging/logger.js').createLogger()
     vi.spyOn(loggerInstance, 'warn')
     vi.spyOn(loggerInstance, 'error')
-    await server.register({ plugin: healthEffectsCy }) // '' Register Welsh plugin
+    await server.register({ plugin: healthEffectsCy })
   })
 
   it("'' registers Welsh dynamic route", async () => {
@@ -51,7 +51,7 @@ describe("'' healthEffectsCy plugin - route registration", () => {
 
   it("'' continues request when legacy path does not match", async () => {
     const res = await server.inject('/location/unknown/path')
-    expect(res.statusCode).toBe(HTTP_NOT_FOUND) // '' No route matches
+    expect(res.statusCode).toBe(HTTP_NOT_FOUND)
   })
 })
 
@@ -63,7 +63,7 @@ describe("'' healthEffectsCy plugin - redirects", () => {
     await server.register({ plugin: healthEffectsCy })
   })
   it("'' redirects legacy English path to Welsh dynamic route when lang=cy", async () => {
-    // '' Provide lang=cy query so onPreHandler will perform the redirect when the plugin registers it.
+    // Provide lang=cy query so onPreHandler will perform the redirect when the plugin registers it.
     const res = await server.inject(
       '/location/locationName/health-effects?lang=cy'
     )
@@ -97,29 +97,29 @@ describe("'' healthEffectsCy plugin - redirects", () => {
   })
 
   it("'' does not redirect when lang is not cy", async () => {
-    // '' Should not redirect when lang is not 'cy' (wantsCy false)
+    // Should not redirect when lang is not 'cy' (wantsCy false)
     const res = await server.inject(
       '/location/locationName/health-effects?lang=en'
     )
-    expect(res.statusCode).toBe(HTTP_NOT_FOUND) // '' No route matches / original path continues
+    expect(res.statusCode).toBe(HTTP_NOT_FOUND)
   })
 
   it("'' continues when English path matches but no lang parameter", async () => {
     const res = await server.inject('/location/test/health-effects')
-    expect(res.statusCode).toBe(HTTP_NOT_FOUND) // '' No redirect, continues
+    expect(res.statusCode).toBe(HTTP_NOT_FOUND)
   })
 
   it("'' successfully redirects English path with lang=cy", async () => {
-    // '' Test the redirect logic when path matches and lang=cy
+    // Test the redirect logic when path matches and lang=cy
     const redirectServer = new Server({ port: 0 })
     await redirectServer.register({ plugin: healthEffectsCy })
 
-    // '' Inject the exact English path that should redirect
+    // Inject the exact English path that should redirect
     const res = await redirectServer.inject(
       '/location/test-id/health-effects?lang=cy'
     )
 
-    // '' Should either redirect (302) or not found (404)
+    // Should either redirect (302) or not found (404)
     expect([HTTP_FOUND, HTTP_NOT_FOUND]).toContain(res.statusCode)
 
     if (res.statusCode === HTTP_FOUND) {
@@ -128,7 +128,7 @@ describe("'' healthEffectsCy plugin - redirects", () => {
   })
 })
 
-// '' Helper function for checking error messages
+// Helper function for checking error messages
 const hasErrorOrOnPreHandlerMessage = (calls) => {
   for (const callArgs of calls) {
     for (const arg of callArgs) {
@@ -158,15 +158,15 @@ describe("'' healthEffectsCy plugin - error handling", () => {
 
   describe("'' error handling", () => {
     it("'' logs error when onPreHandler fails", async () => {
-      // '' Simulate error in onPreHandler
+      // Simulate error in onPreHandler
       const mockRedirect = vi.fn(() => {
         throw new Error('Simulated onPreHandler error')
       })
       server.ext('onPreHandler', (_request, _h) => mockRedirect())
       const res = await server.inject('/location/invalid/health-effects')
-      expect([HTTP_NOT_FOUND, HTTP_SERVER_ERROR]).toContain(res.statusCode) // '' Accept either behavior
+      expect([HTTP_NOT_FOUND, HTTP_SERVER_ERROR]).toContain(res.statusCode)
 
-      // '' Accept logging being optional in this environment.
+      // Accept logging being optional in this environment.
       const warnCalls = loggerInstance.warn.mock?.calls?.length ?? 0
       const errorCalls = loggerInstance.error.mock?.calls?.length ?? 0
 
@@ -187,28 +187,28 @@ describe("'' healthEffectsCy plugin - error handling", () => {
           throw new Error('Registration failed')
         }
       }
-      // '' Expect registration to reject with the plugin error
+      // Expect registration to reject with the plugin error
       await expect(server.register({ plugin: failingPlugin })).rejects.toThrow(
         'Registration failed'
       )
     })
 
     it("'' handles warning when onPreHandler fails", async () => {
-      // '' Test warning path in onPreHandler catch block
+      // Test warning path in onPreHandler catch block
       const warnServer = new Server({ port: 0 })
 
       await warnServer.register({ plugin: healthEffectsCy })
 
-      // '' Inject path that won't match redirect pattern
+      // Inject path that won't match redirect pattern
       const res = await warnServer.inject('/some/other/path')
       expect(res.statusCode).toBe(HTTP_NOT_FOUND)
     })
 
     it("'' handles error propagation in registration", async () => {
-      // '' Test that errors during registration are thrown
+      // Test that errors during registration are thrown
       const errorServer = new Server({ port: 0 })
 
-      // '' Successfully register the plugin
+      // Successfully register the plugin
       await expect(
         errorServer.register({ plugin: healthEffectsCy })
       ).resolves.not.toThrow()
@@ -218,7 +218,7 @@ describe("'' healthEffectsCy plugin - error handling", () => {
 
 describe("'' healthEffectsCy plugin - actual error coverage", () => {
   it("'' covers registration catch block when server.route fails", async () => {
-    // '' Pre-register the same route to cause a conflict
+    // Pre-register the same route to cause a conflict
     const errorServer = new Server({ port: 0 })
     errorServer.route({
       method: 'GET',
@@ -226,22 +226,22 @@ describe("'' healthEffectsCy plugin - actual error coverage", () => {
       handler: () => 'conflict'
     })
 
-    // '' Attempting to register the plugin should throw due to route conflict
+    // Attempting to register the plugin should throw due to route conflict
     await expect(
       errorServer.register({ plugin: healthEffectsCy })
     ).rejects.toThrow()
   })
 
   it("'' tests onPreHandler error path - defensive catch block", async () => {
-    // '' NOTE: Lines 26-28, 30-31 (catch block) are defensive error handling that
-    // '' would only execute if core JavaScript functions (encodeURIComponent, h.redirect)
-    // '' throw unexpected errors. These are extremely difficult to trigger reliably
-    // '' in unit tests without compromising test integrity. The catch block provides
-    // '' production safety for edge cases like memory errors or unexpected runtime failures.
+    // NOTE: Lines 26-28, 30-31 (catch block) are defensive error handling that
+    // would only execute if core JavaScript functions (encodeURIComponent, h.redirect)
+    // throw unexpected errors. These are extremely difficult to trigger reliably
+    // in unit tests without compromising test integrity. The catch block provides
+    // production safety for edge cases like memory errors or unexpected runtime failures.
     const errorServer = new Server({ port: 0 })
     await errorServer.register({ plugin: healthEffectsCy })
 
-    // '' Verify the plugin's normal operation works correctly
+    // Verify the plugin's normal operation works correctly
     const res = await errorServer.inject(
       '/location/test/health-effects?lang=cy'
     )

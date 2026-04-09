@@ -1,4 +1,4 @@
-// '' - Filter to normalize Welsh and English pollutant band names to CSS class names
+// - Filter to normalize Welsh and English pollutant band names to CSS class names
 
 /**
  * Map of Welsh band names to English equivalents for CSS class consistency

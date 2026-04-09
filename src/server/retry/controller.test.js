@@ -9,8 +9,6 @@ vi.mock('../common/helpers/get-site-url.js', () => ({
   getAirQualitySiteUrl: vi.fn(() => 'https://example')
 }))
 
-// ''
-
 const buildRequest = ({ payload, query, referer } = {}) => ({
   payload,
   query,

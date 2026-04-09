@@ -7,12 +7,12 @@ import { config } from '../../../../config/index.js'
 import { generateEmailLink } from '../../../common/services/notify.js'
 import { recordEmailCapture } from '../../../common/services/subscription.js'
 
-// '' Mock notify service so unit tests never make real HTTP calls
+// Mock notify service so unit tests never make real HTTP calls
 vi.mock('../../../common/services/notify.js', () => ({
   generateEmailLink: vi.fn().mockResolvedValue({ ok: true })
 }))
 
-// '' Mock subscription service to avoid real HTTP calls
+// Mock subscription service to avoid real HTTP calls
 vi.mock('../../../common/services/subscription.js', () => ({
   recordEmailCapture: vi.fn().mockResolvedValue({ ok: true })
 }))
@@ -100,14 +100,14 @@ describe('email-details controller', () => {
     const h = mockH()
     const res = handleEmailDetailsRequest(req, h)
     expect(res.tpl).toBe('notify/register/email-details/index')
-    // '' Error flag should be cleared from session after reading
+    // Error flag should be cleared from session after reading
     expect(session.maxAlertsEmailError).toBeUndefined()
     expect(session.maxAlertsEmail).toBeUndefined()
-    // '' Summary message should contain the email address
+    // Summary message should contain the email address
     expect(res.vm.maxAlertsError).toBeTruthy()
     expect(res.vm.maxAlertsError.summary).toContain('test@example.com')
     expect(res.vm.maxAlertsError.field).toBeTruthy()
-    // '' Page title should include Error: prefix
+    // Page title should include Error: prefix
     expect(res.vm.pageTitle).toContain('Error:')
   })
 

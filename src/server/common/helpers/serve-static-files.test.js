@@ -18,7 +18,6 @@ vi.mock('node:path', () => ({
 
 describe('serve-static-files', () => {
   test('should export serveStaticFiles plugin', async () => {
-    // ''
     const module = await import('./serve-static-files.js')
 
     expect(module.serveStaticFiles).toBeDefined()
@@ -28,7 +27,6 @@ describe('serve-static-files', () => {
   })
 
   test('should register routes on server', async () => {
-    // ''
     const mockServer = {
       route: vi.fn()
     }
@@ -41,7 +39,6 @@ describe('serve-static-files', () => {
   })
 
   test('should handle basic plugin structure', () => {
-    // ''
     // Simple test to ensure basic coverage
     expect(true).toBe(true)
   })

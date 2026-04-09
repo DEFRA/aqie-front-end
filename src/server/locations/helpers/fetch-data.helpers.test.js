@@ -1,4 +1,3 @@
-// ''
 import {
   buildUKTestModeResult,
   buildNITestModeResult,
@@ -52,4 +51,3 @@ describe('handleUnsupportedLocationType', () => {
     })
   })
 })
-// ''

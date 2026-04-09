@@ -1,26 +1,26 @@
-// '' Health effects controller (CY)
-import { welsh } from '../../data/cy/cy.js' // '' Welsh copy
-import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js' // '' Site URL helper
-import { createLogger } from '../../common/helpers/logging/logger.js' // '' Logger
+// Health effects controller (CY)
+import { welsh } from '../../data/cy/cy.js'
+import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
+import { createLogger } from '../../common/helpers/logging/logger.js'
 import { STATUS_INTERNAL_SERVER_ERROR } from '../../data/constants.js'
 import {
   getReadableLocationName,
   buildHealthEffectsViewModel
-} from '../helpers/index.js' // '' Shared pure helpers
+} from '../helpers/index.js'
 
-const LANG_EN = 'en' // '' Language constants
+const LANG_EN = 'en'
 const LANG_CY = 'cy'
 const REDIRECT_STATUS_CODE = 302
 
-const logger = createLogger() // '' Logger instance
+const logger = createLogger()
 
-// '' Handler (CY)
+// Handler (CY)
 const healthEffectsHandlerCy = (request, h, content = welsh) => {
   try {
     const { query, params } = request
-    const metaSiteUrl = getAirQualitySiteUrl(request) // '' Canonical site URL
+    const metaSiteUrl = getAirQualitySiteUrl(request)
 
-    // '' Redirect to English variant if requested
+    // Redirect to English variant if requested
     if ((query?.lang || '').toLowerCase() === LANG_EN) {
       const readableNameRedirect = getReadableLocationName(
         query,
@@ -57,6 +57,6 @@ const healthEffectsHandlerCy = (request, h, content = welsh) => {
   }
 }
 
-const healthEffectsControllerCy = { handler: healthEffectsHandlerCy } // '' Export
+const healthEffectsControllerCy = { handler: healthEffectsHandlerCy }
 
 export { healthEffectsControllerCy, healthEffectsHandlerCy }

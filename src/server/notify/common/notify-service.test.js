@@ -128,7 +128,6 @@ describe('notify service - mock alert storage', () => {
   })
 
   test('NI postcode normalization prevents duplicates with/without town name', async () => {
-    // ''
     const phoneNumber = '07700900123'
 
     // First alert: BT1 1AA without town name
@@ -165,7 +164,6 @@ describe('notify service - mock alert storage', () => {
   })
 
   test('NI postcode normalization handles different formatting', async () => {
-    // ''
     const phoneNumber = '07700900456'
     const sameCoords = { lat: '54.5085', lon: '-7.8305' }
 
@@ -201,7 +199,6 @@ describe('notify service - mock alert storage', () => {
   })
 
   test('Non-NI locations are not affected by postcode normalization', async () => {
-    // ''
     const phoneNumber = '07700900789'
 
     // First alert: London

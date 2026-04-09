@@ -75,7 +75,7 @@ describe('context and cache', () => {
       })
     })
 
-    // '' - Flattened tests to avoid deep nesting
+    // - Flattened tests to avoid deep nesting
     describe('context.getAssetPath with valid asset path', () => {
       let contextImport
       let contextResult

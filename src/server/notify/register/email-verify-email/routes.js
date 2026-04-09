@@ -1,7 +1,7 @@
 // Routes for email verify email page ''
 import { handleEmailVerifyRequest } from './controller.js'
 
-// '' Welsh placeholder path for email-verify-email
+// Welsh placeholder path for email-verify-email
 const EMAIL_VERIFY_EMAIL_PATH_CY = '/hysbysiad/cofrestru/ebost-dilysu'
 
 const routes = [

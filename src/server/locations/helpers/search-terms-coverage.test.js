@@ -1,4 +1,4 @@
-// '' - Additional tests specifically to improve SonarCloud new code coverage
+// - Additional tests specifically to improve SonarCloud new code coverage
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { getSearchTermsFromUrl } from './get-search-terms-from-url.js'
 import { getPostcode } from './get-postcode-type.js'

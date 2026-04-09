@@ -75,7 +75,7 @@ const handleUKLocationType = async (request, h, params) => {
   request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
   request.yar.clear('searchTermsSaved')
   if (searchTerms) {
-    // '' Render error view directly to avoid redirect to catchAll
+    // Render error view directly to avoid redirect to catchAll
     return h
       .view('error/index', {
         pageTitle: PAGE_NOT_FOUND_MESSAGE,

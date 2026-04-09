@@ -61,7 +61,7 @@ import { healthEffectsCy } from './health-effects/cy/index.js'
 import { airPollutionBreaches } from './air-pollution-breaches/index.js'
 import { airPollutionBreachesCy } from './air-pollution-breaches/cy/index.js'
 
-const logger = createLogger() // ''
+const logger = createLogger()
 
 function getServerPlugins() {
   return [
@@ -171,7 +171,7 @@ const router = {
   plugin: {
     name: 'router',
     register: async (server) => {
-      await server.register([inert]) // ''
+      await server.register([inert])
       const plugins = getServerPlugins()
       await registerServerPlugins(server, plugins)
       registerWellKnownRoute(server)
@@ -180,4 +180,4 @@ const router = {
   }
 }
 
-export { router } // ''
+export { router }

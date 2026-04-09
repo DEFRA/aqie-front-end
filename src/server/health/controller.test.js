@@ -16,7 +16,6 @@ describe('Health Controller', () => {
   })
 
   test('should export healthController', async () => {
-    // ''
     const module = await import('./controller.js')
 
     expect(module.healthController).toBeDefined()
@@ -25,7 +24,6 @@ describe('Health Controller', () => {
   })
 
   test('should return success response with 200 status code', async () => {
-    // ''
     const module = await import('./controller.js')
     const result = await module.healthController.handler(mockRequest, mockH)
 

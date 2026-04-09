@@ -93,7 +93,6 @@ describe('Multiple Results Controller', function () {
   })
 
   test('should export getLocationDataController', async () => {
-    // ''
     const module = await import('./controller.js')
 
     expect(module.getLocationDataController).toBeDefined()
@@ -102,7 +101,6 @@ describe('Multiple Results Controller', function () {
   })
 
   test('should handle valid location data successfully', async () => {
-    // ''
     const mockLocationData = createMockLocationData()
 
     mockRequest.yar.get.mockReturnValue(mockLocationData)
@@ -115,7 +113,6 @@ describe('Multiple Results Controller', function () {
   })
 
   test('should handle empty location data gracefully', async () => {
-    // ''
     mockRequest.yar.get.mockReturnValue([])
 
     const module = await import('./controller.js')
@@ -125,7 +122,6 @@ describe('Multiple Results Controller', function () {
   })
 
   test('should handle errors gracefully and show error page', async () => {
-    // ''
     // Create incomplete data that will cause an error in processing
     const incompleteData = {
       results: null, // This will cause issues
@@ -168,7 +164,6 @@ describe('Multiple Results Controller - Error Handling', function () {
   })
 
   test('should handle authentication errors with 401 status', async () => {
-    // ''
     // Test the controller's ability to handle errors
     const module = await import('./controller.js')
 
@@ -187,7 +182,6 @@ describe('Multiple Results Controller - Error Handling', function () {
   })
 
   test('should handle authentication token error with 401 status', async () => {
-    // ''
     const mockLocationData = createMockLocationData({ results: ['location1'] })
 
     mockRequest.yar.get.mockReturnValue(mockLocationData)
@@ -215,7 +209,6 @@ describe('Multiple Results Controller - Error Handling', function () {
   })
 
   test('should handle general errors with 500 status', async () => {
-    // ''
     const mockLocationData = createMockLocationData({ results: ['location1'] })
 
     mockRequest.yar.get.mockReturnValue(mockLocationData)
@@ -260,7 +253,6 @@ describe('Multiple Results Controller - Welsh Language', function () {
   })
 
   test('should handle Welsh language redirect properly', async () => {
-    // ''
     const { REDIRECT_STATUS_CODE } = await import('../data/constants.js')
     const mockLocationData = createMockLocationData({
       results: ['location1'],

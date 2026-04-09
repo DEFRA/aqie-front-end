@@ -1,4 +1,4 @@
-// '' Shared test helpers for location-id controller tests (mocks must be in each test file)
+// Shared test helpers for location-id controller tests (mocks must be in each test file)
 import { vi } from 'vitest'
 
 // Helper to get mocked modules - call this after vi.mock() in your test file

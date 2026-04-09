@@ -1,5 +1,5 @@
 // NOSONAR
-// '' Tests for showSummaryDate calculations and preservation
+// Tests for showSummaryDate calculations and preservation
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
@@ -232,7 +232,6 @@ describe('Location ID Controller - ShowSummaryDate Calculations', () => {
   })
 
   it('should calculate showSummaryDate when undefined and issue_date is today', async () => {
-    // ''
     const today = new Date()
     const todayStr = today.toISOString().split('T')[0] + ' 10:00:00'
 
@@ -272,7 +271,6 @@ describe('Location ID Controller - ShowSummaryDate Calculations', () => {
   })
 
   it('should calculate showSummaryDate as false when issue_date is not today', async () => {
-    // ''
     const yesterdayStr = '2020-01-01 10:00:00'
 
     const mockLocationData = {
@@ -322,7 +320,6 @@ describe('Location ID Controller - ShowSummaryDate Preservation', () => {
   })
 
   it('should preserve showSummaryDate when already set', async () => {
-    // ''
     const today = new Date()
     const todayStr = today.toISOString().split('T')[0] + ' 10:00:00'
 
@@ -363,7 +360,6 @@ describe('Location ID Controller - ShowSummaryDate Preservation', () => {
   })
 
   it('should handle missing issue_date gracefully', async () => {
-    // ''
     mockRequest.params = { id: 'test' }
     mockRequest.headers = { referer: 'https://example.com/location' }
 

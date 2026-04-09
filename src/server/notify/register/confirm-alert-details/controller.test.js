@@ -171,4 +171,3 @@ describe('Confirm Alert Details Controller (email & sms)', () => {
     expect(mockH.redirect).toHaveBeenCalledWith('/notify/register/sms-success')
   })
 })
-// ''

@@ -6,7 +6,7 @@ import { transformKeys } from '../../locations/helpers/transform-summary-keys.js
 import { airQualityValues } from '../../locations/helpers/air-quality-values.js'
 import { LANG_CY } from '../../data/constants.js'
 
-// '' Mock all the dependencies
+// Mock all the dependencies
 vi.mock('../../locations/helpers/gazetteer-util.js', () => ({
   gazetteerEntryFilter: vi.fn()
 }))

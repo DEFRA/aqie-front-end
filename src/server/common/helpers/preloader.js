@@ -1,7 +1,5 @@
 import { STATUS_OK } from '../../data/constants.js'
 
-// ''
-
 const DEFAULT_PRELOADER_CONFIG = {
   statusUrl: '/loading-status',
   maxPolls: 15,

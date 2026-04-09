@@ -56,13 +56,11 @@ vi.mock('./cy/pollutant-level-calculation.js', () => ({
 
 describe('Get Nearest Location Coverage Helper', () => {
   it('should import and initialize basic functions', async () => {
-    // ''
     const module = await import('./get-nearest-location.js')
     expect(module).toBeDefined()
   })
 
   it('should handle empty location data', async () => {
-    // ''
     try {
       const module = await import('./get-nearest-location.js')
       // Basic import test to add coverage

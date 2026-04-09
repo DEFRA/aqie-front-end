@@ -70,7 +70,6 @@ describe('Nunjucks Configuration', () => {
   })
 
   test('should export nunjucksConfig with required properties', async () => {
-    // ''
     const module = await import('./index.js')
 
     expect(module.nunjucksConfig).toBeDefined()
@@ -81,7 +80,6 @@ describe('Nunjucks Configuration', () => {
   })
 
   test('should have correct engine configuration', async () => {
-    // ''
     const module = await import('./index.js')
 
     const { nunjucksConfig } = module
@@ -90,7 +88,6 @@ describe('Nunjucks Configuration', () => {
   })
 
   test('should have context function defined', async () => {
-    // ''
     const module = await import('./index.js')
 
     expect(module.nunjucksConfig.options.context).toBeDefined()
@@ -98,7 +95,6 @@ describe('Nunjucks Configuration', () => {
   })
 
   test('should have compile function that returns a function', async () => {
-    // ''
     const module = await import('./index.js')
 
     const compileFn = module.nunjucksConfig.options.engines.njk.compile
@@ -106,21 +102,21 @@ describe('Nunjucks Configuration', () => {
   })
 
   test('should register date filter that handles invalid dates', async () => {
-    // '' Since filters are registered directly on the environment in the module,
-    // '' we can't easily test them with mocks. This test verifies the module loads.
+    // Since filters are registered directly on the environment in the module,
+    // we can't easily test them with mocks. This test verifies the module loads.
     const module = await import('./index.js')
     expect(module.nunjucksConfig).toBeDefined()
   })
 
   test('should register minusOneHour filter', async () => {
-    // '' Since filters are registered directly on the environment in the module,
-    // '' we can't easily test them with mocks. This test verifies the module loads.
+    // Since filters are registered directly on the environment in the module,
+    // we can't easily test them with mocks. This test verifies the module loads.
     const module = await import('./index.js')
     expect(module.nunjucksConfig).toBeDefined()
   })
 
   test('should handle filter registration errors', async () => {
-    // '' Import should complete successfully
+    // Import should complete successfully
     const module = await import('./index.js')
     expect(module.nunjucksConfig).toBeDefined()
     expect(module.nunjucksConfig.options).toBeDefined()
@@ -128,13 +124,12 @@ describe('Nunjucks Configuration', () => {
 })
 
 describe('Nunjucks Filters - Actual Template Rendering', () => {
-  // '' Test filters by actually rendering templates (covers lines 88-101)
+  // Test filters by actually rendering templates (covers lines 88-101)
   const DATE_FILTER_TEMPLATE = '{{ testDate | date }}'
   const INVALID_DATE_MESSAGE = 'Invalid date'
   const DATE_STRING_PREFIX_LENGTH = 15
 
   test('minusOneHour filter works in template rendering', async () => {
-    // ''
     const module = await import('./index.js')
     const compile = module.nunjucksConfig.options.engines.njk.compile
     const compileOptions = module.nunjucksConfig.options.compileOptions
@@ -153,7 +148,6 @@ describe('Nunjucks Filters - Actual Template Rendering', () => {
   })
 
   test('date filter formats valid date correctly', async () => {
-    // ''
     const module = await import('./index.js')
     const compile = module.nunjucksConfig.options.engines.njk.compile
     const compileOptions = module.nunjucksConfig.options.compileOptions
@@ -165,7 +159,6 @@ describe('Nunjucks Filters - Actual Template Rendering', () => {
   })
 
   test('date filter returns Invalid date for null', async () => {
-    // ''
     const module = await import('./index.js')
     const compile = module.nunjucksConfig.options.engines.njk.compile
     const compileOptions = module.nunjucksConfig.options.compileOptions
@@ -177,7 +170,6 @@ describe('Nunjucks Filters - Actual Template Rendering', () => {
   })
 
   test('date filter returns Invalid date for invalid string', async () => {
-    // ''
     const module = await import('./index.js')
     const compile = module.nunjucksConfig.options.engines.njk.compile
     const compileOptions = module.nunjucksConfig.options.compileOptions

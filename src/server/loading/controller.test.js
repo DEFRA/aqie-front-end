@@ -1,8 +1,6 @@
 import { describe, expect, test, vi, beforeEach } from 'vitest'
 import { loadingController } from './controller.js'
 
-// ''
-
 const buildRequest = ({
   payload = {},
   query = {},

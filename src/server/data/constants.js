@@ -1,4 +1,4 @@
-// '' - API endpoint path for forecasts
+// - API endpoint path for forecasts
 import { fileURLToPath } from 'node:url'
 import { dirname } from 'node:path'
 export const FORECASTS_API_PATH = '/aqie-forecast-api/forecast'
@@ -106,7 +106,7 @@ export const SUMMARY_TRANSLATIONS = {
   Today: 'Heddiw'
 }
 
-// '' - Pollutant band translations
+// - Pollutant band translations
 export const POLLUTANT_BAND_LABELS = {
   LOW: { en: 'Low', cy: 'Isel' },
   MODERATE: { en: 'Moderate', cy: 'Cymedrol' },
@@ -114,7 +114,7 @@ export const POLLUTANT_BAND_LABELS = {
   VERY_HIGH: { en: 'Very high', cy: 'Uchel iawn' }
 }
 
-// '' - Pollutant threshold values
+// - Pollutant threshold values
 export const POLLUTANT_THRESHOLD_VALUES = {
   PM10_MAX_1: 50,
   PM10_MAX_2: 75,
@@ -182,5 +182,5 @@ export const CY_LOCATION_VALID_MOCK_BANDS = new Set([
   'very high'
 ])
 
-// '' - Constant for the server directory name
+// - Constant for the server directory name
 export const SERVER_DIRNAME = dirname(fileURLToPath(import.meta.url))

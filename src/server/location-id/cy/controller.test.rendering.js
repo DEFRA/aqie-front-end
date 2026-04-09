@@ -15,7 +15,7 @@ import {
 
 import { getLocationDetailsController } from './controller.js'
 
-// '' - Helper to setup common test data
+// - Helper to setup common test data
 const setupMockProcessLocationData = async () => {
   const { setMockProcessLocationDataResult } = await import(
     '../../common/helpers/location-controller-helper.js'
@@ -31,7 +31,7 @@ const setupMockProcessLocationData = async () => {
   })
 }
 
-// '' - Helper to setup null location data for not found tests
+// - Helper to setup null location data for not found tests
 const setupNullLocationData = async () => {
   const { setMockProcessLocationDataResult } = await import(
     '../../common/helpers/location-controller-helper.js'

@@ -1,5 +1,5 @@
 /* global vi */
-// '' Tests for alerts success controller (email)
+// Tests for alerts success controller (email)
 import {
   handleAlertsSuccessRequest,
   handleAlertsSuccessPost
@@ -78,4 +78,3 @@ describe('Alerts Success Controller (email)', () => {
     expect(cleared).toContain('notifyJourney')
   })
 })
-// ''

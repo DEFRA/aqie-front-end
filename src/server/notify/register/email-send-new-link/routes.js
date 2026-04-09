@@ -4,7 +4,7 @@ import {
   handleEmailSendNewLinkPost
 } from './controller.js'
 
-// '' Welsh placeholder path for email-send-new-link
+// Welsh placeholder path for email-send-new-link
 const EMAIL_SEND_NEW_LINK_PATH_CY =
   '/hysbysiad/cofrestru/ebost-anfon-dolen-newydd'
 

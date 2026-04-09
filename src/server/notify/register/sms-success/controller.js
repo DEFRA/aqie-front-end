@@ -76,7 +76,7 @@ const getSmsSuccessSessionData = (request, smsSuccess) => {
 const handleAlertsSuccessRequest = (request, h, content = english) => {
   logger.info('Showing alerts success page')
 
-  // '' Clear notification flow flag - user has successfully completed subscription
+  // Clear notification flow flag - user has successfully completed subscription
   request.yar.clear('notificationFlow')
   request.yar.clear('locationId')
   request.yar.clear('latitude')

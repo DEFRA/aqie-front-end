@@ -13,10 +13,10 @@ const handleHomeRequest = (request, h, content = welsh) => {
   const metaSiteUrl = getAirQualitySiteUrl(request)
   // Check if request.yar and its set method exist before calling it ''
   if (request.yar && typeof request.yar.set === 'function') {
-    request.yar.set('locationType', '') // ''
+    request.yar.set('locationType', '')
   } else {
     // Optionally log a warning or handle the missing session gracefully ''
-    logger.warn('Session (yar) is not available on the request object') // ''
+    logger.warn('Session (yar) is not available on the request object')
   }
   // Redirect to the English version if the language is 'en'
   if (query.lang === LANG_EN) {

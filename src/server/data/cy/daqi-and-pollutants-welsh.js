@@ -94,7 +94,7 @@ export const daqiTranslationsWelsh = {
   <li>os ydych chi'n ymarfer corff dan do, gofalwch fod yr ystafell wedi'i hawyru'n dda</li>
 </ul>
 <p>Rhagor o gyngor ar <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_CY}?lang=cy">gamau y gallwch eu cymryd i leihau'ch amlygiad i lygredd aer</a>.</p>`,
-    // '' Moderate/High/Very High: Remove "protect your health" text, move long-term exposure to bottom
+    // Moderate/High/Very High: Remove "protect your health" text, move long-term exposure to bottom
     exposureHtmlModerate: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">Sut gallwch chi leihau'ch amlygiad i lygredd aer</h2>
 <p>Ystyriwch y camau canlynol:</p>
 <ul class="govuk-list govuk-list--bullet">
@@ -122,7 +122,7 @@ export const daqiTranslationsWelsh = {
 </ul>
 <p>Rhagor o gyngor ar <a class="govuk-link" href="${ACTIONS_REDUCE_EXPOSURE_ROUTE_CY}?lang=cy">gamau y gallwch eu cymryd i leihau'ch amlygiad i lygredd aer</a>.</p>
 <p>Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer o wahanol <a class="govuk-link" href="${HEALTH_EFFECTS_ROUTE_CY}?lang=cy">gyflyrau iechyd</a> a gall leihau disgwyliad oes.</p>`,
-    // '' Default fallback (keep original for backward compatibility)
+    // Default fallback (keep original for backward compatibility)
     exposureHtml: `<h2 class="govuk-heading-m govuk-!-margin-top-6 govuk-!-margin-bottom-4">Sut gallwch chi leihau'ch amlygiad i lygredd aer</h2>
 <p>Gall amlygiad hirdymor i lygredd aer (dros flynyddoedd) arwain at lawer o wahanol <a class="govuk-link" href="${HEALTH_EFFECTS_ROUTE_CY}?lang=cy">gyflyrau iechyd</a> a gall leihau disgwyliad oes.</p>
 <p>Dylech chi geisio lleihau'ch amlygiad i lygredd aer lle gallwch chi, hyd yn oed pan fo'r lefelau'n isel.</p>

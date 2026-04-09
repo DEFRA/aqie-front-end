@@ -47,8 +47,8 @@ function initHealthAdviceUpdates() {
     })
   }
 
-  // '' Initial load: keep default (Today) tab even if mockDay param present
-  // '' Requirement update: do NOT auto-switch tab based on mockDay query param
+  // Initial load: keep default (Today) tab even if mockDay param present
+  // Requirement update: do NOT auto-switch tab based on mockDay query param
   updateHealthAdviceForActiveTab()
 
   console.log(
@@ -58,7 +58,7 @@ function initHealthAdviceUpdates() {
   )
 }
 
-// '' Removed mockDay tab preselection per updated requirement (keep Today active by default)
+// Removed mockDay tab preselection per updated requirement (keep Today active by default)
 
 function updateHealthAdviceForActiveTab() {
   // Find the currently visible/active panel
@@ -78,20 +78,20 @@ function updateHealthAdviceForActiveTab() {
     return
   }
 
-  // '' Get the aria-label which contains: "Daily Air Quality Index, level 7 out of 10, high pollution"
-  // '' or Welsh: "Mynegai Ansawdd Aer Dyddiol, lefel 7 allan o 10, uchel llygredd"
+  // Get the aria-label which contains: "Daily Air Quality Index, level 7 out of 10, high pollution"
+  // or Welsh: "Mynegai Ansawdd Aer Dyddiol, lefel 7 allan o 10, uchel llygredd"
   const ariaLabel = daqiBar.getAttribute('aria-label')
   if (!ariaLabel) {
     return
   }
 
-  // '' Parse the level and band from aria-label
-  // '' English: "level 7 out of 10" or Welsh: "lefel 7 allan o 10"
+  // Parse the level and band from aria-label
+  // English: "level 7 out of 10" or Welsh: "lefel 7 allan o 10"
   const levelRegex = /(?:level|lefel) (\d+)/i
   const levelMatch = levelRegex.exec(ariaLabel)
-  // '' English: "out of 10, high pollution" or "out of 10, very high pollution"
-  // '' Welsh: "allan o 10, uchel llygredd" or "allan o 10, uchel iawn llygredd"
-  // '' Extract everything between "10, " and " pollution"/" llygredd"
+  // English: "out of 10, high pollution" or "out of 10, very high pollution"
+  // Welsh: "allan o 10, uchel llygredd" or "allan o 10, uchel iawn llygredd"
+  // Extract everything between "10, " and " pollution"/" llygredd"
   const bandRegex =
     /(?:out of|allan o) \d+,\s*([a-z]+(?:\s+[a-z]+)?)\s+(?:pollution|llygredd)/i
   const bandMatch = bandRegex.exec(ariaLabel)
@@ -101,7 +101,7 @@ function updateHealthAdviceForActiveTab() {
   }
 
   const level = Number.parseInt(levelMatch[1], 10)
-  // '' Band is already extracted without "pollution" or "llygredd" suffix
+  // Band is already extracted without "pollution" or "llygredd" suffix
   const band = bandMatch[1].trim() // "low", "high", "cymedrol", "uchel", etc.
 
   console.log(`Active tab: level ${level}, band: ${band}`)
@@ -109,16 +109,16 @@ function updateHealthAdviceForActiveTab() {
   // Update health advice content
   updateHealthAdvice(level, band)
 
-  // '' Update exposure section content based on band
+  // Update exposure section content based on band
   updateExposureSection(band)
 
-  // '' Dynamically reorder exposure vs health sections based on active tab level
+  // Dynamically reorder exposure vs health sections based on active tab level
   reorderExposureAndHealth(level)
 }
 
 const EXPOSURE_SECTION_ID = 'exposure-section'
 
-// '' Helper to extract locationId from URL path
+// Helper to extract locationId from URL path
 function extractLocationIdFromUrl() {
   const urlPath = globalThis.location.pathname
   const regex = /\/(location|lleoliad)\/([^/]+)/
@@ -130,7 +130,7 @@ function extractLocationIdFromUrl() {
   return null
 }
 
-// '' Helper to get location data from exposure section
+// Helper to get location data from exposure section
 function getLocationData() {
   const exposureSection = document.getElementById(EXPOSURE_SECTION_ID)
   let locationId = exposureSection?.dataset.locationId ?? null
@@ -149,7 +149,7 @@ function getLocationData() {
   return { locationId, locationName, searchTerms }
 }
 
-// '' Helper to build query parameters string
+// Helper to build query parameters string
 function buildQueryParams(searchTerms, locationName) {
   let queryParams = ''
   if (searchTerms) {
@@ -161,7 +161,7 @@ function buildQueryParams(searchTerms, locationName) {
   return queryParams
 }
 
-// '' Helper to append query params to links based on language
+// Helper to append query params to links based on language
 function appendParamsToLinks(html, queryParams) {
   const isWelsh = document.documentElement.lang === 'cy'
 
@@ -203,7 +203,7 @@ function updateExposureSection(band) {
     return
   }
 
-  // '' Add locationName and searchTerms parameters to links (same as Nunjucks template does)
+  // Add locationName and searchTerms parameters to links (same as Nunjucks template does)
   exposureHtml = addQueryParametersToLinks(exposureHtml)
 
   // Update the exposure section content
@@ -211,7 +211,7 @@ function updateExposureSection(band) {
   console.log(`Exposure section updated for band: ${normalizedBand}`)
 }
 
-// '' Adds locationId, locationName and searchTerms query parameters to exposure section links
+// Adds locationId, locationName and searchTerms query parameters to exposure section links
 function addQueryParametersToLinks(html) {
   const { locationId, locationName, searchTerms } = getLocationData()
 
@@ -289,7 +289,7 @@ function handleLowPollution(healthHeading, adviceData) {
     contentDiv.className = 'daqi-health-content daqi-health-content--low'
     healthHeading.after(contentDiv)
   }
-  // '' Replace {locationId} placeholder and add query parameters to links
+  // Replace {locationId} placeholder and add query parameters to links
   contentDiv.innerHTML = addQueryParametersToLinks(adviceData.insetText)
   contentDiv.style.display = 'block'
   contentDiv.dataset.daqiBand = 'low'
@@ -321,7 +321,7 @@ function handleHighPollution(healthHeading, adviceData, band) {
 
   if (adviceData.insetText) {
     insetText.style.display = 'block'
-    // '' Replace {locationId} placeholder and add query parameters to links
+    // Replace {locationId} placeholder and add query parameters to links
     insetText.innerHTML = addQueryParametersToLinks(adviceData.insetText)
     console.log('Inset text content updated')
 
@@ -394,7 +394,7 @@ function getAdviceForBand(band, _level) {
   // Normalize band name
   let normalizedBand = band.toLowerCase().trim()
 
-  // '' Translate Welsh band names to English keys (template maps Welsh→English for JS compatibility)
+  // Translate Welsh band names to English keys (template maps Welsh→English for JS compatibility)
   const welshToEnglishBands = {
     isel: 'low',
     cymedrol: 'moderate',
@@ -408,7 +408,7 @@ function getAdviceForBand(band, _level) {
     console.log(`Translated Welsh band to English key: ${normalizedBand}`)
   }
 
-  // '' Use server-injected data if available, otherwise fall back to hardcoded data
+  // Use server-injected data if available, otherwise fall back to hardcoded data
   if (
     globalThis.airQualityMessages !== undefined &&
     globalThis.airQualityMessages[normalizedBand]
@@ -490,7 +490,7 @@ function placeHealthFirst(healthHeading, exposure, separator, healthContent) {
   }
 }
 
-// '' Reorder exposure section and health advice block depending on DAQI level
+// Reorder exposure section and health advice block depending on DAQI level
 function reorderExposureAndHealth(level) {
   try {
     const exposure = document.getElementById(EXPOSURE_SECTION_ID)

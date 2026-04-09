@@ -6,7 +6,7 @@ import {
 } from '../data/constants.js' //
 import { english as englishData } from '../data/en/en.js'
 
-// '' Helper to handle Welsh language redirect
+// Helper to handle Welsh language redirect
 function handleWelshRedirect(h) {
   return h
     .redirect(LOCATION_NOT_FOUND_ROUTE_CY)
@@ -14,7 +14,7 @@ function handleWelshRedirect(h) {
     .takeover()
 }
 
-// '' Helper to extract location data from session
+// Helper to extract location data from session
 function getLocationData(request) {
   const locationData = request.yar.get('locationDataNotFound') || {}
   return {
@@ -23,7 +23,7 @@ function getLocationData(request) {
   }
 }
 
-// '' Helper to prepare English page content
+// Helper to prepare English page content
 function prepareEnglishContent(languageData) {
   const {
     notFoundLocation = {},
@@ -46,7 +46,7 @@ function prepareEnglishContent(languageData) {
   }
 }
 
-// '' Helper to build view data object
+// Helper to build view data object
 function buildViewData(locationData, content, query) {
   const { locationNameOrPostcode, lang } = locationData
   const {

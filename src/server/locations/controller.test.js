@@ -6,7 +6,7 @@ import {
 
 /* global vi, describe, it, expect, beforeEach */
 
-// '' - Constants to avoid duplicated strings
+// - Constants to avoid duplicated strings
 const OTHER_PATH = '/other-path'
 const OTHER_URL = 'https://example.com/other'
 const LOCATION_NOT_FOUND_VIEW = 'location-not-found/index'

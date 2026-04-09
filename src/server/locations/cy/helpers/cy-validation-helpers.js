@@ -13,19 +13,19 @@ import {
   WRONG_POSTCODE
 } from '../../../data/constants.js'
 
-// '' Helper function to validate location postcode based on type
+// Helper function to validate location postcode based on type
 export const validateLocationPostcode = (userLocation, locationType) => {
   if (locationType === 'uk-location') {
     return isValidFullPostcodeUK(userLocation)
   } else if (locationType === 'ni-location') {
     return isValidFullPostcodeNI(userLocation)
   } else {
-    // '' Handle other location types
+    // Handle other location types
     return false
   }
 }
 
-// '' Helper function to create error response
+// Helper function to create error response
 export const createErrorResponse = (
   h,
   welshTranslations,
@@ -51,7 +51,7 @@ export const createErrorResponse = (
     .takeover()
 }
 
-// '' Helper function to handle location data not found
+// Helper function to handle location data not found
 export const handleLocationNotFound = (
   request,
   h,
@@ -69,7 +69,7 @@ export const handleLocationNotFound = (
   return h.redirect(LOCATION_NOT_FOUND_PATH_CY).takeover()
 }
 
-// '' Helper function to validate UK search terms
+// Helper function to validate UK search terms
 export const validateUKSearchTerms = (
   searchTerms,
   request,
@@ -104,12 +104,12 @@ export const validateUKSearchTerms = (
   }
 }
 
-// '' Helper function to check if results are empty or invalid
+// Helper function to check if results are empty or invalid
 const isResultsEmpty = (results, getOSPlaces) => {
   return !results || results.length === 0 || getOSPlaces === WRONG_POSTCODE
 }
 
-// '' Helper function to handle no results without search terms
+// Helper function to handle no results without search terms
 const handleNoResultsWithoutSearch = (
   request,
   h,
@@ -122,7 +122,7 @@ const handleNoResultsWithoutSearch = (
   }
 }
 
-// '' Helper function to handle no results with search terms
+// Helper function to handle no results with search terms
 const handleNoResultsWithSearch = (
   request,
   h,
@@ -143,7 +143,7 @@ const handleNoResultsWithSearch = (
   }
 }
 
-// '' Helper function to check if results are valid
+// Helper function to check if results are valid
 const checkResultsExist = (
   getOSPlaces,
   searchTerms,
@@ -155,10 +155,10 @@ const checkResultsExist = (
 ) => {
   const { results } = getOSPlaces
 
-  // '' Check if results are empty or invalid
+  // Check if results are empty or invalid
   const resultsEmpty = isResultsEmpty(results, getOSPlaces)
 
-  // '' Handle case without search terms
+  // Handle case without search terms
   if (resultsEmpty && !searchTerms) {
     return handleNoResultsWithoutSearch(
       request,
@@ -168,7 +168,7 @@ const checkResultsExist = (
     )
   }
 
-  // '' Handle case with search terms but no results
+  // Handle case with search terms but no results
   if (!results && searchTerms) {
     return handleNoResultsWithSearch(
       request,
@@ -182,19 +182,19 @@ const checkResultsExist = (
   return { isValid: true, results }
 }
 
-// '' Helper function to remove duplicate results
+// Helper function to remove duplicate results
 const removeDuplicateResults = (results) => {
   return Array.from(new Set(results.map((item) => JSON.stringify(item)))).map(
     (item) => JSON.parse(item)
   )
 }
 
-// '' Helper function to check if search terms have exact word matches
+// Helper function to check if search terms have exact word matches
 const hasExactWordMatches = (exactWordFirstTerm, exactWordSecondTerm) => {
   return exactWordFirstTerm && exactWordSecondTerm
 }
 
-// '' Helper function to handle search terms with no matches
+// Helper function to handle search terms with no matches
 const handleSearchTermsNoMatches = (request, h) => {
   request.yar.clear('searchTermsSaved')
   return {
@@ -207,7 +207,7 @@ const handleSearchTermsNoMatches = (request, h) => {
   }
 }
 
-// '' Helper function to validate matches
+// Helper function to validate matches
 const validateMatches = (matchData, requestContext, locationContext) => {
   const {
     selectedMatches,
@@ -218,7 +218,7 @@ const validateMatches = (matchData, requestContext, locationContext) => {
   const { request, h } = requestContext
   const { locationNameOrPostcode, lang } = locationContext
 
-  // '' Handle search terms with no matches and no exact word matches
+  // Handle search terms with no matches and no exact word matches
   if (
     searchTerms !== undefined &&
     selectedMatches.length === 0 &&
@@ -227,7 +227,7 @@ const validateMatches = (matchData, requestContext, locationContext) => {
     return handleSearchTermsNoMatches(request, h)
   }
 
-  // '' Handle no matches found
+  // Handle no matches found
   if (selectedMatches.length === 0) {
     return {
       isValid: false,
@@ -238,7 +238,7 @@ const validateMatches = (matchData, requestContext, locationContext) => {
   return { isValid: true }
 }
 
-// '' Helper function to validate and process results
+// Helper function to validate and process results
 export const validateAndProcessResults = (
   getOSPlaces,
   searchParams,
@@ -250,7 +250,7 @@ export const validateAndProcessResults = (
   const { request, h } = requestContext
   const { locationNameOrPostcode, lang } = locationParams
 
-  // '' Check if results exist
+  // Check if results exist
   const resultsCheck = checkResultsExist(
     getOSPlaces,
     searchTerms,
@@ -264,10 +264,10 @@ export const validateAndProcessResults = (
     return resultsCheck
   }
 
-  // '' Remove duplicates from results
+  // Remove duplicates from results
   const cleanResults = removeDuplicateResults(resultsCheck.results)
 
-  // '' Process matches
+  // Process matches
   const { selectedMatches, exactWordFirstTerm, exactWordSecondTerm } =
     processMatches(
       cleanResults,
@@ -277,7 +277,7 @@ export const validateAndProcessResults = (
       secondSearchTerm
     )
 
-  // '' Validate matches
+  // Validate matches
   const matchValidation = validateMatches(
     {
       selectedMatches,

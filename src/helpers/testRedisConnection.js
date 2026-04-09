@@ -3,7 +3,7 @@ import { createLogger } from '../server/common/helpers/logging/logger.js'
 
 const logger = createLogger()
 
-// '' - Function to test Redis connection
+// - Function to test Redis connection
 export async function testRedisConnection() {
   const redis = new Redis()
 

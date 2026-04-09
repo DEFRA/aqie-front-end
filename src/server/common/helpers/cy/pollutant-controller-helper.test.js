@@ -6,7 +6,7 @@ import {
   REDIRECT_STATUS_CODE
 } from '../../../data/constants.js'
 
-// '' Shared test data
+// Shared test data
 const VIEW_TEMPLATE = 'sulphur-dioxide/index'
 const mockH = {
   view: jest.fn(),

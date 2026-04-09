@@ -1,5 +1,3 @@
-// ''
-
 class Preloader {
   constructor(element) {
     this.element = element

@@ -16,8 +16,8 @@ const normalizePopulatedPlace = (populatedPlace) => {
 }
 
 // Helper function to get the appropriate location field for postcodes ''
-// '' For postcodes, use POPULATED_PLACE if it exists (for consistency), else DISTRICT_BOROUGH
-// '' This ensures we always get the same location name (e.g., "Hornsey") for the same postcode
+// For postcodes, use POPULATED_PLACE if it exists (for consistency), else DISTRICT_BOROUGH
+// This ensures we always get the same location name (e.g., "Hornsey") for the same postcode
 const getPostcodeLocationField = (gazetteerEntry) => {
   const populatedPlace = normalizePopulatedPlace(
     gazetteerEntry?.POPULATED_PLACE
@@ -35,9 +35,9 @@ const gazetteerEntryFilter = (locationDetails) => {
   let headerTitle = ''
 
   if (locationDetails?.GAZETTEER_ENTRY?.LOCAL_TYPE === 'Postcode') {
-    // '' For postcodes, prefer POPULATED_PLACE when available for consistency
-    // '' Fall back to DISTRICT_BOROUGH or COUNTY_UNITARY if POPULATED_PLACE doesn't exist
-    // '' This ensures consistent location strings (e.g., always "Hornsey" for N8 7GE)
+    // For postcodes, prefer POPULATED_PLACE when available for consistency
+    // Fall back to DISTRICT_BOROUGH or COUNTY_UNITARY if POPULATED_PLACE doesn't exist
+    // This ensures consistent location strings (e.g., always "Hornsey" for N8 7GE)
     return updateTitleHeader(locationDetails)
   }
 
@@ -50,7 +50,7 @@ const gazetteerEntryFilter = (locationDetails) => {
   function updateTitleHeader(_locationDetails) {
     const isPostcode =
       _locationDetails.GAZETTEER_ENTRY?.LOCAL_TYPE === 'Postcode'
-    // '' For postcodes, use POPULATED_PLACE if available, else DISTRICT_BOROUGH/COUNTY_UNITARY
+    // For postcodes, use POPULATED_PLACE if available, else DISTRICT_BOROUGH/COUNTY_UNITARY
     const locationField = isPostcode
       ? getPostcodeLocationField(_locationDetails.GAZETTEER_ENTRY)
       : _locationDetails.GAZETTEER_ENTRY.DISTRICT_BOROUGH ||
@@ -66,7 +66,7 @@ const gazetteerEntryFilter = (locationDetails) => {
       headerTitle = `${_locationDetails.GAZETTEER_ENTRY?.NAME1}, ${locationField}`
       return { title, headerTitle }
     }
-    // '' Fallback if no location field is available
+    // Fallback if no location field is available
     if (_locationDetails.GAZETTEER_ENTRY?.NAME2) {
       title = `${_locationDetails.GAZETTEER_ENTRY?.NAME2}, ${_locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY}`
       headerTitle = `${_locationDetails.GAZETTEER_ENTRY?.NAME2}, ${_locationDetails.GAZETTEER_ENTRY.COUNTY_UNITARY}`

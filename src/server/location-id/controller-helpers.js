@@ -345,11 +345,11 @@ export function applyMockPollutants(
  * @returns {string} Search params string
  */
 function buildSearchParams(currentUrl, locationId) {
-  // '' Extract searchTerms from current URL path (0.685.0 approach)
+  // Extract searchTerms from current URL path (0.685.0 approach)
   const { searchTerms, secondSearchTerm, searchTermsLocationType } =
     getSearchTermsFromUrl(currentUrl)
 
-  // '' Fallback to locationId for URLs like /location/{id}/?lang=en where path parsing can return empty
+  // Fallback to locationId for URLs like /location/{id}/?lang=en where path parsing can return empty
   const fallbackSearchTerms = locationId || ''
   const safeSearchTerms = searchTerms || fallbackSearchTerms
   const safeSecondSearchTerm = secondSearchTerm || ''
@@ -425,7 +425,7 @@ export function validateAndProcessSessionData(
 ) {
   const safeRequest = request || {}
 
-  // '' Check for valid results AND forecasts (like 0.685.0)
+  // Check for valid results AND forecasts (like 0.685.0)
   if (hasValidSessionLocationData(locationData)) {
     return null
   }

@@ -1,4 +1,4 @@
-// '' Tests for mock DAQI level and pollutant band functionality
+// Tests for mock DAQI level and pollutant band functionality
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 const TEST_LOCATION_NAME = 'Cardiff'
@@ -239,7 +239,6 @@ describe('Location ID Controller - Mock DAQI Level', () => {
 
   describe('Session storage', () => {
     it('should apply mock level from session when provided', async () => {
-      // ''
       const mockLocationData = {
         results: [{ id: 'test', name: TEST_LOCATION_NAME }],
         getForecasts: [{ locationId: 'test' }],
@@ -279,7 +278,6 @@ describe('Location ID Controller - Mock DAQI Level', () => {
 
   describe('Query parameters', () => {
     it('should store mockLevel in session when query parameter provided', async () => {
-      // ''
       mockRequest.query = { lang: 'en', mockLevel: '8' }
 
       const mockLocationData = {
@@ -323,7 +321,6 @@ describe('Location ID Controller - Mock DAQI Clear Functionality', () => {
   })
 
   it('should clear mockLevel when explicitly requested', async () => {
-    // ''
     mockRequest.query = { lang: 'en', mockLevel: 'clear' }
 
     const mockLocationData = {
@@ -367,7 +364,6 @@ describe('Location ID Controller - Mock Day Selection', () => {
 
   describe('Mock day selection', () => {
     it('should store mockDay in session when query parameter provided', async () => {
-      // ''
       mockRequest.query = { lang: 'en', mockDay: 'day3' }
 
       const mockLocationData = {
@@ -412,7 +408,6 @@ describe('Location ID Controller - Mock Pollutants', () => {
 
   describe('Session storage', () => {
     it('should store mockPollutantBand in session when query parameter provided', async () => {
-      // ''
       mockRequest.query = { lang: 'en', mockPollutantBand: 'high' }
 
       const mockLocationData = {
@@ -459,7 +454,6 @@ describe('Location ID Controller - Mock Pollutants Clear Functionality', () => {
   })
 
   it('should clear mockPollutantBand when explicitly requested', async () => {
-    // ''
     mockRequest.query = { lang: 'en', mockPollutantBand: 'clear' }
 
     const mockLocationData = {
@@ -502,7 +496,6 @@ describe('Location ID Controller - Mock Pollutants Application', () => {
   })
 
   it('should apply mockPollutantBand from session to monitoring sites', async () => {
-    // ''
     mockRequest.params = { id: 'test' }
     mockRequest.headers = { referer: 'https://example.com/location' }
 
@@ -556,7 +549,6 @@ describe('Location ID Controller - Mock Parameter Preservation', () => {
   })
 
   it('should preserve mockLevel in Welsh redirect', async () => {
-    // ''
     mockRequest.query = { lang: 'cy', mockLevel: '5' }
     mockRequest.yar.get.mockReturnValue(true)
 
@@ -568,7 +560,6 @@ describe('Location ID Controller - Mock Parameter Preservation', () => {
   })
 
   it('should preserve mockPollutantBand in Welsh redirect', async () => {
-    // ''
     mockRequest.query = { lang: 'cy', mockPollutantBand: 'moderate' }
     mockRequest.yar.get.mockReturnValue(true)
 
@@ -580,7 +571,6 @@ describe('Location ID Controller - Mock Parameter Preservation', () => {
   })
 
   it('should preserve multiple mock parameters in search terms redirect', async () => {
-    // ''
     mockRequest.headers = {}
     mockRequest.query = { lang: 'en', mockLevel: '6', mockDay: 'day2' }
     mockRequest.yar.get.mockReturnValueOnce(false) // searchTermsSaved

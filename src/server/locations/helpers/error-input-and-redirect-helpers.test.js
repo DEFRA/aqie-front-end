@@ -111,7 +111,6 @@ describe('error-input-and-redirect-helpers', () => {
         ''
       )
       expect(mockH.redirect).toHaveBeenCalledWith('/search-location?lang=en')
-      // ''
     })
 
     it('should set errors and redirect for Welsh language', () => {
@@ -139,7 +138,6 @@ describe('error-input-and-redirect-helpers', () => {
         ''
       )
       expect(mockH.redirect).toHaveBeenCalledWith('chwilio-lleoliad/cy?lang=cy')
-      // ''
     })
 
     it('should redirect with a 301 status code for English language', () => {
@@ -188,7 +186,6 @@ describe('error-input-and-redirect-helpers', () => {
         'London'
       )
       expect(mockH.redirect).toHaveBeenCalledWith('/search-location?lang=en')
-      // ''
     })
   })
 
@@ -217,7 +214,6 @@ describe('error-input-and-redirect-helpers', () => {
         'Belfast'
       )
       expect(mockH.redirect).toHaveBeenCalledWith('chwilio-lleoliad/cy?lang=cy')
-      // ''
     })
   })
 

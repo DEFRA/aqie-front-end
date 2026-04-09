@@ -29,10 +29,10 @@ function findLocationResult(locationData, locationId, logger) {
 }
 
 function buildLocationTitle(locationData, gazetteerEntry) {
-  // '' Build proper location title from gazetteerEntry instead of using page title
+  // Build proper location title from gazetteerEntry instead of using page title
   let locationTitle = locationData.headerTitle
 
-  // '' If headerTitle is not set or is a generic page title, build from gazetteerEntry
+  // If headerTitle is not set or is a generic page title, build from gazetteerEntry
   if (!locationTitle || locationTitle === 'Locations matching') {
     const name = gazetteerEntry.NAME2 || gazetteerEntry.NAME1 || ''
     const district =
@@ -45,7 +45,7 @@ function buildLocationTitle(locationData, gazetteerEntry) {
 
 async function resolveNotificationCoordinates(gazetteerEntry, result) {
   if (gazetteerEntry.GEOMETRY_X && gazetteerEntry.GEOMETRY_Y) {
-    // '' Import OsGridRef for coordinate conversion
+    // Import OsGridRef for coordinate conversion
     const OsGridRef = (await import('mt-osgridref')).default
     const point = new OsGridRef(
       gazetteerEntry.GEOMETRY_X,
@@ -55,7 +55,7 @@ async function resolveNotificationCoordinates(gazetteerEntry, result) {
     return { lat: latlon._lat, lon: latlon._lon }
   }
 
-  // '' Fallback to direct latitude/longitude if available
+  // Fallback to direct latitude/longitude if available
   return {
     lat: gazetteerEntry.LATITUDE || gazetteerEntry.latitude || result.latitude,
     lon:
@@ -466,8 +466,8 @@ async function processLocationWorkflow({
     ...workflowDependencies
   })
 
-  // '' Store current page coordinates in session so notification flows
-  // '' (e.g. 'Request a new activation link') always use the correct location
+  // Store current page coordinates in session so notification flows
+  // (e.g. 'Request a new activation link') always use the correct location
   if (locationDetails && locationData?.results?.length) {
     const result = findLocationResult(
       locationData,

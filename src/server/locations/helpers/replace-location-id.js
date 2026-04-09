@@ -1,4 +1,4 @@
-// '' Replace locationId and locationName in air quality messages
+// Replace locationId and locationName in air quality messages
 function replaceLocationId(airQuality, locationId, locationName, headerTitle) {
   if (!airQuality || typeof airQuality !== 'object') {
     return airQuality

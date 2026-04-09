@@ -1,8 +1,6 @@
 import { loadingController } from './controller.js'
 import { loadingStatusController } from './status-controller.js'
 
-// ''
-
 const configureRoutes = (server) => {
   server.route([
     {

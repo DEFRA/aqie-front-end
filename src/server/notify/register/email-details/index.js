@@ -3,7 +3,7 @@ import {
   handleEmailDetailsPost
 } from './controller.js'
 
-// '' Welsh placeholder path for email-details
+// Welsh placeholder path for email-details
 const EMAIL_DETAILS_PATH_CY = '/hysbysiad/cofrestru/ebost-manylion'
 
 const emailDetails = {

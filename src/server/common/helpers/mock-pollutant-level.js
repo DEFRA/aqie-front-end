@@ -120,7 +120,7 @@ function getMockPollutantData(pollutantType, band, lang = 'en') {
   const month = now.toLocaleString('en-GB', { month: 'long' })
   const year = now.getFullYear()
 
-  // '' Use Welsh label if lang is 'cy', otherwise English
+  // Use Welsh label if lang is 'cy', otherwise English
   const bandLabel = lang === 'cy' ? bandInfo.labelCy : bandInfo.label
 
   return {

@@ -1,4 +1,3 @@
-// ''
 import { config } from '../../../config/index.js'
 import { createLogger } from './logging/logger.js'
 import { getSessionRedisClient } from './session-cache/cache-engine.js'

@@ -214,10 +214,10 @@ vi.mock('./data/constants.js', async (importOriginal) => {
     WELSH_TITLE: 'Gwirio ansawdd aer',
     WELSH_PAGE_TITLE_BASE: 'Mock Welsh Page Title Base',
     DAQI_DESCRIPTION: 'Mock DAQI Description',
-    ACTIONS_REDUCE_EXPOSURE_ROUTE_EN: '/mock/actions-reduce-exposure-en', // ''
-    ACTIONS_REDUCE_EXPOSURE_ROUTE_CY: '/mock/actions-reduce-exposure-cy', // ''
-    HEALTH_EFFECTS_ROUTE_EN: '/mock/health-effects-en', // ''
-    HEALTH_EFFECTS_ROUTE_CY: '/mock/health-effects-cy', // ''
+    ACTIONS_REDUCE_EXPOSURE_ROUTE_EN: '/mock/actions-reduce-exposure-en',
+    ACTIONS_REDUCE_EXPOSURE_ROUTE_CY: '/mock/actions-reduce-exposure-cy',
+    HEALTH_EFFECTS_ROUTE_EN: '/mock/health-effects-en',
+    HEALTH_EFFECTS_ROUTE_CY: '/mock/health-effects-cy',
     AIR_POLLUTION_BREACHES_PATH_EN: '/air-pollution-breaches',
     AIR_POLLUTION_BREACHES_PATH_CY: '/torriadau-llygredd-aer/cy'
   }
@@ -238,7 +238,6 @@ beforeEach(() => {
 
 describe('Router plugin structure', () => {
   test('should export router object', async () => {
-    // ''
     const { router } = await import('./router.js')
     expect(router).toBeDefined()
     expect(router.plugin).toBeDefined()
@@ -247,7 +246,6 @@ describe('Router plugin structure', () => {
   })
 
   test('should have correct plugin structure', async () => {
-    // ''
     const { router } = await import('./router.js')
     expect(router.plugin).toMatchObject({
       name: 'router',
@@ -258,7 +256,6 @@ describe('Router plugin structure', () => {
 
 describe('Router plugin registration', () => {
   test('should register plugins on server', async () => {
-    // ''
     const mockServer = {
       register: vi.fn(),
       route: vi.fn(),
@@ -287,7 +284,6 @@ describe('Router plugin registration', () => {
   })
 
   test('should handle static file routes', async () => {
-    // ''
     const mockServer = {
       register: vi.fn(),
       route: vi.fn(),
@@ -315,7 +311,6 @@ describe('Router plugin registration', () => {
   })
 
   test('should prevent duplicate route registration', async () => {
-    // ''
     const mockServer = {
       register: vi.fn(),
       route: vi.fn(),
@@ -333,7 +328,6 @@ describe('Router plugin registration', () => {
   })
 
   test('should handle plugin registration errors gracefully', async () => {
-    // ''
     const { router } = await import('./router.js')
     expect(router.plugin.register).toBeDefined()
     expect(typeof router.plugin.register).toBe('function')
@@ -342,7 +336,6 @@ describe('Router plugin registration', () => {
 
 describe('Router route registration', () => {
   test('should register actions-reduce-exposure routes', async () => {
-    // ''
     const mockServer = {
       register: vi.fn(),
       route: vi.fn(),
@@ -363,7 +356,6 @@ describe('Router route registration', () => {
   })
 
   test('should register all required plugins including new routes', async () => {
-    // ''
     const mockServer = {
       register: vi.fn(),
       route: vi.fn(),
@@ -379,11 +371,10 @@ describe('Router route registration', () => {
     // Should register multiple plugins (including actions-reduce-exposure and health-effects)
     expect(mockServer.register.mock.calls.length).toBeGreaterThan(
       MINIMUM_PLUGIN_REGISTRATIONS
-    ) // ''
+    )
   })
 
   test('should handle WELSH_TITLE constant in imports', async () => {
-    // ''
     const { router } = await import('./router.js')
     expect(router).toBeDefined()
     // Test passes if import succeeds without WELSH_TITLE error

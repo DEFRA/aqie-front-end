@@ -82,7 +82,6 @@ describe('fetchForecasts edge branches', () => {
   })
 })
 
-// ''
 // Removed obsolete fetchDailySummary edge branches tests as the function is deleted.
 describe('handleUKLocationData more branches', () => {
   it('calls formatUKApiResponse if statusCodeOSPlace is OK', async () => {
@@ -99,7 +98,7 @@ describe('handleUKLocationData more branches', () => {
       SYMBOLS_ARRAY: [],
       HTTP_STATUS_OK: 200,
       options: {}
-    } // ''
+    }
     // handleUKLocationData returns { results: [] } if not test mode and mocks as above
     const result = await handleUKLocationData('test', '', '', di)
     expect(result).toEqual({ results: [] })
@@ -117,7 +116,7 @@ describe('handleNILocationData more branches', () => {
       formatNorthernIrelandPostcode: vi.fn(),
       catchProxyFetchError: vi.fn(async () => [500, null]),
       isTestMode: () => true
-    } // ''
+    }
     const result = await handleNILocationData('postcode', '', '', di)
     expect(result).toEqual({ results: ['niData'] })
     // In test mode, logger may not be called
@@ -132,7 +131,7 @@ describe('handleNILocationData more branches', () => {
       formatNorthernIrelandPostcode: vi.fn(),
       catchProxyFetchError: vi.fn(async () => [200, { foo: 'bar' }]),
       isTestMode: () => false
-    } // ''
+    }
     // formatNIResponse is not DI'd, so just check for array wrap
     const result = await handleNILocationData({}, {}, di)
     expect(result).toBeDefined()
@@ -253,7 +252,6 @@ describe('fetchForecasts additional coverage', () => {
   })
 })
 
-// ''
 // Removed fetchDailySummary additional coverage tests (function deleted)
 
 describe('refreshOAuthToken additional coverage', () => {
@@ -270,7 +268,6 @@ describe('refreshOAuthToken additional coverage', () => {
     expect(request.yar.set).toHaveBeenCalledWith('savedAccessToken', 'token')
   })
 })
-// ''
 // Removed fetchDailySummary tests (function deleted)
 
 describe('fetchData', () => {
@@ -712,7 +709,6 @@ describe('fetchData branch coverage', () => {
   })
 })
 
-// ''
 describe('fetchData missing request parameter', () => {
   it('throws error if request parameter is missing', async () => {
     await expect(
@@ -731,7 +727,6 @@ describe('fetchData missing request parameter', () => {
   })
 })
 
-// ''
 describe('fetchData getDailySummary fallback coverage', () => {
   it('uses fallback object when getDailySummary is invalid', async () => {
     const mockRequest = { yar: { get: vi.fn() } }
@@ -792,7 +787,6 @@ describe('fetchData getDailySummary fallback coverage', () => {
   })
 })
 
-// ''
 describe('fetchData unsupported location type coverage', () => {
   it('returns errorResponse for unsupported location type', async () => {
     const mockRequest = { yar: { get: vi.fn() } }

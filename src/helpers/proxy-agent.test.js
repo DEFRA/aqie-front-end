@@ -44,7 +44,6 @@ describe('proxy-agent', () => {
   })
 
   test('should export proxyAgent function', async () => {
-    // ''
     const module = await import('./proxy-agent.js')
 
     expect(module.proxyAgent).toBeDefined()
@@ -52,7 +51,6 @@ describe('proxy-agent', () => {
   })
 
   test('should return null when no https proxy is configured', async () => {
-    // ''
     mockConfig.get.mockReturnValue(null)
 
     const module = await import('./proxy-agent.js')
@@ -63,7 +61,6 @@ describe('proxy-agent', () => {
   })
 
   test('should create proxy agent when https proxy is configured', async () => {
-    // ''
     const proxyUrl = 'https://proxy.example.com:8080'
     mockConfig.get.mockReturnValue(proxyUrl)
 
@@ -77,7 +74,6 @@ describe('proxy-agent', () => {
   })
 
   test('should handle invalid proxy URL gracefully', async () => {
-    // ''
     mockConfig.get.mockReturnValue('invalid-url')
     mockUrl.mockImplementation(() => {
       throw new Error('Invalid URL')

@@ -15,7 +15,7 @@ vi.mock('../config/index.js', () => ({
   }
 }))
 
-// '' Constants to avoid duplication
+// Constants to avoid duplication
 const TEST_URL = 'https://example.com'
 
 describe('proxy-fetch', () => {
@@ -38,7 +38,6 @@ describe('proxy-fetch', () => {
   })
 
   test('should export proxyFetch function', async () => {
-    // ''
     const module = await import('./proxy-fetch.js')
 
     expect(module.proxyFetch).toBeDefined()
@@ -46,7 +45,6 @@ describe('proxy-fetch', () => {
   })
 
   test('should use non-proxy fetch when no proxy is configured', async () => {
-    // ''
     mockConfig.get.mockReturnValue(null)
 
     const module = await import('./proxy-fetch.js')
@@ -60,7 +58,6 @@ describe('proxy-fetch', () => {
   })
 
   test('should use proxy fetch when https proxy is configured', async () => {
-    // ''
     mockConfig.get.mockImplementation((key) => {
       if (key === 'httpsProxy') {
         return 'https://proxy.example.com:8080'
@@ -79,7 +76,6 @@ describe('proxy-fetch', () => {
   })
 
   test('should handle fetch with options correctly', async () => {
-    // ''
     mockConfig.get.mockReturnValue(null)
 
     const module = await import('./proxy-fetch.js')

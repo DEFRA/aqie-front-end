@@ -4,7 +4,7 @@ import {
   handleAlertsSuccessPost
 } from './controller.js'
 
-// '' Welsh placeholder path for alerts-success
+// Welsh placeholder path for alerts-success
 const ALERTS_SUCCESS_PATH_CY = '/hysbysiad/cofrestru/rhybuddion-llwyddiant'
 
 const alertsSuccessGetController = { handler: handleAlertsSuccessRequest }
@@ -44,4 +44,3 @@ export {
   alertsSuccessGetController,
   alertsSuccessPostController
 }
-// ''

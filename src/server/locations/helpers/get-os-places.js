@@ -83,7 +83,6 @@ const getOptionsForRequest = (optionsInput, request) => {
   return withoutApiKeyHeader(optionsInput)
 }
 
-// ''
 // Refactored to use the request object for local detection
 async function getOSPlaces(
   userLocation,

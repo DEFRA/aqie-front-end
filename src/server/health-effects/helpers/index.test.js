@@ -1,10 +1,10 @@
-// '' Unit tests for health-effects helpers
-import { describe, it, expect, vi } from 'vitest' // '' Vitest
+// Unit tests for health-effects helpers
+import { describe, it, expect, vi } from 'vitest'
 import {
   getReadableLocationName,
   buildBackLinkModel,
   buildHealthEffectsViewModel
-} from './index.js' // '' Helpers
+} from './index.js'
 
 describe("'' getReadableLocationName", () => {
   it("'' returns query.locationName when present", () => {
@@ -40,7 +40,7 @@ describe("'' getReadableLocationName", () => {
 
   it("'' returns empty and logs warn on error", () => {
     const logger = { warn: vi.fn() }
-    // '' Force error: .trim() on non-string (object without trim)
+    // Force error: .trim() on non-string (object without trim)
     const badQuery = { locationName: {} }
     expect(getReadableLocationName(badQuery, {}, logger)).toBe('')
     expect(logger.warn).toHaveBeenCalledTimes(1)
@@ -76,7 +76,7 @@ describe("'' buildHealthEffectsViewModel", () => {
     expect(vm.locationName).toBe('Leeds')
     expect(vm.serviceName).toBe('')
     expect(vm.lang).toBe('en')
-    expect(vm.backLinkUrl).toBe('/search-location?lang=en') // '' No locationId defaults to search page
+    expect(vm.backLinkUrl).toBe('/search-location?lang=en')
     expect(vm.backLinkHref).toBe(vm.backLinkUrl)
   })
 
@@ -114,7 +114,7 @@ describe("'' buildHealthEffectsViewModel", () => {
       readableName: 'York',
       locationId: 'york123'
     })
-    expect(vm.backLinkUrl).toBe('/location/york123?lang=en') // '' With locationId
+    expect(vm.backLinkUrl).toBe('/location/york123?lang=en')
     expect(vm.backLinkHref).toBe(vm.backLinkUrl)
     expect(vm.locationName).toBe('York')
     expect(vm.locationId).toBe('york123')

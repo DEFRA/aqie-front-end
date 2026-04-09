@@ -2,7 +2,6 @@
  * Welsh translations for SMS notification journey
  * Covers mobile number input, code verification, and confirmation pages
  */
-// ''
 const TODO_CONTINUE = 'TODO Welsh: Continue'
 const TODO_REQUEST_NEW_ACTIVATION_LINK =
   'TODO Welsh: Request a new activation link'

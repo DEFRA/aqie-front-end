@@ -5,7 +5,7 @@
 
 /* global vi */
 
-// '' - Constants to avoid string duplication
+// - Constants to avoid string duplication
 const MOCK_COOKIE_MESSAGE = 'Mock cookie message'
 const MOCK_WELSH_NOT_FOUND = 'Mock Welsh not found message'
 const MOCK_WELSH_HEADING = 'Mock Welsh heading'
@@ -161,7 +161,7 @@ vi.mock('../../common/helpers/get-site-url.js', () => ({
   getAirQualitySiteUrl: vi.fn().mockReturnValue('https://mock-site-url.com')
 }))
 
-// '' - Helper to create initialize location variables mock result
+// - Helper to create initialize location variables mock result
 const createInitializeLocationVariablesMock = (request, lang) => {
   request.yar.clear('searchTermsSaved')
   return {
@@ -199,7 +199,7 @@ const createInitializeLocationVariablesMock = (request, lang) => {
   }
 }
 
-// '' - Helper to create build location view data mock result
+// - Helper to create build location view data mock result
 const createBuildLocationViewDataMock = ({ locationDetails, lang }) => {
   return {
     lang: lang || 'cy',
@@ -218,7 +218,7 @@ const createBuildLocationViewDataMock = ({ locationDetails, lang }) => {
   }
 }
 
-// '' - Helper to create render not found view mock result
+// - Helper to create render not found view mock result
 const createRenderNotFoundViewMock = (h, lang) => {
   return h.view('location-not-found/index', {
     lang,
@@ -227,7 +227,7 @@ const createRenderNotFoundViewMock = (h, lang) => {
   })
 }
 
-// '' - Helper to optimize location data in session
+// - Helper to optimize location data in session
 const createOptimizeLocationDataInSessionMock = (
   request,
   locationData,

@@ -9,7 +9,7 @@ import {
 } from './helpers/cy-middleware-utils.js'
 import { handleLocationNotFound } from './helpers/cy-validation-helpers.js'
 
-// '' Main Welsh middleware function for location search
+// Main Welsh middleware function for location search
 
 const searchMiddlewareCy = async (request, h) => {
   const { query, payload } = request
@@ -29,7 +29,7 @@ const searchMiddlewareCy = async (request, h) => {
   const secondSearchTerm = query?.secondSearchTerm?.toUpperCase()
   const searchTermsLocationType = query?.searchTermsLocationType
 
-  // '' Validate input and handle errors
+  // Validate input and handle errors
   const validationResult = await validateInputAndHandleErrors(
     request,
     h,
@@ -53,7 +53,7 @@ const searchMiddlewareCy = async (request, h) => {
   } = validationResult
   locationType = validatedLocationType
 
-  // '' Fetch and process data
+  // Fetch and process data
   const dataResult = await fetchAndProcessData(
     request,
     locationType,
@@ -76,10 +76,10 @@ const searchMiddlewareCy = async (request, h) => {
     welshDate
   } = dataResult
 
-  // '' Set session data
+  // Set session data
   setSessionData(request, locationNameOrPostcode, lang, searchTerms)
 
-  // '' Process based on location type
+  // Process based on location type
   return processLocationByType(request, h, locationType, {
     locationNameOrPostcode,
     lang,

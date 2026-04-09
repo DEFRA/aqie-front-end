@@ -22,7 +22,6 @@ describe('testRedisConnection', () => {
   })
 
   it('should return true when Redis connection is successful', async () => {
-    // ''
     mockRedis.ping.mockResolvedValue('PONG')
 
     const result = await testRedisConnection()
@@ -33,7 +32,6 @@ describe('testRedisConnection', () => {
   })
 
   it('should return false when Redis connection fails', async () => {
-    // ''
     mockRedis.ping.mockRejectedValue(new Error('Connection failed'))
 
     const result = await testRedisConnection()
@@ -44,7 +42,6 @@ describe('testRedisConnection', () => {
   })
 
   it('should handle Redis ping timeout gracefully', async () => {
-    // ''
     mockRedis.ping.mockRejectedValue(new Error('Timeout'))
 
     const result = await testRedisConnection()
@@ -54,7 +51,6 @@ describe('testRedisConnection', () => {
   })
 
   it('should disconnect Redis client even if ping fails', async () => {
-    // ''
     mockRedis.ping.mockRejectedValue(new Error('Network error'))
 
     await testRedisConnection()

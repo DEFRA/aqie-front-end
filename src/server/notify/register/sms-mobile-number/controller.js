@@ -111,11 +111,11 @@ const withMaxAlertsError = (viewModel, smsMobileNumber, maskedPhoneNumber) => {
 }
 
 const handleNotifyRequest = (request, h, content = english) => {
-  // '' Check if user has reached maximum alerts
+  // Check if user has reached maximum alerts
   const maxAlertsError = request.yar.get('maxAlertsError')
   const maskedPhoneNumber = request.yar.get('maskedPhoneNumber')
 
-  // '' Clear the error flags after reading them
+  // Clear the error flags after reading them
   if (maxAlertsError) {
     request.yar.clear('maxAlertsError')
     request.yar.clear('maskedPhoneNumber')
@@ -179,7 +179,7 @@ const handleNotifyRequest = (request, h, content = english) => {
       ''
   }
 
-  // '' Add max alerts error if present
+  // Add max alerts error if present
   if (maxAlertsError && maskedPhoneNumber) {
     viewModel = withMaxAlertsError(
       viewModel,

@@ -6,7 +6,7 @@ import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
 const TEST_LOCATION = 'Test Location'
 
-// '' Shared mock setup
+// Shared mock setup
 function createMockRequestResponse() {
   const mockRequest = {
     query: {},

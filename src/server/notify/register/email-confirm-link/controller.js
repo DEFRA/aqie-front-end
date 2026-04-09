@@ -1,6 +1,6 @@
 // Controller for email confirm link callback page ''
-// '' This page is the landing point when a user clicks the activation link in their email.
-// '' It validates the token silently and redirects to the success page on success.
+// This page is the landing point when a user clicks the activation link in their email.
+// It validates the token silently and redirects to the success page on success.
 import { createLogger } from '../../../common/helpers/logging/logger.js'
 import { config } from '../../../../config/index.js'
 import { english } from '../../../data/en/en.js'
@@ -53,9 +53,9 @@ const resolveEmailAlertData = (tokenData, request) => {
   const hasTokenLat = hasOwnValue(tokenData, 'lat')
   const hasTokenLong = hasOwnValue(tokenData, 'long')
 
-  // '' Prefer signup-specific session context over the general browsing location
-  // '' so that visiting other locations before clicking the confirmation link
-  // '' doesn't corrupt the subscription data.
+  // Prefer signup-specific session context over the general browsing location
+  // so that visiting other locations before clicking the confirmation link
+  // doesn't corrupt the subscription data.
   const sessionLocation =
     request.yar.get('emailSignupLocation') || request.yar.get('location') || ''
   const sessionLat =
@@ -135,7 +135,7 @@ const restoreSessionFromExpiredToken = (request, body) => {
   logger.info(
     `[EMAIL CONFIRM] restoreSessionFromExpiredToken: body received hasEmailAddress=${!!body.emailAddress} hasLocation=${!!body.location} hasLat=${body.lat != null} hasLong=${body.long != null} location=${body.location ?? 'undefined'}`
   )
-  // '' Backend may send the address as 'email' or 'emailAddress'
+  // Backend may send the address as 'email' or 'emailAddress'
   const emailAddress = body.emailAddress || body.email
   if (emailAddress) {
     request.yar.set('emailAddress', emailAddress)
@@ -162,7 +162,7 @@ const validateTokenOrThrow = async (token, request) => {
   const hasResultLat = hasOwnValue(result.data, 'lat')
   const hasResultLong = hasOwnValue(result.data, 'long')
 
-  // '' For valid responses location is in result.data; for error responses (e.g. expired token) it is in result.body
+  // For valid responses location is in result.data; for error responses (e.g. expired token) it is in result.body
   logger.info(
     `[EMAIL CONFIRM] validateEmailLink raw response ok=${result.ok} status=${result.status} skipped=${result.skipped} tokenHasEmail=${!!(result.data?.emailAddress || result.body?.emailAddress)} tokenHasLocation=${!!(result.data?.location || result.body?.location)} tokenHasLatLong=${hasResultLat && hasResultLong} data=${JSON.stringify(result.data ?? null)} body=${JSON.stringify(result.body ?? null)}`
   )

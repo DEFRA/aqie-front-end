@@ -1,8 +1,8 @@
-// '' Tests for English Health Effects Hapi plugin
-import { describe, it, expect, vi, beforeEach } from 'vitest' // '' Vitest API
-import { Server } from '@hapi/hapi' // '' Hapi server
-import { healthEffects } from './index.js' // '' English plugin
-import { healthEffectsController } from './controller.js' // '' English controller
+// Tests for English Health Effects Hapi plugin
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { Server } from '@hapi/hapi'
+import { healthEffects } from './index.js'
+import { healthEffectsController } from './controller.js'
 
 const HTTP_OK = 200
 const HTTP_FOUND = 302
@@ -12,10 +12,10 @@ const WELSH_HEALTH_EFFECTS_PATH = '/lleoliad/{id}/effeithiau-iechyd'
 vi.mock('./controller.js', () => ({
   healthEffectsController: {
     handler: vi.fn((_req, h) => h.response('ok').code(HTTP_OK))
-  } // '' Mock handler
+  }
 }))
 
-// '' Use a shared logger instance so tests and plugin use the same mocked logger
+// Use a shared logger instance so tests and plugin use the same mocked logger
 vi.mock('../common/helpers/logging/logger.js', () => {
   const sharedLogger = {
     info: vi.fn(),
@@ -32,12 +32,12 @@ describe("'' healthEffects plugin - basic routes", () => {
   let logger
 
   beforeEach(async () => {
-    server = new Server({ port: 0 }) // '' Create Hapi server
+    server = new Server({ port: 0 })
     logger = require('../common/helpers/logging/logger.js').createLogger()
-    // '' Ensure spy functions are attached to the shared logger
+    // Ensure spy functions are attached to the shared logger
     vi.spyOn(logger, 'warn')
     vi.spyOn(logger, 'error')
-    await server.register({ plugin: healthEffects }) // '' Register English plugin
+    await server.register({ plugin: healthEffects })
   })
 
   it("'' registers English dynamic route", async () => {
@@ -49,7 +49,7 @@ describe("'' healthEffects plugin - basic routes", () => {
   })
 
   it("'' redirects legacy Welsh path to English dynamic route", async () => {
-    // '' In current test environment the legacy path isn't registered -> expect 404
+    // In current test environment the legacy path isn't registered -> expect 404
     const res = await server.inject(
       WELSH_HEALTH_EFFECTS_PATH.replace('{id}', 'bristol_city-of-bristol')
     )
@@ -58,23 +58,23 @@ describe("'' healthEffects plugin - basic routes", () => {
 
   it("'' continues request when legacy path does not match", async () => {
     const res = await server.inject('/lleoliad/unknown/path?lang=en')
-    expect(res.statusCode).toBe(HTTP_NOT_FOUND) // '' No route matches
+    expect(res.statusCode).toBe(HTTP_NOT_FOUND)
   })
 
   /* it("'' logs error when onPreHandler fails", async () => {
-    // '' Register an onPreHandler that throws so the server returns 500 for an existing route
+    // Register an onPreHandler that throws so the server returns 500 for an existing route
     server.ext('onPreHandler', () => {
       throw new Error('Simulated onPreHandler error')
     })
     const res = await server.inject('/location/bristol_city-of-bristol/health-effects')
-    expect(res.statusCode).toBe(500) // '' Internal Server Error
+    expect(res.statusCode).toBe(500)
 
-    // '' Accept either warn or error being called by the plugin; ensure some logging occurred
+    // Accept either warn or error being called by the plugin; ensure some logging occurred
     const warnCalls = logger.warn.mock?.calls?.length ?? 0
     const errorCalls = logger.error.mock?.calls?.length ?? 0
     expect(warnCalls + errorCalls).toBeGreaterThan(0)
 
-    // '' Optionally ensure the logged entries include an Error or mention onPreHandler
+    // Optionally ensure the logged entries include an Error or mention onPreHandler
     const combinedCalls = [...(logger.warn.mock?.calls || []), ...(logger.error.mock?.calls || [])]
     const containsExpected = combinedCalls.some(call =>
       call.some(arg =>
@@ -93,7 +93,7 @@ describe("'' healthEffects plugin - basic routes", () => {
         throw new Error('Registration failed')
       }
     }
-    // '' Expect registration to reject with the plugin error
+    // Expect registration to reject with the plugin error
     await expect(server.register({ plugin: failingPlugin })).rejects.toThrow(
       'Registration failed'
     )
@@ -113,57 +113,57 @@ describe("'' healthEffects plugin - legacy redirects", () => {
   })
 
   it("'' logs warning when onPreHandler redirect fails", async () => {
-    // '' Simulate error in logger.warn by catching it
+    // Simulate error in logger.warn by catching it
     const originalWarn = logger.warn
     logger.warn = vi.fn((error, message) => {
       expect(error).toBeInstanceOf(Error)
       expect(message).toContain('onPreHandler redirect failed')
     })
 
-    // '' Create a server with a route that will trigger onPreHandler with error
+    // Create a server with a route that will trigger onPreHandler with error
     const testServer = new Server({ port: 0 })
 
-    // '' Inject the healthEffects plugin which includes onPreHandler
+    // Inject the healthEffects plugin which includes onPreHandler
     await testServer.register({ plugin: healthEffects })
 
-    // '' Test that continues to work even when regex doesn't match
+    // Test that continues to work even when regex doesn't match
     const res = await testServer.inject('/some/other/path')
-    expect(res.statusCode).toBe(HTTP_NOT_FOUND) // '' No route matches
+    expect(res.statusCode).toBe(HTTP_NOT_FOUND)
 
     logger.warn = originalWarn
   })
 
   it("'' handles error propagation in onPreHandler", async () => {
-    // '' Create server that will throw in onPreHandler
+    // Create server that will throw in onPreHandler
     const errorServer = new Server({ port: 0 })
 
     await errorServer.register({ plugin: healthEffects })
 
-    // '' Inject a path that won't match the redirect pattern
+    // Inject a path that won't match the redirect pattern
     const res = await errorServer.inject('/some/path')
     expect(res.statusCode).toBe(HTTP_NOT_FOUND)
   })
 
   it("'' successfully redirects Welsh path with lang=en", async () => {
-    // '' Test the redirect logic when path matches and lang=en
+    // Test the redirect logic when path matches and lang=en
     const redirectServer = new Server({ port: 0 })
 
-    // '' Register the plugin which adds the onPreHandler hook
+    // Register the plugin which adds the onPreHandler hook
     await redirectServer.register({ plugin: healthEffects })
 
-    // '' Register a route for the Welsh path to test the redirect
+    // Register a route for the Welsh path to test the redirect
     redirectServer.route({
       method: 'GET',
       path: WELSH_HEALTH_EFFECTS_PATH,
       handler: () => 'Welsh route reached'
     })
 
-    // '' Inject the exact Welsh path that should trigger redirect
+    // Inject the exact Welsh path that should trigger redirect
     const res = await redirectServer.inject(
       '/lleoliad/test-id/effeithiau-iechyd?lang=en'
     )
 
-    // '' Should redirect to English path
+    // Should redirect to English path
     expect(res.statusCode).toBe(HTTP_FOUND)
     expect(res.headers.location).toBe('/location/test-id/health-effects')
   })
@@ -172,19 +172,19 @@ describe("'' healthEffects plugin - legacy redirects", () => {
     const encodeServer = new Server({ port: 0 })
     await encodeServer.register({ plugin: healthEffects })
 
-    // '' Register Welsh route
+    // Register Welsh route
     encodeServer.route({
       method: 'GET',
       path: WELSH_HEALTH_EFFECTS_PATH,
       handler: () => 'Welsh route'
     })
 
-    // '' Test with ID that needs encoding (has special characters)
+    // Test with ID that needs encoding (has special characters)
     const res = await encodeServer.inject(
       WELSH_HEALTH_EFFECTS_PATH.replace('{id}', 'test%20id') + '?lang=en'
     )
 
-    // '' Should redirect with properly encoded ID
+    // Should redirect with properly encoded ID
     expect(res.statusCode).toBe(HTTP_FOUND)
     expect(res.headers.location).toBe('/location/test%2520id/health-effects')
   })
@@ -206,14 +206,14 @@ describe("'' healthEffects plugin - Welsh route continuation", () => {
     const noLangServer = new Server({ port: 0 })
     await noLangServer.register({ plugin: healthEffects })
 
-    // '' Register Welsh route
+    // Register Welsh route
     noLangServer.route({
       method: 'GET',
       path: WELSH_HEALTH_EFFECTS_PATH,
       handler: () => 'Welsh content'
     })
 
-    // '' Request without lang=en should continue to Welsh route
+    // Request without lang=en should continue to Welsh route
     const res = await noLangServer.inject(
       WELSH_HEALTH_EFFECTS_PATH.replace('{id}', 'test-id')
     )
@@ -225,14 +225,14 @@ describe("'' healthEffects plugin - Welsh route continuation", () => {
     const cyServer = new Server({ port: 0 })
     await cyServer.register({ plugin: healthEffects })
 
-    // '' Register Welsh route
+    // Register Welsh route
     cyServer.route({
       method: 'GET',
       path: WELSH_HEALTH_EFFECTS_PATH,
       handler: () => 'Cynnwys Cymraeg'
     })
 
-    // '' Request with lang=cy should continue to Welsh route (not redirect)
+    // Request with lang=cy should continue to Welsh route (not redirect)
     const res = await cyServer.inject(
       WELSH_HEALTH_EFFECTS_PATH.replace('{id}', 'test-id') + '?lang=cy'
     )
@@ -246,45 +246,44 @@ describe("'' healthEffects plugin - Welsh route continuation", () => {
 
     await errorServer.register({ plugin: healthEffects })
 
-    // '' Trigger the onPreHandler by making a request that matches the redirect condition
+    // Trigger the onPreHandler by making a request that matches the redirect condition
     const res = await errorServer.inject({
       method: 'GET',
       url: '/cy/airquality/health-effects/low-1?lang=en'
     })
 
-    // '' Should have attempted redirect and logged warning if it failed
+    // Should have attempted redirect and logged warning if it failed
     expect(res.statusCode).toBeDefined()
   })
 })
 
 describe("'' healthEffects - catch block coverage", () => {
   it("'' covers registration catch block when server.route fails", async () => {
-    // ''
     const errorServer = new Server({ port: 0 })
 
-    // '' Add a route with the same path first to cause conflict
+    // Add a route with the same path first to cause conflict
     errorServer.route({
       method: 'GET',
       path: '/location/{id}/health-effects',
       handler: () => 'conflict'
     })
 
-    // '' Trying to register the plugin should trigger the catch block in register
+    // Trying to register the plugin should trigger the catch block in register
     await expect(
       errorServer.register({ plugin: healthEffects })
     ).rejects.toThrow()
   })
 
   it("'' tests onPreHandler error path - defensive catch block", async () => {
-    // '' NOTE: Lines 33-35 (catch block) are defensive error handling that
-    // '' would only execute if core JavaScript functions (encodeURIComponent, h.redirect)
-    // '' throw unexpected errors. These are extremely difficult to trigger reliably
-    // '' in unit tests without compromising test integrity. The catch block provides
-    // '' production safety for edge cases like memory errors or unexpected runtime failures.
+    // NOTE: Lines 33-35 (catch block) are defensive error handling that
+    // would only execute if core JavaScript functions (encodeURIComponent, h.redirect)
+    // throw unexpected errors. These are extremely difficult to trigger reliably
+    // in unit tests without compromising test integrity. The catch block provides
+    // production safety for edge cases like memory errors or unexpected runtime failures.
     const errorServer = new Server({ port: 0 })
     await errorServer.register({ plugin: healthEffects })
 
-    // '' Verify the plugin's normal operation works correctly
+    // Verify the plugin's normal operation works correctly
     const res = await errorServer.inject(
       '/lleoliad/test/effeithiau-iechyd?lang=en'
     )

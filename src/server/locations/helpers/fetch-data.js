@@ -1,4 +1,4 @@
-// ''  Data fetching functions for air quality locations
+//  Data fetching functions for air quality locations
 import {
   handleTestModeFetchData,
   fetchForecastsTestMode,
@@ -106,7 +106,7 @@ function ensureForecastSummary(forecastData) {
 }
 
 const fetchForecasts = async (di = {}) => {
-  // ''  Simple DI with fallbacks
+  //  Simple DI with fallbacks
   const testModeChecker = getOverrideOrDefault(di, 'isTestMode', isTestMode)
   const testLogger = getOverrideOrDefault(di, 'logger', logger)
 
@@ -134,7 +134,7 @@ const fetchForecasts = async (di = {}) => {
   )
   const httpStatusOk = getOverrideOrDefault(di, 'HTTP_STATUS_OK', STATUS_OK)
 
-  // ''  Call forecasts API
+  //  Call forecasts API
   const forecastsResult = await callForecastsApi({
     config: forecastsConfig,
     optionsEphemeralProtected,
@@ -438,7 +438,7 @@ async function handleNILocation(
   diRequest
 ) {
   const niDi = { ...di.overrides, request: diRequest || {} }
-  // '' Pass userLocation and niDi (which contains request) to handleNILocationData
+  // Pass userLocation and niDi (which contains request) to handleNILocationData
   const getNIPlaces = await di.handleNILocationData(
     userLocation,
     optionsOAuth,

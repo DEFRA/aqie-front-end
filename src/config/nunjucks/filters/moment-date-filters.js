@@ -8,7 +8,7 @@ import {
 } from '../../../server/data/constants.js'
 import { createLogger } from '../../../server/common/helpers/logging/logger.js'
 
-const logger = createLogger('moment-date-filters') // ''
+const logger = createLogger('moment-date-filters')
 const INVALID_ENV_ERROR = 'Invalid Nunjucks environment.'
 
 /**
@@ -101,7 +101,7 @@ const addDaysToTodayAbrevWelsh = function (env) {
   }
 }
 
-// '' - Full day name filters for screen reader accessibility
+// - Full day name filters for screen reader accessibility
 const addDaysToTodayFull = function (env) {
   try {
     if (!env || typeof env.addFilter !== 'function') {
@@ -154,5 +154,5 @@ export {
   addDaysToTodayAbrevWelsh,
   addDaysToTodayFull,
   addDaysToTodayFullWelsh,
-  logger as __logger // ''
+  logger as __logger
 }
