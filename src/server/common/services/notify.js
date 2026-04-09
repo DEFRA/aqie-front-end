@@ -12,7 +12,8 @@ export {
   validateEmailLink,
   setupEmailAlert,
   sendSmsCode,
-  verifyOtp
+  verifyOtp,
+  unsubscribeEmailAlert
 } from './notify-backend.js'
 export { getSubscriptionCount } from './notify-subscription-service.js'
 export {

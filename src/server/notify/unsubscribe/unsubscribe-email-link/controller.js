@@ -6,6 +6,7 @@ import { welsh } from '../../../data/cy/cy.js'
 import { LANG_CY } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { resolveNotifyLanguage } from '../../register/helpers/resolve-notify-language.js'
+import { unsubscribeEmailAlert } from '../../../common/services/notify.js'
 
 const logger = createLogger()
 const VIEW_PATH = 'notify/unsubscribe/unsubscribe-email-link/index'
@@ -75,7 +76,7 @@ export const handleUnsubscribeEmailLinkRequest = (request, h) => {
 
 /**
  * Handle POST request — user clicked "Yes, unsubscribe"
- * Backend endpoint to be hooked up later
+ * Calls the backend DELETE /opt-out-email-alert endpoint
  */
 export const handleUnsubscribeEmailLinkPost = async (request, h) => {
   logger.info('Unsubscribe confirmed by user')
@@ -84,7 +85,16 @@ export const handleUnsubscribeEmailLinkPost = async (request, h) => {
     `[UNSUBSCRIBE] User confirmed unsubscribe for email=${email ? email.split('@')[0] + '@****' : 'unknown'}`
   )
 
-  // TODO: call backend unsubscribe endpoint here
-  // For now redirect to unsubscribe success page (to be created)
+  const result = await unsubscribeEmailAlert(email, request)
+  logger.info(
+    `[UNSUBSCRIBE] Backend response ok=${result.ok} status=${result.status ?? 'n/a'} skipped=${result.skipped ?? false}`
+  )
+
+  if (!result.ok && !result.skipped) {
+    logger.error(
+      `[UNSUBSCRIBE] Backend DELETE failed status=${result.status} error=${result.error ?? 'unknown'}`
+    )
+  }
+
   return h.redirect('/notify/unsubscribe-success')
 }

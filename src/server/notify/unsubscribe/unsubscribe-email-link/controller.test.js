@@ -4,6 +4,10 @@ import {
   handleUnsubscribeEmailLinkPost
 } from './controller.js'
 
+vi.mock('../../../common/services/notify.js', () => ({
+  unsubscribeEmailAlert: vi.fn()
+}))
+
 vi.mock('../../../common/helpers/logging/logger.js', () => ({
   createLogger: () => ({
     info: vi.fn(),
@@ -20,6 +24,10 @@ vi.mock('../../../common/helpers/get-site-url.js', () => ({
 vi.mock('../../register/helpers/resolve-notify-language.js', () => ({
   resolveNotifyLanguage: vi.fn(() => 'en')
 }))
+
+const { unsubscribeEmailAlert } = await import(
+  '../../../common/services/notify.js'
+)
 
 const mockH = () => ({
   view: vi.fn((tpl, vm) => ({ tpl, vm })),
@@ -120,7 +128,23 @@ describe('unsubscribe-email-link/controller', () => {
   })
 
   describe('handleUnsubscribeEmailLinkPost (POST)', () => {
-    it('redirects to unsubscribe success page', async () => {
+    beforeEach(() => {
+      unsubscribeEmailAlert.mockResolvedValue({ ok: true })
+    })
+
+    it('calls unsubscribeEmailAlert with email from session', async () => {
+      const session = { unsubscribeEmail: 'user@example.com' }
+      const request = mockRequest({ session })
+
+      await handleUnsubscribeEmailLinkPost(request, mockH())
+
+      expect(unsubscribeEmailAlert).toHaveBeenCalledWith(
+        'user@example.com',
+        request
+      )
+    })
+
+    it('redirects to unsubscribe success page on backend success', async () => {
       const h = mockH()
       const session = { unsubscribeEmail: 'user@example.com' }
       const request = mockRequest({ session })
@@ -130,7 +154,18 @@ describe('unsubscribe-email-link/controller', () => {
       expect(response.redirect).toBe('/notify/unsubscribe-success')
     })
 
-    it('redirects to success even when session email is missing', async () => {
+    it('redirects to success even when backend DELETE fails', async () => {
+      unsubscribeEmailAlert.mockResolvedValue({ ok: false, status: 500 })
+      const h = mockH()
+      const session = { unsubscribeEmail: 'user@example.com' }
+      const request = mockRequest({ session })
+
+      const response = await handleUnsubscribeEmailLinkPost(request, h)
+
+      expect(response.redirect).toBe('/notify/unsubscribe-success')
+    })
+
+    it('redirects to success when session email is missing', async () => {
       const h = mockH()
       const request = mockRequest({ session: {} })
 

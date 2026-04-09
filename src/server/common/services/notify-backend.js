@@ -254,6 +254,57 @@ export async function sendSmsCode(phoneNumber, request = null) {
   return result
 }
 
+async function deleteFromBackend(request, apiPath, body, customBaseUrl = null) {
+  const enabled = config.get(CONFIG_NOTIFY_ENABLED)
+  const baseUrl = customBaseUrl || config.get(CONFIG_NOTIFY_BASE_URL)
+
+  if (!enabled || !baseUrl) {
+    return logNotifyDisabledAndSkip(apiPath, enabled, baseUrl)
+  }
+
+  try {
+    const { url, fetchOptions } = buildBackendApiFetchOptions(
+      request,
+      baseUrl,
+      apiPath,
+      { method: 'DELETE', body }
+    )
+
+    const [status, data] = await catchFetchError(url, fetchOptions)
+
+    if (status !== HTTP_STATUS_OK) {
+      const notifyErrorData = {
+        url,
+        status,
+        responseBody: data,
+        bodyStringified: JSON.stringify(data)?.slice(0, MAX_ERROR_BODY_LENGTH)
+      }
+      logger.warn(
+        `Notify DELETE API error ${status}: ${JSON.stringify(notifyErrorData)}`,
+        notifyErrorData
+      )
+      return { ok: false, status, body: data }
+    }
+
+    logger.info(`Notify DELETE request succeeded: ${url}`)
+    return { ok: true, data }
+  } catch (err) {
+    logger.error('Notify DELETE API request failed', err)
+    return { ok: false, error: err }
+  }
+}
+
+export async function unsubscribeEmailAlert(emailAddress, request = null) {
+  const optOutPath = config.get('notify.optOutEmailAlertPath')
+  const alertBackendBaseUrl = config.get(CONFIG_NOTIFY_ALERT_BACKEND_BASE_URL)
+  return deleteFromBackend(
+    request,
+    optOutPath,
+    { emailAddress },
+    alertBackendBaseUrl
+  )
+}
+
 export async function verifyOtp(phoneNumber, otp, request = null) {
   const verifyPath = config.get('notify.verifyOtpPath')
   const mockOtpEnabled = config.get('notify.mockOtpEnabled')
