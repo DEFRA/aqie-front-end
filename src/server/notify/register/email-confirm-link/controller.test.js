@@ -89,6 +89,9 @@ describe('email-confirm-link/controller', () => {
 
     expect(response.tpl).toBe('notify/register/email-confirm-link/index')
     expect(response.vm.errorMessage).toBeTruthy()
+    expect(response.vm.content.errorExpiredBody).toBeTruthy()
+    expect(response.vm.content.errorSearchLinkText).toBeTruthy()
+    expect(response.vm.content.errorSearchLinkSuffix).toBeTruthy()
     expect(validateEmailLink).not.toHaveBeenCalled()
   })
 

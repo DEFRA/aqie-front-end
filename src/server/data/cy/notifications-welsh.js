@@ -127,8 +127,12 @@ export const notificationTranslationsWelsh = {
   // Email confirm link callback page
   emailConfirmLink: {
     errorPageTitle:
-      'TODO Welsh: There is a problem - Check your email - Check air quality - GOV.UK',
-    errorHeading: 'TODO Welsh: There is a problem with your activation link',
+      'TODO Welsh: This activation link has expired - Check air quality - GOV.UK',
+    errorHeading: 'TODO Welsh: This activation link has expired',
+    errorExpiredBody:
+      'TODO Welsh: Activation links stop working after 15 minutes.',
+    errorSearchLinkText: 'TODO Welsh: Search for a town or postcode',
+    errorSearchLinkSuffix: 'TODO Welsh: to set up an air pollution alert.',
     errorMissingToken:
       'TODO Welsh: The activation link is missing or incomplete. Please request a new one.',
     errorInvalidToken:
