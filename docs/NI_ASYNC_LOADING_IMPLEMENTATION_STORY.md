@@ -296,5 +296,4 @@ Previous branch has:
 
 **Created**: 2026-02-14  
 **Updated**: 2026-02-14  
-**Assignee**: GitHub Copilot  
 **Reporter**: Development Team
