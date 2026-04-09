@@ -1,5 +1,5 @@
 // NOSONAR
-// '' Tests for Welsh and English language handling
+// Tests for Welsh and English language handling
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
@@ -232,7 +232,6 @@ describe('Location ID Controller - Welsh Language Handling', () => {
   })
 
   it('should handle Welsh language correctly', async () => {
-    // ''
     mockRequest.query = { lang: 'cy', searchTerms: 'caerdydd' }
     mockRequest.params = { id: 'cardiff' }
     mockRequest.headers = { referer: 'https://example.com/lleoliad' }
@@ -287,7 +286,6 @@ describe('Location ID Controller - English Language Default', () => {
   })
 
   it('should default to English when no lang parameter', async () => {
-    // ''
     mockRequest.query = {}
     mockRequest.params = { id: 'test' }
     mockRequest.headers = { referer: 'https://example.com/location' }

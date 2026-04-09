@@ -1,20 +1,20 @@
-// '' Tests for Welsh healthEffectsHandlerCy
+// Tests for Welsh healthEffectsHandlerCy
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-// '' Import after mocks
+// Import after mocks
 import { healthEffectsHandlerCy } from './controller.js'
 import {
   getReadableLocationName,
   buildHealthEffectsViewModel
 } from '../helpers/index.js'
-import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js' // '' Vitest API
+import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
-// '' Mock site URL helper
+// Mock site URL helper
 vi.mock('../../common/helpers/get-site-url.js', () => ({
-  getAirQualitySiteUrl: vi.fn(() => 'https://example.test') // '' Stub URL
+  getAirQualitySiteUrl: vi.fn(() => 'https://example.test')
 }))
 
-// '' Mock logger
+// Mock logger
 vi.mock('../../common/helpers/logging/logger.js', () => ({
   createLogger: () => ({
     debug: vi.fn(),
@@ -22,9 +22,9 @@ vi.mock('../../common/helpers/logging/logger.js', () => ({
   })
 }))
 
-// '' Mock pure helpers
+// Mock pure helpers
 vi.mock('../helpers/index.js', () => ({
-  getReadableLocationName: vi.fn(() => 'Caerdydd'), // '' Default Welsh location name
+  getReadableLocationName: vi.fn(() => 'Caerdydd'),
   buildHealthEffectsViewModel: vi.fn(
     ({ readableName = 'Caerdydd', lang = 'cy' } = {}) => ({
       page: 'Effaith llygredd aer ar iechyd',
@@ -37,20 +37,20 @@ vi.mock('../helpers/index.js', () => ({
   )
 }))
 
-// '' Fake hapi response toolkit
+// Fake hapi response toolkit
 const createH = () => {
-  const view = vi.fn((template, context) => ({ template, context })) // '' Simulate h.view
+  const view = vi.fn((template, context) => ({ template, context }))
   const redirect = vi.fn((url) => ({
     code: (statusCode) => ({ redirectedTo: url, statusCode })
-  })) // '' Simulate h.redirect
+  }))
   const response = vi.fn((payload) => ({
     payload,
     code: (statusCode) => ({ payload, statusCode })
-  })) // '' Simulate h.response
+  }))
   return { view, redirect, response }
 }
 
-// '' Helper to verify common expectations
+// Helper to verify common expectations
 const verifyCommonCalls = () => {
   expect(getReadableLocationName).toHaveBeenCalled()
 }

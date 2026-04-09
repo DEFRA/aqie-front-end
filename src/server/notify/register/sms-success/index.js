@@ -3,7 +3,7 @@ import {
   handleAlertsSuccessPost
 } from './controller.js'
 
-// '' Welsh placeholder path for sms-success
+// Welsh placeholder path for sms-success
 const SMS_SUCCESS_PATH_CY = '/hysbysiad/cofrestru/sms-llwyddiant'
 
 const alertsSuccess = {

@@ -1,21 +1,21 @@
-// '' Unit tests for unified healthEffectsHandler (EN & CY)
-import { describe, it, expect, vi, beforeEach } from 'vitest' // ''
-import { healthEffectsHandler } from './controller.js' // ''
-import { english } from '../data/en/en.js' // ''
+// Unit tests for unified healthEffectsHandler (EN & CY)
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { healthEffectsHandler } from './controller.js'
+import { english } from '../data/en/en.js'
 import { welsh } from '../data/cy/cy.js'
 import {
   getReadableLocationName,
   buildHealthEffectsViewModel,
   buildBackLinkModel
 } from './helpers/index.js'
-import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js' // ''
+import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 import {
   STATUS_NOT_FOUND,
   STATUS_INTERNAL_SERVER_ERROR
 } from '../data/constants.js'
 
 const MOCK_SITE_URL = 'https://example.test'
-// '' Define constant for duplicated string literal
+// Define constant for duplicated string literal
 const HEALTH_EFFECTS_PAGE_TITLE = 'Health effects of air pollution'
 const MOCK_LOCATION = 'Mock Location'
 const LANG_EN = 'en'
@@ -35,12 +35,12 @@ const PAGE_NOT_FOUND = 'Page Not Found'
 const INTERNAL_SERVER_ERROR = 'Internal Server Error'
 const HISTORY_BACK_URL = '#'
 
-// '' Mock dependencies
+// Mock dependencies
 vi.mock('../common/helpers/get-site-url.js', () => ({
-  getAirQualitySiteUrl: vi.fn(() => MOCK_SITE_URL) // ''
+  getAirQualitySiteUrl: vi.fn(() => MOCK_SITE_URL)
 }))
 vi.mock('./helpers/index.js', () => ({
-  getReadableLocationName: vi.fn(() => MOCK_LOCATION), // ''
+  getReadableLocationName: vi.fn(() => MOCK_LOCATION),
   buildHealthEffectsViewModel: vi.fn((opts = {}) => ({
     pageTitle:
       opts?.content?.healthEffects?.pageTitle || HEALTH_EFFECTS_PAGE_TITLE,
@@ -53,20 +53,20 @@ vi.mock('./helpers/index.js', () => ({
   }))
 }))
 
-// '' Fake hapi response toolkit
+// Fake hapi response toolkit
 const createH = () => {
-  const view = vi.fn((template, context) => ({ template, context })) // ''
+  const view = vi.fn((template, context) => ({ template, context }))
   const redirect = vi.fn((url) => ({
     code: (statusCode) => ({ redirectedTo: url, statusCode })
-  })) // ''
+  }))
   const response = vi.fn((payload) => ({
     payload,
     code: (statusCode) => ({ payload, statusCode })
-  })) // ''
+  }))
   return { view, redirect, response }
 }
 
-// '' Helper to verify common expectations
+// Helper to verify common expectations
 const verifyCommonCalls = (request) => {
   expect(getAirQualitySiteUrl).toHaveBeenCalled()
   expect(getReadableLocationName).toHaveBeenCalledWith(
@@ -76,10 +76,10 @@ const verifyCommonCalls = (request) => {
   )
 }
 
-// '' Helper to create mock request
+// Helper to create mock request
 const createRequest = (query, params, path) => ({ query, params, path })
 
-// '' Helper to verify view model call
+// Helper to verify view model call
 const verifyViewModelCall = (content, readableName, lang, locationId) => {
   expect(buildHealthEffectsViewModel).toHaveBeenCalledWith(
     expect.objectContaining({
@@ -92,7 +92,7 @@ const verifyViewModelCall = (content, readableName, lang, locationId) => {
   )
 }
 
-// '' Helper to verify view call
+// Helper to verify view call
 const verifyViewCall = (h, template, expectedContext) => {
   expect(h.view).toHaveBeenCalledWith(
     template,
@@ -100,7 +100,7 @@ const verifyViewCall = (h, template, expectedContext) => {
   )
 }
 
-// '' Helper to setup Welsh mocks
+// Helper to setup Welsh mocks
 const setupWelshMocks = (locationName, pageTitle) => {
   getReadableLocationName.mockReturnValueOnce(locationName)
   buildHealthEffectsViewModel.mockReturnValueOnce({
@@ -111,7 +111,7 @@ const setupWelshMocks = (locationName, pageTitle) => {
   })
 }
 
-// '' Helper to setup English mocks
+// Helper to setup English mocks
 const setupEnglishMocks = (locationName, backLinkText) => {
   getReadableLocationName.mockReturnValueOnce(locationName)
   buildHealthEffectsViewModel.mockReturnValueOnce({
@@ -127,7 +127,7 @@ const setupEnglishMocks = (locationName, backLinkText) => {
   })
 }
 
-// '' Helper to setup custom content mocks
+// Helper to setup custom content mocks
 const setupCustomContentMocks = (locationName, customTitle) => {
   getReadableLocationName.mockReturnValueOnce(locationName)
   buildHealthEffectsViewModel.mockReturnValueOnce({
@@ -145,7 +145,7 @@ const setupCustomContentMocks = (locationName, customTitle) => {
 
 describe("'' healthEffectsHandler", () => {
   beforeEach(() => {
-    vi.clearAllMocks() // ''
+    vi.clearAllMocks()
   })
 
   it("'' renders Welsh view model for Welsh route", () => {
@@ -218,7 +218,7 @@ describe("'' healthEffectsHandler", () => {
 
   it("'' returns 500 when view model build throws", () => {
     buildHealthEffectsViewModel.mockImplementationOnce(() => {
-      throw new Error('Boom') // ''
+      throw new Error('Boom')
     })
     const request = createRequest(
       {},

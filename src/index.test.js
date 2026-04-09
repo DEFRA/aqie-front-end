@@ -21,14 +21,12 @@ describe('Application Entry Point', () => {
 
   describe('Module imports and basic functionality', () => {
     it('should import without throwing errors', async () => {
-      // ''
       expect(async () => {
         await import('./index.js')
       }).not.toThrow()
     })
 
     it('should call startServer on import', async () => {
-      // ''
       mockStartServer.mockResolvedValue()
 
       await import('./index.js')
@@ -39,7 +37,6 @@ describe('Application Entry Point', () => {
 
   describe('Process event handlers', () => {
     it('should handle unhandledRejection events', async () => {
-      // ''
       mockStartServer.mockResolvedValue()
 
       await import('./index.js')
@@ -53,7 +50,6 @@ describe('Application Entry Point', () => {
     })
 
     it('should handle process exit gracefully', () => {
-      // ''
       expect(process).toBeDefined()
       expect(process.exitCode).toBeDefined()
     })
@@ -61,13 +57,11 @@ describe('Application Entry Point', () => {
 
   describe('Basic module structure', () => {
     it('should have process available', () => {
-      // ''
       expect(process).toBeDefined()
       expect(process.on).toBeDefined()
     })
 
     it('should be able to register process event handlers', () => {
-      // ''
       const handler = vi.fn()
       process.on('test-event', handler)
 

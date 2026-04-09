@@ -79,7 +79,7 @@ export function buildBackendApiRequest(
     }
   }
 
-  // '' Default to direct service-to-service URL
+  // Default to direct service-to-service URL
   const baseUrl = productionBaseUrl.replace(/\/$/, '')
   const url = `${baseUrl}${normalizedApiPath}`
   const headers = {

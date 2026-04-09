@@ -1,4 +1,4 @@
-// '' Tests for test mode functionality and issueTime calculations
+// Tests for test mode functionality and issueTime calculations
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Constants
@@ -230,7 +230,6 @@ describe('Location ID Controller - Test Mode Session Storage', () => {
   })
 
   it('should store testMode in session when query parameter provided', async () => {
-    // ''
     mockRequest.query = { lang: 'en', testMode: 'noDailySummary' }
 
     const mockLocationData = {
@@ -278,7 +277,6 @@ describe('Location ID Controller - Test Mode OldDate', () => {
   })
 
   it('should set date to yesterday', async () => {
-    // ''
     mockRequest.query = { lang: 'en' }
 
     const mockLocationData = {
@@ -337,7 +335,6 @@ describe('Location ID Controller - Test Mode TodayDate', () => {
   })
 
   it('should set date to today', async () => {
-    // ''
     mockRequest.query = { lang: 'en' }
     mockRequest.params = { id: 'test' }
     mockRequest.headers = { referer: 'https://example.com/location' }
@@ -399,7 +396,6 @@ describe('Location ID Controller - Test Mode NoDataOldDate', () => {
   })
 
   it('should remove summary and set old date', async () => {
-    // ''
     mockRequest.query = { lang: 'en' }
 
     const mockLocationData = {
@@ -459,7 +455,6 @@ describe('Location ID Controller - Test Mode Error Handling', () => {
   })
 
   it('should handle unknown test mode with warning', async () => {
-    // ''
     mockRequest.query = { lang: 'en' }
     mockRequest.params = { id: 'test' }
     mockRequest.headers = { referer: 'https://example.com/location' }
@@ -512,7 +507,6 @@ describe('Location ID Controller - IssueTime Missing', () => {
   })
 
   it('should calculate and save issueTime when showSummaryDate is set but issueTime is missing', async () => {
-    // ''
     const today = new Date()
     const todayStr = today.toISOString().split('T')[0] + ' 10:00:00'
 
@@ -567,7 +561,6 @@ describe('Location ID Controller - IssueTime Existing', () => {
   })
 
   it('should not recalculate issueTime when both showSummaryDate and issueTime are already set', async () => {
-    // ''
     const today = new Date()
     const todayStr = today.toISOString().split('T')[0] + ' 10:00:00'
 

@@ -32,7 +32,7 @@ const mockH = {
   redirect: (url) => ({
     redirect: url,
     code: (c) => ({ redirect: url, code: c })
-  }) // ''
+  })
 }
 
 describe('mock-pollutant-route', () => {
@@ -51,14 +51,14 @@ describe('mock-pollutant-route', () => {
       const result = await route.handler(request, mockH)
       expect(result.type).toBe('text/html')
       expect(result.code).toBe(HTTP_OK)
-      expect(result.payload).toContain('Mock Pollutant Band Test') // ''
+      expect(result.payload).toContain('Mock Pollutant Band Test')
     })
 
     it('returns error for invalid band', async () => {
       const route = routes.find((r) => r.path === TEST_POLLUTANTS_PATH)
       const request = { query: { band: 'invalid' } }
       const result = await route.handler(request, mockH)
-      expect(result.payload.error).toBe('Invalid band') // ''
+      expect(result.payload.error).toBe('Invalid band')
       expect(result.code).toBe(HTTP_BAD_REQUEST)
     })
 
@@ -68,18 +68,18 @@ describe('mock-pollutant-route', () => {
       const result = await route.handler(request, mockH)
       expect(result.payload.band).toBe('low')
       expect(result.code).toBe(HTTP_OK)
-      expect(result.payload.mockPollutants).toBeDefined() // ''
+      expect(result.payload.mockPollutants).toBeDefined()
     })
   })
 
   describe('GET /test-pollutants-custom', () => {
     it('returns HTML', async () => {
       const route = routes.find((r) => r.path === TEST_POLLUTANTS_CUSTOM_PATH)
-      const request = { query: {}, url: { href: '/test-pollutants-custom' } } // ''
+      const request = { query: {}, url: { href: '/test-pollutants-custom' } }
       const result = await route.handler(request, mockH)
       expect(result.type).toBe('text/html')
       expect(result.code).toBe(HTTP_OK)
-      expect(result.payload).toContain('Custom Mock Pollutant Levels') // ''
+      expect(result.payload).toContain('Custom Mock Pollutant Levels')
     })
 
     it(JSON_FORMAT_TEST_NAME, async () => {
@@ -87,11 +87,11 @@ describe('mock-pollutant-route', () => {
       const request = {
         query: { format: FORMAT_JSON, NO2: 'high' },
         url: { href: '/test-pollutants-custom?format=json&NO2=high' }
-      } // ''
+      }
       const result = await route.handler(request, mockH)
       expect(result.code).toBe(HTTP_OK)
       expect(result.payload.pollutantBands.NO2).toBe('high')
-      expect(result.payload.mockPollutants).toBeDefined() // ''
+      expect(result.payload.mockPollutants).toBeDefined()
     })
   })
 
@@ -102,7 +102,7 @@ describe('mock-pollutant-route', () => {
       const result = await route.handler(request, mockH)
       expect(result.type).toBe('text/html')
       expect(result.code).toBe(HTTP_OK)
-      expect(result.payload).toContain('All Pollutant Bands Comparison') // ''
+      expect(result.payload).toContain('All Pollutant Bands Comparison')
     })
 
     it(JSON_FORMAT_TEST_NAME, async () => {
@@ -110,7 +110,7 @@ describe('mock-pollutant-route', () => {
       const request = { query: { format: FORMAT_JSON } }
       const result = await route.handler(request, mockH)
       expect(result.code).toBe(HTTP_OK)
-      expect(result.payload.bands).toBeDefined() // ''
+      expect(result.payload.bands).toBeDefined()
     })
   })
 
@@ -132,9 +132,9 @@ describe('mock-pollutant-route', () => {
       mockH.redirect = vi.fn(() => ({ code: mockCode }))
 
       const result = await route.handler(request, mockH)
-      expect(result.redirect).toContain('/location/123?mockPollutantBand=high') // ''
+      expect(result.redirect).toContain('/location/123?mockPollutantBand=high')
       expect(mockCode).toHaveBeenCalledWith(HTTP_REDIRECT)
-      expect(request.yar.set).toHaveBeenCalledWith('searchTermsSaved', true) // ''
+      expect(request.yar.set).toHaveBeenCalledWith('searchTermsSaved', true)
     })
   })
 })

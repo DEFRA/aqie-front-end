@@ -40,11 +40,11 @@ const getEmailVerifyContent = (request, content = english) => {
 const handleEmailVerifyRequest = (request, h, content = english) => {
   logger.info('Displaying email verify email page')
 
-  // '' Get the email address from session
+  // Get the email address from session
   const emailAddress = request.yar.get('emailAddress') || ''
 
   if (!emailAddress) {
-    // '' If no email address in session, redirect back to email entry page
+    // If no email address in session, redirect back to email entry page
     return h.redirect(config.get(EMAIL_DETAILS_PATH_KEY))
   }
 
@@ -52,8 +52,8 @@ const handleEmailVerifyRequest = (request, h, content = english) => {
     getEmailVerifyContent(request, content)
   const { footerTxt, phaseBanner, cookieBanner } = languageContent
   const metaSiteUrl = getAirQualitySiteUrl(request)
-  // '' Prefer signup-specific location so browsing to other locations after
-  // '' sign-up doesn't change the text shown on this page.
+  // Prefer signup-specific location so browsing to other locations after
+  // sign-up doesn't change the text shown on this page.
   const location =
     request.yar.get('emailSignupLocation') || request.yar.get('location') || ''
   const sentLinkText = emailVerifyEmail.sentLinkText.replace(

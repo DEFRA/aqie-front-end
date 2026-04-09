@@ -175,7 +175,7 @@ async function getNearestLocationData(
   // Store calculated latlon from geolib in locationData ''
   locationData.latlon = latlon
 
-  // '' Ensure nearestLocation is an array; fallback to empty array if forecasts are missing
+  // Ensure nearestLocation is an array; fallback to empty array if forecasts are missing
   return {
     locationDetails,
     forecastNum,
@@ -211,7 +211,7 @@ function handleRequestData(request) {
 
 // Helper to initialize common variables
 async function initializeCommonVariables(request, locationId, lang) {
-  // '' Clear searchTermsSaved after handleSearchTermsRedirect check (0.685.0 behavior)
+  // Clear searchTermsSaved after handleSearchTermsRedirect check (0.685.0 behavior)
   clearSessionKeyIfExists(request, 'searchTermsSaved')
   const currentMonthName = moment().format('MMMM')
   const getMonth = calendarEnglish.indexOf(currentMonthName)

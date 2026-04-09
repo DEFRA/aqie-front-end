@@ -25,7 +25,7 @@ const setSessionIfChanged = (request, key, value) => {
         return
       }
     } catch {
-      // '' Ignore serialization errors and continue to set
+      // Ignore serialization errors and continue to set
     }
   }
 

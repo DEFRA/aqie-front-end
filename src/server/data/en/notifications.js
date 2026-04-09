@@ -2,7 +2,6 @@
  * English translations for SMS and Email notification journeys
  * Covers mobile number input, email input, code verification, and confirmation pages
  */
-// ''
 const SERVICE_NAME = 'Check air quality'
 const REQUEST_NEW_ACTIVATION_LINK = 'Request a new activation link'
 const ALERT_ALREADY_SET_UP = 'This alert has already been set up'

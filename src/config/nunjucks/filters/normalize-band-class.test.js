@@ -1,4 +1,4 @@
-// '' - Tests for normalizeBandClass filter
+// - Tests for normalizeBandClass filter
 import { describe, it, expect } from 'vitest'
 import {
   normalizeBandClass,

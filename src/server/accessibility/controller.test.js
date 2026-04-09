@@ -208,7 +208,6 @@ describe('Accessibility Handler - Direct Handler Function', () => {
   })
 
   it('should test accessibilityHandler function directly', () => {
-    // ''
     const result = accessibilityHandler(
       mockRequest,
       mockH,

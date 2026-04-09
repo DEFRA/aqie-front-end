@@ -72,7 +72,7 @@ describe('selectMeasurementsUrlAndOptions', () => {
       expect.objectContaining({ headers: expect.any(Object) })
     )
   })
-  // '' Test removed: function always uses Ricardo API now (useNewMeasurementsApi flag removed)
+  // Test removed: function always uses Ricardo API now (useNewMeasurementsApi flag removed)
 })
 
 describe('callAndHandleMeasurementsResponse', () => {

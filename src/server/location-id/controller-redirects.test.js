@@ -1,11 +1,11 @@
 // NOSONAR
-// '' Tests for Welsh redirects, search term redirects, session validation, UK/NI location processing
+// Tests for Welsh redirects, search term redirects, session validation, UK/NI location processing
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Test constants - Note: Can't be used in vi.mock() due to hoisting
 const MOCK_TEST_LOCATION = 'Test Location'
-const REDIRECT_URL_PATTERN = '/location?lang=en' // '' searchTerms intentionally removed - only from bookmarks/direct URLs
+const REDIRECT_URL_PATTERN = '/location?lang=en'
 const TEST_LOCATION_ID = 'test-location'
 const TEST_NI_LOCATION_ID = 'test-ni-location' // NOSONAR - Used in NI location mocks
 const MOCK_OBJECT_SIZE = 2048576 // 2MB in bytes
@@ -241,7 +241,6 @@ describe('Location ID Controller - Welsh Redirects', () => {
 
   describe('Welsh redirect - with lang=cy', () => {
     it('should redirect to Welsh URL when lang=cy and no search terms', async () => {
-      // ''
       mockRequest.query = { lang: 'cy' }
       mockRequest.yar.get.mockReturnValue(true)
 
@@ -255,7 +254,6 @@ describe('Location ID Controller - Welsh Redirects', () => {
 
   describe('Welsh redirect - with search terms', () => {
     it('should not redirect to Welsh URL when search terms present', async () => {
-      // ''
       mockRequest.query = { lang: 'cy', searchTerms: 'london' }
       mockRequest.yar.get
         .mockReturnValueOnce(true) // searchTermsSaved
@@ -299,7 +297,6 @@ describe('Location ID Controller - Search Term Redirects', () => {
 
   describe('Search terms redirect functionality', () => {
     it('should redirect when no referer and no saved search terms', async () => {
-      // ''
       mockRequest.headers = {}
       mockRequest.yar.get.mockReturnValueOnce(false) // searchTermsSaved
 
@@ -311,7 +308,6 @@ describe('Location ID Controller - Search Term Redirects', () => {
     })
 
     it('should redirect when referer equals current URL and no saved search terms', async () => {
-      // ''
       vi.mocked(compareLastElements).mockReturnValue(true)
 
       mockRequest.yar.get.mockReturnValueOnce(false) // searchTermsSaved
@@ -324,7 +320,7 @@ describe('Location ID Controller - Search Term Redirects', () => {
     })
 
     it.skip('should not redirect when referer exists and search terms saved', async () => {
-      // '' Skipped: mock DAQI changes affected this test
+      // Skipped: mock DAQI changes affected this test
       mockRequest.headers = {
         referer: 'http://localhost:3000/location?searchTerms=test'
       }
@@ -372,9 +368,8 @@ describe('Location ID Controller - Session Validation', () => {
   })
 
   describe('Session data validation', () => {
-    // '' Test disabled - controller no longer redirects on invalid session data, handles gracefully or returns error
+    // Test disabled - controller no longer redirects on invalid session data, handles gracefully or returns error
     it.skip('should redirect when locationData.results is not an array', async () => {
-      // ''
       mockRequest.params = { id: 'test' }
       mockRequest.headers = { referer: 'https://example.com/location' }
 
@@ -410,10 +405,9 @@ describe('Location ID Controller - Session Validation', () => {
       )
     })
 
-    // '' Test disabled - validation intentionally allows pages to render without forecasts
-    // '' See controller-helpers.js line 521: "Allow pages to render even without forecasts"
+    // Test disabled - validation intentionally allows pages to render without forecasts
+    // See controller-helpers.js line 521: "Allow pages to render even without forecasts"
     it.skip('should redirect when getForecasts is missing', async () => {
-      // ''
       mockRequest.yar.get
         .mockReturnValueOnce(true) // searchTermsSaved
         .mockReturnValueOnce({
@@ -428,9 +422,8 @@ describe('Location ID Controller - Session Validation', () => {
       )
     })
 
-    // '' Test disabled - controller no longer redirects on empty session data, handles gracefully or returns error
+    // Test disabled - controller no longer redirects on empty session data, handles gracefully or returns error
     it.skip('should redirect when locationData is empty object', async () => {
-      // ''
       mockRequest.params = { id: 'test' }
       mockRequest.headers = { referer: 'https://example.com/location' }
 
@@ -475,7 +468,6 @@ describe('Location ID Controller - Location Processing', () => {
 
   describe('UK location processing', () => {
     it('should successfully process UK location and return view', async () => {
-      // ''
       const mockLocationData = {
         results: [{ id: TEST_LOCATION_ID, name: MOCK_TEST_LOCATION }],
         getForecasts: [{ locationId: TEST_LOCATION_ID, forecast: 4 }],
@@ -539,7 +531,6 @@ describe('Location ID Controller - NI Location Processing', () => {
 
   describe('NI location processing', () => {
     it('should successfully process NI location', async () => {
-      // ''
       const mockLocationData = {
         results: [{ id: TEST_NI_LOCATION_ID, name: 'Belfast Location' }],
         getForecasts: [{ locationId: TEST_NI_LOCATION_ID, forecast: 3 }],

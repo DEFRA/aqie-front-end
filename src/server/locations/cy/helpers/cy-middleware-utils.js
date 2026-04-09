@@ -18,7 +18,7 @@ import {
   processNILocation
 } from './cy-location-processors.js'
 
-// '' Helper function to validate input and handle initial errors
+// Helper function to validate input and handle initial errors
 export const validateInputAndHandleErrors = async (
   request,
   h,
@@ -30,7 +30,7 @@ export const validateInputAndHandleErrors = async (
   const { searchTerms, searchTermsLocationType, initialLocationType } =
     searchOptions
 
-  // '' Handle error input and redirection
+  // Handle error input and redirection
   const redirectError = handleErrorInputAndRedirect(
     request,
     h,
@@ -49,7 +49,7 @@ export const validateInputAndHandleErrors = async (
     locationType = searchTermsLocationType
   }
 
-  // '' Handle invalid postcode
+  // Handle invalid postcode
   if (locationType === 'Invalid Postcode') {
     return {
       error: handleLocationNotFound(
@@ -63,7 +63,7 @@ export const validateInputAndHandleErrors = async (
     }
   }
 
-  // '' Validate location input
+  // Validate location input
   const isLocationValidPostcode = validateLocationPostcode(
     userLocation,
     redirectError.locationType
@@ -86,7 +86,7 @@ export const validateInputAndHandleErrors = async (
   return { userLocation, locationNameOrPostcode, locationType }
 }
 
-// '' Helper function to fetch and process data
+// Helper function to fetch and process data
 export const fetchAndProcessData = async (
   request,
   locationType,
@@ -96,7 +96,7 @@ export const fetchAndProcessData = async (
   searchTerms,
   secondSearchTerm
 ) => {
-  // '' Fetch location data
+  // Fetch location data
   const { getDailySummary, getForecasts, getOSPlaces } = await fetchData(
     request,
     {
@@ -113,7 +113,7 @@ export const fetchAndProcessData = async (
     return { error: 'NO_DAILY_SUMMARY' }
   }
 
-  // '' Process date and summary data
+  // Process date and summary data
   const { getMonthSummary, formattedDateSummary } = getFormattedDateSummary(
     getDailySummary?.issue_date,
     calendarEnglish,
@@ -138,7 +138,7 @@ export const fetchAndProcessData = async (
   }
 }
 
-// '' Helper function to set session data
+// Helper function to set session data
 export const setSessionData = (
   request,
   locationNameOrPostcode,
@@ -149,7 +149,7 @@ export const setSessionData = (
   request.yar.set('searchTermsSaved', searchTerms)
 }
 
-// '' Helper function to process location based on type
+// Helper function to process location based on type
 export const processLocationByType = (
   request,
   h,
@@ -161,7 +161,7 @@ export const processLocationByType = (
   } else if (locationType === LOCATION_TYPE_NI) {
     return processNILocation(request, h, processParams.niParams)
   } else {
-    // '' Handle other location types
+    // Handle other location types
     return handleLocationNotFound(
       request,
       h,

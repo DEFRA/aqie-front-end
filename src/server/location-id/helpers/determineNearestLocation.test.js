@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import determineNearestLocation from './determineNearestLocation.js'
 import { getNearestLocation } from '../../locations/helpers/get-nearest-location.js'
 
-// '' Mock the getNearestLocation dependency
+// Mock the getNearestLocation dependency
 vi.mock('../../locations/helpers/get-nearest-location.js', () => ({
   getNearestLocation: vi.fn()
 }))

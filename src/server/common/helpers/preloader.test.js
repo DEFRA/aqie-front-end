@@ -1,4 +1,3 @@
-// ''
 import { describe, expect, test, vi } from 'vitest'
 import {
   DEFAULT_PRELOADER_CONFIG,

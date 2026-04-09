@@ -1,4 +1,4 @@
-// '' Tests for modular back link helper
+// Tests for modular back link helper
 import { describe, it, expect } from 'vitest'
 import {
   createBackLink,

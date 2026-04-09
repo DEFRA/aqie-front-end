@@ -1,7 +1,5 @@
 import { retryController } from './controller.js'
 
-// ''
-
 const configureRoutes = (server) => {
   server.route([
     {

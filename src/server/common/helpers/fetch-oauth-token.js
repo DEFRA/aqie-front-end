@@ -1,4 +1,3 @@
-// ''
 import { createLogger } from './logging/logger.js'
 import { catchFetchError } from './catch-fetch-error.js'
 import { config } from '../../../config/index.js'

@@ -10,14 +10,14 @@ import {
   STATUS_UNAUTHORIZED
 } from '../../data/constants.js'
 
-// '' Accept logger as an optional parameter for testability
+// Accept logger as an optional parameter for testability
 const handleErrorInputAndRedirect = (
   request,
   h,
   lang,
   payload,
   searchTerms,
-  logger = createLogger() // '' Default to real logger if not provided
+  logger = createLogger()
 ) => {
   try {
     if (!searchTerms) {

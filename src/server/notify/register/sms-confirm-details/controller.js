@@ -96,7 +96,7 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
     request
   )
 
-  // '' Debug logging to see actual result
+  // Debug logging to see actual result
   logger.info('Setup alert result received', {
     ok: result.ok,
     status: result.status,

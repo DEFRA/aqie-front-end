@@ -39,7 +39,6 @@ describe('pointsInRange', () => {
 
 describe('getNearLocation', () => {
   it('should return nearest location', () => {
-    // ''
     const lat = 51.5074
     const lon = -0.1278
     const forecastCoordinates = [{ latitude: 51.5074, longitude: -0.1278 }]
@@ -54,7 +53,6 @@ describe('getNearLocation', () => {
   })
 
   it('should return empty array when getLocation is undefined', () => {
-    // ''
     const lat = 51.5074
     const lon = -0.1278
     const forecastCoordinates = [{ latitude: 51.5074, longitude: -0.1278 }]
@@ -66,7 +64,6 @@ describe('getNearLocation', () => {
   })
 
   it('should return empty array when getLocation missing latitude', () => {
-    // ''
     const lat = 51.5074
     const lon = -0.1278
     const forecastCoordinates = [{ latitude: 51.5074, longitude: -0.1278 }]
@@ -78,7 +75,6 @@ describe('getNearLocation', () => {
   })
 
   it('should handle error in findNearest and return empty array', () => {
-    // ''
     const lat = 51.5074
     const lon = -0.1278
     const forecastCoordinates = [{ latitude: 51.5074, longitude: -0.1278 }]
@@ -92,7 +88,6 @@ describe('getNearLocation', () => {
   })
 
   it('should return empty array when lat or lon is missing', () => {
-    // ''
     const forecastCoordinates = [{ latitude: 51.5074, longitude: -0.1278 }]
     const forecasts = [{ location: { coordinates: [51.5074, -0.1278] } }]
 
@@ -116,7 +111,6 @@ describe('orderByDistance', () => {
 
 describe('convertPointToLonLat', () => {
   it('should convert UK location points to lat/lon', () => {
-    // ''
     const matches = [
       { GAZETTEER_ENTRY: { GEOMETRY_X: 123456, GEOMETRY_Y: 654321 } }
     ]
@@ -130,7 +124,6 @@ describe('convertPointToLonLat', () => {
   })
 
   it('should convert NI location points using xCoordinate/yCoordinate', () => {
-    // ''
     const matches = [
       {
         xCoordinate: 123456,
@@ -148,7 +141,6 @@ describe('convertPointToLonLat', () => {
   })
 
   it('should convert NI location using LONGITUDE/LATITUDE when coordinates missing', () => {
-    // ''
     const matches = [
       {
         GAZETTEER_ENTRY: { LONGITUDE: 123456, LATITUDE: 654321 }
@@ -164,7 +156,6 @@ describe('convertPointToLonLat', () => {
   })
 
   it('should handle OsGridRef error for NI location', () => {
-    // ''
     const matches = [
       {
         GAZETTEER_ENTRY: { LONGITUDE: 'invalid', LATITUDE: 'invalid' }
@@ -185,7 +176,6 @@ describe('convertPointToLonLat', () => {
 
 describe('coordinatesTotal', () => {
   it('should return coordinates from matches', () => {
-    // ''
     const matches = [{ location: { coordinates: [51.5074, -0.1278] } }]
     const result = coordinatesTotal(matches)
 
@@ -193,7 +183,6 @@ describe('coordinatesTotal', () => {
   })
 
   it('should handle error in reduce and return empty array', () => {
-    // ''
     const matches = [{ location: null }] // This will cause an error
 
     const result = coordinatesTotal(matches)

@@ -43,7 +43,6 @@ describe('Nunjucks Template', () => {
   })
 
   it('should render the error-404-cy template correctly', () => {
-    // ''
     // Updated context to match the template keys in error-404-cy.njk
     const context = {
       notFoundUrl: {

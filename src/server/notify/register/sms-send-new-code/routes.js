@@ -4,7 +4,7 @@ import {
   handleSendNewCodePost
 } from './controller.js'
 
-// '' Welsh placeholder path for sms-send-new-code
+// Welsh placeholder path for sms-send-new-code
 const SMS_SEND_NEW_CODE_PATH_CY = '/hysbysiad/cofrestru/sms-anfon-cod-newydd'
 
 const routes = [

@@ -276,7 +276,7 @@ describe('splitAndCheckSpecificWords', () => {
 
   test('handles empty string input', () => {
     // Empty string splits to [''], length 1, so it goes to default case
-    // '' includes anything, and anything.toUpperCase() includes ''
+    // includes anything, and anything.toUpperCase() includes ''
     expect(splitAndCheckSpecificWords('HELLO', '')).toBe(true)
     // Source empty means sourceString.includes('') is true
     expect(splitAndCheckSpecificWords('', 'hello')).toBe(true)
@@ -487,20 +487,17 @@ describe('compareLastElements', () => {
 
 describe('convertString', () => {
   it('should convert string to uppercase', () => {
-    // ''
     const mockString = 'Test String'
     const result = convertString(mockString)
     expect(result).toBe('TEST STRING')
   })
 
   it('should handle empty string gracefully', () => {
-    // ''
     const result = convertString('')
     expect(result).toBe('')
   })
 
   it('should handle non-string inputs', () => {
-    // ''
     expect(convertString('hello')).toBe('HELLO')
     expect(convertString('123 ABC')).toBe('123 ABC')
     expect(convertString('mixed-case_test')).toBe('MIXED-CASE_TEST')

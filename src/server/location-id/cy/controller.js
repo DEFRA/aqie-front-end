@@ -27,7 +27,7 @@ import {
   renderNotFoundView,
   optimizeLocationDataInSession
 } from '../../common/helpers/location-controller-helper.js'
-// '' Import mock pollutant helpers
+// Import mock pollutant helpers
 import {
   mockPollutantBand as generateMockPollutantBand,
   applyMockPollutantsToSites
@@ -40,7 +40,7 @@ const logger = createLogger()
  * '' - Non-intrusive: only applies mock if explicitly enabled
  */
 function applyMockPollutants(request, monitoringSites) {
-  // '' Disable mock functionality when configured (production by default)
+  // Disable mock functionality when configured (production by default)
   const mocksDisabled = config.get('disableTestMocks')
   if (mocksDisabled) {
     return monitoringSites
@@ -182,12 +182,12 @@ function setLocationDates(locationData, dateValue) {
 function applyWelshTestMode(locationData, testMode) {
   switch (testMode) {
     case 'noDailySummary':
-      // '' Remove daily summary text only (keep date if today)
+      // Remove daily summary text only (keep date if today)
       locationData.dailySummary = null
       break
 
     case 'oldDate':
-      // '' Set date to yesterday (date should NOT show)
+      // Set date to yesterday (date should NOT show)
       if (locationData.dailySummary) {
         const yesterday = moment().subtract(1, 'days')
         locationData.dailySummary.issue_date = yesterday.format(
@@ -198,7 +198,7 @@ function applyWelshTestMode(locationData, testMode) {
       break
 
     case 'todayDate': {
-      // '' Set date to today (date SHOULD show)
+      // Set date to today (date SHOULD show)
       const today = moment()
       if (!locationData.dailySummary) {
         locationData.dailySummary = {}
@@ -211,7 +211,7 @@ function applyWelshTestMode(locationData, testMode) {
     }
 
     case 'noDataOldDate': {
-      // '' Remove daily summary AND set old date (nothing should show)
+      // Remove daily summary AND set old date (nothing should show)
       const yesterday = moment().subtract(1, 'days')
       locationData.dailySummary = {
         issue_date: yesterday.format(CY_LOCATION_DATE_TIME_FORMAT)
@@ -334,7 +334,7 @@ const getLocationDetailsController = {
         'useNewRicardoMeasurementsEnabled'
       )
 
-      // '' Store mock parameters in session (mockLevel, mockDay, mockPollutantBand, testMode)
+      // Store mock parameters in session (mockLevel, mockDay, mockPollutantBand, testMode)
       const mocksDisabled = config.get('disableTestMocks')
       persistMockAndTestModeParams(request, query, mocksDisabled)
 

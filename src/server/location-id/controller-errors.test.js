@@ -1,5 +1,5 @@
 // NOSONAR
-// '' Tests for location not found handling and error cases
+// Tests for location not found handling and error cases
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
@@ -234,7 +234,6 @@ describe('Location ID Controller - Location Not Found', () => {
 
   describe('Location not found - null details', () => {
     it('should return location not found view when location details is null', async () => {
-      // ''
       const mockLocationData = {
         results: [{ id: DIFFERENT_LOCATION_ID }],
         getForecasts: [{ locationId: DIFFERENT_LOCATION_ID }],
@@ -269,7 +268,6 @@ describe('Location ID Controller - Location Not Found', () => {
 
   describe('Location not found - undefined details', () => {
     it('should return location not found view when location details is undefined', async () => {
-      // ''
       const mockLocationData = {
         results: [{ id: DIFFERENT_LOCATION_ID }],
         getForecasts: [{ locationId: DIFFERENT_LOCATION_ID }],
@@ -312,7 +310,6 @@ describe('Location ID Controller - Error Handling', () => {
 
   describe('Exception handling', () => {
     it('should return 500 error when an exception occurs', async () => {
-      // ''
       mockRequest.yar.get.mockImplementation(() => {
         throw new Error('Session error')
       })
@@ -324,7 +321,6 @@ describe('Location ID Controller - Error Handling', () => {
     })
 
     it('should handle async errors in getNearestLocationData', async () => {
-      // ''
       mockRequest.yar.get.mockReturnValueOnce(true).mockReturnValueOnce({
         results: [{ id: 'test' }],
         getForecasts: [{ locationId: 'test' }],

@@ -2,8 +2,6 @@ import { english } from '../data/en/en.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 import { LANG_CY } from '../data/constants.js'
 
-// ''
-
 const RETRY_PATH = '/retry'
 const WELSH_SEARCH_PATH = '/chwilio-lleoliad/cy'
 

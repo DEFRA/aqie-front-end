@@ -124,7 +124,6 @@ export const navigationTranslationsWelsh = {
     },
     serviceAPI: {
       heading: PAGE_NOT_FOUND_MESSAGE,
-      // ''
       breakerOpenMessage:
         "Rydym yn methu cysylltu â'r gwasanaeth ansawdd aer dros dro. Arhoswch funud ac yna rhowch gynnig arall arni.",
       paragraphs: {

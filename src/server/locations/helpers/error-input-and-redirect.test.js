@@ -1,4 +1,4 @@
-// '' Mock dependencies before importing the module under test
+// Mock dependencies before importing the module under test
 import { handleErrorInputAndRedirect } from './error-input-and-redirect.js'
 import { handleNoSearchTerms, handleSearchTerms } from './handle-error-helpers'
 
@@ -15,7 +15,7 @@ describe('handleErrorInputAndRedirect', () => {
   let mockRequest, mockH, mockPayload
 
   beforeEach(() => {
-    // '' Reset all mocks before each test
+    // Reset all mocks before each test
     vi.clearAllMocks()
     handleNoSearchTerms.mockReset()
     handleSearchTerms.mockReset()
@@ -44,7 +44,6 @@ describe('handleErrorInputAndRedirect', () => {
   })
 
   it('should call handleNoSearchTerms when searchTerms is not provided', () => {
-    // ''
     const lang = 'en'
     handleNoSearchTerms.mockReturnValue({
       locationType: 'uk-location',
@@ -57,7 +56,7 @@ describe('handleErrorInputAndRedirect', () => {
       lang,
       mockPayload,
       null,
-      mockLogger // '' Pass mockLogger for testability
+      mockLogger
     )
 
     expect(handleNoSearchTerms).toHaveBeenCalledWith(
@@ -74,7 +73,6 @@ describe('handleErrorInputAndRedirect', () => {
   })
 
   it('should call handleSearchTerms when searchTerms is provided', () => {
-    // ''
     const lang = 'en'
     const searchTerms = 'London'
     handleSearchTerms.mockReturnValue({
@@ -88,7 +86,7 @@ describe('handleErrorInputAndRedirect', () => {
       lang,
       mockPayload,
       searchTerms,
-      mockLogger // '' Pass mockLogger for testability
+      mockLogger
     )
 
     expect(handleSearchTerms).toHaveBeenCalledWith(searchTerms)
@@ -100,7 +98,6 @@ describe('handleErrorInputAndRedirect', () => {
   })
 
   it("'' returns error view and logs when handleNoSearchTerms throws", () => {
-    // ''
     const lang = 'en'
     handleNoSearchTerms.mockImplementation(() => {
       throw new Error('fail no search')
@@ -112,7 +109,7 @@ describe('handleErrorInputAndRedirect', () => {
       lang,
       mockPayload,
       null,
-      mockLogger // '' Pass mockLogger for testability
+      mockLogger
     )
 
     expect(mockLogger.error).toHaveBeenCalledWith(
@@ -132,7 +129,6 @@ describe('handleErrorInputAndRedirect', () => {
   })
 
   it("'' returns error view and logs when handleSearchTerms throws", () => {
-    // ''
     const lang = 'en'
     handleSearchTerms.mockImplementation(() => {
       throw new Error('fail search')
@@ -144,7 +140,7 @@ describe('handleErrorInputAndRedirect', () => {
       lang,
       mockPayload,
       'London',
-      mockLogger // '' Pass mockLogger for testability
+      mockLogger
     )
 
     expect(mockLogger.error).toHaveBeenCalledWith(
@@ -164,7 +160,6 @@ describe('handleErrorInputAndRedirect', () => {
   })
 
   it("'' returns unauthorized status when error message contains access_token", () => {
-    // ''
     const lang = 'en'
     handleNoSearchTerms.mockImplementation(() => {
       throw new Error('missing access_token')
@@ -176,7 +171,7 @@ describe('handleErrorInputAndRedirect', () => {
       lang,
       mockPayload,
       null,
-      mockLogger // '' Pass mockLogger for testability
+      mockLogger
     )
 
     const viewArgs = mockH.view.mock.calls[0][1]
@@ -185,7 +180,6 @@ describe('handleErrorInputAndRedirect', () => {
   })
 
   it("'' handles missing searchTerms and missing payload gracefully", () => {
-    // ''
     handleNoSearchTerms.mockReturnValue({ result: 'ok' })
     const result = handleErrorInputAndRedirect(
       mockRequest,
@@ -193,7 +187,7 @@ describe('handleErrorInputAndRedirect', () => {
       'en',
       undefined,
       undefined,
-      mockLogger // '' Pass mockLogger for testability
+      mockLogger
     )
     expect(handleNoSearchTerms).toHaveBeenCalledWith(
       mockRequest,
@@ -205,7 +199,6 @@ describe('handleErrorInputAndRedirect', () => {
   })
 
   it("'' handles missing lang parameter", () => {
-    // ''
     handleNoSearchTerms.mockReturnValue({ result: 'ok' })
     const result = handleErrorInputAndRedirect(
       mockRequest,
@@ -213,15 +206,14 @@ describe('handleErrorInputAndRedirect', () => {
       undefined,
       mockPayload,
       null,
-      mockLogger // '' Pass mockLogger for testability
+      mockLogger
     )
     expect(result).toEqual({ result: 'ok' })
   })
 
   it("'' handles error with no message property", () => {
-    // ''
     handleNoSearchTerms.mockImplementation(() => {
-      // '' Throw an error without a message property
+      // Throw an error without a message property
       throw new Error()
     })
     const result = handleErrorInputAndRedirect(
@@ -230,7 +222,7 @@ describe('handleErrorInputAndRedirect', () => {
       'en',
       mockPayload,
       null,
-      mockLogger // '' Pass mockLogger for testability
+      mockLogger
     )
     expect(mockLogger.error).toHaveBeenCalled()
     expect(mockH.view).toHaveBeenCalledWith(
@@ -243,7 +235,6 @@ describe('handleErrorInputAndRedirect', () => {
   })
 
   it("'' sets all error view context fields", () => {
-    // ''
     handleNoSearchTerms.mockImplementation(() => {
       throw new Error('fail')
     })
@@ -253,7 +244,7 @@ describe('handleErrorInputAndRedirect', () => {
       'en',
       mockPayload,
       null,
-      mockLogger // '' Pass mockLogger for testability
+      mockLogger
     )
     const context = mockH.view.mock.calls[0][1]
     expect(context.pageTitle).toBeDefined()

@@ -72,7 +72,7 @@ export function initializeLocationVariables(request, lang) {
   const metaSiteUrl = getAirQualitySiteUrl(request)
   const components = UI_COMPONENTS[lang]
 
-  // '' Initialize mock parameters in session (for mock DAQI levels and days)
+  // Initialize mock parameters in session (for mock DAQI levels and days)
   initializeMockParameters(request)
 
   return {
@@ -182,7 +182,7 @@ export async function processLocationData(
  * Non-intrusive: only applies mock if explicitly enabled, otherwise returns original data
  */
 export function applyMockLevel(request, airQuality, lang = LANG_EN) {
-  // '' Disable mock functionality when configured (production by default)
+  // Disable mock functionality when configured (production by default)
   const mocksDisabled = config.get('disableTestMocks')
   if (mocksDisabled) {
     return airQuality
@@ -194,7 +194,7 @@ export function applyMockLevel(request, airQuality, lang = LANG_EN) {
 
   // Check session for mockLevel (preserved across redirects)
   const mockLevel = request.yar.get('mockLevel')
-  const mockDay = request.yar.get('mockDay') // '' Optional: specific day to apply mock level
+  const mockDay = request.yar.get('mockDay')
 
   if (mockLevel !== undefined && mockLevel !== null) {
     const level = parseInt(mockLevel, 10)
@@ -284,12 +284,12 @@ export function buildLocationViewData({
   // Apply mock level if requested (pass lang for language-specific mock data)
   airQuality = applyMockLevel(request, airQuality, lang)
 
-  // '' Get forecast warning for high/very high pollution levels
+  // Get forecast warning for high/very high pollution levels
   const forecastWarning = getForecastWarning(airQuality, lang)
 
   const components = UI_COMPONENTS[lang]
 
-  // '' Get searchTerms and locationName from request query for back link context
+  // Get searchTerms and locationName from request query for back link context
   const searchTerms = request?.query?.searchTerms || ''
   const locationNameFromQuery = request?.query?.locationName || ''
 

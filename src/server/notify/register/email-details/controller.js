@@ -179,10 +179,10 @@ const handleValidEmailSubmission = async (
 ) => {
   const { location, lat, long } = getSubmissionContext(request, email)
 
-  // '' Note: the backend has no GET /api/subscriptions endpoint for email.
-  // '' Max-5 enforcement happens at POST /setup-alert (after the user clicks
-  // '' the activation link). The email-confirm-link controller handles the 400
-  // '' and redirects back here with maxAlertsEmailError + maxAlertsEmail flags.
+  // Note: the backend has no GET /api/subscriptions endpoint for email.
+  // Max-5 enforcement happens at POST /setup-alert (after the user clicks
+  // the activation link). The email-confirm-link controller handles the 400
+  // and redirects back here with maxAlertsEmailError + maxAlertsEmail flags.
   await recordEmailCaptureSafely(email)
 
   // Send activation link and redirect to check email page ''
@@ -209,8 +209,8 @@ const getSubmissionContext = (request, email) => {
   const lat = request.yar.get('latitude')
   const long = request.yar.get('longitude')
 
-  // '' Persist dedicated signup context so it survives the user browsing to
-  // '' other locations before clicking 'Request a new activation link'.
+  // Persist dedicated signup context so it survives the user browsing to
+  // other locations before clicking 'Request a new activation link'.
   request.yar.set('emailSignupLocation', location)
   request.yar.set('emailSignupLat', lat)
   request.yar.set('emailSignupLong', long)
@@ -270,9 +270,9 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
     const ui = getEmailDetailsContent(content)
 
     logger.info('Starting email notify journey')
-    request.yar.set('notifyJourney', 'email-started') // ''
+    request.yar.set('notifyJourney', 'email-started')
 
-    // '' Read max-alerts error flag set by email-confirm-link after a 400 response
+    // Read max-alerts error flag set by email-confirm-link after a 400 response
     const { maxAlertsEmailError, maxAlertsEmail } =
       consumeMaxAlertsState(request)
 

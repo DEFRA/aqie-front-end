@@ -13,10 +13,10 @@ const handleNotifyRequest = (request, h, content = english) => {
 
   // Check if request.yar and its set method exist before calling it ''
   if (request.yar && typeof request.yar.set === 'function') {
-    request.yar.set('notifyJourney', 'started') // ''
+    request.yar.set('notifyJourney', 'started')
   } else {
     // Optionally log a warning or handle the missing session gracefully ''
-    logger.warn('Session (yar) is not available on the request object') // ''
+    logger.warn('Session (yar) is not available on the request object')
   }
 
   return h.view('notify/index', {
@@ -56,7 +56,7 @@ const handleNotifyPost = (request, h) => {
 
   // Store the mobile number in session ''
   if (request.yar && typeof request.yar.set === 'function') {
-    request.yar.set('mobileNumber', notifyByText.trim()) // ''
+    request.yar.set('mobileNumber', notifyByText.trim())
   }
 
   // Redirect to verification code page ''

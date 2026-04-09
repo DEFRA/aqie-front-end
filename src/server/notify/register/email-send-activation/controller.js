@@ -8,8 +8,8 @@ const logger = createLogger()
 
 const getSignupSessionContext = (request) => ({
   emailAddress: request.yar.get('emailAddress') || '',
-  // '' Prefer the signup-specific context so visiting other locations between
-  // '' sign-up and clicking 'Request a new activation link' doesn't corrupt the location.
+  // Prefer the signup-specific context so visiting other locations between
+  // sign-up and clicking 'Request a new activation link' doesn't corrupt the location.
   location:
     request.yar.get('emailSignupLocation') || request.yar.get('location') || '',
   lat: request.yar.get('emailSignupLat') ?? request.yar.get('latitude'),

@@ -121,7 +121,6 @@ export const navigationTranslations = {
     serviceAPI: {
       pageTitle: createEnglishPageTitle(SERVICE_ERROR_MESSAGE),
       heading: SERVICE_ERROR_MESSAGE,
-      // ''
       breakerOpenMessage:
         'We are temporarily unable to connect to the air quality service. Please wait a minute and try again.',
       paragraphs: {

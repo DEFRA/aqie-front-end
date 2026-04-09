@@ -1,4 +1,4 @@
-// '' Welsh pollutant level calculation using unified config
+// Welsh pollutant level calculation using unified config
 import { getPollutantLevel as getUnifiedPollutantLevel } from '../pollutant-threshold-config.js'
 
 function getPollutantLevelCy(polValue, pollutant) {

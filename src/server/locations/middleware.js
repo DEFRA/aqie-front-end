@@ -36,7 +36,7 @@ const areSerializedObjectsEqual = (left, right) => {
   try {
     return JSON.stringify(left) === JSON.stringify(right)
   } catch {
-    // '' Ignore serialization issues and continue to set session value
+    // Ignore serialization issues and continue to set session value
     return false
   }
 }
@@ -67,7 +67,7 @@ const handleLocationDataNotFound = (
   request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
   if (searchTerms) {
     request.yar.clear('searchTermsSaved')
-    // '' Render error view directly to avoid redirect
+    // Render error view directly to avoid redirect
     return h
       .view('error/index', {
         pageTitle: english.notFoundUrl.nonService.pageTitle,
@@ -256,7 +256,7 @@ const processLocationData = async (
   searchTerms,
   secondSearchTerm
 ) => {
-  // '' Return the promise directly to avoid redundant await
+  // Return the promise directly to avoid redundant await
   return fetchData(request, {
     locationType: redirectError.locationType,
     userLocation,

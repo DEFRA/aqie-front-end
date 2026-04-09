@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import matchLocationId from './matchLocationId.js'
 import { getIdMatch } from '../../locations/helpers/get-id-match.js'
 
-// '' Mock the getIdMatch dependency
+// Mock the getIdMatch dependency
 vi.mock('../../locations/helpers/get-id-match.js', () => ({
   getIdMatch: vi.fn()
 }))

@@ -71,7 +71,7 @@ const refreshOAuthToken = async (request, di = {}) => {
   const testLogger = di.logger || logger
   const testFetchOAuthToken = di.fetchOAuthToken || fetchOAuthToken
   const testIsTestMode = di.isTestMode || isTestMode
-  // '' Read saved access token for fallback on fetch failure
+  // Read saved access token for fallback on fetch failure
   const savedAccessToken = getSavedAccessToken(request)
 
   if (isRefreshTokenTestMode(testIsTestMode)) {
@@ -88,7 +88,7 @@ const refreshOAuthToken = async (request, di = {}) => {
     return fallbackResponse
   }
 
-  // '' Guard against missing request or yar (session) object
+  // Guard against missing request or yar (session) object
   persistSavedAccessToken(request, accessToken)
   return { accessToken }
 }
@@ -121,7 +121,7 @@ const handleNILocationData = async (...args) => {
   if (testIsMockEnabled) {
     return { results: ['niData'] }
   }
-  // ''  Use getNIPlaces for NI lookups - pass request for OAuth token refresh
+  //  Use getNIPlaces for NI lookups - pass request for OAuth token refresh
   return getNIPlaces(userLocation, request)
 }
 
@@ -173,7 +173,7 @@ const handleUKLocationData = async (...args) => {
   const { userLocation, searchTerms, secondSearchTerm, di } = resolveUKArgs(
     ...args
   )
-  // ''  Simple DI with fallbacks
+  //  Simple DI with fallbacks
   const resolved = resolveUKDependencies(di)
 
   const testModeResult = handleUKLocationDataTestMode(
@@ -247,13 +247,13 @@ const buildNIOptionsOAuth = async ({
     optionsOAuth = {}
   } else {
     logger.info('Mock is disabled, fetching OAuth token...')
-    // '' Guard against missing request or yar object
+    // Guard against missing request or yar object
     const savedAccessToken = request?.yar?.get('savedAccessToken')
     logger.info(`Saved access token exists: ${!!savedAccessToken}`)
-    // '' Extract accessToken from the returned object if we need to refresh
+    // Extract accessToken from the returned object if we need to refresh
     const tokenResult =
       savedAccessToken || (await resolvedRefreshOAuthToken(request))
-    // '' Handle both cases: savedAccessToken is a string, tokenResult is an object
+    // Handle both cases: savedAccessToken is a string, tokenResult is an object
     accessToken =
       typeof tokenResult === 'string' ? tokenResult : tokenResult?.accessToken
     logger.info(`Access token obtained: ${!!accessToken}`)

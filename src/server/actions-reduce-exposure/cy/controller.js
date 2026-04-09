@@ -4,7 +4,7 @@ import { LANG_CY, LANG_EN, REDIRECT_STATUS_CODE } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 import { formatUKPostcode } from '../../locations/helpers/convert-string.js'
 
-// '' Helper to build English redirect URL with query parameters
+// Helper to build English redirect URL with query parameters
 function buildEnglishRedirectUrl(locationId, searchTerms, locationName) {
   let redirectUrl = `/location/${locationId}/actions-reduce-exposure?lang=en`
   if (searchTerms.trim() !== '') {
@@ -16,7 +16,7 @@ function buildEnglishRedirectUrl(locationId, searchTerms, locationName) {
   return redirectUrl
 }
 
-// '' Helper to build Welsh back link text based on available context
+// Helper to build Welsh back link text based on available context
 function buildBackLinkText(formattedPostcode, locationName, defaultText) {
   if (formattedPostcode && locationName) {
     return `Llygredd aer yn ${formattedPostcode}, ${locationName}`
@@ -30,7 +30,7 @@ function buildBackLinkText(formattedPostcode, locationName, defaultText) {
   return defaultText
 }
 
-// '' Helper to build Welsh back link URL with query parameters
+// Helper to build Welsh back link URL with query parameters
 function buildBackLinkUrl(locationId, locationName) {
   let backLinkUrl = `/lleoliad/${locationId}?lang=cy`
   if (locationName.trim() !== '') {

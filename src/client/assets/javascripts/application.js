@@ -96,7 +96,7 @@ if ($cookiesPage) {
   console.warn('Cookies page element not found') // eslint-disable-line no-console
 }
 
-// '' Initialise preloaders
+// Initialise preloaders
 const $preloaders = document.querySelectorAll(PRELOADER_SELECTOR)
 $preloaders.forEach(($preloader) => initializeComponent(Preloader, $preloader))
 
@@ -126,7 +126,7 @@ createAll(Tabs)
 import daqiColumns from './daqi-columns.js'
 // DAQI accessibility enhancements: improve screen reader support and keyboard navigation
 import daqiAccessibility from './daqi-accessibility.js'
-// '' Search loading preloader removed
+// Search loading preloader removed
 
 if (daqiColumns && typeof daqiColumns.init === 'function') {
   if (

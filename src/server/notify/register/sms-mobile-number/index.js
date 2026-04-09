@@ -1,6 +1,6 @@
 import { handleNotifyRequest, handleNotifyPost } from './controller.js'
 
-// '' Welsh placeholder path for sms-mobile-number
+// Welsh placeholder path for sms-mobile-number
 const SMS_MOBILE_NUMBER_PATH_CY = '/hysbysiad/cofrestru/sms-rhif-ffon'
 
 const notify = {

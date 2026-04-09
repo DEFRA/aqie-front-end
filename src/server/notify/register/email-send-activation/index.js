@@ -3,7 +3,7 @@ import {
   handleEmailSendActivationPost
 } from './controller.js'
 
-// '' Welsh placeholder path for email-send-activation
+// Welsh placeholder path for email-send-activation
 const EMAIL_SEND_ACTIVATION_PATH_CY =
   '/hysbysiad/cofrestru/ebost-anfon-actifadu'
 

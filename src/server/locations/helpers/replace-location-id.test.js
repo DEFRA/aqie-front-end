@@ -1,4 +1,4 @@
-// '' - Tests for replaceLocationId helper
+// - Tests for replaceLocationId helper
 import { describe, it, expect } from 'vitest'
 import { replaceLocationId } from './replace-location-id.js'
 

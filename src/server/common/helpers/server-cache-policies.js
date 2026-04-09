@@ -1,4 +1,3 @@
-// ''
 import { config } from '../../../config/index.js'
 import { createLogger } from './logging/logger.js'
 import { HOUR_IN_MS, FIFTEEN_MINUTES_IN_MS } from '../../data/constants.js'

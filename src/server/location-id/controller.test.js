@@ -215,7 +215,7 @@ vi.mock('../../config/index.js', () => ({
         useNewRicardoMeasurementsEnabled: true,
         metaSiteUrl: 'https://uk-air.defra.gov.uk',
         nodeEnv: 'test',
-        disableTestMocks: false, // '' Allow mock functionality in tests
+        disableTestMocks: false,
         'session.cache.name': 'session'
       }
       return mockConfig[key]
@@ -301,7 +301,6 @@ describe('Location ID Controller Tests', () => {
 
   describe('Welsh redirect functionality', () => {
     it('should redirect to Welsh URL when lang=cy and no search terms', async () => {
-      // ''
       mockRequest.query = { lang: 'cy' }
       mockRequest.yar.get.mockReturnValue(true)
 
@@ -313,7 +312,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should not redirect to Welsh URL when search terms present', async () => {
-      // ''
       mockRequest.query = { lang: 'cy', searchTerms: 'london' }
       mockRequest.yar.get
         .mockReturnValueOnce(true) // searchTermsSaved
@@ -346,7 +344,6 @@ describe('Location ID Controller Tests', () => {
 
   describe('Search terms redirect functionality', () => {
     it('should redirect when no referer and no saved search terms', async () => {
-      // ''
       mockRequest.headers = {}
       mockRequest.yar.get.mockReturnValueOnce(false) // searchTermsSaved
 
@@ -358,7 +355,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should redirect when referer equals current URL and no saved search terms', async () => {
-      // ''
       vi.mocked(compareLastElements).mockReturnValue(true)
 
       mockRequest.state = { session: 'existing-session-cookie' }
@@ -372,7 +368,7 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should redirect on same URL refresh when session cookie exists and searchTermsSaved is missing', async () => {
-      // '' Regression: keep refresh protection active for existing sessions
+      // Regression: keep refresh protection active for existing sessions
       vi.mocked(compareLastElements).mockReturnValue(true)
 
       mockRequest.state = { session: 'existing-session-cookie' }
@@ -412,7 +408,7 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should not redirect bookmark first-hit when no referrer and no session cookie', async () => {
-      // '' Regression: prevent /location/{id} -> /location?... redirect loop for no-cookie bookmark hits
+      // Regression: prevent /location/{id} -> /location?... redirect loop for no-cookie bookmark hits
       mockRequest.headers = {}
       mockRequest.state = {}
 
@@ -459,7 +455,7 @@ describe('Location ID Controller Tests', () => {
     })
 
     it.skip('should not redirect when referer exists and search terms saved', async () => {
-      // '' TODO: Fix test - mock DAQI changes affected this test
+      // TODO: Fix test - mock DAQI changes affected this test
       mockRequest.headers = {
         referer: 'http://localhost:3000/location?searchTerms=test'
       }
@@ -497,7 +493,7 @@ describe('Location ID Controller Tests', () => {
 
   describe('Session data validation', () => {
     it('should rehydrate session keys from userDataPolicy cache hit in notification SMS flow', async () => {
-      // '' Explicitly verify cache-hit behavior for userDataPolicy path
+      // Explicitly verify cache-hit behavior for userDataPolicy path
       mockRequest.query = { lang: 'en', fromSmsFlow: 'true' }
       mockRequest.state = { session: 'existing-session-cookie' }
 
@@ -563,7 +559,7 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should fallback to computed values and write via setUserDataPayload on cache miss', async () => {
-      // '' Explicitly verify cache-miss behavior for userDataPolicy path
+      // Explicitly verify cache-miss behavior for userDataPolicy path
       mockRequest.query = { lang: 'en', fromSmsFlow: 'true' }
       mockRequest.state = { session: 'existing-session-cookie' }
 
@@ -634,7 +630,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should redirect when locationData.results is not an array', async () => {
-      // ''
       mockRequest.yar.get
         .mockReturnValueOnce(true) // searchTermsSaved
         .mockReturnValueOnce({
@@ -650,7 +645,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should redirect when getForecasts is missing', async () => {
-      // ''
       mockRequest.yar.get
         .mockReturnValueOnce(true) // searchTermsSaved
         .mockReturnValueOnce({
@@ -666,7 +660,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should redirect when locationData is empty object', async () => {
-      // ''
       mockRequest.yar.get
         .mockReturnValueOnce(true) // searchTermsSaved
         .mockReturnValueOnce({}) // empty locationData
@@ -734,7 +727,6 @@ describe('Location ID Controller Tests', () => {
 
   describe('Location processing for UK locations', () => {
     it('should successfully process UK location and return view', async () => {
-      // ''
       mockRequest.state = { session: 'existing-session-cookie' }
 
       const mockLocationData = {
@@ -787,7 +779,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should successfully process NI location', async () => {
-      // ''
       const mockLocationData = {
         results: [{ id: 'test-ni-location', name: 'Belfast Location' }],
         getForecasts: [{ locationId: 'test-ni-location', forecast: 3 }],
@@ -825,7 +816,6 @@ describe('Location ID Controller Tests', () => {
 
   describe('Location not found handling', () => {
     it('should return location not found view when location details is null', async () => {
-      // ''
       const mockLocationData = {
         results: [{ id: 'different-location' }],
         getForecasts: [{ locationId: 'different-location' }],
@@ -859,7 +849,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should return location not found view when location details is undefined', async () => {
-      // ''
       const mockLocationData = {
         results: [{ id: 'different-location' }],
         getForecasts: [{ locationId: 'different-location' }],
@@ -892,7 +881,6 @@ describe('Location ID Controller Tests', () => {
 
   describe('Error handling', () => {
     it('should return 500 error when an exception occurs', async () => {
-      // ''
       mockRequest.yar.get.mockImplementation(() => {
         throw new Error('Session error')
       })
@@ -904,7 +892,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should handle async errors in getNearestLocationData', async () => {
-      // ''
       mockRequest.yar.get
         .mockReturnValueOnce(true) // searchTermsSaved
         .mockReturnValueOnce({
@@ -929,7 +916,6 @@ describe('Location ID Controller Tests', () => {
 
   describe('Language and date handling', () => {
     it('should handle Welsh language correctly', async () => {
-      // ''
       mockRequest.query = { lang: 'cy', searchTerms: 'caerdydd' }
 
       const mockLocationData = {
@@ -970,7 +956,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should default to English when no lang parameter', async () => {
-      // ''
       mockRequest.query = {}
 
       const mockLocationData = {
@@ -1013,7 +998,6 @@ describe('Location ID Controller Tests', () => {
 
   describe('Session management', () => {
     it('should clear searchTermsSaved from session', async () => {
-      // ''
       mockRequest.state = { session: 'existing-session-cookie' }
 
       const mockLocationData = {
@@ -1049,7 +1033,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should update locationData in session with nearest location info', async () => {
-      // ''
       mockRequest.state = { session: 'existing-session-cookie' }
 
       const mockLocationData = {
@@ -1096,7 +1079,6 @@ describe('Location ID Controller Tests', () => {
 
   describe('showSummaryDate and issueTime calculations', () => {
     it('should calculate showSummaryDate when undefined and issue_date is today', async () => {
-      // ''
       const today = new Date()
       const todayStr = today.toISOString().split('T')[0] + ' 10:00:00'
 
@@ -1150,7 +1132,7 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should calculate showSummaryDate as false when issue_date is not today', async () => {
-      // '' Use a hardcoded past date to ensure it's not today
+      // Use a hardcoded past date to ensure it's not today
       const yesterdayStr = '2020-01-01 10:00:00'
 
       const mockLocationData = {
@@ -1202,7 +1184,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should preserve showSummaryDate when already set', async () => {
-      // ''
       const today = new Date()
       const todayStr = today.toISOString().split('T')[0] + ' 10:00:00'
 
@@ -1257,7 +1238,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should handle missing issue_date gracefully', async () => {
-      // ''
       const mockLocationData = {
         results: [{ id: 'test' }],
         getForecasts: [{ locationId: 'test' }],
@@ -1297,7 +1277,6 @@ describe('Location ID Controller Tests', () => {
 
   describe('Mock DAQI level functionality', () => {
     it('should apply mock level from session when provided', async () => {
-      // ''
       const mockLocationData = {
         results: [{ id: 'test' }],
         getForecasts: [{ locationId: 'test' }],
@@ -1334,7 +1313,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should store mockLevel in session when query parameter provided', async () => {
-      // ''
       mockRequest.query = { lang: 'en', mockLevel: '8' }
 
       const mockLocationData = {
@@ -1366,7 +1344,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should clear mockLevel when explicitly requested', async () => {
-      // ''
       mockRequest.query = { lang: 'en', mockLevel: 'clear' }
 
       const mockLocationData = {
@@ -1398,7 +1375,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should store mockDay in session when query parameter provided', async () => {
-      // ''
       mockRequest.query = { lang: 'en', mockDay: 'day3' }
 
       const mockLocationData = {
@@ -1432,7 +1408,6 @@ describe('Location ID Controller Tests', () => {
 
   describe('Mock pollutant band functionality', () => {
     it('should store mockPollutantBand in session when query parameter provided', async () => {
-      // ''
       mockRequest.query = { lang: 'en', mockPollutantBand: 'high' }
 
       const mockLocationData = {
@@ -1467,7 +1442,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should clear mockPollutantBand when explicitly requested', async () => {
-      // ''
       mockRequest.query = { lang: 'en', mockPollutantBand: 'clear' }
 
       const mockLocationData = {
@@ -1502,7 +1476,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should apply mockPollutantBand from session to monitoring sites', async () => {
-      // ''
       const mockLocationData = {
         results: [{ id: 'test' }],
         getForecasts: [{ locationId: 'test' }],
@@ -1541,7 +1514,6 @@ describe('Location ID Controller Tests', () => {
 
   describe('Mock parameter preservation in redirects', () => {
     it('should preserve mockLevel in Welsh redirect', async () => {
-      // ''
       mockRequest.query = { lang: 'cy', mockLevel: '5' }
       mockRequest.yar.get.mockReturnValue(true)
 
@@ -1553,7 +1525,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should preserve mockPollutantBand in Welsh redirect', async () => {
-      // ''
       mockRequest.query = { lang: 'cy', mockPollutantBand: 'moderate' }
       mockRequest.yar.get.mockReturnValue(true)
 
@@ -1565,7 +1536,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should preserve multiple mock parameters in search terms redirect', async () => {
-      // ''
       mockRequest.headers = { referer: 'https://example.com/previous' }
       mockRequest.state = { session: 'existing-session-cookie' }
       vi.mocked(compareLastElements).mockReturnValue(true)
@@ -1582,7 +1552,6 @@ describe('Location ID Controller Tests', () => {
 
   describe('Test mode functionality', () => {
     it('should store testMode in session when query parameter provided', async () => {
-      // ''
       mockRequest.query = { lang: 'en', testMode: 'noDailySummary' }
 
       const mockLocationData = {
@@ -1619,7 +1588,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should handle oldDate test mode - set date to yesterday', async () => {
-      // ''
       mockRequest.query = { lang: 'en' }
       mockRequest.state = { session: 'existing-session-cookie' }
 
@@ -1674,7 +1642,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should handle todayDate test mode - set date to today', async () => {
-      // ''
       mockRequest.query = { lang: 'en' }
       mockRequest.state = { session: 'existing-session-cookie' }
 
@@ -1727,7 +1694,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should handle noDataOldDate test mode - remove summary and set old date', async () => {
-      // ''
       mockRequest.query = { lang: 'en' }
       mockRequest.state = { session: 'existing-session-cookie' }
 
@@ -1783,7 +1749,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should handle unknown test mode with warning', async () => {
-      // ''
       mockRequest.query = { lang: 'en' }
 
       const mockLocationData = {
@@ -1822,7 +1787,6 @@ describe('Location ID Controller Tests', () => {
 
   describe('issueTime calculation when showSummaryDate already set', () => {
     it('should calculate and save issueTime when showSummaryDate is set but issueTime is missing', async () => {
-      // ''
       mockRequest.state = { session: 'existing-session-cookie' }
 
       const today = new Date()
@@ -1878,7 +1842,6 @@ describe('Location ID Controller Tests', () => {
     })
 
     it('should not recalculate issueTime when both showSummaryDate and issueTime are already set', async () => {
-      // ''
       const today = new Date()
       const todayStr = today.toISOString().split('T')[0] + ' 10:00:00'
 

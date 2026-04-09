@@ -6,7 +6,7 @@ import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
 const TEST_LOCATION = 'Test Location'
 
-// '' Shared mock setup
+// Shared mock setup
 function createMockRequestResponse() {
   const mockRequest = { query: {}, path: '/pollutants/particulate-matter-25' }
   const mockH = {
@@ -18,7 +18,7 @@ function createMockRequestResponse() {
   return { mockRequest, mockH }
 }
 
-// '' Setup mock for getAirQualitySiteUrl
+// Setup mock for getAirQualitySiteUrl
 function setupMockGetAirQualitySiteUrl() {
   vi.mock('../common/helpers/get-site-url.js', () => ({
     getAirQualitySiteUrl: vi.fn((request) => {

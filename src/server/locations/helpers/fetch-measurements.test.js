@@ -31,9 +31,9 @@ describe('fetchMeasurements edge branches', () => {
       request: {}
     })
     expect(result).toEqual([{ measurement: 'dev' }])
-    // '' Log message changed - function now uses debug logs
+    // Log message changed - function now uses debug logs
   })
-  // '' Test removed: function always uses Ricardo API now (no old API option)
+  // Test removed: function always uses Ricardo API now (no old API option)
 })
 
 describe('fetchMeasurements additional coverage', () => {

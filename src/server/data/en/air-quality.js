@@ -20,7 +20,7 @@ export const warningMessages = {
 export const commonMessages = {
   low: {
     values: [DAQI_INDEX_LOW, DAQI_INDEX_LOW_MID, DAQI_INDEX_MID],
-    // '' AQC-657: Removed redundant legacy phrase "Enjoy your usual outdoor activities." after rebase; updated copy for low level
+    // AQC-657: Removed redundant legacy phrase "Enjoy your usual outdoor activities." after rebase; updated copy for low level
     advice:
       'For most people, short term exposure to low levels of air pollution is not an issue.',
     insetText: `<p>For most people, short term exposure to low levels of air pollution is not an issue. Continue your usual outdoor activities.</p>
@@ -41,7 +41,7 @@ export const commonMessages = {
 <p>Follow your agreed management plan if you have one – for example, an asthma action plan. Ask your doctor or nurse for a plan if you do not have one.</p>
 <p>Also consider the impact of other triggers on your symptoms – for example, high pollen outside or poor air quality indoors.</p>`,
     atrisk: {
-      // '' Provide distinct at-risk summaries instead of redundant generic sentence
+      // Provide distinct at-risk summaries instead of redundant generic sentence
       adults: 'Some people may experience symptoms, even when levels are low.',
       asthma: 'People with asthma should follow their usual management plan.',
       oldPeople:
@@ -227,7 +227,7 @@ export function getDetailedInfo(aqValue = '4') {
     band,
     readableBand,
     advice: message.advice,
-    insetText: message.insetText, // '' AQC-657: Include insetText for dynamic health advice display
+    insetText: message.insetText,
     atrisk: message.atrisk,
     outlook: message.outlook,
     ukToday: message.ukToday, // Consider updating these messages to be relevant for each day

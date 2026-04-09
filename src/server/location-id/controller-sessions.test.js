@@ -1,4 +1,4 @@
-// '' Tests for session management (searchTermsSaved clearing and locationData updates)
+// Tests for session management (searchTermsSaved clearing and locationData updates)
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
@@ -234,7 +234,6 @@ describe('Location ID Controller - Session Management', () => {
 
   describe('Session management - searchTermsSaved', () => {
     it('should clear searchTermsSaved from session', async () => {
-      // ''
       const mockLocationData = {
         results: [{ id: 'test' }],
         getForecasts: [{ locationId: 'test' }],
@@ -270,7 +269,6 @@ describe('Location ID Controller - Session Management', () => {
 
   describe('Session management - locationData updates', () => {
     it('should update locationData in session with nearest location info', async () => {
-      // ''
       mockRequest.params = { id: 'test' }
       mockRequest.headers = { referer: 'https://example.com/location' }
 
@@ -283,7 +281,7 @@ describe('Location ID Controller - Session Management', () => {
         issueTime: '12:00'
       }
 
-      const nearestLocation = [{ id: 'test', forecast: 4 }] // '' Changed to array to match actual implementation
+      const nearestLocation = [{ id: 'test', forecast: 4 }]
       const nearestLocationsRange = [{ id: 'nearby-1' }]
 
       // Use mockImplementation to handle all yar.get calls dynamically
@@ -320,7 +318,6 @@ describe('Location ID Controller - Session Management', () => {
 
   describe('Alert coordinates - NI fallback', () => {
     it('should prefer NI result coordinates for alert links', async () => {
-      // ''
       mockRequest.params = { id: 'bt11aa' }
       mockRequest.headers = { referer: 'https://example.com/location' }
 

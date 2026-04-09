@@ -3,7 +3,7 @@ import { actionsReduceExposureCyController } from './controller.js'
 import { welsh } from '../../data/cy/cy.js'
 import { LANG_CY, LANG_EN } from '../../data/constants.js'
 
-// '' Test constants
+// Test constants
 const WELSH_PATH = '/lleoliad/n87ge/camau-lleihau-amlygiad/cy'
 const VIEW_RENDERED = 'view rendered'
 const VIEW_TEMPLATE = 'actions-reduce-exposure/index'
@@ -18,7 +18,7 @@ vi.mock('../../common/helpers/get-site-url.js', () => ({
 // eslint-disable-next-line import-x/first -- vi.mock() must be before imports for Vitest hoisting
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
-// '' Helper function to create mock objects
+// Helper function to create mock objects
 function createMockObjects() {
   const mockRequest = {
     query: {},
@@ -50,7 +50,6 @@ describe('Actions Reduce Exposure - Welsh - English Redirect', () => {
 
   describe('English language redirect', () => {
     it('should redirect to the English version if the language is "en"', () => {
-      // ''
       mockRequest.query.lang = LANG_EN
       mockRequest.path = '/location/n87ge/actions-reduce-exposure'
       const expectedUrl =
@@ -82,7 +81,6 @@ describe('Actions Reduce Exposure - Welsh - Page Rendering', () => {
 
   describe('Welsh page rendering', () => {
     it('should render the Welsh actions reduce exposure page with the necessary data', () => {
-      // ''
       mockRequest = {
         query: {
           lang: LANG_CY
@@ -138,7 +136,6 @@ describe('Actions Reduce Exposure - Welsh - Location Name in Back Link', () => {
 
   describe('Location name parameter', () => {
     it('should handle location name parameter and enable back link', () => {
-      // ''
       mockRequest = {
         query: {
           lang: LANG_CY,
@@ -179,7 +176,6 @@ describe('Actions Reduce Exposure - Welsh - Postcode Formatting', () => {
 
   describe('Postcode formatting in back links', () => {
     it('should format postcode and include location name in back link text', () => {
-      // ''
       mockRequest = {
         query: {
           lang: LANG_CY,
@@ -208,7 +204,6 @@ describe('Actions Reduce Exposure - Welsh - Postcode Formatting', () => {
     })
 
     it('should format postcode without location name in back link text', () => {
-      // ''
       mockRequest = {
         query: {
           lang: LANG_CY,

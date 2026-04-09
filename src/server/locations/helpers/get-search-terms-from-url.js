@@ -6,7 +6,7 @@ import {
 import { getPostcode } from './get-postcode-type.js'
 import { isOnlyWords } from './convert-string.js'
 
-// '' Helper to determine language from URL path segment
+// Helper to determine language from URL path segment
 function determineLanguageFromUrl(splits) {
   if (
     !splits ||
@@ -25,7 +25,7 @@ function determineLanguageFromUrl(splits) {
   return ''
 }
 
-// '' Helper to extract string between last slash and query parameter
+// Helper to extract string between last slash and query parameter
 function extractSearchString(url) {
   const lastSlashIndex = url.lastIndexOf('/')
   let interrogationSignIndex = url.indexOf('?')
@@ -37,7 +37,7 @@ function extractSearchString(url) {
   return url.substring(lastSlashIndex + 1, interrogationSignIndex)
 }
 
-// '' Helper to determine location type based on postcode type
+// Helper to determine location type based on postcode type
 function determineLocationType(postcodeType) {
   if (
     postcodeType === 'Full Northern Ireland Postcode' ||

@@ -20,12 +20,12 @@ const formatTemplate = (template = '', replacements = {}) => {
 const handleEmailDuplicateRequest = (request, h, content = english) => {
   logger.info('Showing email duplicate subscription page')
 
-  // '' Ensure notificationFlow is set so when user searches again, they stay in flow
+  // Ensure notificationFlow is set so when user searches again, they stay in flow
   if (!request.yar.get('notificationFlow')) {
     request.yar.set('notificationFlow', 'email')
   }
 
-  // '' Get location and email address from session
+  // Get location and email address from session
   const location = request.yar.get('location') || 'this location'
   const emailAddress = request.yar.get('emailAddress') || 'your email address'
 

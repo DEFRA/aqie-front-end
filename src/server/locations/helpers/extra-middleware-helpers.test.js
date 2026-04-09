@@ -1,4 +1,3 @@
-// ''
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import {
   handleErrorInputAndRedirect,
@@ -107,7 +106,6 @@ describe('extra-middleware-helpers.js', () => {
 
   describe('handleErrorInputAndRedirect', () => {
     it('should redirect to location-not-found when no payload locationType and no searchTerms', () => {
-      // ''
       const payload = { engScoWal: 'London' }
       const searchTerms = ''
       const lang = 'en'
@@ -129,7 +127,6 @@ describe('extra-middleware-helpers.js', () => {
     })
 
     it('should return location data when payload has locationType', () => {
-      // ''
       const payload = {
         locationType: 'UK',
         engScoWal: 'London'
@@ -154,7 +151,6 @@ describe('extra-middleware-helpers.js', () => {
     })
 
     it('should return location data when searchTerms provided', () => {
-      // ''
       const payload = { engScoWal: 'London' }
       const searchTerms = 'Birmingham'
       const lang = 'cy'
@@ -175,7 +171,6 @@ describe('extra-middleware-helpers.js', () => {
     })
 
     it('should use NI location when payload has ni property', () => {
-      // ''
       const payload = {
         locationType: 'NI',
         ni: 'Belfast'
@@ -199,7 +194,6 @@ describe('extra-middleware-helpers.js', () => {
     })
 
     it('should handle empty payload gracefully', () => {
-      // ''
       const payload = {}
       const searchTerms = ''
       const lang = 'en'
@@ -220,7 +214,6 @@ describe('extra-middleware-helpers.js', () => {
     })
 
     it('should handle null payload gracefully', () => {
-      // ''
       const payload = null
       const searchTerms = 'Test Location'
       const lang = 'cy'
@@ -252,7 +245,6 @@ describe('extra-middleware-helpers.js', () => {
     }
 
     it('should handle single match correctly', async () => {
-      // ''
       const deduplicatedResults = [{ name: 'London', id: 1 }]
       const selectedMatches = [{ name: 'London', id: 1 }]
       const titleData = { title: 'London' }
@@ -290,7 +282,6 @@ describe('extra-middleware-helpers.js', () => {
     })
 
     it('should handle multiple matches correctly', async () => {
-      // ''
       const deduplicatedResults = [
         { name: 'London', id: 1 },
         { name: 'London Bridge', id: 2 }
@@ -317,7 +308,6 @@ describe('extra-middleware-helpers.js', () => {
     })
 
     it('should redirect to location-not-found when no matches and no searchTerms', async () => {
-      // ''
       const paramsNoSearchTerms = { ...mockParams, searchTerms: '' }
 
       mockDeduplicateResults.mockReturnValue([])
@@ -335,7 +325,6 @@ describe('extra-middleware-helpers.js', () => {
     })
 
     it('should render error view when no matches but searchTerms exist', async () => {
-      // ''
       mockDeduplicateResults.mockReturnValue([])
       mockProcessMatches.mockReturnValue({ selectedMatches: [] })
 
@@ -365,7 +354,6 @@ describe('extra-middleware-helpers.js', () => {
     })
 
     it('should handle empty results array', async () => {
-      // ''
       const emptyParams = { ...mockParams, getOSPlaces: { results: [] } }
 
       mockDeduplicateResults.mockReturnValue([])
@@ -377,7 +365,6 @@ describe('extra-middleware-helpers.js', () => {
     })
 
     it('should handle Welsh language correctly', async () => {
-      // ''
       const welshParams = { ...mockParams, lang: 'cy' }
 
       mockDeduplicateResults.mockReturnValue([])

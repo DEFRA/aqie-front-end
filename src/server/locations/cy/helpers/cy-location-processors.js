@@ -28,7 +28,7 @@ import {
   handleLocationNotFound
 } from './cy-validation-helpers.js'
 
-// '' Helper function to prepare location data
+// Helper function to prepare location data
 const prepareLocationData = (
   selectedMatches,
   locationNameOrPostcode,
@@ -59,7 +59,7 @@ const prepareLocationData = (
   }
 }
 
-// '' Helper function to build common parameters
+// Helper function to build common parameters
 const buildCommonParams = (selectedMatches, locationData, params) => {
   const { title, headerTitle, urlRoute, headerTitleRoute, titleRoute } =
     locationData
@@ -106,7 +106,7 @@ const buildCommonParams = (selectedMatches, locationData, params) => {
   }
 }
 
-// '' Helper function to route based on match count and criteria
+// Helper function to route based on match count and criteria
 const routeBasedOnMatches = (
   selectedMatches,
   requestContext,
@@ -146,7 +146,7 @@ const routeBasedOnMatches = (
   }
 }
 
-// '' Helper function to handle matched locations
+// Helper function to handle matched locations
 export const handleMatchedLocations = (
   selectedMatches,
   locationNameOrPostcode,
@@ -155,17 +155,17 @@ export const handleMatchedLocations = (
   request,
   params
 ) => {
-  // '' Prepare location data
+  // Prepare location data
   const locationData = prepareLocationData(
     selectedMatches,
     locationNameOrPostcode,
     userLocation
   )
 
-  // '' Build common parameters
+  // Build common parameters
   const commonParams = buildCommonParams(selectedMatches, locationData, params)
 
-  // '' Route based on matches
+  // Route based on matches
   return routeBasedOnMatches(
     selectedMatches,
     {
@@ -185,7 +185,7 @@ export const handleMatchedLocations = (
   )
 }
 
-// '' Helper function to process UK locations
+// Helper function to process UK locations
 export const processUKLocation = async (request, h, params) => {
   const {
     searchTerms,
@@ -197,7 +197,7 @@ export const processUKLocation = async (request, h, params) => {
     welsh
   } = params
 
-  // '' Validate search terms
+  // Validate search terms
   const searchValidation = validateUKSearchTerms(
     searchTerms,
     request,
@@ -210,7 +210,7 @@ export const processUKLocation = async (request, h, params) => {
     return searchValidation.response
   }
 
-  // '' Validate and process results
+  // Validate and process results
   const resultsValidation = validateAndProcessResults(
     getOSPlaces,
     {
@@ -232,7 +232,7 @@ export const processUKLocation = async (request, h, params) => {
     return resultsValidation.response
   }
 
-  // '' Handle matched locations
+  // Handle matched locations
   return handleMatchedLocations(
     resultsValidation.selectedMatches,
     locationNameOrPostcode,
@@ -243,7 +243,7 @@ export const processUKLocation = async (request, h, params) => {
   )
 }
 
-// '' Helper function to process NI locations
+// Helper function to process NI locations
 export const processNILocation = async (request, h, params) => {
   const {
     locationNameOrPostcode,

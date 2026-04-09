@@ -3,7 +3,7 @@
 describe('5 Location Maximum - Integration Tests (Simple)', () => {
   describe('Phone Number Display Logic', () => {
     test('displays full phone numbers without masking', () => {
-      // '' Phone numbers are now displayed in full
+      // Phone numbers are now displayed in full
       const testCases = [
         { input: '07700900982', expected: '07700900982' },
         { input: '07123456789', expected: '07123456789' },
@@ -12,7 +12,7 @@ describe('5 Location Maximum - Integration Tests (Simple)', () => {
       ]
 
       testCases.forEach((testCase) => {
-        // '' No masking applied - full number displayed
+        // No masking applied - full number displayed
         const displayed = testCase.input
         expect(displayed).toBe(testCase.expected)
       })
@@ -21,20 +21,20 @@ describe('5 Location Maximum - Integration Tests (Simple)', () => {
 
   describe('Maximum Alerts Logic', () => {
     test('understands backend response format for max reached', () => {
-      // '' Backend returns status 400 when max reached
+      // Backend returns status 400 when max reached
       const maxReachedResponse = { ok: true, maxReached: true }
       expect(maxReachedResponse.maxReached).toBe(true)
 
-      // '' Backend returns status 200 when can add more
+      // Backend returns status 200 when can add more
       const canAddMoreResponse = { ok: true, maxReached: false }
       expect(canAddMoreResponse.maxReached).toBe(false)
     })
 
     test('understands error handling strategy', () => {
-      // '' When API fails, should fail open (allow user to proceed)
+      // When API fails, should fail open (allow user to proceed)
       const apiErrorResponse = { ok: false, maxReached: false }
 
-      // '' Logic: If !ok, we fail open and allow proceed
+      // Logic: If !ok, we fail open and allow proceed
       const shouldBlock = apiErrorResponse.ok && apiErrorResponse.maxReached
       expect(shouldBlock).toBe(false) // Should not block on API error
     })
@@ -65,7 +65,7 @@ describe('5 Location Maximum - Integration Tests (Simple)', () => {
 
   describe('Expected Flow Documentation', () => {
     test('documents maximum alerts flow', () => {
-      // '' This test documents the expected flow for maximum alerts
+      // This test documents the expected flow for maximum alerts
       const flow = {
         step1:
           'User at /notify/register/sms-success clicks "search for another location"',
@@ -98,7 +98,7 @@ describe('5 Location Maximum - Integration Tests (Simple)', () => {
     })
 
     test('documents duplicate alert flow', () => {
-      // '' This test documents the expected flow for duplicate alerts
+      // This test documents the expected flow for duplicate alerts
       const flow = {
         step1: 'User submits alert confirmation',
         step2: 'POST /notify/register/sms-confirm-details',

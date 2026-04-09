@@ -1,4 +1,4 @@
-// '' Modular back link helper for creating consistent back link configurations
+// Modular back link helper for creating consistent back link configurations
 
 /**
  * Creates a back link configuration object
@@ -10,7 +10,7 @@
 function createBackLink(options = {}) {
   const { text, url } = options
 
-  // '' Validate inputs
+  // Validate inputs
   if (!text || !url) {
     return {
       displayBacklink: false,
@@ -88,10 +88,10 @@ function createLocationBackLink(options = {}) {
     return createSearchLocationBackLink(lang)
   }
 
-  // '' Build back link text using helper
+  // Build back link text using helper
   const backLinkText = generateBackLinkText(searchTerms, locationName, lang)
 
-  // '' Build back link URL
+  // Build back link URL
   const locationPath =
     lang === 'cy' ? `/lleoliad/${locationId}` : `/location/${locationId}`
   const langParam = lang === 'cy' ? 'lang=cy' : 'lang=en'

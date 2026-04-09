@@ -42,7 +42,6 @@ const resolveDependency = (injectedValue, fallbackValue) => {
 }
 // Dependency Injection setup helpers
 function setupFetchForecastsDI(di = {}) {
-  // ''
   // These dependencies must be provided by the importing file
   // config, logger, catchFetchError, errorResponse, isTestMode, FORECASTS_API_PATH, HTTP_STATUS_OK, optionsEphemeralProtected, options
   // You may need to import these in the main file and pass them in DI if not present
@@ -69,7 +68,6 @@ function setupFetchForecastsDI(di = {}) {
 }
 
 function setupNILocationDataDI(di = {}) {
-  // ''
   // These dependencies must be provided by the importing file
   // logger, buildNIPostcodeUrl, isMockEnabled, config, formatNorthernIrelandPostcode, catchProxyFetchError, isTestMode
   // You may need to import these in the main file and pass them in DI if not present
@@ -94,7 +92,6 @@ function setupNILocationDataDI(di = {}) {
 }
 
 function setupUKLocationDataDI(di = {}) {
-  // ''
   // These dependencies must be provided by the importing file
   // logger, config, buildUKLocationFilters, combineUKSearchTerms, isValidFullPostcodeUK, isValidPartialPostcodeUK, buildUKApiUrl, shouldCallUKApi, catchProxyFetchError, formatUKApiResponse, isTestMode, SYMBOLS_ARRAY, HTTP_STATUS_OK, options
   // You may need to import these in the main file and pass them in DI if not present

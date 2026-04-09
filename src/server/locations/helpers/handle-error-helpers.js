@@ -26,16 +26,16 @@ import {
 /**
  * Handles the case where search terms are not provided.
  */
-const REFERER_PATH_INDEX = 3 // '' Index for the path segment in the referer header
+const REFERER_PATH_INDEX = 3
 
 const getRefererPath = (request) => {
-  // '' Extracts the path segment from the referer header.
+  // Extracts the path segment from the referer header.
   const tempString = request?.headers?.referer?.split('/')[REFERER_PATH_INDEX]
   return tempString?.split('?')[0]
 }
 
 const getLocationTypeAndName = (request, payload) => {
-  // '' Retrieves locationType and locationNameOrPostcode from payload or session.
+  // Retrieves locationType and locationNameOrPostcode from payload or session.
   const locationType = request.payload?.locationType
   const locationNameOrPostcode =
     getLocationNameOrPostcode(locationType, payload) ||
@@ -49,7 +49,7 @@ const setSessionValues = (
   locationNameOrPostcode,
   airQuality
 ) => {
-  // '' Sets session values for locationType, locationNameOrPostcode, and airQuality.
+  // Sets session values for locationType, locationNameOrPostcode, and airQuality.
   request.yar.set('locationType', locationType)
   request.yar.set('locationNameOrPostcode', locationNameOrPostcode)
   request.yar.set('airQuality', airQuality)
@@ -132,8 +132,8 @@ const handleSearchTerms = (searchTerms) => {
     }
   }
 
-  // '' Non-postcode and non-word inputs (for example symbols) are invalid.
-  // '' Mark explicitly so caller can return a validation error without API calls.
+  // Non-postcode and non-word inputs (for example symbols) are invalid.
+  // Mark explicitly so caller can return a validation error without API calls.
   return {
     invalidInput: true,
     locationType: DEFAULT_LOCATION_TYPE,

@@ -1,7 +1,7 @@
 import { handleEmailDuplicateRequest } from './controller.js'
 import { config } from '../../../../config/index.js'
 
-// '' Welsh placeholder path for email-duplicate
+// Welsh placeholder path for email-duplicate
 const EMAIL_DUPLICATE_PATH_CY = '/hysbysiad/cofrestru/ebost-dyblyg'
 
 const emailDuplicate = {

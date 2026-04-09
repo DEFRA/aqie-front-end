@@ -10,7 +10,7 @@ import {
 } from './middleware-title-date-helpers.js'
 
 const buildMockQueryParams = (request) => {
-  // '' Disable mock parameters when configured (production by default)
+  // Disable mock parameters when configured (production by default)
   const mocksDisabled = config.get('disableTestMocks')
   if (mocksDisabled) {
     return ''

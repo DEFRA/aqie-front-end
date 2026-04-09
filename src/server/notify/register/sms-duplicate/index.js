@@ -1,7 +1,7 @@
 import { handleDuplicateSubscriptionRequest } from './controller.js'
 import { config } from '../../../../config/index.js'
 
-// '' Welsh placeholder path for sms-duplicate
+// Welsh placeholder path for sms-duplicate
 const SMS_DUPLICATE_PATH_CY = '/hysbysiad/cofrestru/sms-dyblyg'
 
 const smsDuplicate = {

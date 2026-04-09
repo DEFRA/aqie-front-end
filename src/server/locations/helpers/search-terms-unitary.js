@@ -1,24 +1,24 @@
-// '' Helper function to normalize strings for comparison
+// Helper function to normalize strings for comparison
 const normalizeString = (str) => str?.toUpperCase().replaceAll(/\s+/g, '')
 
-// '' Helper function to check if search term is undefined or empty
+// Helper function to check if search term is undefined or empty
 const isSearchTermEmpty = (term) => term === 'UNDEFINED' || term === ''
 
-// '' Helper function to check bidirectional string inclusion
+// Helper function to check bidirectional string inclusion
 const checkBidirectionalMatch = (str1, str2) => {
   const norm1 = normalizeString(str1)
   const norm2 = normalizeString(str2)
   return norm1?.includes(norm2) && norm2?.includes(norm1)
 }
 
-// '' Helper function to check unidirectional string inclusion
+// Helper function to check unidirectional string inclusion
 const checkUnidirectionalMatch = (str1, str2) => {
   const norm1 = normalizeString(str1)
   const norm2 = normalizeString(str2)
   return norm1?.includes(norm2) || norm2?.includes(norm1)
 }
 
-// '' Handle name2 matching scenarios
+// Handle name2 matching scenarios
 function handleName2Match(searchTerms, name2, secondSearchTerm, unitary) {
   if (isSearchTermEmpty(secondSearchTerm)) {
     return checkBidirectionalMatch(name2, searchTerms)
@@ -34,7 +34,7 @@ function handleName2Match(searchTerms, name2, secondSearchTerm, unitary) {
   return false
 }
 
-// '' Handle name1 matching scenarios
+// Handle name1 matching scenarios
 function handleName1Match(
   searchTerms,
   name1,
@@ -66,12 +66,12 @@ function searchTermsAndUnitary(
   exactWordFirstTerm,
   exactWordSecondTerm
 ) {
-  // '' Handle name2 scenarios first
+  // Handle name2 scenarios first
   if (name2) {
     return handleName2Match(searchTerms, name2, secondSearchTerm, unitary)
   }
 
-  // '' Handle name1 scenarios
+  // Handle name1 scenarios
   return handleName1Match(
     searchTerms,
     name1,

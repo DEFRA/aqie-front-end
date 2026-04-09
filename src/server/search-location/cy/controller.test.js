@@ -176,7 +176,7 @@ describe('searchLocationController - Welsh Language Handling', () => {
   })
 
   it('should set notificationFlow when SMS flow flag is present', () => {
-    // '' Ensure SMS flow is captured
+    // Ensure SMS flow is captured
     mockRequest = {
       query: {
         lang: 'cy',
@@ -206,7 +206,6 @@ describe('searchLocationController - Welsh Error Handling', () => {
   })
 
   it('should display error view when errors exist', () => {
-    // ''
     const mockErrors = {
       errors: [{ field: 'location', message: 'Error message' }]
     }

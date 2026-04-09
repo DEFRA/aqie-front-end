@@ -16,7 +16,6 @@ describe('format-sentence', () => {
 
   describe('addToSentenceCase', () => {
     it('should add toSentenceCase filter to environment', () => {
-      // ''
       const result = addToSentenceCase(mockEnv)
 
       expect(mockEnv.addFilter).toHaveBeenCalledWith(
@@ -27,7 +26,6 @@ describe('format-sentence', () => {
     })
 
     it('should handle errors during filter registration', () => {
-      // ''
       const errorEnv = {
         addFilter: vi.fn(() => {
           throw new Error('Registration error')
@@ -48,14 +46,12 @@ describe('format-sentence', () => {
       })
 
       it('should convert string to sentence case', () => {
-        // ''
         expect(filterFunction(TEST_STRING_HELLO)).toBe(TEST_STRING_CAPITALIZED)
         expect(filterFunction('HELLO WORLD')).toBe(TEST_STRING_CAPITALIZED)
         expect(filterFunction('hELLO wORLD')).toBe(TEST_STRING_CAPITALIZED)
       })
 
       it('should handle non-string inputs', () => {
-        // ''
         expect(filterFunction(TEST_NUMBER)).toBe(TEST_NUMBER)
         expect(filterFunction(null)).toBe(null)
         expect(filterFunction(undefined)).toBe(undefined)
@@ -63,13 +59,11 @@ describe('format-sentence', () => {
       })
 
       it('should handle empty strings', () => {
-        // ''
         expect(filterFunction('')).toBe('')
         expect(filterFunction(' ')).toBe(' ')
       })
 
       it('should handle single character strings', () => {
-        // ''
         expect(filterFunction('a')).toBe('A')
         expect(filterFunction('Z')).toBe('Z')
       })

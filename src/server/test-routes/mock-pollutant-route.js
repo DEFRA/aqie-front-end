@@ -30,7 +30,7 @@ const PATH_TEST_POLLUTANTS_CUSTOM = '/test-pollutants-custom'
 const CLASS_ACTIVE = 'class="active"'
 const CONTENT_TYPE_HTML = 'text/html'
 
-// ''  Helper function to generate HTML table rows for pollutants
+//  Helper function to generate HTML table rows for pollutants
 const generatePollutantTableRows = (mockPollutants, normalizedBand) => {
   return Object.entries(mockPollutants)
     .map(
@@ -46,7 +46,7 @@ const generatePollutantTableRows = (mockPollutants, normalizedBand) => {
     .join('')
 }
 
-// ''  Helper function to generate band selector links
+//  Helper function to generate band selector links
 const generateBandSelectorLinks = (normalizedBand) => {
   return `
     <a href="/test-pollutants?band=${BAND_LOW}" ${normalizedBand === BAND_LOW ? CLASS_ACTIVE : ''}>Low</a>
@@ -56,7 +56,7 @@ const generateBandSelectorLinks = (normalizedBand) => {
   `
 }
 
-// ''  Helper function to generate common CSS styles
+//  Helper function to generate common CSS styles
 const getTestPageStyles = () => {
   return `
         body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
@@ -148,7 +148,7 @@ const generateBandTestHTML = (normalizedBand, mockPollutants) => {
   `
 }
 
-// ''  Helper function to generate custom pollutants CSS
+//  Helper function to generate custom pollutants CSS
 const getCustomPollutantsStyles = () => {
   return `
         body { font-family: Arial, sans-serif; padding: 20px; max-width: 900px; margin: 0 auto; }
@@ -211,7 +211,7 @@ const generateCustomPollutantTableRows = (mockPollutants) => {
     .join('')
 }
 
-// ''  Helper function to generate custom pollutants HTML
+//  Helper function to generate custom pollutants HTML
 const generateCustomPollutantsHTML = (
   validPollutants,
   pollutantBands,
@@ -266,7 +266,7 @@ const generateCustomPollutantsHTML = (
   `
 }
 
-// ''  Helper function to generate all bands CSS
+//  Helper function to generate all bands CSS
 const getAllBandsStyles = () => {
   return `
         body { font-family: Arial, sans-serif; padding: 20px; }
@@ -296,7 +296,7 @@ const getAllBandsStyles = () => {
   `
 }
 
-// ''  Helper function to generate all bands comparison HTML
+//  Helper function to generate all bands comparison HTML
 const generateAllBandsHTML = (bands, allBandsData) => {
   return `
 <!DOCTYPE html>

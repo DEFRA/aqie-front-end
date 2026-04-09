@@ -3,7 +3,7 @@ import handleSearchTermsRedirection from './handleSearchTermsRedirection.js'
 import { compareLastElements } from '../../locations/helpers/convert-string.js'
 import { getSearchTermsFromUrl } from '../../locations/helpers/get-search-terms-from-url.js'
 
-// '' Mock the dependencies
+// Mock the dependencies
 vi.mock('../../locations/helpers/convert-string.js', () => ({
   compareLastElements: vi.fn()
 }))

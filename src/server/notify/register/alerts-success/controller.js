@@ -1,4 +1,4 @@
-// '' Email alerts success controller
+// Email alerts success controller
 import { createLogger } from '../../../common/helpers/logging/logger.js'
 import { english } from '../../../data/en/en.js'
 import { welsh } from '../../../data/cy/cy.js'
@@ -7,7 +7,7 @@ import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { config } from '../../../../config/index.js'
 import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
 
-// '' Create a logger instance
+// Create a logger instance
 const logger = createLogger()
 
 const ALERTS_SUCCESS_SESSION_KEYS = [
@@ -119,7 +119,7 @@ const handleAlertsSuccessRequest = (request, h, _content = english) => {
 }
 
 const handleAlertsSuccessPost = (request, h) => {
-  // '' Clear all notification session data when user is done
+  // Clear all notification session data when user is done
   clearSessionKeys(request, ALERTS_SUCCESS_SESSION_KEYS)
 
   return h.redirect('/')

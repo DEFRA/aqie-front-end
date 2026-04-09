@@ -1,10 +1,10 @@
-// '' - Helper to generate forecast warning for high and very high pollution levels
+// - Helper to generate forecast warning for high and very high pollution levels
 import moment from 'moment'
 import { warningMessages as enWarningMessages } from '../../data/en/air-quality.js'
 import { warningMessages as cyWarningMessages } from '../../data/cy/air-quality.js'
 import { LANG_CY, LANG_EN } from '../../data/constants.js'
 
-// ''  Constants for high pollution bands
+//  Constants for high pollution bands
 const HIGH_BANDS = new Set(['high', 'uchel'])
 const VERY_HIGH_BANDS = new Set(['veryHigh', 'uchelIawn'])
 
@@ -60,7 +60,7 @@ export function getForecastWarning(airQuality, lang = LANG_EN) {
     return null
   }
 
-  // ''  Find first day with high or very high pollution
+  //  Find first day with high or very high pollution
   for (const day of FORECAST_DAYS) {
     const dayData = airQuality[day.key]
     if (!dayData?.band) {

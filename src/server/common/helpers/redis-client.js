@@ -32,7 +32,7 @@ export function buildRedisClient(redisConfig) {
       host,
       db,
       keyPrefix,
-      enableReadyCheck: false, // ''
+      enableReadyCheck: false,
       ...credentials,
       ...tls
     })
@@ -50,7 +50,7 @@ export function buildRedisClient(redisConfig) {
         dnsLookup: (address, callback) => callback(null, address),
         redisOptions: {
           db,
-          enableReadyCheck: false, // ''
+          enableReadyCheck: false,
           ...credentials,
           ...tls
         }

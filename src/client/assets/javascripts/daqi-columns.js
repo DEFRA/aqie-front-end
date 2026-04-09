@@ -177,7 +177,7 @@ if (typeof document !== 'undefined' && typeof window !== 'undefined') {
   }
 }
 // daqi-columns.js
-// '' Measure DAQI bar segment widths and set a CSS variable so labels and bar share column sizing
+// Measure DAQI bar segment widths and set a CSS variable so labels and bar share column sizing
 
 function debounce(fn, wait = 100) {
   let t
@@ -247,7 +247,7 @@ function setDaqiColumns() {
       )
     }
 
-    // '' Development mode: Add 'data-manual-dividers' attribute to container to disable automatic updates
+    // Development mode: Add 'data-manual-dividers' attribute to container to disable automatic updates
     if (container.hasAttribute('data-manual-dividers')) {
       return
     }

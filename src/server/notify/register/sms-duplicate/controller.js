@@ -20,16 +20,16 @@ const formatTemplate = (template = '', replacements = {}) => {
 const handleDuplicateSubscriptionRequest = (request, h, content = english) => {
   logger.info('Showing duplicate subscription page')
 
-  // '' Ensure notificationFlow is set so when user searches again, they stay in flow
+  // Ensure notificationFlow is set so when user searches again, they stay in flow
   if (!request.yar.get('notificationFlow')) {
     request.yar.set('notificationFlow', 'sms')
   }
 
-  // '' Get location and phone number from session
+  // Get location and phone number from session
   const location = request.yar.get('location') || 'this location'
   const mobileNumber = request.yar.get('mobileNumber') || ''
 
-  // '' Use full phone number for display
+  // Use full phone number for display
   const maskedPhoneNumber = mobileNumber
 
   const lang = resolveNotifyLanguage(request)
@@ -41,7 +41,7 @@ const handleDuplicateSubscriptionRequest = (request, h, content = english) => {
   const serviceName = common?.serviceName || DEFAULT_SERVICE_NAME
   const pageTitle = smsDuplicate.pageTitle
 
-  // '' Content structure ready for Welsh translation
+  // Content structure ready for Welsh translation
   const pageContent = {
     heading: smsDuplicate.heading,
     description: formatTemplate(smsDuplicate.description, {

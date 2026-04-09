@@ -70,7 +70,6 @@ describe('startServer', () => {
 
   describe('Server Startup', () => {
     it('should create and start server successfully', async () => {
-      // ''
       mockServer.start.mockResolvedValue()
 
       await startServer()
@@ -80,7 +79,6 @@ describe('startServer', () => {
     })
 
     it('should log server start success message', async () => {
-      // ''
       mockServer.start.mockResolvedValue()
 
       await startServer()
@@ -91,7 +89,6 @@ describe('startServer', () => {
     })
 
     it('should log server access URL', async () => {
-      // ''
       mockServer.start.mockResolvedValue()
       mockConfig.get.mockReturnValue(3000)
 
@@ -105,7 +102,6 @@ describe('startServer', () => {
 
   describe('Error Handling', () => {
     it('should handle server creation errors', async () => {
-      // ''
       const error = new Error('Server creation failed')
       mockCreateServer.mockRejectedValue(error)
 
@@ -113,7 +109,6 @@ describe('startServer', () => {
     })
 
     it('should handle server start errors', async () => {
-      // ''
       const error = new Error('Server start failed')
       mockServer.start.mockRejectedValue(error)
 
@@ -123,7 +118,6 @@ describe('startServer', () => {
 
   describe('Signal Handling', () => {
     it('should register SIGTERM handler', async () => {
-      // ''
       mockServer.start.mockResolvedValue()
 
       const beforeCount = process.listenerCount('SIGTERM')
@@ -134,7 +128,6 @@ describe('startServer', () => {
     })
 
     it('should register SIGINT handler', async () => {
-      // ''
       mockServer.start.mockResolvedValue()
 
       const beforeCount = process.listenerCount('SIGINT')

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { BASE_URL, REDIRECT_STATUS_CODE } from './constants.js'
 
-// '' - Constant to avoid magic number
+// - Constant to avoid magic number
 const EXPECTED_REDIRECT_CODE = 301
 
 describe('accessibility cy constants', () => {

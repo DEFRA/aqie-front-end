@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { handleUKLocationData, handleNILocationData } from './fetch-data.js'
 
-// '' Mock NI places helper to avoid network calls in unit tests
+// Mock NI places helper to avoid network calls in unit tests
 vi.mock('./get-ni-places.js', () => ({
   getNIPlaces: vi.fn().mockResolvedValue({ results: ['niData'] })
 }))

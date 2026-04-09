@@ -9,4 +9,3 @@ const alertsSuccess = {
 }
 
 export { alertsSuccess }
-// ''

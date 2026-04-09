@@ -19,7 +19,6 @@ vi.mock('./logging/logger.js', () => ({
 
 describe('get-site-url', () => {
   test('should export getAirQualitySiteUrl function', async () => {
-    // ''
     const module = await import('./get-site-url.js')
 
     expect(module.getAirQualitySiteUrl).toBeDefined()
@@ -27,7 +26,6 @@ describe('get-site-url', () => {
   })
 
   test('should generate URL correctly', async () => {
-    // ''
     const module = await import('./get-site-url.js')
 
     const request = {
@@ -42,7 +40,6 @@ describe('get-site-url', () => {
   })
 
   test('should handle request without query params', async () => {
-    // ''
     const module = await import('./get-site-url.js')
 
     const request = {

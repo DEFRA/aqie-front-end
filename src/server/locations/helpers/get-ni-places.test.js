@@ -157,7 +157,7 @@ describe('getNIPlaces', () => {
   })
 
   it('should handle SMS journey scenario with undefined request', async () => {
-    // '' Test the fix for SMS journey where request might be undefined
+    // Test the fix for SMS journey where request might be undefined
     const mockData = { results: [{ postcode: 'BT1 1AA', town: 'Belfast' }] }
     catchProxyFetchError.mockResolvedValue([STATUS_OK, mockData])
     const result = await getNIPlaces('BT1 1AA', undefined)
@@ -167,7 +167,7 @@ describe('getNIPlaces', () => {
   })
 
   it('should return service-unavailable error when NI API fails', async () => {
-    // '' Simulate upstream failure from catchProxyFetchError
+    // Simulate upstream failure from catchProxyFetchError
     catchProxyFetchError.mockResolvedValue([
       null,
       { error: 'service-unavailable' }

@@ -91,7 +91,7 @@ describe('Welsh Location ID Controller - Redirects', () => {
 
     mockRequest.headers.referer = null
     mockRequest.yar.get.mockImplementation((key) => {
-      // '' - Return consistent types to satisfy SonarQube
+      // - Return consistent types to satisfy SonarQube
       if (key === 'searchTermsSaved') {
         return { saved: true }
       }

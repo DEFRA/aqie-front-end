@@ -1,11 +1,11 @@
-// '' - Unified pollutant threshold configuration to eliminate duplication
+// - Unified pollutant threshold configuration to eliminate duplication
 import {
   POLLUTANT_BAND_LABELS,
   POLLUTANT_THRESHOLD_VALUES,
   FIRST_INDEX
 } from '../../data/constants.js'
 
-// '' - Common threshold structure using constants
+// - Common threshold structure using constants
 const POLLUTANT_THRESHOLDS_CONFIG = {
   PM10: [
     { max: POLLUTANT_THRESHOLD_VALUES.PM10_MAX_1, daqi: 1, bandKey: 'LOW' },
@@ -57,12 +57,12 @@ const POLLUTANT_THRESHOLDS_CONFIG = {
   ]
 }
 
-// '' - Helper function to find the appropriate threshold for a pollutant value
+// - Helper function to find the appropriate threshold for a pollutant value
 function findPollutantThreshold(thresholds, value) {
   return thresholds.find((threshold) => value <= threshold.max)
 }
 
-// '' - Unified function that works for both languages
+// - Unified function that works for both languages
 function getPollutantLevel(polValue, pollutant, language = 'en') {
   const thresholds = POLLUTANT_THRESHOLDS_CONFIG[pollutant]
 

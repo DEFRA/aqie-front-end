@@ -21,9 +21,9 @@ const filterByPostcode = (matches, postcodes) => {
   const { isFullPostcode } = postcodes
 
   if (isFullPostcode && matches.length > SINGLE_MATCH) {
-    // '' Sort matches alphabetically by location name for consistency
-    // '' Prefer POPULATED_PLACE if available, else use DISTRICT_BOROUGH or COUNTY_UNITARY
-    // '' This ensures same postcode always returns same result (e.g., "N8 7GE, Hornsey")
+    // Sort matches alphabetically by location name for consistency
+    // Prefer POPULATED_PLACE if available, else use DISTRICT_BOROUGH or COUNTY_UNITARY
+    // This ensures same postcode always returns same result (e.g., "N8 7GE, Hornsey")
     const sortedMatches = [...matches].sort((a, b) => {
       const locationA =
         normalizePopulatedPlace(a.GAZETTEER_ENTRY?.POPULATED_PLACE) ||

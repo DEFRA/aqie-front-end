@@ -13,7 +13,6 @@ vi.mock('./middleware-helpers.js', () => ({
 describe('handle-single-match-helper', () => {
   describe('handleSingleMatchHelper', () => {
     it('should call handleSingleMatch with correct parameters', () => {
-      // ''
       const mockH = {}
       const mockRequest = {}
       const mockParams = {

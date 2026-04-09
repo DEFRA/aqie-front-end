@@ -224,7 +224,7 @@ describe('api-utils - selectMeasurementsUrlAndOptions error handling', () => {
       }
     )
 
-    // '' Falls back to direct Ricardo URL when no ephemeral URL available
+    // Falls back to direct Ricardo URL when no ephemeral URL available
     expect(result.url).toContain(RICARDO_API_URL)
   })
 })

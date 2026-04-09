@@ -10,8 +10,6 @@ import {
   resolvePreloaderLanguage
 } from '../common/helpers/preloader.js'
 
-// ''
-
 const LOADING_PATH = '/loading'
 const WELSH_SEARCH_PATH = '/chwilio-lleoliad/cy'
 
@@ -39,11 +37,11 @@ const loadingController = {
     })
     const postcode = request.query?.postcode || ''
 
-    // '' Check if NI processing is active in session
+    // Check if NI processing is active in session
     const niProcessing = request.yar?.get('niProcessing')
 
     if (!niProcessing) {
-      // '' No active processing, redirect to search
+      // No active processing, redirect to search
       const searchPath =
         lang === LANG_CY ? SEARCH_LOCATION_PATH_CY : SEARCH_LOCATION_PATH_EN
       return h.redirect(searchPath)

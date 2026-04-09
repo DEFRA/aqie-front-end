@@ -142,7 +142,7 @@ describe('util-helpers - buildNIOptionsOAuth', () => {
   })
   it('should return options with OAuth token when mock is disabled', async () => {
     mockRequest.yar.get.mockReturnValue(null)
-    const testToken = 'oauth-token-123' // '' Test token - not a real credential
+    const testToken = 'oauth-token-123'
     const mockRefreshOAuthToken = vi.fn().mockResolvedValue(testToken)
 
     const result = await buildNIOptionsOAuth({
