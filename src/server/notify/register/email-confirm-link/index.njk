@@ -2,20 +2,13 @@
 
 {% block content %}
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-two-thirds odd-page">
 
       <h1 class="govuk-heading-l">{{ heading }}</h1>
       <p class="govuk-body">{{ content.errorExpiredBody }}</p>
       <p class="govuk-body">
         <a href="/search-location" class="govuk-link">{{ content.errorSearchLinkText }}</a>
         {{ content.errorSearchLinkSuffix }}
-      </p>
-
-      <p class="govuk-body">
-        <a href="/notify/register/email-send-activation" class="govuk-link">{{ content.requestNewLinkText }}</a>
-      </p>
-      <p class="govuk-body">
-        <a href="/notify/register/email-details" class="govuk-link">{{ content.changeEmailLinkText }}</a>
       </p>
 
     </div>
