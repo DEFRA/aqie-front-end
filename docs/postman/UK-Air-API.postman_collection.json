@@ -1,0 +1,637 @@
+{
+  "info": {
+    "name": "UK Air API",
+    "description": "Postman collection for the UK Air API.\n\nEnvironments:\n- Staging: https://uk-air-api.staging.rcdo.co.uk\n- Prod: TBA\n\nAPI Docs: https://uk-air-api.staging.rcdo.co.uk/api/docs\n\nAuthentication: JWT via /api/login_check. Run the 'Login' request first — the token is automatically saved to the {{jwt_token}} variable.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://uk-air-api.staging.rcdo.co.uk",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "email",
+      "value": "foobar@defra.gov.uk",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "foobar",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.collectionVariables.set('jwt_token', json.token);",
+                  "  console.log('JWT token saved to collection variable jwt_token');",
+                  "} else {",
+                  "  console.error('Login failed:', pm.response.text());",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/login_check",
+              "host": ["{{base_url}}"],
+              "path": ["api", "login_check"]
+            },
+            "description": "Authenticate and receive a JWT token.\n\nExpected responses:\n- HTTP 200: `{\"token\": \"Your-JWT\"}`\n- HTTP 401: `{\"code\": 401, \"message\": \"Invalid credentials.\"}`\n\nOn success the token is automatically saved to {{jwt_token}}."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Site Metadata",
+      "item": [
+        {
+          "name": "List all sites",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/site_meta_datas",
+              "host": ["{{base_url}}"],
+              "path": ["api", "site_meta_datas"]
+            },
+            "description": "Returns a list of all sites and related metadata."
+          }
+        },
+        {
+          "name": "List closed sites",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/site_meta_datas?with-closed=true",
+              "host": ["{{base_url}}"],
+              "path": ["api", "site_meta_datas"],
+              "query": [
+                {
+                  "key": "with-closed",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Returns closed sites and related metadata.\n\nNOTE: Still under test — the closed site flag may not be working correctly."
+          }
+        },
+        {
+          "name": "List sites with pollutants metadata",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/site_meta_datas?with-pollutants=1&start-date=1982-02-02",
+              "host": ["{{base_url}}"],
+              "path": ["api", "site_meta_datas"],
+              "query": [
+                {
+                  "key": "with-pollutants",
+                  "value": "1"
+                },
+                {
+                  "key": "start-date",
+                  "value": "1982-02-02"
+                }
+              ]
+            },
+            "description": "Returns sites with related pollutants metadata from the given start date."
+          }
+        },
+        {
+          "name": "List sites with network details (AURN only)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/site_meta_datas?with-closed=1&networks[]=4&start-date=1982-02-02",
+              "host": ["{{base_url}}"],
+              "path": ["api", "site_meta_datas"],
+              "query": [
+                {
+                  "key": "with-closed",
+                  "value": "1"
+                },
+                {
+                  "key": "networks[]",
+                  "value": "4"
+                },
+                {
+                  "key": "start-date",
+                  "value": "1982-02-02"
+                }
+              ]
+            },
+            "description": "Returns sites with related network details. Currently returns AURN network only.\n\nNOTE: `networks[]=4` is specific to the AURN network. Changing this will have no effect."
+          }
+        },
+        {
+          "name": "List sites within a distance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/site_meta_datas?latitude=54.599650&longitude=-5.928833&distance=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "site_meta_datas"],
+              "query": [
+                {
+                  "key": "latitude",
+                  "value": "54.599650"
+                },
+                {
+                  "key": "longitude",
+                  "value": "-5.928833"
+                },
+                {
+                  "key": "distance",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Returns sites within a given distance (miles) of a lat/long coordinate.\n\nNOTE: All three parameters `latitude`, `longitude` and `distance` must be provided. `distance` is in miles."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pollutant Measurement Data",
+      "item": [
+        {
+          "name": "List measurements by network (AURN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pollutant_measurement_datas?networks[]=4",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pollutant_measurement_datas"],
+              "query": [
+                {
+                  "key": "networks[]",
+                  "value": "4"
+                }
+              ]
+            },
+            "description": "Returns pollutant measurements filtered by network.\n\nNOTE: `networks[]=4` is specific to the AURN network. Changing this will have no effect."
+          }
+        },
+        {
+          "name": "List measurements by station ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pollutant_measurement_datas?station-id=UKA00399",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pollutant_measurement_datas"],
+              "query": [
+                {
+                  "key": "station-id",
+                  "value": "UKA00399"
+                }
+              ]
+            },
+            "description": "Returns pollutant measurements filtered by station ID."
+          }
+        },
+        {
+          "name": "List measurements by pollutant",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pollutant_measurement_datas?pollutant-name=O3",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pollutant_measurement_datas"],
+              "query": [
+                {
+                  "key": "pollutant-name",
+                  "value": "O3"
+                }
+              ]
+            },
+            "description": "Returns measurements filtered by pollutant name.\n\nAvailable pollutants: CO, GE10, GR10, GR25, NO, NO2, NOXasNO2, NV10, NV25, O3, PM25, SO2, V10, V25, uGR10, uGR25"
+          }
+        },
+        {
+          "name": "List measurements by data type",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pollutant_measurement_datas?data-type=12",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pollutant_measurement_datas"],
+              "query": [
+                {
+                  "key": "data-type",
+                  "value": "12"
+                }
+              ]
+            },
+            "description": "Returns measurements filtered by data type.\n\nValues 12, 23 and 24 retrieve data from statistics. All other values use measurements."
+          }
+        },
+        {
+          "name": "List measurements between dates",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pollutant_measurement_datas?start-date-time=2025-03-10 00:00:00&end-date-time=2025-03-12 23:59:00",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pollutant_measurement_datas"],
+              "query": [
+                {
+                  "key": "start-date-time",
+                  "value": "2025-03-10 00:00:00"
+                },
+                {
+                  "key": "end-date-time",
+                  "value": "2025-03-12 23:59:00"
+                }
+              ]
+            },
+            "description": "Returns measurements between two date-times.\n\nNOTE: Both `start-date-time` and `end-date-time` are required. A large date range will negatively impact response time."
+          }
+        }
+      ]
+    },
+    {
+      "name": "DAQI Alerts",
+      "item": [
+        {
+          "name": "List DAQI alerts (today)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/daqi_alerts",
+              "host": ["{{base_url}}"],
+              "path": ["api", "daqi_alerts"]
+            },
+            "description": "Returns DAQI alerts. By default the date range is set to today."
+          }
+        },
+        {
+          "name": "List DAQI alerts between dates",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/daqi_alerts?page=1&start-date=2026-02-10&end-date=2026-02-11",
+              "host": ["{{base_url}}"],
+              "path": ["api", "daqi_alerts"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "start-date",
+                  "value": "2026-02-10"
+                },
+                {
+                  "key": "end-date",
+                  "value": "2026-02-11"
+                }
+              ]
+            },
+            "description": "Returns DAQI alerts between two dates. Default for both is today."
+          }
+        },
+        {
+          "name": "List DAQI alerts by station ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/daqi_alerts?page=1&station-id=UKA00059",
+              "host": ["{{base_url}}"],
+              "path": ["api", "daqi_alerts"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "station-id",
+                  "value": "UKA00059"
+                }
+              ]
+            },
+            "description": "Returns DAQI alerts filtered by station ID."
+          }
+        },
+        {
+          "name": "List DAQI alerts by sampling point ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/daqi_alerts?page=1&sampling-point-id=",
+              "host": ["{{base_url}}"],
+              "path": ["api", "daqi_alerts"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "sampling-point-id",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Returns DAQI alerts filtered by sampling point ID."
+          }
+        }
+      ]
+    },
+    {
+      "name": "AQSR Alerts",
+      "item": [
+        {
+          "name": "List AQSR alerts (today)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/aqsr_alerts",
+              "host": ["{{base_url}}"],
+              "path": ["api", "aqsr_alerts"]
+            },
+            "description": "Returns AQSR alerts. By default the date range is set to today."
+          }
+        },
+        {
+          "name": "List AQSR alerts between dates",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/aqsr_alerts?page=1&start-date=2026-02-10&end-date=2026-02-11",
+              "host": ["{{base_url}}"],
+              "path": ["api", "aqsr_alerts"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "start-date",
+                  "value": "2026-02-10"
+                },
+                {
+                  "key": "end-date",
+                  "value": "2026-02-11"
+                }
+              ]
+            },
+            "description": "Returns AQSR alerts between two dates. Default for both is today."
+          }
+        },
+        {
+          "name": "List AQSR alerts by station ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/aqsr_alerts?page=1&station-id=UKA00059",
+              "host": ["{{base_url}}"],
+              "path": ["api", "aqsr_alerts"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "station-id",
+                  "value": "UKA00059"
+                }
+              ]
+            },
+            "description": "Returns AQSR alerts filtered by station ID."
+          }
+        },
+        {
+          "name": "List AQSR alerts by sampling point ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/aqsr_alerts?page=1&sampling-point-id=",
+              "host": ["{{base_url}}"],
+              "path": ["api", "aqsr_alerts"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "sampling-point-id",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Returns AQSR alerts filtered by sampling point ID."
+          }
+        }
+      ]
+    }
+  ]
+}
