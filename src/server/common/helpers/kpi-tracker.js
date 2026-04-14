@@ -2,8 +2,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { audit } from '@defra/cdp-auditing'
 
 /**
- * KPI Tracker: A Hapi plugin that intercepts requests to log
- * transaction milestones to OpenSearch/S3.
+ * KPI Tracker: A Hapi plugin that intercepts logs and stores them in opensearch.
  */
 export const kpiTracker = {
   name: 'kpiTracker',
@@ -28,7 +27,7 @@ export const kpiTracker = {
       // 3. If a milestone is hit, dispatch the telemetry
       if (isStart || isComplete) {
         audit({
-          'log.level': 'audit',
+          'log.level': 'info',
           event_family: 'kpi_metric',
           event_name: isStart
             ? 'transaction_initiated'
