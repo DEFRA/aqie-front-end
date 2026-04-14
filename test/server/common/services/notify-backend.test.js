@@ -262,6 +262,7 @@ describe('notify-backend service', () => {
       'loc-1',
       '53.8123456',
       '-1.1234567',
+      'en',
       null
     )
 
@@ -277,6 +278,7 @@ describe('notify-backend service', () => {
       'loc-2',
       '53.8123456',
       '-1.1234567',
+      'en',
       null
     )
 
@@ -292,7 +294,8 @@ describe('notify-backend service', () => {
           location: 'Leeds',
           locationId: 'loc-2',
           lat: 53.812346,
-          long: -1.123457
+          long: -1.123457,
+          lang: 'en'
         }
       }
     )
@@ -307,6 +310,7 @@ describe('notify-backend service', () => {
       'loc-3',
       null,
       undefined,
+      'en',
       null
     )
 
@@ -322,7 +326,8 @@ describe('notify-backend service', () => {
           location: nonStringLocation,
           locationId: 'loc-3',
           lat: undefined,
-          long: undefined
+          long: undefined,
+          lang: 'en'
         }
       }
     )
