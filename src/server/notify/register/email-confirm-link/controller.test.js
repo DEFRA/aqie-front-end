@@ -152,6 +152,7 @@ describe('email-confirm-link/controller', () => {
       'loc-2',
       53.95,
       -1.08,
+      'en',
       request
     )
     expect(response.redirect).toBe('/notify/register/alerts-success')

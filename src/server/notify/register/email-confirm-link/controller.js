@@ -193,6 +193,7 @@ const setupEmailAlertAndLog = async (
   locationId,
   lat,
   long,
+  lang,
   request
 ) => {
   const setupResult = await setupEmailAlert(
@@ -201,6 +202,7 @@ const setupEmailAlertAndLog = async (
     locationId,
     lat,
     long,
+    lang,
     request
   )
 
@@ -227,7 +229,7 @@ const getSetupOutcomeResponse = (setupResult, request, h, emailAddress) => {
   return redirectToAlertsSuccess(request, h)
 }
 
-const processValidToken = async (request, h, token) => {
+const processValidToken = async (request, h, token, lang) => {
   logger.info(
     `[EMAIL CONFIRM] Validating token: ${token.substring(0, TOKEN_LOG_PREFIX_LENGTH)}...`
   )
@@ -265,6 +267,7 @@ const processValidToken = async (request, h, token) => {
     locationId,
     lat,
     long,
+    lang,
     request
   )
 
@@ -296,7 +299,7 @@ export const handleEmailConfirmLinkRequest = async (request, h) => {
   }
 
   try {
-    return await processValidToken(request, h, token)
+    return await processValidToken(request, h, token, lang)
   } catch (error) {
     logger.error(`[EMAIL CONFIRM] Token validation failed: ${error.message}`)
 

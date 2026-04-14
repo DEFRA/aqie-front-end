@@ -172,6 +172,7 @@ export async function setupEmailAlert(
   locationId,
   lat,
   long,
+  lang,
   request = null
 ) {
   const setupPath = config.get('notify.setupAlertPath')
@@ -193,7 +194,8 @@ export async function setupEmailAlert(
     location: sanitizedLocation,
     locationId,
     lat: latitude,
-    long: longitude
+    long: longitude,
+    lang
   }
 
   if (mockSetupAlertEnabled) {
