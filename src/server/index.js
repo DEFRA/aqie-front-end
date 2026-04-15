@@ -74,6 +74,7 @@ async function createServer() {
     registerServerCachePolicies(server)
 
     const plugins = [
+      kpiTracker,
       requestLogger,
       requestTracing,
       secureContext,
@@ -82,8 +83,7 @@ async function createServer() {
       hapiCookie,
       nunjucksConfig,
       router,
-      locationNotFoundCy,
-      kpiTracker
+      locationNotFoundCy
     ]
 
     for (const plugin of plugins) {
