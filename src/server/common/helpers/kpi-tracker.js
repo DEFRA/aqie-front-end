@@ -2,14 +2,17 @@ import { v4 as uuidv4 } from 'uuid'
 import { audit } from '@defra/cdp-auditing'
 
 /**
- * KPI Tracker: A Hapi plugin that intercepts logs and stores them in opensearch.
+ * KPI Tracker: plugin that intercepts logs and stores them in OpenSearch.
  */
 export const kpiTracker = {
   name: 'kpiTracker',
   version: '1.0.0',
   register: async (server) => {
     server.ext('onPreHandler', (request, h) => {
-      // 1. Retrieve or initialize the Journey ID from the Yar session
+      // 1. Clean the path and initialize Journey ID
+      // Using trim() and a fallback to '/' handles empty strings from the trailing slash stripper
+      const path = request.path.trim() || '/'
+
       let journeyId = request.yar.get('journeyId')
 
       if (!journeyId) {
@@ -17,17 +20,15 @@ export const kpiTracker = {
         request.yar.set('journeyId', journeyId)
       }
 
-      const path = request.path
-
-      // 2. Define the milestones
+      // 2. Define milestones using .includes for better proxy/subfolder resilience
       const isStart = path === '/'
       const isComplete =
-        path.startsWith('/location/') || path.startsWith('/lleoliad/')
+        path.includes('/location/') || path.includes('/lleoliad/')
 
       // 3. If a milestone is hit, dispatch the telemetry
       if (isStart || isComplete) {
-        audit({
-          'log.level': 'info',
+        const payload = {
+          'log.level': 'info', // Explicitly setting this at the root of our object
           event_family: 'kpi_metric',
           event_name: isStart
             ? 'transaction_initiated'
@@ -36,10 +37,17 @@ export const kpiTracker = {
           service: 'check-air-quality',
           metadata: {
             url_path: path,
-            is_welsh: path.startsWith('/lleoliad/'),
+            is_welsh: path.includes('/lleoliad/'),
             timestamp: new Date().toISOString()
           }
-        })
+        }
+
+        // Trigger the CDP auditing library
+        audit(payload)
+
+        // Fallback: Direct console log to ensure it hits STDOUT for the OpenSearch sidecar
+        // This acts as a safety net in case the audit library nests the log.level
+        console.info(JSON.stringify(payload))
       }
 
       return h.continue
