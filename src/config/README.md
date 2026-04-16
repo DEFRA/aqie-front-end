@@ -15,12 +15,46 @@ This directory contains configuration files for local development.
    cp src/config/local.example.json src/config/local.json
    ```
 
-2. Replace the placeholder values in `local.json` with your actual:
-   - API keys
-   - Passwords
-   - Tokens
-   - Client credentials
-   - Other sensitive information
+2. Configure the required values:
+
+   ### 2.1 API Keys
+
+   **CDP X API Key** (`cdpXApiKey`):
+   1. Open https://portal.cdp-int.defra.cloud/user-profile and sign in
+   2. Go to the 'Developer API Key' section
+   3. Generate a new key for 'test'
+   4. Copy the generated key and add as the `cdpXApiKey` value in `local.json`
+   
+   **Note:** This key expires after 24 hours.
+
+   **Other API Keys** (ask an AQ colleague for these):
+   - `osNamesApiKey` - OS Names Places API key for location search
+   - `daqiePassword` - Password for DAQIE service authentication
+
+   ### 2.2 Cookie Passwords
+
+   Generate secure random passwords (minimum 32 characters):
+
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+   ```
+
+   Run this twice to generate two different passwords, then update in `local.json`:
+   - First password → `session.cookie.password`
+   - Second password → `cookiePassword`
+
+   **Note:** These are randomly generated for each environment - they don't need to be obtained from elsewhere.
+
+   ### 2.3 Optional Configuration
+
+   For Northern Ireland OAuth support (ask AQ colleague if needed):
+   - `oauthTokenNorthernIrelandTenantId` - Azure tenant ID
+   - `clientIdNIreland` - OAuth client ID
+   - `clientSecretNIreland` - OAuth client secret
+   - `scopeNIreland` - OAuth scope
+
+   For Redis authentication:
+   - `redis.password` - Redis password if authentication is enabled
 
 ## Configuration Variables
 
