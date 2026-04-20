@@ -114,8 +114,8 @@ describe('util-helpers', () => {
   describe('handleUKLocationData', () => {
     it('should accept all required parameters', async () => {
       const di = {
-        injectedLogger: mockLogger,
-        injectedIsTestMode: vi.fn().mockReturnValue(true)
+        logger: mockLogger,
+        isTestMode: vi.fn().mockReturnValue(true)
       }
 
       const result = await handleUKLocationData('London', null, null, di)

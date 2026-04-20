@@ -14,15 +14,12 @@ The application provides a mock OTP mode that **bypasses the backend service ent
 
 ## How It Works
 
-### 1. Configuration (`src/config/local.json`)
+### 1. Configuration (`.env`)
 
-```json
-"notify": {
-  "enabled": true,
-  "mockOtpEnabled": true,
-  "mockOtpCode": "12345",
-  ...
-}
+```env
+NOTIFY_ENABLED=true
+NOTIFY_MOCK_OTP_ENABLED=true
+NOTIFY_MOCK_OTP_CODE=12345
 ```
 
 ### 2. Mock Mode Behavior
@@ -62,10 +59,11 @@ When mock mode is disabled:
 
 ### Enable Mock OTP
 
-#### Local Development (`src/config/local.json`):
+#### Local Development (`.env`):
 
-```json
-"mockOtpEnabled": true
+```env
+NOTIFY_MOCK_OTP_ENABLED=true
+NOTIFY_MOCK_OTP_CODE=12345
 ```
 
 #### Test Environment on CDP (Environment Variables):
@@ -86,13 +84,13 @@ NOTIFY_MOCK_OTP_CODE=12345
 
 ### Disable Mock OTP
 
-#### Local Development:
+#### Local Development (`.env`):
 
-In `src/config/local.json`:
-
-```json
-"mockOtpEnabled": false
+```env
+NOTIFY_MOCK_OTP_ENABLED=false
 ```
+
+Or comment out the line entirely.
 
 #### Test Environment:
 
@@ -104,12 +102,10 @@ Or remove/comment out the environment variable entirely.
 
 ### Change Mock Code
 
-#### Local Development:
+#### Local Development (`.env`):
 
-In `src/config/local.json`:
-
-```json
-"mockOtpCode": "99999"
+```env
+NOTIFY_MOCK_OTP_CODE=99999
 ```
 
 #### Test Environment:

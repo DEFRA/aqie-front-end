@@ -95,6 +95,7 @@ describe('handleUKLocationData more branches', () => {
       shouldCallUKApi: vi.fn(() => true),
       catchProxyFetchError: vi.fn(async () => [200, { foo: 'bar' }]),
       formatUKApiResponse: vi.fn(() => ({ formatted: true })),
+      getOSPlacesHelper: vi.fn(async () => ({ results: [] })),
       SYMBOLS_ARRAY: [],
       HTTP_STATUS_OK: 200,
       options: {}
@@ -459,6 +460,7 @@ describe('handleUKLocationData edge cases', () => {
       shouldCallUKApi: vi.fn(() => true),
       catchProxyFetchError: vi.fn(async () => [401, null]),
       formatUKApiResponse: vi.fn(),
+      getOSPlacesHelper: vi.fn(async () => ({ results: [] })),
       SYMBOLS_ARRAY: [],
       HTTP_STATUS_OK: 200,
       options: {}
@@ -485,6 +487,7 @@ describe('handleUKLocationData edge cases', () => {
       shouldCallUKApi: vi.fn(() => true),
       catchProxyFetchError: vi.fn(async () => [500, null]),
       formatUKApiResponse: vi.fn(),
+      getOSPlacesHelper: vi.fn(async () => ({ results: [] })),
       SYMBOLS_ARRAY: [],
       HTTP_STATUS_OK: 200,
       options: {}

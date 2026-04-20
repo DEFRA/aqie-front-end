@@ -1,6 +1,3 @@
-import fs from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { catchProxyFetchError } from '../../common/helpers/catch-proxy-fetch-error.js'
 import { createLogger } from '../../common/helpers/logging/logger.js'
 import { config } from '../../../config/index.js' // Updated imports to use correct relative path
@@ -9,8 +6,6 @@ import {
   isValidPartialPostcodeUK
 } from './convert-string.js'
 
-const FILE_NAME = fileURLToPath(import.meta.url)
-const DIR_NAME = path.dirname(FILE_NAME)
 const logger = createLogger()
 const STATUS_CODE_SUCCESS = 200 // Define constant for success status code
 
@@ -42,14 +37,7 @@ const getConfiguredUserLocation = (
 }
 
 const getCdpApiKey = () => {
-  if (process.env.CDP_X_API_KEY) {
-    return process.env.CDP_X_API_KEY
-  }
-
-  const configPath = path.resolve(DIR_NAME, '../../../config/local.json')
-  const localConfigRaw = fs.readFileSync(configPath, 'utf-8')
-  const localConfig = JSON.parse(localConfigRaw)
-  return localConfig.cdpXApiKey
+  return process.env.CDP_X_API_KEY || config.get('cdpXApiKey')
 }
 
 const withLocalApiKeyHeader = (optionsInput) => {

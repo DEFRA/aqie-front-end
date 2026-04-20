@@ -1,7 +1,6 @@
 import 'dotenv/config'
 import convict from 'convict'
 import path, { dirname } from 'node:path'
-import { existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import convictFormatWithValidator from 'convict-format-with-validator'
 import {
@@ -461,18 +460,5 @@ export const config = convict({
     }
   }
 })
-
-// Load local overrides from src/config/local.json when in development
-if (isDevelopment) {
-  const localConfigPath = path.resolve(dirName, './local.json')
-  if (existsSync(localConfigPath)) {
-    try {
-      config.loadFile(localConfigPath)
-    } catch (err) {
-      // Ignore malformed local configs but log for awareness
-      console.warn(`Failed to load local config: ${localConfigPath}`, err)
-    }
-  }
-}
 
 config.validate({ allowed: 'strict' })
