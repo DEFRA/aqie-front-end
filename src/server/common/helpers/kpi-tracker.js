@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
-import { audit } from '@defra/cdp-auditing'
+import { createLogger } from './logging/logger.js'
+
+const logger = createLogger()
 
 /**
  * KPI Tracker: plugin that intercepts logs and stores them in OpenSearch.
@@ -42,12 +44,7 @@ export const kpiTracker = {
           }
         }
 
-        // Trigger the CDP auditing library
-        audit(payload)
-
-        // Fallback: Direct console log to ensure it hits STDOUT for the OpenSearch sidecar
-        // This acts as a safety net in case the audit library nests the log.level
-        console.info(JSON.stringify(payload))
+        logger.info(payload)
       }
 
       return h.continue
