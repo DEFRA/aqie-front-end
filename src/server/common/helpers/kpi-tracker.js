@@ -35,13 +35,14 @@ export const kpiTracker = {
 
         logger.info(
           {
-            event_family: 'kpi_metric',
-            event_name: eventName,
-            journey_id: journeyId,
-            url_path: path,
-            is_welsh: path.includes('/lleoliad/')
+            event: {
+              action: eventName,
+              kind: 'event',
+              category: ['web'],
+              outcome: 'success'
+            }
           },
-          `kpi: ${eventName}`
+          `kpi: ${eventName} journey_id=${journeyId} url_path=${path} is_welsh=${path.includes('/lleoliad/')}`
         )
       }
 
