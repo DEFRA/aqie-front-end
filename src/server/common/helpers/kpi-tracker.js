@@ -29,22 +29,20 @@ export const kpiTracker = {
 
       // 3. If a milestone is hit, dispatch the telemetry
       if (isStart || isComplete) {
-        const payload = {
-          'log.level': 'info', // Explicitly setting this at the root of our object
-          event_family: 'kpi_metric',
-          event_name: isStart
-            ? 'transaction_initiated'
-            : 'transaction_completed',
-          journey_id: journeyId,
-          service: 'check-air-quality',
-          metadata: {
-            url_path: path,
-            is_welsh: path.includes('/lleoliad/'),
-            timestamp: new Date().toISOString()
-          }
-        }
+        const eventName = isStart
+          ? 'transaction_initiated'
+          : 'transaction_completed'
 
-        logger.info(payload)
+        logger.info(
+          {
+            event_family: 'kpi_metric',
+            event_name: eventName,
+            journey_id: journeyId,
+            url_path: path,
+            is_welsh: path.includes('/lleoliad/')
+          },
+          `kpi: ${eventName}`
+        )
       }
 
       return h.continue
