@@ -37,7 +37,7 @@ export const kpiTracker = {
           {
             event: {
               action: eventName,
-              kind: 'event',
+              kind: 'metric',
               category: ['web'],
               outcome: 'success'
             }

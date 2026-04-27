@@ -16,6 +16,7 @@ import {
   logMissingAlertSetupSessionData,
   handleSetupAlertFailure
 } from './controller-post-helpers.js'
+import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
 
 // Create a logger instance ''
 const logger = createLogger()
@@ -74,6 +75,8 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
   const { phoneNumber, location, locationId, lat, long } =
     getAlertSetupSessionData(request)
 
+  const lang = resolveNotifyLanguage(request)
+
   logAlertSetupSessionData({ phoneNumber, location, locationId, lat, long })
   logMissingAlertSetupSessionData({ phoneNumber, location, lat, long })
 
@@ -93,7 +96,7 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
     locationId,
     lat,
     long,
-    request
+    { lang, request }
   )
 
   // Debug logging to see actual result
