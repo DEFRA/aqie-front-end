@@ -120,8 +120,7 @@ export async function setupAlert(
   locationId,
   lat,
   long,
-  lang,
-  request = null
+  { lang, request = null } = {}
 ) {
   const setupPath = config.get('notify.setupAlertPath')
   const alertBackendBaseUrl = config.get(CONFIG_NOTIFY_ALERT_BACKEND_BASE_URL)

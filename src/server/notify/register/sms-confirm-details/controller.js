@@ -96,8 +96,7 @@ const handleConfirmAlertDetailsPost = async (request, h) => {
     locationId,
     lat,
     long,
-    lang,
-    request
+    { lang, request }
   )
 
   // Debug logging to see actual result
