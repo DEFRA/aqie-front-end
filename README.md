@@ -25,7 +25,7 @@ Updated for SonarQube compliance
 
 ### Node.js
 
-Please install [Node.js](http://nodejs.org/) `>= v18` and [npm](https://nodejs.org/) `>= v9`. You will find it
+Please install [Node.js](http://nodejs.org/) `>= v22.16.0` and [npm](https://nodejs.org/) `>= v10`. You will find it
 easier to use the Node Version Manager [nvm](https://github.com/creationix/nvm)
 
 To use the correct version of Node.js for this application, via nvm:
@@ -70,7 +70,7 @@ npm install
 
 3. **Generate CDP X API Key**:
    - Open https://portal.cdp-int.defra.cloud/user-profile and sign in
-   - Go to 'Developer API Key' section and generate a key for 'dev'
+   - Go to 'Developer API Key' section and generate a key for 'test'
    - Copy to `.env`: `CDP_X_API_KEY=<your-key>`
    - **Note:** Expires after 24 hours
 
