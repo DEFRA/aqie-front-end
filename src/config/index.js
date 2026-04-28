@@ -258,13 +258,6 @@ export const config = convict({
     default: 'https://api.os.uk/search/names/v1/find?query=',
     env: 'OS_NAMES_API_URL'
   },
-  daqiePassword: {
-    doc: 'password for daqie',
-    format: '*',
-    default: 'air',
-    sensitive: true,
-    env: 'DAQIE_PASSWORD'
-  },
   session: {
     cache: {
       engine: {

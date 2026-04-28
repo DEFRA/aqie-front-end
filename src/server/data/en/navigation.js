@@ -22,15 +22,6 @@ const createEnglishPageTitle = (prefix) =>
  * English translations for navigation, search, and authentication components
  */
 export const navigationTranslations = {
-  login: {
-    pageTitle: createEnglishPageTitle('Sign in'),
-    heading: 'This is a private beta',
-    texts: {
-      a: 'You should only continue if you have been invited to.',
-      b: 'Password',
-      buttonText: 'Continue'
-    }
-  },
   home: {
     pageTitle: ENGLISH_PAGE_TITLE_BASE,
     heading: SERVICE_NAME,

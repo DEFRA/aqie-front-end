@@ -80,8 +80,6 @@ npm install
    OS_NAMES_API_KEY=<key-from-colleague>
    ```
 
-5. **Optional:** Set `DAQIE_PASSWORD` if needed (ask AQ colleague)
-
 #### Available Variables
 
 See `.env.example` for all available configuration options including:
