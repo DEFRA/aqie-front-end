@@ -11,6 +11,7 @@ Updated for SonarQube compliance
   - [Local JSON API](#local-json-api)
   - [Production](#production)
   - [Npm scripts](#npm-scripts)
+  - [Repository Access](#repository-access)
 - [Documentation](#documentation)
   - [API specifications](#api-specifications)
   - [Operational runbooks](#operational-runbooks)
@@ -24,7 +25,7 @@ Updated for SonarQube compliance
 
 ### Node.js
 
-Please install [Node.js](http://nodejs.org/) `>= v18` and [npm](https://nodejs.org/) `>= v9`. You will find it
+Please install [Node.js](http://nodejs.org/) `>= v22.16.0` and [npm](https://nodejs.org/) `>= v10`. You will find it
 easier to use the Node Version Manager [nvm](https://github.com/creationix/nvm)
 
 To use the correct version of Node.js for this application, via nvm:
@@ -46,23 +47,50 @@ npm install
 
 ### Environment variables (.env)
 
-This project reads environment variables via `dotenv`. For local development:
+#### Quick Setup
 
-1. Copy `.env.example` to `.env` and fill in values:
+1. Copy `.env.example` to `.env`:
 
-```bash
-cp .env.example .env
-```
+   ```bash
+   cp .env.example .env
+   ```
 
-2. At minimum, set `OS_NAMES_API_KEY` to enable UK location lookups (Ordnance Survey Names API):
+2. **Generate cookie passwords** (run twice for two different values):
 
-```env
-OS_NAMES_API_KEY=your_os_names_key_here
-```
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+   ```
 
-3. Optional variables (proxies, NI OAuth for testing NI flows, feature toggles) are documented in `.env.example`.
+   Add to `.env`:
 
-You can still export variables in your shell if you prefer; `.env` is simply a convenience for local runs and tests.
+   ```env
+   SESSION_COOKIE_PASSWORD=<first-generated-password>
+   COOKIE_PASSWORD=<second-generated-password>
+   ```
+
+3. **Generate CDP X API Key**:
+   - Open https://portal.cdp-int.defra.cloud/user-profile and sign in
+   - Go to 'Developer API Key' section and generate a key for 'test'
+   - Copy to `.env`: `CDP_X_API_KEY=<your-key>`
+   - **Note:** Expires after 24 hours
+
+4. **Get OS Names API Key** (ask an AQ colleague):
+
+   ```env
+   OS_NAMES_API_KEY=<key-from-colleague>
+   ```
+
+5. **Optional:** Set `DAQIE_PASSWORD` if needed (ask AQ colleague)
+
+#### Available Variables
+
+See `.env.example` for all available configuration options including:
+
+- Proxy settings
+- Mock OTP configuration (for local testing)
+- Northern Ireland OAuth credentials (for NI postcode testing)
+
+**Note:** Restart the dev server after updating `.env`
 
 ### Development
 
@@ -98,6 +126,10 @@ To view them in your command line run:
 ```bash
 npm run
 ```
+
+### Repository Access
+
+To push changes to this repository, you must be added to the [air-quality team](https://github.com/orgs/DEFRA/teams/air-quality) by a GitHub admin in the DEFRA organisation.
 
 ## Documentation
 

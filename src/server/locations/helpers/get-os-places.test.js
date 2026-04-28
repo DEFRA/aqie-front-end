@@ -197,6 +197,9 @@ describe('getOSPlaces - CDP X-API key from file', () => {
       if (key === 'osNamesApiKey') {
         return MOCK_API_KEY
       }
+      if (key === 'cdpXApiKey') {
+        return 'test-key-from-config'
+      }
       return ''
     })
     const { isValidFullPostcodeUK, isValidPartialPostcodeUK } = await import(
@@ -212,13 +215,7 @@ describe('getOSPlaces - CDP X-API key from file', () => {
       { results: [LOCAL_TEST_DATA] }
     ])
 
-    // Mock fs.readFileSync to simulate reading from local.json
-    const fs = await import('node:fs')
-    fs.default.readFileSync.mockReturnValue(
-      JSON.stringify({ cdpXApiKey: 'test-key-from-file' })
-    )
-
-    // Ensure CDP_X_API_KEY is NOT set to test file reading path
+    // Ensure CDP_X_API_KEY is NOT set to test config fallback path
     const originalEnv = process.env.CDP_X_API_KEY
     delete process.env.CDP_X_API_KEY
 
@@ -239,7 +236,7 @@ describe('getOSPlaces - CDP X-API key from file', () => {
     )
     expect(result).toBeDefined()
     expect(catchProxyFetchError).toHaveBeenCalled()
-    // Verify x-api-key was added from local.json file
+    // Verify x-api-key was added from config
     const callArgs = catchProxyFetchError.mock.calls[0]
     expect(callArgs[1].headers).toHaveProperty('x-api-key')
 
