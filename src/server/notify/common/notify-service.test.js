@@ -59,7 +59,7 @@ describe('notify service - mock alert storage', () => {
       'location-id-123',
       '51.5007',
       '-0.1246',
-      null
+      {}
     )
 
     expect(result.ok).toBe(true)
@@ -94,7 +94,7 @@ describe('notify service - mock alert storage', () => {
       locationId,
       '51.5885',
       '-0.1139',
-      null
+      {}
     )
 
     expect(first.ok).toBe(true)
@@ -107,7 +107,7 @@ describe('notify service - mock alert storage', () => {
       locationId,
       '51.5885',
       '-0.1139',
-      null
+      {}
     )
 
     expect(second.ok).toBe(false)
@@ -138,7 +138,7 @@ describe('notify service - mock alert storage', () => {
       null,
       '54.6024',
       '-5.9213',
-      null
+      {}
     )
 
     expect(first.ok).toBe(true)
@@ -151,7 +151,7 @@ describe('notify service - mock alert storage', () => {
       null,
       '54.6024',
       '-5.9213',
-      null
+      {}
     )
 
     expect(second.ok).toBe(false)
@@ -175,7 +175,7 @@ describe('notify service - mock alert storage', () => {
       null,
       sameCoords.lat,
       sameCoords.lon,
-      null
+      {}
     )
 
     expect(first.ok).toBe(true)
@@ -188,7 +188,7 @@ describe('notify service - mock alert storage', () => {
       null,
       sameCoords.lat,
       sameCoords.lon,
-      null
+      {}
     )
 
     expect(second.ok).toBe(false)
@@ -209,7 +209,7 @@ describe('notify service - mock alert storage', () => {
       null,
       '51.5069',
       '-0.1261',
-      null
+      {}
     )
 
     expect(first.ok).toBe(true)
@@ -222,7 +222,7 @@ describe('notify service - mock alert storage', () => {
       null,
       '51.5390',
       '-0.1426',
-      null
+      {}
     )
 
     expect(second.ok).toBe(true)

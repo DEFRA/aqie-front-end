@@ -166,6 +166,41 @@ describe('Confirm Alert Details Controller - handleConfirmAlertDetailsPost', () 
       )
     })
 
+    test('calls setupAlert with lang resolved from request', async () => {
+      const mockRequest = {
+        payload: { confirmDetails: 'yes' },
+        query: { lang: 'cy' },
+        yar: {
+          get: vi.fn((key) => {
+            const mockData = {
+              mobileNumber: '07123456789',
+              location: 'London',
+              locationId: 'london-123',
+              latitude: '51.5074',
+              longitude: '-0.1278'
+            }
+            return mockData[key] || ''
+          }),
+          set: vi.fn(),
+          clear: vi.fn()
+        }
+      }
+
+      const mockH = { view: vi.fn(), redirect: vi.fn() }
+
+      await handleConfirmAlertDetailsPost(mockRequest, mockH)
+
+      expect(setupAlert).toHaveBeenCalledWith(
+        '07123456789',
+        'sms',
+        'London',
+        'london-123',
+        '51.5074',
+        '-0.1278',
+        expect.objectContaining({ lang: 'cy' })
+      )
+    })
+
     test('redirects to sms-mobile-number with max alerts error on 400 response', async () => {
       setupAlert.mockResolvedValueOnce({
         ok: false,

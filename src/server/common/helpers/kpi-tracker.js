@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
-import { audit } from '@defra/cdp-auditing'
+import { createLogger } from './logging/logger.js'
+
+const logger = createLogger()
 
 /**
  * KPI Tracker: plugin that intercepts logs and stores them in OpenSearch.
@@ -27,27 +29,21 @@ export const kpiTracker = {
 
       // 3. If a milestone is hit, dispatch the telemetry
       if (isStart || isComplete) {
-        const payload = {
-          'log.level': 'info', // Explicitly setting this at the root of our object
-          event_family: 'kpi_metric',
-          event_name: isStart
-            ? 'transaction_initiated'
-            : 'transaction_completed',
-          journey_id: journeyId,
-          service: 'check-air-quality',
-          metadata: {
-            url_path: path,
-            is_welsh: path.includes('/lleoliad/'),
-            timestamp: new Date().toISOString()
-          }
-        }
+        const eventName = isStart
+          ? 'transaction_initiated'
+          : 'transaction_completed'
 
-        // Trigger the CDP auditing library
-        audit(payload)
-
-        // Fallback: Direct console log to ensure it hits STDOUT for the OpenSearch sidecar
-        // This acts as a safety net in case the audit library nests the log.level
-        console.info(JSON.stringify(payload))
+        logger.info(
+          {
+            event: {
+              action: eventName,
+              kind: 'metric',
+              category: ['web'],
+              outcome: 'success'
+            }
+          },
+          `kpi: ${eventName} journey_id=${journeyId} url_path=${path} is_welsh=${path.includes('/lleoliad/')}`
+        )
       }
 
       return h.continue

@@ -42,15 +42,16 @@ function toRoundedCoordinate(value) {
   return Math.round(Number.parseFloat(value) * 1000000) / 1000000
 }
 
-function buildSetupAlertPayload(
+function buildSetupAlertPayload({
   phoneNumber,
   alertType,
   location,
   locationId,
   lat,
   long,
-  alertBackendBaseUrl
-) {
+  alertBackendBaseUrl,
+  lang
+}) {
   const latitude = toRoundedCoordinate(lat)
   const longitude = toRoundedCoordinate(long)
 
@@ -88,7 +89,8 @@ function buildSetupAlertPayload(
     location: sanitizedLocation,
     locationId,
     lat: latitude,
-    long: longitude
+    long: longitude,
+    lang
   }
 
   return { latitude, longitude, sanitizedLocation, payload }
@@ -118,21 +120,22 @@ export async function setupAlert(
   locationId,
   lat,
   long,
-  request = null
+  { lang, request = null } = {}
 ) {
   const setupPath = config.get('notify.setupAlertPath')
   const alertBackendBaseUrl = config.get(CONFIG_NOTIFY_ALERT_BACKEND_BASE_URL)
   const mockSetupAlertEnabled = config.get('notify.mockSetupAlertEnabled')
   const { latitude, longitude, sanitizedLocation, payload } =
-    buildSetupAlertPayload(
+    buildSetupAlertPayload({
       phoneNumber,
       alertType,
       location,
       locationId,
       lat,
       long,
-      alertBackendBaseUrl
-    )
+      alertBackendBaseUrl,
+      lang
+    })
 
   if (mockSetupAlertEnabled) {
     logger.info('Mock setup alert enabled, bypassing backend for setup-alert')

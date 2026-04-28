@@ -59,6 +59,7 @@ export default defineConfig({
         'src/server/common/helpers/proxy/**',
         'src/server/common/helpers/secure-context/**',
         'src/server/common/helpers/session-cache/**',
+        'src/server/common/helpers/kpi-tracker.js',
         'src/server/common/helpers/logging/**',
         'src/server/common/constants/**',
         'src/server/common/components/**'
