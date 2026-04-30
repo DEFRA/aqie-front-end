@@ -14,17 +14,13 @@
 {% set htmlLang = "cy" %}
 {% endif %}
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds-from-desktop govuk-grid-column-full">
+    <div class="govuk-grid-column-full-until-desktop govuk-grid-column-two-thirds-from-desktop">
       <h1 class="govuk-heading-{{ pageHeadingSize }}">
 {% if caption %}
         <span class="govuk-caption-{{ pageHeadingSize }}">{{ caption }}</span>
 {% endif %}
         {{ title }}
       </h1>
-    </div>
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full-until-desktop govuk-grid-column-two-thirds-from-desktop">
   
   {# Display warning for high or very high pollution forecasts #}
   {% if forecastWarning %}
@@ -389,7 +385,7 @@
 {% endif %}
     </div>
 
-    <div class="govuk-grid-column-full-until-desktop govuk-grid-column-one-third-from-desktop">
+    <div class="govuk-grid-column-full-until-desktop govuk-grid-column-one-third-from-desktop location-related-content">
       <h2 class="govuk-heading-m">{% if lang == 'cy' %}Cynnwys cysylltiedig{% else %}Related content{% endif %}</h2>
       <ul class="govuk-list govuk-list--spaced">
         <li>
