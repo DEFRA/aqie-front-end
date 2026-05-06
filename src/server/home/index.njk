@@ -23,12 +23,11 @@
 
       {% include 'partials/start-button.njk' %}
 
-      <p class="govuk-body">{{ paragraphs.h }}</p>
+      <h2 class="govuk-heading-m">{{ paragraphs.h }}</h2>
 
-      <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-6 govuk-!-margin-left-2">
-        <li>{{ paragraphs.i }}</li>
-        <li>{{ paragraphs.j }}</li>
-      </ul>
+      <p class="govuk-body govuk-!-margin-bottom-1">{{ paragraphs.i }}</p>
+      <p class="govuk-body govuk-!-margin-bottom-1">{{ paragraphs.j }}</p>
+      <p class="govuk-body"><a href="#" class="govuk-link">{{ paragraphs.k }}</a></p>
     </div>
   </div>
 {% endblock %}

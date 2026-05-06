@@ -34,11 +34,12 @@ export const navigationTranslations = {
       e: 'the health effects of air pollution',
       f: 'what you can do to minimise your exposure to air pollution',
       g: 'air pollutants and how air pollution is measured',
-      h: 'You can also:',
-      i: 'get air pollution data for the UK',
-      j: 'see when air pollution has gone over the legal limits'
+      h: 'Other ways to get this information',
+      i: 'Telephone: 03459 33 55 77',
+      j: 'Monday to Friday, 8:30am to 5pm',
+      k: 'Find out about call charges'
     },
-    button: 'Start',
+    button: 'Start now',
     description: `${SERVICE_NAME} in your local area and the air pollution forecast for the next 5 days. Also, get health advice to reduce your exposure to pollutants`
   },
   searchLocation: {

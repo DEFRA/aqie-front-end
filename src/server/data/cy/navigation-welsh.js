@@ -36,18 +36,19 @@ export const navigationTranslationsWelsh = {
       'Sut y gall lefelau gwahanol o lygredd aer effeithio ar iechyd',
     page: `${WELSH_TITLE}`,
     paragraphs: {
-      a: 'Defnyddiwch y gwasanaeth yma:',
-      b: 'i wirio ansawdd yr aer mewn ardal leol',
-      c: 'TODO Welsh: get air pollution alerts',
-      d: 'TODO Welsh: You can also find out about:',
-      e: 'TODO Welsh: the health effects of air pollution',
-      f: 'TODO Welsh: what you can do to minimise your exposure to air pollution',
-      g: 'TODO Welsh: air pollutants and how air pollution is measured',
-      h: 'TODO Welsh: You can also:',
-      i: 'TODO Welsh: get air pollution data for the UK',
-      j: 'TODO Welsh: see when air pollution has gone over the legal limits'
+      a: 'Defnyddiwch y gwasanaeth hwn ar gyfer y canlynol: ',
+      b: 'gwirio ansawdd yr aer yn eich ardal leol',
+      c: 'cael rhybuddion am lygredd aer',
+      d: 'Gallwch hefyd gael gwybodaeth am y pethau canlynol: ',
+      e: 'effaith llygredd aer ar eich iechyd',
+      f: 'beth allwch chi ei wneud i leihau dod i gysylltiad â llygredd aer',
+      g: 'llygryddion aer a sut mae llygredd aer yn cael ei fesur ',
+      h: 'Ffyrdd eraill o gael yr wybodaeth hon',
+      i: 'Ffôn: 03459 33 55 77',
+      j: 'Dydd Llun i ddydd Gwener, 8:30am i 5pm',
+      k: 'Gwybodaeth am gostau galwadau'
     },
-    button: 'Dechrau',
+    button: 'Dechrau nawr',
     description:
       "Gwiriwch ansawdd aer eich ardal leol a'r rhagolygon llygredd aer am y 5 diwrnod nesaf. Hefyd, mynnwch gyngor iechyd i leihau'ch amlygiad i lygryddion."
   },
