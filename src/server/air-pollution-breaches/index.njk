@@ -56,10 +56,7 @@
   {% else %}
     {% for breach in pastBreaches %}
       <h4 class="govuk-heading-s">{{ breach.title }}</h4>
-      {% if breach.noInformation %}
-        <p class="govuk-body">{{ past.noInformation }}</p>
-      {% else %}
-        <dl class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-0">
+        <dl class="govuk-summary-list govuk-!-margin-bottom-0">
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">{{ past.labels.alertRegion }}</dt>
             <dd class="govuk-summary-list__value">{{ breach.alertRegion }}</dd>
@@ -71,7 +68,7 @@
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">{{ past.labels.pollutant }}</dt>
             <dd class="govuk-summary-list__value">
-              <a href="{{ breach.pollutantLink }}" class="govuk-link">{{ breach.pollutantName }}</a>
+              {{ breach.pollutantName }} (<a href="{{ breach.pollutantLink }}" class="govuk-link">{{ active.whatCausesPrefix }}{{ breach.pollutantName }}{{ active.whatCausesSuffix }}</a>)
             </dd>
           </div>
           <div class="govuk-summary-list__row">
@@ -86,7 +83,6 @@
             </dd>
           </div>
         </dl>
-      {% endif %}
     {% endfor %}
   {% endif %}
 {% endblock %}

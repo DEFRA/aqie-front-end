@@ -185,6 +185,12 @@ const EXTRA_CONFIG_SCHEMA = {
       format: String,
       default: '/notify/unsubscribe-keep-alerts',
       env: 'NOTIFY_UNSUBSCRIBE_KEEP_ALERTS_PATH'
+    },
+    breachesPath: {
+      doc: 'Alert backend path for air pollution breaches',
+      format: String,
+      default: '/aqsr-alert',
+      env: 'NOTIFY_BREACHES_PATH'
     }
   },
   subscriptionApi: {

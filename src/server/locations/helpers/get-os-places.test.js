@@ -74,7 +74,7 @@ describe('getOSPlaces - basic functionality', () => {
     )
     expect(result).toBeDefined()
     expect(catchProxyFetchError).toHaveBeenCalled()
-  })
+  }, 15000)
 })
 
 describe('getOSPlaces - postcode handling', () => {

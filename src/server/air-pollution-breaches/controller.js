@@ -1,37 +1,23 @@
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 import { english } from '../data/en/en.js'
-import { welsh } from '../data/cy/cy.js'
-import {
-  AIR_POLLUTION_BREACHES_PATH_EN,
-  AIR_POLLUTION_BREACHES_PATH_CY
-} from '../data/constants.js'
-import {
-  activeBreachesCy,
-  activeBreachesEn,
-  breachesContentCy,
-  breachesContentEn,
-  pastBreachesCy,
-  pastBreachesEn
-} from './content.js'
+import { AIR_POLLUTION_BREACHES_PATH_EN } from '../data/constants.js'
+import { breachesContentEn } from './content.js'
+import { fetchBreaches } from './fetch-breaches.js'
 
 const EN_PATH = AIR_POLLUTION_BREACHES_PATH_EN
-const CY_PATH = AIR_POLLUTION_BREACHES_PATH_CY
 
 function mapActiveBreaches(activeBreaches, activeContent) {
   return activeBreaches.map((breach) => ({
     ...breach,
-    pollutantLinkText: `${activeContent.whatCausesPrefix}${breach.pollutantName}${activeContent.whatCausesSuffix}`,
-    lastUpdatedLabel: `${activeContent.lastUpdatedPrefix} ${breach.lastUpdatedText}`
+    pollutantLinkText: `${activeContent.whatCausesPrefix}${breach.pollutantName}${activeContent.whatCausesSuffix}`
   }))
 }
 
-function buildPastBreachHtml(breach, pastContent) {
-  if (breach.noInformation) {
-    return `<p class="govuk-body">${pastContent.noInformation}</p>`
-  }
-
+function buildPastBreachHtml(breach, content) {
+  const pastContent = content.past
+  const activeContent = content.active
   return `
-    <dl class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-0">
+    <dl class="govuk-summary-list govuk-!-margin-bottom-0">
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">${pastContent.labels.alertRegion}</dt>
         <dd class="govuk-summary-list__value">${breach.alertRegion}</dd>
@@ -43,7 +29,7 @@ function buildPastBreachHtml(breach, pastContent) {
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">${pastContent.labels.pollutant}</dt>
         <dd class="govuk-summary-list__value">
-          <a href="${breach.pollutantLink}" class="govuk-link">${breach.pollutantName}</a>
+          ${breach.pollutantName} (<a href="${breach.pollutantLink}" class="govuk-link">${activeContent.whatCausesPrefix}${breach.pollutantName}${activeContent.whatCausesSuffix}</a>)
         </dd>
       </div>
       <div class="govuk-summary-list__row">
@@ -61,13 +47,13 @@ function buildPastBreachHtml(breach, pastContent) {
   `
 }
 
-function mapPastBreachesToAccordionItems(pastBreaches, pastContent) {
+function mapPastBreachesToAccordionItems(pastBreaches, content) {
   return pastBreaches.map((breach) => ({
     heading: {
       text: breach.title
     },
     content: {
-      html: buildPastBreachHtml(breach, pastContent)
+      html: buildPastBreachHtml(breach, content)
     }
   }))
 }
@@ -94,17 +80,15 @@ function getViewModel(
     past: content.past,
     activeBreaches: mapActiveBreaches(activeBreaches, content.active),
     pastBreaches,
-    pastAccordionItems: mapPastBreachesToAccordionItems(
-      pastBreaches,
-      content.past
-    ),
+    pastAccordionItems: mapPastBreachesToAccordionItems(pastBreaches, content),
     currentPath,
     metaSiteUrl: getAirQualitySiteUrl(request),
     phaseBanner: sharedContent.phaseBanner,
     footerTxt: sharedContent.footerTxt,
     cookieBanner: sharedContent.cookieBanner,
     serviceName: sharedContent.multipleLocations.serviceName,
-    displayBacklink: false
+    displayBacklink: false,
+    hideLanguageToggle: true
   }
 }
 
@@ -114,15 +98,17 @@ function shouldSwitchToLanguage(request, targetLanguage) {
 }
 
 const airPollutionBreachesController = {
-  handler: (request, h) => {
+  handler: async (request, h) => {
     if (shouldSwitchToLanguage(request, 'en')) {
       return h.redirect(EN_PATH)
     }
 
+    const { activeBreaches, pastBreaches } = await fetchBreaches('en', request)
+
     const viewModel = getViewModel(
       breachesContentEn,
-      activeBreachesEn,
-      pastBreachesEn,
+      activeBreaches,
+      pastBreaches,
       EN_PATH,
       request,
       english
@@ -137,25 +123,8 @@ const airPollutionBreachesController = {
 }
 
 const airPollutionBreachesCyController = {
-  handler: (request, h) => {
-    if (shouldSwitchToLanguage(request, 'cy')) {
-      return h.redirect(CY_PATH)
-    }
-
-    const viewModel = getViewModel(
-      breachesContentCy,
-      activeBreachesCy,
-      pastBreachesCy,
-      CY_PATH,
-      request,
-      welsh
-    )
-
-    return h.view('air-pollution-breaches/index', {
-      ...viewModel,
-      page: 'torriadau llygredd aer',
-      lang: 'cy'
-    })
+  handler: (_request, h) => {
+    return h.redirect(EN_PATH)
   }
 }
 

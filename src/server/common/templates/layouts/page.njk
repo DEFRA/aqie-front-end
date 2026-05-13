@@ -357,15 +357,17 @@
           {% endif %}
         {% endif %}
         {% if statusCode != 500 %}
-          {{
-            dwpLanguageToggle({
-              selectedLang: lang,
-              href: {
-                en: fullHrefEn,
-                cy: fullHrefCy
-              }
-            })
-          }}
+          <div{% if hideLanguageToggle %} hidden{% endif %}>
+            {{
+              dwpLanguageToggle({
+                selectedLang: lang,
+                href: {
+                  en: fullHrefEn,
+                  cy: fullHrefCy
+                }
+              })
+            }}
+          </div>
         {% endif %}
       {% endif %}
     {% endif %}
