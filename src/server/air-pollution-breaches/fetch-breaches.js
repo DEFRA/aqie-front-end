@@ -5,6 +5,8 @@ import { buildBackendApiFetchOptions } from '../common/helpers/backend-api-helpe
 const DATA_SOURCE_EN = 'Automatic Urban and Rural Network (AURN)'
 const DATA_SOURCE_CY = 'Rhwydwaith Awtomatig Trefol a Gwledig (AURN)'
 const MS_IN_24_HOURS = 24 * 60 * 60 * 1000
+const DAYS_IN_YEAR = 365
+const HTTP_STATUS_OK = 200
 
 const POLLUTANT_MAP = {
   'ozone (o3)': {
@@ -126,7 +128,7 @@ async function fetchBreaches(lang = 'en', request = null) {
   const baseUrl = config.get('notify.alertBackendBaseUrl')
   const breachesPath = config.get('notify.breachesPath')
   const endDate = new Date().toISOString().split('T')[0]
-  const startDate = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
+  const startDate = new Date(Date.now() - DAYS_IN_YEAR * 24 * 60 * 60 * 1000)
     .toISOString()
     .split('T')[0]
   const pathWithParams = `${breachesPath}?start-date=${startDate}&end-date=${endDate}`
@@ -140,7 +142,7 @@ async function fetchBreaches(lang = 'en', request = null) {
 
   const [status, data] = await catchFetchError(url, fetchOptions)
 
-  if (status !== 200 || !Array.isArray(data)) {
+  if (status !== HTTP_STATUS_OK || !Array.isArray(data)) {
     return { activeBreaches: [], pastBreaches: [] }
   }
 
