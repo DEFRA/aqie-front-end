@@ -209,6 +209,51 @@ describe('airPollutionBreachesController', () => {
     expect(viewArgs.active.countHtml).toContain('2')
   })
 
+  it('should handle locationName passed as an array', async () => {
+    const request = {
+      query: {
+        lang: 'en',
+        locationId: 'bristol-city',
+        locationName: ['Bristol, City of Bristol']
+      }
+    }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.locationName).toBe('Bristol, City of Bristol')
+  })
+
+  it('should handle locationName passed as an empty array', async () => {
+    const request = {
+      query: { lang: 'en', locationId: 'bristol-city', locationName: [] }
+    }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.locationName).toBe('')
+  })
+
+  it('should build back link text with postcode and locationName when searchTerms is a postcode', async () => {
+    const request = {
+      query: {
+        lang: 'en',
+        locationId: 'bristol-city',
+        searchTerms: 'BS1 1AA',
+        locationName: 'Bristol'
+      }
+    }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.backLinkText).toBe('Air pollution in BS1 1AA, Bristol')
+  })
+
+  it('should build back link text with postcode only when searchTerms is a postcode and no locationName', async () => {
+    const request = {
+      query: { lang: 'en', locationId: 'bristol-city', searchTerms: 'BS1 1AA' }
+    }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.backLinkText).toBe('Air pollution in BS1 1AA')
+  })
+
   it('should add pollutantLinkText to each active breach', async () => {
     fetchBreaches.mockResolvedValue({
       activeBreaches: [mockActiveBreach],
