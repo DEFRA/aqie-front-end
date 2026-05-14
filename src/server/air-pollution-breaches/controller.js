@@ -3,6 +3,7 @@ import { english } from '../data/en/en.js'
 import { AIR_POLLUTION_BREACHES_PATH_EN } from '../data/constants.js'
 import { breachesContentEn } from './content.js'
 import { fetchBreaches } from './fetch-breaches.js'
+import { formatUKPostcode } from '../locations/helpers/convert-string.js'
 
 const EN_PATH = AIR_POLLUTION_BREACHES_PATH_EN
 
@@ -58,6 +59,67 @@ function mapPastBreachesToAccordionItems(pastBreaches, content) {
   }))
 }
 
+function getLocationName(query) {
+  if (Array.isArray(query?.locationName)) {
+    return query.locationName[0] || ''
+  }
+  return query?.locationName || ''
+}
+
+function getLocationContext(query = {}) {
+  const searchTerms = query?.searchTerms || ''
+  const locationName = getLocationName(query)
+  return {
+    searchTerms,
+    locationName,
+    hasLocationName: locationName.trim() !== ''
+  }
+}
+
+function buildBackLinkText(
+  formattedPostcode,
+  locationName,
+  hasLocationName,
+  defaultText
+) {
+  if (formattedPostcode && hasLocationName) {
+    return `Air pollution in ${formattedPostcode}, ${locationName}`
+  }
+  if (formattedPostcode) {
+    return `Air pollution in ${formattedPostcode}`
+  }
+  if (hasLocationName) {
+    return `Air pollution in ${locationName}`
+  }
+  return defaultText
+}
+
+function buildBackLinkData({
+  locationId,
+  searchTerms,
+  locationName,
+  backlink
+}) {
+  if (locationId) {
+    const formattedPostcode = searchTerms.trim()
+      ? formatUKPostcode(searchTerms)
+      : ''
+    return {
+      backLinkText: buildBackLinkText(
+        formattedPostcode,
+        locationName,
+        locationName.trim() !== '',
+        backlink.text
+      ),
+      backLinkUrl: `/location/${locationId}?lang=en`
+    }
+  }
+  return {
+    backLinkText: backlink.text,
+    backLinkUrl: '/search-location?lang=en'
+  }
+}
+
 function getViewModel(
   content,
   activeBreaches,
@@ -66,6 +128,18 @@ function getViewModel(
   request,
   sharedContent
 ) {
+  const { locationId } = request.query
+  const { searchTerms, locationName, hasLocationName } = getLocationContext(
+    request.query
+  )
+  const { backlink } = sharedContent
+  const { backLinkText, backLinkUrl } = buildBackLinkData({
+    locationId,
+    searchTerms,
+    locationName,
+    backlink
+  })
+
   return {
     pageTitle: content.pageTitle,
     heading: content.heading,
@@ -87,7 +161,14 @@ function getViewModel(
     footerTxt: sharedContent.footerTxt,
     cookieBanner: sharedContent.cookieBanner,
     serviceName: sharedContent.multipleLocations.serviceName,
-    displayBacklink: false,
+    backlink,
+    displayBacklink: !!locationId,
+    customBackLink: !!locationId,
+    backLinkText,
+    backLinkUrl,
+    locationName,
+    locationId,
+    hasLocationName,
     hideLanguageToggle: true
   }
 }

@@ -357,6 +357,7 @@
           {% endif %}
         {% endif %}
         {% if statusCode != 500 %}
+          {# '' hideLanguageToggle hides (not removes) the toggle for English-only pages (e.g. air pollution breaches) '' #}
           <div{% if hideLanguageToggle %} hidden{% endif %}>
             {{
               dwpLanguageToggle({
@@ -474,12 +475,15 @@
           {% set fullHrefCy = "/cy?lang=cy" %}
         {% endif %}
       {% endif %}
-      {{
-        dwpLanguageToggle({
-          selectedLang: lang,
-          href: { en: fullHrefEn, cy: fullHrefCy }
-        })
-      }}
+      {# '' hideLanguageToggle hides (not removes) the toggle for English-only pages (e.g. air pollution breaches) '' #}
+      <div{% if hideLanguageToggle %} hidden{% endif %}>
+        {{
+          dwpLanguageToggle({
+            selectedLang: lang,
+            href: { en: fullHrefEn, cy: fullHrefCy }
+          })
+        }}
+      </div>
     </div>
   {% endif %}
   {% if lang == 'cy' %}
