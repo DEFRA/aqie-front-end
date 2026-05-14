@@ -24,7 +24,8 @@ vi.mock('../data/en/en.js', () => ({
       accessibility: 'Accessibility'
     },
     cookieBanner: {},
-    multipleLocations: { serviceName: 'Check air quality' }
+    multipleLocations: { serviceName: 'Check air quality' },
+    backlink: { text: 'Change location' }
   }
 }))
 
@@ -128,13 +129,55 @@ describe('airPollutionBreachesController', () => {
     )
   })
 
-  it('should pass displayBacklink: false to the view', async () => {
-    const request = { query: { lang: 'en' } }
+  it('should pass displayBacklink: true and customBackLink: true to the view when locationId is present', async () => {
+    const request = { query: { lang: 'en', locationId: 'bristol-city' } }
     await airPollutionBreachesController.handler(request, mockH)
     expect(mockH.view).toHaveBeenCalledWith(
       'air-pollution-breaches/index',
-      expect.objectContaining({ displayBacklink: false })
+      expect.objectContaining({ displayBacklink: true, customBackLink: true })
     )
+  })
+
+  it('should build backLinkUrl to location page when locationId is present', async () => {
+    const request = {
+      query: {
+        lang: 'en',
+        locationId: 'bristol-city',
+        locationName: 'Bristol, City of Bristol'
+      }
+    }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.backLinkUrl).toBe('/location/bristol-city?lang=en')
+  })
+
+  it('should set backLinkText to "Air pollution in {locationName}" when locationName is present', async () => {
+    const request = {
+      query: {
+        lang: 'en',
+        locationId: 'bristol-city',
+        locationName: 'Bristol, City of Bristol'
+      }
+    }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.backLinkText).toBe(
+      'Air pollution in Bristol, City of Bristol'
+    )
+  })
+
+  it('should not show back button when no locationId is present', async () => {
+    const request = { query: { lang: 'en' } }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.displayBacklink).toBe(false)
+  })
+
+  it('should fall back to search-location backLinkUrl when no locationId is present', async () => {
+    const request = { query: { lang: 'en' } }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.backLinkUrl).toBe('/search-location?lang=en')
   })
 
   it('should fetch breaches in English', async () => {

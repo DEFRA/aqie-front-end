@@ -399,7 +399,7 @@
           </a>
         </li>
         <li>
-          <a class="govuk-link" href="{% if lang == 'cy' %}/torriadau-llygredd-aer/cy?lang=cy{% else %}/air-pollution-breaches?lang=en{% endif %}">
+          <a class="govuk-link" href="/air-pollution-breaches?lang=en&locationId={{ locationId | urlencode }}{% if locationName %}&locationName={{ locationName | urlencode }}{% endif %}">
             {% if lang == 'cy' %}Torriadau llygredd aer{% else %}Air pollution breaches{% endif %}
           </a>
         </li>
