@@ -1,0 +1,27 @@
+.aq-pollution-alert {
+  border: 5px solid #d4351c;
+  margin-bottom: 30px;
+
+  &__header {
+    background-color: #d4351c;
+    padding: 10px 15px;
+
+    p {
+      color: white;
+      font-weight: bold;
+      margin: 0;
+    }
+  }
+
+  &__body {
+    padding: 15px;
+
+    p {
+      margin: 0;
+    }
+
+    p + p {
+      margin-top: 10px;
+    }
+  }
+}

@@ -1,3 +1,5 @@
+import { fetchLocationAlert } from '../../air-pollution-breaches/fetch-location-alert.js'
+
 function setNotificationLocationSessionValues(
   request,
   setSessionKeyIfSessionExists,
@@ -264,6 +266,7 @@ async function renderLocationOrNotFound({
   request,
   locationId,
   nearestLocation,
+  locationAlert,
   h,
   LOCATION_NOT_FOUND,
   buildLocationViewData,
@@ -283,7 +286,8 @@ async function renderLocationOrNotFound({
     getMonth,
     metaSiteUrl,
     request,
-    locationId
+    locationId,
+    locationAlert
   })
 
   return processLocationResult(
@@ -370,6 +374,7 @@ async function finalizeWorkflowResponse({
   metaSiteUrl,
   locationId,
   nearestLocation,
+  locationAlert,
   h,
   LOCATION_NOT_FOUND,
   persistLocationDataForLocationRoute,
@@ -392,6 +397,7 @@ async function finalizeWorkflowResponse({
     request,
     locationId,
     nearestLocation,
+    locationAlert,
     h,
     LOCATION_NOT_FOUND,
     buildLocationViewData,
@@ -423,6 +429,52 @@ async function prepareWorkflowRenderContext({
 
   logAndCalculateSummaryDate(locationData)
   return nearestContext
+}
+
+// Store current page coordinates in session so notification flows
+// (e.g. 'Request a new activation link') always use the correct location,
+// and fetch a breach alert for the location if one exists.
+async function resolveLocationSessionAndAlert({
+  locationData,
+  locationId,
+  lang,
+  request,
+  logger,
+  setSessionKeyIfSessionExists
+}) {
+  if (!locationData?.results?.length) {
+    return null
+  }
+
+  const result = findLocationResult(locationData, locationId, logger)
+  const gazetteerEntry = result.GAZETTEER_ENTRY || result
+  const locationTitle = buildLocationTitle(locationData, gazetteerEntry)
+  const { lat, lon } = locationData.latlon || {}
+
+  setNotificationLocationSessionValues(
+    request,
+    setSessionKeyIfSessionExists,
+    locationTitle,
+    locationId,
+    lat,
+    lon
+  )
+
+  try {
+    return await fetchLocationAlert(
+      lat,
+      lon,
+      locationId,
+      locationTitle,
+      lang,
+      request
+    )
+  } catch (err) {
+    logger.warn(
+      `fetchLocationAlert failed, rendering page without alert: ${err.message}`
+    )
+    return null
+  }
 }
 
 async function processLocationWorkflow({
@@ -466,26 +518,17 @@ async function processLocationWorkflow({
     ...workflowDependencies
   })
 
-  // Store current page coordinates in session so notification flows
-  // (e.g. 'Request a new activation link') always use the correct location
-  if (locationDetails && locationData?.results?.length) {
-    const result = findLocationResult(
-      locationData,
-      locationId,
-      workflowDependencies.logger
-    )
-    const gazetteerEntry = result.GAZETTEER_ENTRY || result
-    const locationTitle = buildLocationTitle(locationData, gazetteerEntry)
-    const { lat, lon } = locationData.latlon || {}
-    setNotificationLocationSessionValues(
-      request,
-      workflowDependencies.setSessionKeyIfSessionExists,
-      locationTitle,
-      locationId,
-      lat,
-      lon
-    )
-  }
+  const locationAlert = locationDetails
+    ? await resolveLocationSessionAndAlert({
+        locationData,
+        locationId,
+        lang,
+        request,
+        logger: workflowDependencies.logger,
+        setSessionKeyIfSessionExists:
+          workflowDependencies.setSessionKeyIfSessionExists
+      })
+    : null
 
   return finalizeWorkflowResponse({
     request,
@@ -498,6 +541,7 @@ async function processLocationWorkflow({
     metaSiteUrl,
     locationId,
     nearestLocation,
+    locationAlert,
     h,
     LOCATION_NOT_FOUND,
     ...workflowDependencies
