@@ -431,6 +431,52 @@ async function prepareWorkflowRenderContext({
   return nearestContext
 }
 
+// Store current page coordinates in session so notification flows
+// (e.g. 'Request a new activation link') always use the correct location,
+// and fetch a breach alert for the location if one exists.
+async function resolveLocationSessionAndAlert({
+  locationData,
+  locationId,
+  lang,
+  request,
+  logger,
+  setSessionKeyIfSessionExists
+}) {
+  if (!locationData?.results?.length) {
+    return null
+  }
+
+  const result = findLocationResult(locationData, locationId, logger)
+  const gazetteerEntry = result.GAZETTEER_ENTRY || result
+  const locationTitle = buildLocationTitle(locationData, gazetteerEntry)
+  const { lat, lon } = locationData.latlon || {}
+
+  setNotificationLocationSessionValues(
+    request,
+    setSessionKeyIfSessionExists,
+    locationTitle,
+    locationId,
+    lat,
+    lon
+  )
+
+  try {
+    return await fetchLocationAlert(
+      lat,
+      lon,
+      locationId,
+      locationTitle,
+      lang,
+      request
+    )
+  } catch (err) {
+    logger.warn(
+      `fetchLocationAlert failed, rendering page without alert: ${err.message}`
+    )
+    return null
+  }
+}
+
 async function processLocationWorkflow({
   locationData,
   locationId,
@@ -472,43 +518,17 @@ async function processLocationWorkflow({
     ...workflowDependencies
   })
 
-  // Store current page coordinates in session so notification flows
-  // (e.g. 'Request a new activation link') always use the correct location
-  let locationAlert = null
-  if (locationDetails && locationData?.results?.length) {
-    const result = findLocationResult(
-      locationData,
-      locationId,
-      workflowDependencies.logger
-    )
-    const gazetteerEntry = result.GAZETTEER_ENTRY || result
-    const locationTitle = buildLocationTitle(locationData, gazetteerEntry)
-    const { lat, lon } = locationData.latlon || {}
-    setNotificationLocationSessionValues(
-      request,
-      workflowDependencies.setSessionKeyIfSessionExists,
-      locationTitle,
-      locationId,
-      lat,
-      lon
-    )
-
-    // Fetch breach alert for this specific location using its coordinates
-    try {
-      locationAlert = await fetchLocationAlert(
-        lat,
-        lon,
+  const locationAlert = locationDetails
+    ? await resolveLocationSessionAndAlert({
+        locationData,
         locationId,
-        locationTitle,
         lang,
-        request
-      )
-    } catch (err) {
-      workflowDependencies.logger.warn(
-        `fetchLocationAlert failed, rendering page without alert: ${err.message}`
-      )
-    }
-  }
+        request,
+        logger: workflowDependencies.logger,
+        setSessionKeyIfSessionExists:
+          workflowDependencies.setSessionKeyIfSessionExists
+      })
+    : null
 
   return finalizeWorkflowResponse({
     request,
