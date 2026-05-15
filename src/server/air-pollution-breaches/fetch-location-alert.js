@@ -13,7 +13,9 @@ const POLLUTANT_DISPLAY_NAMES = {
 }
 
 function getPollutantDisplayName(rawName) {
-  if (!rawName) return rawName
+  if (!rawName) {
+    return rawName
+  }
   return POLLUTANT_DISPLAY_NAMES[rawName.toLowerCase()] || rawName
 }
 
