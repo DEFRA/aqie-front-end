@@ -220,7 +220,8 @@ function buildLocationViewData({
   getMonth,
   metaSiteUrl,
   request,
-  locationId
+  locationId,
+  locationAlert = null
 }) {
   const { title, headerTitle } = prepareLocationTitles(locationDetails)
 
@@ -282,6 +283,7 @@ function buildLocationViewData({
     dailySummaryTexts: english.dailySummaryTexts,
     serviceName: english.multipleLocations.serviceName,
     forecastWarning,
+    locationAlert,
     lang
   }
 }

@@ -1,3 +1,5 @@
+import { fetchLocationAlert } from '../../air-pollution-breaches/fetch-location-alert.js'
+
 function setNotificationLocationSessionValues(
   request,
   setSessionKeyIfSessionExists,
@@ -264,6 +266,7 @@ async function renderLocationOrNotFound({
   request,
   locationId,
   nearestLocation,
+  locationAlert,
   h,
   LOCATION_NOT_FOUND,
   buildLocationViewData,
@@ -283,7 +286,8 @@ async function renderLocationOrNotFound({
     getMonth,
     metaSiteUrl,
     request,
-    locationId
+    locationId,
+    locationAlert
   })
 
   return processLocationResult(
@@ -370,6 +374,7 @@ async function finalizeWorkflowResponse({
   metaSiteUrl,
   locationId,
   nearestLocation,
+  locationAlert,
   h,
   LOCATION_NOT_FOUND,
   persistLocationDataForLocationRoute,
@@ -392,6 +397,7 @@ async function finalizeWorkflowResponse({
     request,
     locationId,
     nearestLocation,
+    locationAlert,
     h,
     LOCATION_NOT_FOUND,
     buildLocationViewData,
@@ -468,6 +474,7 @@ async function processLocationWorkflow({
 
   // Store current page coordinates in session so notification flows
   // (e.g. 'Request a new activation link') always use the correct location
+  let locationAlert = null
   if (locationDetails && locationData?.results?.length) {
     const result = findLocationResult(
       locationData,
@@ -485,6 +492,22 @@ async function processLocationWorkflow({
       lat,
       lon
     )
+
+    // Fetch breach alert for this specific location using its coordinates
+    try {
+      locationAlert = await fetchLocationAlert(
+        lat,
+        lon,
+        locationId,
+        locationTitle,
+        lang,
+        request
+      )
+    } catch (err) {
+      workflowDependencies.logger.warn(
+        `fetchLocationAlert failed, rendering page without alert: ${err.message}`
+      )
+    }
   }
 
   return finalizeWorkflowResponse({
@@ -498,6 +521,7 @@ async function processLocationWorkflow({
     metaSiteUrl,
     locationId,
     nearestLocation,
+    locationAlert,
     h,
     LOCATION_NOT_FOUND,
     ...workflowDependencies

@@ -15,6 +15,20 @@
 {% endif %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full-until-desktop govuk-grid-column-two-thirds-from-desktop">
+
+      {# '' Measured pollutant breach alert — shown when an active breach is detected for this location '' #}
+      {% if locationAlert %}
+        <div class="aq-pollution-alert" role="alert">
+          <div class="aq-pollution-alert__header">
+            <p>Alert</p>
+          </div>
+          <div class="aq-pollution-alert__body">
+            <p><strong>High levels of {{ locationAlert.pollutantsText }} measured in this region</strong></p>
+            <p><a href="{{ locationAlert.breachesPageUrl }}" class="govuk-link">A monitoring station near {{ locationName }}</a> has measured high {{ locationAlert.pollutantsText }} levels in the last 24 hours.</p>
+          </div>
+        </div>
+      {% endif %}
+
       <h1 class="govuk-heading-{{ pageHeadingSize }}">
 {% if caption %}
         <span class="govuk-caption-{{ pageHeadingSize }}">{{ caption }}</span>
