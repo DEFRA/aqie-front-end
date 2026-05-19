@@ -97,7 +97,8 @@ function groupBySamplingId(items) {
   let ungroupedIndex = 0
 
   for (const item of items) {
-    const id = item['sampling-id'] ?? `__ungrouped_${ungroupedIndex++}`
+    const id = item['sampling-id'] ?? `__ungrouped_${ungroupedIndex}`
+    if (!item['sampling-id']) ungroupedIndex += 1
     if (!grouped.has(id)) {
       grouped.set(id, [])
     }
