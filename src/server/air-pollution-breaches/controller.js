@@ -2,7 +2,7 @@ import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 import { english } from '../data/en/en.js'
 import { AIR_POLLUTION_BREACHES_PATH_EN } from '../data/constants.js'
 import { breachesContentEn } from './content.js'
-import { fetchBreaches } from './fetch-breaches.js'
+import { fetchBreaches, groupActiveByRegion } from './fetch-breaches.js'
 import { formatUKPostcode } from '../locations/helpers/convert-string.js'
 
 const EN_PATH = AIR_POLLUTION_BREACHES_PATH_EN
@@ -153,6 +153,9 @@ function getViewModel(
     },
     past: content.past,
     activeBreaches: mapActiveBreaches(activeBreaches, content.active),
+    activeBreachRegions: groupActiveByRegion(
+      mapActiveBreaches(activeBreaches, content.active)
+    ),
     pastBreaches,
     pastAccordionItems: mapPastBreachesToAccordionItems(pastBreaches, content),
     currentPath,

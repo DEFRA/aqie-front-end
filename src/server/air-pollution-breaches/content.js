@@ -17,7 +17,8 @@ const breachesContentEn = {
     labels: {
       monitoringLocation: 'Monitoring location',
       pollutant: 'Pollutant',
-      alertStarted: 'Alert started'
+      alertStarted: 'Alert started',
+      lastUpdated: 'Last updated'
     },
     whatCausesPrefix: 'What causes high ',
     whatCausesSuffix: ' levels?'
@@ -58,7 +59,8 @@ const breachesContentCy = {
     labels: {
       monitoringLocation: 'Lleoliad monitro',
       pollutant: 'Llygrydd',
-      alertStarted: 'Dechreuodd y rhybudd'
+      alertStarted: 'Dechreuodd y rhybudd',
+      lastUpdated: 'Diweddarwyd diwethaf'
     },
     whatCausesPrefix: 'Beth sy’n achosi lefelau uchel o ',
     whatCausesSuffix: '?'

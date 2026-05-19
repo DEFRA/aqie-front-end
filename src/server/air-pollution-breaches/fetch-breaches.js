@@ -92,14 +92,42 @@ function buildPastBreachTitle(monitoringStation, region, isoString) {
   return `${monitoringStation}, ${region} (${formatDate(date)})`
 }
 
-function mapToActiveBreach(item, lang) {
-  const { displayName, link } = getPollutantInfo(item['pollutant-name'], lang)
+function groupBySamplingId(items) {
+  const grouped = new Map()
+  let ungroupedIndex = 0
+
+  for (const item of items) {
+    const id = item['sampling-id'] ?? `__ungrouped_${ungroupedIndex++}`
+    if (!grouped.has(id)) {
+      grouped.set(id, [])
+    }
+    grouped.get(id).push(item)
+  }
+
+  return Array.from(grouped.values())
+}
+
+function mapGroupToActiveBreach(items, lang) {
+  const sorted = [...items].sort(
+    (a, b) => new Date(a['alert-started']) - new Date(b['alert-started'])
+  )
+  const earliest = sorted[0]
+  const latest = sorted[sorted.length - 1]
+
+  const { displayName, link } = getPollutantInfo(
+    earliest['pollutant-name'],
+    lang
+  )
+
   return {
-    region: item['region'],
-    monitoringLocation: item['monitoring-station-name'],
+    region: earliest['region'],
+    monitoringLocation: earliest['monitoring-station-name'],
     pollutantName: displayName,
     pollutantLink: link,
-    alertStartedText: formatAlertStarted(item['alert-started'])
+    alertStartedText: formatAlertStarted(earliest['alert-started']),
+    ...(items.length > 1
+      ? { lastUpdatedText: formatAlertStarted(latest['alert-started']) }
+      : {})
   }
 }
 
@@ -146,9 +174,9 @@ async function fetchBreaches(lang = 'en', request = null) {
     return { activeBreaches: [], pastBreaches: [] }
   }
 
-  const activeBreaches = data
-    .filter((item) => item['active-breaches'] === true)
-    .map((item) => mapToActiveBreach(item, lang))
+  const activeBreaches = groupBySamplingId(
+    data.filter((item) => item['active-breaches'] === true)
+  ).map((group) => mapGroupToActiveBreach(group, lang))
 
   const pastBreaches = data
     .filter((item) => item['active-breaches'] === false)
@@ -157,4 +185,25 @@ async function fetchBreaches(lang = 'en', request = null) {
   return { activeBreaches, pastBreaches }
 }
 
-export { fetchBreaches }
+function groupActiveByRegion(activeBreaches) {
+  const regionMap = new Map()
+
+  for (const breach of activeBreaches) {
+    if (!regionMap.has(breach.region)) {
+      regionMap.set(breach.region, [])
+    }
+    regionMap.get(breach.region).push(breach)
+  }
+
+  return Array.from(regionMap.entries()).map(([region, breaches]) => ({
+    region,
+    breaches
+  }))
+}
+
+export {
+  fetchBreaches,
+  groupBySamplingId,
+  mapGroupToActiveBreach,
+  groupActiveByRegion
+}

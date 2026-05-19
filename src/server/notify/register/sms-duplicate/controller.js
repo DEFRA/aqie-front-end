@@ -67,7 +67,8 @@ const handleDuplicateSubscriptionRequest = (request, h, content = english) => {
     common,
     content: pageContent,
     location,
-    maskedPhoneNumber
+    maskedPhoneNumber,
+    hideLanguageToggle: true
   }
 
   return h.view('notify/register/sms-duplicate/index', viewModel)

@@ -56,7 +56,8 @@ export const handleConfirmAlertDetailsRequest = (
     mobileNumber: method === 'sms' ? value : undefined,
     emailAddress: method === 'email' ? value : undefined,
     location,
-    formData: request.yar.get('formData') || {}
+    formData: request.yar.get('formData') || {},
+    hideLanguageToggle: true
   }
 
   return h.view(template, viewModel)
@@ -101,7 +102,8 @@ export const handleConfirmAlertDetailsPost = (
         message: 'Select yes to confirm your alert details',
         field: 'confirmDetails'
       },
-      formData: request.payload
+      formData: request.payload,
+      hideLanguageToggle: true
     }
     return h.view(template, viewModel)
   }

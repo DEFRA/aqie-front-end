@@ -60,7 +60,8 @@ function buildInvalidMobileNumberViewModel({
       message: validation.error,
       field: 'mobileNumberNew'
     },
-    formData: request.payload
+    formData: request.payload,
+    hideLanguageToggle: true
   }
 }
 
@@ -123,7 +124,8 @@ const handleSendNewCodeRequest = (request, h, content = english) => {
     common,
     content: smsSendNewCode,
     bulletSameNumber,
-    formData: request.yar.get('formData') || {}
+    formData: request.yar.get('formData') || {},
+    hideLanguageToggle: true
   }
 
   return h.view('notify/register/sms-send-new-code/index', viewModel)
