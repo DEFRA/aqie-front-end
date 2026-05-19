@@ -120,6 +120,34 @@ function buildBackLinkData({
   }
 }
 
+function buildLocationLinks(
+  locationId,
+  locationName,
+  searchTerms,
+  pastBreaches
+) {
+  const actionsLink = locationId
+    ? `/location/${locationId}/actions-reduce-exposure?lang=en`
+    : '#'
+
+  const locationQuerySuffix = [
+    locationId ? `locationId=${encodeURIComponent(locationId)}` : '',
+    locationName ? `locationName=${encodeURIComponent(locationName)}` : '',
+    searchTerms ? `searchTerms=${encodeURIComponent(searchTerms)}` : ''
+  ]
+    .filter(Boolean)
+    .join('&')
+
+  const processedPastBreaches = pastBreaches.map((breach) => ({
+    ...breach,
+    pollutantLink: locationQuerySuffix
+      ? `${breach.pollutantLink}&${locationQuerySuffix}`
+      : breach.pollutantLink
+  }))
+
+  return { actionsLink, processedPastBreaches }
+}
+
 function getViewModel(
   content,
   activeBreaches,
@@ -140,10 +168,20 @@ function getViewModel(
     backlink
   })
 
+  const { actionsLink, processedPastBreaches } = buildLocationLinks(
+    locationId,
+    locationName,
+    searchTerms,
+    pastBreaches
+  )
+
   return {
     pageTitle: content.pageTitle,
     heading: content.heading,
-    intro: content.intro,
+    intro: {
+      ...content.intro,
+      actions: content.intro.actions.replace('{actionsLink}', actionsLink)
+    },
     active: {
       ...content.active,
       countHtml: content.active.countMessage.replace(
@@ -156,8 +194,11 @@ function getViewModel(
     activeBreachRegions: groupActiveByRegion(
       mapActiveBreaches(activeBreaches, content.active)
     ),
-    pastBreaches,
-    pastAccordionItems: mapPastBreachesToAccordionItems(pastBreaches, content),
+    pastBreaches: processedPastBreaches,
+    pastAccordionItems: mapPastBreachesToAccordionItems(
+      processedPastBreaches,
+      content
+    ),
     currentPath,
     metaSiteUrl: getAirQualitySiteUrl(request),
     phaseBanner: sharedContent.phaseBanner,
