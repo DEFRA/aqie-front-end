@@ -13,9 +13,11 @@ const EMAIL_DETAILS_PATH = '/notify/register/email-details'
 const EMAIL_CONFIRM_VIEW = 'notify/register/email-confirm-link/index'
 const CDP_TEST_HOST = 'aqie-front-end.test.cdp-int.defra.cloud'
 const CDP_PERF_TEST_HOST = 'aqie-front-end.perf-test.cdp-int.defra.cloud'
+const CDP_PERF_HOST = 'aqie-front-end.perf.cdp-int.defra.cloud'
 const DEFAULT_TOKEN = 'abc123'
 const DEFAULT_EMAIL = 'user@example.com'
 const MOCK_VERIFICATION_TOKEN = 'mock-verify-123'
+const STALE_MOCK_VERIFICATION_TOKEN = 'stale-token'
 const DEFAULT_LOCATION = 'Leeds'
 const DEFAULT_LAT = 53.8
 const DEFAULT_LONG = -1.5
@@ -110,6 +112,37 @@ const resetNotifyMocks = () => {
   generateEmailLink.mockResolvedValue({ ok: true, data: {} })
 }
 
+const assertMockTokenCapturedForHostInProduction = async (host) => {
+  const originalNodeEnv = process.env.NODE_ENV
+  process.env.NODE_ENV = 'production'
+
+  try {
+    validateEmailLink.mockResolvedValueOnce({
+      ok: true,
+      data: buildValidTokenData()
+    })
+    setupEmailAlert.mockResolvedValueOnce({ ok: true, status: 201 })
+    generateEmailLink.mockResolvedValueOnce({
+      ok: true,
+      data: { verificationToken: MOCK_VERIFICATION_TOKEN }
+    })
+
+    const session = { locationId: 'loc-1' }
+    const request = mockRequest({
+      query: { token: DEFAULT_TOKEN },
+      session,
+      headers: { host }
+    })
+
+    const response = await handleEmailConfirmLinkRequest(request, mockH())
+
+    expect(response.redirect).toBe(ALERTS_SUCCESS_PATH)
+    expect(session.mockEmailVerificationToken).toBe(MOCK_VERIFICATION_TOKEN)
+  } finally {
+    process.env.NODE_ENV = originalNodeEnv
+  }
+}
+
 describe('email-confirm-link/controller errors', () => {
   beforeEach(() => {
     resetNotifyMocks()
@@ -176,37 +209,24 @@ describe('email-confirm-link/controller production host override', () => {
   })
 
   it('captures mock token in production for CDP test host', async () => {
-    const originalNodeEnv = process.env.NODE_ENV
-    process.env.NODE_ENV = 'production'
-
-    try {
-      validateEmailLink.mockResolvedValueOnce({
-        ok: true,
-        data: buildValidTokenData()
-      })
-      setupEmailAlert.mockResolvedValueOnce({ ok: true, status: 201 })
-      generateEmailLink.mockResolvedValueOnce({
-        ok: true,
-        data: { verificationToken: MOCK_VERIFICATION_TOKEN }
-      })
-
-      const session = { locationId: 'loc-1' }
-      const request = mockRequest({
-        query: { token: DEFAULT_TOKEN },
-        session,
-        headers: { host: CDP_TEST_HOST }
-      })
-
-      const response = await handleEmailConfirmLinkRequest(request, mockH())
-
-      expect(response.redirect).toBe(ALERTS_SUCCESS_PATH)
-      expect(session.mockEmailVerificationToken).toBe(MOCK_VERIFICATION_TOKEN)
-    } finally {
-      process.env.NODE_ENV = originalNodeEnv
-    }
+    await assertMockTokenCapturedForHostInProduction(CDP_TEST_HOST)
   })
 
   it('captures mock token in production for CDP perf-test host', async () => {
+    await assertMockTokenCapturedForHostInProduction(CDP_PERF_TEST_HOST)
+  })
+
+  it('captures mock token in production for CDP perf host', async () => {
+    await assertMockTokenCapturedForHostInProduction(CDP_PERF_HOST)
+  })
+})
+
+describe('email-confirm-link/controller production non-CDP behavior', () => {
+  beforeEach(() => {
+    resetNotifyMocks()
+  })
+
+  it('does not capture mock token in production for non-CDP host', async () => {
     const originalNodeEnv = process.env.NODE_ENV
     process.env.NODE_ENV = 'production'
 
@@ -216,22 +236,22 @@ describe('email-confirm-link/controller production host override', () => {
         data: buildValidTokenData()
       })
       setupEmailAlert.mockResolvedValueOnce({ ok: true, status: 201 })
-      generateEmailLink.mockResolvedValueOnce({
-        ok: true,
-        data: { verificationToken: MOCK_VERIFICATION_TOKEN }
-      })
 
-      const session = { locationId: 'loc-1' }
+      const session = {
+        locationId: 'loc-1',
+        mockEmailVerificationToken: STALE_MOCK_VERIFICATION_TOKEN
+      }
       const request = mockRequest({
         query: { token: DEFAULT_TOKEN },
         session,
-        headers: { host: CDP_PERF_TEST_HOST }
+        headers: { host: 'www.example.com' }
       })
 
       const response = await handleEmailConfirmLinkRequest(request, mockH())
 
       expect(response.redirect).toBe(ALERTS_SUCCESS_PATH)
-      expect(session.mockEmailVerificationToken).toBe(MOCK_VERIFICATION_TOKEN)
+      expect(generateEmailLink).not.toHaveBeenCalled()
+      expect(session.mockEmailVerificationToken).toBeUndefined()
     } finally {
       process.env.NODE_ENV = originalNodeEnv
     }
@@ -312,7 +332,77 @@ describe('email-confirm-link/controller success redirect flow', () => {
     setupEmailAlert.mockResolvedValueOnce({ ok: true, status: 201 })
     generateEmailLink.mockResolvedValueOnce({ ok: true, data: {} })
 
-    const session = { mockEmailVerificationToken: 'stale-token' }
+    const session = {
+      mockEmailVerificationToken: STALE_MOCK_VERIFICATION_TOKEN
+    }
+    const request = mockRequest({ query: { token: DEFAULT_TOKEN }, session })
+
+    const response = await handleEmailConfirmLinkRequest(request, mockH())
+
+    expect(response.redirect).toBe(ALERTS_SUCCESS_PATH)
+    expect(session.mockEmailVerificationToken).toBeUndefined()
+  })
+})
+
+describe('email-confirm-link/controller mock token extraction branches', () => {
+  beforeEach(() => {
+    resetNotifyMocks()
+  })
+
+  it('captures token from nested generate-link response body.data shape', async () => {
+    validateEmailLink.mockResolvedValueOnce({
+      ok: true,
+      data: buildValidTokenData()
+    })
+    setupEmailAlert.mockResolvedValueOnce({ ok: true, status: 201 })
+    generateEmailLink.mockResolvedValueOnce({
+      ok: true,
+      body: {
+        data: { verificationToken: MOCK_VERIFICATION_TOKEN }
+      }
+    })
+
+    const session = { locationId: 'loc-1' }
+    const request = mockRequest({ query: { token: DEFAULT_TOKEN }, session })
+
+    const response = await handleEmailConfirmLinkRequest(request, mockH())
+
+    expect(response.redirect).toBe(ALERTS_SUCCESS_PATH)
+    expect(session.mockEmailVerificationToken).toBe(MOCK_VERIFICATION_TOKEN)
+  })
+
+  it('continues to success when generate-link call fails and clears stale token', async () => {
+    validateEmailLink.mockResolvedValueOnce({
+      ok: true,
+      data: buildValidTokenData()
+    })
+    setupEmailAlert.mockResolvedValueOnce({ ok: true, status: 201 })
+    generateEmailLink.mockRejectedValueOnce(new Error('generate-link failed'))
+
+    const session = {
+      locationId: 'loc-1',
+      mockEmailVerificationToken: STALE_MOCK_VERIFICATION_TOKEN
+    }
+    const request = mockRequest({ query: { token: DEFAULT_TOKEN }, session })
+
+    const response = await handleEmailConfirmLinkRequest(request, mockH())
+
+    expect(response.redirect).toBe(ALERTS_SUCCESS_PATH)
+    expect(session.mockEmailVerificationToken).toBeUndefined()
+  })
+
+  it('treats non-object generate-link response as missing token and clears stale token', async () => {
+    validateEmailLink.mockResolvedValueOnce({
+      ok: true,
+      data: buildValidTokenData()
+    })
+    setupEmailAlert.mockResolvedValueOnce({ ok: true, status: 201 })
+    generateEmailLink.mockResolvedValueOnce('invalid-shape')
+
+    const session = {
+      locationId: 'loc-1',
+      mockEmailVerificationToken: STALE_MOCK_VERIFICATION_TOKEN
+    }
     const request = mockRequest({ query: { token: DEFAULT_TOKEN }, session })
 
     const response = await handleEmailConfirmLinkRequest(request, mockH())
