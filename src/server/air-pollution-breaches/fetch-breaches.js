@@ -5,6 +5,8 @@ import { buildBackendApiFetchOptions } from '../common/helpers/backend-api-helpe
 const DATA_SOURCE_EN = 'Automatic Urban and Rural Network (AURN)'
 const DATA_SOURCE_CY = 'Rhwydwaith Awtomatig Trefol a Gwledig (AURN)'
 const MS_IN_24_HOURS = 24 * 60 * 60 * 1000
+const MS_PER_HOUR = 1000 * 60 * 60
+const MS_PER_MINUTE = 1000 * 60
 const DAYS_IN_YEAR = 365
 const HTTP_STATUS_OK = 200
 
@@ -71,8 +73,8 @@ function formatDate(date) {
 function formatAlertStarted(isoString) {
   const alertDate = new Date(isoString)
   const diffMs = Date.now() - alertDate.getTime()
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-  const diffMins = Math.floor(diffMs / (1000 * 60))
+  const diffHours = Math.floor(diffMs / MS_PER_HOUR)
+  const diffMins = Math.floor(diffMs / MS_PER_MINUTE)
   const time = formatTime(alertDate)
   const date = formatDate(alertDate)
 
@@ -97,8 +99,11 @@ function groupBySamplingId(items) {
   let ungroupedIndex = 0
 
   for (const item of items) {
-    const id = item['sampling-id'] ?? `__ungrouped_${ungroupedIndex}`
-    if (!item['sampling-id']) ungroupedIndex += 1
+    const samplingId = item['sampling-id']
+    const id = samplingId ?? `__ungrouped_${ungroupedIndex}`
+    if (!samplingId) {
+      ungroupedIndex += 1
+    }
     if (!grouped.has(id)) {
       grouped.set(id, [])
     }
@@ -157,7 +162,7 @@ async function fetchBreaches(lang = 'en', request = null) {
   const baseUrl = config.get('notify.alertBackendBaseUrl')
   const breachesPath = config.get('notify.breachesPath')
   const endDate = new Date().toISOString().split('T')[0]
-  const startDate = new Date(Date.now() - DAYS_IN_YEAR * 24 * 60 * 60 * 1000)
+  const startDate = new Date(Date.now() - DAYS_IN_YEAR * MS_IN_24_HOURS)
     .toISOString()
     .split('T')[0]
   const pathWithParams = `${breachesPath}?start-date=${startDate}&end-date=${endDate}`
