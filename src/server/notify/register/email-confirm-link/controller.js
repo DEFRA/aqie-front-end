@@ -9,6 +9,7 @@ import { LANG_CY } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
 import {
+  generateEmailLink,
   setupEmailAlert,
   validateEmailLink
 } from '../../../common/services/notify.js'
@@ -18,6 +19,10 @@ const VIEW_PATH = 'notify/register/email-confirm-link/index'
 const DEFAULT_SERVICE_NAME = 'Check air quality'
 const HTTP_STATUS_CONFLICT = 409
 const TOKEN_LOG_PREFIX_LENGTH = 6
+const MOCK_EMAIL_VERIFICATION_TOKEN_SESSION_KEY = 'mockEmailVerificationToken'
+const CDP_TEST_HOST_MARKER = '.test.cdp-int.'
+const CDP_PERF_TEST_HOST_MARKER = '.perf-test.cdp-int.'
+const CDP_PERF_HOST_MARKER = '.perf.cdp-int.'
 
 const hasOwnValue = (obj, key) => {
   return Object.hasOwn(obj || {}, key)
@@ -80,6 +85,85 @@ const setConfirmSessionData = (request, token, emailAddress, location) => {
   request.yar.set('emailAddress', emailAddress)
   if (location) {
     request.yar.set('location', location)
+  }
+}
+
+const isCdpTestOrPerfRequest = (request) => {
+  const host = request?.headers?.host?.toLowerCase() || ''
+  return (
+    host.includes(CDP_TEST_HOST_MARKER) ||
+    host.includes(CDP_PERF_TEST_HOST_MARKER) ||
+    host.includes(CDP_PERF_HOST_MARKER)
+  )
+}
+
+const isMockTokenCaptureEnabled = (request) => {
+  const env = process.env.NODE_ENV || 'development'
+  return env !== 'production' || isCdpTestOrPerfRequest(request)
+}
+
+const extractMockVerificationToken = (generateLinkResult) => {
+  if (!generateLinkResult || typeof generateLinkResult !== 'object') {
+    return ''
+  }
+
+  const tokenCandidates = [
+    generateLinkResult?.data?.verificationToken,
+    generateLinkResult?.data?.data?.verificationToken,
+    generateLinkResult?.body?.verificationToken,
+    generateLinkResult?.body?.data?.verificationToken
+  ]
+
+  const token = tokenCandidates.find((value) => {
+    return typeof value === 'string' && value.trim().length > 0
+  })
+
+  return token || ''
+}
+
+const captureOptionalMockVerificationToken = async (
+  request,
+  emailAddress,
+  location,
+  lat,
+  long
+) => {
+  if (!isMockTokenCaptureEnabled(request) || !emailAddress) {
+    request.yar.clear(MOCK_EMAIL_VERIFICATION_TOKEN_SESSION_KEY)
+    return
+  }
+
+  try {
+    const generateLinkResult = await generateEmailLink(
+      emailAddress,
+      location,
+      lat,
+      long,
+      request
+    )
+    const mockVerificationToken =
+      extractMockVerificationToken(generateLinkResult)
+
+    if (!mockVerificationToken) {
+      request.yar.clear(MOCK_EMAIL_VERIFICATION_TOKEN_SESSION_KEY)
+      logger.info(
+        '[EMAIL CONFIRM] generate-link response has no mock verificationToken'
+      )
+      return
+    }
+
+    request.yar.set(
+      MOCK_EMAIL_VERIFICATION_TOKEN_SESSION_KEY,
+      mockVerificationToken
+    )
+    logger.info(
+      '[EMAIL CONFIRM] Captured optional mock verificationToken for success-page header'
+    )
+  } catch (err) {
+    request.yar.clear(MOCK_EMAIL_VERIFICATION_TOKEN_SESSION_KEY)
+    logger.warn(
+      `[EMAIL CONFIRM] generate-link call failed before success redirect: ${err?.message || err}`
+    )
   }
 }
 
@@ -213,10 +297,25 @@ const setupEmailAlertAndLog = async (
   return setupResult
 }
 
-const getSetupOutcomeResponse = (setupResult, request, h, emailAddress) => {
+const getSetupOutcomeResponse = async (
+  setupResult,
+  request,
+  h,
+  emailAddress,
+  location,
+  lat,
+  long
+) => {
   if (setupResult.skipped) {
     logger.warn(
       '[EMAIL CONFIRM] setupEmailAlert skipped (notify disabled) - redirecting to success'
+    )
+    await captureOptionalMockVerificationToken(
+      request,
+      emailAddress,
+      location,
+      lat,
+      long
     )
     return redirectToAlertsSuccess(request, h)
   }
@@ -225,6 +324,13 @@ const getSetupOutcomeResponse = (setupResult, request, h, emailAddress) => {
     return handleSetupFailureRedirect(setupResult, request, h, emailAddress)
   }
 
+  await captureOptionalMockVerificationToken(
+    request,
+    emailAddress,
+    location,
+    lat,
+    long
+  )
   logger.info('[EMAIL CONFIRM] Token accepted, redirecting to success')
   return redirectToAlertsSuccess(request, h)
 }
@@ -271,7 +377,15 @@ const processValidToken = async (request, h, token, lang) => {
     request
   )
 
-  return getSetupOutcomeResponse(setupResult, request, h, emailAddress)
+  return getSetupOutcomeResponse(
+    setupResult,
+    request,
+    h,
+    emailAddress,
+    location,
+    lat,
+    long
+  )
 }
 
 /**
