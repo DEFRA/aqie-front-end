@@ -14,31 +14,43 @@
 
   <h2 class="govuk-heading-m">{{ active.heading }}</h2>
   <p class="govuk-body">{{ active.countHtml | safe }}</p>
+  {% if activeBreaches.length > 0 %}
   <p class="govuk-body">{{ active.timingMessage }}</p>
+  {% endif %}
 
-  {% for breach in activeBreaches %}
+  {% for regionGroup in activeBreachRegions %}
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
-    <h3 class="govuk-heading-s govuk-!-margin-bottom-1">{{ breach.region }}</h3>
+    <h3 class="govuk-heading-s govuk-!-margin-bottom-1">{{ regionGroup.region }}</h3>
 
-    <dl class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-4">
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">{{ active.labels.monitoringLocation }}</dt>
-        <dd class="govuk-summary-list__value">{{ breach.monitoringLocation }}</dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">{{ active.labels.pollutant }}</dt>
-        <dd class="govuk-summary-list__value">
-          <a href="{{ breach.pollutantLink }}" class="govuk-link">{{ breach.pollutantLinkText }}</a>
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">{{ active.labels.alertStarted }}</dt>
-        <dd class="govuk-summary-list__value">{{ breach.alertStartedText }}</dd>
-      </div>
-    </dl>
+    {% for breach in regionGroup.breaches %}
+      {% if not loop.first %}
+        <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible">
+      {% endif %}
 
-    <p class="govuk-body-s govuk-!-margin-top-2">{{ breach.lastUpdatedLabel }}</p>
+      <dl class="govuk-summary-list govuk-!-margin-bottom-4">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">{{ active.labels.monitoringLocation }}</dt>
+          <dd class="govuk-summary-list__value">{{ breach.monitoringLocation }}</dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">{{ active.labels.pollutant }}</dt>
+          <dd class="govuk-summary-list__value">
+            <a href="{{ breach.pollutantLink }}" class="govuk-link">{{ breach.pollutantLinkText }}</a>
+          </dd>
+        </div>
+        {% if breach.lastUpdatedText %}
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">{{ active.labels.lastUpdated }}</dt>
+          <dd class="govuk-summary-list__value">{{ breach.lastUpdatedText }}</dd>
+        </div>
+        {% endif %}
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">{{ active.labels.alertStarted }}</dt>
+          <dd class="govuk-summary-list__value">{{ breach.alertStartedText }}</dd>
+        </div>
+      </dl>
+    {% endfor %}
   {% endfor %}
 
   <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">

@@ -64,7 +64,8 @@ const handleEmailDuplicateRequest = (request, h, content = english) => {
     common,
     content: pageContent,
     location,
-    emailAddress
+    emailAddress,
+    hideLanguageToggle: true
   }
 
   return h.view('notify/register/email-duplicate/index', viewModel)

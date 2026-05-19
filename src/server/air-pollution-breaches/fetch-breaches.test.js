@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { fetchBreaches } from './fetch-breaches.js'
+import { fetchBreaches, groupActiveByRegion } from './fetch-breaches.js'
 import { catchFetchError } from '../common/helpers/catch-fetch-error.js'
 import { buildBackendApiFetchOptions } from '../common/helpers/backend-api-helper.js'
 
@@ -24,7 +24,12 @@ vi.mock('../common/helpers/backend-api-helper.js', () => ({
   })
 }))
 
-const makeActiveBreach = (pollutantName = 'ozone (o3)', minsAgo = 120) => ({
+const makeActiveBreach = (
+  pollutantName = 'ozone (o3)',
+  minsAgo = 120,
+  samplingId = undefined
+) => ({
+  ...(samplingId !== undefined ? { 'sampling-id': samplingId } : {}),
   'pollutant-name': pollutantName,
   region: 'Test Region',
   'monitoring-station-name': 'Test Station',
@@ -219,6 +224,106 @@ describe('fetchBreaches', () => {
     })
   })
 
+  describe('sampling-id grouping', () => {
+    it('groups two entries with the same sampling-id into one active breach', async () => {
+      catchFetchError.mockResolvedValue([
+        200,
+        [
+          makeActiveBreach('ozone (o3)', 120, '12345'),
+          makeActiveBreach('ozone (o3)', 60, '12345')
+        ]
+      ])
+      const result = await fetchBreaches('en')
+      expect(result.activeBreaches).toHaveLength(1)
+    })
+
+    it('uses the earliest alert-started as alertStartedText', async () => {
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2024-06-01T12:00:00.000Z'))
+      catchFetchError.mockResolvedValue([
+        200,
+        [
+          makeActiveBreach('ozone (o3)', 120, '12345'),
+          makeActiveBreach('ozone (o3)', 60, '12345')
+        ]
+      ])
+      const result = await fetchBreaches('en')
+      expect(result.activeBreaches[0].alertStartedText).toMatch(
+        /About 2 hours ago/
+      )
+    })
+
+    it('sets lastUpdatedText to the most recent alert-started', async () => {
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2024-06-01T12:00:00.000Z'))
+      catchFetchError.mockResolvedValue([
+        200,
+        [
+          makeActiveBreach('ozone (o3)', 120, '12345'),
+          makeActiveBreach('ozone (o3)', 60, '12345')
+        ]
+      ])
+      const result = await fetchBreaches('en')
+      expect(result.activeBreaches[0].lastUpdatedText).toMatch(
+        /About 1 hour ago/
+      )
+    })
+
+    it('updates lastUpdatedText on a 3rd entry with the most recent time', async () => {
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2024-06-01T12:00:00.000Z'))
+      catchFetchError.mockResolvedValue([
+        200,
+        [
+          makeActiveBreach('ozone (o3)', 180, '12345'),
+          makeActiveBreach('ozone (o3)', 120, '12345'),
+          makeActiveBreach('ozone (o3)', 60, '12345')
+        ]
+      ])
+      const result = await fetchBreaches('en')
+      expect(result.activeBreaches).toHaveLength(1)
+      expect(result.activeBreaches[0].alertStartedText).toMatch(
+        /About 3 hours ago/
+      )
+      expect(result.activeBreaches[0].lastUpdatedText).toMatch(
+        /About 1 hour ago/
+      )
+    })
+
+    it('does not set lastUpdatedText for a single entry', async () => {
+      catchFetchError.mockResolvedValue([
+        200,
+        [makeActiveBreach('ozone (o3)', 120, '12345')]
+      ])
+      const result = await fetchBreaches('en')
+      expect(result.activeBreaches[0].lastUpdatedText).toBeUndefined()
+    })
+
+    it('keeps entries with different sampling-ids as separate breaches', async () => {
+      catchFetchError.mockResolvedValue([
+        200,
+        [
+          makeActiveBreach('ozone (o3)', 120, '12345'),
+          makeActiveBreach('sulphur dioxide (so2)', 120, '23456')
+        ]
+      ])
+      const result = await fetchBreaches('en')
+      expect(result.activeBreaches).toHaveLength(2)
+    })
+
+    it('keeps entries without sampling-id as separate breaches', async () => {
+      catchFetchError.mockResolvedValue([
+        200,
+        [
+          makeActiveBreach('ozone (o3)', 120),
+          makeActiveBreach('ozone (o3)', 60)
+        ]
+      ])
+      const result = await fetchBreaches('en')
+      expect(result.activeBreaches).toHaveLength(2)
+    })
+  })
+
   describe('API URL construction', () => {
     it('should call buildBackendApiFetchOptions with the base URL and path', async () => {
       catchFetchError.mockResolvedValue([200, []])
@@ -248,5 +353,62 @@ describe('fetchBreaches', () => {
       const [, endDate] = pathArg.match(/end-date=(\d{4}-\d{2}-\d{2})/)
       expect(new Date(startDate) < new Date(endDate)).toBe(true)
     })
+  })
+})
+
+describe('groupActiveByRegion', () => {
+  const makeBreach = (region, monitoringLocation = 'Test Station') => ({
+    region,
+    monitoringLocation,
+    pollutantName: 'Ozone',
+    pollutantLink: '/pollutants/ozone?lang=en',
+    alertStartedText: 'About 2 hours ago'
+  })
+
+  it('groups breaches from the same region under one entry', () => {
+    const breaches = [
+      makeBreach('North West', 'Wigan Centre'),
+      makeBreach('North West', 'Manchester Piccadilly')
+    ]
+    const result = groupActiveByRegion(breaches)
+    expect(result).toHaveLength(1)
+    expect(result[0].region).toBe('North West')
+    expect(result[0].breaches).toHaveLength(2)
+  })
+
+  it('keeps breaches from different regions as separate entries', () => {
+    const breaches = [
+      makeBreach('North West', 'Wigan Centre'),
+      makeBreach('Eastern', 'Borehamwood')
+    ]
+    const result = groupActiveByRegion(breaches)
+    expect(result).toHaveLength(2)
+  })
+
+  it('returns the correct region names', () => {
+    const breaches = [makeBreach('North West'), makeBreach('Eastern')]
+    const result = groupActiveByRegion(breaches)
+    expect(result.map((r) => r.region)).toEqual(['North West', 'Eastern'])
+  })
+
+  it('preserves order of first appearance for regions', () => {
+    const breaches = [
+      makeBreach('Eastern'),
+      makeBreach('North West'),
+      makeBreach('Eastern')
+    ]
+    const result = groupActiveByRegion(breaches)
+    expect(result[0].region).toBe('Eastern')
+    expect(result[1].region).toBe('North West')
+  })
+
+  it('returns an empty array when given an empty array', () => {
+    expect(groupActiveByRegion([])).toEqual([])
+  })
+
+  it('wraps a single breach in a region group', () => {
+    const result = groupActiveByRegion([makeBreach('Highlands and Islands')])
+    expect(result).toHaveLength(1)
+    expect(result[0].breaches).toHaveLength(1)
   })
 })

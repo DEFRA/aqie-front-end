@@ -50,7 +50,8 @@ const renderErrorView = (
     phaseBanner,
     cookieBanner,
     common,
-    content: emailConfirmLink
+    content: emailConfirmLink,
+    hideLanguageToggle: true
   })
 }
 

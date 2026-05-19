@@ -119,7 +119,8 @@ const handleAlertsSuccessRequest = (request, h, content = english) => {
     smsSuccessAnotherAlertPrefix,
     alertDetailsConfirmed,
     formData,
-    userResearchPanelUrl: config.get('userResearchPanelUrl')
+    userResearchPanelUrl: config.get('userResearchPanelUrl'),
+    hideLanguageToggle: true
   }
 
   return h.view('notify/register/sms-success/index', viewModel)

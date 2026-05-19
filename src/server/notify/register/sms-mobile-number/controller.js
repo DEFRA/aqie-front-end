@@ -176,7 +176,8 @@ const handleNotifyRequest = (request, h, content = english) => {
     alertLimitHint:
       smsMobilePhone.alertLimitHint ||
       english.smsMobilePhone?.alertLimitHint ||
-      ''
+      '',
+    hideLanguageToggle: true
   }
 
   // Add max alerts error if present
@@ -243,7 +244,8 @@ const handleNotifyPost = async (request, h, content = english) => {
         message: validation.error,
         field: 'notifyByText'
       },
-      formData: request.payload
+      formData: request.payload,
+      hideLanguageToggle: true
     }
 
     // Only show back button if locationId exists ''
