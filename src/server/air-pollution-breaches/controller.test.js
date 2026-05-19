@@ -6,7 +6,18 @@ import {
 import { fetchBreaches } from './fetch-breaches.js'
 
 vi.mock('./fetch-breaches.js', () => ({
-  fetchBreaches: vi.fn()
+  fetchBreaches: vi.fn(),
+  groupActiveByRegion: vi.fn((breaches) => {
+    const regionMap = new Map()
+    for (const breach of breaches) {
+      if (!regionMap.has(breach.region)) regionMap.set(breach.region, [])
+      regionMap.get(breach.region).push(breach)
+    }
+    return Array.from(regionMap.entries()).map(([region, bs]) => ({
+      region,
+      breaches: bs
+    }))
+  })
 }))
 
 vi.mock('../common/helpers/get-site-url.js', () => ({
@@ -46,7 +57,8 @@ vi.mock('./content.js', () => ({
       labels: {
         monitoringLocation: 'Monitoring location',
         pollutant: 'Pollutant',
-        alertStarted: 'Alert started'
+        alertStarted: 'Alert started',
+        lastUpdated: 'Last updated'
       },
       whatCausesPrefix: 'What causes high ',
       whatCausesSuffix: ' levels?'
@@ -252,6 +264,33 @@ describe('airPollutionBreachesController', () => {
     await airPollutionBreachesController.handler(request, mockH)
     const viewArgs = mockH.view.mock.calls[0][1]
     expect(viewArgs.backLinkText).toBe('Air pollution in BS1 1AA')
+  })
+
+  it('should group active breaches by region into activeBreachRegions', async () => {
+    fetchBreaches.mockResolvedValue({
+      activeBreaches: [
+        { ...mockActiveBreach, region: 'London' },
+        {
+          ...mockActiveBreach,
+          region: 'London',
+          monitoringLocation: 'London Victoria'
+        },
+        {
+          ...mockActiveBreach,
+          region: 'East Midlands',
+          monitoringLocation: 'Nottingham'
+        }
+      ],
+      pastBreaches: []
+    })
+    const request = { query: { lang: 'en' } }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.activeBreachRegions).toHaveLength(2)
+    expect(viewArgs.activeBreachRegions[0].region).toBe('London')
+    expect(viewArgs.activeBreachRegions[0].breaches).toHaveLength(2)
+    expect(viewArgs.activeBreachRegions[1].region).toBe('East Midlands')
+    expect(viewArgs.activeBreachRegions[1].breaches).toHaveLength(1)
   })
 
   it('should add pollutantLinkText to each active breach', async () => {

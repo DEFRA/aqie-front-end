@@ -5,6 +5,8 @@ import { buildBackendApiFetchOptions } from '../common/helpers/backend-api-helpe
 const DATA_SOURCE_EN = 'Automatic Urban and Rural Network (AURN)'
 const DATA_SOURCE_CY = 'Rhwydwaith Awtomatig Trefol a Gwledig (AURN)'
 const MS_IN_24_HOURS = 24 * 60 * 60 * 1000
+const MS_PER_HOUR = 1000 * 60 * 60
+const MS_PER_MINUTE = 1000 * 60
 const DAYS_IN_YEAR = 365
 const HTTP_STATUS_OK = 200
 
@@ -71,8 +73,8 @@ function formatDate(date) {
 function formatAlertStarted(isoString) {
   const alertDate = new Date(isoString)
   const diffMs = Date.now() - alertDate.getTime()
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-  const diffMins = Math.floor(diffMs / (1000 * 60))
+  const diffHours = Math.floor(diffMs / MS_PER_HOUR)
+  const diffMins = Math.floor(diffMs / MS_PER_MINUTE)
   const time = formatTime(alertDate)
   const date = formatDate(alertDate)
 
@@ -92,14 +94,46 @@ function buildPastBreachTitle(monitoringStation, region, isoString) {
   return `${monitoringStation}, ${region} (${formatDate(date)})`
 }
 
-function mapToActiveBreach(item, lang) {
-  const { displayName, link } = getPollutantInfo(item['pollutant-name'], lang)
+function groupBySamplingId(items) {
+  const grouped = new Map()
+  let ungroupedIndex = 0
+
+  for (const item of items) {
+    const samplingId = item['sampling-id']
+    const id = samplingId ?? `__ungrouped_${ungroupedIndex}`
+    if (!samplingId) {
+      ungroupedIndex += 1
+    }
+    if (!grouped.has(id)) {
+      grouped.set(id, [])
+    }
+    grouped.get(id).push(item)
+  }
+
+  return Array.from(grouped.values())
+}
+
+function mapGroupToActiveBreach(items, lang) {
+  const sorted = [...items].sort(
+    (a, b) => new Date(a['alert-started']) - new Date(b['alert-started'])
+  )
+  const earliest = sorted[0]
+  const latest = sorted[sorted.length - 1]
+
+  const { displayName, link } = getPollutantInfo(
+    earliest['pollutant-name'],
+    lang
+  )
+
   return {
-    region: item['region'],
-    monitoringLocation: item['monitoring-station-name'],
+    region: earliest['region'],
+    monitoringLocation: earliest['monitoring-station-name'],
     pollutantName: displayName,
     pollutantLink: link,
-    alertStartedText: formatAlertStarted(item['alert-started'])
+    alertStartedText: formatAlertStarted(earliest['alert-started']),
+    ...(items.length > 1
+      ? { lastUpdatedText: formatAlertStarted(latest['alert-started']) }
+      : {})
   }
 }
 
@@ -128,7 +162,7 @@ async function fetchBreaches(lang = 'en', request = null) {
   const baseUrl = config.get('notify.alertBackendBaseUrl')
   const breachesPath = config.get('notify.breachesPath')
   const endDate = new Date().toISOString().split('T')[0]
-  const startDate = new Date(Date.now() - DAYS_IN_YEAR * 24 * 60 * 60 * 1000)
+  const startDate = new Date(Date.now() - DAYS_IN_YEAR * MS_IN_24_HOURS)
     .toISOString()
     .split('T')[0]
   const pathWithParams = `${breachesPath}?start-date=${startDate}&end-date=${endDate}`
@@ -146,9 +180,9 @@ async function fetchBreaches(lang = 'en', request = null) {
     return { activeBreaches: [], pastBreaches: [] }
   }
 
-  const activeBreaches = data
-    .filter((item) => item['active-breaches'] === true)
-    .map((item) => mapToActiveBreach(item, lang))
+  const activeBreaches = groupBySamplingId(
+    data.filter((item) => item['active-breaches'] === true)
+  ).map((group) => mapGroupToActiveBreach(group, lang))
 
   const pastBreaches = data
     .filter((item) => item['active-breaches'] === false)
@@ -157,4 +191,25 @@ async function fetchBreaches(lang = 'en', request = null) {
   return { activeBreaches, pastBreaches }
 }
 
-export { fetchBreaches }
+function groupActiveByRegion(activeBreaches) {
+  const regionMap = new Map()
+
+  for (const breach of activeBreaches) {
+    if (!regionMap.has(breach.region)) {
+      regionMap.set(breach.region, [])
+    }
+    regionMap.get(breach.region).push(breach)
+  }
+
+  return Array.from(regionMap.entries()).map(([region, breaches]) => ({
+    region,
+    breaches
+  }))
+}
+
+export {
+  fetchBreaches,
+  groupBySamplingId,
+  mapGroupToActiveBreach,
+  groupActiveByRegion
+}

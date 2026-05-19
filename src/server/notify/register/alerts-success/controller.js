@@ -112,7 +112,8 @@ const handleAlertsSuccessRequest = (request, h, _content = english) => {
     emailSuccessAnotherAlertPrefix,
     alertDetailsConfirmed,
     formData,
-    userResearchPanelUrl: config.get('userResearchPanelUrl')
+    userResearchPanelUrl: config.get('userResearchPanelUrl'),
+    hideLanguageToggle: true
   }
 
   return h.view('notify/register/alerts-success/index', viewModel)

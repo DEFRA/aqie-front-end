@@ -71,7 +71,8 @@ const buildBaseViewModel = (request, content, ui, pageTitle) => {
     footerTxt,
     phaseBanner,
     backlink,
-    cookieBanner
+    cookieBanner,
+    hideLanguageToggle: true
   }
 }
 
@@ -278,6 +279,7 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
 
     persistLocationQueryInSession(request)
 
+    const locationId = request.yar.get('locationId') || ''
     const maxAlertsErrorObj = getMaxAlertsError(
       content,
       maxAlertsEmailError,
@@ -288,7 +290,13 @@ const handleEmailDetailsRequest = (request, h, content = english) => {
       pageTitle: maxAlertsErrorObj ? ui.errorPageTitle : ui.pageTitle,
       formData: request.yar.get('formData') || {},
       maxAlertsError: maxAlertsErrorObj,
-      alertLimitHint: getAlertLimitHint(content)
+      alertLimitHint: getAlertLimitHint(content),
+      ...(locationId && {
+        displayBacklink: true,
+        customBackLink: true,
+        backLinkText: 'Back',
+        backLinkUrl: `/location/${locationId}?lang=en`
+      })
     })
   } catch (error) {
     // Log and present a generic error view (re-using template with message) ''

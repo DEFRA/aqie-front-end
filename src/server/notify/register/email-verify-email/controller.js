@@ -88,7 +88,8 @@ const handleEmailVerifyRequest = (request, h, content = english) => {
     customBackLink: true,
     backLinkText: common?.backLinkText || 'Back',
     backLinkUrl: config.get(EMAIL_DETAILS_PATH_KEY),
-    emailAddress
+    emailAddress,
+    hideLanguageToggle: true
   }
 
   return h.view(VIEW_PATH, viewModel)
