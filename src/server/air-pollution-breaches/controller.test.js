@@ -46,7 +46,7 @@ vi.mock('./content.js', () => ({
     heading: 'Air pollution breaches',
     intro: {
       legal: 'Legal text',
-      actions: 'Actions text',
+      actions: 'Find out what to do <a href="{actionsLink}">here</a>.',
       measured: 'Measured'
     },
     active: {
@@ -304,6 +304,50 @@ describe('airPollutionBreachesController', () => {
     expect(viewArgs.activeBreaches[0].pollutantLinkText).toBe(
       'What causes high Ozone levels?'
     )
+  })
+
+  it('should append locationId to past breach pollutantLink when locationId is present', async () => {
+    fetchBreaches.mockResolvedValue({
+      activeBreaches: [],
+      pastBreaches: [mockPastBreach]
+    })
+    const request = { query: { lang: 'en', locationId: 'bristol-city' } }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.pastBreaches[0].pollutantLink).toContain(
+      'locationId=bristol-city'
+    )
+  })
+
+  it('should not modify past breach pollutantLink when no locationId is present', async () => {
+    fetchBreaches.mockResolvedValue({
+      activeBreaches: [],
+      pastBreaches: [mockPastBreach]
+    })
+    const request = { query: { lang: 'en' } }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.pastBreaches[0].pollutantLink).toBe(
+      mockPastBreach.pollutantLink
+    )
+  })
+
+  it('should replace {actionsLink} in intro.actions with the location URL when locationId is present', async () => {
+    fetchBreaches.mockResolvedValue({ activeBreaches: [], pastBreaches: [] })
+    const request = { query: { lang: 'en', locationId: 'bristol-city' } }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.intro.actions).toContain(
+      '/location/bristol-city/actions-reduce-exposure?lang=en'
+    )
+  })
+
+  it('should replace {actionsLink} with # in intro.actions when no locationId is present', async () => {
+    fetchBreaches.mockResolvedValue({ activeBreaches: [], pastBreaches: [] })
+    const request = { query: { lang: 'en' } }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.intro.actions).toContain('href="#"')
   })
 })
 

@@ -4,8 +4,7 @@ const breachesContentEn = {
   intro: {
     legal:
       'The <a href="https://www.legislation.gov.uk/uksi/2010/1001/contents" class="govuk-link">Air Quality Standards Regulations (2010)</a> sets out the legal safe limits for specific air pollutants.',
-    actions:
-      'When a pollutant goes over (breaches) its legal safe limit in one area, it may be a serious health risk to people nearby. <a href="/actions-reduce-exposure?lang=en" class="govuk-link">Find out what to do if you’re in an area with an active air pollution breach</a>.',
+    actions: `When a pollutant goes over (breaches) its legal safe limit in one area, it may be a serious health risk to people nearby. <a href="{actionsLink}" class="govuk-link">Find out what to do if you’re in an area with an active air pollution breach</a>.`,
     measured: 'Air pollution levels across the UK are measured hourly.'
   },
   active: {
