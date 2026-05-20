@@ -2,6 +2,7 @@
 import { createLogger } from '../../../common/helpers/logging/logger.js'
 import { config } from '../../../../config/index.js'
 import { generateEmailLink } from '../../../common/services/notify.js'
+import { syncMockVerificationTokenFromGenerateLinkResult } from '../helpers/mock-email-verification.js'
 
 // Create a logger instance ''
 const logger = createLogger()
@@ -29,10 +30,18 @@ const sendActivationAndRedirect = async (
   }
 
   try {
-    await generateEmailLink(emailAddress, location, lat, long, request)
+    const sendResult = await generateEmailLink(
+      emailAddress,
+      location,
+      lat,
+      long,
+      request
+    )
+    syncMockVerificationTokenFromGenerateLinkResult(request, sendResult)
     request.yar.set('emailActivationSent', Date.now())
     logger.info('Queued Notify email link for delivery')
   } catch (err) {
+    syncMockVerificationTokenFromGenerateLinkResult(request, null)
     logger.error('Notify email send failed', err)
   }
 
