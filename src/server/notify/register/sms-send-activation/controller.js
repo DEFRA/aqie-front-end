@@ -117,7 +117,8 @@ function buildSendActivationViewModel({
     backLinkUrl,
     changeMobileNumberUrl: backLinkUrl,
     mobileNumber,
-    error
+    error,
+    hideLanguageToggle: true
   }
 }
 

@@ -48,7 +48,8 @@ const handleSmsMaxAlertsRequest = (request, h, content = english) => {
     displayBacklink: false,
     common,
     content: smsMaxAlerts,
-    smsMobileNumberPath
+    smsMobileNumberPath,
+    hideLanguageToggle: true
   }
 
   return h.view('notify/register/sms-max-emails/index', viewModel)

@@ -84,6 +84,7 @@ function buildViewModel(request, pageContent, emailAddress, extras = {}) {
     customBackLink: true,
     backLinkText: common?.backLinkText || 'Back',
     backLinkUrl: config.get('notify.emailVerifyEmailPath'),
+    hideLanguageToggle: true,
     ...extras
   }
 }

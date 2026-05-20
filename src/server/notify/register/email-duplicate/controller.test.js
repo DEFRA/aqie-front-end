@@ -52,4 +52,22 @@ describe('email-duplicate/controller', () => {
     expect(response.vm.location).toBe('this location')
     expect(response.vm.emailAddress).toBe('your email address')
   })
+
+  it('wraps location and email address in bold tags in the description', () => {
+    const session = { location: 'Leeds', emailAddress: 'user@example.com' }
+    const response = handleEmailDuplicateRequest(mockRequest(session), mockH())
+
+    expect(response.vm.content.description).toContain('<b>Leeds</b>')
+    expect(response.vm.content.description).toContain('<b>user@example.com</b>')
+  })
+
+  it('shows a back button with javascript:history.back()', () => {
+    const session = { location: 'Leeds', emailAddress: 'user@example.com' }
+    const response = handleEmailDuplicateRequest(mockRequest(session), mockH())
+
+    expect(response.vm.displayBacklink).toBe(true)
+    expect(response.vm.customBackLink).toBe(true)
+    expect(response.vm.backLinkUrl).toBe('javascript:history.back()')
+    expect(response.vm.backLinkText).toBe('Back')
+  })
 })

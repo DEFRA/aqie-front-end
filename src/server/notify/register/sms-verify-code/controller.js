@@ -75,7 +75,8 @@ function buildErrorViewModel(
     backLinkUrl: SMS_SEND_ACTIVATION_PATH,
     mobileNumber,
     error: { message: errorMessage, field: FIELD_NAME },
-    formData: request.payload
+    formData: request.payload,
+    hideLanguageToggle: true
   }
 }
 
@@ -257,7 +258,8 @@ const handleCheckMessageRequest = (request, h, content = english) => {
     backLinkUrl: SMS_SEND_ACTIVATION_PATH,
     mobileNumber,
     formData: request.yar.get('formData') || {},
-    debugToken: developerHint
+    debugToken: developerHint,
+    hideLanguageToggle: true
   }
 
   return h.view(VIEW_PATH, viewModel)

@@ -32,9 +32,9 @@ const mockRequest = { query: {} }
 
 describe('getPollutantDisplayName', () => {
   it.each([
-    ['ozone (o3)', 'Ozone'],
-    ['nitrogen dioxide (no2)', 'Nitrogen dioxide'],
-    ['sulphur dioxide (so2)', 'Sulphur dioxide'],
+    ['ozone (o3)', 'ozone'],
+    ['nitrogen dioxide (no2)', 'nitrogen dioxide'],
+    ['sulphur dioxide (so2)', 'sulphur dioxide'],
     ['particulate matter (pm2.5)', 'PM2.5'],
     ['particulate matter (pm10)', 'PM10']
   ])('maps "%s" to "%s"', (raw, expected) => {
@@ -42,9 +42,9 @@ describe('getPollutantDisplayName', () => {
   })
 
   it('is case insensitive — handles uppercase variant from API', () => {
-    expect(getPollutantDisplayName('ozone (O3)')).toBe('Ozone')
+    expect(getPollutantDisplayName('ozone (O3)')).toBe('ozone')
     expect(getPollutantDisplayName('Nitrogen Dioxide (NO2)')).toBe(
-      'Nitrogen dioxide'
+      'nitrogen dioxide'
     )
   })
 
@@ -74,10 +74,21 @@ describe('buildPollutantsText', () => {
     )
   })
 
-  it('joins three pollutants with commas only', () => {
+  it('joins three pollutants with commas and "and" before the last', () => {
     expect(
       buildPollutantsText(['Ozone', 'Nitrogen dioxide', 'Sulphur dioxide'])
-    ).toBe('Ozone, Nitrogen dioxide, Sulphur dioxide')
+    ).toBe('Ozone, Nitrogen dioxide and Sulphur dioxide')
+  })
+
+  it('joins four pollutants with commas and "and" before the last', () => {
+    expect(
+      buildPollutantsText([
+        'Ozone',
+        'Nitrogen dioxide',
+        'Sulphur dioxide',
+        'PM2.5'
+      ])
+    ).toBe('Ozone, Nitrogen dioxide, Sulphur dioxide and PM2.5')
   })
 })
 
@@ -195,7 +206,7 @@ describe('fetchLocationAlert', () => {
       'en',
       mockRequest
     )
-    expect(result.pollutantsText).toBe('Ozone')
+    expect(result.pollutantsText).toBe('ozone')
     expect(result.breachesPageUrl).toBe(
       '/air-pollution-breaches?lang=en&locationId=bristol-city&locationName=Bristol%2C%20City%20of%20Bristol'
     )
@@ -217,10 +228,10 @@ describe('fetchLocationAlert', () => {
       'en',
       mockRequest
     )
-    expect(result.pollutantsText).toBe('Ozone and Nitrogen dioxide')
+    expect(result.pollutantsText).toBe('ozone and nitrogen dioxide')
   })
 
-  it('returns comma-separated pollutant names for three active breaches', async () => {
+  it('returns pollutant names joined with commas and "and" for three active breaches', async () => {
     catchFetchError.mockResolvedValue([
       200,
       [
@@ -238,7 +249,7 @@ describe('fetchLocationAlert', () => {
       mockRequest
     )
     expect(result.pollutantsText).toBe(
-      'Ozone, Nitrogen dioxide, Sulphur dioxide'
+      'ozone, nitrogen dioxide and sulphur dioxide'
     )
   })
 
@@ -258,7 +269,7 @@ describe('fetchLocationAlert', () => {
       'en',
       mockRequest
     )
-    expect(result.pollutantsText).toBe('Ozone')
+    expect(result.pollutantsText).toBe('ozone')
   })
 
   it('includes lang in the breachesPageUrl', async () => {

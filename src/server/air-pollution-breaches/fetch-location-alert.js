@@ -5,9 +5,9 @@ import { buildBackendApiFetchOptions } from '../common/helpers/backend-api-helpe
 const HTTP_STATUS_OK = 200
 
 const POLLUTANT_DISPLAY_NAMES = {
-  'ozone (o3)': 'Ozone',
-  'nitrogen dioxide (no2)': 'Nitrogen dioxide',
-  'sulphur dioxide (so2)': 'Sulphur dioxide',
+  'ozone (o3)': 'ozone',
+  'nitrogen dioxide (no2)': 'nitrogen dioxide',
+  'sulphur dioxide (so2)': 'sulphur dioxide',
   'particulate matter (pm2.5)': 'PM2.5',
   'particulate matter (pm10)': 'PM10'
 }
@@ -26,7 +26,9 @@ function buildPollutantsText(pollutants) {
   if (pollutants.length === 2) {
     return `${pollutants[0]} and ${pollutants[1]}`
   }
-  return pollutants.join(', ')
+  const allButLast = pollutants.slice(0, -1)
+  const last = pollutants[pollutants.length - 1]
+  return `${allButLast.join(', ')} and ${last}`
 }
 
 async function fetchLocationAlert(

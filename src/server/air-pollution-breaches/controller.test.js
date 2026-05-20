@@ -6,7 +6,18 @@ import {
 import { fetchBreaches } from './fetch-breaches.js'
 
 vi.mock('./fetch-breaches.js', () => ({
-  fetchBreaches: vi.fn()
+  fetchBreaches: vi.fn(),
+  groupActiveByRegion: vi.fn((breaches) => {
+    const regionMap = new Map()
+    for (const breach of breaches) {
+      if (!regionMap.has(breach.region)) regionMap.set(breach.region, [])
+      regionMap.get(breach.region).push(breach)
+    }
+    return Array.from(regionMap.entries()).map(([region, bs]) => ({
+      region,
+      breaches: bs
+    }))
+  })
 }))
 
 vi.mock('../common/helpers/get-site-url.js', () => ({
@@ -35,7 +46,7 @@ vi.mock('./content.js', () => ({
     heading: 'Air pollution breaches',
     intro: {
       legal: 'Legal text',
-      actions: 'Actions text',
+      actions: 'Find out what to do <a href="{actionsLink}">here</a>.',
       measured: 'Measured'
     },
     active: {
@@ -46,7 +57,8 @@ vi.mock('./content.js', () => ({
       labels: {
         monitoringLocation: 'Monitoring location',
         pollutant: 'Pollutant',
-        alertStarted: 'Alert started'
+        alertStarted: 'Alert started',
+        lastUpdated: 'Last updated'
       },
       whatCausesPrefix: 'What causes high ',
       whatCausesSuffix: ' levels?'
@@ -254,6 +266,33 @@ describe('airPollutionBreachesController', () => {
     expect(viewArgs.backLinkText).toBe('Air pollution in BS1 1AA')
   })
 
+  it('should group active breaches by region into activeBreachRegions', async () => {
+    fetchBreaches.mockResolvedValue({
+      activeBreaches: [
+        { ...mockActiveBreach, region: 'London' },
+        {
+          ...mockActiveBreach,
+          region: 'London',
+          monitoringLocation: 'London Victoria'
+        },
+        {
+          ...mockActiveBreach,
+          region: 'East Midlands',
+          monitoringLocation: 'Nottingham'
+        }
+      ],
+      pastBreaches: []
+    })
+    const request = { query: { lang: 'en' } }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.activeBreachRegions).toHaveLength(2)
+    expect(viewArgs.activeBreachRegions[0].region).toBe('London')
+    expect(viewArgs.activeBreachRegions[0].breaches).toHaveLength(2)
+    expect(viewArgs.activeBreachRegions[1].region).toBe('East Midlands')
+    expect(viewArgs.activeBreachRegions[1].breaches).toHaveLength(1)
+  })
+
   it('should add pollutantLinkText to each active breach', async () => {
     fetchBreaches.mockResolvedValue({
       activeBreaches: [mockActiveBreach],
@@ -265,6 +304,50 @@ describe('airPollutionBreachesController', () => {
     expect(viewArgs.activeBreaches[0].pollutantLinkText).toBe(
       'What causes high Ozone levels?'
     )
+  })
+
+  it('should append locationId to past breach pollutantLink when locationId is present', async () => {
+    fetchBreaches.mockResolvedValue({
+      activeBreaches: [],
+      pastBreaches: [mockPastBreach]
+    })
+    const request = { query: { lang: 'en', locationId: 'bristol-city' } }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.pastBreaches[0].pollutantLink).toContain(
+      'locationId=bristol-city'
+    )
+  })
+
+  it('should not modify past breach pollutantLink when no locationId is present', async () => {
+    fetchBreaches.mockResolvedValue({
+      activeBreaches: [],
+      pastBreaches: [mockPastBreach]
+    })
+    const request = { query: { lang: 'en' } }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.pastBreaches[0].pollutantLink).toBe(
+      mockPastBreach.pollutantLink
+    )
+  })
+
+  it('should replace {actionsLink} in intro.actions with the location URL when locationId is present', async () => {
+    fetchBreaches.mockResolvedValue({ activeBreaches: [], pastBreaches: [] })
+    const request = { query: { lang: 'en', locationId: 'bristol-city' } }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.intro.actions).toContain(
+      '/location/bristol-city/actions-reduce-exposure?lang=en'
+    )
+  })
+
+  it('should replace {actionsLink} with # in intro.actions when no locationId is present', async () => {
+    fetchBreaches.mockResolvedValue({ activeBreaches: [], pastBreaches: [] })
+    const request = { query: { lang: 'en' } }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.intro.actions).toContain('href="#"')
   })
 })
 

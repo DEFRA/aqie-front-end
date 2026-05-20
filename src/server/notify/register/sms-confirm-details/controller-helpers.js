@@ -250,7 +250,8 @@ const buildConfirmDetailsViewModel = ({
       duplicateAlertLocation,
       smsConfirmDetails,
       safeLocation
-    })
+    }),
+    hideLanguageToggle: true
   }
 }
 

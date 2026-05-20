@@ -4,8 +4,7 @@ const breachesContentEn = {
   intro: {
     legal:
       'The <a href="https://www.legislation.gov.uk/uksi/2010/1001/contents" class="govuk-link">Air Quality Standards Regulations (2010)</a> sets out the legal safe limits for specific air pollutants.',
-    actions:
-      'When a pollutant goes over (breaches) its legal safe limit in one area, it may be a serious health risk to people nearby. <a href="/actions-reduce-exposure?lang=en" class="govuk-link">Find out what to do if you’re in an area with an active air pollution breach</a>.',
+    actions: `When a pollutant goes over (breaches) its legal safe limit in one area, it may be a serious health risk to people nearby. <a href="{actionsLink}" class="govuk-link">Find out what to do if you’re in an area with an active air pollution breach</a>.`,
     measured: 'Air pollution levels across the UK are measured hourly.'
   },
   active: {
@@ -13,11 +12,12 @@ const breachesContentEn = {
     countMessage:
       'There is currently <b>{count}</b> active air pollution breach',
     timingMessage:
-      'This alert will stay active until 24 hours after the last measured breach. This is currently expected to be in about 2 hours.',
+      'This alert will stay active until 24 hours after the last measured breach.',
     labels: {
       monitoringLocation: 'Monitoring location',
       pollutant: 'Pollutant',
-      alertStarted: 'Alert started'
+      alertStarted: 'Alert started',
+      lastUpdated: 'Last updated'
     },
     whatCausesPrefix: 'What causes high ',
     whatCausesSuffix: ' levels?'
@@ -54,11 +54,12 @@ const breachesContentCy = {
     countMessage:
       'Ar hyn o bryd mae <b>{count}</b> torriad llygredd aer gweithredol',
     timingMessage:
-      'Bydd y rhybudd hwn yn aros yn weithredol tan 24 awr ar ôl y torriad mesuredig diwethaf. Ar hyn o bryd disgwylir hyn mewn tua 2 awr.',
+      'Bydd y rhybudd hwn yn aros yn weithredol tan 24 awr ar ôl y torriad mesuredig diwethaf.',
     labels: {
       monitoringLocation: 'Lleoliad monitro',
       pollutant: 'Llygrydd',
-      alertStarted: 'Dechreuodd y rhybudd'
+      alertStarted: 'Dechreuodd y rhybudd',
+      lastUpdated: 'Diweddarwyd diwethaf'
     },
     whatCausesPrefix: 'Beth sy’n achosi lefelau uchel o ',
     whatCausesSuffix: '?'

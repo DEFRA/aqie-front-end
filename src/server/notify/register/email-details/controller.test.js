@@ -119,6 +119,30 @@ describe('email-details controller', () => {
     expect(res.vm.pageTitle).not.toContain('Error:')
   })
 
+  it('GET shows back link to location page when locationId is present', () => {
+    const session = {}
+    const req = mockRequest({}, session)
+    req.query = { locationId: 'E08000035' }
+    const h = mockH()
+
+    const res = handleEmailDetailsRequest(req, h)
+
+    expect(res.vm.displayBacklink).toBe(true)
+    expect(res.vm.customBackLink).toBe(true)
+    expect(res.vm.backLinkUrl).toBe('/location/E08000035?lang=en')
+    expect(res.vm.backLinkText).toBe('Back')
+  })
+
+  it('GET does not show back link when no locationId is present', () => {
+    const req = mockRequest()
+    const h = mockH()
+
+    const res = handleEmailDetailsRequest(req, h)
+
+    expect(res.vm.displayBacklink).toBeFalsy()
+    expect(res.vm.backLinkUrl).toBeUndefined()
+  })
+
   it('GET persists query location, coordinates and locationId in session', () => {
     const session = {}
     const req = mockRequest({}, session)

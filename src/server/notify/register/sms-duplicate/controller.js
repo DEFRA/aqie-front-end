@@ -45,8 +45,8 @@ const handleDuplicateSubscriptionRequest = (request, h, content = english) => {
   const pageContent = {
     heading: smsDuplicate.heading,
     description: formatTemplate(smsDuplicate.description, {
-      location,
-      mobileNumber: maskedPhoneNumber
+      location: `<b>${location}</b>`,
+      mobileNumber: `<b>${maskedPhoneNumber}</b>`
     }),
     searchLink: smsDuplicate.searchLinkText,
     searchText: smsDuplicate.searchText
@@ -63,11 +63,15 @@ const handleDuplicateSubscriptionRequest = (request, h, content = english) => {
     footerTxt,
     phaseBanner,
     cookieBanner,
-    displayBacklink: false,
+    displayBacklink: true,
+    customBackLink: true,
+    backLinkText: 'Back',
+    backLinkUrl: 'javascript:history.back()',
     common,
     content: pageContent,
     location,
-    maskedPhoneNumber
+    maskedPhoneNumber,
+    hideLanguageToggle: true
   }
 
   return h.view('notify/register/sms-duplicate/index', viewModel)
