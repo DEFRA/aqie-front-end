@@ -74,10 +74,21 @@ describe('buildPollutantsText', () => {
     )
   })
 
-  it('joins three pollutants with commas only', () => {
+  it('joins three pollutants with commas and "and" before the last', () => {
     expect(
       buildPollutantsText(['Ozone', 'Nitrogen dioxide', 'Sulphur dioxide'])
-    ).toBe('Ozone, Nitrogen dioxide, Sulphur dioxide')
+    ).toBe('Ozone, Nitrogen dioxide and Sulphur dioxide')
+  })
+
+  it('joins four pollutants with commas and "and" before the last', () => {
+    expect(
+      buildPollutantsText([
+        'Ozone',
+        'Nitrogen dioxide',
+        'Sulphur dioxide',
+        'PM2.5'
+      ])
+    ).toBe('Ozone, Nitrogen dioxide, Sulphur dioxide and PM2.5')
   })
 })
 
@@ -220,7 +231,7 @@ describe('fetchLocationAlert', () => {
     expect(result.pollutantsText).toBe('ozone and nitrogen dioxide')
   })
 
-  it('returns comma-separated pollutant names for three active breaches', async () => {
+  it('returns pollutant names joined with commas and "and" for three active breaches', async () => {
     catchFetchError.mockResolvedValue([
       200,
       [
@@ -238,7 +249,7 @@ describe('fetchLocationAlert', () => {
       mockRequest
     )
     expect(result.pollutantsText).toBe(
-      'ozone, nitrogen dioxide, sulphur dioxide'
+      'ozone, nitrogen dioxide and sulphur dioxide'
     )
   })
 

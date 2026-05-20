@@ -26,7 +26,9 @@ function buildPollutantsText(pollutants) {
   if (pollutants.length === 2) {
     return `${pollutants[0]} and ${pollutants[1]}`
   }
-  return pollutants.join(', ')
+  const allButLast = pollutants.slice(0, -1)
+  const last = pollutants[pollutants.length - 1]
+  return `${allButLast.join(', ')} and ${last}`
 }
 
 async function fetchLocationAlert(

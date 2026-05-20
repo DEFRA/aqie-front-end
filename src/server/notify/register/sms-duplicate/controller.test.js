@@ -58,4 +58,28 @@ describe('sms-duplicate/controller', () => {
     expect(response.vm.location).toBe('this location')
     expect(response.vm.maskedPhoneNumber).toBe('')
   })
+
+  it('wraps location and mobile number in bold tags in the description', () => {
+    const session = { location: 'Leeds', mobileNumber: '07123456789' }
+    const response = handleDuplicateSubscriptionRequest(
+      mockRequest(session),
+      mockH()
+    )
+
+    expect(response.vm.content.description).toContain('<b>Leeds</b>')
+    expect(response.vm.content.description).toContain('<b>07123456789</b>')
+  })
+
+  it('shows a back button with javascript:history.back()', () => {
+    const session = { location: 'Leeds', mobileNumber: '07123456789' }
+    const response = handleDuplicateSubscriptionRequest(
+      mockRequest(session),
+      mockH()
+    )
+
+    expect(response.vm.displayBacklink).toBe(true)
+    expect(response.vm.customBackLink).toBe(true)
+    expect(response.vm.backLinkUrl).toBe('javascript:history.back()')
+    expect(response.vm.backLinkText).toBe('Back')
+  })
 })

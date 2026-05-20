@@ -5,7 +5,7 @@
     <div class="govuk-grid-column-full odd-page">
       <h1 class="govuk-heading-l">{{ content.heading }}</h1>
       
-      <p class="govuk-body">{{ content.description }}</p>
+      <p class="govuk-body">{{ content.description | safe }}</p>
       
       <p class="govuk-body">
         <a href="/search-location?fromSmsFlow=true" class="govuk-link">{{ content.searchLink }}</a> {{ content.searchText }}

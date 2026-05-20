@@ -12,7 +12,7 @@ const breachesContentEn = {
     countMessage:
       'There is currently <b>{count}</b> active air pollution breach',
     timingMessage:
-      'This alert will stay active until 24 hours after the last measured breach. This is currently expected to be in about 2 hours.',
+      'This alert will stay active until 24 hours after the last measured breach.',
     labels: {
       monitoringLocation: 'Monitoring location',
       pollutant: 'Pollutant',
@@ -54,7 +54,7 @@ const breachesContentCy = {
     countMessage:
       'Ar hyn o bryd mae <b>{count}</b> torriad llygredd aer gweithredol',
     timingMessage:
-      'Bydd y rhybudd hwn yn aros yn weithredol tan 24 awr ar ôl y torriad mesuredig diwethaf. Ar hyn o bryd disgwylir hyn mewn tua 2 awr.',
+      'Bydd y rhybudd hwn yn aros yn weithredol tan 24 awr ar ôl y torriad mesuredig diwethaf.',
     labels: {
       monitoringLocation: 'Lleoliad monitro',
       pollutant: 'Llygrydd',
