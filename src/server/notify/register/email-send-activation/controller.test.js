@@ -58,7 +58,9 @@ describe('Email Send Activation Controller GET', () => {
       'emailActivationSent',
       expect.any(Number)
     )
-    expect(mockH.redirect).toHaveBeenCalledWith(config.get(VERIFY_EMAIL_PATH_KEY))
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      config.get(VERIFY_EMAIL_PATH_KEY)
+    )
   })
 
   test('handleEmailSendActivationRequest redirects when no email in session', async () => {
@@ -75,7 +77,9 @@ describe('Email Send Activation Controller GET', () => {
 
     await handleEmailSendActivationRequest(mockRequest, mockH)
 
-    expect(mockH.redirect).toHaveBeenCalledWith(config.get(EMAIL_DETAILS_PATH_KEY))
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      config.get(EMAIL_DETAILS_PATH_KEY)
+    )
     expect(mockH.view).not.toHaveBeenCalled()
   })
 
@@ -95,7 +99,9 @@ describe('Email Send Activation Controller GET', () => {
       'emailActivationSent',
       expect.any(Number)
     )
-    expect(mockH.redirect).toHaveBeenCalledWith(config.get(VERIFY_EMAIL_PATH_KEY))
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      config.get(VERIFY_EMAIL_PATH_KEY)
+    )
   })
 })
 
@@ -120,7 +126,9 @@ describe('Email Send Activation Controller POST', () => {
       'emailActivationSent',
       expect.any(Number)
     )
-    expect(mockH.redirect).toHaveBeenCalledWith(config.get(VERIFY_EMAIL_PATH_KEY))
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      config.get(VERIFY_EMAIL_PATH_KEY)
+    )
   })
 
   test('handleEmailSendActivationPost redirects when no email in session', async () => {
@@ -137,7 +145,9 @@ describe('Email Send Activation Controller POST', () => {
 
     await handleEmailSendActivationPost(mockRequest, mockH)
 
-    expect(mockH.redirect).toHaveBeenCalledWith(config.get(EMAIL_DETAILS_PATH_KEY))
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      config.get(EMAIL_DETAILS_PATH_KEY)
+    )
     expect(mockRequest.yar.set).not.toHaveBeenCalled()
   })
 })

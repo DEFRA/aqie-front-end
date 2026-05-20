@@ -108,10 +108,11 @@ const captureOptionalMockVerificationToken = async (
       long,
       request
     )
-    const mockVerificationToken = syncMockVerificationTokenFromGenerateLinkResult(
-      request,
-      generateLinkResult
-    )
+    const mockVerificationToken =
+      syncMockVerificationTokenFromGenerateLinkResult(
+        request,
+        generateLinkResult
+      )
 
     if (!mockVerificationToken) {
       logger.info(

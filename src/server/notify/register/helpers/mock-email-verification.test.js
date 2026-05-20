@@ -117,7 +117,10 @@ describe('syncMockVerificationTokenFromGenerateLinkResult', () => {
 
   it('clears token in production for non-CDP hosts', () => {
     process.env.NODE_ENV = 'production'
-    const request = createRequest({ [SESSION_KEY]: STALE_TOKEN }, { host: NON_CDP_HOST })
+    const request = createRequest(
+      { [SESSION_KEY]: STALE_TOKEN },
+      { host: NON_CDP_HOST }
+    )
 
     const token = syncMockVerificationTokenFromGenerateLinkResult(request, {
       data: { verificationToken: TOKEN_FROM_NON_CDP_PROD }
@@ -137,7 +140,10 @@ describe('syncMockVerificationTokenFromGenerateLinkResult', () => {
     })
 
     expect(token).toBe(TOKEN_FROM_CDP_PROD)
-    expect(request.yar.set).toHaveBeenCalledWith(SESSION_KEY, TOKEN_FROM_CDP_PROD)
+    expect(request.yar.set).toHaveBeenCalledWith(
+      SESSION_KEY,
+      TOKEN_FROM_CDP_PROD
+    )
   })
 })
 
