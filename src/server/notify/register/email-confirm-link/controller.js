@@ -13,16 +13,16 @@ import {
   setupEmailAlert,
   validateEmailLink
 } from '../../../common/services/notify.js'
+import {
+  isMockVerificationHeaderEnabled,
+  syncMockVerificationTokenFromGenerateLinkResult
+} from '../helpers/mock-email-verification.js'
 
 const logger = createLogger()
 const VIEW_PATH = 'notify/register/email-confirm-link/index'
 const DEFAULT_SERVICE_NAME = 'Check air quality'
 const HTTP_STATUS_CONFLICT = 409
 const TOKEN_LOG_PREFIX_LENGTH = 6
-const MOCK_EMAIL_VERIFICATION_TOKEN_SESSION_KEY = 'mockEmailVerificationToken'
-const CDP_TEST_HOST_MARKER = '.test.cdp-int.'
-const CDP_PERF_TEST_HOST_MARKER = '.perf-test.cdp-int.'
-const CDP_PERF_HOST_MARKER = '.perf.cdp-int.'
 
 const hasOwnValue = (obj, key) => {
   return Object.hasOwn(obj || {}, key)
@@ -88,39 +88,6 @@ const setConfirmSessionData = (request, token, emailAddress, location) => {
   }
 }
 
-const isCdpTestOrPerfRequest = (request) => {
-  const host = request?.headers?.host?.toLowerCase() || ''
-  return (
-    host.includes(CDP_TEST_HOST_MARKER) ||
-    host.includes(CDP_PERF_TEST_HOST_MARKER) ||
-    host.includes(CDP_PERF_HOST_MARKER)
-  )
-}
-
-const isMockTokenCaptureEnabled = (request) => {
-  const env = process.env.NODE_ENV || 'development'
-  return env !== 'production' || isCdpTestOrPerfRequest(request)
-}
-
-const extractMockVerificationToken = (generateLinkResult) => {
-  if (!generateLinkResult || typeof generateLinkResult !== 'object') {
-    return ''
-  }
-
-  const tokenCandidates = [
-    generateLinkResult?.data?.verificationToken,
-    generateLinkResult?.data?.data?.verificationToken,
-    generateLinkResult?.body?.verificationToken,
-    generateLinkResult?.body?.data?.verificationToken
-  ]
-
-  const token = tokenCandidates.find((value) => {
-    return typeof value === 'string' && value.trim().length > 0
-  })
-
-  return token || ''
-}
-
 const captureOptionalMockVerificationToken = async (
   request,
   emailAddress,
@@ -128,8 +95,8 @@ const captureOptionalMockVerificationToken = async (
   lat,
   long
 ) => {
-  if (!isMockTokenCaptureEnabled(request) || !emailAddress) {
-    request.yar.clear(MOCK_EMAIL_VERIFICATION_TOKEN_SESSION_KEY)
+  if (!isMockVerificationHeaderEnabled(request) || !emailAddress) {
+    syncMockVerificationTokenFromGenerateLinkResult(request, null)
     return
   }
 
@@ -141,26 +108,22 @@ const captureOptionalMockVerificationToken = async (
       long,
       request
     )
-    const mockVerificationToken =
-      extractMockVerificationToken(generateLinkResult)
+    const mockVerificationToken = syncMockVerificationTokenFromGenerateLinkResult(
+      request,
+      generateLinkResult
+    )
 
     if (!mockVerificationToken) {
-      request.yar.clear(MOCK_EMAIL_VERIFICATION_TOKEN_SESSION_KEY)
       logger.info(
         '[EMAIL CONFIRM] generate-link response has no mock verificationToken'
       )
       return
     }
-
-    request.yar.set(
-      MOCK_EMAIL_VERIFICATION_TOKEN_SESSION_KEY,
-      mockVerificationToken
-    )
     logger.info(
-      '[EMAIL CONFIRM] Captured optional mock verificationToken for success-page header'
+      '[EMAIL CONFIRM] Captured optional mock verificationToken for verify-email header'
     )
   } catch (err) {
-    request.yar.clear(MOCK_EMAIL_VERIFICATION_TOKEN_SESSION_KEY)
+    syncMockVerificationTokenFromGenerateLinkResult(request, null)
     logger.warn(
       `[EMAIL CONFIRM] generate-link call failed before success redirect: ${err?.message || err}`
     )

@@ -126,6 +126,7 @@ export {
   MOCK_VERIFICATION_TOKEN_HEADER,
   MOCK_GENERATE_LINK_ENDPOINT_HEADER,
   MOCK_EMAIL_VERIFICATION_TOKEN_SESSION_KEY,
+  isMockVerificationHeaderEnabled,
   syncMockVerificationTokenFromGenerateLinkResult,
   maybeApplyMockVerificationHeaders
 }
