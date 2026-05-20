@@ -42,8 +42,8 @@ const handleEmailDuplicateRequest = (request, h, content = english) => {
   const pageContent = {
     heading: emailDuplicate.heading,
     description: formatTemplate(emailDuplicate.description, {
-      location,
-      emailAddress
+      location: `<b>${location}</b>`,
+      emailAddress: `<b>${emailAddress}</b>`
     }),
     searchLink: emailDuplicate.searchLinkText,
     searchText: emailDuplicate.searchText
@@ -60,7 +60,10 @@ const handleEmailDuplicateRequest = (request, h, content = english) => {
     footerTxt,
     phaseBanner,
     cookieBanner,
-    displayBacklink: false,
+    displayBacklink: true,
+    customBackLink: true,
+    backLinkText: 'Back',
+    backLinkUrl: 'javascript:history.back()',
     common,
     content: pageContent,
     location,
