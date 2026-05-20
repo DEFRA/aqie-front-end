@@ -186,6 +186,10 @@ async function fetchBreaches(lang = 'en', request = null) {
 
   const pastBreaches = data
     .filter((item) => item['active-breaches'] === false)
+    .filter((item) => {
+      const d = new Date(item['alert-started'])
+      return item['alert-started'] && !isNaN(d.getTime())
+    })
     .map((item) => mapToPastBreach(item, lang))
 
   return { activeBreaches, pastBreaches }
