@@ -6,17 +6,11 @@ import { LANG_CY } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { config } from '../../../../config/index.js'
 import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
-import { buildBackendApiRequest } from '../../../common/helpers/backend-api-helper.js'
 
 // Create a logger instance
 const logger = createLogger()
 
-const MOCK_VERIFICATION_TOKEN_HEADER = 'x-aqie-email-verification-token'
-const MOCK_GENERATE_LINK_ENDPOINT_HEADER = 'x-aqie-email-generate-link-endpoint'
 const MOCK_EMAIL_VERIFICATION_TOKEN_SESSION_KEY = 'mockEmailVerificationToken'
-const CDP_TEST_HOST_MARKER = '.test.cdp-int.'
-const CDP_PERF_TEST_HOST_MARKER = '.perf-test.cdp-int.'
-const CDP_PERF_HOST_MARKER = '.perf.cdp-int.'
 
 const ALERTS_SUCCESS_SESSION_KEYS = [
   'emailAddress',
@@ -54,37 +48,6 @@ const formatTemplate = (template = '', replacements = {}) => {
   }, template)
 }
 
-const isCdpTestOrPerfRequest = (request) => {
-  const host = request?.headers?.host?.toLowerCase() || ''
-  return (
-    host.includes(CDP_TEST_HOST_MARKER) ||
-    host.includes(CDP_PERF_TEST_HOST_MARKER) ||
-    host.includes(CDP_PERF_HOST_MARKER)
-  )
-}
-
-const isMockVerificationHeaderEnabled = (request) => {
-  const env = process.env.NODE_ENV || 'development'
-  return env !== 'production' || isCdpTestOrPerfRequest(request)
-}
-
-const buildGenerateLinkMockEndpoint = (request) => {
-  const notifyBaseUrl = config.get('notify.baseUrl')
-  const emailGenerateLinkPath = config.get('notify.emailGenerateLinkPath')
-
-  if (!notifyBaseUrl || !emailGenerateLinkPath) {
-    return null
-  }
-
-  const { url } = buildBackendApiRequest(
-    request,
-    notifyBaseUrl,
-    emailGenerateLinkPath
-  )
-
-  return url
-}
-
 const getAlertsSuccessSessionData = (request, emailSuccess) => {
   const emailAddress = request.yar.get('emailAddress') || 'Not provided'
   const rawLocation = request.yar.get('location') || 'Not selected'
@@ -102,8 +65,6 @@ const getAlertsSuccessSessionData = (request, emailSuccess) => {
     emailSuccess.anotherAlertPrefix,
     { emailAddress }
   )
-  const emailVerificationToken =
-    request.yar.get(MOCK_EMAIL_VERIFICATION_TOKEN_SESSION_KEY) || ''
 
   return {
     emailAddress,
@@ -111,7 +72,6 @@ const getAlertsSuccessSessionData = (request, emailSuccess) => {
     alertDetailsConfirmed,
     emailSuccessHeading,
     emailSuccessAnotherAlertPrefix,
-    emailVerificationToken,
     formData: request.yar.get('formData') || {}
   }
 }
@@ -132,7 +92,6 @@ const handleAlertsSuccessRequest = (request, h, _content = english) => {
     alertDetailsConfirmed,
     emailSuccessHeading,
     emailSuccessAnotherAlertPrefix,
-    emailVerificationToken,
     formData
   } = getAlertsSuccessSessionData(request, emailSuccess)
 
@@ -161,22 +120,7 @@ const handleAlertsSuccessRequest = (request, h, _content = english) => {
     hideLanguageToggle: true
   }
 
-  const response = h.view('notify/register/alerts-success/index', viewModel)
-
-  if (
-    isMockVerificationHeaderEnabled(request) &&
-    emailVerificationToken &&
-    typeof response?.header === 'function'
-  ) {
-    response.header(MOCK_VERIFICATION_TOKEN_HEADER, emailVerificationToken)
-
-    const generateLinkEndpoint = buildGenerateLinkMockEndpoint(request)
-    if (generateLinkEndpoint) {
-      response.header(MOCK_GENERATE_LINK_ENDPOINT_HEADER, generateLinkEndpoint)
-    }
-  }
-
-  return response
+  return h.view('notify/register/alerts-success/index', viewModel)
 }
 
 const handleAlertsSuccessPost = (request, h) => {

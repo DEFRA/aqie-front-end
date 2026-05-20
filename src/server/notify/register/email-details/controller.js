@@ -6,6 +6,7 @@ import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { recordEmailCapture } from '../../../common/services/subscription.js'
 import { generateEmailLink } from '../../../common/services/notify.js'
 import { validateEmail } from '../../../common/helpers/validate-email.js'
+import { syncMockVerificationTokenFromGenerateLinkResult } from '../helpers/mock-email-verification.js'
 
 const EMAIL_DETAILS_VIEW = 'notify/register/email-details/index'
 
@@ -248,6 +249,8 @@ const sendActivationLink = async (request, email, location, lat, long) => {
       request
     )
 
+    syncMockVerificationTokenFromGenerateLinkResult(request, sendResult)
+
     if (!sendResult?.ok) {
       logger.warn('Notify email send skipped or failed', {
         status: sendResult?.status,
@@ -260,6 +263,7 @@ const sendActivationLink = async (request, email, location, lat, long) => {
     logger.info('Queued Notify email link for delivery')
     return true
   } catch (err) {
+    syncMockVerificationTokenFromGenerateLinkResult(request, null)
     logger.error('Notify email send failed', err)
     return false
   }

@@ -8,6 +8,7 @@ import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { validateEmail } from '../../../common/helpers/validate-email.js'
 import { generateEmailLink } from '../../../common/services/notify.js'
 import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
+import { syncMockVerificationTokenFromGenerateLinkResult } from '../helpers/mock-email-verification.js'
 
 // Create a logger instance ''
 const logger = createLogger()
@@ -165,15 +166,17 @@ export const handleEmailSendNewLinkPost = async (
   }
 
   try {
-    await generateEmailLink(
+    const sendResult = await generateEmailLink(
       emailToUse,
       sessionContext.location,
       sessionContext.lat,
       sessionContext.long,
       request
     )
+    syncMockVerificationTokenFromGenerateLinkResult(request, sendResult)
     logger.info('Queued Notify email link for delivery (resend)')
   } catch (err) {
+    syncMockVerificationTokenFromGenerateLinkResult(request, null)
     logger.error('Notify email resend failed', err)
   }
 
