@@ -6,6 +6,7 @@ import { welsh } from '../../../data/cy/cy.js'
 import { LANG_CY } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
+import { maybeApplyMockVerificationHeaders } from '../helpers/mock-email-verification.js'
 
 // Constants ''
 const DEFAULT_SERVICE_NAME = 'Check air quality'
@@ -92,7 +93,8 @@ const handleEmailVerifyRequest = (request, h, content = english) => {
     hideLanguageToggle: true
   }
 
-  return h.view(VIEW_PATH, viewModel)
+  const response = h.view(VIEW_PATH, viewModel)
+  return maybeApplyMockVerificationHeaders(request, response)
 }
 
 export { handleEmailVerifyRequest }

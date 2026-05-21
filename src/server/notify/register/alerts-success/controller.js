@@ -10,6 +10,8 @@ import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
 // Create a logger instance
 const logger = createLogger()
 
+const MOCK_EMAIL_VERIFICATION_TOKEN_SESSION_KEY = 'mockEmailVerificationToken'
+
 const ALERTS_SUCCESS_SESSION_KEYS = [
   'emailAddress',
   'location',
@@ -20,7 +22,9 @@ const ALERTS_SUCCESS_SESSION_KEYS = [
   'notifyJourney',
   'notificationFlow',
   'formData',
+  'emailLinkToken',
   'emailVerificationToken',
+  MOCK_EMAIL_VERIFICATION_TOKEN_SESSION_KEY,
   'emailVerified'
 ]
 
