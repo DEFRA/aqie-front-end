@@ -78,6 +78,36 @@ describe('Alerts Success Controller', () => {
     expect(mockH.redirect).toHaveBeenCalledWith('/')
   })
 
+  test('shows a back button with javascript:history.back()', () => {
+    const mockRequest = {
+      yar: {
+        get: vi
+          .fn()
+          .mockReturnValueOnce('07123456789') // mobileNumber
+          .mockReturnValueOnce('London') // location
+          .mockReturnValueOnce(true) // alertDetailsConfirmed
+          .mockReturnValueOnce({}), // formData
+        clear: vi.fn()
+      }
+    }
+
+    const mockH = {
+      view: vi.fn()
+    }
+
+    handleAlertsSuccessRequest(mockRequest, mockH)
+
+    expect(mockH.view).toHaveBeenCalledWith(
+      'notify/register/sms-success/index',
+      expect.objectContaining({
+        displayBacklink: true,
+        customBackLink: true,
+        backLinkUrl: 'javascript:history.back()',
+        backLinkText: 'Back'
+      })
+    )
+  })
+
   test('handleAlertsSuccessRequest handles missing session data', () => {
     const mockRequest = {
       yar: {
