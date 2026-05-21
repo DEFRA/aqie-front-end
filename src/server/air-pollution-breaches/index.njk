@@ -53,6 +53,7 @@
     {% endfor %}
   {% endfor %}
 
+  {% if pastBreaches.length > 0 %}
   <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
   <h2 class="govuk-heading-m">{{ past.heading }}</h2>
@@ -96,5 +97,6 @@
           </div>
         </dl>
     {% endfor %}
+  {% endif %}
   {% endif %}
 {% endblock %}
