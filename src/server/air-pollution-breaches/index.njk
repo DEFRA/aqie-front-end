@@ -36,7 +36,7 @@
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">{{ active.labels.pollutant }}</dt>
           <dd class="govuk-summary-list__value">
-            <a href="{{ breach.pollutantLink }}" class="govuk-link">{{ breach.pollutantLinkText }}</a>
+            {{ breach.pollutantName }} (<a href="{{ breach.pollutantLink }}" class="govuk-link">{{ breach.pollutantLinkText }}</a>)
           </dd>
         </div>
         {% if breach.lastUpdatedText %}
@@ -81,7 +81,7 @@
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">{{ past.labels.pollutant }}</dt>
             <dd class="govuk-summary-list__value">
-              {{ breach.pollutantName }} (<a href="{{ breach.pollutantLink }}" class="govuk-link">{{ active.whatCausesPrefix }}{{ breach.pollutantName }}{{ active.whatCausesSuffix }}</a>)
+              {{ breach.pollutantName }} (<a href="{{ breach.pollutantLink }}" class="govuk-link">{{ active.whatCausesPrefix }}{{ breach.pollutantNameLower }}{{ active.whatCausesSuffix }}</a>)
             </dd>
           </div>
           <div class="govuk-summary-list__row">

@@ -8,10 +8,15 @@ import { formatUKPostcode } from '../locations/helpers/convert-string.js'
 const EN_PATH = AIR_POLLUTION_BREACHES_PATH_EN
 
 function mapActiveBreaches(activeBreaches, activeContent) {
-  return activeBreaches.map((breach) => ({
-    ...breach,
-    pollutantLinkText: `${activeContent.whatCausesPrefix}${breach.pollutantName}${activeContent.whatCausesSuffix}`
-  }))
+  return activeBreaches.map((breach) => {
+    const nameLower =
+      breach.pollutantName.charAt(0).toLowerCase() +
+      breach.pollutantName.slice(1)
+    return {
+      ...breach,
+      pollutantLinkText: `${activeContent.whatCausesPrefix}${nameLower}${activeContent.whatCausesSuffix}`
+    }
+  })
 }
 
 function buildPastBreachHtml(breach, content) {
@@ -30,7 +35,7 @@ function buildPastBreachHtml(breach, content) {
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">${pastContent.labels.pollutant}</dt>
         <dd class="govuk-summary-list__value">
-          ${breach.pollutantName} (<a href="${breach.pollutantLink}" class="govuk-link">${activeContent.whatCausesPrefix}${breach.pollutantName}${activeContent.whatCausesSuffix}</a>)
+          ${breach.pollutantName} (<a href="${breach.pollutantLink}" class="govuk-link">${activeContent.whatCausesPrefix}${breach.pollutantNameLower}${activeContent.whatCausesSuffix}</a>)
         </dd>
       </div>
       <div class="govuk-summary-list__row">
@@ -142,7 +147,10 @@ function buildLocationLinks(
     ...breach,
     pollutantLink: locationQuerySuffix
       ? `${breach.pollutantLink}&${locationQuerySuffix}`
-      : breach.pollutantLink
+      : breach.pollutantLink,
+    pollutantNameLower:
+      breach.pollutantName.charAt(0).toLowerCase() +
+      breach.pollutantName.slice(1)
   }))
 
   return { actionsLink, processedPastBreaches }

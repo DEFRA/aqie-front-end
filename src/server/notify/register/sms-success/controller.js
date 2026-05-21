@@ -120,6 +120,10 @@ const handleAlertsSuccessRequest = (request, h, content = english) => {
     alertDetailsConfirmed,
     formData,
     userResearchPanelUrl: config.get('userResearchPanelUrl'),
+    displayBacklink: true,
+    customBackLink: true,
+    backLinkText: 'Back',
+    backLinkUrl: 'javascript:history.back()',
     hideLanguageToggle: true
   }
 

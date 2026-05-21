@@ -302,8 +302,19 @@ describe('airPollutionBreachesController', () => {
     await airPollutionBreachesController.handler(request, mockH)
     const viewArgs = mockH.view.mock.calls[0][1]
     expect(viewArgs.activeBreaches[0].pollutantLinkText).toBe(
-      'What causes high Ozone levels?'
+      'What causes high ozone levels?'
     )
+  })
+
+  it('should add pollutantNameLower to each past breach', async () => {
+    fetchBreaches.mockResolvedValue({
+      activeBreaches: [],
+      pastBreaches: [mockPastBreach]
+    })
+    const request = { query: { lang: 'en' } }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.pastBreaches[0].pollutantNameLower).toBe('nitrogen dioxide')
   })
 
   it('should append locationId to past breach pollutantLink when locationId is present', async () => {
