@@ -70,16 +70,13 @@ describe('sms-duplicate/controller', () => {
     expect(response.vm.content.description).toContain('<b>07123456789</b>')
   })
 
-  it('shows a back button with javascript:history.back()', () => {
+  it('does not show a back button', () => {
     const session = { location: 'Leeds', mobileNumber: '07123456789' }
     const response = handleDuplicateSubscriptionRequest(
       mockRequest(session),
       mockH()
     )
 
-    expect(response.vm.displayBacklink).toBe(true)
-    expect(response.vm.customBackLink).toBe(true)
-    expect(response.vm.backLinkUrl).toBe('javascript:history.back()')
-    expect(response.vm.backLinkText).toBe('Back')
+    expect(response.vm.displayBacklink).toBeFalsy()
   })
 })

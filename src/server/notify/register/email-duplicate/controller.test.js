@@ -61,13 +61,10 @@ describe('email-duplicate/controller', () => {
     expect(response.vm.content.description).toContain('<b>user@example.com</b>')
   })
 
-  it('shows a back button with javascript:history.back()', () => {
+  it('does not show a back button', () => {
     const session = { location: 'Leeds', emailAddress: 'user@example.com' }
     const response = handleEmailDuplicateRequest(mockRequest(session), mockH())
 
-    expect(response.vm.displayBacklink).toBe(true)
-    expect(response.vm.customBackLink).toBe(true)
-    expect(response.vm.backLinkUrl).toBe('javascript:history.back()')
-    expect(response.vm.backLinkText).toBe('Back')
+    expect(response.vm.displayBacklink).toBeFalsy()
   })
 })
