@@ -253,6 +253,25 @@ describe('fetchLocationAlert', () => {
     )
   })
 
+  it('deduplicates pollutant names when multiple records have the same pollutant', async () => {
+    catchFetchError.mockResolvedValue([
+      200,
+      [
+        { 'active-breaches': true, 'pollutant-name': 'ozone (O3)' },
+        { 'active-breaches': true, 'pollutant-name': 'ozone (O3)' }
+      ]
+    ])
+    const result = await fetchLocationAlert(
+      51.48,
+      -3.18,
+      'bristol-city',
+      'Bristol',
+      'en',
+      mockRequest
+    )
+    expect(result.pollutantsText).toBe('ozone')
+  })
+
   it('only includes active breaches and ignores inactive ones', async () => {
     catchFetchError.mockResolvedValue([
       200,

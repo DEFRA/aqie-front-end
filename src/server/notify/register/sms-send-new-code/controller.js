@@ -125,6 +125,10 @@ const handleSendNewCodeRequest = (request, h, content = english) => {
     content: smsSendNewCode,
     bulletSameNumber,
     formData: request.yar.get('formData') || {},
+    displayBacklink: true,
+    customBackLink: true,
+    backLinkText: 'Back',
+    backLinkUrl: 'javascript:history.back()',
     hideLanguageToggle: true
   }
 

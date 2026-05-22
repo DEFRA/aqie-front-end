@@ -306,6 +306,32 @@ describe('airPollutionBreachesController', () => {
     )
   })
 
+  it('should append locationId to active breach pollutantLink when locationId is present', async () => {
+    fetchBreaches.mockResolvedValue({
+      activeBreaches: [mockActiveBreach],
+      pastBreaches: []
+    })
+    const request = { query: { lang: 'en', locationId: 'bristol-city' } }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.activeBreaches[0].pollutantLink).toContain(
+      'locationId=bristol-city'
+    )
+  })
+
+  it('should not modify active breach pollutantLink when no locationId is present', async () => {
+    fetchBreaches.mockResolvedValue({
+      activeBreaches: [mockActiveBreach],
+      pastBreaches: []
+    })
+    const request = { query: { lang: 'en' } }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.activeBreaches[0].pollutantLink).toBe(
+      mockActiveBreach.pollutantLink
+    )
+  })
+
   it('should add pollutantNameLower to each past breach', async () => {
     fetchBreaches.mockResolvedValue({
       activeBreaches: [],

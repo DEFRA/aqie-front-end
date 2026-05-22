@@ -109,6 +109,27 @@ describe('SMS Send New Code Controller - handleSendNewCodeRequest with Mobile', 
     )
   })
 
+  it('should show a back button with javascript:history.back()', () => {
+    const mobileNumber = '07123456789'
+    mockRequest.yar.get.mockImplementation((key) => {
+      if (key === 'mobileNumber') return mobileNumber
+      if (key === 'formData') return {}
+      return null
+    })
+
+    handleSendNewCodeRequest(mockRequest, mockH)
+
+    expect(mockH.view).toHaveBeenCalledWith(
+      VIEW_PATH,
+      expect.objectContaining({
+        displayBacklink: true,
+        customBackLink: true,
+        backLinkUrl: 'javascript:history.back()',
+        backLinkText: 'Back'
+      })
+    )
+  })
+
   it('should include all required view model properties', () => {
     // Arrange ''
     const mobileNumber = '07123456789'

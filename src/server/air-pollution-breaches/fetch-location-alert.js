@@ -77,9 +77,13 @@ async function fetchLocationAlert(
     return null
   }
 
-  const pollutants = activeBreaches.map((item) =>
-    getPollutantDisplayName(item['pollutant-name'])
-  )
+  const pollutants = [
+    ...new Set(
+      activeBreaches.map((item) =>
+        getPollutantDisplayName(item['pollutant-name'])
+      )
+    )
+  ]
   const pollutantsText = buildPollutantsText(pollutants)
   const breachesPageUrl = `/air-pollution-breaches?lang=${lang}&locationId=${encodeURIComponent(locationId)}&locationName=${encodeURIComponent(locationName)}`
 

@@ -129,6 +129,7 @@ function buildLocationLinks(
   locationId,
   locationName,
   searchTerms,
+  activeBreaches,
   pastBreaches
 ) {
   const actionsLink = locationId
@@ -143,17 +144,23 @@ function buildLocationLinks(
     .filter(Boolean)
     .join('&')
 
-  const processedPastBreaches = pastBreaches.map((breach) => ({
+  const appendLocationSuffix = (breach) => ({
     ...breach,
     pollutantLink: locationQuerySuffix
       ? `${breach.pollutantLink}&${locationQuerySuffix}`
-      : breach.pollutantLink,
+      : breach.pollutantLink
+  })
+
+  const processedActiveBreaches = activeBreaches.map(appendLocationSuffix)
+
+  const processedPastBreaches = pastBreaches.map((breach) => ({
+    ...appendLocationSuffix(breach),
     pollutantNameLower:
       breach.pollutantName.charAt(0).toLowerCase() +
       breach.pollutantName.slice(1)
   }))
 
-  return { actionsLink, processedPastBreaches }
+  return { actionsLink, processedActiveBreaches, processedPastBreaches }
 }
 
 function getViewModel(
@@ -176,12 +183,16 @@ function getViewModel(
     backlink
   })
 
-  const { actionsLink, processedPastBreaches } = buildLocationLinks(
-    locationId,
-    locationName,
-    searchTerms,
-    pastBreaches
-  )
+  const mappedActiveBreaches = mapActiveBreaches(activeBreaches, content.active)
+
+  const { actionsLink, processedActiveBreaches, processedPastBreaches } =
+    buildLocationLinks(
+      locationId,
+      locationName,
+      searchTerms,
+      mappedActiveBreaches,
+      pastBreaches
+    )
 
   return {
     pageTitle: content.pageTitle,
@@ -198,10 +209,8 @@ function getViewModel(
       )
     },
     past: content.past,
-    activeBreaches: mapActiveBreaches(activeBreaches, content.active),
-    activeBreachRegions: groupActiveByRegion(
-      mapActiveBreaches(activeBreaches, content.active)
-    ),
+    activeBreaches: processedActiveBreaches,
+    activeBreachRegions: groupActiveByRegion(processedActiveBreaches),
     pastBreaches: processedPastBreaches,
     pastAccordionItems: mapPastBreachesToAccordionItems(
       processedPastBreaches,
