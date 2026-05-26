@@ -9,14 +9,9 @@ import { LANG_CY } from '../../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../../common/helpers/get-site-url.js'
 import { resolveNotifyLanguage } from '../helpers/resolve-notify-language.js'
 import {
-  generateEmailLink,
   setupEmailAlert,
   validateEmailLink
 } from '../../../common/services/notify.js'
-import {
-  isMockVerificationHeaderEnabled,
-  syncMockVerificationTokenFromGenerateLinkResult
-} from '../helpers/mock-email-verification.js'
 
 const logger = createLogger()
 const VIEW_PATH = 'notify/register/email-confirm-link/index'
@@ -86,49 +81,6 @@ const setConfirmSessionData = (request, token, emailAddress, location) => {
   request.yar.set('emailAddress', emailAddress)
   if (location) {
     request.yar.set('location', location)
-  }
-}
-
-const captureOptionalMockVerificationToken = async (
-  request,
-  emailAddress,
-  location,
-  lat,
-  long
-) => {
-  if (!isMockVerificationHeaderEnabled(request) || !emailAddress) {
-    syncMockVerificationTokenFromGenerateLinkResult(request, null)
-    return
-  }
-
-  try {
-    const generateLinkResult = await generateEmailLink(
-      emailAddress,
-      location,
-      lat,
-      long,
-      request
-    )
-    const mockVerificationToken =
-      syncMockVerificationTokenFromGenerateLinkResult(
-        request,
-        generateLinkResult
-      )
-
-    if (!mockVerificationToken) {
-      logger.info(
-        '[EMAIL CONFIRM] generate-link response has no mock verificationToken'
-      )
-      return
-    }
-    logger.info(
-      '[EMAIL CONFIRM] Captured optional mock verificationToken for verify-email header'
-    )
-  } catch (err) {
-    syncMockVerificationTokenFromGenerateLinkResult(request, null)
-    logger.warn(
-      `[EMAIL CONFIRM] generate-link call failed before success redirect: ${err?.message || err}`
-    )
   }
 }
 
@@ -266,21 +218,11 @@ const getSetupOutcomeResponse = async (
   setupResult,
   request,
   h,
-  emailAddress,
-  location,
-  lat,
-  long
+  emailAddress
 ) => {
   if (setupResult.skipped) {
     logger.warn(
       '[EMAIL CONFIRM] setupEmailAlert skipped (notify disabled) - redirecting to success'
-    )
-    await captureOptionalMockVerificationToken(
-      request,
-      emailAddress,
-      location,
-      lat,
-      long
     )
     return redirectToAlertsSuccess(request, h)
   }
@@ -289,13 +231,6 @@ const getSetupOutcomeResponse = async (
     return handleSetupFailureRedirect(setupResult, request, h, emailAddress)
   }
 
-  await captureOptionalMockVerificationToken(
-    request,
-    emailAddress,
-    location,
-    lat,
-    long
-  )
   logger.info('[EMAIL CONFIRM] Token accepted, redirecting to success')
   return redirectToAlertsSuccess(request, h)
 }
@@ -342,15 +277,7 @@ const processValidToken = async (request, h, token, lang) => {
     request
   )
 
-  return getSetupOutcomeResponse(
-    setupResult,
-    request,
-    h,
-    emailAddress,
-    location,
-    lat,
-    long
-  )
+  return getSetupOutcomeResponse(setupResult, request, h, emailAddress)
 }
 
 /**
