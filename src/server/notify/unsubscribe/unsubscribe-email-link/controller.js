@@ -43,7 +43,8 @@ const buildViewModel = (
     cookieBanner,
     common,
     content: unsubscribeEmailLink,
-    email
+    email,
+    hideLanguageToggle: true
   }
 }
 

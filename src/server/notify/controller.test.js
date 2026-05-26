@@ -33,6 +33,26 @@ describe('Notify Controller', () => {
     )
   })
 
+  test('handleNotifyRequest hides the language toggle', () => {
+    const mockRequest = { yar: { set: vi.fn() } }
+    const mockH = { view: vi.fn() }
+    handleNotifyRequest(mockRequest, mockH)
+    expect(mockH.view).toHaveBeenCalledWith(
+      'notify/index',
+      expect.objectContaining({ hideLanguageToggle: true })
+    )
+  })
+
+  test('handleNotifyPost hides the language toggle on validation error', () => {
+    const mockRequest = { payload: { notifyByText: '' }, yar: { set: vi.fn() } }
+    const mockH = { view: vi.fn(), redirect: vi.fn() }
+    handleNotifyPost(mockRequest, mockH)
+    expect(mockH.view).toHaveBeenCalledWith(
+      'notify/index',
+      expect.objectContaining({ hideLanguageToggle: true })
+    )
+  })
+
   test('handleNotifyPost validates mobile number', () => {
     const mockRequest = {
       payload: {

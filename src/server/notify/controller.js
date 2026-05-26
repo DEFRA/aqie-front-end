@@ -30,7 +30,8 @@ const handleNotifyRequest = (request, h, content = english) => {
     backlink,
     cookieBanner,
     serviceName: 'Check air quality',
-    lang: LANG_EN
+    lang: LANG_EN,
+    hideLanguageToggle: true
   })
 }
 
@@ -50,7 +51,8 @@ const handleNotifyPost = (request, h) => {
       },
       formData: { notifyByText },
       serviceName: 'Check air quality',
-      lang: LANG_EN
+      lang: LANG_EN,
+      hideLanguageToggle: true
     })
   }
 

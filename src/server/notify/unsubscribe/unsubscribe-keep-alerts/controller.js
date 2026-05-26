@@ -33,6 +33,7 @@ export const handleUnsubscribeKeepAlertsRequest = (request, h) => {
     phaseBanner,
     cookieBanner,
     common,
-    content: unsubscribeKeepAlerts
+    content: unsubscribeKeepAlerts,
+    hideLanguageToggle: true
   })
 }

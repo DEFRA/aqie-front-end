@@ -33,6 +33,7 @@ export const handleUnsubscribeSuccessRequest = (request, h) => {
     phaseBanner,
     cookieBanner,
     common,
-    content: unsubscribeSuccess
+    content: unsubscribeSuccess,
+    hideLanguageToggle: true
   })
 }
