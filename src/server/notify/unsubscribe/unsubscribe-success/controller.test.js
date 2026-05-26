@@ -63,6 +63,12 @@ describe('unsubscribe-success/controller', () => {
     expect(response.vm.content.bodySuffix).toBe('.')
   })
 
+  it('hides the language toggle', () => {
+    const h = mockH()
+    const response = handleUnsubscribeSuccessRequest(mockRequest(), h)
+    expect(response.vm.hideLanguageToggle).toBe(true)
+  })
+
   it('includes metaSiteUrl and currentPath in view model', () => {
     const h = mockH()
     const response = handleUnsubscribeSuccessRequest(mockRequest(), h)

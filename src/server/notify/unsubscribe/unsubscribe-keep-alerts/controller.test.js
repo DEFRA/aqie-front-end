@@ -63,6 +63,12 @@ describe('unsubscribe-keep-alerts/controller', () => {
     expect(response.vm.content.bodySuffix).toBe('.')
   })
 
+  it('hides the language toggle', () => {
+    const h = mockH()
+    const response = handleUnsubscribeKeepAlertsRequest(mockRequest(), h)
+    expect(response.vm.hideLanguageToggle).toBe(true)
+  })
+
   it('includes metaSiteUrl and currentPath in view model', () => {
     const h = mockH()
     const response = handleUnsubscribeKeepAlertsRequest(mockRequest(), h)

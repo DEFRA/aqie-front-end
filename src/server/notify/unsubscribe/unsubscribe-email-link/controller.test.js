@@ -116,6 +116,13 @@ describe('unsubscribe-email-link/controller', () => {
       expect(response.vm.content.cancelLink).toBe('No, keep email alerts')
     })
 
+    it('hides the language toggle', () => {
+      const h = mockH()
+      const request = mockRequest({ query: {}, session: {} })
+      const response = handleUnsubscribeEmailLinkRequest(request, h)
+      expect(response.vm.hideLanguageToggle).toBe(true)
+    })
+
     it('includes metaSiteUrl and currentPath in view model', () => {
       const h = mockH()
       const request = mockRequest({ query: {}, session: {} })
