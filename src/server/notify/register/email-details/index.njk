@@ -3,7 +3,7 @@
   <div class="govuk-grid-column-two-thirds">
     {% if error or maxAlertsError %}
     <div
-      class="govuk-error-summary"
+      class="govuk-error-summary govuk-!-margin-top-7"
       role="alert"
       aria-labelledby="error-summary-title"
       data-module="govuk-error-summary"
@@ -24,7 +24,7 @@
     </div>
     {% endif %}
 
-    <h1 class="govuk-heading-l">{{ heading }}</h1>
+    <h1 class="govuk-heading-l{% if not error and not maxAlertsError %} govuk-!-margin-top-7{% endif %}">{{ heading }}</h1>
     <form method="post" novalidate>
       <div
         class="govuk-form-group {% if error or maxAlertsError %}govuk-form-group--error{% endif %}"
