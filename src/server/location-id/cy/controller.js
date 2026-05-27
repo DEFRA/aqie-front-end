@@ -316,7 +316,8 @@ function renderProcessedLocationOrNotFound({
     siteTypeDescriptions,
     pollutantTypes,
     request,
-    locationId
+    locationId,
+    latlon: processedData.latlon
   })
 
   return renderLocationView(h, viewData)

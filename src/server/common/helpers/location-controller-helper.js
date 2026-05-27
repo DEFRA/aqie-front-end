@@ -158,7 +158,7 @@ export async function processLocationData(
     indexNI
   )
 
-  const { forecastNum, nearestLocationsRange, nearestLocation } =
+  const { forecastNum, nearestLocationsRange, nearestLocation, latlon } =
     await getNearestLocation(
       locationData?.results,
       getForecasts,
@@ -173,7 +173,8 @@ export async function processLocationData(
     locationDetails,
     forecastNum,
     nearestLocationsRange,
-    nearestLocation
+    nearestLocation,
+    latlon
   }
 }
 
@@ -269,7 +270,8 @@ export function buildLocationViewData({
   siteTypeDescriptions,
   pollutantTypes,
   request,
-  locationId
+  locationId,
+  latlon: latlonParam = null
 }) {
   let { title, headerTitle } = gazetteerEntryFilter(locationDetails)
   title = convertFirstLetterIntoUppercase(title)
@@ -293,6 +295,8 @@ export function buildLocationViewData({
   const searchTerms = request?.query?.searchTerms || ''
   const locationNameFromQuery = request?.query?.locationName || ''
 
+  const latlon = latlonParam ?? locationData?.latlon ?? null
+
   return {
     result: locationDetails,
     airQuality,
@@ -305,8 +309,10 @@ export function buildLocationViewData({
     metaSiteUrl,
     description: `${components.daqi.description.a} ${headerTitle}${components.daqi.description.b}`,
     title: `${components.multipleLocations.titlePrefix} ${headerTitle}`,
+    headerTitle,
     locationName: locationNameFromQuery || headerTitle,
     locationId,
+    latlon,
     searchTerms,
     displayBacklink: true,
     transformedDailySummary,

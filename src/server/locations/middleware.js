@@ -22,7 +22,8 @@ import { getMonth } from './helpers/location-type-util.js'
 import * as airQualityData from '../data/en/air-quality.js'
 import {
   isValidPartialPostcodeNI,
-  isValidPartialPostcodeUK
+  isValidPartialPostcodeUK,
+  isValidFullPostcodeNI
 } from './helpers/convert-string.js'
 import { sentenceCase } from '../common/helpers/sentence-case.js'
 import { convertFirstLetterIntoUppercase } from './helpers/convert-first-letter-into-upper-case.js'
@@ -363,25 +364,65 @@ function buildRouteContext({
   }
 }
 
-const searchMiddleware = async (request, h) => {
-  const { query, payload } = request
-  const lang = LANG_EN
-  const month = getMonth(lang)
-  const searchTerms = query?.searchTerms?.toUpperCase()
-  const secondSearchTerm = query?.secondSearchTerm?.toUpperCase()
+const redirectNILocationNotFound = (
+  request,
+  h,
+  locationNameOrPostcode,
+  lang
+) => {
+  request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+  request.yar.clear('searchTermsSaved')
+  return h
+    .redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`)
+    .code(REDIRECT_STATUS_CODE)
+    .takeover()
+}
 
-  const redirectError = handleErrorInputAndRedirect(
-    request,
-    h,
-    lang,
-    payload,
-    searchTerms
-  )
-  if (!redirectError.locationType) {
-    return redirectError
+const checkNIPostcodeFormat = (
+  request,
+  h,
+  redirectError,
+  userLocation,
+  locationNameOrPostcode,
+  lang
+) => {
+  if (
+    redirectError.locationType === LOCATION_TYPE_NI &&
+    !isValidFullPostcodeNI(userLocation) &&
+    !isValidPartialPostcodeNI(userLocation)
+  ) {
+    return redirectNILocationNotFound(request, h, locationNameOrPostcode, lang)
   }
+  return null
+}
 
-  const { userLocation, locationNameOrPostcode } = redirectError
+const checkNIServiceAvailability = (
+  request,
+  h,
+  redirectError,
+  getNIPlaces,
+  locationNameOrPostcode,
+  lang
+) => {
+  if (
+    redirectError.locationType === LOCATION_TYPE_NI &&
+    getNIPlaces?.error === SERVICE_UNAVAILABLE_ERROR
+  ) {
+    return redirectNILocationNotFound(request, h, locationNameOrPostcode, lang)
+  }
+  return null
+}
+
+const resolveAndRoute = async (request, h, redirectError, options) => {
+  const {
+    lang,
+    month,
+    searchTerms,
+    secondSearchTerm,
+    userLocation,
+    locationNameOrPostcode
+  } = options
+
   const { getDailySummary, getForecasts, getOSPlaces, getNIPlaces } =
     await processLocationData(
       request,
@@ -391,15 +432,16 @@ const searchMiddleware = async (request, h) => {
       secondSearchTerm
     )
 
-  if (
-    redirectError.locationType === LOCATION_TYPE_NI &&
-    getNIPlaces?.error === SERVICE_UNAVAILABLE_ERROR
-  ) {
-    request.yar.set('retryPayload', {
-      locationType: LOCATION_TYPE_NI,
-      ni: userLocation
-    })
-    return h.redirect('/retry').code(REDIRECT_STATUS_CODE).takeover()
+  const serviceCheck = checkNIServiceAvailability(
+    request,
+    h,
+    redirectError,
+    getNIPlaces,
+    locationNameOrPostcode,
+    lang
+  )
+  if (serviceCheck) {
+    return serviceCheck
   }
 
   if (
@@ -435,6 +477,48 @@ const searchMiddleware = async (request, h) => {
   })
 
   return routeByLocationType(request, h, redirectError, routeContext)
+}
+
+const searchMiddleware = async (request, h) => {
+  const { query, payload } = request
+  const lang = LANG_EN
+  const month = getMonth(lang)
+  const searchTerms = query?.searchTerms?.toUpperCase()
+  const secondSearchTerm = query?.secondSearchTerm?.toUpperCase()
+
+  const redirectError = handleErrorInputAndRedirect(
+    request,
+    h,
+    lang,
+    payload,
+    searchTerms
+  )
+  if (!redirectError.locationType) {
+    return redirectError
+  }
+
+  const { userLocation, locationNameOrPostcode } = redirectError
+
+  const formatCheck = checkNIPostcodeFormat(
+    request,
+    h,
+    redirectError,
+    userLocation,
+    locationNameOrPostcode,
+    lang
+  )
+  if (formatCheck) {
+    return formatCheck
+  }
+
+  return resolveAndRoute(request, h, redirectError, {
+    lang,
+    month,
+    searchTerms,
+    secondSearchTerm,
+    userLocation,
+    locationNameOrPostcode
+  })
 }
 
 export { searchMiddleware, shouldReturnNotFound, isInvalidDailySummary }

@@ -40,7 +40,8 @@ vi.mock('../../locations/helpers/get-nearest-location.js', () => ({
     Promise.resolve({
       forecastNum: 3,
       nearestLocationsRange: [],
-      nearestLocation: {}
+      nearestLocation: {},
+      latlon: { lat: 51.5, lon: -0.1 }
     })
   )
 }))
@@ -150,6 +151,7 @@ describe('Location Controller Helper', () => {
       expect(result.forecastNum).toBe(3)
       expect(result.nearestLocationsRange).toBeDefined()
       expect(result.nearestLocation).toBeDefined()
+      expect(result.latlon).toEqual({ lat: 51.5, lon: -0.1 })
     })
   })
 
@@ -168,7 +170,8 @@ describe('Location Controller Helper', () => {
         metaSiteUrl: 'https://example.com',
         airQualityData: { commonMessages: {} },
         siteTypeDescriptions: {},
-        pollutantTypes: {}
+        pollutantTypes: {},
+        latlon: { lat: 51.5, lon: -0.1 }
       }
 
       const result = buildLocationViewData(params)
@@ -176,6 +179,8 @@ describe('Location Controller Helper', () => {
       expect(result.lang).toBe(LANG_EN)
       expect(result.pageTitle).toContain('Test location')
       expect(result.locationName).toBe('Test location')
+      expect(result.headerTitle).toBe('Test location')
+      expect(result.latlon).toEqual({ lat: 51.5, lon: -0.1 })
       expect(result.displayBacklink).toBe(true)
       expect(result.footerTxt).toBeDefined()
     })
@@ -201,6 +206,52 @@ describe('Location Controller Helper', () => {
 
       expect(result.lang).toBe(LANG_CY)
       expect(result.summaryDate).toBe('2024-03-15')
+      expect(result.headerTitle).toBe('Test location')
+    })
+
+    it('should fall back to locationData.latlon when latlon param is not provided', () => {
+      const params = {
+        locationDetails: { name: 'Test Location' },
+        nearestLocationsRange: [],
+        locationData: {
+          dailySummary: {},
+          englishDate: '2024-03-15',
+          latlon: { lat: 52.0, lon: -1.5 }
+        },
+        forecastNum: 3,
+        lang: LANG_EN,
+        getMonth: 2,
+        metaSiteUrl: 'https://example.com',
+        airQualityData: { commonMessages: {} },
+        siteTypeDescriptions: {},
+        pollutantTypes: {}
+      }
+
+      const result = buildLocationViewData(params)
+
+      expect(result.latlon).toEqual({ lat: 52.0, lon: -1.5 })
+    })
+
+    it('should set latlon to null when neither param nor locationData.latlon is provided', () => {
+      const params = {
+        locationDetails: { name: 'Test Location' },
+        nearestLocationsRange: [],
+        locationData: {
+          dailySummary: {},
+          englishDate: '2024-03-15'
+        },
+        forecastNum: 3,
+        lang: LANG_EN,
+        getMonth: 2,
+        metaSiteUrl: 'https://example.com',
+        airQualityData: { commonMessages: {} },
+        siteTypeDescriptions: {},
+        pollutantTypes: {}
+      }
+
+      const result = buildLocationViewData(params)
+
+      expect(result.latlon).toBeNull()
     })
   })
 
