@@ -441,7 +441,9 @@ const searchMiddleware = async (request, h) => {
     locationNameOrPostcode,
     lang
   )
-  if (formatCheck) return formatCheck
+  if (formatCheck) {
+    return formatCheck
+  }
 
   const { getDailySummary, getForecasts, getOSPlaces, getNIPlaces } =
     await processLocationData(
@@ -460,7 +462,9 @@ const searchMiddleware = async (request, h) => {
     locationNameOrPostcode,
     lang
   )
-  if (serviceCheck) return serviceCheck
+  if (serviceCheck) {
+    return serviceCheck
+  }
 
   if (
     shouldReturnNotFound(
