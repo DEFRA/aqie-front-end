@@ -36,7 +36,8 @@ const locationNotFoundController = {
       phaseBanner,
       backlink,
       cookieBanner,
-      lang: query?.lang || lang
+      lang: query?.lang || lang,
+      currentPath: '/lleoliad-heb-ei-ganfod/cy'
     })
   }
 }

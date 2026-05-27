@@ -69,7 +69,8 @@ function buildViewData(locationData, content, query) {
     phaseBanner,
     backlink,
     cookieBanner,
-    lang: query?.lang || lang
+    lang: query?.lang || lang,
+    currentPath: '/location-not-found'
   }
 }
 

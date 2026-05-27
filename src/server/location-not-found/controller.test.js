@@ -49,7 +49,8 @@ describe('locationNotFoundController - english - basic rendering', () => {
       phaseBanner: mockContent.phaseBanner,
       backlink: mockContent.backlink,
       cookieBanner: mockContent.cookieBanner,
-      lang: 'en'
+      lang: 'en',
+      currentPath: '/location-not-found'
     })
   })
 
