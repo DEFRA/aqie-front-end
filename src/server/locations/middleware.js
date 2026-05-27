@@ -364,6 +364,55 @@ function buildRouteContext({
   }
 }
 
+const redirectNILocationNotFound = (
+  request,
+  h,
+  locationNameOrPostcode,
+  lang
+) => {
+  request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+  request.yar.clear('searchTermsSaved')
+  return h
+    .redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`)
+    .code(REDIRECT_STATUS_CODE)
+    .takeover()
+}
+
+const checkNIPostcodeFormat = (
+  request,
+  h,
+  redirectError,
+  userLocation,
+  locationNameOrPostcode,
+  lang
+) => {
+  if (
+    redirectError.locationType === LOCATION_TYPE_NI &&
+    !isValidFullPostcodeNI(userLocation) &&
+    !isValidPartialPostcodeNI(userLocation)
+  ) {
+    return redirectNILocationNotFound(request, h, locationNameOrPostcode, lang)
+  }
+  return null
+}
+
+const checkNIServiceAvailability = (
+  request,
+  h,
+  redirectError,
+  getNIPlaces,
+  locationNameOrPostcode,
+  lang
+) => {
+  if (
+    redirectError.locationType === LOCATION_TYPE_NI &&
+    getNIPlaces?.error === SERVICE_UNAVAILABLE_ERROR
+  ) {
+    return redirectNILocationNotFound(request, h, locationNameOrPostcode, lang)
+  }
+  return null
+}
+
 const searchMiddleware = async (request, h) => {
   const { query, payload } = request
   const lang = LANG_EN
@@ -384,18 +433,15 @@ const searchMiddleware = async (request, h) => {
 
   const { userLocation, locationNameOrPostcode } = redirectError
 
-  if (
-    redirectError.locationType === LOCATION_TYPE_NI &&
-    !isValidFullPostcodeNI(userLocation) &&
-    !isValidPartialPostcodeNI(userLocation)
-  ) {
-    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-    request.yar.clear('searchTermsSaved')
-    return h
-      .redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`)
-      .code(REDIRECT_STATUS_CODE)
-      .takeover()
-  }
+  const formatCheck = checkNIPostcodeFormat(
+    request,
+    h,
+    redirectError,
+    userLocation,
+    locationNameOrPostcode,
+    lang
+  )
+  if (formatCheck) return formatCheck
 
   const { getDailySummary, getForecasts, getOSPlaces, getNIPlaces } =
     await processLocationData(
@@ -406,17 +452,15 @@ const searchMiddleware = async (request, h) => {
       secondSearchTerm
     )
 
-  if (
-    redirectError.locationType === LOCATION_TYPE_NI &&
-    getNIPlaces?.error === SERVICE_UNAVAILABLE_ERROR
-  ) {
-    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
-    request.yar.clear('searchTermsSaved')
-    return h
-      .redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`)
-      .code(REDIRECT_STATUS_CODE)
-      .takeover()
-  }
+  const serviceCheck = checkNIServiceAvailability(
+    request,
+    h,
+    redirectError,
+    getNIPlaces,
+    locationNameOrPostcode,
+    lang
+  )
+  if (serviceCheck) return serviceCheck
 
   if (
     shouldReturnNotFound(
