@@ -413,37 +413,15 @@ const checkNIServiceAvailability = (
   return null
 }
 
-const searchMiddleware = async (request, h) => {
-  const { query, payload } = request
-  const lang = LANG_EN
-  const month = getMonth(lang)
-  const searchTerms = query?.searchTerms?.toUpperCase()
-  const secondSearchTerm = query?.secondSearchTerm?.toUpperCase()
-
-  const redirectError = handleErrorInputAndRedirect(
-    request,
-    h,
+const resolveAndRoute = async (request, h, redirectError, options) => {
+  const {
     lang,
-    payload,
-    searchTerms
-  )
-  if (!redirectError.locationType) {
-    return redirectError
-  }
-
-  const { userLocation, locationNameOrPostcode } = redirectError
-
-  const formatCheck = checkNIPostcodeFormat(
-    request,
-    h,
-    redirectError,
+    month,
+    searchTerms,
+    secondSearchTerm,
     userLocation,
-    locationNameOrPostcode,
-    lang
-  )
-  if (formatCheck) {
-    return formatCheck
-  }
+    locationNameOrPostcode
+  } = options
 
   const { getDailySummary, getForecasts, getOSPlaces, getNIPlaces } =
     await processLocationData(
@@ -499,6 +477,48 @@ const searchMiddleware = async (request, h) => {
   })
 
   return routeByLocationType(request, h, redirectError, routeContext)
+}
+
+const searchMiddleware = async (request, h) => {
+  const { query, payload } = request
+  const lang = LANG_EN
+  const month = getMonth(lang)
+  const searchTerms = query?.searchTerms?.toUpperCase()
+  const secondSearchTerm = query?.secondSearchTerm?.toUpperCase()
+
+  const redirectError = handleErrorInputAndRedirect(
+    request,
+    h,
+    lang,
+    payload,
+    searchTerms
+  )
+  if (!redirectError.locationType) {
+    return redirectError
+  }
+
+  const { userLocation, locationNameOrPostcode } = redirectError
+
+  const formatCheck = checkNIPostcodeFormat(
+    request,
+    h,
+    redirectError,
+    userLocation,
+    locationNameOrPostcode,
+    lang
+  )
+  if (formatCheck) {
+    return formatCheck
+  }
+
+  return resolveAndRoute(request, h, redirectError, {
+    lang,
+    month,
+    searchTerms,
+    secondSearchTerm,
+    userLocation,
+    locationNameOrPostcode
+  })
 }
 
 export { searchMiddleware, shouldReturnNotFound, isInvalidDailySummary }
