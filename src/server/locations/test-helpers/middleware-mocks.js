@@ -69,7 +69,8 @@ vi.mock('../../data/en/air-quality.js', () => ({
 
 vi.mock('../helpers/convert-string.js', () => ({
   isValidPartialPostcodeNI: vi.fn(),
-  isValidPartialPostcodeUK: vi.fn()
+  isValidPartialPostcodeUK: vi.fn(),
+  isValidFullPostcodeNI: vi.fn()
 }))
 
 vi.mock('../../common/helpers/sentence-case.js', () => ({

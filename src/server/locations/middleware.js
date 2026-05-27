@@ -22,7 +22,8 @@ import { getMonth } from './helpers/location-type-util.js'
 import * as airQualityData from '../data/en/air-quality.js'
 import {
   isValidPartialPostcodeNI,
-  isValidPartialPostcodeUK
+  isValidPartialPostcodeUK,
+  isValidFullPostcodeNI
 } from './helpers/convert-string.js'
 import { sentenceCase } from '../common/helpers/sentence-case.js'
 import { convertFirstLetterIntoUppercase } from './helpers/convert-first-letter-into-upper-case.js'
@@ -382,6 +383,20 @@ const searchMiddleware = async (request, h) => {
   }
 
   const { userLocation, locationNameOrPostcode } = redirectError
+
+  if (
+    redirectError.locationType === LOCATION_TYPE_NI &&
+    !isValidFullPostcodeNI(userLocation) &&
+    !isValidPartialPostcodeNI(userLocation)
+  ) {
+    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+    request.yar.clear('searchTermsSaved')
+    return h
+      .redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`)
+      .code(REDIRECT_STATUS_CODE)
+      .takeover()
+  }
+
   const { getDailySummary, getForecasts, getOSPlaces, getNIPlaces } =
     await processLocationData(
       request,
@@ -395,11 +410,12 @@ const searchMiddleware = async (request, h) => {
     redirectError.locationType === LOCATION_TYPE_NI &&
     getNIPlaces?.error === SERVICE_UNAVAILABLE_ERROR
   ) {
-    request.yar.set('retryPayload', {
-      locationType: LOCATION_TYPE_NI,
-      ni: userLocation
-    })
-    return h.redirect('/retry').code(REDIRECT_STATUS_CODE).takeover()
+    request.yar.set('locationDataNotFound', { locationNameOrPostcode, lang })
+    request.yar.clear('searchTermsSaved')
+    return h
+      .redirect(`${LOCATION_NOT_FOUND_URL}?lang=en`)
+      .code(REDIRECT_STATUS_CODE)
+      .takeover()
   }
 
   if (

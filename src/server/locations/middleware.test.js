@@ -8,7 +8,8 @@ import { handleUKLocationType } from './helpers/extra-middleware-helpers.js'
 import { handleErrorInputAndRedirect } from './helpers/error-input-and-redirect.js'
 import {
   isValidPartialPostcodeNI,
-  isValidPartialPostcodeUK
+  isValidPartialPostcodeUK,
+  isValidFullPostcodeNI
 } from './helpers/convert-string.js'
 import {
   LANG_EN,
@@ -139,15 +140,17 @@ describe('searchMiddleware - NI location processing', () => {
   it('should handle NI location type processing successfully', async () => {
     const { mockRequest, mockH } = mocks
     mockRequest.query = {
-      searchTerms: 'belfast',
+      searchTerms: 'bt1 1aa',
       secondSearchTerm: 'ni'
     }
 
     vi.mocked(handleErrorInputAndRedirect).mockReturnValue({
       locationType: LOCATION_TYPE_NI,
-      userLocation: 'Belfast',
-      locationNameOrPostcode: 'Belfast'
+      userLocation: 'BT1 1AA',
+      locationNameOrPostcode: 'BT1 1AA'
     })
+
+    vi.mocked(isValidFullPostcodeNI).mockReturnValue(true)
 
     vi.mocked(fetchData).mockResolvedValue({
       getDailySummary: { issue_date: MOCK_DATE_STRING, today: {} },
@@ -162,7 +165,7 @@ describe('searchMiddleware - NI location processing', () => {
 
     expect(mockRequest.yar.set).toHaveBeenCalledWith(
       'searchTermsSaved',
-      'BELFAST'
+      'BT1 1AA'
     )
     expect(mockH.redirect).toHaveBeenCalledWith('/location/bt11aa?lang=en')
     expect(handleUKLocationType).not.toHaveBeenCalled()
@@ -247,7 +250,7 @@ describe('searchMiddleware - location not found scenarios', () => {
     expect(result).toBe(TAKEOVER_RESULT)
   })
 
-  it('should redirect to /retry when NI API returns service unavailable', async () => {
+  it('should redirect to location-not-found when NI API returns service unavailable', async () => {
     const { mockRequest, mockH } = mocks
     mockRequest.query = { searchTerms: 'bt1 1fb' }
 
@@ -256,6 +259,8 @@ describe('searchMiddleware - location not found scenarios', () => {
       userLocation: 'BT1 1FB',
       locationNameOrPostcode: 'BT1 1FB'
     })
+
+    vi.mocked(isValidFullPostcodeNI).mockReturnValue(true)
 
     vi.mocked(fetchData).mockResolvedValue({
       getDailySummary: { issue_date: MOCK_DATE_STRING, today: {} },
@@ -266,11 +271,14 @@ describe('searchMiddleware - location not found scenarios', () => {
 
     const result = await searchMiddleware(mockRequest, mockH)
 
-    expect(mockRequest.yar.set).toHaveBeenCalledWith('retryPayload', {
-      locationType: LOCATION_TYPE_NI,
-      ni: 'BT1 1FB'
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('locationDataNotFound', {
+      locationNameOrPostcode: 'BT1 1FB',
+      lang: LANG_EN
     })
-    expect(mockH.redirect).toHaveBeenCalledWith('/retry')
+    expect(mockRequest.yar.clear).toHaveBeenCalledWith('searchTermsSaved')
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      `${LOCATION_NOT_FOUND_URL}?lang=en`
+    )
     expect(result).toBe(TAKEOVER_RESULT)
   })
 
@@ -298,6 +306,39 @@ describe('searchMiddleware - location not found scenarios', () => {
       lang: LANG_EN
     })
     expect(mockRequest.yar.clear).toHaveBeenCalledWith('searchTermsSaved')
+    expect(result).toBe(TAKEOVER_RESULT)
+  })
+})
+
+describe('searchMiddleware - NI invalid format early redirect', () => {
+  beforeEach(() => {
+    setupMocks()
+  })
+
+  it('should redirect to location-not-found for invalid NI input without calling the API', async () => {
+    const { mockRequest, mockH } = mocks
+    mockRequest.query = {}
+
+    vi.mocked(handleErrorInputAndRedirect).mockReturnValue({
+      locationType: LOCATION_TYPE_NI,
+      userLocation: 'LONDON',
+      locationNameOrPostcode: 'LONDON'
+    })
+
+    vi.mocked(isValidFullPostcodeNI).mockReturnValue(false)
+    vi.mocked(isValidPartialPostcodeNI).mockReturnValue(false)
+
+    const result = await searchMiddleware(mockRequest, mockH)
+
+    expect(fetchData).not.toHaveBeenCalled()
+    expect(mockRequest.yar.set).toHaveBeenCalledWith('locationDataNotFound', {
+      locationNameOrPostcode: 'LONDON',
+      lang: LANG_EN
+    })
+    expect(mockRequest.yar.clear).toHaveBeenCalledWith('searchTermsSaved')
+    expect(mockH.redirect).toHaveBeenCalledWith(
+      `${LOCATION_NOT_FOUND_URL}?lang=en`
+    )
     expect(result).toBe(TAKEOVER_RESULT)
   })
 })
