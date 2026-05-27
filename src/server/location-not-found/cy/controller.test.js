@@ -45,7 +45,8 @@ describe('locationNotFoundController - welsh - basic rendering', () => {
       phaseBanner: mockContent.phaseBanner,
       backlink: mockContent.backlink,
       cookieBanner: mockContent.cookieBanner,
-      lang: 'cy'
+      lang: 'cy',
+      currentPath: '/lleoliad-heb-ei-ganfod/cy'
     })
   })
 
