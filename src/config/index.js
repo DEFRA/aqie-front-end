@@ -242,7 +242,7 @@ export const config = convict({
   userResearchPanelUrl: {
     doc: 'User research panel URL displayed on notify success pages',
     format: String,
-    default: 'https://defragroup.eu.qualtrics.com/jfe/form/SV_3JEDGo4ZaGtBpHw',
+    default: 'https://defragroup.eu.qualtrics.com/jfe/form/SV_dj4wJCoOkFQLXfM',
     env: 'USER_RESEARCH_PANEL_URL'
   },
   osNamesApiKey: {
