@@ -14,10 +14,12 @@ import {
   WRONG_POSTCODE,
   STATUS_NOT_FOUND,
   REDIRECT_STATUS_CODE,
-  SERVICE_UNAVAILABLE_ERROR,
-  HTTP_STATUS_INTERNAL_SERVER_ERROR
+  SERVICE_UNAVAILABLE_ERROR
 } from '../data/constants.js'
-import { handleUKLocationType } from './helpers/extra-middleware-helpers.js'
+import {
+  handleUKLocationType,
+  checkOSNamesApiError
+} from './helpers/extra-middleware-helpers.js'
 import { handleErrorInputAndRedirect } from './helpers/error-input-and-redirect.js'
 import { getMonth } from './helpers/location-type-util.js'
 import * as airQualityData from '../data/en/air-quality.js'
@@ -410,29 +412,6 @@ const checkNIServiceAvailability = (
     getNIPlaces?.error === SERVICE_UNAVAILABLE_ERROR
   ) {
     return redirectNILocationNotFound(request, h, locationNameOrPostcode, lang)
-  }
-  return null
-}
-
-const checkOSNamesApiError = (h, redirectError, getOSPlaces, lang) => {
-  if (
-    redirectError.locationType === LOCATION_TYPE_UK &&
-    getOSPlaces?.apiError
-  ) {
-    return h
-      .view('error/index', {
-        pageTitle: english.notFoundUrl.serviceAPI.pageTitle,
-        statusCode: HTTP_STATUS_INTERNAL_SERVER_ERROR,
-        notFoundUrl: english.notFoundUrl,
-        displayBacklink: false,
-        phaseBanner: english.phaseBanner,
-        footerTxt: english.footerTxt,
-        cookieBanner: english.cookieBanner,
-        serviceName: english.multipleLocations.serviceName,
-        lang
-      })
-      .code(HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .takeover()
   }
   return null
 }

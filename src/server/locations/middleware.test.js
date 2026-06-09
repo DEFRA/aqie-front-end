@@ -4,7 +4,10 @@ import * as middleware from './middleware.js'
 import { fetchData } from './helpers/fetch-data.js'
 import { transformKeys } from './helpers/transform-summary-keys.js'
 import { getFormattedDateSummary } from './helpers/middleware-helpers.js'
-import { handleUKLocationType } from './helpers/extra-middleware-helpers.js'
+import {
+  handleUKLocationType,
+  checkOSNamesApiError
+} from './helpers/extra-middleware-helpers.js'
 import { handleErrorInputAndRedirect } from './helpers/error-input-and-redirect.js'
 import {
   isValidPartialPostcodeNI,
@@ -664,8 +667,8 @@ describe('searchMiddleware - OS Names API down', () => {
     setupMocks()
   })
 
-  it('should render 500 error page when OS Names API returns apiError', async () => {
-    const { mockRequest, mockH, mockView } = mocks
+  it('should call checkOSNamesApiError and return its result when OS Names API returns apiError', async () => {
+    const { mockRequest, mockH } = mocks
     mockRequest.query = {
       searchTerms: 'london',
       secondSearchTerm: ''
@@ -677,18 +680,23 @@ describe('searchMiddleware - OS Names API down', () => {
       locationNameOrPostcode: 'London'
     })
 
+    const osPlaces = { results: [], apiError: true }
     vi.mocked(fetchData).mockResolvedValue({
       getDailySummary: { issue_date: MOCK_DATE_STRING, today: {} },
       getForecasts: { forecasts: [] },
-      getOSPlaces: { results: [], apiError: true },
+      getOSPlaces: osPlaces,
       getNIPlaces: null
     })
 
+    vi.mocked(checkOSNamesApiError).mockReturnValueOnce(TAKEOVER_RESULT)
+
     const result = await searchMiddleware(mockRequest, mockH)
 
-    expect(mockView).toHaveBeenCalledWith(
-      ERROR_INDEX,
-      expect.objectContaining({ statusCode: 500 })
+    expect(checkOSNamesApiError).toHaveBeenCalledWith(
+      mockH,
+      expect.objectContaining({ locationType: LOCATION_TYPE_UK }),
+      osPlaces,
+      'en'
     )
     expect(result).toBe(TAKEOVER_RESULT)
   })
