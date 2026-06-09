@@ -16,7 +16,10 @@ import {
   REDIRECT_STATUS_CODE,
   SERVICE_UNAVAILABLE_ERROR
 } from '../data/constants.js'
-import { handleUKLocationType } from './helpers/extra-middleware-helpers.js'
+import {
+  handleUKLocationType,
+  checkOSNamesApiError
+} from './helpers/extra-middleware-helpers.js'
 import { handleErrorInputAndRedirect } from './helpers/error-input-and-redirect.js'
 import { getMonth } from './helpers/location-type-util.js'
 import * as airQualityData from '../data/en/air-quality.js'
@@ -431,6 +434,11 @@ const resolveAndRoute = async (request, h, redirectError, options) => {
       searchTerms,
       secondSearchTerm
     )
+
+  const osNamesCheck = checkOSNamesApiError(h, redirectError, getOSPlaces, lang)
+  if (osNamesCheck) {
+    return osNamesCheck
+  }
 
   const serviceCheck = checkNIServiceAvailability(
     request,

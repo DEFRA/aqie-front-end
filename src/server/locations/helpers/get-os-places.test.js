@@ -463,7 +463,7 @@ describe('getOSPlaces - error handling', () => {
       undefined,
       catchProxyFetchError
     )
-    expect(result).toEqual({ results: [] })
+    expect(result).toEqual({ results: [], apiError: true })
   })
 })
 

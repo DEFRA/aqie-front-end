@@ -54,22 +54,34 @@ describe('fetchBreaches', () => {
     vi.useRealTimers()
   })
 
-  it('should return empty arrays when status is not 200', async () => {
+  it('should return empty arrays and apiError when status is not 200', async () => {
     catchFetchError.mockResolvedValue([404, null])
     const result = await fetchBreaches('en')
-    expect(result).toEqual({ activeBreaches: [], pastBreaches: [] })
+    expect(result).toEqual({
+      activeBreaches: [],
+      pastBreaches: [],
+      apiError: true
+    })
   })
 
-  it('should return empty arrays when data is not an array', async () => {
+  it('should return empty arrays and apiError when data is not an array', async () => {
     catchFetchError.mockResolvedValue([200, { error: 'unexpected' }])
     const result = await fetchBreaches('en')
-    expect(result).toEqual({ activeBreaches: [], pastBreaches: [] })
+    expect(result).toEqual({
+      activeBreaches: [],
+      pastBreaches: [],
+      apiError: true
+    })
   })
 
-  it('should return empty arrays when data is null', async () => {
+  it('should return empty arrays and apiError when data is null', async () => {
     catchFetchError.mockResolvedValue([200, null])
     const result = await fetchBreaches('en')
-    expect(result).toEqual({ activeBreaches: [], pastBreaches: [] })
+    expect(result).toEqual({
+      activeBreaches: [],
+      pastBreaches: [],
+      apiError: true
+    })
   })
 
   it('should correctly separate active and past breaches', async () => {

@@ -52,7 +52,8 @@ vi.mock('../helpers/middleware-helpers.js', () => ({
 }))
 
 vi.mock('../helpers/extra-middleware-helpers.js', () => ({
-  handleUKLocationType: vi.fn()
+  handleUKLocationType: vi.fn(),
+  checkOSNamesApiError: vi.fn().mockReturnValue(null)
 }))
 
 vi.mock('../helpers/error-input-and-redirect.js', () => ({

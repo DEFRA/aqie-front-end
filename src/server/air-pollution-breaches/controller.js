@@ -245,7 +245,10 @@ const airPollutionBreachesController = {
       return h.redirect(EN_PATH)
     }
 
-    const { activeBreaches, pastBreaches } = await fetchBreaches('en', request)
+    const { activeBreaches, pastBreaches, apiError } = await fetchBreaches(
+      'en',
+      request
+    )
 
     const viewModel = getViewModel(
       breachesContentEn,
@@ -258,6 +261,7 @@ const airPollutionBreachesController = {
 
     return h.view('air-pollution-breaches/index', {
       ...viewModel,
+      apiError: apiError ?? false,
       page: 'air pollution breaches',
       lang: 'en'
     })

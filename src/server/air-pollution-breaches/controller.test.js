@@ -386,6 +386,26 @@ describe('airPollutionBreachesController', () => {
     const viewArgs = mockH.view.mock.calls[0][1]
     expect(viewArgs.intro.actions).toContain('href="#"')
   })
+
+  it('should pass apiError: true to the view when fetchBreaches returns an API error', async () => {
+    fetchBreaches.mockResolvedValue({
+      activeBreaches: [],
+      pastBreaches: [],
+      apiError: true
+    })
+    const request = { query: { lang: 'en' } }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.apiError).toBe(true)
+  })
+
+  it('should pass apiError: false to the view when fetchBreaches succeeds', async () => {
+    fetchBreaches.mockResolvedValue({ activeBreaches: [], pastBreaches: [] })
+    const request = { query: { lang: 'en' } }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.apiError).toBe(false)
+  })
 })
 
 describe('airPollutionBreachesCyController', () => {

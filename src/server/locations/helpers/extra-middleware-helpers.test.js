@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import {
   handleErrorInputAndRedirect,
-  handleUKLocationType
+  handleUKLocationType,
+  checkOSNamesApiError
 } from './extra-middleware-helpers.js'
 
 // Mock all dependencies
@@ -32,7 +33,10 @@ vi.mock('../../common/helpers/logging/logger.js', () => ({
 
 vi.mock('../../data/en/en.js', () => ({
   english: {
-    notFoundUrl: '/not-found',
+    notFoundUrl: {
+      nonService: { pageTitle: 'Page not found' },
+      serviceAPI: { pageTitle: 'Service error' }
+    },
     phaseBanner: { tag: 'alpha' },
     footerTxt: 'Footer text',
     cookieBanner: { title: 'Cookies' },
@@ -42,7 +46,9 @@ vi.mock('../../data/en/en.js', () => ({
 
 vi.mock('../../data/constants.js', () => ({
   STATUS_NOT_FOUND: 404,
-  PAGE_NOT_FOUND_MESSAGE: 'Page not found'
+  PAGE_NOT_FOUND_MESSAGE: 'Page not found',
+  LOCATION_TYPE_UK: 'uk-location',
+  HTTP_STATUS_INTERNAL_SERVER_ERROR: 500
 }))
 
 describe('extra-middleware-helpers.js', () => {
@@ -341,7 +347,10 @@ describe('extra-middleware-helpers.js', () => {
         statusCode: 404,
         message: 'Page not found',
         url: '/test-path',
-        notFoundUrl: '/not-found',
+        notFoundUrl: {
+          nonService: { pageTitle: 'Page not found' },
+          serviceAPI: { pageTitle: 'Service error' }
+        },
         displayBacklink: false,
         phaseBanner: { tag: 'alpha' },
         footerTxt: 'Footer text',
@@ -376,6 +385,51 @@ describe('extra-middleware-helpers.js', () => {
         locationNameOrPostcode: 'London',
         lang: 'cy'
       })
+    })
+  })
+
+  describe('checkOSNamesApiError', () => {
+    const ukRedirectError = { locationType: 'uk-location' }
+    const niRedirectError = { locationType: 'ni-location' }
+
+    it('should return null when locationType is not UK', () => {
+      const result = checkOSNamesApiError(
+        mockH,
+        niRedirectError,
+        { results: [], apiError: true },
+        'en'
+      )
+      expect(result).toBeNull()
+      expect(mockH.view).not.toHaveBeenCalled()
+    })
+
+    it('should return null when locationType is UK but no apiError', () => {
+      const result = checkOSNamesApiError(
+        mockH,
+        ukRedirectError,
+        { results: [{ id: '1' }] },
+        'en'
+      )
+      expect(result).toBeNull()
+      expect(mockH.view).not.toHaveBeenCalled()
+    })
+
+    it('should render 500 error view when locationType is UK and apiError is true', () => {
+      checkOSNamesApiError(
+        mockH,
+        ukRedirectError,
+        { results: [], apiError: true },
+        'en'
+      )
+      expect(mockH.view).toHaveBeenCalledWith(
+        'error/index',
+        expect.objectContaining({
+          statusCode: 500,
+          displayBacklink: false,
+          lang: 'en'
+        })
+      )
+      expect(mockH.view().code).toHaveBeenCalledWith(500)
     })
   })
 })

@@ -5,7 +5,9 @@ import { handleMultipleMatchesHelper } from './handle-multiple-match-helper.js'
 import { english } from '../../data/en/en.js'
 import {
   STATUS_NOT_FOUND,
-  PAGE_NOT_FOUND_MESSAGE
+  PAGE_NOT_FOUND_MESSAGE,
+  LOCATION_TYPE_UK,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR
 } from '../../data/constants.js'
 
 // Helper function to handle redirection for invalid input
@@ -97,4 +99,31 @@ const handleUKLocationType = async (request, h, params) => {
   return h.redirect('/location-not-found').takeover()
 }
 
-export { handleErrorInputAndRedirect, handleUKLocationType }
+const checkOSNamesApiError = (h, redirectError, getOSPlaces, lang) => {
+  if (
+    redirectError.locationType === LOCATION_TYPE_UK &&
+    getOSPlaces?.apiError
+  ) {
+    return h
+      .view('error/index', {
+        pageTitle: english.notFoundUrl.serviceAPI.pageTitle,
+        statusCode: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        notFoundUrl: english.notFoundUrl,
+        displayBacklink: false,
+        phaseBanner: english.phaseBanner,
+        footerTxt: english.footerTxt,
+        cookieBanner: english.cookieBanner,
+        serviceName: english.multipleLocations.serviceName,
+        lang
+      })
+      .code(HTTP_STATUS_INTERNAL_SERVER_ERROR)
+      .takeover()
+  }
+  return null
+}
+
+export {
+  handleErrorInputAndRedirect,
+  handleUKLocationType,
+  checkOSNamesApiError
+}

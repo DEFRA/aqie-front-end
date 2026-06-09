@@ -177,7 +177,7 @@ async function fetchBreaches(lang = 'en', request = null) {
   const [status, data] = await catchFetchError(url, fetchOptions)
 
   if (status !== HTTP_STATUS_OK || !Array.isArray(data)) {
-    return { activeBreaches: [], pastBreaches: [] }
+    return { activeBreaches: [], pastBreaches: [], apiError: true }
   }
 
   const activeBreaches = groupBySamplingId(
