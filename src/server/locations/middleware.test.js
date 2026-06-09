@@ -659,6 +659,41 @@ describe('searchMiddleware - location not found without searchTerms', () => {
   })
 })
 
+describe('searchMiddleware - OS Names API down', () => {
+  beforeEach(() => {
+    setupMocks()
+  })
+
+  it('should render 500 error page when OS Names API returns apiError', async () => {
+    const { mockRequest, mockH, mockView } = mocks
+    mockRequest.query = {
+      searchTerms: 'london',
+      secondSearchTerm: ''
+    }
+
+    vi.mocked(handleErrorInputAndRedirect).mockReturnValue({
+      locationType: LOCATION_TYPE_UK,
+      userLocation: 'London',
+      locationNameOrPostcode: 'London'
+    })
+
+    vi.mocked(fetchData).mockResolvedValue({
+      getDailySummary: { issue_date: MOCK_DATE_STRING, today: {} },
+      getForecasts: { forecasts: [] },
+      getOSPlaces: { results: [], apiError: true },
+      getNIPlaces: null
+    })
+
+    const result = await searchMiddleware(mockRequest, mockH)
+
+    expect(mockView).toHaveBeenCalledWith(
+      ERROR_INDEX,
+      expect.objectContaining({ statusCode: 500 })
+    )
+    expect(result).toBe(TAKEOVER_RESULT)
+  })
+})
+
 describe('searchMiddleware - unknown location type fallback', () => {
   beforeEach(() => {
     setupMocks()

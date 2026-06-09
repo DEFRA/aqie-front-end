@@ -432,6 +432,26 @@ const resolveAndRoute = async (request, h, redirectError, options) => {
       secondSearchTerm
     )
 
+  if (
+    redirectError.locationType === LOCATION_TYPE_UK &&
+    getOSPlaces?.apiError
+  ) {
+    return h
+      .view('error/index', {
+        pageTitle: english.notFoundUrl.serviceAPI.pageTitle,
+        statusCode: 500,
+        notFoundUrl: english.notFoundUrl,
+        displayBacklink: false,
+        phaseBanner: english.phaseBanner,
+        footerTxt: english.footerTxt,
+        cookieBanner: english.cookieBanner,
+        serviceName: english.multipleLocations.serviceName,
+        lang
+      })
+      .code(500)
+      .takeover()
+  }
+
   const serviceCheck = checkNIServiceAvailability(
     request,
     h,

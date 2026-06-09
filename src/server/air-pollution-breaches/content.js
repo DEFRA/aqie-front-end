@@ -13,6 +13,8 @@ const breachesContentEn = {
       'There is currently <b>{count}</b> active air pollution breach',
     timingMessage:
       'This alert will stay active until 24 hours after the last measured breach.',
+    apiErrorMessage:
+      'No data currently being received. We are investigating the issue and hope to have it resolved soon.',
     labels: {
       monitoringLocation: 'Monitoring location',
       pollutant: 'Pollutant',
@@ -27,6 +29,7 @@ const breachesContentEn = {
     subheading: 'Recorded in the last 12 months',
     showText: 'Show',
     hideText: 'Hide',
+    apiErrorMessage: 'No data currently available. Check back later.',
     labels: {
       alertRegion: 'Alert region',
       monitoringArea: 'Monitoring area',

@@ -113,8 +113,7 @@ async function getOSPlaces(
   }
 
   logger.error(`Error fetching statusCodeOSPlace data: ${statusCodeOSPlace}`)
-  // Always return a defined object, even on error
-  return { results: [] }
+  return { results: [], apiError: true }
 }
 
 export { getOSPlaces }
