@@ -14,7 +14,8 @@ import {
   WRONG_POSTCODE,
   STATUS_NOT_FOUND,
   REDIRECT_STATUS_CODE,
-  SERVICE_UNAVAILABLE_ERROR
+  SERVICE_UNAVAILABLE_ERROR,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR
 } from '../data/constants.js'
 import { handleUKLocationType } from './helpers/extra-middleware-helpers.js'
 import { handleErrorInputAndRedirect } from './helpers/error-input-and-redirect.js'
@@ -413,6 +414,29 @@ const checkNIServiceAvailability = (
   return null
 }
 
+const checkOSNamesApiError = (h, redirectError, getOSPlaces, lang) => {
+  if (
+    redirectError.locationType === LOCATION_TYPE_UK &&
+    getOSPlaces?.apiError
+  ) {
+    return h
+      .view('error/index', {
+        pageTitle: english.notFoundUrl.serviceAPI.pageTitle,
+        statusCode: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        notFoundUrl: english.notFoundUrl,
+        displayBacklink: false,
+        phaseBanner: english.phaseBanner,
+        footerTxt: english.footerTxt,
+        cookieBanner: english.cookieBanner,
+        serviceName: english.multipleLocations.serviceName,
+        lang
+      })
+      .code(HTTP_STATUS_INTERNAL_SERVER_ERROR)
+      .takeover()
+  }
+  return null
+}
+
 const resolveAndRoute = async (request, h, redirectError, options) => {
   const {
     lang,
@@ -432,24 +456,9 @@ const resolveAndRoute = async (request, h, redirectError, options) => {
       secondSearchTerm
     )
 
-  if (
-    redirectError.locationType === LOCATION_TYPE_UK &&
-    getOSPlaces?.apiError
-  ) {
-    return h
-      .view('error/index', {
-        pageTitle: english.notFoundUrl.serviceAPI.pageTitle,
-        statusCode: 500,
-        notFoundUrl: english.notFoundUrl,
-        displayBacklink: false,
-        phaseBanner: english.phaseBanner,
-        footerTxt: english.footerTxt,
-        cookieBanner: english.cookieBanner,
-        serviceName: english.multipleLocations.serviceName,
-        lang
-      })
-      .code(500)
-      .takeover()
+  const osNamesCheck = checkOSNamesApiError(h, redirectError, getOSPlaces, lang)
+  if (osNamesCheck) {
+    return osNamesCheck
   }
 
   const serviceCheck = checkNIServiceAvailability(
