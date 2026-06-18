@@ -89,6 +89,8 @@ function buildDaqiAlertResult(data) {
   }
 }
 
+const MOCK_ALERT_STARTED = '2026-06-09T13:41:19.117Z'
+
 // Single pollutant, single station — DAQI 7 (High)
 const MOCK_DAQI_ALERT_DATA = [
   {
@@ -97,7 +99,7 @@ const MOCK_DAQI_ALERT_DATA = [
     daqi: 7,
     samplingPointId: 77162,
     siteId: 'UKA00819',
-    'alert-started': '2026-06-09T13:41:19.117Z'
+    'alert-started': MOCK_ALERT_STARTED
   }
 ]
 
@@ -112,7 +114,7 @@ const MOCK_DAQI_ALERT_DATA_MULTI = [
     daqi: 7,
     samplingPointId: 77162,
     siteId: 'UKA00819',
-    'alert-started': '2026-06-09T13:41:19.117Z'
+    'alert-started': MOCK_ALERT_STARTED
   },
   {
     'active-breaches': true,
@@ -120,7 +122,7 @@ const MOCK_DAQI_ALERT_DATA_MULTI = [
     daqi: 10,
     samplingPointId: 77163,
     siteId: 'UKA00820',
-    'alert-started': '2026-06-09T13:41:19.117Z'
+    'alert-started': MOCK_ALERT_STARTED
   },
   {
     'active-breaches': true,
@@ -128,43 +130,22 @@ const MOCK_DAQI_ALERT_DATA_MULTI = [
     daqi: 8,
     samplingPointId: 77164,
     siteId: 'UKA00819',
-    'alert-started': '2026-06-09T13:41:19.117Z'
+    'alert-started': MOCK_ALERT_STARTED
   }
 ]
 
-async function fetchDaqiAlert(
-  lat,
-  lon,
-  _locationId,
-  _locationName,
-  _lang = 'en',
-  request = null
-) {
-  if (!lat || !lon) {
-    return null
+function getMockDaqiAlertData(request) {
+  const mockParam = request?.query?.mockDaqiAlert
+  if (mockParam === 'true') {
+    return MOCK_DAQI_ALERT_DATA
   }
-
-  const mocksDisabled = config.get('disableTestMocks')
-  if (!mocksDisabled && request?.query?.mockDaqiAlert === 'true') {
-    return buildDaqiAlertResult(MOCK_DAQI_ALERT_DATA)
+  if (mockParam === 'multi') {
+    return MOCK_DAQI_ALERT_DATA_MULTI
   }
-  if (!mocksDisabled && request?.query?.mockDaqiAlert === 'multi') {
-    return buildDaqiAlertResult(MOCK_DAQI_ALERT_DATA_MULTI)
-  }
+  return null
+}
 
-  const baseUrl = config.get('notify.alertBackendBaseUrl')
-  const daqiAlertPath = config.get('notify.daqiAlertPath')
-  const pathWithParams = `${daqiAlertPath}?current-day=true&lat=${lat}&long=${lon}`
-
-  const { url, fetchOptions } = buildBackendApiFetchOptions(
-    request,
-    baseUrl,
-    pathWithParams,
-    { method: 'GET' }
-  )
-
-  logger.info(`DAQI alert API URL: ${url}`)
-
+async function fetchActiveAlerts(url, fetchOptions) {
   const [status, data] = await catchFetchError(url, fetchOptions)
 
   if (status !== HTTP_STATUS_OK || !Array.isArray(data) || data.length === 0) {
@@ -183,6 +164,46 @@ async function fetchDaqiAlert(
   }
 
   logger.info(`DAQI alert API: ${activeAlerts.length} active alert(s) returned`)
+  return activeAlerts
+}
+
+async function fetchDaqiAlert(
+  lat,
+  lon,
+  _locationId,
+  _locationName,
+  _lang = 'en',
+  request = null
+) {
+  if (!lat || !lon) {
+    return null
+  }
+
+  const mocksDisabled = config.get('disableTestMocks')
+  if (!mocksDisabled) {
+    const mockData = getMockDaqiAlertData(request)
+    if (mockData) {
+      return buildDaqiAlertResult(mockData)
+    }
+  }
+
+  const baseUrl = config.get('notify.alertBackendBaseUrl')
+  const daqiAlertPath = config.get('notify.daqiAlertPath')
+  const pathWithParams = `${daqiAlertPath}?current-day=true&lat=${lat}&long=${lon}`
+
+  const { url, fetchOptions } = buildBackendApiFetchOptions(
+    request,
+    baseUrl,
+    pathWithParams,
+    { method: 'GET' }
+  )
+
+  logger.info(`DAQI alert API URL: ${url}`)
+
+  const activeAlerts = await fetchActiveAlerts(url, fetchOptions)
+  if (!activeAlerts) {
+    return null
+  }
   return buildDaqiAlertResult(activeAlerts)
 }
 
