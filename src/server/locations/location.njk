@@ -1,5 +1,6 @@
 {% extends 'layouts/page.njk' %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "daqi-alert-bar-macro.njk" import daqiActualLevelsBar %}
 {% set caption = "" %}
 {% set pollutantTime = '' %}
 {% set pollutantDay = '' %}
@@ -29,13 +30,45 @@
         </div>
       {% endif %}
 
+      {% if daqiAlert %}
+        <div class="aq-pollution-alert" role="alert">
+          <div class="aq-pollution-alert__header">
+            <p>Alert</p>
+          </div>
+          <div class="aq-pollution-alert__body">
+            <p><strong>{{ daqiAlert.highestReadableBand }} levels of air pollution measured in this region</strong></p>
+            <p>{% if daqiAlert.isMultipleStations %}Monitoring stations near{% else %}A monitoring station near{% endif %} {{ locationName }} has measured {{ daqiAlert.highestReadableBand | lower }} levels of air pollution.</p>
+          </div>
+        </div>
+      {% endif %}
+
       <h1 class="govuk-heading-{{ pageHeadingSize }}">
 {% if caption %}
         <span class="govuk-caption-{{ pageHeadingSize }}">{{ caption }}</span>
 {% endif %}
         {{ title }}
       </h1>
-  
+
+      {% if daqiAlert %}
+        {# '' Actual air pollution levels section — only shown when DAQI alert API returns data #}
+        <h2 class="govuk-heading-m">{{ daqi.headings.actualLevels }}</h2>
+        {{ daqiActualLevelsBar(daqiAlert.highestDaqi, daqiAlert.highestReadableBand, lang) }}
+        <p class="govuk-body govuk-!-margin-top-4">
+          {% set predictedValue = airQuality.today.value | int %}
+          {% if daqiAlert.highestDaqi > predictedValue %}
+            Air pollution in {{ locationName }} is {{ daqiAlert.highestReadableBand | lower }} today, even though {{ airQuality.today.readableBand | lower }} levels of air pollution were predicted earlier.
+          {% else %}
+            Air pollution in {{ locationName }} is {{ daqiAlert.highestReadableBand | lower }} today.
+          {% endif %}
+        </p>
+        <p class="govuk-body">This is because {{ daqiAlert.pollutantsText }} levels in the region are higher than expected.
+          {% for pollutant in daqiAlert.pollutants %}
+            <a href="{{ pollutant.href }}?lang={{ lang }}{% if locationId %}&locationId={{ locationId }}{% if locationName %}&locationName={{ locationName | urlencode }}{% endif %}{% if searchTerms %}&searchTerms={{ searchTerms | urlencode }}{% endif %}{% endif %}" class="govuk-link">Learn more about {{ pollutant.name }}</a>.
+          {% endfor %}
+        </p>
+        <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l">
+      {% endif %}
+
   {# Display warning for high or very high pollution forecasts #}
   {% if forecastWarning %}
     {{ govukWarningText({

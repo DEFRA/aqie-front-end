@@ -191,6 +191,12 @@ const EXTRA_CONFIG_SCHEMA = {
       format: String,
       default: '/aqsr-alert',
       env: 'NOTIFY_BREACHES_PATH'
+    },
+    daqiAlertPath: {
+      doc: 'Alert backend path for DAQI alerts',
+      format: String,
+      default: '/daqi-alert',
+      env: 'NOTIFY_DAQI_ALERT_PATH'
     }
   },
   subscriptionApi: {

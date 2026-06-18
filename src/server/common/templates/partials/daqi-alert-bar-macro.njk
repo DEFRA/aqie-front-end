@@ -1,0 +1,26 @@
+{% macro daqiActualLevelsBar(value, readableBand, language) %}
+  {% set safeValue = value | default(0) %}
+  {# '' Screen reader reads: "Daily Air Quality Index, level [number] out of 10, [level] pollution" or Welsh equivalent #}
+  {% if language == 'cy' %}
+    {% set ariaLabel = "Mynegai Ansawdd Aer Dyddiol, lefel " + (safeValue | string) + " allan o 10, " + (readableBand | default('anhysbys') | lower) + " llygredd" %}
+  {% else %}
+    {% set ariaLabel = "Daily Air Quality Index, level " + (safeValue | string) + " out of 10, " + (readableBand | default('unknown') | lower) + " pollution" %}
+  {% endif %}
+  <div class="daqi-numbered" role="img" aria-label="{{ ariaLabel }}">
+    <div class="daqi-bar" aria-hidden="true">
+      {% for i in range(1, 11) %}
+        {% if i == safeValue %}
+          <div class="daqi-bar-segment daqi-{{ i }} daqi-selected"><span class="daqi-number">{{ i }}</span></div>
+        {% else %}
+          <div class="daqi-bar-segment"><span class="daqi-number">{{ i }}</span></div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="daqi-labels" aria-hidden="true">
+      <span class="daqi-band daqi-band-low">{{ daqi.levels.a }}</span>
+      <span class="daqi-band daqi-band-moderate" style="text-align:center">{{ daqi.levels.b }}</span>
+      <span class="daqi-band daqi-band-high" style="text-align:center">{{ daqi.levels.c }}</span>
+      <span class="daqi-band daqi-band-very-high">{{ daqi.levels.d }}</span>
+    </div>
+  </div>
+{% endmacro %}

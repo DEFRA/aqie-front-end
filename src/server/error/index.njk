@@ -5,7 +5,7 @@
 
 {% block content %}
   {% if statusCode == '500' %}
-    {% include 'partials/error-500.njk' %}
+    {% include 'error-500.njk' %}
   {% elif statusCode == '404' or statusCode == '400' %}
     {% if lang == 'en' %}
       {% include 'error-404-en.njk' %}

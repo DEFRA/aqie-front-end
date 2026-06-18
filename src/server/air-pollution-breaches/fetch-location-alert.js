@@ -43,17 +43,17 @@ async function fetchLocationAlert(
     return null
   }
 
-  // Visual testing: append ?mockAlert=Ozone or ?mockAlert=Ozone,Sulphur%20dioxide to the location URL
-  // if (request?.query?.mockAlert) {
-  //   const mockPollutants = request.query.mockAlert
-  //     .split(',')
-  //     .map((p) => p.trim())
-  //     .filter(Boolean)
-  //   return {
-  //     pollutantsText: buildPollutantsText(mockPollutants),
-  //     breachesPageUrl: `/air-pollution-breaches?lang=${lang}&locationId=${encodeURIComponent(locationId)}&locationName=${encodeURIComponent(locationName)}`
-  //   }
-  // }
+  const mocksDisabled = config.get('disableTestMocks')
+  if (!mocksDisabled && request?.query?.mockPollutantAlert) {
+    const mockPollutants = request.query.mockPollutantAlert
+      .split(',')
+      .map((p) => p.trim())
+      .filter(Boolean)
+    return {
+      pollutantsText: buildPollutantsText(mockPollutants),
+      breachesPageUrl: `/air-pollution-breaches?lang=${lang}&locationId=${encodeURIComponent(locationId)}&locationName=${encodeURIComponent(locationName)}`
+    }
+  }
 
   const baseUrl = config.get('notify.alertBackendBaseUrl')
   const breachesPath = config.get('notify.breachesPath')

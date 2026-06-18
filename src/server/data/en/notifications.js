@@ -139,7 +139,12 @@ export const notificationTranslations = {
     errorSetupAlert:
       'We could not finish setting up your alert. Please request a new activation link.',
     requestNewLinkText: REQUEST_NEW_ACTIVATION_LINK,
-    changeEmailLinkText: 'Use a different email address'
+    changeEmailLinkText: 'Use a different email address',
+    confirmPageTitle: 'Confirm your email address - Check air quality - GOV.UK',
+    confirmHeading: 'Confirm your email address',
+    confirmBodyText:
+      'Click the button below to confirm your email address and activate your air quality alerts.',
+    confirmButtonText: 'Confirm my email address'
   },
   // Email verify email page
   emailVerifyEmail: {

@@ -1,4 +1,5 @@
 import { fetchLocationAlert } from '../../air-pollution-breaches/fetch-location-alert.js'
+import { fetchDaqiAlert } from '../../air-pollution-breaches/fetch-daqi-alert.js'
 
 function setNotificationLocationSessionValues(
   request,
@@ -267,6 +268,7 @@ async function renderLocationOrNotFound({
   locationId,
   nearestLocation,
   locationAlert,
+  daqiAlert,
   h,
   LOCATION_NOT_FOUND,
   buildLocationViewData,
@@ -287,7 +289,8 @@ async function renderLocationOrNotFound({
     metaSiteUrl,
     request,
     locationId,
-    locationAlert
+    locationAlert,
+    daqiAlert
   })
 
   return processLocationResult(
@@ -375,6 +378,7 @@ async function finalizeWorkflowResponse({
   locationId,
   nearestLocation,
   locationAlert,
+  daqiAlert,
   h,
   LOCATION_NOT_FOUND,
   persistLocationDataForLocationRoute,
@@ -398,6 +402,7 @@ async function finalizeWorkflowResponse({
     locationId,
     nearestLocation,
     locationAlert,
+    daqiAlert,
     h,
     LOCATION_NOT_FOUND,
     buildLocationViewData,
@@ -443,7 +448,7 @@ async function resolveLocationSessionAndAlert({
   setSessionKeyIfSessionExists
 }) {
   if (!locationData?.results?.length) {
-    return null
+    return { locationAlert: null, daqiAlert: null }
   }
 
   const result = findLocationResult(locationData, locationId, logger)
@@ -460,20 +465,29 @@ async function resolveLocationSessionAndAlert({
     lon
   )
 
-  try {
-    return await fetchLocationAlert(
-      lat,
-      lon,
-      locationId,
-      locationTitle,
-      lang,
-      request
-    )
-  } catch (err) {
+  const [locationAlertResult, daqiAlertResult] = await Promise.allSettled([
+    fetchLocationAlert(lat, lon, locationId, locationTitle, lang, request),
+    fetchDaqiAlert(lat, lon, locationId, locationTitle, lang, request)
+  ])
+
+  if (locationAlertResult.status === 'rejected') {
     logger.warn(
-      `fetchLocationAlert failed, rendering page without alert: ${err.message}`
+      `fetchLocationAlert failed, rendering page without alert: ${locationAlertResult.reason?.message}`
     )
-    return null
+  }
+  if (daqiAlertResult.status === 'rejected') {
+    logger.warn(
+      `fetchDaqiAlert failed, rendering page without DAQI alert: ${daqiAlertResult.reason?.message}`
+    )
+  }
+
+  return {
+    locationAlert:
+      locationAlertResult.status === 'fulfilled'
+        ? locationAlertResult.value
+        : null,
+    daqiAlert:
+      daqiAlertResult.status === 'fulfilled' ? daqiAlertResult.value : null
   }
 }
 
@@ -518,7 +532,7 @@ async function processLocationWorkflow({
     ...workflowDependencies
   })
 
-  const locationAlert = locationDetails
+  const { locationAlert, daqiAlert } = locationDetails
     ? await resolveLocationSessionAndAlert({
         locationData,
         locationId,
@@ -528,7 +542,7 @@ async function processLocationWorkflow({
         setSessionKeyIfSessionExists:
           workflowDependencies.setSessionKeyIfSessionExists
       })
-    : null
+    : { locationAlert: null, daqiAlert: null }
 
   return finalizeWorkflowResponse({
     request,
@@ -542,6 +556,7 @@ async function processLocationWorkflow({
     locationId,
     nearestLocation,
     locationAlert,
+    daqiAlert,
     h,
     LOCATION_NOT_FOUND,
     ...workflowDependencies

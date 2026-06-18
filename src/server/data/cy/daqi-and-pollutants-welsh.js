@@ -44,7 +44,8 @@ export const daqiTranslationsWelsh = {
     },
     headings: {
       main: 'Mynegai Ansawdd Aer Dyddiol (DAQI)',
-      predictedLevels: 'Lefelau llygredd aer a ragwelir'
+      predictedLevels: 'Lefelau llygredd aer a ragwelir',
+      actualLevels: 'Actual air pollution levels'
     },
     tabs: {
       today: 'Heddiw'

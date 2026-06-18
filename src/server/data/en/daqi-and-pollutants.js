@@ -44,7 +44,8 @@ export const daqiTranslations = {
     },
     headings: {
       main: 'Daily Air Quality Index (DAQI)',
-      predictedLevels: 'Predicted air pollution levels'
+      predictedLevels: 'Predicted air pollution levels',
+      actualLevels: 'Actual air pollution levels'
     },
     tabs: {
       today: 'Today'
