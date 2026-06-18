@@ -221,7 +221,8 @@ function buildLocationViewData({
   metaSiteUrl,
   request,
   locationId,
-  locationAlert = null
+  locationAlert = null,
+  daqiAlert = null
 }) {
   const { title, headerTitle } = prepareLocationTitles(locationDetails)
 
@@ -284,6 +285,7 @@ function buildLocationViewData({
     serviceName: english.multipleLocations.serviceName,
     forecastWarning,
     locationAlert,
+    daqiAlert,
     lang
   }
 }

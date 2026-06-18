@@ -33,6 +33,14 @@ const buildMockQueryParams = (request) => {
   if (query.testMode !== undefined) {
     params.push(`testMode=${encodeURIComponent(query.testMode)}`)
   }
+  if (query.mockDaqiAlert !== undefined) {
+    params.push(`mockDaqiAlert=${encodeURIComponent(query.mockDaqiAlert)}`)
+  }
+  if (query.mockPollutantAlert !== undefined) {
+    params.push(
+      `mockPollutantAlert=${encodeURIComponent(query.mockPollutantAlert)}`
+    )
+  }
 
   if (params.length === 0) {
     return ''

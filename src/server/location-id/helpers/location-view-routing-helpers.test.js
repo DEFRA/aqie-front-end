@@ -110,6 +110,83 @@ const buildBaseParams = () => ({
   locationId: 'bristol-city'
 })
 
+describe('buildLocationViewData — daqiAlert', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('includes daqiAlert in view data when provided', () => {
+    const daqiAlert = {
+      highestDaqi: 8,
+      highestReadableBand: 'High',
+      isMultipleStations: false,
+      pollutants: [{ name: 'ozone', href: '/pollutants/ozone' }],
+      pollutantsText: 'ozone'
+    }
+    const result = buildLocationViewData({
+      ...buildBaseParams(),
+      daqiAlert
+    })
+    expect(result.daqiAlert).toEqual(daqiAlert)
+  })
+
+  it('sets daqiAlert to null when not provided', () => {
+    const result = buildLocationViewData(buildBaseParams())
+    expect(result.daqiAlert).toBeNull()
+  })
+
+  it('sets daqiAlert to null when explicitly passed as null', () => {
+    const result = buildLocationViewData({
+      ...buildBaseParams(),
+      daqiAlert: null
+    })
+    expect(result.daqiAlert).toBeNull()
+  })
+
+  it('preserves all daqiAlert fields in view data', () => {
+    const daqiAlert = {
+      highestDaqi: 9,
+      highestReadableBand: 'High',
+      isMultipleStations: true,
+      pollutants: [
+        { name: 'ozone', href: '/pollutants/ozone' },
+        { name: 'sulphur dioxide', href: '/pollutants/sulphur-dioxide' }
+      ],
+      pollutantsText: 'ozone and sulphur dioxide'
+    }
+    const result = buildLocationViewData({
+      ...buildBaseParams(),
+      daqiAlert
+    })
+    expect(result.daqiAlert.highestDaqi).toBe(9)
+    expect(result.daqiAlert.highestReadableBand).toBe('High')
+    expect(result.daqiAlert.isMultipleStations).toBe(true)
+    expect(result.daqiAlert.pollutants).toHaveLength(2)
+    expect(result.daqiAlert.pollutantsText).toBe('ozone and sulphur dioxide')
+  })
+
+  it('includes both locationAlert and daqiAlert simultaneously', () => {
+    const locationAlert = {
+      pollutantsText: 'ozone',
+      breachesPageUrl: '/air-pollution-breaches?lang=en'
+    }
+    const daqiAlert = {
+      highestDaqi: 7,
+      highestReadableBand: 'High',
+      isMultipleStations: false,
+      pollutants: [{ name: 'ozone', href: '/pollutants/ozone' }],
+      pollutantsText: 'ozone'
+    }
+    const result = buildLocationViewData({
+      ...buildBaseParams(),
+      locationAlert,
+      daqiAlert
+    })
+    expect(result.locationAlert).toEqual(locationAlert)
+    expect(result.daqiAlert).toEqual(daqiAlert)
+  })
+})
+
 describe('buildLocationViewData — locationAlert', () => {
   beforeEach(() => {
     vi.clearAllMocks()

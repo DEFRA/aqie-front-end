@@ -338,4 +338,35 @@ describe('fetchLocationAlert', () => {
       )
     ).rejects.toThrow('network timeout')
   })
+
+  it('returns mock result from mockPollutantAlert query param when mocks enabled', async () => {
+    const request = { query: { mockPollutantAlert: 'ozone,PM2.5' } }
+    const result = await fetchLocationAlert(
+      51.48,
+      -3.18,
+      'bristol-city',
+      'Bristol',
+      'en',
+      request
+    )
+
+    expect(catchFetchError).not.toHaveBeenCalled()
+    expect(result.pollutantsText).toBe('ozone and PM2.5')
+    expect(result.breachesPageUrl).toContain('lang=en')
+    expect(result.breachesPageUrl).toContain('locationId=bristol-city')
+  })
+
+  it('handles a single pollutant in mockPollutantAlert', async () => {
+    const request = { query: { mockPollutantAlert: 'nitrogen dioxide' } }
+    const result = await fetchLocationAlert(
+      51.48,
+      -3.18,
+      'bristol-city',
+      'Bristol',
+      'en',
+      request
+    )
+
+    expect(result.pollutantsText).toBe('nitrogen dioxide')
+  })
 })

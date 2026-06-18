@@ -32,6 +32,8 @@ import {
   mockPollutantBand as generateMockPollutantBand,
   applyMockPollutantsToSites
 } from '../../common/helpers/mock-pollutant-level.js'
+import { fetchDaqiAlert } from '../../air-pollution-breaches/fetch-daqi-alert.js'
+import { fetchLocationAlert } from '../../air-pollution-breaches/fetch-location-alert.js'
 
 const logger = createLogger()
 
@@ -103,7 +105,14 @@ function buildMockQueryParams(query, mocksDisabled) {
   }
 
   const params = []
-  const keys = ['mockLevel', 'mockDay', 'mockPollutantBand', 'testMode']
+  const keys = [
+    'mockLevel',
+    'mockDay',
+    'mockPollutantBand',
+    'testMode',
+    'mockDaqiAlert',
+    'mockPollutantAlert'
+  ]
 
   keys.forEach((key) => {
     if (query?.[key] !== undefined) {
@@ -278,7 +287,7 @@ function ensureSummaryDateForDirectAccess(locationData) {
   locationData.issueTime = getIssueTime(locationData.dailySummary.issue_date)
 }
 
-function renderProcessedLocationOrNotFound({
+async function renderProcessedLocationOrNotFound({
   h,
   request,
   locationData,
@@ -304,6 +313,32 @@ function renderProcessedLocationOrNotFound({
     processedData.nearestLocationsRange
   )
 
+  const { lat, lon } = processedData.latlon || {}
+  const locationTitle = locationData.title || locationData.headerTitle || ''
+
+  const [locationAlertResult, daqiAlertResult] = await Promise.allSettled([
+    fetchLocationAlert(lat, lon, locationId, locationTitle, LANG_CY, request),
+    fetchDaqiAlert(lat, lon, locationId, locationTitle, LANG_CY, request)
+  ])
+
+  if (locationAlertResult.status === 'rejected') {
+    logger.warn(
+      `fetchLocationAlert failed for Welsh page, rendering without alert: ${locationAlertResult.reason?.message}`
+    )
+  }
+  if (daqiAlertResult.status === 'rejected') {
+    logger.warn(
+      `fetchDaqiAlert failed for Welsh page, rendering without alert: ${daqiAlertResult.reason?.message}`
+    )
+  }
+
+  const locationAlert =
+    locationAlertResult.status === 'fulfilled'
+      ? locationAlertResult.value
+      : null
+  const daqiAlert =
+    daqiAlertResult.status === 'fulfilled' ? daqiAlertResult.value : null
+
   const viewData = buildLocationViewData({
     locationDetails: processedData.locationDetails,
     nearestLocationsRange: modifiedMonitoringSites,
@@ -317,7 +352,9 @@ function renderProcessedLocationOrNotFound({
     pollutantTypes,
     request,
     locationId,
-    latlon: processedData.latlon
+    latlon: processedData.latlon,
+    locationAlert,
+    daqiAlert
   })
 
   return renderLocationView(h, viewData)
@@ -380,7 +417,7 @@ const getLocationDetailsController = {
         useNewRicardoMeasurementsEnabled
       )
 
-      return renderProcessedLocationOrNotFound({
+      return await renderProcessedLocationOrNotFound({
         h,
         request,
         locationData,
