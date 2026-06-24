@@ -4,12 +4,23 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds odd-page">
 
-      <h1 class="govuk-heading-l govuk-!-margin-top-7">{{ heading }}</h1>
-      <p class="govuk-body">{{ content.errorExpiredBody }}</p>
-      <p class="govuk-body">
-        <a href="/search-location" class="govuk-link">{{ content.errorSearchLinkText }}</a>
-        {{ content.errorSearchLinkSuffix }}
-      </p>
+      {% if showConfirmForm %}
+        <h1 class="govuk-heading-l govuk-!-margin-top-7">{{ content.confirmPageHeading }}</h1>
+        <p class="govuk-body">{{ content.confirmPageBody }}</p>
+        <form method="post" action="{{ currentPath }}">
+          <input type="hidden" name="token" value="{{ token }}">
+          <button type="submit" class="govuk-button" data-module="govuk-button">
+            {{ content.confirmButton }}
+          </button>
+        </form>
+      {% else %}
+        <h1 class="govuk-heading-l govuk-!-margin-top-7">{{ heading }}</h1>
+        <p class="govuk-body">{{ content.errorExpiredBody }}</p>
+        <p class="govuk-body">
+          <a href="/search-location" class="govuk-link">{{ content.errorSearchLinkText }}</a>
+          {{ content.errorSearchLinkSuffix }}
+        </p>
+      {% endif %}
 
     </div>
   </div>

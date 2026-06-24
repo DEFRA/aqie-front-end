@@ -232,6 +232,14 @@ vi.mock('node:path', () => ({
   dirname: vi.fn((_path) => '/mock/dirname')
 }))
 
+// Pre-load router.js once so it is cached before any test runs.
+// The initial Vitest mock resolution across ~60 dependencies can exceed
+// the default 5 000 ms per-test timeout, causing a false failure on the
+// first test that does `await import('./router.js')`.
+beforeAll(async () => {
+  await import('./router.js')
+}, 30000)
+
 beforeEach(() => {
   vi.clearAllMocks()
 })

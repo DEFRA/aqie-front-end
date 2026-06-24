@@ -125,6 +125,12 @@ export const notificationTranslationsWelsh = {
   },
   // Email confirm link callback page
   emailConfirmLink: {
+    confirmPageTitle:
+      'TODO Welsh: Confirm your email address - Check air quality - GOV.UK',
+    confirmPageHeading: 'TODO Welsh: Confirm your email address',
+    confirmPageBody:
+      'TODO Welsh: Click the button below to confirm your email address and activate your air pollution alert.',
+    confirmButton: 'TODO Welsh: Confirm email address',
     errorPageTitle:
       'TODO Welsh: This activation link has expired - Check air quality - GOV.UK',
     errorHeading: 'TODO Welsh: This activation link has expired',
