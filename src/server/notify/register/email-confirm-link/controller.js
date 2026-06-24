@@ -281,12 +281,11 @@ const processValidToken = async (request, h, token, lang) => {
 }
 
 /**
- * Handle GET request when user clicks the activation link in their email.
- * Redirects to the confirmation page — token is NOT consumed here so that
- * corporate email security scanners cannot burn the single-use token.
+ * Handle GET request when user clicks the activation link in their email ''
+ * Validates the token and redirects to success, or shows an error page
  */
-export const handleEmailConfirmLinkRequest = (request, h) => {
-  logger.info('Email confirm link received — redirecting to confirmation page')
+export const handleEmailConfirmLinkRequest = async (request, h) => {
+  logger.info('Email confirm link callback received')
 
   const { token } = request.query
   const { lang, languageContent, emailConfirmLink, common } =
@@ -294,74 +293,6 @@ export const handleEmailConfirmLinkRequest = (request, h) => {
 
   if (!token) {
     logger.warn('[EMAIL CONFIRM] No token in query string')
-    return renderErrorView(
-      request,
-      h,
-      languageContent,
-      emailConfirmLink,
-      common,
-      lang,
-      emailConfirmLink.errorMissingToken
-    )
-  }
-
-  return h.redirect(
-    `/notify/register/email-confirm-token?token=${encodeURIComponent(token)}&lang=${lang}`
-  )
-}
-
-/**
- * Handle GET request for the confirmation page.
- * Renders a "Confirm my email" button — token still NOT consumed.
- */
-export const handleEmailConfirmTokenRequest = (request, h) => {
-  const { token } = request.query
-  const { lang, languageContent, emailConfirmLink, common } =
-    getContent(request)
-
-  if (!token) {
-    return renderErrorView(
-      request,
-      h,
-      languageContent,
-      emailConfirmLink,
-      common,
-      lang,
-      emailConfirmLink.errorMissingToken
-    )
-  }
-
-  const { footerTxt, phaseBanner, cookieBanner } = languageContent
-  return h.view('notify/register/email-confirm-link/confirm', {
-    pageTitle: emailConfirmLink.confirmPageTitle,
-    heading: emailConfirmLink.confirmHeading,
-    bodyText: emailConfirmLink.confirmBodyText,
-    buttonText: emailConfirmLink.confirmButtonText,
-    token,
-    lang,
-    serviceName: DEFAULT_SERVICE_NAME,
-    metaSiteUrl: getAirQualitySiteUrl(request),
-    currentPath: request.path,
-    footerTxt,
-    phaseBanner,
-    cookieBanner,
-    common,
-    content: emailConfirmLink,
-    hideLanguageToggle: true
-  })
-}
-
-/**
- * Handle POST request when user clicks "Confirm my email address".
- * This is the only place the token is validated and consumed.
- */
-export const handleEmailConfirmTokenPost = async (request, h) => {
-  const token = request.payload?.token
-  const { lang, languageContent, emailConfirmLink, common } =
-    getContent(request)
-
-  if (!token) {
-    logger.warn('[EMAIL CONFIRM] No token in POST payload')
     return renderErrorView(
       request,
       h,
