@@ -15,7 +15,7 @@ const EXTRA_CONFIG_SCHEMA = {
     alertBackendBaseUrl: {
       doc: 'Alert backend service base URL',
       format: String,
-      default: 'https://aqie-alert-back-end-service.test.cdp-int.defra.cloud',
+      default: 'https://aqie-alert-back-end.test.cdp-int.defra.cloud',
       env: 'ALERT_BACKEND_BASE_URL'
     },
     smsPath: {

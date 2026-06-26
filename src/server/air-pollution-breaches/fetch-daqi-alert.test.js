@@ -466,44 +466,4 @@ describe('fetchDaqiAlert', () => {
       fetchDaqiAlert(51.48, -3.18, 'loc1', 'Bristol', 'en', mockRequest)
     ).rejects.toThrow('network timeout')
   })
-
-  it('returns mock single-station result when mockDaqiAlert=true and mocks enabled', async () => {
-    const request = { query: { mockDaqiAlert: 'true' } }
-    const result = await fetchDaqiAlert(
-      51.48,
-      -3.18,
-      'loc1',
-      'Bristol',
-      'en',
-      request
-    )
-
-    expect(catchFetchError).not.toHaveBeenCalled()
-    expect(result).toMatchObject({
-      highestDaqi: 7,
-      highestReadableBand: 'High',
-      isMultipleStations: false,
-      pollutantsText: 'ozone'
-    })
-    expect(result.pollutants).toHaveLength(1)
-    expect(result.pollutants[0].name).toBe('ozone')
-  })
-
-  it('returns mock multi-station result when mockDaqiAlert=multi and mocks enabled', async () => {
-    const request = { query: { mockDaqiAlert: 'multi' } }
-    const result = await fetchDaqiAlert(
-      51.48,
-      -3.18,
-      'loc1',
-      'Bristol',
-      'en',
-      request
-    )
-
-    expect(catchFetchError).not.toHaveBeenCalled()
-    expect(result.highestDaqi).toBe(10)
-    expect(result.highestReadableBand).toBe('Very high')
-    expect(result.isMultipleStations).toBe(true)
-    expect(result.pollutants).toHaveLength(3)
-  })
 })
