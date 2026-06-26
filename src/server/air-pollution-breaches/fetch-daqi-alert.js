@@ -89,62 +89,6 @@ function buildDaqiAlertResult(data) {
   }
 }
 
-const MOCK_ALERT_STARTED = '2026-06-09T13:41:19.117Z'
-
-// Single pollutant, single station — DAQI 7 (High)
-const MOCK_DAQI_ALERT_DATA = [
-  {
-    'active-breaches': true,
-    'pollutant-name': 'ozone (O3)',
-    daqi: 7,
-    samplingPointId: 77162,
-    siteId: 'UKA00819',
-    'alert-started': MOCK_ALERT_STARTED
-  }
-]
-
-// Multiple pollutants at different DAQI levels, multiple stations.
-// Highest is nitrogen dioxide at DAQI 10 (Very High) — alert box and bar should show Very High.
-// Ozone and sulphur dioxide share station UKA00819; nitrogen dioxide is from UKA00820.
-// isMultipleStations = true → "Monitoring stations near..."
-const MOCK_DAQI_ALERT_DATA_MULTI = [
-  {
-    'active-breaches': true,
-    'pollutant-name': 'ozone (O3)',
-    daqi: 7,
-    samplingPointId: 77162,
-    siteId: 'UKA00819',
-    'alert-started': MOCK_ALERT_STARTED
-  },
-  {
-    'active-breaches': true,
-    'pollutant-name': 'nitrogen dioxide (NO2)',
-    daqi: 10,
-    samplingPointId: 77163,
-    siteId: 'UKA00820',
-    'alert-started': MOCK_ALERT_STARTED
-  },
-  {
-    'active-breaches': true,
-    'pollutant-name': 'sulphur dioxide (SO2)',
-    daqi: 8,
-    samplingPointId: 77164,
-    siteId: 'UKA00819',
-    'alert-started': MOCK_ALERT_STARTED
-  }
-]
-
-function getMockDaqiAlertData(request) {
-  const mockParam = request?.query?.mockDaqiAlert
-  if (mockParam === 'true') {
-    return MOCK_DAQI_ALERT_DATA
-  }
-  if (mockParam === 'multi') {
-    return MOCK_DAQI_ALERT_DATA_MULTI
-  }
-  return null
-}
-
 async function fetchActiveAlerts(url, fetchOptions) {
   const [status, data] = await catchFetchError(url, fetchOptions)
 
@@ -177,14 +121,6 @@ async function fetchDaqiAlert(
 ) {
   if (!lat || !lon) {
     return null
-  }
-
-  const mocksDisabled = config.get('disableTestMocks')
-  if (!mocksDisabled) {
-    const mockData = getMockDaqiAlertData(request)
-    if (mockData) {
-      return buildDaqiAlertResult(mockData)
-    }
   }
 
   const baseUrl = config.get('notify.alertBackendBaseUrl')
