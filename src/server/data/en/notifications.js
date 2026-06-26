@@ -126,6 +126,11 @@ export const notificationTranslations = {
   },
   // Email confirm link callback page
   emailConfirmLink: {
+    confirmPageTitle:
+      'Activate your air pollution alert - Check air quality - GOV.UK',
+    confirmHeading: 'Activate your air pollution alert',
+    confirmBodyText: 'Confirm your email address to activate your alert.',
+    confirmButtonText: 'Confirm',
     errorPageTitle:
       'This activation link has expired - Check air quality - GOV.UK',
     errorHeading: 'This activation link has expired',

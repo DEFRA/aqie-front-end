@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { handleEmailConfirmLinkRequest } from './controller.js'
+import {
+  handleEmailConfirmLinkRequest,
+  handleEmailConfirmTokenRequest,
+  handleEmailConfirmTokenPost
+} from './controller.js'
 
 import {
   validateEmailLink,
@@ -10,6 +14,7 @@ const ALERTS_SUCCESS_PATH = '/notify/register/alerts-success'
 const EMAIL_DUPLICATE_PATH = '/notify/register/email-duplicate'
 const EMAIL_DETAILS_PATH = '/notify/register/email-details'
 const EMAIL_CONFIRM_VIEW = 'notify/register/email-confirm-link/index'
+const EMAIL_CONFIRM_VIEW_CONFIRM = 'notify/register/email-confirm-link/confirm'
 const DEFAULT_TOKEN = 'abc123'
 const DEFAULT_EMAIL = 'user@example.com'
 const DEFAULT_LOCATION = 'Leeds'
@@ -83,11 +88,13 @@ const mockH = () => ({
 const mockRequest = ({
   query = {},
   path = '/notify/register/email-confirm-link',
+  payload = {},
   session = {},
   headers = {}
 } = {}) => ({
   query,
   path,
+  payload,
   headers,
   yar: {
     get: vi.fn((key) => session[key]),
@@ -104,31 +111,112 @@ const resetNotifyMocks = () => {
   vi.clearAllMocks()
 }
 
-describe('email-confirm-link/controller errors', () => {
+// ---------------------------------------------------------------------------
+// handleEmailConfirmLinkRequest — step 1: redirect to confirmation page
+// ---------------------------------------------------------------------------
+
+describe('email-confirm-link/controller — handleEmailConfirmLinkRequest', () => {
   beforeEach(() => {
     resetNotifyMocks()
   })
 
-  it('renders error view when token is missing', async () => {
+  it('renders error view when token is missing', () => {
     const h = mockH()
     const request = mockRequest({ query: {} })
 
-    const response = await handleEmailConfirmLinkRequest(request, h)
+    const response = handleEmailConfirmLinkRequest(request, h)
 
     expect(response.tpl).toBe(EMAIL_CONFIRM_VIEW)
     expect(response.vm.errorMessage).toBeTruthy()
-    expect(response.vm.content.errorExpiredBody).toBeTruthy()
-    expect(response.vm.content.errorSearchLinkText).toBeTruthy()
-    expect(response.vm.content.errorSearchLinkSuffix).toBeTruthy()
+    expect(validateEmailLink).not.toHaveBeenCalled()
+  })
+
+  it('redirects to confirmation page with token and lang when token is present', () => {
+    const h = mockH()
+    const request = mockRequest({ query: { token: DEFAULT_TOKEN } })
+
+    const response = handleEmailConfirmLinkRequest(request, h)
+
+    expect(response.redirect).toContain('/notify/register/email-confirm-token')
+    expect(response.redirect).toContain(
+      `token=${encodeURIComponent(DEFAULT_TOKEN)}`
+    )
+    expect(validateEmailLink).not.toHaveBeenCalled()
+    expect(setupEmailAlert).not.toHaveBeenCalled()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// handleEmailConfirmTokenRequest — step 2 GET: renders confirm button page
+// ---------------------------------------------------------------------------
+
+describe('email-confirm-link/controller — handleEmailConfirmTokenRequest', () => {
+  beforeEach(() => {
+    resetNotifyMocks()
+  })
+
+  it('renders error view when token is missing', () => {
+    const h = mockH()
+    const request = mockRequest({
+      path: '/notify/register/email-confirm-token',
+      query: {}
+    })
+
+    const response = handleEmailConfirmTokenRequest(request, h)
+
+    expect(response.tpl).toBe(EMAIL_CONFIRM_VIEW)
+    expect(response.vm.errorMessage).toBeTruthy()
+  })
+
+  it('renders confirmation page with token and content when token is present', () => {
+    const h = mockH()
+    const request = mockRequest({
+      path: '/notify/register/email-confirm-token',
+      query: { token: DEFAULT_TOKEN }
+    })
+
+    const response = handleEmailConfirmTokenRequest(request, h)
+
+    expect(response.tpl).toBe(EMAIL_CONFIRM_VIEW_CONFIRM)
+    expect(response.vm.token).toBe(DEFAULT_TOKEN)
+    expect(response.vm.heading).toBeTruthy()
+    expect(response.vm.bodyText).toBeTruthy()
+    expect(response.vm.buttonText).toBeTruthy()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// handleEmailConfirmTokenPost — step 2 POST: validates and consumes token
+// ---------------------------------------------------------------------------
+
+describe('email-confirm-link/controller — handleEmailConfirmTokenPost errors', () => {
+  beforeEach(() => {
+    resetNotifyMocks()
+  })
+
+  it('renders error view when token is missing from payload', async () => {
+    const h = mockH()
+    const request = mockRequest({
+      path: '/notify/register/email-confirm-token',
+      payload: {}
+    })
+
+    const response = await handleEmailConfirmTokenPost(request, h)
+
+    expect(response.tpl).toBe(EMAIL_CONFIRM_VIEW)
+    expect(response.vm.errorMessage).toBeTruthy()
     expect(validateEmailLink).not.toHaveBeenCalled()
   })
 
   it('renders invalid token error when validateEmailLink is not ok', async () => {
     validateEmailLink.mockResolvedValueOnce({ ok: false, status: 400 })
     const h = mockH()
-    const request = mockRequest({ query: { token: DEFAULT_TOKEN } })
+    const request = mockRequest({
+      path: '/notify/register/email-confirm-token',
+      payload: { token: DEFAULT_TOKEN }
+    })
 
-    const response = await handleEmailConfirmLinkRequest(request, h)
+    const response = await handleEmailConfirmTokenPost(request, h)
 
     expect(response.tpl).toBe(EMAIL_CONFIRM_VIEW)
     expect(response.vm.errorMessage).toContain('invalid')
@@ -138,10 +226,11 @@ describe('email-confirm-link/controller errors', () => {
     validateEmailLink.mockResolvedValueOnce({ ok: true, data: {} })
 
     const request = mockRequest({
-      query: { token: DEFAULT_TOKEN },
+      path: '/notify/register/email-confirm-token',
+      payload: { token: DEFAULT_TOKEN },
       session: {}
     })
-    const response = await handleEmailConfirmLinkRequest(request, mockH())
+    const response = await handleEmailConfirmTokenPost(request, mockH())
 
     expect(response.tpl).toBe(EMAIL_CONFIRM_VIEW)
     expect(response.vm.errorMessage).toContain('finish setting up your alert')
@@ -154,8 +243,11 @@ describe('email-confirm-link/controller errors', () => {
       throw err
     })
 
-    const response = await handleEmailConfirmLinkRequest(
-      mockRequest({ query: { token: DEFAULT_TOKEN } }),
+    const response = await handleEmailConfirmTokenPost(
+      mockRequest({
+        path: '/notify/register/email-confirm-token',
+        payload: { token: DEFAULT_TOKEN }
+      }),
       mockH()
     )
 
@@ -164,7 +256,7 @@ describe('email-confirm-link/controller errors', () => {
   })
 })
 
-describe('email-confirm-link/controller success redirect flow', () => {
+describe('email-confirm-link/controller — handleEmailConfirmTokenPost success redirect flow', () => {
   beforeEach(() => {
     resetNotifyMocks()
   })
@@ -178,9 +270,13 @@ describe('email-confirm-link/controller success redirect flow', () => {
 
     const h = mockH()
     const session = { locationId: 'loc-1' }
-    const request = mockRequest({ query: { token: DEFAULT_TOKEN }, session })
+    const request = mockRequest({
+      path: '/notify/register/email-confirm-token',
+      payload: { token: DEFAULT_TOKEN },
+      session
+    })
 
-    const response = await handleEmailConfirmLinkRequest(request, h)
+    const response = await handleEmailConfirmTokenPost(request, h)
 
     expect(response.redirect).toBe(ALERTS_SUCCESS_PATH)
     expect(session.notificationFlow).toBe('email')
@@ -202,8 +298,12 @@ describe('email-confirm-link/controller success redirect flow', () => {
       latitude: YORK_LAT,
       longitude: YORK_LONG
     }
-    const request = mockRequest({ query: { token: DEFAULT_TOKEN }, session })
-    const response = await handleEmailConfirmLinkRequest(request, mockH())
+    const request = mockRequest({
+      path: '/notify/register/email-confirm-token',
+      payload: { token: DEFAULT_TOKEN },
+      session
+    })
+    const response = await handleEmailConfirmTokenPost(request, mockH())
 
     expect(setupEmailAlert).toHaveBeenCalledWith(
       'session@example.com',
@@ -218,7 +318,7 @@ describe('email-confirm-link/controller success redirect flow', () => {
   })
 })
 
-describe('email-confirm-link/controller setup result branches', () => {
+describe('email-confirm-link/controller — handleEmailConfirmTokenPost setup result branches', () => {
   beforeEach(() => {
     resetNotifyMocks()
   })
@@ -231,10 +331,11 @@ describe('email-confirm-link/controller setup result branches', () => {
     setupEmailAlert.mockResolvedValueOnce({ ok: false, status: 409, body: {} })
 
     const request = mockRequest({
-      query: { token: DEFAULT_TOKEN },
+      path: '/notify/register/email-confirm-token',
+      payload: { token: DEFAULT_TOKEN },
       session: {}
     })
-    const response = await handleEmailConfirmLinkRequest(request, mockH())
+    const response = await handleEmailConfirmTokenPost(request, mockH())
 
     expect(response.redirect).toBe(EMAIL_DUPLICATE_PATH)
   })
@@ -247,8 +348,12 @@ describe('email-confirm-link/controller setup result branches', () => {
     setupEmailAlert.mockResolvedValueOnce({ ok: false, status: 500, body: {} })
 
     const session = {}
-    const request = mockRequest({ query: { token: DEFAULT_TOKEN }, session })
-    const response = await handleEmailConfirmLinkRequest(request, mockH())
+    const request = mockRequest({
+      path: '/notify/register/email-confirm-token',
+      payload: { token: DEFAULT_TOKEN },
+      session
+    })
+    const response = await handleEmailConfirmTokenPost(request, mockH())
 
     expect(response.redirect).toBe(EMAIL_DETAILS_PATH)
     expect(session.maxAlertsEmailError).toBe(true)
@@ -263,8 +368,12 @@ describe('email-confirm-link/controller setup result branches', () => {
     setupEmailAlert.mockResolvedValueOnce({ skipped: true })
 
     const session = {}
-    const request = mockRequest({ query: { token: DEFAULT_TOKEN }, session })
-    const response = await handleEmailConfirmLinkRequest(request, mockH())
+    const request = mockRequest({
+      path: '/notify/register/email-confirm-token',
+      payload: { token: DEFAULT_TOKEN },
+      session
+    })
+    const response = await handleEmailConfirmTokenPost(request, mockH())
 
     expect(response.redirect).toBe(ALERTS_SUCCESS_PATH)
     expect(session.notificationFlow).toBe('email')
@@ -289,10 +398,11 @@ describe('email-confirm-link/controller setup result branches', () => {
       longitude: -2.5879
     }
     const request = mockRequest({
-      query: { token: 'expired-gloucester-token' },
+      path: '/notify/register/email-confirm-token',
+      payload: { token: 'expired-gloucester-token' },
       session
     })
-    const response = await handleEmailConfirmLinkRequest(request, mockH())
+    const response = await handleEmailConfirmTokenPost(request, mockH())
 
     expect(response.tpl).toBe(EMAIL_CONFIRM_VIEW)
     expect(session.emailAddress).toBe(DEFAULT_EMAIL)
