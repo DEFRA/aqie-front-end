@@ -18,6 +18,7 @@ import { createLogger } from '../../common/helpers/logging/logger.js'
 
 const logger = createLogger()
 const METERS_TO_MILES = 0.000621371192
+const BST_TIMEZONE = 'Europe/London'
 
 const hasMatches = (matches) => matches.length > 0
 
@@ -79,16 +80,16 @@ export function buildPollutantsObject(curr, lang) {
         ? getPollutantLevelCy(polValue, pollutant)
         : getPollutantLevel(polValue, pollutant)
     const formatHour = moment
-      .tz(curr.pollutants[pollutant].time.date, 'Europe/London')
+      .tz(curr.pollutants[pollutant].time.date, BST_TIMEZONE)
       .format('ha')
     const dayNumber = moment
-      .tz(curr.pollutants[pollutant].time.date, 'Europe/London')
+      .tz(curr.pollutants[pollutant].time.date, BST_TIMEZONE)
       .format('D')
     const yearNumber = moment
-      .tz(curr.pollutants[pollutant].time.date, 'Europe/London')
+      .tz(curr.pollutants[pollutant].time.date, BST_TIMEZONE)
       .format('YYYY')
     const monthNumber = moment
-      .tz(curr.pollutants[pollutant].time.date, 'Europe/London')
+      .tz(curr.pollutants[pollutant].time.date, BST_TIMEZONE)
       .format('MMMM')
     Object.assign(newpollutants, {
       [pollutant]: {
@@ -237,7 +238,7 @@ const mapNewMeasurementsWithPollutants = (measurements, lang, latlon) => {
 const getForecastDay = () => {
   return (
     moment
-      .tz('Europe/London')
+      .tz(BST_TIMEZONE)
       ?.format('dddd')
       ?.substring(0, FORECAST_DAY_SLICE_LENGTH) || ''
   )

@@ -18,6 +18,18 @@ import { createLogger } from './common/helpers/logging/logger.js'
 import { registerServerCachePolicies } from './common/helpers/server-cache-policies.js'
 import { locationNotFoundCy } from './location-not-found/cy/index.js'
 
+function signInGateHandler(excludedPaths) {
+  return function handleSignInGate(request, h) {
+    const isExcluded = excludedPaths.some((p) => request.path.startsWith(p))
+    if (!isExcluded && !request.yar.get('authenticated')) {
+      const destination = request.path + (request.url.search || '')
+      request.yar.set('signInRedirectTo', destination)
+      return h.redirect('/sign-in').takeover()
+    }
+    return h.continue
+  }
+}
+
 async function createServer() {
   const logger = createLogger()
 
@@ -99,17 +111,7 @@ async function createServer() {
         '/public/',
         '/.well-known/'
       ]
-      server.ext('onPreHandler', (request, h) => {
-        const isExcluded = SIGN_IN_EXCLUDED.some((p) =>
-          request.path.startsWith(p)
-        )
-        if (!isExcluded && !request.yar.get('authenticated')) {
-          const destination = request.path + (request.url.search || '')
-          request.yar.set('signInRedirectTo', destination)
-          return h.redirect('/sign-in').takeover()
-        }
-        return h.continue
-      })
+      server.ext('onPreHandler', signInGateHandler(SIGN_IN_EXCLUDED))
     }
 
     // Register global middleware (jsDetectionMiddleware is now handled by the plugin)
@@ -122,4 +124,4 @@ async function createServer() {
   }
 }
 
-export { createServer }
+export { createServer, signInGateHandler }
