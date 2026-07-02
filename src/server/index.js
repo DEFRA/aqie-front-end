@@ -77,7 +77,9 @@ async function registerPlugins(server) {
 }
 
 function registerSignInGate(server) {
-  if (config.get('env') === 'test') return
+  if (config.get('env') === 'test') {
+    return
+  }
   const SIGN_IN_EXCLUDED = ['/sign-in', '/health', '/public/', '/.well-known/']
   server.ext('onPreHandler', signInGateHandler(SIGN_IN_EXCLUDED))
 }
