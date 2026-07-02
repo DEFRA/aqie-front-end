@@ -133,7 +133,7 @@ const getIssueTime = (issueDate) => {
   if (!issueDate) {
     return '5:00am'
   }
-  const issueMoment = moment(issueDate)
+  const issueMoment = moment.tz(issueDate, 'Europe/London')
   if (!issueMoment.isValid()) {
     return '5:00am'
   }

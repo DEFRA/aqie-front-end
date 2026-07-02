@@ -18,6 +18,7 @@ import { createLogger } from '../../common/helpers/logging/logger.js'
 
 const logger = createLogger()
 const METERS_TO_MILES = 0.000621371192
+const BST_TIMEZONE = 'Europe/London'
 
 const hasMatches = (matches) => matches.length > 0
 
@@ -78,14 +79,18 @@ export function buildPollutantsObject(curr, lang) {
       lang === LANG_CY
         ? getPollutantLevelCy(polValue, pollutant)
         : getPollutantLevel(polValue, pollutant)
-    const formatHour = moment(curr.pollutants[pollutant].time.date).format('ha')
-    const dayNumber = moment(curr.pollutants[pollutant].time.date).format('D')
-    const yearNumber = moment(curr.pollutants[pollutant].time.date).format(
-      'YYYY'
-    )
-    const monthNumber = moment(curr.pollutants[pollutant].time.date).format(
-      'MMMM'
-    )
+    const formatHour = moment
+      .tz(curr.pollutants[pollutant].time.date, BST_TIMEZONE)
+      .format('ha')
+    const dayNumber = moment
+      .tz(curr.pollutants[pollutant].time.date, BST_TIMEZONE)
+      .format('D')
+    const yearNumber = moment
+      .tz(curr.pollutants[pollutant].time.date, BST_TIMEZONE)
+      .format('YYYY')
+    const monthNumber = moment
+      .tz(curr.pollutants[pollutant].time.date, BST_TIMEZONE)
+      .format('MMMM')
     Object.assign(newpollutants, {
       [pollutant]: {
         exception: curr.pollutants[pollutant].exception,
@@ -233,7 +238,7 @@ const mapNewMeasurementsWithPollutants = (measurements, lang, latlon) => {
 const getForecastDay = () => {
   return (
     moment
-      .tz('Europe/London')
+      .tz(BST_TIMEZONE)
       ?.format('dddd')
       ?.substring(0, FORECAST_DAY_SLICE_LENGTH) || ''
   )
