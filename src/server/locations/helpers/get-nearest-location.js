@@ -78,14 +78,18 @@ export function buildPollutantsObject(curr, lang) {
       lang === LANG_CY
         ? getPollutantLevelCy(polValue, pollutant)
         : getPollutantLevel(polValue, pollutant)
-    const formatHour = moment(curr.pollutants[pollutant].time.date).format('ha')
-    const dayNumber = moment(curr.pollutants[pollutant].time.date).format('D')
-    const yearNumber = moment(curr.pollutants[pollutant].time.date).format(
-      'YYYY'
-    )
-    const monthNumber = moment(curr.pollutants[pollutant].time.date).format(
-      'MMMM'
-    )
+    const formatHour = moment
+      .tz(curr.pollutants[pollutant].time.date, 'Europe/London')
+      .format('ha')
+    const dayNumber = moment
+      .tz(curr.pollutants[pollutant].time.date, 'Europe/London')
+      .format('D')
+    const yearNumber = moment
+      .tz(curr.pollutants[pollutant].time.date, 'Europe/London')
+      .format('YYYY')
+    const monthNumber = moment
+      .tz(curr.pollutants[pollutant].time.date, 'Europe/London')
+      .format('MMMM')
     Object.assign(newpollutants, {
       [pollutant]: {
         exception: curr.pollutants[pollutant].exception,

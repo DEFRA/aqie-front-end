@@ -138,6 +138,7 @@ vi.mock('./air-pollution-breaches/index.js', () => ({
 vi.mock('./air-pollution-breaches/cy/index.js', () => ({
   airPollutionBreachesCy: mockRouteModule
 }))
+vi.mock('./sign-in/index.js', () => ({ signIn: mockRouteModule }))
 vi.mock('./notify/register/email-send-new-link/index.js', () => ({
   emailSendNewLink: mockRouteModule
 }))

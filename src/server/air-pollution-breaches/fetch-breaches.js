@@ -55,7 +55,8 @@ function formatTime(date) {
     .toLocaleTimeString('en-GB', {
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
+      timeZone: 'Europe/London'
     })
     .replace('\u202f', '')
     .replace(' ', '')
@@ -66,7 +67,8 @@ function formatDate(date) {
   return date.toLocaleDateString('en-GB', {
     day: 'numeric',
     month: 'long',
-    year: 'numeric'
+    year: 'numeric',
+    timeZone: 'Europe/London'
   })
 }
 

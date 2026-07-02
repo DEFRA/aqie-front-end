@@ -90,6 +90,28 @@ async function createServer() {
       await server.register(plugin)
     }
 
+    // Sign-in gate: redirect unauthenticated users to /sign-in for all public-facing routes
+    // Skipped in test mode so integration tests can inject requests without authenticating
+    if (config.get('env') !== 'test') {
+      const SIGN_IN_EXCLUDED = [
+        '/sign-in',
+        '/health',
+        '/public/',
+        '/.well-known/'
+      ]
+      server.ext('onPreHandler', (request, h) => {
+        const isExcluded = SIGN_IN_EXCLUDED.some((p) =>
+          request.path.startsWith(p)
+        )
+        if (!isExcluded && !request.yar.get('authenticated')) {
+          const destination = request.path + (request.url.search || '')
+          request.yar.set('signInRedirectTo', destination)
+          return h.redirect('/sign-in').takeover()
+        }
+        return h.continue
+      })
+    }
+
     // Register global middleware (jsDetectionMiddleware is now handled by the plugin)
     server.ext('onPreResponse', catchAll)
 

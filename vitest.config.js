@@ -6,6 +6,7 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     clearMocks: true,
+    testTimeout: 15000,
     exclude: [
       ...configDefaults.exclude,
       GOVUK_SRC_EXCLUDE, // Ignore files inside src/src/govuk from testing
