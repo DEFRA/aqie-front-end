@@ -388,8 +388,8 @@ const EXTRA_CONFIG_SCHEMA = {
     password: {
       doc: 'Sign-in gate password',
       format: String,
-      default: 'password',
-      env: 'SIGNIN_PASSWORD'
+      default: 'AIRQUALITY_SIGNIN_PASSWORD',
+      env: 'AIRQUALITY_SIGNIN_PASSWORD'
     }
   }
 }
