@@ -377,20 +377,6 @@ const EXTRA_CONFIG_SCHEMA = {
       default: 'x-cdp-request-id',
       env: 'TRACING_HEADER'
     }
-  },
-  signIn: {
-    username: {
-      doc: 'Sign-in gate username',
-      format: String,
-      default: 'admin',
-      env: 'SIGNIN_USERNAME'
-    },
-    password: {
-      doc: 'Sign-in gate password',
-      format: String,
-      default: 'password',
-      env: 'SIGNIN_PASSWORD'
-    }
   }
 }
 
