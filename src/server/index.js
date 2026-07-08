@@ -18,18 +18,6 @@ import { createLogger } from './common/helpers/logging/logger.js'
 import { registerServerCachePolicies } from './common/helpers/server-cache-policies.js'
 import { locationNotFoundCy } from './location-not-found/cy/index.js'
 
-function signInGateHandler(excludedPaths) {
-  return function handleSignInGate(request, h) {
-    const isExcluded = excludedPaths.some((p) => request.path.startsWith(p))
-    if (!isExcluded && !request.yar.get('authenticated')) {
-      const destination = request.path + (request.url.search || '')
-      request.yar.set('signInRedirectTo', destination)
-      return h.redirect('/sign-in').takeover()
-    }
-    return h.continue
-  }
-}
-
 function buildCacheProviders(cacheEngine, sessionCacheName) {
   const cacheProviders = [{ name: sessionCacheName, engine: cacheEngine }]
   if (sessionCacheName !== 'serverCache') {
@@ -76,14 +64,6 @@ async function registerPlugins(server) {
   }
 }
 
-function registerSignInGate(server) {
-  if (config.get('env') === 'test') {
-    return
-  }
-  const SIGN_IN_EXCLUDED = ['/sign-in', '/health', '/public/', '/.well-known/']
-  server.ext('onPreHandler', signInGateHandler(SIGN_IN_EXCLUDED))
-}
-
 async function createServer() {
   const logger = createLogger()
   try {
@@ -94,7 +74,6 @@ async function createServer() {
     const server = hapi.server(buildServerOptions(cacheProviders))
     registerServerCachePolicies(server)
     await registerPlugins(server)
-    registerSignInGate(server)
     server.ext('onPreResponse', catchAll)
     return server
   } catch (error) {
@@ -103,4 +82,4 @@ async function createServer() {
   }
 }
 
-export { createServer, signInGateHandler }
+export { createServer }

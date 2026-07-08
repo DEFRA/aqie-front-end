@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { createServer, signInGateHandler } from './index.js'
+import { createServer } from './index.js'
 
 // Mock all dependencies
 vi.mock('../config/index.js', () => ({
@@ -386,67 +386,5 @@ describe('Server Index', () => {
         expect.any(Error)
       )
     })
-  })
-})
-
-describe('signInGateHandler', () => {
-  const EXCLUDED = ['/sign-in', '/health', '/public/', '/.well-known/']
-  const hapiContinue = Symbol('hapi.continue')
-
-  const makeRequest = (path, search, authenticated) => ({
-    path,
-    url: { search },
-    yar: {
-      get: vi.fn().mockReturnValue(authenticated),
-      set: vi.fn()
-    }
-  })
-
-  const makeH = () => ({
-    continue: hapiContinue,
-    redirect: vi.fn().mockReturnValue({
-      takeover: vi.fn().mockReturnValue('redirect-response')
-    })
-  })
-
-  it('returns h.continue for an excluded path', () => {
-    const handler = signInGateHandler(EXCLUDED)
-    const request = makeRequest('/sign-in', '', false)
-    const h = makeH()
-    expect(handler(request, h)).toBe(hapiContinue)
-  })
-
-  it('returns h.continue for /health', () => {
-    const handler = signInGateHandler(EXCLUDED)
-    const request = makeRequest('/health', '', false)
-    const h = makeH()
-    expect(handler(request, h)).toBe(hapiContinue)
-  })
-
-  it('returns h.continue when user is authenticated', () => {
-    const handler = signInGateHandler(EXCLUDED)
-    const request = makeRequest('/search-location', '', true)
-    const h = makeH()
-    expect(handler(request, h)).toBe(hapiContinue)
-  })
-
-  it('redirects to /sign-in and stores destination when not authenticated', () => {
-    const handler = signInGateHandler(EXCLUDED)
-    const request = makeRequest('/search-location', '?lang=en', false)
-    const h = makeH()
-    handler(request, h)
-    expect(request.yar.set).toHaveBeenCalledWith(
-      'signInRedirectTo',
-      '/search-location?lang=en'
-    )
-    expect(h.redirect).toHaveBeenCalledWith('/sign-in')
-  })
-
-  it('stores destination without query string when search is empty', () => {
-    const handler = signInGateHandler(EXCLUDED)
-    const request = makeRequest('/home', '', false)
-    const h = makeH()
-    handler(request, h)
-    expect(request.yar.set).toHaveBeenCalledWith('signInRedirectTo', '/home')
   })
 })
