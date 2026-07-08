@@ -60,13 +60,11 @@ import { healthEffects } from './health-effects/index.js'
 import { healthEffectsCy } from './health-effects/cy/index.js'
 import { airPollutionBreaches } from './air-pollution-breaches/index.js'
 import { airPollutionBreachesCy } from './air-pollution-breaches/cy/index.js'
-import { signIn } from './sign-in/index.js'
 
 const logger = createLogger()
 
 function getServerPlugins() {
   return [
-    signIn,
     home,
     homeCy,
     searchLocation,
