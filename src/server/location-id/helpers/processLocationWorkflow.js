@@ -245,7 +245,18 @@ async function resolveLocationSessionAndAlert({
   const result = findLocationResult(locationData, locationId, logger)
   const gazetteerEntry = result.GAZETTEER_ENTRY || result
   const locationTitle = buildLocationTitle(locationData, gazetteerEntry)
-  const { lat, lon } = locationData.latlon || {}
+  const firstResult = locationData?.results?.[0]
+  const latlonFromResults =
+    firstResult?.latitude != null && firstResult?.longitude != null
+      ? { lat: firstResult.latitude, lon: firstResult.longitude }
+      : null
+  const { lat, lon } = latlonFromResults || locationData.latlon || {}
+
+  logger.info('[resolveLocationSessionAndAlert] resolved lat/lon', {
+    lat,
+    lon,
+    source: latlonFromResults ? 'results[0]' : 'locationData.latlon'
+  })
 
   setNotificationLocationSessionValues(
     request,
