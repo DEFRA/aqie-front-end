@@ -15,7 +15,9 @@ const POLLUTANT_DISPLAY_NAMES = {
   'sulphur dioxide (so2)': 'sulphur dioxide',
   'nitrogen dioxide (no2)': 'nitrogen dioxide',
   'particulate matter (pm2.5)': 'PM2.5',
-  'particulate matter (pm10)': 'PM10'
+  'particulate matter (pm10)': 'PM10',
+  'pm2.5 (pm2.5)': 'PM2.5',
+  'pm10 (pm10)': 'PM10'
 }
 
 const POLLUTANT_HREFS = {
@@ -23,7 +25,9 @@ const POLLUTANT_HREFS = {
   'sulphur dioxide (so2)': '/pollutants/sulphur-dioxide',
   'nitrogen dioxide (no2)': '/pollutants/nitrogen-dioxide',
   'particulate matter (pm2.5)': '/pollutants/particulate-matter-25',
-  'particulate matter (pm10)': '/pollutants/particulate-matter-10'
+  'particulate matter (pm10)': '/pollutants/particulate-matter-10',
+  'pm2.5 (pm2.5)': '/pollutants/particulate-matter-25',
+  'pm10 (pm10)': '/pollutants/particulate-matter-10'
 }
 
 function getPollutantDisplayName(rawName) {

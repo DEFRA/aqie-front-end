@@ -84,7 +84,9 @@ describe('getPollutantDisplayName', () => {
     ['nitrogen dioxide (no2)', 'nitrogen dioxide'],
     ['sulphur dioxide (so2)', 'sulphur dioxide'],
     ['particulate matter (pm2.5)', 'PM2.5'],
-    ['particulate matter (pm10)', 'PM10']
+    ['particulate matter (pm10)', 'PM10'],
+    ['pm2.5 (pm2.5)', 'PM2.5'],
+    ['pm10 (pm10)', 'PM10']
   ])('maps "%s" to "%s"', (raw, expected) => {
     expect(getPollutantDisplayName(raw)).toBe(expected)
   })
@@ -113,7 +115,9 @@ describe('getPollutantHref', () => {
     ['sulphur dioxide (so2)', '/pollutants/sulphur-dioxide'],
     ['nitrogen dioxide (no2)', '/pollutants/nitrogen-dioxide'],
     ['particulate matter (pm2.5)', '/pollutants/particulate-matter-25'],
-    ['particulate matter (pm10)', '/pollutants/particulate-matter-10']
+    ['particulate matter (pm10)', '/pollutants/particulate-matter-10'],
+    ['pm2.5 (pm2.5)', '/pollutants/particulate-matter-25'],
+    ['pm10 (pm10)', '/pollutants/particulate-matter-10']
   ])('maps "%s" to "%s"', (raw, expected) => {
     expect(getPollutantHref(raw)).toBe(expected)
   })
@@ -440,6 +444,39 @@ describe('fetchDaqiAlert', () => {
     expect(result.pollutantsText).toBe(
       'ozone, sulphur dioxide, nitrogen dioxide, PM2.5 and PM10'
     )
+  })
+
+  it('resolves PM2.5 and PM10 pollutant names in the API format returned by DAQI', async () => {
+    catchFetchError.mockResolvedValue([
+      200,
+      [
+        {
+          'active-breaches': true,
+          'pollutant-name': 'PM2.5 (PM2.5)',
+          daqi: 7,
+          siteId: 'UKA00819'
+        },
+        {
+          'active-breaches': true,
+          'pollutant-name': 'PM10 (PM10)',
+          daqi: 8,
+          siteId: 'UKA00820'
+        }
+      ]
+    ])
+    const result = await fetchDaqiAlert(
+      51.48,
+      -3.18,
+      'loc1',
+      'Bristol',
+      'en',
+      mockRequest
+    )
+    expect(result.pollutants).toEqual([
+      { name: 'PM2.5', href: '/pollutants/particulate-matter-25' },
+      { name: 'PM10', href: '/pollutants/particulate-matter-10' }
+    ])
+    expect(result.pollutantsText).toBe('PM2.5 and PM10')
   })
 
   it('calls the API with current-day, lat and long in the path', async () => {

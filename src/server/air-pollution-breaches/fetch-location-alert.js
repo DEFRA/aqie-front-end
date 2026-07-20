@@ -9,7 +9,9 @@ const POLLUTANT_DISPLAY_NAMES = {
   'nitrogen dioxide (no2)': 'nitrogen dioxide',
   'sulphur dioxide (so2)': 'sulphur dioxide',
   'particulate matter (pm2.5)': 'PM2.5',
-  'particulate matter (pm10)': 'PM10'
+  'particulate matter (pm10)': 'PM10',
+  'pm2.5 (pm2.5)': 'PM2.5',
+  'pm10 (pm10)': 'PM10'
 }
 
 function getPollutantDisplayName(rawName) {
