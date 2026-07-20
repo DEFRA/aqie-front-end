@@ -230,14 +230,12 @@ async function prepareWorkflowRenderContext({
 function resolveLatlonForAlerts(locationData, logger) {
   const firstResult = locationData?.results?.[0]
   if (firstResult?.latitude != null && firstResult?.longitude != null) {
-    const lat = firstResult.latitude
-    const lon = firstResult.longitude
     logger.info('[resolveLocationSessionAndAlert] resolved lat/lon', {
-      lat,
-      lon,
+      lat: firstResult.latitude,
+      lon: firstResult.longitude,
       source: 'results[0]'
     })
-    return { lat, lon }
+    return { lat: firstResult.latitude, lon: firstResult.longitude }
   }
   const { lat, lon } = locationData.latlon || {}
   logger.info('[resolveLocationSessionAndAlert] resolved lat/lon', {
