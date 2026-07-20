@@ -227,6 +227,52 @@ async function prepareWorkflowRenderContext({
   return nearestContext
 }
 
+function resolveLatlonForAlerts(locationData, logger) {
+  const firstResult = locationData?.results?.[0]
+  if (firstResult?.latitude != null && firstResult?.longitude != null) {
+    const lat = firstResult.latitude
+    const lon = firstResult.longitude
+    logger.info('[resolveLocationSessionAndAlert] resolved lat/lon', {
+      lat,
+      lon,
+      source: 'results[0]'
+    })
+    return { lat, lon }
+  }
+  const { lat, lon } = locationData.latlon || {}
+  logger.info('[resolveLocationSessionAndAlert] resolved lat/lon', {
+    lat,
+    lon,
+    source: 'locationData.latlon'
+  })
+  return { lat, lon }
+}
+
+function extractSettledAlertResults(
+  locationAlertResult,
+  daqiAlertResult,
+  logger
+) {
+  if (locationAlertResult.status === 'rejected') {
+    logger.warn(
+      `fetchLocationAlert failed, rendering page without alert: ${locationAlertResult.reason?.message}`
+    )
+  }
+  if (daqiAlertResult.status === 'rejected') {
+    logger.warn(
+      `fetchDaqiAlert failed, rendering page without DAQI alert: ${daqiAlertResult.reason?.message}`
+    )
+  }
+  return {
+    locationAlert:
+      locationAlertResult.status === 'fulfilled'
+        ? locationAlertResult.value
+        : null,
+    daqiAlert:
+      daqiAlertResult.status === 'fulfilled' ? daqiAlertResult.value : null
+  }
+}
+
 // Store current page coordinates in session so notification flows
 // (e.g. 'Request a new activation link') always use the correct location,
 // and fetch a breach alert for the location if one exists.
@@ -245,18 +291,7 @@ async function resolveLocationSessionAndAlert({
   const result = findLocationResult(locationData, locationId, logger)
   const gazetteerEntry = result.GAZETTEER_ENTRY || result
   const locationTitle = buildLocationTitle(locationData, gazetteerEntry)
-  const firstResult = locationData?.results?.[0]
-  const latlonFromResults =
-    firstResult?.latitude != null && firstResult?.longitude != null
-      ? { lat: firstResult.latitude, lon: firstResult.longitude }
-      : null
-  const { lat, lon } = latlonFromResults || locationData.latlon || {}
-
-  logger.info('[resolveLocationSessionAndAlert] resolved lat/lon', {
-    lat,
-    lon,
-    source: latlonFromResults ? 'results[0]' : 'locationData.latlon'
-  })
+  const { lat, lon } = resolveLatlonForAlerts(locationData, logger)
 
   setNotificationLocationSessionValues(
     request,
@@ -272,25 +307,11 @@ async function resolveLocationSessionAndAlert({
     fetchDaqiAlert(lat, lon, locationId, locationTitle, lang, request)
   ])
 
-  if (locationAlertResult.status === 'rejected') {
-    logger.warn(
-      `fetchLocationAlert failed, rendering page without alert: ${locationAlertResult.reason?.message}`
-    )
-  }
-  if (daqiAlertResult.status === 'rejected') {
-    logger.warn(
-      `fetchDaqiAlert failed, rendering page without DAQI alert: ${daqiAlertResult.reason?.message}`
-    )
-  }
-
-  return {
-    locationAlert:
-      locationAlertResult.status === 'fulfilled'
-        ? locationAlertResult.value
-        : null,
-    daqiAlert:
-      daqiAlertResult.status === 'fulfilled' ? daqiAlertResult.value : null
-  }
+  return extractSettledAlertResults(
+    locationAlertResult,
+    daqiAlertResult,
+    logger
+  )
 }
 
 async function processLocationWorkflow({
