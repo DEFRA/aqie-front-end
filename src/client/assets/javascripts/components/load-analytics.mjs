@@ -1,9 +1,11 @@
 // @ts-nocheck
 export default function loadAnalytics() {
-  if (!window.ga?.loaded) {
+  if (!window.gtmLoaded) {
+    window.gtmLoaded = true
     window.dataLayer = window.dataLayer || []
+    function gtag() { window.dataLayer.push(arguments) }
     if (localStorage.getItem('consentMode') === null) {
-      window.dataLayer.push('consent', 'default', {
+      gtag('consent', 'default', {
         ad_storage: 'denied',
         analytics_storage: 'denied',
         personalization_storage: 'denied',
@@ -11,11 +13,7 @@ export default function loadAnalytics() {
         security_storage: 'denied'
       })
     } else {
-      window.dataLayer.push(
-        'consent',
-        'default',
-        JSON.parse(localStorage.getItem('consentMode'))
-      )
+      gtag('consent', 'default', JSON.parse(localStorage.getItem('consentMode')))
     }
     // prettier-ignore
     ;(function (w, d, s, l, i) {
