@@ -4,17 +4,16 @@ export default function loadAnalytics() {
     window.gtmLoaded = true
     window.dataLayer = window.dataLayer || []
     function gtag() { window.dataLayer.push(arguments) }
-    if (localStorage.getItem('consentMode') === null) {
-      gtag('consent', 'default', {
-        ad_storage: 'denied',
-        analytics_storage: 'denied',
-        personalization_storage: 'denied',
-        functionality_storage: 'denied',
-        security_storage: 'denied'
-      })
-    } else {
-      gtag('consent', 'default', JSON.parse(localStorage.getItem('consentMode')))
-    }
+    // This function only runs after the user has already accepted analytics
+    // cookies (see initializeAnalytics() in application.js), so consent is
+    // granted by default here.
+    gtag('consent', 'default', {
+      ad_storage: 'granted',
+      analytics_storage: 'granted',
+      personalization_storage: 'granted',
+      functionality_storage: 'granted',
+      security_storage: 'granted'
+    })
     // prettier-ignore
     ;(function (w, d, s, l, i) {
         const noscript2 = document.createElement('noscript')
