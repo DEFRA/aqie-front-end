@@ -1,3 +1,4 @@
+import moment from 'moment-timezone'
 import { config } from '../../config/index.js'
 import { catchFetchError } from '../common/helpers/catch-fetch-error.js'
 import { buildBackendApiFetchOptions } from '../common/helpers/backend-api-helper.js'
@@ -51,25 +52,11 @@ function getPollutantInfo(rawName, lang) {
 }
 
 function formatTime(date) {
-  return date
-    .toLocaleTimeString('en-GB', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-      timeZone: 'Europe/London'
-    })
-    .replace('\u202f', '')
-    .replace(' ', '')
-    .toLowerCase()
+  return moment.tz(date, 'Europe/London').format('h:mma')
 }
 
 function formatDate(date) {
-  return date.toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'Europe/London'
-  })
+  return moment.tz(date, 'Europe/London').format('D MMMM YYYY')
 }
 
 function formatAlertStarted(isoString) {
