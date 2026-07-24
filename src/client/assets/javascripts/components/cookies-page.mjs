@@ -98,11 +98,6 @@ class CookiesPage {
     // Save preferences to cookie and show success notification
     setConsentCookie(preferences)
     this.showSuccessNotification()
-    // Reload so analytics is (re)initialised based on the new preference -
-    // otherwise a retracted consent would keep tracking for the rest of this
-    // page view, and a newly granted consent would not start tracking until
-    // the next navigation.
-    window.location.reload()
   }
 
   /**
