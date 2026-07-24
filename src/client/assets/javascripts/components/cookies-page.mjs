@@ -97,7 +97,7 @@ class CookiesPage {
 
     // Save preferences to cookie and show success notification
     setConsentCookie(preferences)
-    return this.showSuccessNotification() // Return the result of showing the notification
+    this.showSuccessNotification()
   }
 
   /**
