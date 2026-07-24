@@ -14,6 +14,13 @@ export default function loadAnalytics() {
       functionality_storage: 'granted',
       security_storage: 'granted'
     })
+    // Load GA4 directly
+    const k = document.createElement('script')
+    k.async = true
+    k.src = 'https://www.googletagmanager.com/gtag/js?id=G-8CMZBTDQBC'
+    document.head.appendChild(k)
+    gtag('js', new Date())
+    gtag('config', 'G-8CMZBTDQBC')
     // prettier-ignore
     ;(function (w, d, s, l, i) {
         const noscript2 = document.createElement('noscript')
