@@ -177,7 +177,7 @@ export const footerTranslations = {
         buttonText: 'Save cookie settings',
         ga1: 'The cookies',
         ga2: '_ga_',
-        ga3: '_gat_UA-[G-Q72HFE9LNG]',
+        ga3: '_gat_UA-[G-8CMZBTDQBC]',
         ga4: 'and',
         ga5: 'will only be active if you accept the cookies. However, if you do not accept cookies, they may still appear in your cookie session, but they will not be active.'
       },
