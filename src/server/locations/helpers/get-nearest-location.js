@@ -22,6 +22,32 @@ const BST_TIMEZONE = 'Europe/London'
 
 const hasMatches = (matches) => matches.length > 0
 
+// Derive the display time parts from the timestamp on the new Ricardo path.
+// We keep the wall-clock time written in the string and shift it forward by
+// the string's own UTC offset. So a "...T14:00:00+01:00" timestamp displays
+// as 3pm (14:00 + 01:00), while the same wall clock in UTC, "...T14:00:00Z",
+// displays as 2pm (14:00 + 00:00). If the timestamp is missing/unparseable we
+// fall back to the parts the backend already supplied.
+const deriveDisplayTimeParts = (date, fallbackParts = {}) => {
+  const parsed = moment.parseZone(date, moment.ISO_8601, true)
+  if (!parsed.isValid()) {
+    return {
+      hour: fallbackParts.hour,
+      day: fallbackParts.day,
+      month: fallbackParts.month,
+      year: fallbackParts.year
+    }
+  }
+  // Shift the displayed wall clock forward by the parsed offset.
+  parsed.add(parsed.utcOffset(), 'minutes')
+  return {
+    hour: parsed.format('ha'),
+    day: parsed.format('D'),
+    month: parsed.format('MMMM'),
+    year: parsed.format('YYYY')
+  }
+}
+
 // Helper to get latlon and forecastCoordinates //
 export function getLatLonAndForecastCoords(
   matches,
@@ -82,26 +108,31 @@ export function buildPollutantsObject(curr, lang) {
 
     const backendTime = curr.pollutants[pollutant].time
 
-    // Trust the backend's pre-computed London-local time fields when present
-    // (new Ricardo path). Fall back to deriving them here for the legacy
-    // path, which does not pre-compute these fields.
+    // New Ricardo path (pre-computed parts present): recompute the display
+    // time from the timestamp's own UTC offset. Legacy path (no parts): keep
+    // the existing Europe/London conversion untouched (legacy will be removed
+    // later).
     const hasBackendTimeParts =
       backendTime?.hour &&
       backendTime?.day &&
       backendTime?.month &&
       backendTime?.year
 
+    const derivedTime = hasBackendTimeParts
+      ? deriveDisplayTimeParts(backendTime?.date, backendTime)
+      : null
+
     const formatHour = hasBackendTimeParts
-      ? backendTime.hour
+      ? derivedTime.hour
       : moment.tz(backendTime?.date, BST_TIMEZONE).format('ha')
     const dayNumber = hasBackendTimeParts
-      ? backendTime.day
+      ? derivedTime.day
       : moment.tz(backendTime?.date, BST_TIMEZONE).format('D')
     const yearNumber = hasBackendTimeParts
-      ? backendTime.year
+      ? derivedTime.year
       : moment.tz(backendTime?.date, BST_TIMEZONE).format('YYYY')
     const monthNumber = hasBackendTimeParts
-      ? backendTime.month
+      ? derivedTime.month
       : moment.tz(backendTime?.date, BST_TIMEZONE).format('MMMM')
 
     Object.assign(newpollutants, {
