@@ -79,24 +79,37 @@ export function buildPollutantsObject(curr, lang) {
       lang === LANG_CY
         ? getPollutantLevelCy(polValue, pollutant)
         : getPollutantLevel(polValue, pollutant)
-    const formatHour = moment
-      .tz(curr.pollutants[pollutant].time.date, BST_TIMEZONE)
-      .format('ha')
-    const dayNumber = moment
-      .tz(curr.pollutants[pollutant].time.date, BST_TIMEZONE)
-      .format('D')
-    const yearNumber = moment
-      .tz(curr.pollutants[pollutant].time.date, BST_TIMEZONE)
-      .format('YYYY')
-    const monthNumber = moment
-      .tz(curr.pollutants[pollutant].time.date, BST_TIMEZONE)
-      .format('MMMM')
+
+    const backendTime = curr.pollutants[pollutant].time
+
+    // Trust the backend's pre-computed London-local time fields when present
+    // (new Ricardo path). Fall back to deriving them here for the legacy
+    // path, which does not pre-compute these fields.
+    const hasBackendTimeParts =
+      backendTime?.hour &&
+      backendTime?.day &&
+      backendTime?.month &&
+      backendTime?.year
+
+    const formatHour = hasBackendTimeParts
+      ? backendTime.hour
+      : moment.tz(backendTime?.date, BST_TIMEZONE).format('ha')
+    const dayNumber = hasBackendTimeParts
+      ? backendTime.day
+      : moment.tz(backendTime?.date, BST_TIMEZONE).format('D')
+    const yearNumber = hasBackendTimeParts
+      ? backendTime.year
+      : moment.tz(backendTime?.date, BST_TIMEZONE).format('YYYY')
+    const monthNumber = hasBackendTimeParts
+      ? backendTime.month
+      : moment.tz(backendTime?.date, BST_TIMEZONE).format('MMMM')
+
     Object.assign(newpollutants, {
       [pollutant]: {
         exception: curr.pollutants[pollutant].exception,
         featureOfInterest: curr.pollutants[pollutant].featureOfInterest,
         time: {
-          date: curr.pollutants[pollutant].time.date,
+          date: backendTime?.date,
           hour: formatHour,
           day: dayNumber,
           month: monthNumber,

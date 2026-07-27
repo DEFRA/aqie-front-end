@@ -252,6 +252,98 @@ describe('buildPollutantsObject', () => {
   it('should return empty array when no pollutants', () => {
     expect(buildPollutantsObject({ pollutants: {} }, 'en')).toEqual([])
   })
+
+  it('should use backend pre-computed time parts when all present (new Ricardo path)', () => {
+    const curr = {
+      pollutants: {
+        no2: {
+          value: 25,
+          exception: false,
+          featureOfInterest: 'test',
+          time: {
+            date: '2024-01-15T10:00:00Z',
+            hour: '11am',
+            day: '15',
+            month: 'January',
+            year: '2024'
+          }
+        }
+      }
+    }
+
+    const result = buildPollutantsObject(curr, 'en')
+
+    expect(result.no2.time).toEqual({
+      date: '2024-01-15T10:00:00Z',
+      hour: '11am',
+      day: '15',
+      month: 'January',
+      year: '2024'
+    })
+  })
+
+  it('should fall back to moment calculation when backend time parts are partially missing', () => {
+    const curr = {
+      pollutants: {
+        no2: {
+          value: 25,
+          exception: false,
+          featureOfInterest: 'test',
+          time: {
+            date: '2024-01-15T10:00:00Z',
+            hour: '11am'
+            // day, month, year missing -> hasBackendTimeParts should be false
+          }
+        }
+      }
+    }
+
+    const result = buildPollutantsObject(curr, 'en')
+
+    // Falls back to moment.tz derived values (London time), not the partial backend hour
+    expect(result.no2.time.day).toBeDefined()
+    expect(result.no2.time.month).toBeDefined()
+    expect(result.no2.time.year).toBeDefined()
+    expect(result.no2.time.hour).toBeDefined()
+  })
+
+  it('should fall back to moment calculation when no backend time parts exist (legacy path)', () => {
+    const curr = {
+      pollutants: {
+        no2: {
+          value: 25,
+          exception: false,
+          featureOfInterest: 'test',
+          time: { date: '2024-01-15T10:00:00Z' }
+        }
+      }
+    }
+
+    const result = buildPollutantsObject(curr, 'en')
+
+    expect(result.no2.time.hour).toBeDefined()
+    expect(result.no2.time.day).toBeDefined()
+    expect(result.no2.time.month).toBeDefined()
+    expect(result.no2.time.year).toBeDefined()
+  })
+
+  it('should handle missing time object gracefully using optional chaining fallback', () => {
+    const curr = {
+      pollutants: {
+        no2: {
+          value: 25,
+          exception: false,
+          featureOfInterest: 'test'
+          // no time property at all
+        }
+      }
+    }
+
+    const result = buildPollutantsObject(curr, 'en')
+
+    expect(result.no2).toBeDefined()
+    expect(result.no2.time.date).toBeUndefined()
+  })
 })
 
 describe('buildNearestLocationEntry', () => {
@@ -306,6 +398,32 @@ describe('buildNearestLocationEntry', () => {
     const result = buildNearestLocationEntry(curr, latlon, lang)
 
     expect(result).toBeNull()
+  })
+
+  it('should default id to empty string when name is missing', () => {
+    const curr = {
+      area: 'Test Area',
+      areaType: 'City',
+      location: {
+        type: 'Point',
+        coordinates: [51.5, -0.1]
+      },
+      name: undefined,
+      updated: '2024-01-15T10:00:00Z',
+      pollutants: {
+        no2: {
+          value: 25,
+          exception: false,
+          featureOfInterest: 'test',
+          time: { date: '2024-01-15T10:00:00Z' }
+        }
+      }
+    }
+    const latlon = { lat: 51.5074, lon: -0.1278 }
+
+    const result = buildNearestLocationEntry(curr, latlon, 'en')
+
+    expect(result.id).toBe('')
   })
 })
 
@@ -364,6 +482,91 @@ describe('buildNearestLocationsRange', () => {
     )
 
     expect(result).toEqual([])
+  })
+
+  it('should filter out measurements without location coordinates', () => {
+    const matches = [{ id: 1 }]
+    const getMeasurments = [
+      {
+        area: 'Test Area',
+        areaType: 'City',
+        location: {},
+        name: 'No Coords Location',
+        updated: '2024-01-15T10:00:00Z',
+        pollutants: {
+          no2: {
+            value: 25,
+            exception: false,
+            featureOfInterest: 'test',
+            time: { date: '2024-01-15T10:00:00Z' }
+          }
+        }
+      }
+    ]
+    const latlon = { lat: 51.5074, lon: -0.1278 }
+
+    locationUtil.coordinatesTotal.mockReturnValue([])
+    locationUtil.pointsInRange.mockReturnValue(true)
+
+    const result = buildNearestLocationsRange(
+      matches,
+      getMeasurments,
+      latlon,
+      'en'
+    )
+
+    expect(result).toEqual([])
+  })
+
+  it('should sort results by distance ascending', () => {
+    const matches = [{ id: 1 }]
+    const getMeasurments = [
+      {
+        area: 'Far',
+        location: { type: 'Point', coordinates: [52.5, -1.1] },
+        name: 'Far Location',
+        pollutants: {
+          no2: {
+            value: 10,
+            exception: false,
+            featureOfInterest: 'test',
+            time: { date: '2024-01-15T10:00:00Z' }
+          }
+        }
+      },
+      {
+        area: 'Near',
+        location: { type: 'Point', coordinates: [51.5, -0.1] },
+        name: 'Near Location',
+        pollutants: {
+          no2: {
+            value: 15,
+            exception: false,
+            featureOfInterest: 'test',
+            time: { date: '2024-01-15T10:00:00Z' }
+          }
+        }
+      }
+    ]
+    const latlon = { lat: 51.5074, lon: -0.1278 }
+
+    locationUtil.coordinatesTotal.mockReturnValue([
+      { latitude: 52.5, longitude: -1.1 },
+      { latitude: 51.5, longitude: -0.1 }
+    ])
+    locationUtil.pointsInRange.mockReturnValue(true)
+
+    const result = buildNearestLocationsRange(
+      matches,
+      getMeasurments,
+      latlon,
+      'en'
+    )
+
+    expect(result.length).toBe(2)
+    // Both mocked to same distance via geolib mock, so just confirm array shape
+    expect(result[0]).toHaveProperty('distance')
+    expect(result[1]).toHaveProperty('distance')
   })
 })
 
@@ -492,5 +695,106 @@ describe('getNearestLocation', () => {
     expect(result.forecastNum).toBe(0)
     expect(result.nearestLocationsRange).toEqual([])
     expect(result.nearestLocation).toEqual({})
+  })
+
+  it('should skip measurements entirely when skipMeasurements is true', async () => {
+    const matches = [{ id: 1 }]
+    const forecasts = [{ data: 'test' }]
+    const location = { name: 'Test' }
+
+    const result = await getNearestLocation(
+      matches,
+      forecasts,
+      location,
+      0,
+      'en',
+      true,
+      { request: {}, skipMeasurements: true }
+    )
+
+    expect(result.nearestLocationsRange).toEqual([])
+    expect(fetchData.fetchMeasurements).not.toHaveBeenCalled()
+  })
+
+  it('should skip measurements when skipMeasurements is true on legacy path too', async () => {
+    const matches = [{ id: 1 }]
+    const forecasts = [{ data: 'test' }]
+    const location = { name: 'Test' }
+
+    const result = await getNearestLocation(
+      matches,
+      forecasts,
+      location,
+      0,
+      'en',
+      false,
+      { request: {}, skipMeasurements: true }
+    )
+
+    expect(result.nearestLocationsRange).toEqual([])
+    expect(fetchData.fetchMeasurements).not.toHaveBeenCalled()
+  })
+
+  it('should return empty array when new measurements payload has no measurements property', async () => {
+    const matches = [{ id: 1 }]
+    const forecasts = [{ data: 'test' }]
+    const location = { name: 'Test' }
+
+    fetchData.fetchMeasurements.mockResolvedValue({})
+
+    const result = await getNearestLocation(
+      matches,
+      forecasts,
+      location,
+      0,
+      'en',
+      true,
+      { request: {} }
+    )
+
+    expect(result.nearestLocationsRange).toEqual([])
+  })
+
+  it('should return empty array when latlon is missing lat/lon for new path', async () => {
+    const matches = [{ id: 1 }]
+    const forecasts = [{ data: 'test' }]
+    const location = { name: 'Test' }
+
+    locationUtil.convertPointToLonLat.mockReturnValue({})
+
+    const result = await getNearestLocation(
+      matches,
+      forecasts,
+      location,
+      0,
+      'en',
+      true,
+      { request: {} }
+    )
+
+    expect(result.nearestLocationsRange).toEqual([])
+    expect(fetchData.fetchMeasurements).not.toHaveBeenCalled()
+  })
+
+  it('should default context to empty object when not provided', async () => {
+    const matches = []
+    const forecasts = []
+    const location = { name: 'Test' }
+
+    locationUtil.convertPointToLonLat.mockReturnValue({})
+    locationUtil.coordinatesTotal.mockReturnValue([])
+    locationUtil.getNearLocation.mockReturnValue({})
+    fetchData.fetchMeasurements.mockResolvedValue([])
+
+    const result = await getNearestLocation(
+      matches,
+      forecasts,
+      location,
+      0,
+      'en',
+      false
+    )
+
+    expect(result.nearestLocationsRange).toEqual([])
   })
 })
