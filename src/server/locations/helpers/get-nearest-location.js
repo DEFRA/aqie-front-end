@@ -20,6 +20,66 @@ const logger = createLogger()
 const METERS_TO_MILES = 0.000621371192
 const BST_TIMEZONE = 'Europe/London'
 
+const MONTH_NAMES = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December'
+]
+
+// Matches ISO 8601 strings like 2026-07-27T16:00:00+01:00 or
+// 2026-07-28T08:00:00.000Z
+const DATE_PARTS_REGEX =
+  /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})$/
+
+const formatHour12 = (hour) => {
+  const period = hour >= 12 ? 'pm' : 'am'
+  const twelveHour = hour % 12 === 0 ? 12 : hour % 12
+  return `${twelveHour}${period}`
+}
+
+// Derives London-local date/time parts from an ISO date string, adding the
+// fixed +1 hour BST adjustment when the offset is +01:00, and rolling over
+// day/month/year as needed. Returns undefined if the string is missing or
+// doesn't match the expected pattern.
+export function getAdjustedDateTimeParts(dateString) {
+  if (!dateString) {
+    return undefined
+  }
+
+  const match = DATE_PARTS_REGEX.exec(dateString)
+  if (!match) {
+    return undefined
+  }
+
+  const [, yearStr, monthStr, dayStr, hourStr, , , offset] = match
+  const year = Number(yearStr)
+  const month = Number(monthStr)
+  const day = Number(dayStr)
+  const hour = Number(hourStr)
+
+  const adjustedHour = offset === '+01:00' ? hour + 1 : hour
+
+  // Use a Date object to naturally handle day/month/year rollover instead
+  // of manual arithmetic.
+  const adjustedDate = new Date(year, month - 1, day, adjustedHour)
+
+  return {
+    hour: formatHour12(adjustedDate.getHours()),
+    day: String(adjustedDate.getDate()),
+    month: MONTH_NAMES[adjustedDate.getMonth()],
+    year: String(adjustedDate.getFullYear())
+  }
+}
+
 const hasMatches = (matches) => matches.length > 0
 
 // Helper to get latlon and forecastCoordinates //
@@ -82,26 +142,23 @@ export function buildPollutantsObject(curr, lang) {
 
     const backendTime = curr.pollutants[pollutant].time
 
-    // Trust the backend's pre-computed London-local time fields when present
-    // (new Ricardo path). Fall back to deriving them here for the legacy
-    // path, which does not pre-compute these fields.
-    const hasBackendTimeParts =
-      backendTime?.hour &&
-      backendTime?.day &&
-      backendTime?.month &&
-      backendTime?.year
+    // Always derive the London-local time parts manually from the date,
+    // ignoring any pre-computed backend fields, so the +1h BST adjustment
+    // is applied consistently. Fall back to moment-timezone only when the
+    // date string doesn't match the expected ISO pattern.
+    const adjustedParts = getAdjustedDateTimeParts(backendTime?.date)
 
-    const formatHour = hasBackendTimeParts
-      ? backendTime.hour
+    const formatHour = adjustedParts
+      ? adjustedParts.hour
       : moment.tz(backendTime?.date, BST_TIMEZONE).format('ha')
-    const dayNumber = hasBackendTimeParts
-      ? backendTime.day
+    const dayNumber = adjustedParts
+      ? adjustedParts.day
       : moment.tz(backendTime?.date, BST_TIMEZONE).format('D')
-    const yearNumber = hasBackendTimeParts
-      ? backendTime.year
+    const yearNumber = adjustedParts
+      ? adjustedParts.year
       : moment.tz(backendTime?.date, BST_TIMEZONE).format('YYYY')
-    const monthNumber = hasBackendTimeParts
-      ? backendTime.month
+    const monthNumber = adjustedParts
+      ? adjustedParts.month
       : moment.tz(backendTime?.date, BST_TIMEZONE).format('MMMM')
 
     Object.assign(newpollutants, {
