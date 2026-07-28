@@ -20,33 +20,69 @@ const logger = createLogger()
 const METERS_TO_MILES = 0.000621371192
 const BST_TIMEZONE = 'Europe/London'
 
-const hasMatches = (matches) => matches.length > 0
+const MONTH_NAMES = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December'
+]
 
-// Derive the display time parts from the timestamp on the new Ricardo path.
-// We keep the wall-clock time written in the string and shift it forward by
-// the string's own UTC offset. So a "...T14:00:00+01:00" timestamp displays
-// as 3pm (14:00 + 01:00), while the same wall clock in UTC, "...T14:00:00Z",
-// displays as 2pm (14:00 + 00:00). If the timestamp is missing/unparseable we
-// fall back to the parts the backend already supplied.
-const deriveDisplayTimeParts = (date, fallbackParts = {}) => {
-  const parsed = moment.parseZone(date, moment.ISO_8601, true)
-  if (!parsed.isValid()) {
-    return {
-      hour: fallbackParts.hour,
-      day: fallbackParts.day,
-      month: fallbackParts.month,
-      year: fallbackParts.year
-    }
+// Matches ISO 8601 strings like 2026-07-27T16:00:00+01:00 or
+// 2026-07-28T08:00:00.000Z
+const DATE_PARTS_REGEX =
+  /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})$/
+
+const formatHour12 = (hour) => {
+  const period = hour >= 12 ? 'pm' : 'am'
+  const twelveHour = hour % 12 === 0 ? 12 : hour % 12
+  return `${twelveHour}${period}`
+}
+
+// Derives London-local date/time parts from an ISO date string, adding the
+// fixed +1 hour BST adjustment when the offset is +01:00, and rolling over
+// day/month/year as needed. Returns undefined if the string is missing or
+// doesn't match the expected pattern.
+export function getAdjustedDateTimeParts(dateString) {
+  if (!dateString) {
+    return undefined
   }
-  // Shift the displayed wall clock forward by the parsed offset.
-  parsed.add(parsed.utcOffset(), 'minutes')
+
+  const match = DATE_PARTS_REGEX.exec(dateString)
+  if (!match) {
+    return undefined
+  }
+
+  const [, yearStr, monthStr, dayStr, hourStr, , , offset] = match
+  const year = Number(yearStr)
+  const month = Number(monthStr)
+  const day = Number(dayStr)
+  const hour = Number(hourStr)
+
+  const adjustedHour = offset === '+01:00' ? hour + 1 : hour
+
+  // Build the adjusted date using UTC arithmetic only, so this is fully
+  // deterministic and independent of the host/process timezone and of
+  // fake timers, which can behave unpredictably with local-time Date
+  // construction.
+  const adjustedDate = new Date(Date.UTC(year, month - 1, day, adjustedHour))
+
   return {
-    hour: parsed.format('ha'),
-    day: parsed.format('D'),
-    month: parsed.format('MMMM'),
-    year: parsed.format('YYYY')
+    hour: formatHour12(adjustedDate.getUTCHours()),
+    day: String(adjustedDate.getUTCDate()),
+    month: MONTH_NAMES[adjustedDate.getUTCMonth()],
+    year: String(adjustedDate.getUTCFullYear())
   }
 }
+
+const hasMatches = (matches) => matches.length > 0
 
 // Helper to get latlon and forecastCoordinates //
 export function getLatLonAndForecastCoords(
@@ -108,31 +144,23 @@ export function buildPollutantsObject(curr, lang) {
 
     const backendTime = curr.pollutants[pollutant].time
 
-    // New Ricardo path (pre-computed parts present): recompute the display
-    // time from the timestamp's own UTC offset. Legacy path (no parts): keep
-    // the existing Europe/London conversion untouched (legacy will be removed
-    // later).
-    const hasBackendTimeParts =
-      backendTime?.hour &&
-      backendTime?.day &&
-      backendTime?.month &&
-      backendTime?.year
+    // Always derive the London-local time parts manually from the date,
+    // ignoring any pre-computed backend fields, so the +1h BST adjustment
+    // is applied consistently. Fall back to moment-timezone only when the
+    // date string doesn't match the expected ISO pattern.
+    const adjustedParts = getAdjustedDateTimeParts(backendTime?.date)
 
-    const derivedTime = hasBackendTimeParts
-      ? deriveDisplayTimeParts(backendTime?.date, backendTime)
-      : null
-
-    const formatHour = hasBackendTimeParts
-      ? derivedTime.hour
+    const formatHour = adjustedParts
+      ? adjustedParts.hour
       : moment.tz(backendTime?.date, BST_TIMEZONE).format('ha')
-    const dayNumber = hasBackendTimeParts
-      ? derivedTime.day
+    const dayNumber = adjustedParts
+      ? adjustedParts.day
       : moment.tz(backendTime?.date, BST_TIMEZONE).format('D')
-    const yearNumber = hasBackendTimeParts
-      ? derivedTime.year
+    const yearNumber = adjustedParts
+      ? adjustedParts.year
       : moment.tz(backendTime?.date, BST_TIMEZONE).format('YYYY')
-    const monthNumber = hasBackendTimeParts
-      ? derivedTime.month
+    const monthNumber = adjustedParts
+      ? adjustedParts.month
       : moment.tz(backendTime?.date, BST_TIMEZONE).format('MMMM')
 
     Object.assign(newpollutants, {
