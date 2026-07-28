@@ -82,7 +82,7 @@ export function getAdjustedDateTimeParts(dateString) {
 
 const hasMatches = (matches) => matches.length > 0
 
-// Helper to get latlon and forecastCoordinates //
+// Helper to get latlon and forecastCoordinates
 export function getLatLonAndForecastCoords(
   matches,
   location,
