@@ -6,7 +6,8 @@ import {
   buildPollutantsObject,
   buildNearestLocationEntry,
   buildNearestLocationsRange,
-  getNearestLocation
+  getNearestLocation,
+  getAdjustedDateTimeParts
 } from './get-nearest-location.js'
 import * as locationUtil from './location-util.js'
 import * as fetchData from './fetch-data.js'
@@ -174,6 +175,72 @@ describe('isValidNonNegativeNumber', () => {
   })
 })
 
+describe('getAdjustedDateTimeParts', () => {
+  it('should add 1 hour when offset is +01:00 (BST)', () => {
+    const result = getAdjustedDateTimeParts('2026-07-27T16:00:00+01:00')
+    expect(result.hour).toBe('5pm')
+    expect(result.day).toBe('27')
+    expect(result.month).toBe('July')
+    expect(result.year).toBe('2026')
+  })
+
+  it('should not adjust hour when string ends in Z (UTC)', () => {
+    const result = getAdjustedDateTimeParts('2026-07-27T14:00:00Z')
+    expect(result.hour).toBe('2pm')
+    expect(result.day).toBe('27')
+    expect(result.month).toBe('July')
+    expect(result.year).toBe('2026')
+  })
+
+  it('should handle backend format with milliseconds', () => {
+    const result = getAdjustedDateTimeParts('2026-07-28T08:00:00.000Z')
+    expect(result.hour).toBe('8am')
+    expect(result.day).toBe('28')
+    expect(result.month).toBe('July')
+    expect(result.year).toBe('2026')
+  })
+
+  it('should roll over to the next day when +01:00 pushes past midnight', () => {
+    const result = getAdjustedDateTimeParts('2026-07-27T23:30:00+01:00')
+    expect(result.hour).toBe('12am')
+    expect(result.day).toBe('28')
+    expect(result.month).toBe('July')
+    expect(result.year).toBe('2026')
+  })
+
+  it('should roll over to the next month when day/hour overflow', () => {
+    const result = getAdjustedDateTimeParts('2026-07-31T23:15:00+01:00')
+    expect(result.day).toBe('1')
+    expect(result.month).toBe('August')
+    expect(result.year).toBe('2026')
+  })
+
+  it('should format midnight (0) as 12am', () => {
+    const result = getAdjustedDateTimeParts('2026-07-27T00:00:00Z')
+    expect(result.hour).toBe('12am')
+  })
+
+  it('should format noon (12) as 12pm', () => {
+    const result = getAdjustedDateTimeParts('2026-07-27T12:00:00Z')
+    expect(result.hour).toBe('12pm')
+  })
+
+  it('should return undefined when date string is missing', () => {
+    expect(getAdjustedDateTimeParts(undefined)).toBeUndefined()
+    expect(getAdjustedDateTimeParts(null)).toBeUndefined()
+    expect(getAdjustedDateTimeParts('')).toBeUndefined()
+  })
+
+  it('should return undefined when date string does not match expected pattern', () => {
+    expect(getAdjustedDateTimeParts('not-a-date')).toBeUndefined()
+  })
+
+  it('should not adjust for offsets other than +01:00', () => {
+    const result = getAdjustedDateTimeParts('2026-07-27T14:00:00+02:00')
+    expect(result.hour).toBe('2pm')
+  })
+})
+
 describe('buildPollutantsObject', () => {
   beforeEach(() => {
     vi.useFakeTimers()
@@ -253,7 +320,7 @@ describe('buildPollutantsObject', () => {
     expect(buildPollutantsObject({ pollutants: {} }, 'en')).toEqual([])
   })
 
-  it('should recompute display time from the timestamp offset on the new Ricardo path (ignoring pre-computed parts)', () => {
+  it('should ignore backend pre-computed time parts and derive manually from date (+01:00 offset)', () => {
     const curr = {
       pollutants: {
         no2: {
@@ -261,13 +328,11 @@ describe('buildPollutantsObject', () => {
           exception: false,
           featureOfInterest: 'test',
           time: {
-            date: '2024-01-15T10:00:00Z',
-            // Backend-supplied parts are present (new Ricardo path) but are
-            // recomputed from the timestamp; the '11am' below is overridden.
-            hour: '11am',
-            day: '15',
-            month: 'January',
-            year: '2024'
+            date: '2026-07-27T16:00:00+01:00',
+            hour: '11am', // backend value - should be ignored
+            day: '99',
+            month: 'NotAMonth',
+            year: '0000'
           }
         }
       }
@@ -275,17 +340,13 @@ describe('buildPollutantsObject', () => {
 
     const result = buildPollutantsObject(curr, 'en')
 
-    // 10:00 wall clock + 00:00 offset -> 10:00 -> 10am
-    expect(result.no2.time).toEqual({
-      date: '2024-01-15T10:00:00Z',
-      hour: '10am',
-      day: '15',
-      month: 'January',
-      year: '2024'
-    })
+    expect(result.no2.time.hour).toBe('5pm')
+    expect(result.no2.time.day).toBe('27')
+    expect(result.no2.time.month).toBe('July')
+    expect(result.no2.time.year).toBe('2026')
   })
 
-  it('should fall back to backend parts when the timestamp is unparseable on the new Ricardo path', () => {
+  it('should ignore backend pre-computed time parts and derive manually from date (Z/UTC offset)', () => {
     const curr = {
       pollutants: {
         no2: {
@@ -293,11 +354,11 @@ describe('buildPollutantsObject', () => {
           exception: false,
           featureOfInterest: 'test',
           time: {
-            date: 'not-a-date',
-            hour: '11am',
-            day: '15',
-            month: 'January',
-            year: '2024'
+            date: '2026-07-28T08:00:00.000Z',
+            hour: '9am', // backend value - should be ignored
+            day: '28',
+            month: 'July',
+            year: '2026'
           }
         }
       }
@@ -305,38 +366,48 @@ describe('buildPollutantsObject', () => {
 
     const result = buildPollutantsObject(curr, 'en')
 
-    expect(result.no2.time.hour).toBe('11am')
-    expect(result.no2.time.day).toBe('15')
-    expect(result.no2.time.month).toBe('January')
-    expect(result.no2.time.year).toBe('2024')
+    // Manually derived from date (Z => no adjustment) => 8am, not backend's 9am
+    expect(result.no2.time.hour).toBe('8am')
+    expect(result.no2.time.day).toBe('28')
+    expect(result.no2.time.month).toBe('July')
+    expect(result.no2.time.year).toBe('2026')
   })
 
-  it('should fall back to moment calculation when backend time parts are partially missing', () => {
+  it('should correctly add 1 hour for +01:00 offset dates with no backend time parts', () => {
     const curr = {
       pollutants: {
         no2: {
           value: 25,
           exception: false,
           featureOfInterest: 'test',
-          time: {
-            date: '2024-01-15T10:00:00Z',
-            hour: '11am'
-            // day, month, year missing -> hasBackendTimeParts should be false
-          }
+          time: { date: '2026-07-27T16:00:00+01:00' }
         }
       }
     }
 
     const result = buildPollutantsObject(curr, 'en')
 
-    // Falls back to moment.tz derived values (London time), not the partial backend hour
-    expect(result.no2.time.day).toBeDefined()
-    expect(result.no2.time.month).toBeDefined()
-    expect(result.no2.time.year).toBeDefined()
-    expect(result.no2.time.hour).toBeDefined()
+    expect(result.no2.time.hour).toBe('5pm')
   })
 
-  it('should fall back to moment calculation when no backend time parts exist (legacy path)', () => {
+  it('should not adjust hour for Z (UTC) dates with no backend time parts', () => {
+    const curr = {
+      pollutants: {
+        no2: {
+          value: 25,
+          exception: false,
+          featureOfInterest: 'test',
+          time: { date: '2026-07-27T14:00:00Z' }
+        }
+      }
+    }
+
+    const result = buildPollutantsObject(curr, 'en')
+
+    expect(result.no2.time.hour).toBe('2pm')
+  })
+
+  it('should fall back to moment calculation when date does not match manual parse pattern', () => {
     const curr = {
       pollutants: {
         no2: {

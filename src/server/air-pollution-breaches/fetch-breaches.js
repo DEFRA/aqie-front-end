@@ -1,4 +1,3 @@
-import moment from 'moment-timezone'
 import { config } from '../../config/index.js'
 import { catchFetchError } from '../common/helpers/catch-fetch-error.js'
 import { buildBackendApiFetchOptions } from '../common/helpers/backend-api-helper.js'
@@ -10,6 +9,21 @@ const MS_PER_HOUR = 1000 * 60 * 60
 const MS_PER_MINUTE = 1000 * 60
 const DAYS_IN_YEAR = 365
 const HTTP_STATUS_OK = 200
+
+const MONTH_NAMES = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December'
+]
 
 const POLLUTANT_MAP = {
   'ozone (o3)': {
@@ -51,12 +65,90 @@ function getPollutantInfo(rawName, lang) {
   }
 }
 
-function formatTime(date) {
-  return moment.tz(date, 'Europe/London').format('h:mma')
+// Manually derives day/month/year/hour/minute from an ISO date string, based
+// on the backend's offset convention:
+//   - "+01:00" suffix (BST) => add 1 hour to the raw UTC time before display.
+//   - "Z" / "+00:00" suffix (UTC/GMT) => display the raw UTC time as-is.
+// We do NOT rely on a timezone library's DST resolution, since the backend
+// explicitly tells us the offset to apply via the ISO string itself.
+export function getAdjustedDateTimeParts(dateString) {
+  if (!dateString) {
+    return undefined
+  }
+
+  const match = dateString.match(
+    /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})$/
+  )
+
+  if (!match) {
+    return undefined
+  }
+
+  const [, year, month, day, hour, minute, second, offset] = match
+
+  const baseUtcMs = Date.UTC(
+    Number(year),
+    Number(month) - 1,
+    Number(day),
+    Number(hour),
+    Number(minute),
+    Number(second)
+  )
+
+  const addOneHour = offset === '+01:00'
+  const adjustedMs = addOneHour ? baseUtcMs + MS_PER_HOUR : baseUtcMs
+
+  const adjustedDate = new Date(adjustedMs)
+
+  const adjustedHour = adjustedDate.getUTCHours()
+  const adjustedMinute = adjustedDate.getUTCMinutes()
+  const period = adjustedHour >= 12 ? 'pm' : 'am'
+  let displayHour = adjustedHour % 12
+  if (displayHour === 0) {
+    displayHour = 12
+  }
+  const displayMinute = String(adjustedMinute).padStart(2, '0')
+
+  return {
+    time: `${displayHour}:${displayMinute}${period}`,
+    day: String(adjustedDate.getUTCDate()),
+    month: MONTH_NAMES[adjustedDate.getUTCMonth()],
+    year: String(adjustedDate.getUTCFullYear()),
+    adjustedDate,
+    adjustedMs
+  }
 }
 
-function formatDate(date) {
-  return moment.tz(date, 'Europe/London').format('D MMMM YYYY')
+// Formats an already-adjusted UTC instant (ms) directly, without applying
+// any further offset adjustment. Used when we've derived a new instant via
+// arithmetic on an already-adjusted time (e.g. alertPeriodFrom + 24h), so the
+// BST adjustment carries through consistently instead of being re-applied
+// or dropped.
+function formatAdjustedInstant(ms) {
+  const date = new Date(ms)
+  const hour = date.getUTCHours()
+  const minute = date.getUTCMinutes()
+  const period = hour >= 12 ? 'pm' : 'am'
+  let displayHour = hour % 12
+  if (displayHour === 0) {
+    displayHour = 12
+  }
+  const displayMinute = String(minute).padStart(2, '0')
+  const day = date.getUTCDate()
+  const month = MONTH_NAMES[date.getUTCMonth()]
+  const year = date.getUTCFullYear()
+
+  return `${displayHour}:${displayMinute}${period}, ${day} ${month} ${year}`
+}
+
+function formatTime(isoString) {
+  const parts = getAdjustedDateTimeParts(isoString)
+  return parts ? parts.time : ''
+}
+
+function formatDate(isoString) {
+  const parts = getAdjustedDateTimeParts(isoString)
+  return parts ? `${parts.day} ${parts.month} ${parts.year}` : ''
 }
 
 function formatAlertStarted(isoString) {
@@ -64,8 +156,8 @@ function formatAlertStarted(isoString) {
   const diffMs = Date.now() - alertDate.getTime()
   const diffHours = Math.floor(diffMs / MS_PER_HOUR)
   const diffMins = Math.floor(diffMs / MS_PER_MINUTE)
-  const time = formatTime(alertDate)
-  const date = formatDate(alertDate)
+  const time = formatTime(isoString)
+  const date = formatDate(isoString)
 
   if (diffHours < 1) {
     return `About ${diffMins} minute${diffMins !== 1 ? 's' : ''} ago (${time}, ${date})`
@@ -74,13 +166,11 @@ function formatAlertStarted(isoString) {
 }
 
 function formatAlertPeriodFrom(isoString) {
-  const date = new Date(isoString)
-  return `${formatTime(date)}, ${formatDate(date)}`
+  return `${formatTime(isoString)}, ${formatDate(isoString)}`
 }
 
 function buildPastBreachTitle(monitoringStation, region, isoString) {
-  const date = new Date(isoString)
-  return `${monitoringStation}, ${region} (${formatDate(date)})`
+  return `${monitoringStation}, ${region} (${formatDate(isoString)})`
 }
 
 function groupBySamplingId(items) {
@@ -128,9 +218,16 @@ function mapGroupToActiveBreach(items, lang) {
 
 function mapToPastBreach(item, lang) {
   const { displayName, link } = getPollutantInfo(item['pollutant-name'], lang)
-  const alertEndDate = new Date(
-    new Date(item['alert-started']).getTime() + MS_IN_24_HOURS
-  )
+
+  // Derive alertPeriodTo from the already BST-adjusted instant used for
+  // alertPeriodFrom, so the +1h offset carries through consistently rather
+  // than being dropped when adding 24 hours.
+  const startParts = getAdjustedDateTimeParts(item['alert-started'])
+  const startAdjustedMs = startParts
+    ? startParts.adjustedMs
+    : new Date(item['alert-started']).getTime()
+  const alertEndMs = startAdjustedMs + MS_IN_24_HOURS
+
   return {
     title: buildPastBreachTitle(
       item['monitoring-station-name'],
@@ -143,7 +240,7 @@ function mapToPastBreach(item, lang) {
     pollutantLink: link,
     dataSource: lang === 'cy' ? DATA_SOURCE_CY : DATA_SOURCE_EN,
     alertPeriodFrom: formatAlertPeriodFrom(item['alert-started']),
-    alertPeriodTo: formatAlertPeriodFrom(alertEndDate.toISOString())
+    alertPeriodTo: formatAdjustedInstant(alertEndMs)
   }
 }
 

@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { fetchBreaches, groupActiveByRegion } from './fetch-breaches.js'
+import {
+  fetchBreaches,
+  groupActiveByRegion,
+  getAdjustedDateTimeParts
+} from './fetch-breaches.js'
 import { catchFetchError } from '../common/helpers/catch-fetch-error.js'
 import { buildBackendApiFetchOptions } from '../common/helpers/backend-api-helper.js'
 
@@ -43,6 +47,69 @@ const makePastBreach = (pollutantName = 'ozone (o3)') => ({
   'monitoring-station-name': 'Test Station',
   'alert-started': new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
   'active-breaches': false
+})
+
+describe('getAdjustedDateTimeParts', () => {
+  it('should add 1 hour when offset is +01:00 (BST)', () => {
+    const result = getAdjustedDateTimeParts('2025-01-13T16:00:00+01:00')
+    expect(result.time).toBe('5:00pm')
+    expect(result.day).toBe('13')
+    expect(result.month).toBe('January')
+    expect(result.year).toBe('2025')
+  })
+
+  it('should not adjust when offset is Z (UTC)', () => {
+    const result = getAdjustedDateTimeParts('2025-01-13T16:00:00Z')
+    expect(result.time).toBe('4:00pm')
+    expect(result.day).toBe('13')
+    expect(result.month).toBe('January')
+    expect(result.year).toBe('2025')
+  })
+
+  it('should handle milliseconds in the date string', () => {
+    const result = getAdjustedDateTimeParts('2025-01-13T08:00:00.000Z')
+    expect(result.time).toBe('8:00am')
+  })
+
+  it('should roll over to the next day when +01:00 pushes past midnight', () => {
+    const result = getAdjustedDateTimeParts('2025-01-13T23:30:00+01:00')
+    expect(result.time).toBe('12:30am')
+    expect(result.day).toBe('14')
+    expect(result.month).toBe('January')
+    expect(result.year).toBe('2025')
+  })
+
+  it('should roll over to the next month when day/hour overflow', () => {
+    const result = getAdjustedDateTimeParts('2025-01-31T23:15:00+01:00')
+    expect(result.day).toBe('1')
+    expect(result.month).toBe('February')
+    expect(result.year).toBe('2025')
+  })
+
+  it('should format midnight as 12am', () => {
+    const result = getAdjustedDateTimeParts('2025-01-13T00:00:00Z')
+    expect(result.time).toBe('12:00am')
+  })
+
+  it('should format noon as 12pm', () => {
+    const result = getAdjustedDateTimeParts('2025-01-13T12:00:00Z')
+    expect(result.time).toBe('12:00pm')
+  })
+
+  it('should not adjust for offsets other than +01:00', () => {
+    const result = getAdjustedDateTimeParts('2025-01-13T14:00:00+02:00')
+    expect(result.time).toBe('2:00pm')
+  })
+
+  it('should return undefined when date string is missing', () => {
+    expect(getAdjustedDateTimeParts(undefined)).toBeUndefined()
+    expect(getAdjustedDateTimeParts(null)).toBeUndefined()
+    expect(getAdjustedDateTimeParts('')).toBeUndefined()
+  })
+
+  it('should return undefined when date string does not match expected pattern', () => {
+    expect(getAdjustedDateTimeParts('not-a-date')).toBeUndefined()
+  })
 })
 
 describe('fetchBreaches', () => {
@@ -364,6 +431,52 @@ describe('fetchBreaches', () => {
       const [, startDate] = pathArg.match(/start-date=(\d{4}-\d{2}-\d{2})/)
       const [, endDate] = pathArg.match(/end-date=(\d{4}-\d{2}-\d{2})/)
       expect(new Date(startDate) < new Date(endDate)).toBe(true)
+    })
+  })
+
+  describe('date formatting for pastBreaches (manual offset logic)', () => {
+    it('should format title/alertPeriodFrom/alertPeriodTo using +01:00 offset (adds 1 hour, carried through to alertPeriodTo)', async () => {
+      catchFetchError.mockResolvedValue([
+        200,
+        [
+          {
+            'pollutant-name': 'ozone (o3)',
+            region: 'Test Region',
+            'monitoring-station-name': 'Test Station',
+            'alert-started': '2025-01-13T16:00:00+01:00',
+            'active-breaches': false
+          }
+        ]
+      ])
+      const result = await fetchBreaches('en')
+      const breach = result.pastBreaches[0]
+
+      expect(breach.title).toBe('Test Station, Test Region (13 January 2025)')
+      expect(breach.alertPeriodFrom).toBe('5:00pm, 13 January 2025')
+      // alert-started (already adjusted to 5:00pm) + 24h => same clock time
+      // the next day, since the +1h BST adjustment carries through.
+      expect(breach.alertPeriodTo).toBe('5:00pm, 14 January 2025')
+    })
+
+    it('should format title/alertPeriodFrom/alertPeriodTo using Z (UTC) offset (no adjustment)', async () => {
+      catchFetchError.mockResolvedValue([
+        200,
+        [
+          {
+            'pollutant-name': 'ozone (o3)',
+            region: 'Test Region',
+            'monitoring-station-name': 'Test Station',
+            'alert-started': '2025-01-13T16:00:00Z',
+            'active-breaches': false
+          }
+        ]
+      ])
+      const result = await fetchBreaches('en')
+      const breach = result.pastBreaches[0]
+
+      expect(breach.title).toBe('Test Station, Test Region (13 January 2025)')
+      expect(breach.alertPeriodFrom).toBe('4:00pm, 13 January 2025')
+      expect(breach.alertPeriodTo).toBe('4:00pm, 14 January 2025')
     })
   })
 })
