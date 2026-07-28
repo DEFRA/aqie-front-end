@@ -17,10 +17,10 @@ export default function loadAnalytics() {
     // Load GA4 directly
     const k = document.createElement('script')
     k.async = true
-    k.src = 'https://www.googletagmanager.com/gtag/js?id=G-8CMZBTDQBC'
+    k.src = 'https://www.googletagmanager.com/gtag/js?id=G-Q72HFE9LNG'
     document.head.appendChild(k)
     gtag('js', new Date())
-    gtag('config', 'G-8CMZBTDQBC')
+    gtag('config', 'G-Q72HFE9LNG')
     // prettier-ignore
     ;(function (w, d, s, l, i) {
         const noscript2 = document.createElement('noscript')
@@ -37,6 +37,6 @@ export default function loadAnalytics() {
         j.async = true
         j.src = `https://www.googletagmanager.com/gtm.js?id=${i}${dl}`
         f.parentNode.insertBefore(j, f)
-      })(window, document, 'script', 'dataLayer', 'GTM-PCJNTC4H')
+      })(window, document, 'script', 'dataLayer', 'GTM-5D232W33')
   }
 }
