@@ -427,6 +427,61 @@ describe('buildPollutantsObject', () => {
     expect(result.no2.time.year).toBeDefined()
   })
 
+  it('should shift the wall-clock time forward by the offset for a +01:00 timestamp (new Ricardo path)', () => {
+    const curr = {
+      pollutants: {
+        no2: {
+          value: 25,
+          exception: false,
+          featureOfInterest: 'test',
+          time: {
+            date: '2026-07-27T14:00:00+01:00',
+            // Backend parts present (new Ricardo path); recomputed from date.
+            hour: '9am',
+            day: '1',
+            month: 'January',
+            year: '2000'
+          }
+        }
+      }
+    }
+
+    const result = buildPollutantsObject(curr, 'en')
+
+    // 14:00 wall clock + 01:00 offset -> 15:00 -> 3pm
+    expect(result.no2.time.hour).toBe('3pm')
+    expect(result.no2.time.day).toBe('27')
+    expect(result.no2.time.month).toBe('July')
+    expect(result.no2.time.year).toBe('2026')
+  })
+
+  it('should display the wall-clock time as-is for a Z (UTC) timestamp (new Ricardo path)', () => {
+    const curr = {
+      pollutants: {
+        no2: {
+          value: 25,
+          exception: false,
+          featureOfInterest: 'test',
+          time: {
+            date: '2026-07-27T14:00:00Z',
+            hour: '9am',
+            day: '1',
+            month: 'January',
+            year: '2000'
+          }
+        }
+      }
+    }
+
+    const result = buildPollutantsObject(curr, 'en')
+
+    // 14:00 wall clock + 00:00 offset -> 14:00 -> 2pm
+    expect(result.no2.time.hour).toBe('2pm')
+    expect(result.no2.time.day).toBe('27')
+    expect(result.no2.time.month).toBe('July')
+    expect(result.no2.time.year).toBe('2026')
+  })
+
   it('should handle missing time object gracefully using optional chaining fallback', () => {
     const curr = {
       pollutants: {
