@@ -19,70 +19,7 @@ import { createLogger } from '../../common/helpers/logging/logger.js'
 const logger = createLogger()
 const METERS_TO_MILES = 0.000621371192
 const BST_TIMEZONE = 'Europe/London'
-
-const MONTH_NAMES = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December'
-]
-
-// Matches ISO 8601 strings like 2026-07-27T16:00:00+01:00 or
-// 2026-07-28T08:00:00.000Z
-const DATE_PARTS_REGEX =
-  /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})$/
-
-const formatHour12 = (hour) => {
-  const period = hour >= 12 ? 'pm' : 'am'
-  const twelveHour = hour % 12 === 0 ? 12 : hour % 12
-  return `${twelveHour}${period}`
-}
-
-// Derives date/time parts from an ISO date string by taking the literal
-// wall-clock hour written in the string (ignoring any offset/timezone
-// suffix) and always adding a fixed +1 hour adjustment, rolling over
-// day/month/year as needed. This matches the upstream API's own
-// convention (e.g. "14:00:00.000Z" -> "3pm", "17:00:00+01:00" -> "6pm").
-// Returns undefined if the string is missing or doesn't match the
-// expected ISO pattern.
-export function getAdjustedDateTimeParts(dateString) {
-  if (!dateString) {
-    return undefined
-  }
-
-  const match = DATE_PARTS_REGEX.exec(dateString)
-  if (!match) {
-    return undefined
-  }
-
-  const [, yearStr, monthStr, dayStr, hourStr] = match
-  const year = Number(yearStr)
-  const month = Number(monthStr)
-  const day = Number(dayStr)
-  const hour = Number(hourStr)
-
-  // Always add 1 hour to the literal wall-clock hour in the string,
-  // regardless of the offset suffix. Build the adjusted date using UTC
-  // arithmetic only, so this is fully deterministic and independent of the
-  // host/process timezone and of fake timers, which can behave
-  // unpredictably with local-time Date construction.
-  const adjustedDate = new Date(Date.UTC(year, month - 1, day, hour + 1))
-
-  return {
-    hour: formatHour12(adjustedDate.getUTCHours()),
-    day: String(adjustedDate.getUTCDate()),
-    month: MONTH_NAMES[adjustedDate.getUTCMonth()],
-    year: String(adjustedDate.getUTCFullYear())
-  }
-}
+const DISTANCE_DECIMAL_PLACES = 1
 
 const hasMatches = (matches) => matches.length > 0
 
@@ -144,26 +81,10 @@ export function buildPollutantsObject(curr, lang) {
         ? getPollutantLevelCy(polValue, pollutant)
         : getPollutantLevel(polValue, pollutant)
 
+    // Display the time exactly as provided by the backend - no adjustment
+    // or re-parsing. The backend is now the single source of truth for
+    // the displayed hour/day/month/year.
     const backendTime = curr.pollutants[pollutant].time
-
-    // Always derive the time parts manually from the date, ignoring any
-    // pre-computed backend fields, so the +1h adjustment is applied
-    // consistently. Fall back to moment-timezone only when the date
-    // string doesn't match the expected ISO pattern.
-    const adjustedParts = getAdjustedDateTimeParts(backendTime?.date)
-
-    const formatHour = adjustedParts
-      ? adjustedParts.hour
-      : moment.tz(backendTime?.date, BST_TIMEZONE).format('ha')
-    const dayNumber = adjustedParts
-      ? adjustedParts.day
-      : moment.tz(backendTime?.date, BST_TIMEZONE).format('D')
-    const yearNumber = adjustedParts
-      ? adjustedParts.year
-      : moment.tz(backendTime?.date, BST_TIMEZONE).format('YYYY')
-    const monthNumber = adjustedParts
-      ? adjustedParts.month
-      : moment.tz(backendTime?.date, BST_TIMEZONE).format('MMMM')
 
     Object.assign(newpollutants, {
       [pollutant]: {
@@ -171,10 +92,10 @@ export function buildPollutantsObject(curr, lang) {
         featureOfInterest: curr.pollutants[pollutant].featureOfInterest,
         time: {
           date: backendTime?.date,
-          hour: formatHour,
-          day: dayNumber,
-          month: monthNumber,
-          year: yearNumber
+          hour: backendTime?.hour,
+          day: backendTime?.day,
+          month: backendTime?.month,
+          year: backendTime?.year
         },
         value: polValue,
         daqi: getDaqi,
@@ -213,7 +134,7 @@ export function buildNearestLocationEntry(curr, latlon, lang) {
     id: curr.name?.replaceAll(' ', '') || '',
     name: curr.name,
     updated: curr.updated,
-    distance: getDistance.toFixed(1),
+    distance: getDistance.toFixed(DISTANCE_DECIMAL_PLACES),
     pollutants: { ...newpollutants }
   }
 }
