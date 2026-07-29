@@ -46,10 +46,13 @@ const formatHour12 = (hour) => {
   return `${twelveHour}${period}`
 }
 
-// Derives London-local date/time parts from an ISO date string, adding the
-// fixed +1 hour BST adjustment when the offset is +01:00, and rolling over
-// day/month/year as needed. Returns undefined if the string is missing or
-// doesn't match the expected pattern.
+// Derives date/time parts from an ISO date string by taking the literal
+// wall-clock hour written in the string (ignoring any offset/timezone
+// suffix) and always adding a fixed +1 hour adjustment, rolling over
+// day/month/year as needed. This matches the upstream API's own
+// convention (e.g. "14:00:00.000Z" -> "3pm", "17:00:00+01:00" -> "6pm").
+// Returns undefined if the string is missing or doesn't match the
+// expected ISO pattern.
 export function getAdjustedDateTimeParts(dateString) {
   if (!dateString) {
     return undefined
@@ -60,19 +63,18 @@ export function getAdjustedDateTimeParts(dateString) {
     return undefined
   }
 
-  const [, yearStr, monthStr, dayStr, hourStr, , , offset] = match
+  const [, yearStr, monthStr, dayStr, hourStr] = match
   const year = Number(yearStr)
   const month = Number(monthStr)
   const day = Number(dayStr)
   const hour = Number(hourStr)
 
-  const adjustedHour = offset === '+01:00' ? hour + 1 : hour
-
-  // Build the adjusted date using UTC arithmetic only, so this is fully
-  // deterministic and independent of the host/process timezone and of
-  // fake timers, which can behave unpredictably with local-time Date
-  // construction.
-  const adjustedDate = new Date(Date.UTC(year, month - 1, day, adjustedHour))
+  // Always add 1 hour to the literal wall-clock hour in the string,
+  // regardless of the offset suffix. Build the adjusted date using UTC
+  // arithmetic only, so this is fully deterministic and independent of the
+  // host/process timezone and of fake timers, which can behave
+  // unpredictably with local-time Date construction.
+  const adjustedDate = new Date(Date.UTC(year, month - 1, day, hour + 1))
 
   return {
     hour: formatHour12(adjustedDate.getUTCHours()),
@@ -144,10 +146,10 @@ export function buildPollutantsObject(curr, lang) {
 
     const backendTime = curr.pollutants[pollutant].time
 
-    // Always derive the London-local time parts manually from the date,
-    // ignoring any pre-computed backend fields, so the +1h BST adjustment
-    // is applied consistently. Fall back to moment-timezone only when the
-    // date string doesn't match the expected ISO pattern.
+    // Always derive the time parts manually from the date, ignoring any
+    // pre-computed backend fields, so the +1h adjustment is applied
+    // consistently. Fall back to moment-timezone only when the date
+    // string doesn't match the expected ISO pattern.
     const adjustedParts = getAdjustedDateTimeParts(backendTime?.date)
 
     const formatHour = adjustedParts
