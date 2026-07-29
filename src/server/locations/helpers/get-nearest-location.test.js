@@ -187,18 +187,18 @@ describe('getAdjustedDateTimeParts', () => {
     expect(getAdjustedDateTimeParts('2024-01-15')).toBeUndefined()
   })
 
-  it('applies no adjustment for a Z (UTC) offset', () => {
+  it('adds 1 hour to the literal wall-clock hour for a Z (UTC) offset', () => {
     const result = getAdjustedDateTimeParts('2026-07-27T14:00:00Z')
 
     expect(result).toEqual({
-      hour: '2pm',
+      hour: '3pm',
       day: '27',
       month: 'July',
       year: '2026'
     })
   })
 
-  it('adds 1 hour for a +01:00 offset', () => {
+  it('adds 1 hour to the literal wall-clock hour for a +01:00 offset', () => {
     const result = getAdjustedDateTimeParts('2026-07-27T14:00:00+01:00')
 
     expect(result).toEqual({
@@ -333,10 +333,10 @@ describe('buildPollutantsObject', () => {
 
     const result = buildPollutantsObject(curr, 'en')
 
-    // Z offset -> no adjustment -> 10am
+    // Literal hour 10 + 1h adjustment -> 11am
     expect(result.no2.time).toEqual({
       date: '2024-01-15T10:00:00Z',
-      hour: '10am',
+      hour: '11am',
       day: '15',
       month: 'January',
       year: '2024'
@@ -392,7 +392,7 @@ describe('buildPollutantsObject', () => {
 
     expect(result.no2.time).toEqual({
       date: '2024-01-15T10:00:00Z',
-      hour: '10am',
+      hour: '11am',
       day: '15',
       month: 'January',
       year: '2024'
@@ -415,14 +415,14 @@ describe('buildPollutantsObject', () => {
 
     expect(result.no2.time).toEqual({
       date: '2024-01-15T10:00:00Z',
-      hour: '10am',
+      hour: '11am',
       day: '15',
       month: 'January',
       year: '2024'
     })
   })
 
-  it('should shift the wall-clock time forward by the offset for a +01:00 timestamp', () => {
+  it('should add 1 hour to the literal wall-clock time regardless of a +01:00 offset', () => {
     const curr = {
       pollutants: {
         no2: {
@@ -442,14 +442,14 @@ describe('buildPollutantsObject', () => {
 
     const result = buildPollutantsObject(curr, 'en')
 
-    // 14:00 wall clock + 01:00 offset -> 15:00 -> 3pm
+    // Literal hour 14 + 1h -> 15:00 -> 3pm
     expect(result.no2.time.hour).toBe('3pm')
     expect(result.no2.time.day).toBe('27')
     expect(result.no2.time.month).toBe('July')
     expect(result.no2.time.year).toBe('2026')
   })
 
-  it('should display the wall-clock time as-is for a Z (UTC) timestamp', () => {
+  it('should add 1 hour to the literal wall-clock time regardless of a Z (UTC) offset', () => {
     const curr = {
       pollutants: {
         no2: {
@@ -469,8 +469,8 @@ describe('buildPollutantsObject', () => {
 
     const result = buildPollutantsObject(curr, 'en')
 
-    // 14:00 wall clock + 00:00 offset -> 14:00 -> 2pm
-    expect(result.no2.time.hour).toBe('2pm')
+    // Literal hour 14 + 1h -> 15:00 -> 3pm
+    expect(result.no2.time.hour).toBe('3pm')
     expect(result.no2.time.day).toBe('27')
     expect(result.no2.time.month).toBe('July')
     expect(result.no2.time.year).toBe('2026')
