@@ -61,11 +61,17 @@
             Air pollution in {{ locationName }} is {{ daqiAlert.highestReadableBand | lower }} today.
           {% endif %}
         </p>
-        <p class="govuk-body">This is because {{ daqiAlert.pollutantsText }} levels in the region are higher than expected.
-          {% for pollutant in daqiAlert.pollutants %}
-            <a href="{{ pollutant.href }}?lang={{ lang }}{% if locationId %}&locationId={{ locationId }}{% if locationName %}&locationName={{ locationName | urlencode }}{% endif %}{% if searchTerms %}&searchTerms={{ searchTerms | urlencode }}{% endif %}{% endif %}" class="govuk-link">Learn more about {{ pollutant.name }}</a>.
-          {% endfor %}
+        {# UPDATED BLOCK: each link on its own line #}
+        <p class="govuk-body">
+          This is because {{ daqiAlert.pollutantsText }} levels in the region are higher than expected.
         </p>
+        {% for pollutant in daqiAlert.pollutants %}
+          <p class="govuk-body">
+            <a href="{{ pollutant.href }}?lang={{ lang }}{% if locationId %}&locationId={{ locationId }}{% if locationName %}&locationName={{ locationName | urlencode }}{% endif %}{% if searchTerms %}&searchTerms={{ searchTerms | urlencode }}{% endif %}{% endif %}" class="govuk-link">
+              Learn more about {{ pollutant.name }}
+            </a>
+          </p>
+        {% endfor %}
         <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l">
       {% endif %}
 
@@ -309,7 +315,7 @@
     {% endif %}
   {% endset %}
 
-  {% set _ = tabs.push({
+{% set _ = tabs.push({
     classes: "govuk-tabs__list-item--sites",
     label: site.name | truncate(1500),
     status: "<span class='defra-aq-tabs__label-distance'>" ~ site.distance ~ " miles away</span>",
