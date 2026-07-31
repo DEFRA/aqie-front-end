@@ -180,7 +180,7 @@ export const footerTranslationsWelsh = {
         buttonText: 'Cadw gosodiadau cwcis',
         ga1: 'Bydd y cwcis',
         ga2: '_ga_',
-        ga3: '_gat_UA-[G-Q72HFE9LNG]',
+        ga3: '_gat_UA-[G-8CMZBTDQBC]',
         ga4: 'a',
         ga5: 'ond yn weithredol os byddwch yn derbyn y cwcis. Fodd bynnag, os nad ydych yn derbyn cwcis, efallai y byddant yn dal i ymddangos yn eich sesiwn cwci, ond ni fyddant yn weithredol.'
       },
