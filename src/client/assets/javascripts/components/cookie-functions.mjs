@@ -192,16 +192,15 @@ export function resetCookies() {
 }
 
 /**
- * Remove UA cookies for user and prevent Google setting them.
+ * Remove legacy UA (Universal Analytics) cookies.
  *
- * We've migrated our analytics from UA (Universal Analytics) to GA4, however
- * users may still have the UA cookie set from our previous implementation.
- * Additionally, our UA properties are scheduled for deletion but until they are
- * entirely deleted, GTM is still setting UA cookies.
+ * We've migrated to GA4. Users may still have UA cookies from our previous
+ * implementation, and GTM may still set them until our UA properties are deleted.
+ * Note: GA4 cookies (_ga, _ga_*) must not be deleted here or returning users
+ * will be miscounted as new users on every page load.
  */
 export function removeUACookies() {
   for (const UACookie of [
-    '_ga_8CMZBTDQBC',
     '_gid',
     '_gat_UA-26179049-17',
     '_gat_UA-116229859-1'
