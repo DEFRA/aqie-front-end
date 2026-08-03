@@ -21,7 +21,7 @@ export default function loadAnalytics() {
     document.head.appendChild(k)
     gtag('js', new Date())
     gtag('config', 'G-8CMZBTDQBC')
-    gtag('config', 'G-X3YJ5TD74G')
+    gtag('config', 'G-YK0SPXXK3X')
     // prettier-ignore
     ;(function (w, d, s, l, i) {
         const noscript2 = document.createElement('noscript')
