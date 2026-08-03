@@ -119,6 +119,7 @@ function mapGroupToActiveBreach(items, lang) {
     monitoringLocation: earliest['monitoring-station-name'],
     pollutantName: displayName,
     pollutantLink: link,
+    concentration: earliest['concentration'],
     alertStartedText: formatAlertStarted(earliest['alert-started']),
     ...(items.length > 1
       ? { lastUpdatedText: formatAlertStarted(latest['alert-started']) }
@@ -141,6 +142,7 @@ function mapToPastBreach(item, lang) {
     monitoringArea: item['monitoring-station-name'],
     pollutantName: displayName,
     pollutantLink: link,
+    concentration: item['concentration'],
     dataSource: lang === 'cy' ? DATA_SOURCE_CY : DATA_SOURCE_EN,
     alertPeriodFrom: formatAlertPeriodFrom(item['alert-started']),
     alertPeriodTo: formatAlertPeriodFrom(alertEndDate.toISOString())

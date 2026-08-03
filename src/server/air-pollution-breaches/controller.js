@@ -38,6 +38,14 @@ function buildPastBreachHtml(breach, content) {
           ${breach.pollutantName} (<a href="${breach.pollutantLink}" class="govuk-link">${activeContent.whatCausesPrefix}${breach.pollutantNameLower}${activeContent.whatCausesSuffix}</a>)
         </dd>
       </div>
+      ${
+        breach.concentration != null
+          ? `<div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">${pastContent.labels.concentration}</dt>
+        <dd class="govuk-summary-list__value">${breach.concentration} µg/m3</dd>
+      </div>`
+          : ''
+      }
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">${pastContent.labels.dataSource}</dt>
         <dd class="govuk-summary-list__value">${breach.dataSource}</dd>

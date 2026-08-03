@@ -27,22 +27,28 @@ vi.mock('../common/helpers/backend-api-helper.js', () => ({
 const makeActiveBreach = (
   pollutantName = 'ozone (o3)',
   minsAgo = 120,
-  samplingId = undefined
+  samplingId = undefined,
+  concentration = 155.3
 ) => ({
   ...(samplingId !== undefined ? { 'sampling-id': samplingId } : {}),
   'pollutant-name': pollutantName,
   region: 'Test Region',
   'monitoring-station-name': 'Test Station',
   'alert-started': new Date(Date.now() - minsAgo * 60 * 1000).toISOString(),
-  'active-breaches': true
+  'active-breaches': true,
+  concentration
 })
 
-const makePastBreach = (pollutantName = 'ozone (o3)') => ({
+const makePastBreach = (
+  pollutantName = 'ozone (o3)',
+  concentration = 155.3
+) => ({
   'pollutant-name': pollutantName,
   region: 'Test Region',
   'monitoring-station-name': 'Test Station',
   'alert-started': new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
-  'active-breaches': false
+  'active-breaches': false,
+  concentration
 })
 
 describe('fetchBreaches', () => {
@@ -183,6 +189,26 @@ describe('fetchBreaches', () => {
       expect(result.pastBreaches[0].dataSource).toBe(
         'Rhwydwaith Awtomatig Trefol a Gwledig (AURN)'
       )
+    })
+  })
+
+  describe('concentration mapping', () => {
+    it('should map concentration onto an active breach', async () => {
+      catchFetchError.mockResolvedValue([
+        200,
+        [makeActiveBreach('ozone (o3)', 120, undefined, 230)]
+      ])
+      const result = await fetchBreaches('en')
+      expect(result.activeBreaches[0].concentration).toBe(230)
+    })
+
+    it('should map concentration onto a past breach', async () => {
+      catchFetchError.mockResolvedValue([
+        200,
+        [makePastBreach('ozone (o3)', 230)]
+      ])
+      const result = await fetchBreaches('en')
+      expect(result.pastBreaches[0].concentration).toBe(230)
     })
   })
 

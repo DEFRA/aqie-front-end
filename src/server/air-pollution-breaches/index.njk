@@ -48,6 +48,12 @@
               {{ breach.pollutantName }} (<a href="{{ breach.pollutantLink }}" class="govuk-link">{{ breach.pollutantLinkText }}</a>)
             </dd>
           </div>
+          {% if breach.concentration is not none %}
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">{{ active.labels.concentration }}</dt>
+              <dd class="govuk-summary-list__value">{{ breach.concentration }} µg/m3</dd>
+            </div>
+          {% endif %}
           {% if breach.lastUpdatedText %}
             <div class="govuk-summary-list__row">
               <dt class="govuk-summary-list__key">{{ active.labels.lastUpdated }}</dt>
@@ -97,6 +103,12 @@
             {{ breach.pollutantName }} (<a href="{{ breach.pollutantLink }}" class="govuk-link">{{ active.whatCausesPrefix }}{{ breach.pollutantNameLower }}{{ active.whatCausesSuffix }}</a>)
           </dd>
         </div>
+        {% if breach.concentration is not none %}
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">{{ past.labels.concentration }}</dt>
+            <dd class="govuk-summary-list__value">{{ breach.concentration }} µg/m3</dd>
+          </div>
+        {% endif %}
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">{{ past.labels.dataSource }}</dt>
           <dd class="govuk-summary-list__value">{{ breach.dataSource }}</dd>
