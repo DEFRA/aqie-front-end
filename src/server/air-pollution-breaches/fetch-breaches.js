@@ -52,11 +52,11 @@ function getPollutantInfo(rawName, lang) {
 }
 
 function formatTime(date) {
-  return moment.tz(date, 'Europe/London').format('h:mma')
+  return moment.utc(date).format('h:mma')
 }
 
 function formatDate(date) {
-  return moment.tz(date, 'Europe/London').format('D MMMM YYYY')
+  return moment.utc(date).format('D MMMM YYYY')
 }
 
 function formatAlertStarted(isoString) {
