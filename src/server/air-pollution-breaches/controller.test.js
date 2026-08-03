@@ -72,6 +72,7 @@ vi.mock('./content.js', () => ({
         alertRegion: 'Alert region',
         monitoringArea: 'Monitoring area',
         pollutant: 'Pollutant',
+        concentration: 'Level',
         dataSource: 'Data source',
         alertPeriod: 'Alert period'
       },
@@ -367,6 +368,33 @@ describe('airPollutionBreachesController', () => {
     expect(viewArgs.pastBreaches[0].pollutantLink).toBe(
       mockPastBreach.pollutantLink
     )
+  })
+
+  describe('buildPastBreachHtml concentration', () => {
+    it('should include concentration in accordion HTML when present', async () => {
+      fetchBreaches.mockResolvedValue({
+        activeBreaches: [],
+        pastBreaches: [{ ...mockPastBreach, concentration: 230 }]
+      })
+      const request = { query: { lang: 'en' } }
+      await airPollutionBreachesController.handler(request, mockH)
+      const viewArgs = mockH.view.mock.calls[0][1]
+      const accordionHtml = viewArgs.pastAccordionItems[0].content.html
+      expect(accordionHtml).toContain('230 µg/m3')
+      expect(accordionHtml).toContain('Level')
+    })
+
+    it('should omit concentration row from accordion HTML when concentration is null', async () => {
+      fetchBreaches.mockResolvedValue({
+        activeBreaches: [],
+        pastBreaches: [{ ...mockPastBreach, concentration: null }]
+      })
+      const request = { query: { lang: 'en' } }
+      await airPollutionBreachesController.handler(request, mockH)
+      const viewArgs = mockH.view.mock.calls[0][1]
+      const accordionHtml = viewArgs.pastAccordionItems[0].content.html
+      expect(accordionHtml).not.toContain('µg/m3')
+    })
   })
 
   it('should replace {actionsLink} in intro.actions with the location URL when locationId is present', async () => {
