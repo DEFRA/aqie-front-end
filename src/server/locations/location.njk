@@ -30,7 +30,7 @@
         </div>
       {% endif %}
 
-      {% if daqiAlert %}
+      {% if daqiAlert and not locationAlert %}
         <div class="aq-pollution-alert" role="alert">
           <div class="aq-pollution-alert__header">
             <p>Alert</p>
