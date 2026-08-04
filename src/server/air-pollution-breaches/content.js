@@ -18,6 +18,7 @@ const breachesContentEn = {
     labels: {
       monitoringLocation: 'Monitoring location',
       pollutant: 'Pollutant',
+      concentration: 'Level',
       alertStarted: 'Alert started',
       lastUpdated: 'Last updated'
     },
@@ -34,6 +35,7 @@ const breachesContentEn = {
       alertRegion: 'Alert region',
       monitoringArea: 'Monitoring area',
       pollutant: 'Pollutant',
+      concentration: 'Level',
       dataSource: 'Data source',
       alertPeriod: 'Alert period'
     },
@@ -61,6 +63,7 @@ const breachesContentCy = {
     labels: {
       monitoringLocation: 'Lleoliad monitro',
       pollutant: 'Llygrydd',
+      concentration: 'Lefel',
       alertStarted: 'Dechreuodd y rhybudd',
       lastUpdated: 'Diweddarwyd diwethaf'
     },
@@ -76,6 +79,7 @@ const breachesContentCy = {
       alertRegion: 'Rhanbarth rhybudd',
       monitoringArea: 'Ardal fonitro',
       pollutant: 'Llygrydd',
+      concentration: 'Lefel',
       dataSource: 'Ffynhonnell data',
       alertPeriod: 'Cyfnod rhybudd'
     },
