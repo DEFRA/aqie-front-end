@@ -61,7 +61,16 @@ function formatDate(date) {
 
 function formatAlertStarted(isoString) {
   const alertDate = new Date(isoString)
-  const diffMs = Date.now() - alertDate.getTime()
+  const nowLondon = moment.tz(new Date(), 'Europe/London')
+  const nowFakeUtcMs = Date.UTC(
+    nowLondon.year(),
+    nowLondon.month(),
+    nowLondon.date(),
+    nowLondon.hours(),
+    nowLondon.minutes(),
+    nowLondon.seconds()
+  )
+  const diffMs = nowFakeUtcMs - alertDate.getTime()
   const diffHours = Math.floor(diffMs / MS_PER_HOUR)
   const diffMins = Math.floor(diffMs / MS_PER_MINUTE)
   const time = formatTime(alertDate)
@@ -119,7 +128,7 @@ function mapGroupToActiveBreach(items, lang) {
     monitoringLocation: earliest['monitoring-station-name'],
     pollutantName: displayName,
     pollutantLink: link,
-    concentration: earliest['concentration'],
+    concentration: latest['concentration'],
     alertStartedText: formatAlertStarted(earliest['alert-started']),
     ...(items.length > 1
       ? { lastUpdatedText: formatAlertStarted(latest['alert-started']) }

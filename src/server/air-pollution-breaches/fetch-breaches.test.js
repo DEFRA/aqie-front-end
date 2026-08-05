@@ -210,12 +210,24 @@ describe('fetchBreaches', () => {
       const result = await fetchBreaches('en')
       expect(result.pastBreaches[0].concentration).toBe(230)
     })
+
+    it('should use the latest concentration when multiple entries share a sampling-id', async () => {
+      catchFetchError.mockResolvedValue([
+        200,
+        [
+          makeActiveBreach('ozone (o3)', 120, 'abc', 100),
+          makeActiveBreach('ozone (o3)', 60, 'abc', 200)
+        ]
+      ])
+      const result = await fetchBreaches('en')
+      expect(result.activeBreaches[0].concentration).toBe(200)
+    })
   })
 
   describe('alertStartedText formatting', () => {
     it('should show minutes ago for alerts less than 1 hour old', async () => {
       vi.useFakeTimers()
-      vi.setSystemTime(new Date('2024-06-01T12:00:00.000Z'))
+      vi.setSystemTime(new Date('2024-01-15T12:00:00.000Z'))
       catchFetchError.mockResolvedValue([
         200,
         [makeActiveBreach('ozone (o3)', 30)]
@@ -226,7 +238,7 @@ describe('fetchBreaches', () => {
 
     it('should use singular "minute" for exactly 1 minute ago', async () => {
       vi.useFakeTimers()
-      vi.setSystemTime(new Date('2024-06-01T12:00:00.000Z'))
+      vi.setSystemTime(new Date('2024-01-15T12:00:00.000Z'))
       catchFetchError.mockResolvedValue([
         200,
         [makeActiveBreach('ozone (o3)', 1)]
@@ -239,7 +251,7 @@ describe('fetchBreaches', () => {
 
     it('should show hours ago for alerts 1 hour or older', async () => {
       vi.useFakeTimers()
-      vi.setSystemTime(new Date('2024-06-01T12:00:00.000Z'))
+      vi.setSystemTime(new Date('2024-01-15T12:00:00.000Z'))
       catchFetchError.mockResolvedValue([
         200,
         [makeActiveBreach('ozone (o3)', 120)]
@@ -250,7 +262,7 @@ describe('fetchBreaches', () => {
 
     it('should use singular "hour" for exactly 1 hour ago', async () => {
       vi.useFakeTimers()
-      vi.setSystemTime(new Date('2024-06-01T12:00:00.000Z'))
+      vi.setSystemTime(new Date('2024-01-15T12:00:00.000Z'))
       catchFetchError.mockResolvedValue([
         200,
         [makeActiveBreach('ozone (o3)', 60)]
@@ -277,7 +289,7 @@ describe('fetchBreaches', () => {
 
     it('uses the earliest alert-started as alertStartedText', async () => {
       vi.useFakeTimers()
-      vi.setSystemTime(new Date('2024-06-01T12:00:00.000Z'))
+      vi.setSystemTime(new Date('2024-01-15T12:00:00.000Z'))
       catchFetchError.mockResolvedValue([
         200,
         [
@@ -293,7 +305,7 @@ describe('fetchBreaches', () => {
 
     it('sets lastUpdatedText to the most recent alert-started', async () => {
       vi.useFakeTimers()
-      vi.setSystemTime(new Date('2024-06-01T12:00:00.000Z'))
+      vi.setSystemTime(new Date('2024-01-15T12:00:00.000Z'))
       catchFetchError.mockResolvedValue([
         200,
         [
@@ -309,7 +321,7 @@ describe('fetchBreaches', () => {
 
     it('updates lastUpdatedText on a 3rd entry with the most recent time', async () => {
       vi.useFakeTimers()
-      vi.setSystemTime(new Date('2024-06-01T12:00:00.000Z'))
+      vi.setSystemTime(new Date('2024-01-15T12:00:00.000Z'))
       catchFetchError.mockResolvedValue([
         200,
         [
