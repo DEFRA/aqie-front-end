@@ -53,7 +53,7 @@ function applyOffsetToTimestamp(isoString) {
 
   const [, datetimePart, sign, offsetHH, offsetMM] = match
   const offsetMinutes =
-    (parseInt(offsetHH, 10) * 60 + parseInt(offsetMM, 10)) *
+    (Number.parseInt(offsetHH, 10) * 60 + Number.parseInt(offsetMM, 10)) *
     (sign === '+' ? 1 : -1)
 
   if (offsetMinutes === 0) {
