@@ -39,6 +39,33 @@ const POLLUTANT_MAP = {
   }
 }
 
+function applyOffsetToTimestamp(isoString) {
+  if (!isoString) {
+    return isoString
+  }
+
+  const match = isoString.match(
+    /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})([+-])(\d{2}):(\d{2})$/
+  )
+  if (!match) {
+    return isoString
+  }
+
+  const [, datetimePart, sign, offsetHH, offsetMM] = match
+  const offsetMinutes =
+    (parseInt(offsetHH, 10) * 60 + parseInt(offsetMM, 10)) *
+    (sign === '+' ? 1 : -1)
+
+  if (offsetMinutes === 0) {
+    return isoString
+  }
+
+  const adjusted = new Date(datetimePart + 'Z')
+  adjusted.setUTCMinutes(adjusted.getUTCMinutes() + offsetMinutes)
+
+  return adjusted.toISOString().replace('.000Z', 'Z')
+}
+
 function getPollutantInfo(rawName, lang) {
   const key = rawName.toLowerCase()
   const info = POLLUTANT_MAP[key]
@@ -180,11 +207,16 @@ async function fetchBreaches(lang = 'en', request = null) {
     return { activeBreaches: [], pastBreaches: [], apiError: true }
   }
 
+  const normalizedData = data.map((item) => ({
+    ...item,
+    'alert-started': applyOffsetToTimestamp(item['alert-started'])
+  }))
+
   const activeBreaches = groupBySamplingId(
-    data.filter((item) => item['active-breaches'] === true)
+    normalizedData.filter((item) => item['active-breaches'] === true)
   ).map((group) => mapGroupToActiveBreach(group, lang))
 
-  const pastBreaches = data
+  const pastBreaches = normalizedData
     .filter((item) => item['active-breaches'] === false)
     .filter((item) => {
       const d = new Date(item['alert-started'])
@@ -215,5 +247,6 @@ export {
   fetchBreaches,
   groupBySamplingId,
   mapGroupToActiveBreach,
-  groupActiveByRegion
+  groupActiveByRegion,
+  applyOffsetToTimestamp
 }

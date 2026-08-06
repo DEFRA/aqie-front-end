@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { fetchBreaches, groupActiveByRegion } from './fetch-breaches.js'
+import {
+  fetchBreaches,
+  groupActiveByRegion,
+  applyOffsetToTimestamp
+} from './fetch-breaches.js'
 import { catchFetchError } from '../common/helpers/catch-fetch-error.js'
 import { buildBackendApiFetchOptions } from '../common/helpers/backend-api-helper.js'
 
@@ -403,6 +407,50 @@ describe('fetchBreaches', () => {
       const [, endDate] = pathArg.match(/end-date=(\d{4}-\d{2}-\d{2})/)
       expect(new Date(startDate) < new Date(endDate)).toBe(true)
     })
+  })
+})
+
+describe('applyOffsetToTimestamp', () => {
+  it('returns null/undefined as-is', () => {
+    expect(applyOffsetToTimestamp(null)).toBeNull()
+    expect(applyOffsetToTimestamp(undefined)).toBeUndefined()
+    expect(applyOffsetToTimestamp('')).toBe('')
+  })
+
+  it('returns a Z-suffix timestamp unchanged', () => {
+    expect(applyOffsetToTimestamp('2026-08-03T09:00:00Z')).toBe(
+      '2026-08-03T09:00:00Z'
+    )
+  })
+
+  it('returns a +00:00 offset timestamp unchanged', () => {
+    expect(applyOffsetToTimestamp('2026-08-03T09:00:00+00:00')).toBe(
+      '2026-08-03T09:00:00+00:00'
+    )
+  })
+
+  it('adds a +01:00 offset to the time', () => {
+    expect(applyOffsetToTimestamp('2026-08-03T09:00:00+01:00')).toBe(
+      '2026-08-03T10:00:00Z'
+    )
+  })
+
+  it('adds a +05:30 offset to the time', () => {
+    expect(applyOffsetToTimestamp('2026-08-03T09:00:00+05:30')).toBe(
+      '2026-08-03T14:30:00Z'
+    )
+  })
+
+  it('subtracts a negative offset from the time', () => {
+    expect(applyOffsetToTimestamp('2026-08-03T09:00:00-05:00')).toBe(
+      '2026-08-03T04:00:00Z'
+    )
+  })
+
+  it('handles midnight rollover correctly', () => {
+    expect(applyOffsetToTimestamp('2026-08-03T23:00:00+02:00')).toBe(
+      '2026-08-04T01:00:00Z'
+    )
   })
 })
 
