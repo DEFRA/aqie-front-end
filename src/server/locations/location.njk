@@ -56,7 +56,7 @@
         {% set predictedValue = airQuality.today.value | int %}
         <p class="govuk-body govuk-!-margin-top-4">
           {% if daqiAlert.highestDaqi > predictedValue %}
-            Air pollution in {{ locationName }} is {{ daqiAlert.highestReadableBand | lower }} today, even though {{ airQuality.today.readableBand | lower }} levels of air pollution were predicted earlier.
+            Air pollution in {{ locationName }} is {{ daqiAlert.highestReadableBand | lower }} today, even though different levels of air pollution were predicted earlier.
           {% else %}
             Air pollution in {{ locationName }} is {{ daqiAlert.highestReadableBand | lower }} today.
           {% endif %}
