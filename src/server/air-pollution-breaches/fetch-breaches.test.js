@@ -145,6 +145,18 @@ describe('fetchBreaches', () => {
         'PM10',
         '/pollutants/particulate-matter-10?lang=en',
         '/llygryddion/mater-gronynnol-10/cy?lang=cy'
+      ],
+      [
+        'pm2.5 (pm2.5)',
+        'PM2.5',
+        '/pollutants/particulate-matter-25?lang=en',
+        '/llygryddion/mater-gronynnol-25/cy?lang=cy'
+      ],
+      [
+        'pm10 (pm10)',
+        'PM10',
+        '/pollutants/particulate-matter-10?lang=en',
+        '/llygryddion/mater-gronynnol-10/cy?lang=cy'
       ]
     ]
 

@@ -53,17 +53,20 @@
         {# '' Actual air pollution levels section — only shown when DAQI alert API returns data #}
         <h2 class="govuk-heading-m">{{ daqi.headings.actualLevels }}</h2>
         {{ daqiActualLevelsBar(daqiAlert.highestDaqi, daqiAlert.highestReadableBand, lang) }}
+        {% set predictedValue = airQuality.today.value | int %}
         <p class="govuk-body govuk-!-margin-top-4">
-          {% set predictedValue = airQuality.today.value | int %}
           {% if daqiAlert.highestDaqi > predictedValue %}
             Air pollution in {{ locationName }} is {{ daqiAlert.highestReadableBand | lower }} today, even though {{ airQuality.today.readableBand | lower }} levels of air pollution were predicted earlier.
           {% else %}
             Air pollution in {{ locationName }} is {{ daqiAlert.highestReadableBand | lower }} today.
           {% endif %}
         </p>
-        {# UPDATED BLOCK: each link on its own line #}
         <p class="govuk-body">
-          This is because {{ daqiAlert.pollutantsText }} levels in the region are higher than expected.
+          {% if daqiAlert.highestDaqi > predictedValue %}
+            This is because {{ daqiAlert.pollutantsText }} levels in the region are higher than expected.
+          {% else %}
+            This is because of {{ daqiAlert.pollutantsText }} levels.
+          {% endif %}
         </p>
         {% for pollutant in daqiAlert.pollutants %}
           <p class="govuk-body">

@@ -36,6 +36,16 @@ const POLLUTANT_MAP = {
     displayName: 'PM10',
     linkEn: '/pollutants/particulate-matter-10?lang=en',
     linkCy: '/llygryddion/mater-gronynnol-10/cy?lang=cy'
+  },
+  'pm2.5 (pm2.5)': {
+    displayName: 'PM2.5',
+    linkEn: '/pollutants/particulate-matter-25?lang=en',
+    linkCy: '/llygryddion/mater-gronynnol-25/cy?lang=cy'
+  },
+  'pm10 (pm10)': {
+    displayName: 'PM10',
+    linkEn: '/pollutants/particulate-matter-10?lang=en',
+    linkCy: '/llygryddion/mater-gronynnol-10/cy?lang=cy'
   }
 }
 
