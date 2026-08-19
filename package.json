@@ -131,7 +131,6 @@
     "cross-env": "^7.0.3",
     "css-loader": "7.1.0",
     "eslint": "9.29.0",
-    "fast-xml-parser": "4.5.0",
     "husky": "9.1.7",
     "json-server": "0.17.4",
     "neostandard": "0.12.1",
