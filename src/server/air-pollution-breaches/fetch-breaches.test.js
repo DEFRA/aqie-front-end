@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import {
   fetchBreaches,
+  deduplicateItems,
   groupActiveByRegion,
   applyOffsetToTimestamp
 } from './fetch-breaches.js'
@@ -107,7 +108,7 @@ describe('fetchBreaches', () => {
   it('should return only active breaches when all are active', async () => {
     catchFetchError.mockResolvedValue([
       200,
-      [makeActiveBreach(), makeActiveBreach()]
+      [makeActiveBreach('ozone (o3)', 120), makeActiveBreach('ozone (o3)', 60)]
     ])
     const result = await fetchBreaches('en')
     expect(result.activeBreaches).toHaveLength(2)
@@ -520,5 +521,95 @@ describe('groupActiveByRegion', () => {
     const result = groupActiveByRegion([makeBreach('Highlands and Islands')])
     expect(result).toHaveLength(1)
     expect(result[0].breaches).toHaveLength(1)
+  })
+})
+
+describe('deduplicateItems', () => {
+  const makeItem = (overrides = {}) => ({
+    'sampling-id': 'site-001',
+    'monitoring-station-name': 'London Marylebone',
+    'alert-started': '2026-08-01T10:00:00Z',
+    'pollutant-name': 'ozone (o3)',
+    region: 'London',
+    'active-breaches': true,
+    concentration: 100,
+    ...overrides
+  })
+
+  it('removes an exact duplicate (same sampling-id, station, timestamp)', () => {
+    const item = makeItem()
+    expect(deduplicateItems([item, { ...item }])).toHaveLength(1)
+  })
+
+  it('keeps the first occurrence when deduplicating', () => {
+    const first = makeItem({ concentration: 100 })
+    const duplicate = makeItem({ concentration: 200 })
+    const result = deduplicateItems([first, duplicate])
+    expect(result[0].concentration).toBe(100)
+  })
+
+  it('keeps items that differ only by timestamp', () => {
+    const result = deduplicateItems([
+      makeItem({ 'alert-started': '2026-08-01T10:00:00Z' }),
+      makeItem({ 'alert-started': '2026-08-01T11:00:00Z' })
+    ])
+    expect(result).toHaveLength(2)
+  })
+
+  it('keeps items that differ only by sampling-id', () => {
+    const result = deduplicateItems([
+      makeItem({ 'sampling-id': 'site-001' }),
+      makeItem({ 'sampling-id': 'site-002' })
+    ])
+    expect(result).toHaveLength(2)
+  })
+
+  it('keeps items that differ only by monitoring-station-name', () => {
+    const result = deduplicateItems([
+      makeItem({ 'monitoring-station-name': 'Station A' }),
+      makeItem({ 'monitoring-station-name': 'Station B' })
+    ])
+    expect(result).toHaveLength(2)
+  })
+
+  it('deduplicates items with null sampling-id sharing station and timestamp', () => {
+    const item = makeItem({ 'sampling-id': null })
+    expect(deduplicateItems([item, { ...item }])).toHaveLength(1)
+  })
+
+  it('returns an empty array for empty input', () => {
+    expect(deduplicateItems([])).toEqual([])
+  })
+})
+
+describe('deduplication via fetchBreaches', () => {
+  it('collapses duplicate active breaches to one entry', async () => {
+    const item = {
+      'sampling-id': 'site-001',
+      'monitoring-station-name': 'London Marylebone',
+      'alert-started': '2026-08-01T10:00:00Z',
+      'pollutant-name': 'ozone (o3)',
+      region: 'London',
+      'active-breaches': true,
+      concentration: 100
+    }
+    catchFetchError.mockResolvedValue([200, [item, { ...item }]])
+    const result = await fetchBreaches('en')
+    expect(result.activeBreaches).toHaveLength(1)
+  })
+
+  it('collapses duplicate past breaches to one entry', async () => {
+    const item = {
+      'sampling-id': 'site-001',
+      'monitoring-station-name': 'London Marylebone',
+      'alert-started': '2026-08-01T10:00:00Z',
+      'pollutant-name': 'ozone (o3)',
+      region: 'London',
+      'active-breaches': false,
+      concentration: 100
+    }
+    catchFetchError.mockResolvedValue([200, [item, { ...item }]])
+    const result = await fetchBreaches('en')
+    expect(result.pastBreaches).toHaveLength(1)
   })
 })

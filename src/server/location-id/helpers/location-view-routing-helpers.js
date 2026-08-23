@@ -237,6 +237,11 @@ function buildLocationViewData({
     request,
     nearestLocationsRange
   )
+  const mocksDisabled = config.get('disableTestMocks')
+  const monitoringSitesForView =
+    !mocksDisabled && request?.query?.mockNoMonitoringData === 'true'
+      ? []
+      : modifiedMonitoringSites
   const forecastWarning = getForecastWarning(airQuality, lang)
   const { searchTerms, locationNameForTemplate } = extractLocationContext(
     request,
@@ -257,7 +262,7 @@ function buildLocationViewData({
     result: locationDetails,
     airQuality,
     airQualityData: processedAirQualityData,
-    monitoringSites: modifiedMonitoringSites,
+    monitoringSites: monitoringSitesForView,
     siteTypeDescriptions,
     pollutantTypes,
     pageTitle: `${english.multipleLocations.titlePrefix} ${title} - ${english.multipleLocations.pageTitle}`,
