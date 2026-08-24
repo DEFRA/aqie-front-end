@@ -211,6 +211,14 @@ function resolveLatlon(locationData) {
     : locationData.latlon
 }
 
+function resolveMonitoringSites(request, nearestLocationsRange) {
+  const modified = applyMockPollutants(request, nearestLocationsRange)
+  const mocksDisabled = config.get('disableTestMocks')
+  return !mocksDisabled && request?.query?.mockNoMonitoringData === 'true'
+    ? []
+    : modified
+}
+
 function buildLocationViewData({
   locationDetails,
   nearestLocationsRange,
@@ -233,7 +241,7 @@ function buildLocationViewData({
     locationData
   })
 
-  const modifiedMonitoringSites = applyMockPollutants(
+  const monitoringSitesForView = resolveMonitoringSites(
     request,
     nearestLocationsRange
   )
@@ -257,7 +265,7 @@ function buildLocationViewData({
     result: locationDetails,
     airQuality,
     airQualityData: processedAirQualityData,
-    monitoringSites: modifiedMonitoringSites,
+    monitoringSites: monitoringSitesForView,
     siteTypeDescriptions,
     pollutantTypes,
     pageTitle: `${english.multipleLocations.titlePrefix} ${title} - ${english.multipleLocations.pageTitle}`,
