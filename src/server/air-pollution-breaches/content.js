@@ -10,7 +10,9 @@ const breachesContentEn = {
   active: {
     heading: 'Active breaches',
     countMessage:
-      'There is currently <b>{count}</b> active air pollution breach',
+      'There are currently <b>{count}</b> active air pollution breaches.',
+    countMessageSingular:
+      'There is currently <b>1</b> active air pollution breach.',
     timingMessage:
       'This alert will stay active until 24 hours after the last measured breach.',
     apiErrorMessage:

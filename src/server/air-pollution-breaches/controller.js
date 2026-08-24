@@ -211,10 +211,13 @@ function getViewModel(
     },
     active: {
       ...content.active,
-      countHtml: content.active.countMessage.replace(
-        '{count}',
-        String(activeBreaches.length)
-      )
+      countHtml:
+        activeBreaches.length === 1
+          ? content.active.countMessageSingular
+          : content.active.countMessage.replace(
+              '{count}',
+              String(activeBreaches.length)
+            )
     },
     past: content.past,
     activeBreaches: processedActiveBreaches,

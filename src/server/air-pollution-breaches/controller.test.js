@@ -52,7 +52,9 @@ vi.mock('./content.js', () => ({
     active: {
       heading: 'Active breaches',
       countMessage:
-        'There is currently <b>{count}</b> active air pollution breach',
+        'There are currently <b>{count}</b> active air pollution breaches.',
+      countMessageSingular:
+        'There is currently <b>1</b> active air pollution breach.',
       timingMessage: 'Timing message',
       labels: {
         monitoringLocation: 'Monitoring location',
@@ -220,6 +222,19 @@ describe('airPollutionBreachesController', () => {
     await airPollutionBreachesController.handler(request, mockH)
     const viewArgs = mockH.view.mock.calls[0][1]
     expect(viewArgs.active.countHtml).toContain('2')
+  })
+
+  it('should use singular countMessage when there is exactly 1 active breach', async () => {
+    fetchBreaches.mockResolvedValue({
+      activeBreaches: [mockActiveBreach],
+      pastBreaches: []
+    })
+    const request = { query: { lang: 'en' } }
+    await airPollutionBreachesController.handler(request, mockH)
+    const viewArgs = mockH.view.mock.calls[0][1]
+    expect(viewArgs.active.countHtml).toBe(
+      'There is currently <b>1</b> active air pollution breach.'
+    )
   })
 
   it('should handle locationName passed as an array', async () => {
