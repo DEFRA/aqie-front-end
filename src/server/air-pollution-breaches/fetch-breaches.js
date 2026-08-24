@@ -203,7 +203,9 @@ function deduplicateItems(items) {
       item['monitoring-station-name'] ?? '',
       item['alert-started'] ?? ''
     ].join('|')
-    if (seen.has(key)) return false
+    if (seen.has(key)) {
+      return false
+    }
     seen.add(key)
     return true
   })
