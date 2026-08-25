@@ -175,81 +175,63 @@ export async function processLocationData(
   }
 }
 
+const VALID_MOCK_DAYS = new Set(['today', 'day2', 'day3', 'day4', 'day5'])
+const DEFAULT_MOCK_LEVEL = 4
+
+function buildAllDaysForecast(level, getDetailedInfo) {
+  return {
+    today: getDetailedInfo(level),
+    day2: getDetailedInfo(level),
+    day3: getDetailedInfo(level),
+    day4: getDetailedInfo(level),
+    day5: getDetailedInfo(level)
+  }
+}
+
+function cloneOrDefaultAirQuality(airQuality, getDetailedInfo) {
+  if (airQuality && typeof airQuality === 'object') {
+    return {
+      today: airQuality.today ? { ...airQuality.today } : null,
+      day2: airQuality.day2 ? { ...airQuality.day2 } : null,
+      day3: airQuality.day3 ? { ...airQuality.day3 } : null,
+      day4: airQuality.day4 ? { ...airQuality.day4 } : null,
+      day5: airQuality.day5 ? { ...airQuality.day5 } : null
+    }
+  }
+  return buildAllDaysForecast(DEFAULT_MOCK_LEVEL, getDetailedInfo)
+}
+
+function applySingleDayMock(airQuality, level, day, getDetailedInfo) {
+  const cloned = cloneOrDefaultAirQuality(airQuality, getDetailedInfo)
+  cloned[day] = getDetailedInfo(level)
+  return cloned
+}
+
 /**
  * Check if mock level is requested and override air quality data
  * Non-intrusive: only applies mock if explicitly enabled, otherwise returns original data
  */
 export function applyMockLevel(request, airQuality, lang = LANG_EN) {
-  // Disable mock functionality when configured (production by default)
-  const mocksDisabled = config.get('disableTestMocks')
-  if (mocksDisabled) {
+  if (config.get('disableTestMocks')) return airQuality
+
+  const mockLevel = request.yar.get('mockLevel')
+  if (mockLevel == null) return airQuality
+
+  const level = Number.parseInt(mockLevel, 10)
+  if (Number.isNaN(level) || level < 0 || level > 10) {
+    logger.warn(`Invalid mock level: ${mockLevel}. Must be 0-10.`)
     return airQuality
   }
 
-  // Get the appropriate getDetailedInfo function for the language
   const getDetailedInfo =
     lang === LANG_CY ? getDetailedInfoCy : getDetailedInfoEn
-
-  // Check session for mockLevel (preserved across redirects)
-  const mockLevel = request.yar.get('mockLevel')
   const mockDay = request.yar.get('mockDay')
 
-  if (mockLevel !== undefined && mockLevel !== null) {
-    const level = parseInt(mockLevel, 10)
-
-    // Validate level
-    if (!isNaN(level) && level >= 0 && level <= 10) {
-      // If mockDay is specified, apply mock level only to that specific day
-      if (
-        mockDay &&
-        ['today', 'day2', 'day3', 'day4', 'day5'].includes(mockDay)
-      ) {
-        // Generate mock data for the specific day using language-specific function
-        const mockDayData = getDetailedInfo(level)
-
-        // Start with existing airQuality or generate full forecast with current values
-        let modifiedAirQuality
-        if (airQuality && typeof airQuality === 'object') {
-          // Deep clone each day to avoid reference issues
-          modifiedAirQuality = {
-            today: airQuality.today ? { ...airQuality.today } : null,
-            day2: airQuality.day2 ? { ...airQuality.day2 } : null,
-            day3: airQuality.day3 ? { ...airQuality.day3 } : null,
-            day4: airQuality.day4 ? { ...airQuality.day4 } : null,
-            day5: airQuality.day5 ? { ...airQuality.day5 } : null
-          }
-        } else {
-          // If no airQuality exists, generate default forecast (all moderate level 4)
-          modifiedAirQuality = {
-            today: getDetailedInfo(4),
-            day2: getDetailedInfo(4),
-            day3: getDetailedInfo(4),
-            day4: getDetailedInfo(4),
-            day5: getDetailedInfo(4)
-          }
-        }
-
-        // Override the specific day with the mock level
-        modifiedAirQuality[mockDay] = mockDayData
-        return modifiedAirQuality
-      } else {
-        // Generate mock data for all days using language-specific function
-        const mockData = {
-          today: getDetailedInfo(level),
-          day2: getDetailedInfo(level),
-          day3: getDetailedInfo(level),
-          day4: getDetailedInfo(level),
-          day5: getDetailedInfo(level)
-        }
-        return mockData
-      }
-    } else {
-      logger.warn(`Invalid mock level: ${mockLevel}. Must be 0-10.`)
-    }
+  if (mockDay && VALID_MOCK_DAYS.has(mockDay)) {
+    return applySingleDayMock(airQuality, level, mockDay, getDetailedInfo)
   }
 
-  // Return original data if no mock level (default behavior unchanged)
-  return airQuality
+  return buildAllDaysForecast(level, getDetailedInfo)
 }
 
 /**
@@ -296,12 +278,18 @@ export function buildLocationViewData({
 
   const latlon = latlonParam ?? locationData?.latlon ?? null
 
+  const mocksDisabled = config.get('disableTestMocks')
+  const monitoringSitesForView =
+    !mocksDisabled && request?.query?.mockNoMonitoringData === 'true'
+      ? []
+      : nearestLocationsRange
+
   return {
     result: locationDetails,
     airQuality,
     forecastWarning,
     airQualityData: airQualityData.commonMessages,
-    monitoringSites: nearestLocationsRange,
+    monitoringSites: monitoringSitesForView,
     siteTypeDescriptions,
     pollutantTypes,
     pageTitle: `${components.multipleLocations.titlePrefix} ${title} - ${components.multipleLocations.pageTitle}`,

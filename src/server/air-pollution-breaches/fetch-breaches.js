@@ -195,6 +195,22 @@ function mapToPastBreach(item, lang) {
   }
 }
 
+function deduplicateItems(items) {
+  const seen = new Set()
+  return items.filter((item) => {
+    const key = [
+      item['sampling-id'] ?? '',
+      item['monitoring-station-name'] ?? '',
+      item['alert-started'] ?? ''
+    ].join('|')
+    if (seen.has(key)) {
+      return false
+    }
+    seen.add(key)
+    return true
+  })
+}
+
 async function fetchBreaches(lang = 'en', request = null) {
   const baseUrl = config.get('notify.alertBackendBaseUrl')
   const breachesPath = config.get('notify.breachesPath')
@@ -222,11 +238,13 @@ async function fetchBreaches(lang = 'en', request = null) {
     'alert-started': applyOffsetToTimestamp(item['alert-started'])
   }))
 
+  const deduplicatedData = deduplicateItems(normalizedData)
+
   const activeBreaches = groupBySamplingId(
-    normalizedData.filter((item) => item['active-breaches'] === true)
+    deduplicatedData.filter((item) => item['active-breaches'] === true)
   ).map((group) => mapGroupToActiveBreach(group, lang))
 
-  const pastBreaches = normalizedData
+  const pastBreaches = deduplicatedData
     .filter((item) => item['active-breaches'] === false)
     .filter((item) => {
       const d = new Date(item['alert-started'])
@@ -255,6 +273,7 @@ function groupActiveByRegion(activeBreaches) {
 
 export {
   fetchBreaches,
+  deduplicateItems,
   groupBySamplingId,
   mapGroupToActiveBreach,
   groupActiveByRegion,

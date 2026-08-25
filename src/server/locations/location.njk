@@ -194,9 +194,9 @@
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6">
       <h2 class="govuk-heading-m">{{ daqi.pageTexts.c }}</h2>
       {% include "pollutants.njk" %}
-{% if monitoringSites|length %}
 <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6 govuk-!-margin-top-6">
 <h2 class="govuk-heading-m">{{ daqi.pageTexts.d }}</h2>
+{% if monitoringSites|length %}
 <p>{{ daqi.tooltipText.latest1 | safe }}<span class='govuk-!-font-size-16 govuk-!-font-weight-regular'><sup>3</sup></span>{{ daqi.tooltipText.latest2 | safe }}</p>
 {% endif %}
 {% set tabs = [] %} {# Initialize an array to store tab items dynamically #}
@@ -438,6 +438,10 @@
   {% else %}
     <p class='govuk-caption-s govuk-!-margin-bottom-6'>{{ daqi.pollutantTable.f }} {{ pollutantTime }} {{ daqi.pollutantTable.g }} {{ pollutantDay }} {{ pollutantMonth }} {{ pollutantYear }}</p>
   {% endif %}
+{% else %}
+  {{ govukInsetText({
+    text: "No monitoring station data is available. Try again later."
+  }) }}
 {% endif %}
     </div>
 
