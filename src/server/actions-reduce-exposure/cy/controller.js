@@ -6,7 +6,7 @@ import { formatUKPostcode } from '../../locations/helpers/convert-string.js'
 
 // Helper to build English redirect URL with query parameters
 function buildEnglishRedirectUrl(locationId, searchTerms, locationName) {
-  let redirectUrl = `/location/${locationId}/actions-reduce-exposure?lang=en`
+  let redirectUrl = `/location/${encodeURIComponent(locationId)}/actions-reduce-exposure?lang=en`
   if (searchTerms.trim() !== '') {
     redirectUrl += `&searchTerms=${encodeURIComponent(searchTerms)}`
   }

@@ -10,7 +10,7 @@ function buildWelshRedirectUrl(
   hasSearchTerms,
   hasLocationName
 ) {
-  let redirectUrl = `/lleoliad/${locationId}/camau-lleihau-amlygiad/cy?lang=cy`
+  let redirectUrl = `/lleoliad/${encodeURIComponent(locationId)}/camau-lleihau-amlygiad/cy?lang=cy`
   if (hasSearchTerms) {
     redirectUrl += `&searchTerms=${encodeURIComponent(searchTerms)}`
   }

@@ -309,7 +309,7 @@ export const processNILocation = async (request, h, params) => {
   })
 
   return h
-    .redirect(`/lleoliad/${urlRoute}?lang=cy`)
+    .redirect(`/lleoliad/${encodeURIComponent(urlRoute)}?lang=cy`)
     .code(REDIRECT_STATUS_CODE)
     .takeover()
 }

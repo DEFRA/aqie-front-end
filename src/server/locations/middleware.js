@@ -170,7 +170,7 @@ const processNILocationType = (request, h, redirectError, options = {}) => {
 
   setSessionIfChanged(request, 'locationData', locationData)
   return h
-    .redirect(`/location/${locationData.urlRoute}?lang=en`)
+    .redirect(`/location/${encodeURIComponent(locationData.urlRoute)}?lang=en`)
     .code(REDIRECT_STATUS_CODE)
     .takeover()
 }

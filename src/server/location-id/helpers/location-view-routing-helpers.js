@@ -127,7 +127,9 @@ function handleWelshRedirect(query, locationId, h) {
     )
 
     return h
-      .redirect(`/lleoliad/${locationId}/?lang=cy${mockParams}`)
+      .redirect(
+        `/lleoliad/${encodeURIComponent(locationId)}/?lang=cy${mockParams}`
+      )
       .code(REDIRECT_STATUS_CODE)
   }
 

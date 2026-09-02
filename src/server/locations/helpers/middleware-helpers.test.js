@@ -171,6 +171,56 @@ describe('Middleware Helpers Tests', () => {
       expect(mockH.redirect).toHaveBeenCalledWith('/lleoliad/caerdydd-url')
     })
 
+    it('should percent-encode diacritic characters in urlRoute for English', () => {
+      const params = {
+        selectedMatches: [{ name: 'Pontypool' }],
+        getForecasts: { forecasts: [] },
+        getDailySummary: 'summary',
+        transformedDailySummary: 'transformed',
+        englishDate: '15 March 2024',
+        welshDate: '15 Mawrth 2024',
+        month: 3,
+        headerTitle: 'Pontypool',
+        titleRoute: 'pontypool',
+        headerTitleRoute: 'pontypool-header',
+        title: 'Pontypool - Check local air quality',
+        urlRoute: 'pont-y-pŵl_torfaen',
+        locationType: 'city',
+        lang: 'en'
+      }
+
+      handleSingleMatch(mockH, mockRequest, params)
+
+      expect(mockH.redirect).toHaveBeenCalledWith(
+        '/location/pont-y-p%C5%B5l_torfaen'
+      )
+    })
+
+    it('should percent-encode diacritic characters in urlRoute for Welsh', () => {
+      const params = {
+        selectedMatches: [{ name: 'Pont-y-pŵl' }],
+        getForecasts: { forecasts: [] },
+        getDailySummary: 'summary',
+        transformedDailySummary: 'transformed',
+        englishDate: '15 March 2024',
+        welshDate: '15 Mawrth 2024',
+        month: 3,
+        headerTitle: 'Pont-y-pŵl',
+        titleRoute: 'pont-y-pŵl',
+        headerTitleRoute: 'pont-y-pŵl-header',
+        title: 'Pont-y-pŵl - Gwirio ansawdd aer lleol',
+        urlRoute: 'pont-y-pŵl_torfaen',
+        locationType: 'dinas',
+        lang: 'cy'
+      }
+
+      handleSingleMatch(mockH, mockRequest, params)
+
+      expect(mockH.redirect).toHaveBeenCalledWith(
+        '/lleoliad/pont-y-p%C5%B5l_torfaen'
+      )
+    })
+
     it('should use headerTitleRoute when multiple matches exist', () => {
       const params = {
         selectedMatches: [{ name: 'Cardiff' }, { name: 'Newport' }],

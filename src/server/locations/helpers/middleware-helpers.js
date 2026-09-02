@@ -95,11 +95,11 @@ const handleSingleMatch = (
 
   return lang === LANG_EN
     ? h
-        .redirect(`/location/${customId}${queryParams}`)
+        .redirect(`/location/${encodeURIComponent(customId)}${queryParams}`)
         .code(REDIRECT_STATUS_CODE)
         .takeover()
     : h
-        .redirect(`/lleoliad/${customId}${queryParams}`)
+        .redirect(`/lleoliad/${encodeURIComponent(customId)}${queryParams}`)
         .code(REDIRECT_STATUS_CODE)
         .takeover()
 }

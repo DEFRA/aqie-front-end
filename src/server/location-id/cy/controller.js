@@ -377,7 +377,9 @@ const getLocationDetailsController = {
       persistMockAndTestModeParams(request, query, mocksDisabled)
 
       if (shouldRedirectToEnglish(query)) {
-        return h.redirect(`/location/${locationId}/?lang=en`)
+        return h.redirect(
+          `/location/${encodeURIComponent(locationId)}/?lang=en`
+        )
       }
       // Get the previous URL hit by the user from the referer header
       const previousUrl = getPreviousUrl(request)
