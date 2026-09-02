@@ -66,6 +66,19 @@ describe('redirectToWelshLocation', () => {
     expect(result).toBeNull()
   })
 
+  it('should percent-encode diacritic characters in locationId', () => {
+    const query = { lang: LANG_CY }
+    const locationId = 'pont-y-pŵl_torfaen'
+
+    const result = redirectToWelshLocation(query, locationId, mockH)
+
+    expect(mockRedirect).toHaveBeenCalledWith(
+      '/lleoliad/pont-y-p%C5%B5l_torfaen/?lang=cy'
+    )
+    expect(mockCode).toHaveBeenCalledWith(REDIRECT_STATUS_CODE)
+    expect(result).toBe('redirect-result')
+  })
+
   it('should handle empty locationId string', () => {
     const query = { lang: LANG_CY }
     const locationId = ''
