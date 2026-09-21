@@ -381,7 +381,7 @@ const getLocationDetailsController = {
           `/location/${encodeURIComponent(locationId)}/?lang=en`
         )
       }
-      // Get the previous URL hit by the user from the referer header
+      // Get the previous URL hit by the user from the referer header //
       const previousUrl = getPreviousUrl(request)
       const currentUrl = request.url.href
 
