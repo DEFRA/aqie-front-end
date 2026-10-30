@@ -17,7 +17,7 @@ export default defineConfig({
       provider: 'v8',
       reportsDirectory: './coverage',
       reporter: ['text', 'json-summary', 'html', 'lcov'], // Added lcov for SonarCloud
-      include: ['src/**'],
+      include: ['src/**/*.{js,mjs,cjs}'],
       exclude: [
         GOVUK_SRC_EXCLUDE,
         '.public',

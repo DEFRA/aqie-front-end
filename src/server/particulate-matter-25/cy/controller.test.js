@@ -4,6 +4,12 @@ import { particulateMatter25Controller } from './controller.js'
 import { LANG_CY, LANG_EN } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
+vi.mock('../../common/helpers/get-site-url.js', () => ({
+  getAirQualitySiteUrl: vi.fn((request) => {
+    return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+  })
+}))
+
 const PM25_PATH_CY = '/llygryddion/mater-gronynnol-25/cy'
 const VIEW_RENDERED = 'view rendered'
 const TEST_LOCATION = 'Test Location'
@@ -50,11 +56,6 @@ describe('Particular matter25 Controller - Welsh Redirects', () => {
       query: {},
       path: PM25_PATH_CY
     }
-    vi.mock('../../common/helpers/get-site-url.js', () => ({
-      getAirQualitySiteUrl: vi.fn((request) => {
-        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
-      })
-    }))
     mockH = {
       redirect: vi.fn(() => ({
         code: vi.fn(() => 'redirected')

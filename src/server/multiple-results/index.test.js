@@ -2,21 +2,19 @@ import { getLocationDataController } from './controller.js'
 import { multipleResults } from './index.js'
 import Hapi from '@hapi/hapi'
 
+vi.mock('./controller.js', () => ({
+  getLocationDataController: {
+    handler: vi.fn(),
+    options: {}
+  }
+}))
+
 describe('multiple-results index plugin - en', () => {
   let server
 
   beforeAll(async () => {
     server = Hapi.server()
     await multipleResults.plugin.register(server)
-  })
-
-  beforeEach(() => {
-    vi.mock('./controller.js', () => ({
-      getLocationDataController: {
-        handler: vi.fn(),
-        options: {}
-      }
-    }))
   })
 
   test('should register multiple-results route', () => {

@@ -3,21 +3,19 @@ import { sulphurDioxideController } from './controller.js'
 import { sulphurDioxideCy } from './index'
 import Hapi from '@hapi/hapi'
 
+vi.mock('./controller.js', () => ({
+  sulphurDioxideController: {
+    handler: vi.fn(),
+    options: {}
+  }
+}))
+
 describe('sulphurDioxide index plugin - cy', () => {
   let server
 
   beforeAll(async () => {
     server = Hapi.server()
     await sulphurDioxideCy.plugin.register(server)
-  })
-
-  beforeEach(() => {
-    vi.mock('./controller.js', () => ({
-      sulphurDioxideController: {
-        handler: vi.fn(),
-        options: {}
-      }
-    }))
   })
 
   it('should register sulphurDioxide route - cy', () => {

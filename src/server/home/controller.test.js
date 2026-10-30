@@ -13,6 +13,12 @@ vi.mock('../common/helpers/logging/logger.js', () => ({
   }))
 }))
 
+vi.mock('../common/helpers/get-site-url.js', () => ({
+  getAirQualitySiteUrl: vi.fn((request) => {
+    return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+  })
+}))
+
 const VIEW_RENDERED = 'view rendered'
 const REDIRECTED = 'redirected'
 const LANG_EN = 'en'
@@ -60,11 +66,6 @@ describe('Home Controller', () => {
 
   beforeEach(() => {
     mockRequest = createMockRequest()
-    vi.mock('../../common/helpers/get-site-url.js', () => ({
-      getAirQualitySiteUrl: vi.fn((request) => {
-        return `${BASE_URL}${request.path}?lang=${request.query.lang}`
-      })
-    }))
     mockH = createMockH()
   })
 

@@ -4,6 +4,12 @@ import { ozoneController } from './controller.js'
 import { LANG_CY, OZONE_PATH_CY } from '../../data/constants.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 
+vi.mock('../../common/helpers/get-site-url.js', () => ({
+  getAirQualitySiteUrl: vi.fn((request) => {
+    return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+  })
+}))
+
 const TEST_LOCATION = 'Test Location'
 
 const createMockRequestResponse = () => {
@@ -33,11 +39,6 @@ describe('Ozone Controller - Welsh', () => {
     mockRequest = mocks.mockRequest
     mockH = mocks.mockH
     VIEW_RENDERED = mocks.VIEW_RENDERED
-    vi.mock('../../common/helpers/get-site-url.js', () => ({
-      getAirQualitySiteUrl: vi.fn((request) => {
-        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
-      })
-    }))
   })
 
   describe('redirects', () => {
@@ -97,11 +98,6 @@ describe('Ozone Controller - Welsh - default language', () => {
     mockRequest = mocks.mockRequest
     mockH = mocks.mockH
     VIEW_RENDERED = mocks.VIEW_RENDERED
-    vi.mock('../../common/helpers/get-site-url.js', () => ({
-      getAirQualitySiteUrl: vi.fn((request) => {
-        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
-      })
-    }))
   })
 
   it('should render the ozone cy page with the necessary data if lang is not cy | en', () => {
