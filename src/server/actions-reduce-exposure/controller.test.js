@@ -5,6 +5,12 @@ import { english } from '../data/en/en.js'
 import { LANG_CY, LANG_EN } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
+vi.mock('../common/helpers/get-site-url.js', () => ({
+  getAirQualitySiteUrl: vi.fn((request) => {
+    return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+  })
+}))
+
 describe('actions reduce exposure controller - English', () => {
   let mockRequest
   let mockH
@@ -15,11 +21,6 @@ describe('actions reduce exposure controller - English', () => {
       params: { locationId: 'n87ge' },
       path: '/location/n87ge/actions-reduce-exposure'
     }
-    vi.mock('../common/helpers/get-site-url.js', () => ({
-      getAirQualitySiteUrl: vi.fn((request) => {
-        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
-      })
-    }))
     mockH = {
       redirect: vi.fn().mockImplementation((url) => {
         return {

@@ -4,6 +4,24 @@ import { english } from '../data/en/en.js'
 import { sulphurDioxideController } from './controller.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
+vi.mock('../common/helpers/get-site-url.js', () => ({
+  getAirQualitySiteUrl: vi.fn((request) => {
+    const queryParams = new URLSearchParams({
+      lang: request.query.lang || 'en'
+    })
+    if (request.query.locationId) {
+      queryParams.append('locationId', request.query.locationId)
+    }
+    if (request.query.locationName) {
+      queryParams.append('locationName', request.query.locationName)
+    }
+    if (request.query.searchTerms) {
+      queryParams.append('searchTerms', request.query.searchTerms)
+    }
+    return `https://check-air-quality.service.gov.uk${request.path}?${queryParams.toString()}`
+  })
+}))
+
 const TEST_LOCATION = 'Test Location'
 
 // Shared mock setup
@@ -28,26 +46,6 @@ function createMockRequestResponse() {
 }
 
 describe('sulphurDioxide Controller - English', () => {
-  beforeEach(() => {
-    vi.mock('../common/helpers/get-site-url.js', () => ({
-      getAirQualitySiteUrl: vi.fn((request) => {
-        const queryParams = new URLSearchParams({
-          lang: request.query.lang || 'en'
-        })
-        if (request.query.locationId) {
-          queryParams.append('locationId', request.query.locationId)
-        }
-        if (request.query.locationName) {
-          queryParams.append('locationName', request.query.locationName)
-        }
-        if (request.query.searchTerms) {
-          queryParams.append('searchTerms', request.query.searchTerms)
-        }
-        return `https://check-air-quality.service.gov.uk${request.path}?${queryParams.toString()}`
-      })
-    }))
-  })
-
   describe('redirects', () => {
     it('should redirect to the Welsh version if the language is "cy"', () => {
       const { mockRequest, mockH } = createMockRequestResponse()

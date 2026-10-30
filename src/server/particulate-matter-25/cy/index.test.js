@@ -2,21 +2,19 @@ import { particulateMatter25Controller } from './controller.js'
 import { particulateMatter25Cy } from './index'
 import Hapi from '@hapi/hapi'
 
+vi.mock('./controller.js', () => ({
+  particulateMatter25Controller: {
+    handler: vi.fn(),
+    options: {}
+  }
+}))
+
 describe('particulateMatter25 index plugin - cy', () => {
   let server
 
   beforeAll(async () => {
     server = Hapi.server()
     await particulateMatter25Cy.plugin.register(server)
-  })
-
-  beforeEach(() => {
-    vi.mock('./controller.js', () => ({
-      particulateMatter25Controller: {
-        handler: vi.fn(),
-        options: {}
-      }
-    }))
   })
 
   test('should register particulateMatter25 route - cy', () => {

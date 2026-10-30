@@ -2,21 +2,19 @@ import { ozoneController } from './controller.js'
 import { ozoneCy } from './index'
 import Hapi from '@hapi/hapi'
 
+vi.mock('./controller.js', () => ({
+  ozoneController: {
+    handler: vi.fn(),
+    options: {}
+  }
+}))
+
 describe('ozone index plugin - cy', () => {
   let server
 
   beforeAll(async () => {
     server = Hapi.server()
     await ozoneCy.plugin.register(server)
-  })
-
-  beforeEach(() => {
-    vi.mock('./controller.js', () => ({
-      ozoneController: {
-        handler: vi.fn(),
-        options: {}
-      }
-    }))
   })
 
   test('should register ozone route - cy', () => {

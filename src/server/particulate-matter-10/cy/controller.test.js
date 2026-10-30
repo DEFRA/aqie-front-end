@@ -36,16 +36,18 @@ let mockRequest
 let mockH
 const mockContent = welsh
 const { particulateMatter10 } = welsh.pollutants
+
+vi.mock('../../common/helpers/get-site-url.js', () => ({
+  getAirQualitySiteUrl: vi.fn((request) => {
+    return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+  })
+}))
+
 beforeEach(() => {
   mockRequest = {
     query: {},
     path: PM10_PATH_CY
   }
-  vi.mock('../../common/helpers/get-site-url.js', () => ({
-    getAirQualitySiteUrl: vi.fn((request) => {
-      return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
-    })
-  }))
   mockH = {
     redirect: vi.fn(() => ({
       code: vi.fn().mockReturnValue('redirected')

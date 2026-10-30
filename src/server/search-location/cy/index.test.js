@@ -2,21 +2,19 @@ import { searchLocationController } from './controller.js'
 import { searchLocationCy } from './index.js'
 import Hapi from '@hapi/hapi'
 
+vi.mock('./controller.js', () => ({
+  searchLocationController: {
+    handler: vi.fn(),
+    options: {}
+  }
+}))
+
 describe('search location index plugin - cy', () => {
   let server
 
   beforeAll(async () => {
     server = Hapi.server()
     await searchLocationCy.plugin.register(server)
-  })
-
-  beforeEach(() => {
-    vi.mock('./controller.js', () => ({
-      searchLocationController: {
-        handler: vi.fn(),
-        options: {}
-      }
-    }))
   })
 
   test('should register search location route', () => {

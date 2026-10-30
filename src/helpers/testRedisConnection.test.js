@@ -10,7 +10,9 @@ const mockRedis = {
 // Mock the ioredis module
 vi.mock('ioredis', () => {
   return {
-    default: vi.fn(() => mockRedis)
+    default: vi.fn(function () {
+      return mockRedis
+    })
   }
 })
 
