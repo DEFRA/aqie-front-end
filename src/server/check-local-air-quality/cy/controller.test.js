@@ -3,6 +3,12 @@ import { welsh } from '../../data/cy/cy.js'
 import { getAirQualitySiteUrl } from '../../common/helpers/get-site-url.js'
 import { vi } from 'vitest' // Import vi from Vitest for mocking
 
+vi.mock('../../common/helpers/get-site-url.js', () => ({
+  getAirQualitySiteUrl: vi.fn((request) => {
+    return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+  })
+}))
+
 describe('Home Controller', () => {
   let mockRequest
   let mockH // Declare mockH at the top of the test file
@@ -13,11 +19,6 @@ describe('Home Controller', () => {
       query: {},
       path: ''
     }
-    vi.mock('../../common/helpers/get-site-url.js', () => ({
-      getAirQualitySiteUrl: vi.fn((request) => {
-        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
-      })
-    }))
     mockH = {
       redirect: vi.fn().mockImplementation((url) => {
         return {

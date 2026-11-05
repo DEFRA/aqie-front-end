@@ -4,21 +4,19 @@ import { privacy } from './index.js'
 import { privacyController } from './controller.js'
 import Hapi from '@hapi/hapi'
 
+vi.mock('./controller.js', () => ({
+  privacyController: {
+    handler: vi.fn(),
+    options: {}
+  }
+}))
+
 describe('privacy index plugin - en', () => {
   let server
 
   beforeAll(async () => {
     server = Hapi.server()
     await privacy.plugin.register(server)
-  })
-
-  beforeEach(() => {
-    vi.mock('./controller.js', () => ({
-      privacyController: {
-        handler: vi.fn(),
-        options: {}
-      }
-    }))
   })
 
   test('should register privacy route - en', () => {

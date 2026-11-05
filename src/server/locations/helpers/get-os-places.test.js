@@ -9,16 +9,16 @@ const HEADER_OTHER = 'should-remain'
 const LOCAL_TEST_DATA = { data: 'local test' }
 
 // Use doMock to ensure mocks are hoisted before imports
-vi.mock('../common/helpers/catch-proxy-fetch-error.js', () => ({
+vi.mock('../../common/helpers/catch-proxy-fetch-error.js', () => ({
   catchProxyFetchError: vi.fn()
 }))
-vi.mock('../common/helpers/logging/logger.js', () => ({
+vi.mock('../../common/helpers/logging/logger.js', () => ({
   createLogger: vi.fn(() => ({
     info: vi.fn(),
     error: vi.fn()
   }))
 }))
-vi.mock('../../config/index.js', () => ({
+vi.mock('../../../config/index.js', () => ({
   config: {
     get: vi.fn()
   }
@@ -40,7 +40,7 @@ describe('getOSPlaces - basic functionality', () => {
 
   it('should call getOSPlaces function without errors', async () => {
     vi.clearAllMocks()
-    const { config } = await import('../../config/index.js')
+    const { config } = await import('../../../config/index.js')
     config.get.mockImplementation((key) => {
       if (key === 'osNamesApiUrl') {
         return MOCK_API_URL
@@ -56,7 +56,7 @@ describe('getOSPlaces - basic functionality', () => {
     isValidFullPostcodeUK.mockReturnValue(false)
     isValidPartialPostcodeUK.mockReturnValue(false)
     const { catchProxyFetchError } = await import(
-      '../common/helpers/catch-proxy-fetch-error.js'
+      '../../common/helpers/catch-proxy-fetch-error.js'
     )
     catchProxyFetchError.mockResolvedValue([
       STATUS_CODE_SUCCESS,
@@ -84,7 +84,7 @@ describe('getOSPlaces - postcode handling', () => {
 
   it('should handle postcode input', async () => {
     vi.clearAllMocks()
-    const { config } = await import('../../config/index.js')
+    const { config } = await import('../../../config/index.js')
     config.get.mockImplementation((key) => {
       if (key === 'osNamesApiUrl') {
         return MOCK_API_URL
@@ -100,7 +100,7 @@ describe('getOSPlaces - postcode handling', () => {
     isValidFullPostcodeUK.mockReturnValue(true)
     isValidPartialPostcodeUK.mockReturnValue(false)
     const { catchProxyFetchError } = await import(
-      '../common/helpers/catch-proxy-fetch-error.js'
+      '../../common/helpers/catch-proxy-fetch-error.js'
     )
     catchProxyFetchError.mockResolvedValue([
       STATUS_CODE_SUCCESS,
@@ -128,7 +128,7 @@ describe('getOSPlaces - local requests', () => {
 
   it('should handle local requests with localhost host', async () => {
     vi.clearAllMocks()
-    const { config } = await import('../../config/index.js')
+    const { config } = await import('../../../config/index.js')
     config.get.mockImplementation((key) => {
       if (key === 'osNamesApiUrl') {
         return MOCK_API_URL
@@ -144,7 +144,7 @@ describe('getOSPlaces - local requests', () => {
     isValidFullPostcodeUK.mockReturnValue(false)
     isValidPartialPostcodeUK.mockReturnValue(false)
     const { catchProxyFetchError } = await import(
-      '../common/helpers/catch-proxy-fetch-error.js'
+      '../../common/helpers/catch-proxy-fetch-error.js'
     )
     catchProxyFetchError.mockResolvedValue([
       STATUS_CODE_SUCCESS,
@@ -189,7 +189,7 @@ describe('getOSPlaces - CDP X-API key from file', () => {
 
   it('should handle local requests without CDP_X_API_KEY env var', async () => {
     vi.clearAllMocks()
-    const { config } = await import('../../config/index.js')
+    const { config } = await import('../../../config/index.js')
     config.get.mockImplementation((key) => {
       if (key === 'osNamesApiUrl') {
         return MOCK_API_URL
@@ -208,7 +208,7 @@ describe('getOSPlaces - CDP X-API key from file', () => {
     isValidFullPostcodeUK.mockReturnValue(false)
     isValidPartialPostcodeUK.mockReturnValue(false)
     const { catchProxyFetchError } = await import(
-      '../common/helpers/catch-proxy-fetch-error.js'
+      '../../common/helpers/catch-proxy-fetch-error.js'
     )
     catchProxyFetchError.mockResolvedValue([
       STATUS_CODE_SUCCESS,
@@ -254,7 +254,7 @@ describe('getOSPlaces - 127.0.0.1 host', () => {
 
   it('should handle local requests with 127.0.0.1 host', async () => {
     vi.clearAllMocks()
-    const { config } = await import('../../config/index.js')
+    const { config } = await import('../../../config/index.js')
     config.get.mockImplementation((key) => {
       if (key === 'osNamesApiUrl') {
         return MOCK_API_URL
@@ -270,7 +270,7 @@ describe('getOSPlaces - 127.0.0.1 host', () => {
     isValidFullPostcodeUK.mockReturnValue(false)
     isValidPartialPostcodeUK.mockReturnValue(false)
     const { catchProxyFetchError } = await import(
-      '../common/helpers/catch-proxy-fetch-error.js'
+      '../../common/helpers/catch-proxy-fetch-error.js'
     )
     catchProxyFetchError.mockResolvedValue([
       STATUS_CODE_SUCCESS,
@@ -315,7 +315,7 @@ describe('getOSPlaces - non-local requests', () => {
 
   it('should remove x-api-key header for non-local requests', async () => {
     vi.clearAllMocks()
-    const { config } = await import('../../config/index.js')
+    const { config } = await import('../../../config/index.js')
     config.get.mockImplementation((key) => {
       if (key === 'osNamesApiUrl') {
         return MOCK_API_URL
@@ -331,7 +331,7 @@ describe('getOSPlaces - non-local requests', () => {
     isValidFullPostcodeUK.mockReturnValue(false)
     isValidPartialPostcodeUK.mockReturnValue(false)
     const { catchProxyFetchError } = await import(
-      '../common/helpers/catch-proxy-fetch-error.js'
+      '../../common/helpers/catch-proxy-fetch-error.js'
     )
     catchProxyFetchError.mockResolvedValue([
       STATUS_CODE_SUCCESS,
@@ -371,7 +371,7 @@ describe('getOSPlaces - non-local requests without x-api-key', () => {
 
   it('should pass through options unchanged for non-local requests without x-api-key', async () => {
     vi.clearAllMocks()
-    const { config } = await import('../../config/index.js')
+    const { config } = await import('../../../config/index.js')
     config.get.mockImplementation((key) => {
       if (key === 'osNamesApiUrl') {
         return MOCK_API_URL
@@ -387,7 +387,7 @@ describe('getOSPlaces - non-local requests without x-api-key', () => {
     isValidFullPostcodeUK.mockReturnValue(false)
     isValidPartialPostcodeUK.mockReturnValue(false)
     const { catchProxyFetchError } = await import(
-      '../common/helpers/catch-proxy-fetch-error.js'
+      '../../common/helpers/catch-proxy-fetch-error.js'
     )
     catchProxyFetchError.mockResolvedValue([
       STATUS_CODE_SUCCESS,
@@ -433,7 +433,7 @@ describe('getOSPlaces - error handling', () => {
 
   it('should return empty results on error status code', async () => {
     vi.clearAllMocks()
-    const { config } = await import('../../config/index.js')
+    const { config } = await import('../../../config/index.js')
     config.get.mockImplementation((key) => {
       if (key === 'osNamesApiUrl') {
         return MOCK_API_URL
@@ -449,7 +449,7 @@ describe('getOSPlaces - error handling', () => {
     isValidFullPostcodeUK.mockReturnValue(false)
     isValidPartialPostcodeUK.mockReturnValue(false)
     const { catchProxyFetchError } = await import(
-      '../common/helpers/catch-proxy-fetch-error.js'
+      '../../common/helpers/catch-proxy-fetch-error.js'
     )
     catchProxyFetchError.mockResolvedValue([STATUS_CODE_NOT_FOUND, null])
 
@@ -474,7 +474,7 @@ describe('getOSPlaces - successful response', () => {
 
   it('should return osPlacesData when successful', async () => {
     vi.clearAllMocks()
-    const { config } = await import('../../config/index.js')
+    const { config } = await import('../../../config/index.js')
     config.get.mockImplementation((key) => {
       if (key === 'osNamesApiUrl') {
         return MOCK_API_URL
@@ -490,7 +490,7 @@ describe('getOSPlaces - successful response', () => {
     isValidFullPostcodeUK.mockReturnValue(false)
     isValidPartialPostcodeUK.mockReturnValue(false)
     const { catchProxyFetchError } = await import(
-      '../common/helpers/catch-proxy-fetch-error.js'
+      '../../common/helpers/catch-proxy-fetch-error.js'
     )
     const mockData = { results: [{ name: 'London', type: 'City' }] }
     catchProxyFetchError.mockResolvedValue([STATUS_CODE_SUCCESS, mockData])

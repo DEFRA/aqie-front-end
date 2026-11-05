@@ -5,6 +5,12 @@ import { welsh } from '../data/cy/cy.js'
 import { LANG_CY, LANG_EN } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
+vi.mock('../common/helpers/get-site-url.js', () => ({
+  getAirQualitySiteUrl: vi.fn((request) => {
+    return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+  })
+}))
+
 const ACCESSIBILITY_PATH = '/accessibility'
 const VIEW_RENDERED = 'view rendered'
 const ACCESSIBILITY_INDEX_VIEW = 'accessibility/index'
@@ -54,12 +60,6 @@ function createMockH() {
 describe('Accessibility Handler - Welsh Redirects', () => {
   let mockRequest
   let mockH
-
-  vi.mock('../../common/helpers/get-site-url.js', () => ({
-    getAirQualitySiteUrl: vi.fn((request) => {
-      return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
-    })
-  }))
 
   beforeEach(() => {
     mockRequest = createMockRequest()

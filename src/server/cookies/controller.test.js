@@ -4,6 +4,12 @@ import { LANG_CY, LANG_EN } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 import { vi } from 'vitest'
 
+vi.mock('../common/helpers/get-site-url.js', () => ({
+  getAirQualitySiteUrl: vi.fn((request) => {
+    return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+  })
+}))
+
 const VIEW_RENDERED = 'view rendered'
 const REDIRECTED = 'redirected'
 const COOKIES_PATH = '/cookies'
@@ -47,11 +53,6 @@ describe('Cookies Handler', () => {
 
   beforeEach(() => {
     mockRequest = createMockRequest()
-    vi.mock('../../common/helpers/get-site-url.js', () => ({
-      getAirQualitySiteUrl: vi.fn((request) => {
-        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
-      })
-    }))
     mockH = createMockH()
   })
 

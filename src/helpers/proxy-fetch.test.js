@@ -32,9 +32,11 @@ describe('proxy-fetch', () => {
       json: vi.fn().mockResolvedValue({ data: 'test' })
     })
 
-    mockProxyAgent.mockImplementation(() => ({
-      proxy: 'https://proxy.example.com:8080'
-    }))
+    mockProxyAgent.mockImplementation(function () {
+      return {
+        proxy: 'https://proxy.example.com:8080'
+      }
+    })
   })
 
   test('should export proxyFetch function', async () => {

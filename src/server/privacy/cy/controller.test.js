@@ -45,11 +45,6 @@ describe('privacy controller - Welsh', () => {
       query: {},
       path: ''
     }
-    vi.mock('../../common/helpers/get-site-url.js', () => ({
-      getAirQualitySiteUrl: vi.fn((request) => {
-        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
-      })
-    }))
     mockH = {
       redirect: vi.fn(() => ({
         code: vi.fn(() => 'redirected')

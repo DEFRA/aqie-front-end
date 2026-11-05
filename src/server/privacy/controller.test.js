@@ -5,6 +5,12 @@ import { english } from '../data/en/en.js'
 import { LANG_CY, LANG_EN } from '../data/constants.js'
 import { getAirQualitySiteUrl } from '../common/helpers/get-site-url.js'
 
+vi.mock('../common/helpers/get-site-url.js', () => ({
+  getAirQualitySiteUrl: vi.fn((request) => {
+    return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+  })
+}))
+
 describe('privacy controller - English', () => {
   let mockRequest
   let mockH
@@ -14,11 +20,6 @@ describe('privacy controller - English', () => {
       query: {},
       path: '/privacy'
     }
-    vi.mock('../common/helpers/get-site-url.js', () => ({
-      getAirQualitySiteUrl: vi.fn((request) => {
-        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
-      })
-    }))
     mockH = {
       redirect: vi.fn().mockImplementation(() => {
         return {

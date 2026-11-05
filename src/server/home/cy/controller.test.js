@@ -14,6 +14,12 @@ vi.mock('../../common/helpers/logging/logger.js', () => ({
   }))
 }))
 
+vi.mock('../../common/helpers/get-site-url.js', () => ({
+  getAirQualitySiteUrl: vi.fn((request) => {
+    return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
+  })
+}))
+
 const VIEW_RENDERED = 'view rendered'
 
 describe('Home Controller - Welsh Redirects', () => {
@@ -22,11 +28,6 @@ describe('Home Controller - Welsh Redirects', () => {
 
   beforeEach(() => {
     mockRequest = { query: {}, path: '/', headers: { host: '' } }
-    vi.mock('../../common/helpers/get-site-url.js', () => ({
-      getAirQualitySiteUrl: vi.fn((request) => {
-        return `https://check-air-quality.service.gov.uk${request.path}?lang=${request.query.lang}`
-      })
-    }))
   })
 
   describe('Welsh redirects', () => {

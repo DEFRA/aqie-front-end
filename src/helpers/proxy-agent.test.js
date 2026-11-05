@@ -8,10 +8,12 @@ vi.mock('../config/index.js', () => ({
 }))
 
 vi.mock('https-proxy-agent', () => ({
-  HttpsProxyAgent: vi.fn().mockImplementation((url) => ({
-    proxy: url,
-    type: 'https-proxy-agent'
-  }))
+  HttpsProxyAgent: vi.fn().mockImplementation(function (url) {
+    return {
+      proxy: url,
+      type: 'https-proxy-agent'
+    }
+  })
 }))
 
 vi.mock('../server/common/helpers/logging/logger.js', () => ({
@@ -36,11 +38,13 @@ describe('proxy-agent', () => {
     mockConfig = configModule.config
 
     // Reset URL mock
-    mockUrl.mockImplementation((url) => ({
-      href: url,
-      protocol: 'https:',
-      host: 'proxy.example.com:8080'
-    }))
+    mockUrl.mockImplementation(function (url) {
+      return {
+        href: url,
+        protocol: 'https:',
+        host: 'proxy.example.com:8080'
+      }
+    })
   })
 
   test('should export proxyAgent function', async () => {
@@ -75,7 +79,7 @@ describe('proxy-agent', () => {
 
   test('should handle invalid proxy URL gracefully', async () => {
     mockConfig.get.mockReturnValue('invalid-url')
-    mockUrl.mockImplementation(() => {
+    mockUrl.mockImplementation(function () {
       throw new Error('Invalid URL')
     })
 
